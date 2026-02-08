@@ -17,5 +17,5 @@ export const ResponsivenessChip: React.FC<{ active: boolean }> = ({ active }) =>
 );
 
 export const RiposteChip: React.FC<{ chains?: number }> = ({ chains=0 }) => (
-  chains > 0 ? <Chip label={chains > 1 ? \`Riposte x\${chains}\` : "Riposte"} tone="good" /> : null
+  chains > 0 ? <Chip label={chains > 1 ? `Riposte x${chains}` : "Riposte"} tone="good" /> : null
 );
