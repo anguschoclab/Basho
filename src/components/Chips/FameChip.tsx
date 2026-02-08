@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as Badge from '@radix-ui/react-badge';
 
 function tone(fame: number) {
   if (fame >= 80) return 'bg-purple-600 text-white';

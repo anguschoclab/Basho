@@ -1,33 +1,50 @@
-import React from 'react'
-import { registerSW } from 'virtual:pwa-register'
+import React from 'react';
 
-export default function UpdatePrompt(){
-  const [needRefresh, setNeedRefresh] = React.useState(false)
-  const [offlineReady, setOfflineReady] = React.useState(false)
+export default function UpdatePrompt() {
+  const [needRefresh, setNeedRefresh] = React.useState(false);
+  const [offlineReady, setOfflineReady] = React.useState(false);
 
   React.useEffect(() => {
-    const updateSW = registerSW({
-      immediate: true,
-      onNeedRefresh() { setNeedRefresh(true) },
-      onOfflineReady() { setOfflineReady(true); setTimeout(()=>setOfflineReady(false), 2000) }
-    })
-  }, [])
+    // PWA registration is optional - silently skip if not available
+    // The vite-plugin-pwa provides this virtual module when configured
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      // Check if we have a waiting service worker
+      navigator.serviceWorker.ready.then((registration) => {
+        if (registration.waiting) {
+          setNeedRefresh(true);
+        }
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                setNeedRefresh(true);
+              }
+            });
+          }
+        });
+      }).catch(() => {
+        // No service worker, that's fine
+      });
+    }
+  }, []);
 
-  if (!needRefresh && !offlineReady) return null
+  if (!needRefresh && !offlineReady) return null;
 
   return (
-    <div style={{
-      position:'fixed', bottom:16, right:16, zIndex:50,
-      background:'#12183b', border:'1px solid #28345f', borderRadius:10,
-      color:'#e6ecff', padding:'10px 12px', boxShadow:'0 10px 24px rgba(0,0,0,.32)'
-    }}>
+    <div className="fixed bottom-16 right-4 z-50 bg-neutral-900 border border-neutral-700 rounded-lg text-neutral-100 p-3 shadow-xl">
       {offlineReady && <div>✨ Offline ready</div>}
       {needRefresh && (
-        <div style={{display:'flex', gap:8, alignItems:'center'}}>
+        <div className="flex gap-2 items-center">
           <span>New version available</span>
-          <button className="btn-primary" onClick={()=>location.reload()}>Reload</button>
+          <button 
+            className="px-3 py-1 bg-emerald-600 rounded text-white hover:bg-emerald-500"
+            onClick={() => location.reload()}
+          >
+            Reload
+          </button>
         </div>
       )}
     </div>
-  )
+  );
 }

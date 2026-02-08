@@ -2,10 +2,10 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider, RouteObject, Link } from 'react-router-dom';
 import HallOfFights from '../pages/HallOfFights';
 import { ToastsProvider } from '../ui/Toasts';
-import RunRoundPanel from '../components/RunRoundPanel';
+import RunRoundPanel from '../panels/RunRoundPanel';
 
 const routes: RouteObject[] = [
-  { path: '/', element: <RunRoundPanel /> },
+  { path: '/', element: <RunRoundPanel simulate={() => ({ tagsA: [], tagsD: [], winnerSide: null, by: 'Draw', minutes: 3 })} /> },
   { path: '/hall-of-fights', element: <HallOfFights /> },
 ];
 
