@@ -1,1 +1,0 @@
-import React from 'react'; export const FameChip=({value}:{value:number})=> <span className='px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-xs'>Fame {value}</span>; export const PopChip=({value}:{value:number})=> <span className='px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs'>Pop {value}</span>;

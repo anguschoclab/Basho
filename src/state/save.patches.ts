@@ -1,1 +1,0 @@
-export type FamePopBump={fameDelta?:number;popDelta?:number;reason?:string}; export function applyFamePopBump(f:number,p:number,b:FamePopBump){return {fame:Math.max(0,Math.min(100,f+(b.fameDelta??0))), pop:Math.max(0,Math.min(100,p+(b.popDelta??0)))}}

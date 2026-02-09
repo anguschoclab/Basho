@@ -1,4 +1,0 @@
-
-const Save:any=(globalThis as any).__dmSave;
-function ensure(style:string,m:any){if(!m[style]) m[style]={w:0,l:0,k:0,pct:0,fights:0}; return m[style];}
-export const StyleRollups={addFight(s:any){const wk=s.week??(Save?.getWeek?.()??1), wkMap=Save?.getOrInitStyleWeek?.(wk)??{}; const a=s.aStyle||"Unknown", d=s.dStyle||"Unknown", w=s.winner; const ea=ensure(a,wkMap), ed=ensure(d,wkMap); ea.fights++; ed.fights++; if(w==="A"){ea.w++; ed.l++;} else if(w==="D"){ed.w++; ea.l++;} if(s.by==="Kill"){ if(w==="A") ea.k++; else if(w==="D") ed.k++; } ea.pct=ea.fights?ea.w/ea.fights:0; ed.pct=ed.fights?ed.w/ed.fights:0; Save?.setStyleWeek?.(wk,wkMap); Save?.maintainRollingStyle?.();}, getWeekRollup(week:number){return Save?.getStyleWeek?.(week)??{}}}; (globalThis as any).__dmStyleRollups=StyleRollups; export default StyleRollups;

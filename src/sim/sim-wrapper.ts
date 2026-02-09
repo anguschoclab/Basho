@@ -1,1 +1,0 @@
-export function simulateFightAndSignal(sim:any,a:any,d:any){const out=sim(a,d); const t=(window as any).dmToast; if(t){ if(out?.by==='Kill') t('A lethal finish shakes the arena.'); if(out?.by==='KO') t('A stunning knockout!'); } return out;}

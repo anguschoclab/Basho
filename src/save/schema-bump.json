@@ -1,4 +1,0 @@
-{
-  "version": "1.2.0-sprint6A",
-  "notes": "Adds NewsletterFeed, ArenaHistory, StyleRollups, simulateFightAndSignal wrapper, RunRoundPanel integration."
-}

@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Basho - Sumo Management Sim Design System
+   All colors MUST be HSL.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Core palette - Earthy, traditional Japanese */
+    --background: 40 20% 97%;
+    --foreground: 20 15% 15%;
+
+    --card: 40 25% 95%;
+    --card-foreground: 20 15% 15%;
+
+    --popover: 40 25% 98%;
+    --popover-foreground: 20 15% 15%;
+
+    /* Primary - Deep indigo (traditional sumo colors) */
+    --primary: 230 45% 25%;
+    --primary-foreground: 40 20% 97%;
+
+    /* Secondary - Warm beige/sand */
+    --secondary: 35 30% 88%;
+    --secondary-foreground: 20 15% 20%;
+
+    --muted: 35 20% 90%;
+    --muted-foreground: 20 10% 45%;
+
+    /* Accent - Rich crimson red (victory/importance) */
+    --accent: 0 70% 45%;
+    --accent-foreground: 40 20% 97%;
+
+    /* Status colors */
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 40 20% 97%;
+
+    --success: 145 60% 35%;
+    --success-foreground: 40 20% 97%;
+
+    --warning: 35 90% 50%;
+    --warning-foreground: 20 15% 15%;
+
+    /* Borders & inputs */
+    --border: 30 15% 82%;
+    --input: 30 15% 85%;
+    --ring: 230 45% 25%;
+
+    --radius: 0.375rem;
+
+    /* Sumo-specific tokens */
+    --dohyo: 35 40% 70%;
+    --dohyo-border: 0 60% 40%;
+    --east: 0 70% 45%;
+    --west: 220 60% 45%;
+    --gold: 45 90% 55%;
+    --silver: 220 10% 65%;
+    --bronze: 25 60% 45%;
+
+    /* Typography */
+    --font-display: 'Noto Serif JP', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px hsl(20 15% 15% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(20 15% 15% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(20 15% 15% / 0.1);
+    --shadow-paper: 0 1px 3px hsl(20 15% 15% / 0.12), 0 1px 2px hsl(20 15% 15% / 0.24);
+
+    /* Sidebar */
+    --sidebar-background: 35 25% 94%;
+    --sidebar-foreground: 20 15% 20%;
+    --sidebar-primary: 230 45% 25%;
+    --sidebar-primary-foreground: 40 20% 97%;
+    --sidebar-accent: 35 30% 88%;
+    --sidebar-accent-foreground: 20 15% 20%;
+    --sidebar-border: 30 15% 82%;
+    --sidebar-ring: 230 45% 25%;
+  }
+
+  .dark {
+    --background: 220 20% 10%;
+    --foreground: 40 15% 92%;
+
+    --card: 220 18% 13%;
+    --card-foreground: 40 15% 92%;
+
+    --popover: 220 18% 12%;
+    --popover-foreground: 40 15% 92%;
+
+    /* Primary - Lighter indigo for dark mode */
+    --primary: 225 50% 65%;
+    --primary-foreground: 220 20% 10%;
+
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 40 15% 90%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    /* Accent - Brighter crimson */
+    --accent: 0 65% 55%;
+    --accent-foreground: 40 20% 97%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 40 20% 97%;
+
+    --success: 145 55% 45%;
+    --success-foreground: 220 20% 10%;
+
+    --warning: 40 85% 55%;
+    --warning-foreground: 220 20% 10%;
+
+    --border: 220 15% 22%;
+    --input: 220 15% 20%;
+    --ring: 225 50% 65%;
+
+    /* Sumo tokens - dark */
+    --dohyo: 35 30% 25%;
+    --dohyo-border: 0 50% 35%;
+    --east: 0 65% 55%;
+    --west: 215 55% 55%;
+    --gold: 45 85% 60%;
+    --silver: 220 10% 55%;
+    --bronze: 25 55% 50%;
+
+    /* Shadows - dark */
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.4);
+    --shadow-paper: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px hsl(0 0% 0% / 0.4);
+
+    /* Sidebar - dark */
+    --sidebar-background: 220 18% 12%;
+    --sidebar-foreground: 40 15% 90%;
+    --sidebar-primary: 225 50% 65%;
+    --sidebar-primary-foreground: 220 20% 10%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 40 15% 90%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 225 50% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Dohyo ring visual */
+  .dohyo-ring {
+    @apply rounded-full border-4;
+    background: hsl(var(--dohyo));
+    border-color: hsl(var(--dohyo-border));
+  }
+
+  /* East/West indicators */
+  .side-east {
+    @apply border-l-4;
+    border-left-color: hsl(var(--east));
+  }
+
+  .side-west {
+    @apply border-l-4;
+    border-left-color: hsl(var(--west));
+  }
+
+  /* Rank badges */
+  .rank-yokozuna {
+    background: linear-gradient(135deg, hsl(var(--gold)), hsl(45 80% 45%));
+  }
+
+  .rank-ozeki {
+    background: linear-gradient(135deg, hsl(var(--silver)), hsl(220 15% 55%));
+  }
+
+  .rank-sekiwake, .rank-komusubi {
+    background: linear-gradient(135deg, hsl(var(--bronze)), hsl(25 50% 40%));
+  }
+
+  /* Paper/card effect */
+  .paper {
+    box-shadow: var(--shadow-paper);
+    @apply bg-card rounded-lg;
+  }
+
+  /* Bout phase indicator */
+  .phase-tachiai {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .phase-clinch {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .phase-momentum {
+    @apply bg-secondary text-secondary-foreground;
+  }
+
+  .phase-finish {
+    @apply bg-success text-success-foreground;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(10px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.95); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Sumo-specific utilities */
+  .text-east {
+    color: hsl(var(--east));
+  }
+
+  .text-west {
+    color: hsl(var(--west));
+  }
+
+  .bg-east {
+    background-color: hsl(var(--east));
+  }
+
+  .bg-west {
+    background-color: hsl(var(--west));
+  }
+}
