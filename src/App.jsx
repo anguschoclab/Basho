@@ -211,7 +211,7 @@
       summary: "A calm in the arena. Plans are laid, steel is sharpened."
     });
     save();
-    toast(\`Advanced to week \${STATE.week}\`);
+    toast(`Advanced to week ${STATE.week}`);
     render();
   }
 
@@ -223,7 +223,7 @@
       const wk = Number(a.getAttribute("data-week"));
       const n = STATE.newsletter.find(x=>x.week===wk);
       if (!n) return;
-      alert(\`WEEK \${n.week}\n\${n.headline}\n\n\${n.summary}\`);
+      alert(`WEEK ${n.week}\n${n.headline}\n\n${n.summary}`);
     }));
     $$("#app [data-act='open-sheet']").forEach(a=> a.addEventListener("click", (e)=>{
       e.preventDefault();
