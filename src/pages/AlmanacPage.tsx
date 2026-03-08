@@ -465,8 +465,8 @@ export default function AlmanacPage() {
 
                       if (!best) return null;
 
-                      const denom = Math.max(1, (best.careerWins || 0) + (best.careerLosses || 0));
-                      const rate = (((best.careerWins || 0) / denom) * 100).toFixed(1);
+                      const { toWinRateAssessment: toWRA, WIN_RATE_LABELS: WRL } = require("@/engine/descriptorBands");
+                      const rateLabel = WRL[toWRA(best.careerWins || 0, best.careerLosses || 0)];
 
                       return (
                         <div className="p-4 rounded-lg bg-secondary/50">
@@ -475,7 +475,7 @@ export default function AlmanacPage() {
                             <Link to={`/rikishi/${best.id}`} className="font-display font-bold text-lg hover:text-primary">
                               {best.shikona}
                             </Link>
-                            <span className="font-mono text-success">{rate}%</span>
+                            <span className="font-mono text-success">{rateLabel}</span>
                           </div>
                         </div>
                       );
