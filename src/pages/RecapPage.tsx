@@ -288,9 +288,9 @@ export default function RecapPage() {
               {lastBasho.prizes && (
                 <div className="pt-2 border-t">
                   <p className="text-xs text-muted-foreground">
-                    Prize purse: Yūshō ¥{(lastBasho.prizes.yushoAmount / 1_000_000).toFixed(0)}M • 
-                    Jun-Yūshō ¥{(lastBasho.prizes.junYushoAmount / 1_000_000).toFixed(0)}M • 
-                    Special Prizes ¥{(lastBasho.prizes.specialPrizes / 1_000_000).toFixed(0)}M each
+                    Prize purse: Yūshō — Grand Prize • 
+                    Jun-Yūshō — Substantial • 
+                    Special Prizes — Notable
                   </p>
                 </div>
               )}

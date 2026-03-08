@@ -278,10 +278,13 @@ function RivalryCard({ pair, world, isPlayerRivalry }: RivalryCardProps) {
         <div className="pt-2">
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Rivalry Heat</span>
-            <span>{Math.round(heat)}%</span>
+            <span>{(() => {
+              const { toRivalryHeatBand, RIVALRY_HEAT_LABELS } = require("@/engine/descriptorBands");
+              return RIVALRY_HEAT_LABELS[toRivalryHeatBand(heat)];
+            })()}</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div className={`h-full transition-all ${heatBarClass(heatBand)}`} style={{ width: `${heat}%` }} />
+            <div className={`h-full transition-all ${heatBarClass(heatBand)}`} style={{ width: `${Math.min(heat, 100)}%` }} />
           </div>
         </div>
       </CardContent>

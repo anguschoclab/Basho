@@ -131,7 +131,7 @@ export default function TalentPoolPage() {
                 <div className="font-semibold">{playerHeya.name}</div>
               </div>
               <div className="text-sm text-muted-foreground flex flex-col items-end">
-                <div>Funds: ¥{(playerHeya.funds ?? 0).toLocaleString()}</div>
+                <div>Runway: <span className="font-medium capitalize">{playerHeya.runwayBand ?? "unknown"}</span></div>
                 <div className="text-xs">Foreigners: {foreignCount}/{talentpool.FOREIGN_RIKISHI_LIMIT_PER_HEYA}</div>
               </div>
             </div>

@@ -131,7 +131,7 @@ export default function HistoryPage() {
 
                       <div className="text-right shrink-0">
                         <div className="text-sm text-muted-foreground">Yūshō Prize</div>
-                        <div className="font-mono">{yushoMillions === null ? "—" : `¥${yushoMillions.toFixed(0)}M`}</div>
+                        <div className="font-mono">{yushoMillions === null ? "—" : yushoMillions >= 30 ? "Grand Prize" : yushoMillions >= 10 ? "Substantial" : "Modest"}</div>
                       </div>
                     </div>
                   </CardHeader>

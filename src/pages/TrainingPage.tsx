@@ -336,7 +336,6 @@ export default function TrainingPage() {
                         <span>•</span>
                         <span>Injury sensitivity: {phaseEffect.injurySensitivity > 1.1 ? "High" : phaseEffect.injurySensitivity < 0.9 ? "Low" : "Normal"}</span>
                         {rikishi.fatigue !== undefined && rikishi.fatigue > 0 && (() => {
-                          const { toFatigueBand, FATIGUE_LABELS } = require("@/engine/descriptorBands");
                           const fb = toFatigueBand(rikishi.fatigue);
                           return (
                             <>
@@ -346,8 +345,7 @@ export default function TrainingPage() {
                               </span>
                             </>
                           );
-                        })(
-                        )}
+                        })()}
                       </div>
                     </div>
 
