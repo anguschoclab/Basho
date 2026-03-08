@@ -64,6 +64,11 @@ const items = [
     icon: Coins,
   },
   {
+    title: "Scouting",
+    url: "/scouting",
+    icon: Search,
+  },
+  {
     title: "Talent Pools",
     url: "/talent",
     icon: UserSearch,
