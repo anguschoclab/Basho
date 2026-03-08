@@ -338,7 +338,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
   const initialBashoName: BashoName = "hatsu";
 
-  const world: any = {
+  const world: WorldState = {
     id: crypto.randomUUID(),
     seed: actualSeed,
     year: currentYear,
@@ -350,11 +350,6 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     heyas: heyaMap,
     rikishi: rikishiMap,
     oyakata: oyakataMap,
-    
-    // Legacy arrays for backward compatibility if needed
-    heyasArray: Array.from(heyaMap.values()),
-    rikishiArray: Array.from(rikishiMap.values()),
-    oyakataArray: Array.from(oyakataMap.values()),
 
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
@@ -371,13 +366,11 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       currentWeek: 1,
       currentDay: 1
     },
-    
-    currentDate: new Date(currentYear, 0, 1)
-  };
+  } as WorldState;
 
   // Persistent Talent Pools (created immediately so scouting has targets)
   try {
-    ensureTalentPools(world as WorldState);
+    ensureTalentPools(world);
   } catch {
     // swallow
   }
@@ -399,9 +392,9 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   }
 
   // Initialize media state (Constitution: media system drives headlines + popularity)
-  (world as any).mediaState = createDefaultMediaState();
+  world.mediaState = createDefaultMediaState();
 
-  return world as WorldState;
+  return world;
 }
 
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {

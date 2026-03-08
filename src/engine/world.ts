@@ -60,9 +60,8 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   EventBus.bashoStarted(world, name);
 
   // Reset basho-scoped media tracking (streaks, promo watch)
-  const w = world as any;
-  if (w.mediaState) {
-    w.mediaState = resetBashoMediaTracking(w.mediaState);
+  if (world.mediaState) {
+    world.mediaState = resetBashoMediaTracking(world.mediaState);
   }
 
   return world;
@@ -181,18 +180,17 @@ export function applyBoutResult(
 
   // Update media from bout (generates headlines, media heat, heya pressure)
   safeCall(() => {
-    const w = world as any;
-    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    if (!world.mediaState) world.mediaState = createDefaultMediaState();
     const { state } = updateMediaFromBout({
-      state: w.mediaState,
+      state: world.mediaState,
       world,
       result,
       day: match.day,
       bashoName: world.currentBashoName,
       division: east.division,
-      rivalries: (world as any).rivalriesState,
+      rivalries: world.rivalriesState,
     });
-    w.mediaState = state;
+    world.mediaState = state;
   });
 
   // Emit canonical bout result event
@@ -313,9 +311,8 @@ export function endBasho(world: WorldState): WorldState {
 
   // Snapshot media heat for sparkline history
   safeCall(() => {
-    const w = world as any;
-    if (w.mediaState) {
-      w.mediaState = snapshotMediaHeatForBasho(w.mediaState, basho.bashoName);
+    if (world.mediaState) {
+      world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
     }
   });
 
@@ -703,7 +700,7 @@ function runAIMetaDrift(world: WorldState): void {
     yotsuWins > oshiWins * 1.3 ? "yotsu" : "neutral";
 
   // Write meta state for NPC AI to consume in future weeks
-  (world as any)._postBashoMeta = {
+  world._postBashoMeta = {
     bashoNumber: lastBasho.bashoNumber,
     metaBias,
     yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
@@ -769,7 +766,7 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
 
   if (playerHeya) {
     // Set recruitment window state on world (consumed by UI and dailyTick)
-    (world as any)._recruitmentWindow = {
+    world._recruitmentWindow = {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 4, // 4-week window per Constitution
       vacancies: playerVacancies,

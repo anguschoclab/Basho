@@ -41,6 +41,8 @@ import * as facilities from "./facilities";
 import { processWeeklyMediaBoundary, createDefaultMediaState, resetBashoMediaTracking } from "./media";
 import { initializeBasho } from "./worldgen";
 import * as schedule from "./schedule";
+import { processYearEndInduction, HOF_CATEGORY_LABELS } from "./hallOfFame";
+import { RANK_HIERARCHY } from "./banzuke";
 
 // ============================================================================
 // TYPES
@@ -107,7 +109,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 
   switch (world.cyclePhase) {
     case "pre_basho": {
-      const remaining = (world as any)._interimDaysRemaining ?? 0;
+      const remaining = world._interimDaysRemaining ?? 0;
       if (remaining <= 0) {
         // Auto-start the basho inline (avoid circular import with world.ts)
         const bashoName = world.currentBashoName || "hatsu";
@@ -117,15 +119,14 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 
         // Generate day 1 schedule
         try {
-          if (typeof (schedule as any).generateDaySchedule === "function") {
-            (schedule as any).generateDaySchedule(world, basho, 1, world.seed);
+          if (typeof schedule.generateDaySchedule === "function") {
+            schedule.generateDaySchedule(world, basho, 1, world.seed);
           }
         } catch (_) { /* schedule optional */ }
 
         // Reset basho-scoped media tracking
-        const w = world as any;
-        if (w.mediaState) {
-          w.mediaState = resetBashoMediaTracking(w.mediaState);
+        if (world.mediaState) {
+          world.mediaState = resetBashoMediaTracking(world.mediaState);
         }
 
         EventBus.bashoStarted(world, bashoName);
@@ -151,10 +152,10 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
     }
 
     case "post_basho": {
-      const remaining = (world as any)._postBashoDays ?? 7;
+      const remaining = world._postBashoDays ?? 7;
       if (remaining <= 0) {
         world.cyclePhase = "interim";
-        (world as any)._interimDaysRemaining = getInterimDaysTotal() - 7;
+        world._interimDaysRemaining = getInterimDaysTotal() - 7;
         logEngineEvent(world, {
           type: "PHASE_TRANSITION",
           category: "basho",
@@ -171,10 +172,10 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
     }
 
     case "interim": {
-      const remaining = (world as any)._interimDaysRemaining ?? 0;
+      const remaining = world._interimDaysRemaining ?? 0;
       if (remaining <= 7) {
         world.cyclePhase = "pre_basho";
-        (world as any)._interimDaysRemaining = 7;
+        world._interimDaysRemaining = 7;
         logEngineEvent(world, {
           type: "PHASE_TRANSITION",
           category: "basho",
@@ -251,14 +252,13 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
 
   // Media weekly boundary — decay heat/pressure, generate features
   safeCall(() => {
-    const w = world as any;
-    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    if (!world.mediaState) world.mediaState = createDefaultMediaState();
     const { state } = processWeeklyMediaBoundary({
-      state: w.mediaState,
+      state: world.mediaState,
       world,
-      rivalries: (world as any).rivalriesState,
+      rivalries: world.rivalriesState,
     });
-    w.mediaState = state;
+    world.mediaState = state;
   }) && subs.push("media");
 
   // Recruitment window lifecycle — check if window should close
@@ -276,7 +276,7 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
  * Per A3.4, windows have a fixed duration set at open time.
  */
 function tickRecruitmentWindowClose(world: WorldState): void {
-  const rw = (world as any)._recruitmentWindow;
+  const rw = world._recruitmentWindow;
   if (!rw || !rw.isOpen) return;
 
   if (world.week >= rw.closesAtWeek) {
@@ -304,7 +304,7 @@ function tickRecruitmentWindowClose(world: WorldState): void {
 function tickMidInterimRecruitment(world: WorldState): void {
   if (world.cyclePhase !== "interim") return;
 
-  const interimDaysRemaining = (world as any)._interimDaysRemaining ?? 0;
+  const interimDaysRemaining = world._interimDaysRemaining ?? 0;
   const totalInterimDays = 42; // 6 weeks
   const elapsedDays = totalInterimDays - interimDaysRemaining;
   const elapsedWeeks = Math.floor(elapsedDays / 7);
@@ -313,13 +313,13 @@ function tickMidInterimRecruitment(world: WorldState): void {
   if (elapsedWeeks !== 3) return;
 
   // Don't re-open if a window is already open
-  const existingWindow = (world as any)._recruitmentWindow;
+  const existingWindow = world._recruitmentWindow;
   if (existingWindow?.isOpen) return;
 
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
   if (playerHeya) {
-    (world as any)._recruitmentWindow = {
+    world._recruitmentWindow = {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 2, // Shorter 2-week window
       vacancies: 0,
@@ -354,7 +354,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
       }
     }
     if (Object.keys(smallStables).length > 0) {
-      (talentpool as any).fillVacanciesForNPC?.(world, smallStables);
+      talentpool.fillVacanciesForNPC(world, smallStables);
     }
   });
 }
@@ -390,7 +390,6 @@ function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Loans/interest
  */
 function tickMonthlyEconomics(world: WorldState): void {
-  const { RANK_HIERARCHY } = require("./banzuke");
 
   for (const heya of world.heyas.values()) {
     // 1. Sekitori monthly salaries (paid to rikishi, deducted from heya as payroll)
@@ -478,13 +477,11 @@ function tickYearBoundary(world: WorldState, subs: string[]): void {
   // 1. Hall of Fame induction pipeline (deterministic, from immutable history)
   let hofInductees: string[] = [];
   safeCall(() => {
-    const { processYearEndInduction } = require("./hallOfFame");
     const inductees = processYearEndInduction(world);
-    hofInductees = inductees.map((i: any) => i.shikona);
+    hofInductees = inductees.map((i) => i.shikona);
 
     // Log each induction as an event
     for (const inductee of inductees) {
-      const { HOF_CATEGORY_LABELS } = require("./hallOfFame");
       const catLabel = HOF_CATEGORY_LABELS[inductee.category]?.name || inductee.category;
       logEngineEvent(world, {
         type: "HOF_INDUCTION",
@@ -560,11 +557,11 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   const { monthBoundary, yearBoundary } = advanceCalendarDay(world);
 
   // Decrement phase-specific day counters
-  if ((world as any)._interimDaysRemaining != null) {
-    (world as any)._interimDaysRemaining -= 1;
+  if (world._interimDaysRemaining != null) {
+    world._interimDaysRemaining -= 1;
   }
-  if ((world as any)._postBashoDays != null) {
-    (world as any)._postBashoDays -= 1;
+  if (world._postBashoDays != null) {
+    world._postBashoDays -= 1;
   }
 
   // Phase transition check
@@ -640,10 +637,10 @@ export function advanceFullInterim(world: WorldState): DailyTickReport[] {
 
 export function enterPostBasho(world: WorldState): void {
   world.cyclePhase = "post_basho";
-  (world as any)._postBashoDays = 7;
+  world._postBashoDays = 7;
 }
 
 export function enterInterim(world: WorldState): void {
   world.cyclePhase = "interim";
-  (world as any)._interimDaysRemaining = getInterimDaysTotal();
+  world._interimDaysRemaining = getInterimDaysTotal();
 }

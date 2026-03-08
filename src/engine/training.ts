@@ -24,7 +24,7 @@ import type {
   RikishiStats,
   Heya
 } from './types';
-import { SeededRNG } from './utils/SeededRNG';
+import { rngFromSeed } from './rng';
 import { EventBus } from './events';
 
 // Re-export types for UI consumption
@@ -249,7 +249,7 @@ function calculateGrowthVector(
 // ============================================================================
 
 export function applyWeeklyTraining(world: WorldState): WorldState {
-  const rng = new SeededRNG(world.id + world.calendar.currentWeek);
+  const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
 
   world.rikishi.forEach(rikishi => {
     if (rikishi.isRetired) return;

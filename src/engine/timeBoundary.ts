@@ -6,10 +6,14 @@
 // - One authoritative ordering for interim (between-basho) simulation steps.
 // - Deterministic: each subsystem derives its RNG from world.seed.
 // - Produces structured "boundary events" that UI can digest later.
+//
+// NOTE: The primary tick pipeline is dailyTick.ts (advanceOneDay).
+// This module provides the legacy tickWeek/advanceWeeks interface
+// used by some consumers.
 // =======================================================
 
 import type { WorldState } from "./types";
-import * as scouting from "./scouting";
+import * as scouting from "./scoutingStore";
 import * as training from "./training";
 import * as injuries from "./injuries";
 import * as welfare from "./welfare";
@@ -44,51 +48,56 @@ export interface TimeState {
  * Explicit interim ordering (v1):
  *  1) scouting updates
  *  2) training progression
- *  3) injury recovery + injury rolls (if modeled)
- *  4) economy tick
- *  5) governance tick
- *  6) narrative events tick
- *  7) rivalry updates
+ *  3) injury recovery + injury rolls
+ *  4) welfare / compliance
+ *  5) economy tick
+ *  6) governance tick
+ *  7) narrative events tick
+ *  8) rivalry updates
  */
 export function tickWeek(world: WorldState): BoundaryTickReport {
   const weekIndex = world.week ?? 0;
 
   // 1) Scouting
-  const scoutingEvents = (scouting as any).tickWeek?.(world) ?? 0;
+  scouting.tickWeek(world);
+  const scoutingEvents = 0;
 
   // 2) Training
-  (training as any).tickWeek?.(world);
+  training.tickWeek(world);
 
   // 3) Injuries (recovery/rolls)
-  const injReport = (injuries as any).tickWeek?.(world) ?? null;
-  const injuriesRecovered = typeof injReport?.recoveredCount === "number" ? injReport.recoveredCount : 0;
-  const injuriesNew = typeof injReport?.newCount === "number" ? injReport.newCount : 0;
+  const injReport = injuries.tickWeek(world);
+  const injuriesRecovered = injReport?.recoveredCount ?? 0;
+  const injuriesNew = injReport?.newCount ?? 0;
 
   // 4) Welfare / Compliance
-  const welfareEvents = (welfare as any).tickWeek?.(world) ?? 0;
+  const welfareEvents = welfare.tickWeek(world) ?? 0;
 
   // 5) Economy
-  const econEvents = (economics as any).tickWeek?.(world) ?? 0;
+  economics.tickWeek(world);
+  const econEvents = 0;
 
   // 6) Governance
-  const govEvents = (governance as any).tickWeek?.(world) ?? 0;
+  governance.tickWeek(world);
+  const govEvents = 0;
 
   // 7) Narrative events
-  const narrativeEvents = (events as any).tickWeek?.(world) ?? 0;
+  const narrativeEvents = events.tickWeek(world) ?? 0;
 
   // 8) Rivalries
-  const rivalryEvents = (rivalries as any).tickWeek?.(world) ?? 0;
+  rivalries.tickWeek(world);
+  const rivalryEvents = 0;
 
   return {
     weekIndex,
-    scoutingEvents: Number(scoutingEvents) || 0,
+    scoutingEvents,
     injuriesRecovered,
     injuriesNew,
-    welfareEvents: Number(welfareEvents) || 0,
-    economyEvents: Number(econEvents) || 0,
-    governanceRulings: Number(govEvents) || 0,
-    narrativeEvents: Number(narrativeEvents) || 0,
-    rivalryEvents: Number(rivalryEvents) || 0,
+    welfareEvents,
+    economyEvents: econEvents,
+    governanceRulings: govEvents,
+    narrativeEvents,
+    rivalryEvents,
   };
 }
 
@@ -108,14 +117,13 @@ export function advanceWeeks(world: WorldState, weeks: number): BoundaryTickRepo
 /**
  * processWeeklyBoundary - Called at week boundaries
  */
-export function processWeeklyBoundary(world: WorldState, timeState: TimeState): BoundaryTickReport {
+export function processWeeklyBoundary(world: WorldState, _timeState: TimeState): BoundaryTickReport {
   return tickWeek(world);
 }
 
 /**
  * processMonthlyBoundary - Called at month boundaries (optional additional processing)
  */
-export function processMonthlyBoundary(world: WorldState, timeState: TimeState): void {
+export function processMonthlyBoundary(world: WorldState, _timeState: TimeState): void {
   // Monthly processing hooks - currently a pass-through
-  // Can be extended for monthly reports, financial summaries, etc.
 }
