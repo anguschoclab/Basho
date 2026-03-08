@@ -360,6 +360,11 @@ export default function HallOfFamePage() {
           )}
         </div>
 
+        {/* Timeline Visualization */}
+        {totalInductees > 0 && (
+          <HoFTimeline inductees={hof?.inductees ?? []} world={world} />
+        )}
+
         {/* Tabs */}
         <Tabs defaultValue="all">
           <TabsList className="grid w-full max-w-lg grid-cols-4">
