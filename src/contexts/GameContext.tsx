@@ -9,9 +9,11 @@ import { saveGame, loadGame, autosave as rawAutosave, hasAutosave, loadAutosave,
 import { signalAutosave } from "@/hooks/useAutosaveIndicator";
 import { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
+import { getAutosaveEnabled } from "@/pages/SettingsPage";
 
-/** Autosave with visual indicator signal */
+/** Autosave with visual indicator signal — respects user setting */
 function autosaveWithSignal(world: WorldState): boolean {
+  if (!getAutosaveEnabled()) return false;
   signalAutosave("saving");
   const ok = rawAutosave(world);
   setTimeout(() => signalAutosave("done"), 50);
