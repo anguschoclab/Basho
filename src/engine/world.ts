@@ -322,7 +322,7 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
   for (let i = 0; i < days; i++) {
     advanceOneDay(world);
     // Stop if we've transitioned into active_basho (UI should handle this)
-    if (world.cyclePhase === "active_basho") break;
+    if ((world.cyclePhase as string) === "active_basho") break;
   }
 
   return world;
