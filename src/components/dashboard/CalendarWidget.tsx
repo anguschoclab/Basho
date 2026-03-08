@@ -21,7 +21,7 @@ const PHASE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export function CalendarWidget() {
-  const { state, advanceInterim, advanceOneDay, startBasho, simulateAllBouts, endDay } = useGame();
+  const { state, advanceInterim, advanceOneDay, startBasho, simulateAllBouts, endDay, advanceDay } = useGame();
   const { toast } = useToast();
   const navigate = useNavigate();
   const world = state.world;
