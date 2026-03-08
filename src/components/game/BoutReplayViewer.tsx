@@ -110,6 +110,17 @@ export function BoutReplayViewer({
 
   const safeLog = useMemo(() => (Array.isArray((result as any)?.log) ? (result as any).log : []), [result]);
 
+  // Extract tactical strategy descriptions from bout log
+  const tacticalStrategies = useMemo(() => {
+    const strategies: { side: "east" | "west"; strategy: string }[] = [];
+    for (const entry of safeLog) {
+      if (entry.data?.tacticalEntry && entry.data?.strategy) {
+        strategies.push({ side: entry.data.side as "east" | "west", strategy: entry.data.strategy });
+      }
+    }
+    return strategies;
+  }, [safeLog]);
+
   // Compute target positions for each phase
   const getTargetState = useCallback((phase: ReplayPhase, progress01: number): { east: RikishiState; west: RikishiState } => {
     const winner = result.winner;
