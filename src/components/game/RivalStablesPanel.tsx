@@ -140,10 +140,10 @@ export function RivalStablesPanel() {
                   <Badge variant="destructive" className="text-[10px] px-1.5">⚠</Badge>
                 )}
                 {p.welfareRiskBand === "elevated" && (
-                  <Badge variant="outline" className="text-[10px] px-1.5 border-orange-400 text-orange-600">!</Badge>
+                  <Badge variant="outline" className="text-[10px] px-1.5 border-destructive/50 text-destructive">!</Badge>
                 )}
                 {(p.stableMediaHeatBand === "blazing" || p.stableMediaHeatBand === "hot") && (
-                  <Flame className="h-3.5 w-3.5 text-orange-500" />
+                  <Flame className="h-3.5 w-3.5 text-destructive/70" />
                 )}
                 {p.rivalryPressureBand === "fierce" && (
                   <Swords className="h-3.5 w-3.5 text-destructive" />
