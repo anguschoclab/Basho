@@ -80,20 +80,23 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   const state = ensureHeyaWelfareState(heya);
 
   // Injuries are the primary driver
-  const { pressure, seriousCount } = computeHeyaInjuryPressure(world, heya);
-  if (pressure > 0) {
-    const injDelta = clamp(Math.round(pressure / 3), 0, 12);
-    if (injDelta > 0) {
-      reasons.push(`injury_pressure+${injDelta}`);
-      state.welfareRisk += injDelta; // temporary, we'll compute delta separately as well
-      state.welfareRisk -= injDelta;
-    }
-  }
+  const { pressure, seriousCount, negligenceCount } = computeHeyaInjuryPressure(world, heya);
 
   let delta = clamp(Math.round(pressure / 3), 0, 12);
   if (seriousCount > 0) {
     delta += 2;
     reasons.push(`serious_injuries+2`);
+  }
+
+  // NEGLIGENCE vs MISFORTUNE (Constitution §A7):
+  // Negligence = forcing injured to train without protection. Escalates faster.
+  // Misfortune = injuries with proper protection in place. Normal escalation.
+  if (negligenceCount > 0) {
+    const negligencePenalty = negligenceCount * 3;
+    delta += negligencePenalty;
+    reasons.push(`negligence+${negligencePenalty}(${negligenceCount}_unprotected_injured)`);
+  } else if (pressure > 0) {
+    reasons.push(`misfortune(protected_or_mild)`);
   }
 
   // Training profile and intensity
