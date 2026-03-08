@@ -23,7 +23,10 @@ import {
   Shield,
   Coins,
   UserX,
-  Heart
+  Heart,
+  Award,
+  Star,
+  Medal
 } from "lucide-react";
 import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
 
@@ -167,49 +170,126 @@ export default function RecapPage() {
           </div>
         </div>
 
-        {/* YUSHO / CHAMPIONSHIP SECTION */}
-        {hasYusho && (
+        {/* YUSHO / CHAMPIONSHIP SECTION - Always show if we have basho data */}
+        {lastBasho && (
           <Card className="border-amber-500/30 bg-amber-500/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-amber-500" />
-                Championship Results
+                <Crown className="h-6 w-6 text-amber-500" />
+                {lastBasho.bashoName?.toUpperCase()} {lastBasho.year} Champion
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {groupedEvents.yusho.map((e, i) => (
-                  <div key={e.id || i} className="flex items-start gap-3">
-                    <Trophy className="h-4 w-4 text-amber-500 mt-1 shrink-0" />
-                    <div>
-                      <p className="font-medium">{e.title}</p>
-                      <p className="text-sm text-muted-foreground">{e.summary}</p>
+            <CardContent className="space-y-6">
+              {/* YUSHO WINNER */}
+              {lastBasho.yusho && (() => {
+                const champion = world.rikishi.get(lastBasho.yusho);
+                const championHeya = champion?.heyaId ? world.heyas.get(champion.heyaId) : null;
+                const isPlayerChampion = champion?.heyaId === world.playerHeyaId;
+                return (
+                  <div className={`p-4 rounded-lg border ${isPlayerChampion ? 'border-primary bg-primary/5' : 'border-amber-500/30 bg-amber-500/10'}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-full bg-amber-500/20 flex items-center justify-center">
+                        <Trophy className="h-8 w-8 text-amber-500" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-2xl font-bold">{champion?.shikona || "Unknown"}</p>
+                        <p className="text-muted-foreground">
+                          {championHeya?.name || "Unknown Stable"} • {champion?.rank?.toUpperCase()}
+                        </p>
+                        {isPlayerChampion && (
+                          <Badge className="mt-2 bg-primary">Your Stable's Champion!</Badge>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-amber-500">優勝</p>
+                        <p className="text-sm text-muted-foreground">Yūshō</p>
+                      </div>
                     </div>
                   </div>
-                ))}
-                {groupedEvents.yusho.length === 0 && lastBasho && (
-                  <p className="text-muted-foreground italic">
-                    Championship details will be recorded after the tournament concludes.
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                );
+              })()}
 
-        {/* LAST BASHO SUMMARY (fallback if no yusho events) */}
-        {!hasYusho && lastBasho && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary" />
-                {lastBasho.bashoName?.toUpperCase()} {lastBasho.year} Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                The {lastBasho.bashoName} basho has concluded. Review the standings and results in the History page.
-              </p>
+              {/* JUN-YUSHO (Runner-up) */}
+              {lastBasho.junYusho && lastBasho.junYusho.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                    <Medal className="h-4 w-4" />
+                    Jun-Yūshō (Runner-up)
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {lastBasho.junYusho.map((id: string) => {
+                      const r = world.rikishi.get(id);
+                      return (
+                        <Badge key={id} variant="secondary" className="text-sm">
+                          {r?.shikona || "Unknown"}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* SPECIAL PRIZES */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Special Prizes (三賞 Sanshō)
+                </p>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {/* Shukun-shō - Outstanding Performance */}
+                  <div className="p-3 rounded-lg border bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Star className="h-4 w-4 text-red-500" />
+                      <span className="font-medium text-sm">殊勲賞</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">Shukun-shō (Outstanding Performance)</p>
+                    {lastBasho.shukunsho ? (
+                      <p className="font-medium">{world.rikishi.get(lastBasho.shukunsho)?.shikona || "Unknown"}</p>
+                    ) : (
+                      <p className="text-muted-foreground italic text-sm">Not awarded</p>
+                    )}
+                  </div>
+
+                  {/* Kantō-shō - Fighting Spirit */}
+                  <div className="p-3 rounded-lg border bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Star className="h-4 w-4 text-orange-500" />
+                      <span className="font-medium text-sm">敢闘賞</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">Kantō-shō (Fighting Spirit)</p>
+                    {lastBasho.kantosho ? (
+                      <p className="font-medium">{world.rikishi.get(lastBasho.kantosho)?.shikona || "Unknown"}</p>
+                    ) : (
+                      <p className="text-muted-foreground italic text-sm">Not awarded</p>
+                    )}
+                  </div>
+
+                  {/* Ginō-shō - Technique */}
+                  <div className="p-3 rounded-lg border bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Star className="h-4 w-4 text-blue-500" />
+                      <span className="font-medium text-sm">技能賞</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">Ginō-shō (Technique)</p>
+                    {lastBasho.ginoSho ? (
+                      <p className="font-medium">{world.rikishi.get(lastBasho.ginoSho)?.shikona || "Unknown"}</p>
+                    ) : (
+                      <p className="text-muted-foreground italic text-sm">Not awarded</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Prize Money Summary */}
+              {lastBasho.prizes && (
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-muted-foreground">
+                    Prize purse: Yūshō ¥{(lastBasho.prizes.yushoAmount / 1_000_000).toFixed(0)}M • 
+                    Jun-Yūshō ¥{(lastBasho.prizes.junYushoAmount / 1_000_000).toFixed(0)}M • 
+                    Special Prizes ¥{(lastBasho.prizes.specialPrizes / 1_000_000).toFixed(0)}M each
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
