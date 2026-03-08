@@ -185,11 +185,19 @@ export interface UIRosterEntry {
   shikona: string;
   rank: Rank;
   rankLabel: string;
+  rankLabelJa: string;
+  rankNumber?: number;
   division: Division;
   side: Side;
   record: string;
+  careerRecord: string;
+  currentBashoWins: number;
+  currentBashoLosses: number;
+  careerWins: number;
+  careerLosses: number;
   isInjured: boolean;
   condition: number;
+  momentum: number;
   potentialBand: PotentialBand;
 }
 
@@ -200,11 +208,19 @@ export function projectRosterEntry(r: Rikishi): UIRosterEntry {
     shikona: r.shikona,
     rank: r.rank,
     rankLabel: rankInfo?.en ?? r.rank,
+    rankLabelJa: rankInfo?.ja ?? r.rank,
+    rankNumber: r.rankNumber,
     division: r.division,
     side: r.side,
     record: `${r.currentBashoWins}-${r.currentBashoLosses}`,
+    careerRecord: `${r.careerWins}-${r.careerLosses}`,
+    currentBashoWins: r.currentBashoWins,
+    currentBashoLosses: r.currentBashoLosses,
+    careerWins: r.careerWins,
+    careerLosses: r.careerLosses,
     isInjured: r.injured,
     condition: r.condition,
+    momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
   };
 }
