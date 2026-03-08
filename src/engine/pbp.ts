@@ -577,6 +577,7 @@ function selectPhraseForFact(
       return { phrase: chosen, tags: mergeTags(chosen.tags) };
     }
   }
+}
 
 /** =========================
  *  Utilities
