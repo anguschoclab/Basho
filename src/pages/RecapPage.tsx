@@ -321,11 +321,11 @@ export default function RecapPage() {
                           <div key={idx} className={`p-3 rounded-lg border ${isPlayerKinboshi ? 'border-primary bg-primary/5' : 'border-yellow-500/30 bg-yellow-500/10'}`}>
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="font-bold">{winner?.shikona || "Unknown"}</p>
-                                <p className="text-xs text-muted-foreground">{winnerHeya?.name} • Day {m.day}</p>
+                                <p className="font-bold">{winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}</p>
+                                <p className="text-xs text-muted-foreground">{winnerHeya ? <StableName id={winnerHeya.id} name={winnerHeya.name} /> : ""} • Day {m.day}</p>
                               </div>
                               <div className="text-right">
-                                <p className="text-sm">defeated <span className="font-medium">{loser?.shikona || "Yokozuna"}</span></p>
+                                <p className="text-sm">defeated <span className="font-medium">{loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Yokozuna"}</span></p>
                                 <p className="text-xs text-muted-foreground">via {m.result.kimariteName}</p>
                               </div>
                               {isPlayerKinboshi && (
