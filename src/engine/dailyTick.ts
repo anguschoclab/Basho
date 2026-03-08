@@ -26,6 +26,7 @@ import type { WorldState, CyclePhase } from "./types";
 import { EventBus, logEngineEvent } from "./events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
 import { autosave } from "./saveload";
+import { buildAllPerceptionSnapshots } from "./perception";
 import * as training from "./training";
 import * as injuries from "./injuries";
 import * as economics from "./economics";
