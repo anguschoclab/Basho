@@ -449,6 +449,10 @@ export function tickWeek(world: WorldState): number {
   const playerHeyaId = world.playerHeyaId;
   let decisionsApplied = 0;
 
+  // Initialize scouting priorities map for this week (consumed by talentpool)
+  if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
+  const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
+
   for (const heya of world.heyas.values()) {
     // Skip player-owned heya — player makes their own decisions
     if (heya.id === playerHeyaId) continue;
@@ -458,6 +462,9 @@ export function tickWeek(world: WorldState): number {
     // Apply the decision to world state
     applyNPCDecision(world, decision);
     decisionsApplied++;
+
+    // Publish scouting priority for talentpool consumption
+    scoutingMap[heya.id] = decision.scoutingPriority;
 
     // Audit log (A7.3): manager decision log
     logEngineEvent(world, {
@@ -479,6 +486,9 @@ export function tickWeek(world: WorldState): number {
       }
     });
   }
+
+  // Commit scouting priorities to world state for talentpool to read
+  world.npcScoutingPriorities = scoutingMap;
 
   return decisionsApplied;
 }
