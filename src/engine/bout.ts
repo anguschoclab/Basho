@@ -165,17 +165,236 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
   return score;
 }
 
+// =========================================================
+// OPPONENT-AWARE TACTICAL AI HEURISTICS
+// Each archetype "reads" the opponent and adjusts behavior.
+// Returns signed modifiers consumed by each bout phase.
+// =========================================================
+
+interface TacticalModifiers {
+  tachiaiAggression: number;   // bonus to tachiai force
+  clinchPreference: "belt" | "push" | "neutral";  // preferred stance path
+  clinchBonus: number;         // flat bonus in preferred clinch
+  momentumPersistence: number; // chance to resist momentum swings (0-0.3)
+  counterResist: number;       // reduces opponent counter chance
+  finishBonus: number;         // bonus win% in finish phase
+  fatigueEfficiency: number;   // fatigue drain multiplier (lower = better)
+  description: string;         // narrative label for PBP
+}
+
+function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalModifiers {
+  const arch = self.archetype as TacticalArchetype;
+  const oppArch = opponent.archetype as TacticalArchetype;
+  const oppStyle = opponent.style ?? "hybrid";
+  const selfStyle = self.style ?? "hybrid";
+  const weightDiff = self.weight - opponent.weight;
+  const techAdv = stat(self, "technique") - stat(opponent, "technique");
+  const speedAdv = stat(self, "speed") - stat(opponent, "speed");
+
+  // Base neutral modifiers
+  const mods: TacticalModifiers = {
+    tachiaiAggression: 0,
+    clinchPreference: "neutral",
+    clinchBonus: 0,
+    momentumPersistence: 0,
+    counterResist: 0,
+    finishBonus: 0,
+    fatigueEfficiency: 1.0,
+    description: "Standard approach"
+  };
+
+  switch (arch) {
+    case "oshi_specialist":
+      // Oshi reads opponent weight: if opponent is much heavier, shift to lateral movement
+      if (weightDiff < -30) {
+        mods.tachiaiAggression = 4; // lighter approach, seek angles
+        mods.clinchPreference = "push";
+        mods.fatigueEfficiency = 0.92; // conserve energy for movement
+        mods.description = "Lateral oshi — avoiding the heavier opponent's center";
+      } else {
+        mods.tachiaiAggression = 8; // full steam ahead
+        mods.clinchPreference = "push";
+        mods.clinchBonus = 5;
+        mods.finishBonus = 0.03;
+        mods.description = "Full-power oshi attack";
+      }
+      // Oshi vs yotsu: deny the belt at all costs
+      if (oppStyle === "yotsu") {
+        mods.clinchBonus += 4; // extra push conviction
+        mods.counterResist = 0.04; // harder to counter raw forward pressure
+        mods.description = "Deny the belt — relentless forward pressure";
+      }
+      // Oshi vs counter_specialist: temper aggression to avoid traps
+      if (oppArch === "counter_specialist") {
+        mods.tachiaiAggression -= 3;
+        mods.momentumPersistence = 0.08; // more cautious, hold position
+        mods.description = "Measured oshi — wary of counter timing";
+      }
+      break;
+
+    case "yotsu_specialist":
+      mods.clinchPreference = "belt";
+      mods.clinchBonus = 6;
+      mods.momentumPersistence = 0.10; // belt grip provides stability
+      // Yotsu vs oshi: survive the initial blast, then establish grip
+      if (oppStyle === "oshi" || oppArch === "oshi_specialist") {
+        mods.tachiaiAggression = -2; // absorb rather than clash
+        mods.counterResist = 0.05; // harder to push off the belt
+        mods.fatigueEfficiency = 0.90; // efficient at extended grappling
+        mods.description = "Absorb the tachiai, hunt the belt";
+      }
+      // Yotsu vs another yotsu: technique battle
+      if (oppStyle === "yotsu") {
+        mods.clinchBonus += 3;
+        mods.finishBonus = techAdv > 10 ? 0.04 : -0.02;
+        mods.description = "Belt-fighting showdown — technique decides";
+      }
+      // Yotsu vs speedster: close distance fast
+      if (oppArch === "speedster") {
+        mods.tachiaiAggression = 5; // must close the gap
+        mods.description = "Close the distance — deny the speedster space";
+      }
+      break;
+
+    case "speedster":
+      mods.fatigueEfficiency = 0.88; // efficient movement
+      // Speedster vs heavy opponents: use movement, avoid center collisions
+      if (weightDiff < -20) {
+        mods.tachiaiAggression = -4; // sidestep approach
+        mods.clinchPreference = "neutral"; // keep distance
+        mods.momentumPersistence = 0.05;
+        mods.finishBonus = 0.02; // opportunistic finish
+        mods.description = "Movement sumo — using speed to neutralize size";
+      } else {
+        mods.tachiaiAggression = 2;
+        mods.description = "Quick and aggressive";
+      }
+      // Speedster vs yotsu: avoid getting locked into belt battle
+      if (oppStyle === "yotsu") {
+        mods.clinchPreference = "push"; // keep them at arm's length
+        mods.clinchBonus = 3;
+        mods.description = "Stay mobile — never let them grab the belt";
+      }
+      // Speedster vs oshi: lateral evasion
+      if (oppArch === "oshi_specialist") {
+        mods.counterResist = 0.06;
+        mods.description = "Dodge the freight train — lateral evasion";
+      }
+      break;
+
+    case "trickster":
+      mods.fatigueEfficiency = 0.90;
+      // Trickster reads everyone: exploit weaknesses
+      if (stat(opponent, "mental") < 45) {
+        mods.tachiaiAggression = 3; // disorient a mentally weak opponent
+        mods.finishBonus = 0.03;
+        mods.description = "Exploit mental weakness — feints and misdirection";
+      }
+      // Trickster vs power fighters: use their momentum against them
+      if (oppArch === "oshi_specialist" || weightDiff < -25) {
+        mods.counterResist = 0.08;
+        mods.tachiaiAggression = -5; // let them overcommit
+        mods.description = "Matador sumo — sidestep and redirect";
+      }
+      // Trickster vs yotsu: prevent grip with erratic movement
+      if (oppStyle === "yotsu") {
+        mods.clinchPreference = "neutral";
+        mods.clinchBonus = 2;
+        mods.description = "Keep it messy — deny clean grips";
+      }
+      // Trickster vs counter: battle of wits
+      if (oppArch === "counter_specialist") {
+        mods.momentumPersistence = 0.12;
+        mods.description = "Mirror match — reading the reader";
+      }
+      break;
+
+    case "all_rounder":
+      // All-rounder adapts to opponent's weakest area
+      if (oppStyle === "oshi") {
+        mods.clinchPreference = "belt"; // take it to the belt where oshi is weaker
+        mods.clinchBonus = 3;
+        mods.description = "Exploit oshi weakness — transition to belt";
+      } else if (oppStyle === "yotsu") {
+        mods.clinchPreference = "push"; // keep yotsu specialist off the belt
+        mods.clinchBonus = 2;
+        mods.description = "Keep the yotsu specialist at bay";
+      } else {
+        mods.clinchPreference = "neutral";
+        mods.description = "Read and adapt — no fixed plan";
+      }
+      mods.momentumPersistence = 0.06; // steady, hard to shift
+      mods.fatigueEfficiency = 0.95;
+      // All-rounder targets opponent's lowest stat axis
+      if (speedAdv > 15) {
+        mods.finishBonus = 0.02;
+      } else if (techAdv > 15) {
+        mods.finishBonus = 0.02;
+      }
+      break;
+
+    case "hybrid_oshi_yotsu":
+      // Hybrid reads what the opponent is bad at and goes there
+      if (oppStyle === "oshi") {
+        mods.clinchPreference = "belt"; // transition if they can't grapple
+        mods.clinchBonus = 4;
+        mods.description = "Transition game — switching to belt vs oshi fighter";
+      } else if (oppStyle === "yotsu") {
+        mods.clinchPreference = "push"; // keep yotsu off balance
+        mods.clinchBonus = 3;
+        mods.description = "Push-first — denying the belt specialist";
+      } else {
+        mods.clinchPreference = "neutral";
+        mods.description = "Flexible approach — reading the situation";
+      }
+      mods.tachiaiAggression = 3;
+      mods.momentumPersistence = 0.05;
+      break;
+
+    case "counter_specialist":
+      // Counter specialist reads aggression: more aggressive opponent = better counter setup
+      const oppAgg = stat(opponent, "aggression");
+      if (oppAgg > 60 || oppArch === "oshi_specialist") {
+        mods.tachiaiAggression = -6; // absorb, don't fight force with force
+        mods.counterResist = 0.10; // they're built to absorb and redirect
+        mods.finishBonus = 0.03;
+        mods.fatigueEfficiency = 0.85; // very efficient when defending
+        mods.description = "Absorb and redirect — turning aggression into opportunity";
+      } else {
+        mods.tachiaiAggression = 0;
+        mods.counterResist = 0.05;
+        mods.description = "Patient counter — waiting for the opening";
+      }
+      // Counter vs trickster: both reactive, becomes a chess match
+      if (oppArch === "trickster") {
+        mods.momentumPersistence = 0.10;
+        mods.finishBonus = 0.01;
+        mods.description = "Precision duel — two reactive fighters testing each other";
+      }
+      // Counter vs yotsu: fight on the belt where timing matters
+      if (oppStyle === "yotsu") {
+        mods.clinchPreference = "belt";
+        mods.clinchBonus = 2;
+        mods.description = "Accept the belt battle — counter from the clinch";
+      }
+      break;
+  }
+
+  return mods;
+}
+
 /** =========================
  * Phase 1 — Tachiai
  * ========================= */
 
-function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   // Make tachiai primarily about explosion + timing + aggression + MASS (Physics)
   const eastForce = 
     stat(east, "speed") * 0.35 + 
     stat(east, "aggression") * 0.25 + 
     calculateCollisionForce(east) * 0.30 + 
     stat(east, "balance") * 0.10 +
+    (eastTac?.tachiaiAggression ?? 0) +
     jitter(rng, 6);
 
   const westForce = 
@@ -183,6 +402,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
     stat(west, "aggression") * 0.25 + 
     calculateCollisionForce(west) * 0.30 + 
     stat(west, "balance") * 0.10 +
+    (westTac?.tachiaiAggression ?? 0) +
     jitter(rng, 6);
 
   // Archetype Bonus — oshi gets significant tachiai advantage
@@ -220,7 +440,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
  * Phase 2 — Clinch / Stance
  * ========================= */
 
-function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   const leader: Side = st.advantage === "none" ? st.tachiaiWinner : (st.advantage as Side);
   const leaderR = leader === "east" ? east : west;
   const trailerR = leader === "east" ? west : east;
@@ -258,8 +478,14 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   let strikeEvent: StrikeEvent | undefined = undefined;
   let adv: Advantage = st.advantage;
 
-  const beltP = clamp01(0.48 + beltEdge / 120);
-  const pushP = clamp01(0.45 + pushEdge / 120);
+  // Tactical AI: leader's clinch preference shifts probabilities
+  const leaderTac = leader === "east" ? eastTac : westTac;
+  const tacBeltShift = leaderTac?.clinchPreference === "belt" ? 0.08 : leaderTac?.clinchPreference === "push" ? -0.06 : 0;
+  const tacPushShift = leaderTac?.clinchPreference === "push" ? 0.08 : leaderTac?.clinchPreference === "belt" ? -0.06 : 0;
+  const tacClinchBonus = leaderTac?.clinchBonus ?? 0;
+
+  const beltP = clamp01(0.48 + beltEdge / 120 + tacBeltShift + tacClinchBonus / 200);
+  const pushP = clamp01(0.45 + pushEdge / 120 + tacPushShift + tacClinchBonus / 200);
   const roll = rng.next();
 
   if (roll < beltP && beltP >= pushP) {
@@ -333,7 +559,7 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
  * Phase 3 — Momentum ticks
  * ========================= */
 
-function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   st.tick += 1;
 
   // PHYSICS: Pushing a heavier opponent drains more stamina
@@ -342,8 +568,12 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
 
   const baseDrain = 0.6 + rng.next() * 0.7;
 
-  st.fatigueEast += (baseDrain + eastLoad) * (st.advantage === "east" ? 0.9 : 1.15);
-  st.fatigueWest += (baseDrain + westLoad) * (st.advantage === "west" ? 0.9 : 1.15);
+  // Tactical AI: fatigue efficiency modifies drain rate
+  const eastEfficiency = eastTac?.fatigueEfficiency ?? 1.0;
+  const westEfficiency = westTac?.fatigueEfficiency ?? 1.0;
+
+  st.fatigueEast += (baseDrain + eastLoad) * (st.advantage === "east" ? 0.9 : 1.15) * eastEfficiency;
+  st.fatigueWest += (baseDrain + westLoad) * (st.advantage === "west" ? 0.9 : 1.15) * westEfficiency;
 
   const fatiguePressure = clamp01((st.fatigueEast + st.fatigueWest) / 80);
 
@@ -444,13 +674,19 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       // Counter specialist bonus reduced to prevent dominance
       const archBonus = disR.archetype === "counter_specialist" ? 0.08 : disR.archetype === "trickster" ? 0.10 : 0;
       
+      // Tactical AI: the advantaged side's counterResist reduces opponent counter chance
+      const advSide = currentAdv as Side;
+      const advTac = advSide === "east" ? eastTac : westTac;
+      const counterResistMod = advTac?.counterResist ?? 0;
+
       const counterChance = clamp01(
         0.08 +
           stat(disR, "technique") / 250 +
           stat(disR, "balance") / 300 +
           stat(disR, "experience") / 400 +
           fatiguePressure * 0.15 + 
-          archBonus
+          archBonus -
+          counterResistMod  // opponent's tactical counter-resistance
       );
 
       if (rng.next() < counterChance) {
@@ -478,7 +714,15 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
     const westDrive = stat(west, "power") + stat(west, "balance") - st.fatigueWest * 1.2 + jitter(rng, 8);
 
     if (Math.abs(eastDrive - westDrive) > 10) {
-      st.advantage = eastDrive > westDrive ? "east" : "west";
+      const newAdv: Side = eastDrive > westDrive ? "east" : "west";
+      // Tactical AI: momentum persistence — current leader resists swing
+      const currentLeaderTac = st.advantage === "east" ? eastTac : st.advantage === "west" ? westTac : undefined;
+      const persistChance = currentLeaderTac?.momentumPersistence ?? 0;
+      if (newAdv !== st.advantage && st.advantage !== "none" && rng.next() < persistChance) {
+        // Leader holds position through tactical discipline — no swing
+      } else {
+        st.advantage = newAdv;
+      }
       st.log.push({
         phase: "momentum",
         description: "Fatigue shows—momentum swings!",
@@ -586,7 +830,7 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
   return weighted[weighted.length - 1]?.k ?? fallback;
 }
 
-function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): { winner: Side; kimarite: Kimarite } {
+function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: Side; kimarite: Kimarite } {
   const adv = st.advantage !== "none" ? st.advantage : st.tachiaiWinner;
   const attacker = adv === "east" ? east : west;
   const defender = adv === "east" ? west : east;
@@ -602,6 +846,10 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
     jitter(rng, 0.06);
 
   let eastWinP = clamp01(eastWinBase);
+
+  // Tactical AI: finish bonus from opponent-aware heuristics
+  eastWinP += (eastTac?.finishBonus ?? 0);
+  eastWinP -= (westTac?.finishBonus ?? 0);
 
   // Physics Modifier: Mass helps defend against force outs
   if (st.stance === "push-dominant") {
@@ -673,9 +921,13 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     mizuiriDeclared: false
   };
 
-  // Phases
-  resolveTachiai(rng, east, west, st);
-  resolveClinch(rng, east, west, st);
+  // Compute opponent-aware tactical modifiers per side
+  const eastTactics = computeTacticalModifiers(east, west);
+  const westTactics = computeTacticalModifiers(west, east);
+
+  // Phases — pass tactical modifiers
+  resolveTachiai(rng, east, west, st, eastTactics, westTactics);
+  resolveClinch(rng, east, west, st, eastTactics, westTactics);
 
   // BOUT LENGTH SIMULATION (Realistic Distribution)
   const roll = rng.next();
@@ -693,10 +945,10 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   }
 
   for (let i = 0; i < targetTicks; i++) {
-    resolveMomentumTick(rng, east, west, st);
+    resolveMomentumTick(rng, east, west, st, eastTactics, westTactics);
   }
 
-  const { winner, kimarite } = resolveFinish(rng, east, west, st);
+  const { winner, kimarite } = resolveFinish(rng, east, west, st, eastTactics, westTactics);
 
   // Upset heuristic
   // Kinboshi: Maegashira defeats Yokozuna
