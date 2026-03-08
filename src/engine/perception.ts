@@ -105,17 +105,18 @@ function bandMediaHeat(heat: number): MediaHeatBand {
 }
 
 function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
-  // Check if any rikishi in the heya has active rivalries
   const heya = world.heyas.get(heyaId);
   if (!heya) return "dormant";
 
-  let maxIntensity = 0;
+  const rivalriesState: RivalriesState | undefined = (world as any).rivalriesState;
+  if (!rivalriesState?.pairs) return "dormant";
+
+  let maxHeat = 0;
   for (const rId of heya.rikishiIds) {
-    const r = world.rikishi.get(rId);
-    if (!r || !r.rivalries) continue;
-    for (const rv of r.rivalries) {
-      const intensity = rv.intensity ?? 0;
-      if (intensity > maxIntensity) maxIntensity = intensity;
+    for (const pair of Object.values(rivalriesState.pairs)) {
+      if (pair.aId === rId || pair.bId === rId) {
+        if (pair.heat > maxHeat) maxHeat = pair.heat;
+      }
     }
   }
 
