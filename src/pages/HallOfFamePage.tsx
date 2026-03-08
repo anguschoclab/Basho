@@ -39,7 +39,7 @@ const RANK_JA: Record<string, string> = {
   sandanme: "三段目", jonidan: "序二段", jonokuchi: "序ノ口",
 };
 
-function getGreatestFights(world: WorldState, rikishiId: string): Array<{ year: number; bashoName: string; kimarite: string; opponentName: string; isWin: boolean }> {
+function getGreatestFights(world: WorldState, rikishiId: string): Array<{ bashoName: string; kimarite: string; opponentName: string; isWin: boolean }> {
   const r = world.rikishi.get(rikishiId);
   if (!r?.history) return [];
   
