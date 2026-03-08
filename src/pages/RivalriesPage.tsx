@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Flame, Swords, Users, Trophy, TrendingUp } from "lucide-react";
+import { toRivalryHeatBand as toRHBand, RIVALRY_HEAT_LABELS } from "@/engine/descriptorBands";
 import {
   type RivalryPairState,
   type RivalryHeatBand,
