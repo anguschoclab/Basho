@@ -20,7 +20,10 @@ import {
   ArrowLeft,
   AlertTriangle,
   Crown,
-  Shield
+  Shield,
+  Coins,
+  UserX,
+  Heart
 } from "lucide-react";
 import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
 
