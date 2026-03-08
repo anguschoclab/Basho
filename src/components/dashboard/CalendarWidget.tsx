@@ -51,6 +51,8 @@ export function CalendarWidget() {
   const handleSimDay = () => {
     simulateAllBouts();
     endDay();
+    // Advance to the next day so the day counter increments
+    const { advanceDay } = useGameActions;
     toast({ title: "Day simulated" });
   };
 
