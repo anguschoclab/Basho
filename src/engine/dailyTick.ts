@@ -276,7 +276,7 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
  * Per A3.4, windows have a fixed duration set at open time.
  */
 function tickRecruitmentWindowClose(world: WorldState): void {
-  const rw = (world as any)._recruitmentWindow;
+  const rw = world._recruitmentWindow;
   if (!rw || !rw.isOpen) return;
 
   if (world.week >= rw.closesAtWeek) {
