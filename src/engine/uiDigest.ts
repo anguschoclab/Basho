@@ -117,7 +117,8 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Engine Events (Event Bus) ---
   const recentEvents = world.events?.log ? queryEvents(world, { limit: 120 }) : [];
   const thisWeek = (world.week ?? 0);
-  const weekEvents = recentEvents.filter(e => e.week === thisWeek);
+  // Show events from current week and previous week (accounts for tick timing)
+  const weekEvents = recentEvents.filter(e => e.week >= thisWeek - 1 && e.week <= thisWeek);
 
   const econItems: DigestItem[] = [];
   const scoutItems: DigestItem[] = [];
