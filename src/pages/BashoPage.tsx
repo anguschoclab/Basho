@@ -388,6 +388,24 @@ export default function BashoPage() {
           day={basho.day}
         />
       )}
+
+      {/* End Basho confirmation */}
+      <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will finalize the basho results, update the banzuke rankings, and advance to the off-season. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndBasho}>
+              End Basho
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
