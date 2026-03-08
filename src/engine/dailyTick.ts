@@ -390,7 +390,6 @@ function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Loans/interest
  */
 function tickMonthlyEconomics(world: WorldState): void {
-  const { RANK_HIERARCHY } = require("./banzuke");
 
   for (const heya of world.heyas.values()) {
     // 1. Sekitori monthly salaries (paid to rikishi, deducted from heya as payroll)
