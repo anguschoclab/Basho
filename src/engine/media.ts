@@ -270,6 +270,8 @@ export function updateMediaFromBout(args: {
 
   return { state: next, headlines: [headline, ...extraHeadlines] };
 }
+/**
+ * Weekly media boundary:
  * - decay heat/pressure
  * - optionally generate a weekly feature / heya story
  */
