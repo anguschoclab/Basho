@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { toWinRateAssessment, WIN_RATE_LABELS } from "@/engine/descriptorBands";
 import type { Rikishi, Heya } from "@/engine/types";
 import {
   Building2,
