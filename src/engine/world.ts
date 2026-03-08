@@ -766,7 +766,7 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
 
   if (playerHeya) {
     // Set recruitment window state on world (consumed by UI and dailyTick)
-    (world as any)._recruitmentWindow = {
+    world._recruitmentWindow = {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 4, // 4-week window per Constitution
       vacancies: playerVacancies,
