@@ -14,6 +14,7 @@
 // - narrativeDescriptions.ts remains for static bands; pbp.ts is for dynamic commentary.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
 
 /** =========================
@@ -665,7 +666,6 @@ export function buildPbp(
   // Use voice matrix as default library (lazy-loaded singleton)
   if (!lib) {
     try {
-      const { getVoiceMatrix } = require("./pbpMatrix");
       lib = getVoiceMatrix();
     } catch {
       lib = DEFAULT_PBP_LIBRARY;
