@@ -477,13 +477,11 @@ function tickYearBoundary(world: WorldState, subs: string[]): void {
   // 1. Hall of Fame induction pipeline (deterministic, from immutable history)
   let hofInductees: string[] = [];
   safeCall(() => {
-    const { processYearEndInduction } = require("./hallOfFame");
     const inductees = processYearEndInduction(world);
-    hofInductees = inductees.map((i: any) => i.shikona);
+    hofInductees = inductees.map((i) => i.shikona);
 
     // Log each induction as an event
     for (const inductee of inductees) {
-      const { HOF_CATEGORY_LABELS } = require("./hallOfFame");
       const catLabel = HOF_CATEGORY_LABELS[inductee.category]?.name || inductee.category;
       logEngineEvent(world, {
         type: "HOF_INDUCTION",
