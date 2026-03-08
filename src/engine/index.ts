@@ -86,4 +86,19 @@ export { buildPerceptionSnapshot, buildAllPerceptionSnapshots, getCachedPercepti
 export type { PerceptionSnapshot, RikishiPerception, HealthBand, WelfareRiskBand, GovernancePressureBand, MediaHeatBand, RivalryPerceptionBand, RosterStrengthBand, MoraleBand } from "./perception";
 
 // Descriptor Bands (No-Leak Observability Layer — A7.1)
-export * from "./descriptorBands";
+// Selective exports to avoid name clashes with rivalries.ts
+export {
+  toBand,
+  toStatBand, toConditionBand, toFatigueBand, toMomentumBand,
+  toFinancialBand, toRivalryHeatBand, toTraitBand, toWinRateAssessment,
+  toPrizeBand, toScandalBand, toRikishiDescriptor,
+  STAT_BANDS, CONDITION_BANDS, FATIGUE_BANDS, RIVALRY_HEAT_BANDS, TRAIT_BANDS, SCANDAL_BANDS,
+  STAT_BAND_LABELS, CONDITION_LABELS, FATIGUE_LABELS, MOMENTUM_LABELS,
+  RIVALRY_HEAT_LABELS, TRAIT_LABELS, WIN_RATE_LABELS, PRIZE_LABELS, SCANDAL_LABELS,
+  HYSTERESIS_DELTA,
+} from "./descriptorBands";
+export type {
+  BandDef, StatBand, ConditionBand, FatigueBand, MomentumBand,
+  FinancialBand, TraitBand, WinRateAssessment, PrizeBand, ScandalBand,
+  RikishiDescriptor,
+} from "./descriptorBands";
