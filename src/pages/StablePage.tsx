@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand, Rikishi } from "@/engine/types";
+import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 import {
   INTENSITY_EFFECTS,
   FOCUS_EFFECTS,
