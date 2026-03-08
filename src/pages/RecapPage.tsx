@@ -412,8 +412,8 @@ export default function RecapPage() {
                                 <ShieldAlert className={`h-5 w-5 ${isDemoted ? 'text-destructive' : 'text-amber-500'}`} />
                               </div>
                               <div>
-                                <p className="font-bold">{r.shikona}</p>
-                                <p className="text-xs text-muted-foreground">{heya?.name || "Unknown Stable"}</p>
+                                <p className="font-bold">{<RikishiName id={r.id} name={r.shikona} />}</p>
+                                <p className="text-xs text-muted-foreground">{heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"}</p>
                               </div>
                             </div>
                             <div className="text-right">
