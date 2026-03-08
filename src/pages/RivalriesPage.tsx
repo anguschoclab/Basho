@@ -367,21 +367,23 @@ export default function RivalriesPage() {
 
   const hasRivalries = allRivalries.length > 0;
 
+  const competitionTabs = [
+    { id: "basho", label: "Basho", href: "/basho" },
+    { id: "banzuke", label: "Banzuke", href: "/banzuke" },
+    { id: "rivalries", label: "Rivalries" },
+  ];
+
   return (
-    <>
+    <AppLayout
+      pageTitle="Rivalries & Feuds"
+      subNavTabs={competitionTabs}
+      activeSubTab="rivalries"
+    >
       <Helmet>
         <title>Rivalries & Feuds - Basho</title>
       </Helmet>
 
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="font-display text-3xl font-bold flex items-center gap-3">
-            <Flame className="h-8 w-8 text-orange-400" />
-            Rivalries & Feuds
-          </h1>
-          <p className="text-muted-foreground mt-1">The personal battles that define the sumo world</p>
-        </div>
+      <div className="space-y-6">
 
         {!hasRivalries ? (
           <Card className="paper">
