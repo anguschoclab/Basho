@@ -204,11 +204,14 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     heyaMap.set(heyaId, heya);
   });
 
-  // 2. Create Rikishi (Top Division Population)
+  // 2. Create Rikishi — enough to populate 46 stables realistically
+  // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
   const currentYear = 2024;
   const ranks: Rank[] = ["yokozuna", "ozeki", "ozeki", "sekiwake", "sekiwake", "komusubi", "komusubi"];
-  for (let i = 0; i < 35; i++) ranks.push("maegashira");
-  for (let i = 0; i < 20; i++) ranks.push("juryo");
+  for (let i = 0; i < 35; i++) ranks.push("maegashira");  // 42 makuuchi total
+  for (let i = 0; i < 28; i++) ranks.push("juryo");       // 28 juryo
+  // Lower divisions to fill stables (makushita and below represented as "jonidan")
+  for (let i = 0; i < 180; i++) ranks.push("jonidan");    // ~250 total wrestlers
 
   let rikishiCounter = 0;
   const heyaList = Array.from(heyaMap.values());
