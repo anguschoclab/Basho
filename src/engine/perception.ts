@@ -6,10 +6,11 @@
 // =======================================================
 
 import type {
-  WorldState, Id, Heya, Rikishi, Style,
+  WorldState, Id, Heya, Rikishi, Style, Rank,
   StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType,
   ComplianceState
 } from "./types";
+import type { RivalriesState } from "./rivalries";
 
 // === Band types for perception ===
 
