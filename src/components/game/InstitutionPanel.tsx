@@ -107,7 +107,7 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
             <Gavel className="h-4 w-4" />
             <div className="text-sm font-medium">Governance</div>
             <Badge variant="outline">{getStatusLabel(heya.governanceStatus)}</Badge>
-            {heya.scandalScore >= 20 && <Badge variant="outline">Scandal {Math.floor(heya.scandalScore)}</Badge>}
+            {heya.scandalScore >= 20 && <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>}
           </div>
           <div className="text-xs text-muted-foreground">
             Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster.
