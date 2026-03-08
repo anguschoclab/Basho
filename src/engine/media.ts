@@ -133,6 +133,7 @@ export function createDefaultMediaState(): MediaState {
     promoWatchFired: {},
     retirementWatchFired: {},
     titleRaceDayFired: {},
+    injuryWithdrawalFired: {},
   };
 }
 
