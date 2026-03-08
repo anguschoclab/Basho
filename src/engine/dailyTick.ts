@@ -252,14 +252,13 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
 
   // Media weekly boundary — decay heat/pressure, generate features
   safeCall(() => {
-    const w = world as any;
-    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    if (!world.mediaState) world.mediaState = createDefaultMediaState();
     const { state } = processWeeklyMediaBoundary({
-      state: w.mediaState,
+      state: world.mediaState,
       world,
-      rivalries: (world as any).rivalriesState,
+      rivalries: world.rivalriesState,
     });
-    w.mediaState = state;
+    world.mediaState = state;
   }) && subs.push("media");
 
   // Recruitment window lifecycle — check if window should close
