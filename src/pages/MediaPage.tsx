@@ -164,7 +164,7 @@ export default function MediaPage() {
   const world = state.world;
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
-  const mediaState: MediaState = (world as any)?.mediaState ?? createDefaultMediaState();
+  const mediaState: MediaState = world?.mediaState ?? createDefaultMediaState();
 
   const digest: MediaDigest | null = useMemo(() => {
     if (!world) return null;
