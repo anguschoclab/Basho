@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
+import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -247,7 +248,8 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Theme toggle */}
+        {/* Save/Load + Theme toggle */}
+        {world && <SaveLoadDialog />}
         <Button
           variant="ghost"
           size="icon"

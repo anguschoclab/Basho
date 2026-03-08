@@ -140,9 +140,14 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       const day = state.world.currentBasho.day;
       if (day > 15) {
+        // Autosave at end of tournament
+        try { autosave(state.world); } catch { /* silent */ }
         // Tournament is over; UI can route to results.
         return { ...state, world: { ...state.world }, phase: "basho_results" };
       }
+
+      // Autosave on each day advance
+      try { autosave(state.world); } catch { /* silent */ }
 
       return {
         ...state,
@@ -177,6 +182,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         if (!result) break;
         lastResult = result;
       }
+
+      // Autosave after completing all bouts for the day
+      try { autosave(state.world); } catch { /* silent */ }
 
       return {
         ...state,

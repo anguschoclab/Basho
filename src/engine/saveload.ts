@@ -35,7 +35,7 @@ export const CURRENT_SAVE_VERSION_LOCAL: SaveVersion = CURRENT_SAVE_VERSION;
 const SAVE_KEY_PREFIX = "basho_save_";
 const AUTOSAVE_SLOT_NAME = "autosave";
 const AUTOSAVE_KEY = `${SAVE_KEY_PREFIX}${AUTOSAVE_SLOT_NAME}`;
-const SAVE_SLOT_COUNT = 5;
+const SAVE_SLOT_COUNT = 10;
 
 // === STORAGE GUARDS ===
 function hasLocalStorage(): boolean {
