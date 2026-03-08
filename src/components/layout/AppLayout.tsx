@@ -5,6 +5,7 @@ import { TopNavBar } from "./TopNavBar";
 import { EventLogPanel } from "./EventLogPanel";
 import { SubNavTabs, type SubNavTab } from "./SubNavTabs";
 import { useKeyboardShortcuts, SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
+import { openSaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { Badge } from "@/components/ui/badge";
 import { Keyboard } from "lucide-react";
 import {
