@@ -5,7 +5,17 @@ import React, { createContext, useContext, useReducer, useCallback, ReactNode } 
 import type { WorldState, Rikishi, Heya, BoutResult } from "@/engine/types";
 import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
-import { saveGame, loadGame, autosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { saveGame, loadGame, autosave as rawAutosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { signalAutosave } from "@/hooks/useAutosaveIndicator";
+
+/** Autosave with visual indicator signal */
+function autosaveWithSignal(world: any): boolean {
+  signalAutosave("saving");
+  const ok = rawAutosave(world);
+  setTimeout(() => signalAutosave("done"), 50);
+  setTimeout(() => signalAutosave("idle"), 2000);
+  return ok;
+}
 import { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 
