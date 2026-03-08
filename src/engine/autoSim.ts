@@ -194,9 +194,8 @@ export function simulateEntireBasho(
       const loser = result.winner === "east" ? west : east;
 
       winner.currentBashoWins++;
-      winner.careerWins++;
       loser.currentBashoLosses++;
-      loser.careerLosses++;
+      // NOTE: careerWins/Losses are updated at basho end by runCareerJournalUpdates (world.ts)
 
       const winnerStanding = standings.get(winner.id);
       const loserStanding = standings.get(loser.id);
