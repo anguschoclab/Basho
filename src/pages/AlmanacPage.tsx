@@ -159,6 +159,14 @@ export default function AlmanacPage() {
     return [...allRikishi].sort((a, b) => (b.careerWins || 0) - (a.careerWins || 0)).slice(0, 10);
   }, [allRikishi]);
 
+  // Kinboshi leaders
+  const kinboshiLeaders = useMemo(() => {
+    return [...allRikishi]
+      .filter((r) => (r.economics?.kinboshiCount || 0) > 0)
+      .sort((a, b) => (b.economics?.kinboshiCount || 0) - (a.economics?.kinboshiCount || 0))
+      .slice(0, 10);
+  }, [allRikishi]);
+
   // Historical yusho winners from world.history
   const yushoWinners = useMemo(() => {
     const counts = new Map<string, number>();
