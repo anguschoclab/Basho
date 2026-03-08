@@ -38,6 +38,7 @@ import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as talentpool from "./talentpool";
 import * as facilities from "./facilities";
+import { processWeeklyMediaBoundary, createDefaultMediaState } from "./media";
 
 // ============================================================================
 // TYPES
