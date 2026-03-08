@@ -41,6 +41,7 @@ export function TimeControls() {
   const handleStartBasho = () => {
     startBasho();
     toast({ title: "Basho started", description: "The tournament is underway." });
+    navigate("/basho");
   };
 
   const handleSimDay = () => {
