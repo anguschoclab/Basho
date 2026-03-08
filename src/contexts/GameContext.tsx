@@ -6,6 +6,8 @@ import type { WorldState, Rikishi, Heya, BoutResult } from "@/engine/types";
 import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
 import { saveGame, loadGame, autosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
+import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 
 // === STATE TYPES ===
 
