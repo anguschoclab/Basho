@@ -105,6 +105,9 @@ export interface MediaState {
 
   /** Whether title_race headline has fired this basho (fires once per day threshold) */
   titleRaceDayFired: Record<number, boolean>;
+
+  /** Track which injury withdrawal headlines fired this basho (rikishiId → true) */
+  injuryWithdrawalFired: Record<Id, boolean>;
 }
 
 /** Digest output for UI */
