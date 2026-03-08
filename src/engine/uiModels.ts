@@ -16,11 +16,8 @@ import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type Pote
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
 
-// ─────────────────────────────────────────
-//  CareerPhase type (inferred from training.ts)
-// ─────────────────────────────────────────
-
-export type CareerPhase = ReturnType<typeof getCareerPhase>;
+/** Career phase type inferred from training engine */
+type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
 
 // ─────────────────────────────────────────
 //  UIRikishi — Full profile projection
