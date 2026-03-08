@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Search,
   ExternalLink,
+  Wrench,
 } from "lucide-react";
 import type { EngineEvent, WorldState } from "@/engine/types";
 
@@ -34,7 +35,7 @@ const CATEGORY_META: Record<string, { icon: any; color: string; label: string }>
   scouting: { icon: Search, color: "text-primary", label: "Scouting" },
   media: { icon: MessageCircle, color: "text-muted-foreground", label: "Media" },
   milestone: { icon: Star, color: "text-gold", label: "Milestone" },
-  facility: { icon: GraduationCap, color: "text-muted-foreground", label: "Facility" },
+  facility: { icon: Wrench, color: "text-blue-400", label: "Facility" },
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 

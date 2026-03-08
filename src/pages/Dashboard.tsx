@@ -15,6 +15,7 @@ import { NewsWidget } from "@/components/dashboard/NewsWidget";
 import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
 import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
+import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 
@@ -23,7 +24,8 @@ const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "calendar",  column: 0, order: 0, component: CalendarWidget,  label: "Calendar" },
   { id: "stable",    column: 0, order: 1, component: StableWidget,    label: "Stable" },
   { id: "training",  column: 0, order: 2, component: TrainingWidget,  label: "Training" },
-  { id: "finances",  column: 0, order: 3, component: FinancesWidget,  label: "Finances" },
+  { id: "finances",   column: 0, order: 3, component: FinancesWidget,   label: "Finances" },
+  { id: "facilities", column: 0, order: 4, component: FacilitiesWidget, label: "Facilities" },
   // Column 1
   { id: "basho",     column: 1, order: 0, component: BashoWidget,     label: "Basho" },
   { id: "banzuke",   column: 1, order: 1, component: BanzukeWidget,   label: "Banzuke" },
