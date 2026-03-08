@@ -21,6 +21,7 @@ import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
+import { BASHO_ORDER } from "./calendar";
 
 
 // Constants
