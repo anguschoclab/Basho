@@ -109,7 +109,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 
   switch (world.cyclePhase) {
     case "pre_basho": {
-      const remaining = (world as any)._interimDaysRemaining ?? 0;
+      const remaining = world._interimDaysRemaining ?? 0;
       if (remaining <= 0) {
         // Auto-start the basho inline (avoid circular import with world.ts)
         const bashoName = world.currentBashoName || "hatsu";
