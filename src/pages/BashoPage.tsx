@@ -293,83 +293,29 @@ export default function BashoPage() {
         </Card>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Matches */}
-          <Card className="paper lg:col-span-2">
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>
-                Today&apos;s Bouts ({completedBouts}/{matches.length})
-              </CardTitle>
-              <div className="flex gap-2">
-                <Button size="sm" onClick={handleSimulateNext} disabled={remainingBouts === 0 || nextBoutIndex < 0}>
-                  <Play className="h-4 w-4 mr-1" /> Next
-                </Button>
-                <Button size="sm" variant="secondary" onClick={handleSimulateAll} disabled={remainingBouts === 0}>
-                  <FastForward className="h-4 w-4 mr-1" /> All
-                </Button>
-              </div>
-            </CardHeader>
-
-            <CardContent className="space-y-2 max-h-[500px] overflow-auto">
-              {sortedMatches.map((match, i) => {
-                const hasResult = !!match.result;
-                const isPlayer = isPlayerBout(match);
-
+          {/* Match Day Viewer with H2H and Rivalry Heat */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex gap-2 justify-end">
+              <Button size="sm" onClick={handleSimulateNext} disabled={remainingBouts === 0 || nextBoutIndex < 0}>
+                <Play className="h-4 w-4 mr-1" /> Next
+              </Button>
+              <Button size="sm" variant="secondary" onClick={handleSimulateAll} disabled={remainingBouts === 0}>
+                <FastForward className="h-4 w-4 mr-1" /> All
+              </Button>
+            </div>
+            <MatchDayViewer
+              matches={matches}
+              world={world}
+              playerRikishiIds={playerRikishiIds}
+              onBoutClick={(match) => {
+                if (!match.result) return;
                 const east = resolveRikishi(match.eastRikishiId);
                 const west = resolveRikishi(match.westRikishiId);
-
-                const eastName = east?.shikona ?? match.eastRikishiId;
-                const westName = west?.shikona ?? match.westRikishiId;
-
-                const eastRank = east ? safeRankNames(east.rank) : null;
-                const westRank = west ? safeRankNames(west.rank) : null;
-
-                const rowKey =
-                  match.boutId ||
-                  `${match.day ?? basho.day}-${match.eastRikishiId}-${match.westRikishiId}-${i}`;
-
-                return (
-                  <div
-                    key={rowKey}
-                    onClick={() => (hasResult ? handleBoutClick(match) : undefined)}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                      hasResult ? "bg-secondary/30 cursor-pointer hover:bg-secondary/50" : "bg-muted/50"
-                    } ${isPlayer ? "ring-2 ring-primary/50 ring-offset-1 ring-offset-background" : ""}`}
-                  >
-                    {isPlayer && <Star className="h-4 w-4 text-primary shrink-0" fill="currentColor" />}
-
-                    <div className="flex-1 text-right min-w-0">
-                      <span className={`font-display truncate block ${match.result?.winner === "east" ? "font-bold text-success" : ""}`}>
-                        {eastName}
-                      </span>
-                      <div className="text-xs text-muted-foreground">
-                        {eastRank ? `${eastRank.ja} ${eastRank.en}` : " "}
-                      </div>
-                    </div>
-
-                    <div className="w-12 text-center text-xs text-muted-foreground">vs</div>
-
-                    <div className="flex-1 min-w-0">
-                      <span className={`font-display truncate block ${match.result?.winner === "west" ? "font-bold text-success" : ""}`}>
-                        {westName}
-                      </span>
-                      <div className="text-xs text-muted-foreground">
-                        {westRank ? `${westRank.ja} ${westRank.en}` : " "}
-                      </div>
-                    </div>
-
-                    {hasResult && (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {match.result?.kimariteName ?? "—"}
-                        </Badge>
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
+                if (!east || !west) return;
+                setSelectedBout({ east, west, result: match.result, isPlayerBout: isPlayerBout(match) });
+              }}
+            />
+          </div>
 
           {/* Standings */}
           <Card className="paper">
