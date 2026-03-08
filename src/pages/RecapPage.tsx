@@ -475,8 +475,8 @@ export default function RecapPage() {
                           </div>
                           <p className="text-sm text-muted-foreground mt-2">
                             {isDemoted
-                              ? "Two consecutive losing records — demoted from Ōzeki to Sekiwake."
-                              : "Must achieve kachi-koshi (winning record) next basho or face demotion."}
+                              ? "Two consecutive losing records (負け越し make-koshi) — demoted from Ōzeki to Sekiwake."
+                              : `Must achieve kachi-koshi (勝ち越し winning record) next basho or face demotion. ${isMakeKoshi(0, 8, "ozeki") ? "" : ""}`}
                           </p>
                         </div>
                       );
