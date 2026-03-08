@@ -263,7 +263,7 @@ export default function RecapPage() {
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">Kantō-shō (Fighting Spirit)</p>
                     {lastBasho.kantosho ? (
-                      <p className="font-medium">{world.rikishi.get(lastBasho.kantosho)?.shikona || "Unknown"}</p>
+                      <p className="font-medium">{(() => { const r = world.rikishi.get(lastBasho.kantosho); return r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"; })()}</p>
                     ) : (
                       <p className="text-muted-foreground italic text-sm">Not awarded</p>
                     )}
