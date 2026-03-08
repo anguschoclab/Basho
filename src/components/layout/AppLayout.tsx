@@ -30,6 +30,7 @@ export function AppLayout({ children, subNavTabs, activeSubTab, onSubTabChange, 
   useKeyboardShortcuts({
     eventLogOpen,
     onToggleEventLog: () => setEventLogOpen((v) => !v),
+    onOpenSaveLoad: openSaveLoadDialog,
   });
 
   // Don't show layout on menu screen
