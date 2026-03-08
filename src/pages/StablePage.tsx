@@ -172,6 +172,12 @@ export default function StablePage() {
     [rikishiList]
   );
 
+  // Project roster entries via DTO
+  const rosterEntries = useMemo<UIRosterEntry[]>(
+    () => rikishiList.filter((r): r is Rikishi => !!r).map(r => projectRosterEntry(r)),
+    [rikishiList]
+  );
+
   // Compute stable achievements from world history
   const stableAchievements = useMemo<StableAchievements>(() => {
     if (!heya || !world) return { yusho: [], junYusho: [], ginoSho: [], kantosho: [], shukunsho: [] };
