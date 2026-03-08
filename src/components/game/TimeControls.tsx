@@ -50,11 +50,7 @@ export function TimeControls() {
   const inInterim = world.cyclePhase === "interim";
   const playerHeyaId = world.playerHeyaId;
 
-  const handleStartBasho = () => {
-    startBasho();
-    toast({ title: "Basho started", description: "The tournament is underway." });
-    navigate("/basho");
-  };
+  // Basho now auto-starts via time advancement (pre_basho → active_basho)
 
   const handleSimDay = () => {
     simulateAllBouts();
