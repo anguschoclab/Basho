@@ -7,6 +7,7 @@
 // =======================================================
 
 import { rngForWorld } from "./rng";
+import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
 import type {
   WorldState, Style, OyakataArchetype, Oyakata, Id,
   TrainingIntensity, TrainingFocus, RecoveryEmphasis
@@ -160,6 +161,8 @@ export interface NPCWeeklyDecision {
   recovery: RecoveryEmphasis;
   scoutingPriority: "none" | "passive" | "active" | "aggressive";
   individualProtects: Id[];  // rikishi to set to "protect" focus
+  individualDevelops: Id[];  // rikishi to set to "develop" focus (philosophy-driven)
+  individualPushes: Id[];    // rikishi to set to "push" focus (philosophy-driven)
   reasoning: string[];       // audit log entries (A7.3)
 }
 
@@ -171,13 +174,12 @@ function decideTrainingIntensity(
   perception: PerceptionSnapshot,
   riskAppetite: number,
   welfareDiscipline: number,
-  complianceCap: TrainingIntensity | undefined
+  complianceCap: TrainingIntensity | undefined,
+  philosophy?: RecruitmentPhilosophy
 ): { intensity: TrainingIntensity; reason: string } {
-  // Welfare override: compliance sanctions cap intensity
   const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
   const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
 
-  // Count injured/fragile wrestlers
   const fragileCount = perception.rikishiPerceptions.filter(
     r => r.healthBand === "fragile" || r.healthBand === "worn"
   ).length;
@@ -191,38 +193,40 @@ function decideTrainingIntensity(
     intensity = "conservative";
     reason = "Welfare risk critical — forced conservative training";
   }
-  // Elevated welfare + welfare-conscious manager → conservative
   else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
     intensity = "conservative";
     reason = "Elevated welfare risk — cautious approach";
   }
-  // Many fragile wrestlers → dial back
   else if (fragileRatio >= 0.4) {
     intensity = "conservative";
     reason = `${fragileCount} wrestlers worn/fragile — reducing intensity`;
   }
-  // Mutinous morale → ease off
   else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled") {
     intensity = "balanced";
     reason = "Low morale — maintaining balanced training";
   }
-  // High risk appetite + strong roster → push hard
+  // Philosophy-driven intensity biases
+  else if (philosophy === "size_matters" && perception.welfareRiskBand === "safe") {
+    intensity = "intensive";
+    reason = "Size-obsessed philosophy — pushing hard to build mass";
+  }
+  else if (philosophy === "underdog_hunter" || philosophy === "balanced") {
+    intensity = "balanced";
+    reason = `${philosophy === "underdog_hunter" ? "Diamond Seeker" : "Open-Minded"} — steady development`;
+  }
   else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
     intensity = "intensive";
     reason = "Strong roster + ambitious manager — intensive training";
   }
-  // Very high risk appetite → punishing
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
     reason = "Extremely ambitious manager — punishing regimen";
   }
-  // Default
   else {
     intensity = "balanced";
     reason = "Standard balanced training";
   }
 
-  // Apply compliance cap if active
   if (complianceCap && rank(intensity) > rank(complianceCap)) {
     intensity = complianceCap;
     reason += ` (capped by sanctions to ${complianceCap})`;
@@ -237,9 +241,21 @@ function decideTrainingIntensity(
 function decideTrainingFocus(
   perception: PerceptionSnapshot,
   styleBias: Style | "neutral",
-  tradition: number
+  tradition: number,
+  philosophy?: RecruitmentPhilosophy
 ): { focus: TrainingFocus; reason: string } {
-  // Traditionalists emphasize power/balance (yotsu fundamentals)
+  // Philosophy-driven focus overrides (oyakata style preferences)
+  if (philosophy === "size_matters") {
+    return { focus: "power", reason: "Size-obsessed philosophy — power focus to bulk up roster" };
+  }
+  if (philosophy === "innovator") {
+    return { focus: "speed", reason: "Innovator philosophy — speed & agility focus" };
+  }
+  if (philosophy === "traditionalist" || (philosophy === "style_purist" && styleBias === "yotsu")) {
+    return { focus: "balance", reason: "Traditional philosophy — balance & fundamentals" };
+  }
+
+  // Traditionalist oyakata emphasize power/balance (yotsu fundamentals)
   if (tradition >= 75 && styleBias === "yotsu") {
     return { focus: "balance", reason: "Traditionalist yotsu — emphasizing balance" };
   }
@@ -362,19 +378,24 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const perception = persona.perception;
   const reasoning: string[] = [];
 
-  // Get compliance cap from sanctions
+  // Fetch oyakata style profile for philosophy-driven decisions
   const heya = world.heyas.get(heyaId);
+  const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  const styleProfile = oyakata ? getOyakataStyleProfile(world, oyakata) : undefined;
+  const philosophy = styleProfile?.philosophy;
+
+  // Get compliance cap from sanctions
   const complianceCap = heya?.welfareState?.sanctions?.trainingIntensityCap as TrainingIntensity | undefined;
 
-  // 1. Training intensity
+  // 1. Training intensity (now philosophy-aware)
   const intensityDecision = decideTrainingIntensity(
-    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap
+    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap, philosophy
   );
   reasoning.push(`[Training] ${intensityDecision.reason}`);
 
-  // 2. Training focus
+  // 2. Training focus (now philosophy-aware)
   const focusDecision = decideTrainingFocus(
-    perception, persona.styleBias, persona.traits.tradition
+    perception, persona.styleBias, persona.traits.tradition, philosophy
   );
   reasoning.push(`[Focus] ${focusDecision.reason}`);
 
@@ -395,6 +416,44 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     reasoning.push(`[Protect] ${protectDecision.reason}`);
   }
 
+  // 6. Philosophy-driven individual focus: develop wrestlers matching preferred style/archetype
+  const individualDevelops: Id[] = [];
+  const individualPushes: Id[] = [];
+  const protectedSet = new Set(protectDecision.protectIds);
+
+  if (styleProfile && perception.rikishiPerceptions.length > 0) {
+    for (const rp of perception.rikishiPerceptions) {
+      if (protectedSet.has(rp.rikishiId)) continue;
+      const rikishi = world.rikishi.get(rp.rikishiId);
+      if (!rikishi) continue;
+
+      const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
+      const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype);
+
+      // Style purists and traditionalists push wrestlers that match, develop the rest less
+      if (matchesArchetype && matchesStyle) {
+        if ((rp.healthBand === "peak" || rp.healthBand === "good") && (philosophy === "style_purist" || philosophy === "size_matters")) {
+          individualPushes.push(rp.rikishiId);
+        } else if (rp.healthBand === "peak" || rp.healthBand === "good") {
+          individualDevelops.push(rp.rikishiId);
+        }
+      } else if (matchesArchetype || matchesStyle) {
+        individualDevelops.push(rp.rikishiId);
+      }
+    }
+
+    // Cap individual focuses to avoid overwhelming the system (max 3 push, 5 develop)
+    individualPushes.splice(3);
+    individualDevelops.splice(5);
+
+    if (individualPushes.length > 0) {
+      reasoning.push(`[Philosophy] Pushing ${individualPushes.length} wrestler(s) matching ${styleProfile.description.split(".")[0]}`);
+    }
+    if (individualDevelops.length > 0) {
+      reasoning.push(`[Philosophy] Developing ${individualDevelops.length} wrestler(s) aligned with philosophy`);
+    }
+  }
+
   return {
     heyaId,
     archetype: persona.archetype,
@@ -403,6 +462,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     recovery: recoveryDecision.recovery,
     scoutingPriority: scoutingDecision.priority,
     individualProtects: protectDecision.protectIds,
+    individualDevelops,
+    individualPushes,
     reasoning
   };
 }
@@ -421,17 +482,27 @@ function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void 
     recovery: decision.recovery
   };
 
-  // Update individual focus slots for protected wrestlers
-  if (decision.individualProtects.length > 0) {
-    const existingFocus = state.focusSlots.filter(
-      f => !decision.individualProtects.includes(f.rikishiId)
-    );
-    const protectSlots = decision.individualProtects.map(id => ({
-      rikishiId: id,
-      focusType: "protect" as const
-    }));
-    state.focusSlots = [...existingFocus, ...protectSlots];
-  }
+  // Rebuild individual focus slots: protect > push > develop
+  const allManagedIds = new Set([
+    ...decision.individualProtects,
+    ...decision.individualPushes,
+    ...decision.individualDevelops,
+  ]);
+
+  // Keep existing slots for rikishi not managed this tick
+  const existingFocus = state.focusSlots.filter(f => !allManagedIds.has(f.rikishiId));
+
+  const protectSlots = decision.individualProtects.map(id => ({
+    rikishiId: id, focusType: "protect" as const
+  }));
+  const pushSlots = decision.individualPushes.map(id => ({
+    rikishiId: id, focusType: "push" as const
+  }));
+  const developSlots = decision.individualDevelops.map(id => ({
+    rikishiId: id, focusType: "develop" as const
+  }));
+
+  state.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
 }
 
 // ─── Weekly Tick (Orchestrator Entry Point) ─────────────
