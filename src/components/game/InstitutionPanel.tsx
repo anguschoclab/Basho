@@ -137,15 +137,18 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
                 ["Risk", traits.risk],
                 ["Tradition", traits.tradition],
                 ["Compassion", traits.compassion],
-              ] as Array<[string, number]>).map(([label, v]) => (
-                <div key={label} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{label}</span>
-                    <span className="font-medium">{Math.round(v)}</span>
+              ] as Array<[string, number]>).map(([label, v]) => {
+                const band = toTraitBand(v);
+                return (
+                  <div key={label} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{label}</span>
+                      <span className="font-medium">{TRAIT_LABELS[band]}</span>
+                    </div>
+                    <Progress value={clamp(v, 0, 100)} />
                   </div>
-                  <Progress value={clamp(v, 0, 100)} />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
