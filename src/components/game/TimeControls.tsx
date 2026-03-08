@@ -22,6 +22,7 @@ export function TimeControls() {
     endBasho,
     setPhase,
     advanceInterim,
+    advanceOneDay,
     goOnHoliday,
     runAutoSimAction,
   } = useGame();
