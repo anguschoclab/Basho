@@ -26,7 +26,6 @@ import { AutoSimControls } from "./AutoSimControls";
 export function TimeControls() {
   const {
     state,
-    startBasho,
     advanceDay,
     simulateAllBouts,
     endDay,
