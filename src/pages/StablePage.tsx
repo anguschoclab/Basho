@@ -261,7 +261,7 @@ export default function StablePage() {
   const handleFocusChange = (focus: TrainingFocus) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, focus } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
       persistTrainingState(next);
       return next;
     });
