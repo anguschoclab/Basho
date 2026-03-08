@@ -695,44 +695,112 @@ function resolveCandidateSigning(world: WorldState, candidateId: Id): { signed: 
   return { signed: true, signedHeyaId: best.heyaId, rikishiId: r.id };
 }
 
-// NPC stables occasionally make offers to visible candidates.
+// ─── Scouting Priority Config ───────────────────────────
+// Maps NPC scouting priorities (from npcAI decisions) to behavioral parameters.
+// Higher priorities → more stables evaluated, higher offer probability,
+// deeper hidden reach, and more evaluation tries.
+
+const SCOUTING_PRIORITY_CONFIG: Record<
+  "none" | "passive" | "active" | "aggressive",
+  { recruitProb: number; hiddenReachBonus: number; evalTries: number; revealChance: number; maxOffers: number }
+> = {
+  none:       { recruitProb: 0,    hiddenReachBonus: 0,  evalTries: 0,  revealChance: 0,    maxOffers: 0 },
+  passive:    { recruitProb: 0.08, hiddenReachBonus: 0,  evalTries: 16, revealChance: 0.02, maxOffers: 1 },
+  active:     { recruitProb: 0.25, hiddenReachBonus: 3,  evalTries: 28, revealChance: 0.12, maxOffers: 2 },
+  aggressive: { recruitProb: 0.45, hiddenReachBonus: 6,  evalTries: 40, revealChance: 0.25, maxOffers: 3 },
+};
+
+/**
+ * NPC scouting reveal: active/aggressive stables discover hidden candidates,
+ * moving them from hidden → visible (simulates their scouting networks).
+ */
+function npcScoutingRevealTick(world: WorldState, rng: ReturnType<typeof rngForWorld>): void {
+  const tp = ensureWorldPool(world);
+  const priorities = world.npcScoutingPriorities ?? {};
+
+  for (const [heyaId, priority] of Object.entries(priorities)) {
+    if (priority === "none" || priority === "passive") continue;
+
+    const config = SCOUTING_PRIORITY_CONFIG[priority];
+    if (!rng.bool(config.revealChance)) continue;
+
+    // Pick a random pool to scout from
+    const poolType = POOL_TYPES[rng.int(0, POOL_TYPES.length - 1)];
+
+    // Foreign quota check
+    if (poolType === "foreign") {
+      const quotaOk = getForeignCountInHeya(world, heyaId) + getForeignCommitmentsInTalks(world, heyaId) < FOREIGN_RIKISHI_LIMIT_PER_HEYA;
+      if (!quotaOk) continue;
+    }
+
+    const pool = tp.pools[poolType];
+    if (pool.candidatesHidden.length === 0) continue;
+
+    // Reveal 1 hidden candidate
+    const idx = rng.int(0, pool.candidatesHidden.length - 1);
+    const cid = pool.candidatesHidden.splice(idx, 1)[0];
+    const c = tp.candidates[cid];
+    if (!c) continue;
+
+    if (c.visibilityBand === "hidden") c.visibilityBand = "obscure";
+    pool.candidatesVisible.unshift(cid);
+    pool.candidatesVisible = pool.candidatesVisible.slice(0, pool.populationCap);
+  }
+}
+
+// NPC stables make offers based on their scouting priority (from npcAI decisions).
 function npcOfferTick(world: WorldState): void {
   const tp = ensureTalentPools(world);
   const now = getWeek(world);
 
   const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+  const priorities = world.npcScoutingPriorities ?? {};
 
   const heyaIds = Array.from(world.heyas.keys()).filter((id) => !playerHeyaId || id !== playerHeyaId);
   if (heyaIds.length === 0) return;
 
   const rng = rngForWorld(world, "talentpool", `npc_offers::w${now}`);
 
-  // Build candidate pool: visible + a small hidden slice (simulates NPC scouting reach).
+  // NPC scouting reveals hidden candidates first
+  npcScoutingRevealTick(world, rng);
+
+  // Build candidate pool: visible across all pools.
   const visible: Id[] = [];
   for (const pt of POOL_TYPES) visible.push(...tp.pools[pt].candidatesVisible);
   if (visible.length === 0) return;
 
-  // Evaluate a small subset of stables each week to avoid O(N*M).
-  const stablesThisWeek = Math.min(6, heyaIds.length);
-  for (let s = 0; s < stablesThisWeek; s++) {
-    const heyaId = heyaIds[rng.int(0, heyaIds.length - 1)];
+  // Process ALL NPC stables, but gate behavior on their scouting priority
+  for (const heyaId of heyaIds) {
     const heya = world.heyas.get(heyaId);
     const freezeWeeks = (heya as any)?.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) {
-      // Under sanction: cannot recruit
-      continue;
-    }
+    if (freezeWeeks > 0) continue;
 
+    // Read scouting priority from npcAI decision (defaults to passive)
+    const priority = priorities[heyaId] ?? "passive";
+    const config = SCOUTING_PRIORITY_CONFIG[priority];
+
+    // Skip stables with "none" priority entirely
+    if (config.recruitProb <= 0) continue;
+
+    // Probability gate scaled by priority
     const traits = getTraitsForHeya(world, heyaId);
-    const recruitProb = clamp(0.06 + traits.ambition / 600 + (traits.risk / 1200), 0.04, 0.26);
-    if (!rng.bool(recruitProb)) continue;
+    const adjustedProb = clamp(
+      config.recruitProb + traits.ambition / 800 + (traits.risk / 1600),
+      0.02,
+      0.55
+    );
+    if (!rng.bool(adjustedProb)) continue;
 
-    // Assemble an evaluation list per-heya: visible + some hidden (more for "scientist/strategist").
+    // Assemble evaluation list: visible + hidden reach scaled by priority
     const arch = getArchetypeForHeya(world, heyaId);
-    const hiddenReach = clamp(Math.round(2 + traits.patience / 30 + (arch === "scientist" || arch === "strategist" ? 2 : 0)), 1, 8);
+    const baseHiddenReach = clamp(
+      Math.round(2 + traits.patience / 30 + (arch === "scientist" || arch === "strategist" ? 2 : 0)),
+      1, 8
+    );
+    const hiddenReach = baseHiddenReach + config.hiddenReachBonus;
+
     const evalList: Id[] = [...visible];
     for (const pt of POOL_TYPES) {
-      // Don't tempt foreign if quota is already used.
       if (pt === "foreign") {
         const quotaOk = getForeignCountInHeya(world, heyaId) + getForeignCommitmentsInTalks(world, heyaId) < FOREIGN_RIKISHI_LIMIT_PER_HEYA;
         if (!quotaOk) continue;
@@ -740,26 +808,35 @@ function npcOfferTick(world: WorldState): void {
       evalList.push(...tp.pools[pt].candidatesHidden.slice(0, hiddenReach));
     }
 
-    // Pick best candidate from a random sample.
-    let best: { cid: Id; score: number } | null = null;
-    const tries = Math.min(28, evalList.length);
-    for (let i = 0; i < tries; i++) {
-      const cid = evalList[rng.int(0, evalList.length - 1)];
-      const c = tp.candidates[cid];
-      if (!c || c.availabilityState !== "available") continue;
-      const can = canSignCandidate(world, heyaId, c);
-      if (!can.ok) continue;
-      // Add small noise so identical stables don't all pick the same prospect.
-      const noise = (rng.next() - 0.5) * 6;
-      const score = scoreCandidateForHeya(world, heyaId, c) + noise;
-      if (!best || score > best.score) best = { cid, score };
-    }
-    if (!best) continue;
+    // Evaluate candidates — more tries for higher priority
+    const offersToMake = Math.min(config.maxOffers, Math.ceil(evalList.length / 10));
+    const madeOffers = new Set<Id>();
 
-    const chosen = tp.candidates[best.cid];
-    if (!chosen) continue;
-    const { offerType, interest } = chooseOfferProfile(world, heyaId, chosen);
-    offerCandidate(world, best.cid, heyaId, offerType, interest);
+    for (let offerIdx = 0; offerIdx < offersToMake; offerIdx++) {
+      let best: { cid: Id; score: number } | null = null;
+      const tries = Math.min(config.evalTries, evalList.length);
+
+      for (let i = 0; i < tries; i++) {
+        const cid = evalList[rng.int(0, evalList.length - 1)];
+        if (madeOffers.has(cid)) continue;
+        const c = tp.candidates[cid];
+        if (!c || c.availabilityState !== "available") continue;
+        const can = canSignCandidate(world, heyaId, c);
+        if (!can.ok) continue;
+        const noise = (rng.next() - 0.5) * 6;
+        const score = scoreCandidateForHeya(world, heyaId, c) + noise;
+        if (!best || score > best.score) best = { cid, score };
+      }
+
+      if (!best) break;
+
+      const chosen = tp.candidates[best.cid];
+      if (!chosen) break;
+      madeOffers.add(best.cid);
+
+      const { offerType, interest } = chooseOfferProfile(world, heyaId, chosen);
+      offerCandidate(world, best.cid, heyaId, offerType, interest);
+    }
   }
 }
 

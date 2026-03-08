@@ -740,6 +740,9 @@ export interface WorldState {
   // Perception cache (A7.1) — rebuilt at weekly boundary, consumed by NPC AI + UI
   perceptionCache?: Record<Id, import("./perception").PerceptionSnapshot>;
 
+  // NPC scouting priorities (A7/A8) — written by npcAI, consumed by talentpool
+  npcScoutingPriorities?: Record<Id, "none" | "passive" | "active" | "aggressive">;
+
   // Legacy / UI Helpers
   currentDate?: Date;
   heyasArray?: Heya[]; // Optional helper for array-based UI mapping
