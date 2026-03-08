@@ -389,9 +389,9 @@ export default function RecapPage() {
         )}
 
         {/* NAVIGATION */}
-        <div className="flex gap-4">
-          <Button asChild>
-            <NavLink to="/dashboard">Return to Dashboard</NavLink>
+        <div className="flex flex-wrap gap-4">
+          <Button onClick={handleContinue}>
+            Continue to Off-Season
           </Button>
           <Button variant="outline" asChild>
             <NavLink to="/history">View Full History</NavLink>
