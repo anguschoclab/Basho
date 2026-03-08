@@ -43,7 +43,6 @@ function computeCareerStats(rikishi: Rikishi) {
   const totalBouts = wins + losses;
 
   // No-Leak: show win rate as assessment band, not percentage
-  const { toWinRateAssessment, WIN_RATE_LABELS } = require("@/engine/descriptorBands");
   const assessment = WIN_RATE_LABELS[toWinRateAssessment(wins, losses)];
   const estimatedBasho = Math.floor(totalBouts / 15);
 
