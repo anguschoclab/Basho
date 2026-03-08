@@ -269,10 +269,11 @@ export default function AlmanacPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-xl grid-cols-5">
             <TabsTrigger value="rikishi">Rikishi</TabsTrigger>
             <TabsTrigger value="heya">Heya</TabsTrigger>
             <TabsTrigger value="champions">Champions</TabsTrigger>
+            <TabsTrigger value="leaderboards">Leaderboards</TabsTrigger>
             <TabsTrigger value="records">Records</TabsTrigger>
           </TabsList>
 
