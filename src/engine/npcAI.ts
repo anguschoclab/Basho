@@ -432,9 +432,9 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
       // Style purists and traditionalists push wrestlers that match, develop the rest less
       if (matchesArchetype && matchesStyle) {
-        if (rp.healthBand === "healthy" && (philosophy === "style_purist" || philosophy === "size_matters")) {
+        if ((rp.healthBand === "peak" || rp.healthBand === "good") && (philosophy === "style_purist" || philosophy === "size_matters")) {
           individualPushes.push(rp.rikishiId);
-        } else if (rp.healthBand === "healthy") {
+        } else if (rp.healthBand === "peak" || rp.healthBand === "good") {
           individualDevelops.push(rp.rikishiId);
         }
       } else if (matchesArchetype || matchesStyle) {
