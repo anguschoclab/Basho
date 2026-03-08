@@ -41,6 +41,8 @@ import * as facilities from "./facilities";
 import { processWeeklyMediaBoundary, createDefaultMediaState, resetBashoMediaTracking } from "./media";
 import { initializeBasho } from "./worldgen";
 import * as schedule from "./schedule";
+import { processYearEndInduction, HOF_CATEGORY_LABELS } from "./hallOfFame";
+import { RANK_HIERARCHY } from "./banzuke";
 
 // ============================================================================
 // TYPES
