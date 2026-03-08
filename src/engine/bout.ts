@@ -7,8 +7,7 @@
 // - Preserves all 'GripEvent'/'StrikeEvent' strings for narrative
 // =======================================================
 
-import { rngFromSeed } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, SeededRNG } from "./rng";
 import type {
   Rikishi,
   BoutResult,

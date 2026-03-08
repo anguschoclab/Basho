@@ -3,8 +3,7 @@
 // Schedule Builder v1.1 — Deterministic torikumi pairing for ALL divisions
 // Uses matchmaking.ts for candidate generation and scoring.
 // =======================================================
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { BashoState, Division, MatchSchedule, Rikishi, WorldState } from "./types";
 import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 

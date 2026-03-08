@@ -7,8 +7,7 @@
  * - Provides 'generateH2HCommentary' for Pre-Bout and UI display.
  */
 
-import { rngFromSeed } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, SeededRNG } from "./rng";
 import { Rikishi, H2HRecord, BoutResult } from "./types";
 
 /**

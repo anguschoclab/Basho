@@ -10,8 +10,7 @@
  * - FTUE state is updated after first basho completion.
  */
 
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoState } from "./types";
 import { toRankPosition } from "./types";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";

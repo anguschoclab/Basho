@@ -11,8 +11,7 @@
 //
 // Engine position vocabulary:
 // - "front" | "lateral" | "rear"
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { BoutResult, BoutLogEntry, Rikishi, BashoName, Stance } from "./types";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";

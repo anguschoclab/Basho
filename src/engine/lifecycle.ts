@@ -6,8 +6,7 @@
  * - Uses high-fidelity types for recruit generation.
  */
 
-import { rngFromSeed } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, SeededRNG } from "./rng";
 import { Rikishi, Rank, RikishiStats, TacticalArchetype, WorldState } from "./types";
 import { generateRikishiName } from "./shikona";
 
