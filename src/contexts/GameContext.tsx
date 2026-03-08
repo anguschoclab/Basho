@@ -49,6 +49,7 @@ type GameAction =
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
   | { type: "ADVANCE_INTERIM"; weeks: number }
+  | { type: "ADVANCE_ONE_DAY" }
   | { type: "SELECT_RIKISHI"; id: string | null }
   | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_AUTO_PLAY"; value: boolean }
