@@ -311,6 +311,14 @@ export function endBasho(world: WorldState): WorldState {
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
+  // Snapshot media heat for sparkline history
+  safeCall(() => {
+    const w = world as any;
+    if (w.mediaState) {
+      w.mediaState = snapshotMediaHeatForBasho(w.mediaState, basho.bashoName);
+    }
+  });
+
   enterPostBasho(world);
 
   // --- FTUE UPDATE (Constitution A8) ---
