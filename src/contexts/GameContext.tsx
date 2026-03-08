@@ -63,6 +63,7 @@ type GameAction =
   | { type: "SIMULATE_ALL_BOUTS" }
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
+  | { type: "SIM_FULL_BASHO" }
   | { type: "ADVANCE_INTERIM"; weeks: number }
   | { type: "ADVANCE_ONE_DAY" }
   | { type: "RUN_HOLIDAY"; result: HolidayResult }
@@ -226,6 +227,33 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "SIM_FULL_BASHO": {
+      if (!state.world?.currentBasho) return state;
+
+      // Simulate remaining days (up to 15)
+      for (let safety = 0; safety < 15; safety++) {
+        const day = state.world.currentBasho?.day;
+        if (!day || day > 15) break;
+
+        // Simulate all bouts for this day
+        for (let b = 0; b < 64; b++) {
+          const { result } = worldEngine.simulateBoutForToday(state.world, 0);
+          if (!result) break;
+        }
+
+        // Advance to next day
+        worldEngine.advanceBashoDay(state.world);
+      }
+
+      try { autosaveWithSignal(state.world); } catch { /* silent */ }
+
+      return {
+        ...state,
+        world: { ...state.world },
+        phase: "basho_results",
+      };
+    }
+
     case "ADVANCE_INTERIM": {
       if (!state.world) return state;
       worldEngine.advanceInterim(state.world, action.weeks);
@@ -327,6 +355,7 @@ interface GameContextValue {
   simulateAllBouts: () => void;
   endDay: () => void;
   endBasho: () => void;
+  simFullBasho: () => void;
 
   // Interim control
   advanceInterim: (weeks?: number) => void;
@@ -413,6 +442,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const endBasho = useCallback(() => {
     dispatch({ type: "END_BASHO" });
+  }, []);
+
+  const simFullBasho = useCallback(() => {
+    dispatch({ type: "SIM_FULL_BASHO" });
   }, []);
 
   const advanceInterim = useCallback((weeks: number = 1) => {
@@ -512,6 +545,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     simulateAllBouts,
     endDay,
     endBasho,
+    simFullBasho,
     advanceInterim,
     advanceOneDay: advanceOneDayAction,
     saveToSlot,

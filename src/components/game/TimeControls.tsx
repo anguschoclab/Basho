@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat } from "lucide-react";
+import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/components/ui/use-toast";
 import { HolidayControls } from "./HolidayControls";
@@ -31,6 +31,7 @@ export function TimeControls() {
     simulateAllBouts,
     endDay,
     endBasho,
+    simFullBasho,
     setPhase,
     advanceInterim,
     advanceOneDay,
@@ -67,6 +68,11 @@ export function TimeControls() {
 
   const handleEndBasho = () => {
     setShowEndConfirm(true);
+  };
+
+  const handleSimFullBasho = () => {
+    simFullBasho();
+    toast({ title: "Basho complete!", description: "All 15 days simulated and results recorded." });
   };
 
   const confirmEndBasho = () => {
@@ -138,6 +144,10 @@ export function TimeControls() {
             <Button onClick={handleSimDay} className="gap-2">
               <FastForward className="h-4 w-4" />
               Simulate Day
+            </Button>
+            <Button variant="secondary" onClick={handleSimFullBasho} className="gap-2">
+              <SkipForward className="h-4 w-4" />
+              Sim Full Basho
             </Button>
             <Button variant="outline" onClick={handleAdvanceDay} className="gap-2">
               <ArrowRight className="h-4 w-4" />

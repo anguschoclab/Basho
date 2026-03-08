@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Play, FastForward, ArrowRight, Repeat, Calendar, ChevronRight,
+  Play, FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
 
 const BASHO_NAMES: Record<string, string> = {
@@ -21,7 +21,7 @@ const PHASE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export function CalendarWidget() {
-  const { state, advanceInterim, advanceOneDay, startBasho, simulateAllBouts, endDay, advanceDay } = useGame();
+  const { state, advanceInterim, advanceOneDay, startBasho, simulateAllBouts, endDay, advanceDay, simFullBasho } = useGame();
   const { toast } = useToast();
   const navigate = useNavigate();
   const world = state.world;
@@ -53,6 +53,12 @@ export function CalendarWidget() {
     endDay();
     advanceDay();
     toast({ title: "Day simulated" });
+  };
+
+  const handleSimFullBasho = () => {
+    simFullBasho();
+    toast({ title: "Basho complete!", description: "All 15 days simulated." });
+    navigate("/basho");
   };
 
   return (
@@ -106,6 +112,9 @@ export function CalendarWidget() {
           <>
             <Button size="sm" onClick={handleSimDay} className="gap-1.5 h-7 text-xs">
               <FastForward className="h-3 w-3" /> Sim Day
+            </Button>
+            <Button size="sm" variant="secondary" onClick={handleSimFullBasho} className="gap-1.5 h-7 text-xs">
+              <SkipForward className="h-3 w-3" /> Sim All
             </Button>
             <Button size="sm" variant="secondary" onClick={() => navigate("/basho")} className="gap-1.5 h-7 text-xs">
               <ChevronRight className="h-3 w-3" /> View Basho

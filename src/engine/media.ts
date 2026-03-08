@@ -147,18 +147,50 @@ export function updateMediaFromBout(args: {
   if (result.upset) impact += 20;
 
   // Rivalry amps attention
+  let hasRivalry = false;
   if (args.rivalries) {
     const mods = getRivalryBoutModifiers({ state: args.rivalries, aId: result.winnerRikishiId, bId: result.loserRikishiId });
     impact += Math.round(mods.tension * 22);
+    if (mods.tension > 0.1) hasRivalry = true;
   }
 
   // Rank-based bump (higher ranks get more coverage)
-  impact += rankImpact(winner?.rank) + rankImpact(loser?.rank);
+  const winnerRankImpact = rankImpact(winner?.rank);
+  const loserRankImpact = rankImpact(loser?.rank);
+  impact += winnerRankImpact + loserRankImpact;
+
+  // Injury context
+  const winnerInjured = winner && (winner as any).injury?.active;
+  const loserInjured = loser && (loser as any).injury?.active;
 
   impact = clampInt(impact, 0, 100);
 
-  const tone: MediaTone = result.upset ? "hype" : rng.next() < 0.15 ? "praise" : "neutral";
-  const beat: MediaBeat = result.upset ? "upset" : "daily_bout";
+  // --- Context-aware tone assignment ---
+  let tone: MediaTone;
+  const roll = rng.next();
+  if (result.upset) {
+    // Upsets: mostly hype, but controversy if a high-ranker lost badly
+    if (loserRankImpact >= 8 && roll < 0.3) tone = "controversy";
+    else if (roll < 0.15) tone = "disrespect";
+    else tone = "hype";
+  } else if (winnerInjured || loserInjured) {
+    // Injury context: concern or controversy
+    tone = roll < 0.6 ? "concern" : "controversy";
+  } else if (hasRivalry) {
+    // Rivalry bouts: hype or controversy
+    tone = roll < 0.5 ? "hype" : roll < 0.8 ? "controversy" : "praise";
+  } else if (winnerRankImpact >= 8) {
+    // Top-rank wins: praise or hype
+    tone = roll < 0.5 ? "praise" : roll < 0.8 ? "hype" : "neutral";
+  } else if (winnerRankImpact >= 5) {
+    // Mid-rank wins: mixed
+    tone = roll < 0.35 ? "praise" : roll < 0.55 ? "hype" : roll < 0.7 ? "concern" : "neutral";
+  } else {
+    // Lower-division: mostly neutral with occasional praise
+    tone = roll < 0.25 ? "praise" : roll < 0.35 ? "hype" : "neutral";
+  }
+
+  const beat: MediaBeat = result.upset ? "upset" : hasRivalry ? "rivalry" : "daily_bout";
   const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
 
   const title = buildBoutHeadlineTitle({
