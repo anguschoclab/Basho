@@ -166,6 +166,23 @@ export default function Dashboard() {
           </p>
         )}
 
+        {/* Alert banner */}
+        {alerts.length > 0 && (
+          <div className="space-y-1.5">
+            {alerts.map((alert, i) => (
+              <button
+                key={i}
+                onClick={() => navigate(alert.link)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"
+              >
+                <AlertTriangle className={`h-4 w-4 shrink-0 ${alert.color}`} />
+                <alert.icon className={`h-3.5 w-3.5 shrink-0 ${alert.color}`} />
+                <span className={`text-xs font-medium ${alert.color}`}>{alert.text}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* FM-style modular grid */}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {columns.map((col, colIdx) => (
