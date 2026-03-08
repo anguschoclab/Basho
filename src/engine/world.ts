@@ -17,6 +17,7 @@ import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
+import { updateH2H } from "./h2h";
 import { EventBus, logEngineEvent } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 import { buildAlmanacSnapshot } from "./almanac";
@@ -73,14 +74,12 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
   const already = basho.matches.some((m) => m.day === day);
   if (already) return world;
 
-  // Assuming schedule module is updated or compatible hooks exist
-  // For now, we stub a basic schedule generator if external one fails
+  // Use generateDaySchedule from the schedule module
   if (typeof (schedule as any).generateDaySchedule === "function") {
     (schedule as any).generateDaySchedule(world, basho, day, world.seed);
   } else {
       // Basic fallback scheduling
       const rikishiIds = Array.from(world.rikishi.keys());
-      // Simple random pairing
       for(let i=0; i<rikishiIds.length; i+=2) {
           if (i+1 < rikishiIds.length) {
               basho.matches.push({
@@ -171,6 +170,13 @@ function applyBoutResult(
     }
     winner.economics.kinboshiCount = (winner.economics.kinboshiCount || 0) + 1;
   }
+
+  // Update head-to-head records
+  safeCall(() => {
+    const bashoId = world.currentBasho?.id ?? "unknown";
+    const year = world.year ?? 0;
+    updateH2H(winner, loser, result, bashoId, year, match.day);
+  });
 
   safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));

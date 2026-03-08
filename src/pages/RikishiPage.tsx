@@ -24,7 +24,11 @@ import {
   describeCareerPhaseVerbose,
   describeArchetypeVerbose,
   describeStyleVerbose,
-  describeInjuryVerbose
+  describeInjuryVerbose,
+  type AttributeKey,
+  type StyleKey,
+  type ArchetypeKey,
+  type CareerPhase,
 } from "@/engine/narrativeDescriptions";
 import { POTENTIAL_LABELS } from "@/engine/descriptorBands";
 import {

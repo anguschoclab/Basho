@@ -21,6 +21,7 @@ import {
 } from "./timeBoundary";
 import { RANK_HIERARCHY } from "./banzuke";
 import { initializeBasho, generateDaySchedule } from "./worldgen";
+import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, type DivisionScheduleConfig } from "./schedule";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -167,11 +168,19 @@ export function simulateEntireBasho(
     }
   }
 
+  // Pre-generate all 15 days of schedules at once for efficiency
+  try {
+    generateFullBashoSchedule({ world, basho, seed });
+  } catch {
+    // Fallback: generate day-by-day
+    for (let day = 1; day <= 15; day++) {
+      const daySeed = `${seed}-day${day}`;
+      generateDaySchedule(world, basho, day, daySeed);
+    }
+  }
+
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    // IMPORTANT: per-day seed so schedule generation cannot accidentally repeat
-    const daySeed = `${seed}-day${day}`;
-    generateDaySchedule(world, basho, day, daySeed);
 
     const dayMatches = basho.matches.filter((m) => m.day === day && !m.result);
 

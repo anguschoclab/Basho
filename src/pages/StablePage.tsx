@@ -39,7 +39,7 @@ import {
   type BeyaTrainingState,
   createDefaultTrainingState
 } from "@/engine/training";
-import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
+import { describeTrainingEffect, type FacilityType, type OyakataArchetypeKey } from "@/engine/narrativeDescriptions";
 import {
   Activity,
   AlertTriangle,
