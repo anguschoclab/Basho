@@ -133,6 +133,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     ozekiKadoban: (world as any).ozekiKadoban,
     // Hall of Fame
     hallOfFame: (world as any).hallOfFame,
+    // Media state
+    mediaState: (world as any).mediaState,
   } as any;
 }
 
