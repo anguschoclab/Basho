@@ -176,7 +176,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       
       statureBand: STATURE_BANDS[statureIdx],
       prestigeBand: PRESTIGE_BANDS[prestigeIdx],
-      facilitiesBand: FACILITY_BANDS[facilityIdx],
+      facilitiesBand: facilityBase >= 55 ? "world_class" as const : facilityBase >= 40 ? "excellent" as const : facilityBase >= 25 ? "adequate" as const : facilityBase >= 15 ? "basic" as const : "minimal" as const,
       koenkaiBand: "moderate",
       runwayBand: RUNWAY_BANDS[runwayIdx],
 
