@@ -147,6 +147,9 @@ export default function Dashboard() {
         ) : (
             <WeeklyDigest />
         )}
+
+        {/* RIVAL STABLES — banded perception data */}
+        <RivalStablesPanel />
       </div>
     </AppLayout>
   );
