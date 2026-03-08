@@ -270,7 +270,7 @@ export default function StablePage() {
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, recovery } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
       persistTrainingState(next);
       return next;
     });
