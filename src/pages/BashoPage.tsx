@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { BASHO_CALENDAR, getDayName } from "@/engine/calendar";
 import { RANK_NAMES as SCOUT_RANK_NAMES } from "@/engine/scouting";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
+import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Play, FastForward, ChevronRight, Trophy, Star, Eye } from "lucide-react";
 import type { Rikishi, BoutResult, Rank } from "@/engine/types";
 
