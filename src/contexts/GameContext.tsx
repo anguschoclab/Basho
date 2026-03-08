@@ -20,6 +20,7 @@ export type GamePhase =
   | "bout"           // Watching a bout
   | "day_results"    // After day's bouts
   | "basho_results"  // End of tournament
+  | "basho_recap"    // Post-basho recap screen
   | "stable"         // Managing stable
   | "banzuke"        // Viewing rankings
   | "rikishi"        // Viewing wrestler
