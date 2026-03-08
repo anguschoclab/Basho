@@ -204,10 +204,24 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case "ADVANCE_INTERIM": {
       if (!state.world) return state;
       worldEngine.advanceInterim(state.world, action.weeks);
+      // Phase may have changed due to daily tick transitions
+      const newPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return {
         ...state,
         world: { ...state.world },
-        phase: "interim",
+        phase: newPhase,
+      };
+    }
+
+    case "ADVANCE_ONE_DAY": {
+      if (!state.world) return state;
+      worldEngine.advanceDay(state.world);
+      const dayPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : 
+                       state.world.cyclePhase === "pre_basho" ? "interim" : "interim";
+      return {
+        ...state,
+        world: { ...state.world },
+        phase: dayPhase,
       };
     }
 
