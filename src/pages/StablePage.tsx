@@ -136,35 +136,14 @@ export default function StablePage() {
   const { state, updateWorld } = useGame();
   const { world, playerHeyaId } = state;
 
-  // Guard: must not navigate during render; render a safe fallback instead.
-  if (!world || !playerHeyaId) {
-    return null;
-  }
-
   // Use route param if provided, otherwise default to player's stable
-  const viewingHeyaId = routeId || playerHeyaId;
+  const viewingHeyaId = (world && playerHeyaId) ? (routeId || playerHeyaId) : "";
   const isViewingOwnStable = viewingHeyaId === playerHeyaId;
 
-  const heya = world.heyas.get(viewingHeyaId);
-  if (!heya) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto space-y-4">
-        <Card className="paper">
-          <CardHeader>
-            <CardTitle>Stable not found</CardTitle>
-            <CardDescription>The requested heya could not be loaded.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" onClick={() => navigate("/")}>
-              Return to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
   const rikishiList = useMemo(() => {
+    if (!heya || !world) return [];
     return heya.rikishiIds
       .map((id) => world.rikishi.get(id))
       .filter(Boolean)
@@ -173,7 +152,6 @@ export default function StablePage() {
         const tierB = RANK_HIERARCHY[b!.rank].tier;
         if (tierA !== tierB) return tierA - tierB;
 
-        // Stable deterministic tie-break: lower rankNumber first, then east before west, then id.
         const rnA = a!.rankNumber ?? 999;
         const rnB = b!.rankNumber ?? 999;
         if (rnA !== rnB) return rnA - rnB;
@@ -182,7 +160,7 @@ export default function StablePage() {
 
         return a!.id.localeCompare(b!.id);
       });
-  }, [heya.rikishiIds, world.rikishi]);
+  }, [heya, world]);
 
   const sekitori = useMemo(
     () => rikishiList.filter((r) => r && RANK_HIERARCHY[r.rank].isSekitori),
@@ -191,6 +169,8 @@ export default function StablePage() {
 
   // Compute stable achievements from world history
   const stableAchievements = useMemo<StableAchievements>(() => {
+    if (!heya || !world) return { yusho: [], junYusho: [], ginoSho: [], kantosho: [], shukunsho: [] };
+    const stableRikishiIds = new Set(heya.rikishiIds);
     const stableRikishiIds = new Set(heya.rikishiIds);
     const achievements: StableAchievements = { yusho: [], junYusho: [], ginoSho: [], kantosho: [], shukunsho: [] };
 
