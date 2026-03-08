@@ -463,7 +463,7 @@ function tickYearBoundary(world: WorldState, subs: string[]): void {
   });
 
   // 3. Talent pool yearly refresh
-  safeCall(() => { (talentpool as any).tickYear?.(world); });
+  safeCall(() => { talentpool.tickYear(world); });
 
   subs.push("year_boundary");
 
