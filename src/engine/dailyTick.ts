@@ -216,14 +216,14 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
 
   safeCall(() => { npcAI.tickWeek?.(world); }) && subs.push("npcAI");
   safeCall(() => { training.tickWeek(world); }) && subs.push("training");
-  safeCall(() => { (injuries as any).tickWeek?.(world); }) && subs.push("injuries");
+  safeCall(() => { injuries.tickWeek(world); }) && subs.push("injuries");
   safeCall(() => { economics.tickWeek(world); }) && subs.push("economics_weekly");
   safeCall(() => { welfare.tickWeek(world); }) && subs.push("welfare");
   safeCall(() => { governance.tickWeek(world); }) && subs.push("governance");
-  safeCall(() => { (rivalries as any).tickWeek?.(world); }) && subs.push("rivalries");
+  safeCall(() => { rivalries.tickWeek(world); }) && subs.push("rivalries");
   safeCall(() => { events.tickWeek(world); }) && subs.push("events");
-  safeCall(() => { (scoutingStore as any).tickWeek?.(world); }) && subs.push("scouting");
-  safeCall(() => { (talentpool as any).tickWeek?.(world); }) && subs.push("talentpool");
+  safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
+  safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
 
   // Recruitment window lifecycle — check if window should close
   safeCall(() => { tickRecruitmentWindowClose(world); }) && subs.push("recruitment_window");
