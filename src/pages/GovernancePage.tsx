@@ -9,11 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning } from "lucide-react";
 import type { GovernanceStatus, GovernanceRuling, Heya } from "@/engine/types";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
+import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 
-function formatCurrency(amount: number): string {
-  if (amount >= 1_000_000) return `¥${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1_000) return `¥${(amount / 1_000).toFixed(0)}K`;
-  return `¥${amount}`;
+function formatFinePenalty(amount: number): string {
+  if (amount >= 10_000_000) return "Severe fine";
+  if (amount >= 3_000_000) return "Significant fine";
+  if (amount >= 500_000) return "Moderate fine";
+  return "Minor fine";
 }
 
 export default function GovernancePage() {
