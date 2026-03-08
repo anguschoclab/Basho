@@ -110,6 +110,17 @@ export function BoutReplayViewer({
 
   const safeLog = useMemo(() => (Array.isArray((result as any)?.log) ? (result as any).log : []), [result]);
 
+  // Extract tactical strategy descriptions from bout log
+  const tacticalStrategies = useMemo(() => {
+    const strategies: { side: "east" | "west"; strategy: string }[] = [];
+    for (const entry of safeLog) {
+      if (entry.data?.tacticalEntry && entry.data?.strategy) {
+        strategies.push({ side: entry.data.side as "east" | "west", strategy: entry.data.strategy });
+      }
+    }
+    return strategies;
+  }, [safeLog]);
+
   // Compute target positions for each phase
   const getTargetState = useCallback((phase: ReplayPhase, progress01: number): { east: RikishiState; west: RikishiState } => {
     const winner = result.winner;
@@ -505,6 +516,37 @@ export function BoutReplayViewer({
             {getPhaseLabel(currentPhase)}
           </Badge>
         </div>
+
+        {/* Overlay: Tactical Strategy (during ritual phase) */}
+        {currentPhase === "ritual" && tacticalStrategies.length > 0 && (
+          <div className="absolute inset-x-3 top-10 flex flex-col gap-1.5 pointer-events-none">
+            {tacticalStrategies.map((tac, i) => {
+              // Fade in based on progress: east at 30%, west at 50%
+              const fadeThreshold = tac.side === "east" ? 30 : 50;
+              const opacity = phaseProgress > fadeThreshold 
+                ? Math.min(1, (phaseProgress - fadeThreshold) / 15) 
+                : 0;
+              if (opacity <= 0) return null;
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "flex items-start gap-1.5 px-2 py-1 rounded text-[10px] leading-tight backdrop-blur transition-opacity",
+                    tac.side === "east"
+                      ? "bg-blue-500/10 border border-blue-500/20 text-blue-300 self-start"
+                      : "bg-red-500/10 border border-red-500/20 text-red-300 self-end"
+                  )}
+                  style={{ opacity }}
+                >
+                  <span className="font-display font-semibold shrink-0">
+                    {tac.side === "east" ? eastRikishi.shikona : westRikishi.shikona}:
+                  </span>
+                  <span className="italic">{tac.strategy}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Overlay: Names */}
         <div className="absolute bottom-2 left-3 right-3 flex justify-between items-end pointer-events-none">
