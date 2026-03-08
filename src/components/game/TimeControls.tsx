@@ -83,10 +83,16 @@ export function TimeControls() {
         {!inBasho ? (
           <>
             {inInterim && (
-              <Button variant="outline" onClick={handleAdvanceWeek} className="gap-2">
-                <Repeat className="h-4 w-4" />
-                Advance Week
-              </Button>
+              <>
+                <Button variant="secondary" size="sm" onClick={handleAdvanceOneDay} className="gap-2">
+                  <ArrowRight className="h-4 w-4" />
+                  Advance Day
+                </Button>
+                <Button variant="outline" onClick={handleAdvanceWeek} className="gap-2">
+                  <Repeat className="h-4 w-4" />
+                  Advance Week
+                </Button>
+              </>
             )}
             <Button onClick={handleStartBasho} className="gap-2">
               <Play className="h-4 w-4" />
