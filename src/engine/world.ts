@@ -314,38 +314,27 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
 }
 
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
-  if (world.cyclePhase !== "interim") return world;
+  if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho" && world.cyclePhase !== "post_basho") return world;
 
-  const w = Math.max(1, Math.trunc(weeks));
+  // Convert weeks to days and run through the daily tick pipeline
+  const days = Math.max(1, Math.trunc(weeks)) * 7;
 
-  for (let i = 0; i < w; i++) {
-    world.week += 1; 
-    
-    // Subsystem ticks
-    safeCall(() => (npcAI as any).tickWeek?.(world));
-    safeCall(() => (training as any).tickWeek?.(world));
-    safeCall(() => (economics as any).tickWeek?.(world));
-    safeCall(() => (injuries as any).tickWeek?.(world));
-    safeCall(() => (welfare as any).tickWeek?.(world));
-    safeCall(() => (governance as any).tickWeek?.(world));
-    safeCall(() => (rivalries as any).tickWeek?.(world));
-    safeCall(() => (events as any).tickWeek?.(world));
-    safeCall(() => (scoutingStore as any).tickWeek?.(world));
-    safeCall(() => (talentpool as any).tickWeek?.(world));
-
-    // Talent pools tick: refresh cohorts, NPC recruitment, offer resolution
-    safeCall(() => (talentpool as any).tickWeek?.(world));
-
-    safeCall(() => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const tb = require("./timeBoundary");
-      if (typeof tb.tickWeek === "function") tb.tickWeek(world);
-      else if (typeof tb.advanceWeek === "function") tb.advanceWeek(world);
-      else if (typeof tb.applyTimeBoundary === "function") tb.applyTimeBoundary(world);
-    });
+  for (let i = 0; i < days; i++) {
+    advanceOneDay(world);
+    // Stop if we've transitioned into active_basho (UI should handle this)
+    if (world.cyclePhase === "active_basho") break;
   }
 
   return world;
+}
+
+/**
+ * Advance a single day in the interim period.
+ * Used by UI for granular day-by-day control.
+ */
+export function advanceDay(world: WorldState): DailyTickReport | null {
+  if (world.cyclePhase === "active_basho") return null;
+  return advanceOneDay(world);
 }
 
 function safeCall(fn: () => void) {
