@@ -197,9 +197,9 @@ export default function RecapPage() {
                         <Trophy className="h-8 w-8 text-amber-500" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-2xl font-bold">{champion?.shikona || "Unknown"}</p>
+                        <p className="text-2xl font-bold">{champion ? <RikishiName id={champion.id} name={champion.shikona} /> : "Unknown"}</p>
                         <p className="text-muted-foreground">
-                          {championHeya?.name || "Unknown Stable"} • {champion?.rank?.toUpperCase()}
+                          {championHeya ? <StableName id={championHeya.id} name={championHeya.name} /> : "Unknown Stable"} • {champion?.rank?.toUpperCase()}
                         </p>
                         {isPlayerChampion && (
                           <Badge className="mt-2 bg-primary">Your Stable's Champion!</Badge>
