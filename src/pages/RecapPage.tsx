@@ -1,11 +1,16 @@
 // RecapPage.tsx - Post-Basho Narrative Recap
 // Summarizes prestige changes, retirements, new recruits, governance, and meta shifts
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
+import { PressConference } from "@/components/game/PressConference";
+import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useGame } from "@/contexts/GameContext";
+import { getHallOfFame, type HoFInductee } from "@/engine/hallOfFame";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
