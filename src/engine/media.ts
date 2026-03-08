@@ -247,7 +247,7 @@ export function updateMediaFromBout(args: {
     }
   };
 
-  const next = applyHeadlineEffects(state, world, headline);
+  let next = applyHeadlineEffects(state, world, headline);
 
   // --- Streak tracking & headlines ---
   const extraHeadlines: MediaHeadline[] = [];
