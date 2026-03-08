@@ -2,6 +2,7 @@
 // Summarizes prestige changes, retirements, new recruits, governance, and meta shifts
 
 import React from "react";
+import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
