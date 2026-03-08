@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
 import type { Oyakata } from "@/engine/types";
 import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
+import { toTraitBand, TRAIT_LABELS } from "@/engine/descriptorBands";
 
 export default function OyakataPage() {
   const { state } = useGame();
