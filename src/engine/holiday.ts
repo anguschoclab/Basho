@@ -133,9 +133,9 @@ function checkGate(
     case "scandalSeverity": {
       const recentEvents = queryEvents(world, { limit: 20 });
       const scandal = recentEvents.find(
-        e => e.dayIndexGlobal > startDay &&
+        e => e.week >= (world.week ?? 0) - 1 &&
              (e.type.includes("SCANDAL") || e.category === "discipline") &&
-             (e.importance === "critical" || e.importance === "major")
+             (e.importance === "headline" || e.importance === "major")
       );
       if (scandal) {
         return {
@@ -150,7 +150,7 @@ function checkGate(
     case "sponsorChurn": {
       const recentEvents = queryEvents(world, { limit: 20 });
       const sponsorLoss = recentEvents.filter(
-        e => e.dayIndexGlobal > startDay &&
+        e => e.week >= (world.week ?? 0) - 1 &&
              e.category === "sponsor" &&
              e.type.includes("LOST")
       );
