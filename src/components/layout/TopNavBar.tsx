@@ -159,7 +159,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
     : "";
 
   const phaseLabel = world?.cyclePhase === "active_basho"
-    ? `Day ${bashoDay}日目`
+    ? (bashoDay != null ? `Day ${bashoDay}日目` : "Active Basho")
     : world?.cyclePhase === "pre_basho"
       ? "Pre-Basho"
       : world?.cyclePhase === "post_basho"
