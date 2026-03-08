@@ -387,13 +387,14 @@ function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalMod
  * Phase 1 — Tachiai
  * ========================= */
 
-function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   // Make tachiai primarily about explosion + timing + aggression + MASS (Physics)
   const eastForce = 
     stat(east, "speed") * 0.35 + 
     stat(east, "aggression") * 0.25 + 
     calculateCollisionForce(east) * 0.30 + 
     stat(east, "balance") * 0.10 +
+    (eastTac?.tachiaiAggression ?? 0) +
     jitter(rng, 6);
 
   const westForce = 
@@ -401,6 +402,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
     stat(west, "aggression") * 0.25 + 
     calculateCollisionForce(west) * 0.30 + 
     stat(west, "balance") * 0.10 +
+    (westTac?.tachiaiAggression ?? 0) +
     jitter(rng, 6);
 
   // Archetype Bonus — oshi gets significant tachiai advantage
