@@ -28,6 +28,7 @@ export function TimeControls() {
     runAutoSimAction,
   } = useGame();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
 
   const world = state.world;
