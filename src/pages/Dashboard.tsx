@@ -78,9 +78,10 @@ export default function Dashboard() {
             <BanzukeWidget />
           </div>
 
-          {/* Column 3: Roster + News + Rivals */}
+          {/* Column 3: Roster + Scouting + News + Rivals */}
           <div className="space-y-4">
             <RosterWidget />
+            <ScoutingWidget />
             <NewsWidget />
             <RivalsWidget />
           </div>
