@@ -1,5 +1,6 @@
 // RikishiPage.tsx — Full Redesign
 // Clean, FM-inspired rikishi profile with clear hierarchy and fog of war
+// Uses projectRikishi() DTO for basic field display; raw Rikishi for scouting/career gen.
 
 import { rngFromSeed } from "@/engine/rng";
 import { Helmet } from "react-helmet";
@@ -13,12 +14,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { KIMARITE_REGISTRY } from "@/engine/kimarite";
-import { getCareerPhase } from "@/engine/training";
 import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "@/engine/almanac";
+import { projectRikishi } from "@/engine/uiModels";
 import {
   describeAttributeVerbose,
   describeAggressionVerbose,
-  describeExperienceVerbose,
   describeStaminaVerbose,
   describeMomentumVerbose,
   describeCareerPhaseVerbose,
@@ -26,11 +26,9 @@ import {
   describeStyleVerbose,
   describeInjuryVerbose
 } from "@/engine/narrativeDescriptions";
-import { toPotentialBand, POTENTIAL_LABELS } from "@/engine/descriptorBands";
+import { POTENTIAL_LABELS } from "@/engine/descriptorBands";
 import {
   RANK_NAMES,
-  STYLE_NAMES,
-  ARCHETYPE_NAMES,
   createScoutedView,
   getScoutedAttributes,
   describeScoutingLevel,
@@ -65,10 +63,6 @@ function findKimariteById(id: string) {
   if (Array.isArray(anyReg)) return anyReg.find((k: any) => k?.id === id) || null;
   if (anyReg && typeof anyReg === "object") return anyReg[id] || null;
   return null;
-}
-
-function safeStr(v: any, fallback = ""): string {
-  return typeof v === "string" ? v : fallback;
 }
 
 function StatBar({ label, value, max = 100, icon: Icon, color }: {
@@ -122,19 +116,20 @@ export default function RikishiPage() {
     );
   }
 
+  // Project DTO for display fields
+  const ui = projectRikishi(rikishi, world);
+
   const heya = world.heyas.get(rikishi.heyaId);
   const isOwned = rikishi.heyaId === playerHeyaId;
-  const age = world.year - (rikishi.birthYear || world.year - 25);
 
   const rankNames = RANK_NAMES[rikishi.rank] || {
-    ja: safeStr((RANK_HIERARCHY as any)?.[rikishi.rank]?.nameJa, String(rikishi.rank)),
+    ja: String(rikishi.rank),
     en: String(rikishi.rank)
   };
 
-  const careerPhase = getCareerPhase(rikishi.experience);
   const seed = world.seed || `world-${world.id || "unknown"}`;
 
-  // Scouting
+  // Scouting (needs raw rikishi)
   const currentWeek = world.week ?? 0;
   const scouted = createScoutedView(
     rikishi, playerHeyaId ?? null,
@@ -143,30 +138,22 @@ export default function RikishiPage() {
   const scoutedAttrs = getScoutedAttributes(scouted, rikishi, seed);
   const scoutingInfo = describeScoutingLevel(scouted.scoutingLevel);
 
-  // Career record
+  // Career record (needs raw rikishi + world)
   const rng = rngFromSeed(seed, "ui", `career::${rikishi.id}`);
   const careerRecord: RikishiCareerRecord = generateCareerRecord(rikishi, world, () => rng.next());
 
   // Kimarite
-  const favoredMoves = (rikishi.favoredKimarite || [])
+  const favoredMoves = (ui.favoredKimarite || [])
     .map((kid: string) => findKimariteById(kid))
     .filter(Boolean) as Array<NonNullable<ReturnType<typeof findKimariteById>>>;
 
-  // Style info
-  const archetypeInfo = ARCHETYPE_NAMES[rikishi.archetype] || { label: String(rikishi.archetype), labelJa: "", description: "" };
-  const styleInfo = STYLE_NAMES[rikishi.style] || { label: String(rikishi.style), labelJa: "", description: "" };
-
-  const heightText = typeof rikishi.height === "number" && isFinite(rikishi.height) ? `${Math.round(rikishi.height)}cm` : "—";
-  const weightText = typeof rikishi.weight === "number" && isFinite(rikishi.weight) ? `${Math.round(rikishi.weight)}kg` : "—";
-
-  const winRate = rikishi.careerWins + rikishi.careerLosses > 0
-    ? ((rikishi.careerWins / (rikishi.careerWins + rikishi.careerLosses)) * 100).toFixed(1)
+  const winRate = ui.careerWins + ui.careerLosses > 0
+    ? ((ui.careerWins / (ui.careerWins + ui.careerLosses)) * 100).toFixed(1)
     : "—";
 
-  const potBand = toPotentialBand((rikishi as any).talentSeed);
-  const potInfo = potBand !== "unknown" ? POTENTIAL_LABELS[potBand] : null;
+  const potInfo = ui.potentialBand !== "unknown" ? POTENTIAL_LABELS[ui.potentialBand] : null;
 
-  // Attribute narratives
+  // Attribute narratives (needs raw rikishi for owned, scouted for unowned)
   const attrs = isOwned
     ? [
         { label: "Power", icon: Flame, color: "text-destructive", val: rikishi.power, narrative: describeAttributeVerbose("power", rikishi.power) },
@@ -183,7 +170,7 @@ export default function RikishiPage() {
 
   return (
     <>
-      <Helmet><title>{rikishi.shikona} — Profile</title></Helmet>
+      <Helmet><title>{ui.shikona} — Profile</title></Helmet>
 
       <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
         {/* Top bar */}
@@ -195,9 +182,9 @@ export default function RikishiPage() {
         <div className="relative overflow-hidden rounded-xl border border-border bg-card">
           {/* Rank color bar */}
           <div className={`absolute top-0 left-0 right-0 h-1 ${
-            rikishi.rank === "yokozuna" ? "bg-gradient-to-r from-amber-400 to-amber-600"
-            : rikishi.rank === "ozeki" ? "bg-gradient-to-r from-slate-400 to-slate-500"
-            : ["sekiwake", "komusubi"].includes(rikishi.rank) ? "bg-gradient-to-r from-amber-700 to-amber-800"
+            ui.rank === "yokozuna" ? "bg-gradient-to-r from-amber-400 to-amber-600"
+            : ui.rank === "ozeki" ? "bg-gradient-to-r from-slate-400 to-slate-500"
+            : ["sekiwake", "komusubi"].includes(ui.rank) ? "bg-gradient-to-r from-amber-700 to-amber-800"
             : "bg-border"
           }`} />
 
@@ -206,37 +193,37 @@ export default function RikishiPage() {
               {/* Left: Identity */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
-                  <Badge className={`rank-${rikishi.rank} text-xs`}>
-                    {rankNames.ja}{rikishi.rankNumber ? ` ${rikishi.rankNumber}枚目` : ""}
+                  <Badge className={`rank-${ui.rank} text-xs`}>
+                    {rankNames.ja}{ui.rankNumber ? ` ${ui.rankNumber}枚目` : ""}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
-                    {rikishi.side === "east" ? "東 East" : "西 West"}
+                    {ui.side === "east" ? "東 East" : "西 West"}
                   </span>
                   {isOwned && <Badge variant="default" className="text-[10px] h-5">YOUR STABLE</Badge>}
                 </div>
 
-                <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">{rikishi.shikona}</h1>
+                <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">{ui.shikona}</h1>
 
                 <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground flex-wrap">
                   {heya && (
                     <span className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
-                      <StableName id={heya.id} name={heya.name} />
+                      <StableName id={heya.id} name={ui.heyaName} />
                     </span>
                   )}
                   <span className="flex items-center gap-1">
                     <MapPin className="h-3.5 w-3.5" />
-                    {safeStr(rikishi.nationality, "—")}
+                    {ui.nationality}
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
-                    Age {age}
+                    Age {ui.age}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Ruler className="h-3.5 w-3.5" /> {heightText}
+                    <Ruler className="h-3.5 w-3.5" /> {ui.height}cm
                   </span>
                   <span className="flex items-center gap-1">
-                    <Scale className="h-3.5 w-3.5" /> {weightText}
+                    <Scale className="h-3.5 w-3.5" /> {ui.weight}kg
                   </span>
                 </div>
 
@@ -253,14 +240,14 @@ export default function RikishiPage() {
               <div className="flex gap-6 md:gap-8 shrink-0">
                 <div className="text-center">
                   <div className="text-3xl font-mono font-bold tracking-tight">
-                    {rikishi.currentBashoRecord?.wins ?? rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoRecord?.losses ?? rikishi.currentBashoLosses ?? 0}
+                    {ui.currentBashoRecord}
                   </div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">This Basho</div>
                 </div>
                 <Separator orientation="vertical" className="h-12 self-center" />
                 <div className="text-center">
                   <div className="text-3xl font-mono font-bold tracking-tight">
-                    {rikishi.careerWins}-{rikishi.careerLosses}
+                    {ui.careerRecord}
                   </div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">Career ({winRate}%)</div>
                 </div>
@@ -277,17 +264,17 @@ export default function RikishiPage() {
             </div>
 
             {/* Momentum & injury strip */}
-            {(rikishi.momentum !== 0 || rikishi.injured) && (
+            {(ui.momentum !== 0 || ui.isInjured) && (
               <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/50">
-                {rikishi.momentum !== 0 && (
-                  <Badge variant="outline" className={rikishi.momentum > 0 ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
-                    {rikishi.momentum > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-                    {describeMomentumVerbose(rikishi.momentum)}
+                {ui.momentum !== 0 && (
+                  <Badge variant="outline" className={ui.momentum > 0 ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
+                    {ui.momentum > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                    {describeMomentumVerbose(ui.momentum)}
                   </Badge>
                 )}
-                {rikishi.injured && (
+                {ui.isInjured && (
                   <Badge variant="destructive" className="text-xs gap-1">
-                    <Activity className="h-3 w-3" /> {describeInjuryVerbose(rikishi.injuryWeeksRemaining)}
+                    <Activity className="h-3 w-3" /> {ui.injurySummary}
                   </Badge>
                 )}
               </div>
@@ -350,7 +337,7 @@ export default function RikishiPage() {
                   <span className="text-xs">{isOwned ? describeStaminaVerbose(rikishi.stamina) : "Hard to assess"}</span>
                 } />
                 <InfoRow label="Career Phase" value={
-                  <Badge variant="outline" className="text-[10px] capitalize">{careerPhase}</Badge>
+                  <Badge variant="outline" className="text-[10px] capitalize">{ui.careerPhase}</Badge>
                 } />
               </div>
             </CardContent>
@@ -365,12 +352,12 @@ export default function RikishiPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-muted/50 text-center">
-                  <div className="text-xl font-display">{styleInfo.labelJa}</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{styleInfo.label}</div>
+                  <div className="text-xl font-display">{ui.styleName}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{ui.style}</div>
                 </div>
                 <div className="p-3 rounded-lg bg-muted/50 text-center">
-                  <div className="text-xl font-display">{archetypeInfo.labelJa}</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{archetypeInfo.label}</div>
+                  <div className="text-xl font-display">{ui.archetypeName}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{ui.archetype}</div>
                 </div>
               </div>
 

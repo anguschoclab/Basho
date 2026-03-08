@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand, Rikishi } from "@/engine/types";
+import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 import {
   INTENSITY_EFFECTS,
   FOCUS_EFFECTS,
@@ -168,6 +169,12 @@ export default function StablePage() {
 
   const sekitori = useMemo(
     () => rikishiList.filter((r) => r && RANK_HIERARCHY[r.rank].isSekitori),
+    [rikishiList]
+  );
+
+  // Project roster entries via DTO
+  const rosterEntries = useMemo<UIRosterEntry[]>(
+    () => rikishiList.filter((r): r is Rikishi => !!r).map(r => projectRosterEntry(r)),
     [rikishiList]
   );
 
@@ -424,53 +431,47 @@ export default function StablePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {rikishiList.map((rikishi) => {
-                    if (!rikishi) return null;
-                    const rankInfo = RANK_HIERARCHY[rikishi.rank];
-
-                    return (
-                      <div
-                        key={rikishi.id}
-                        className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/rikishi/${rikishi.id}`)}
-                      >
-                        <div className={`w-1 h-10 rounded-full ${rikishi.side === "east" ? "bg-east" : "bg-west"}`} />
-                        <div className="flex-1 min-w-0">
-                          <div className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></div>
-                          <div className="text-sm text-muted-foreground">
-                            {rankInfo.nameJa}
-                            {rikishi.rankNumber && ` ${rikishi.rankNumber}枚目`}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          {/* Allowed: W/L */}
-                          <div className="text-sm font-mono">
-                            {rikishi.currentBashoWins}-{rikishi.currentBashoLosses}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            Career: {rikishi.careerWins}-{rikishi.careerLosses}
-                          </div>
-                        </div>
-                        <div className="flex gap-2 items-center flex-wrap justify-end">
-                          {rikishi.momentum !== 0 &&
-                            (rikishi.momentum > 0 ? (
-                              <span className="text-xs text-success flex items-center gap-1">
-                                <TrendingUp className="h-3 w-3" /> Hot
-                              </span>
-                            ) : (
-                              <span className="text-xs text-destructive flex items-center gap-1">
-                                <TrendingDown className="h-3 w-3" /> Cold
-                              </span>
-                            ))}
-                          {rikishi.injured && (
-                            <span className="text-xs text-destructive flex items-center gap-1">
-                              <Activity className="h-3 w-3" /> Injured
-                            </span>
-                          )}
+                  {rosterEntries.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/rikishi/${entry.id}`)}
+                    >
+                      <div className={`w-1 h-10 rounded-full ${entry.side === "east" ? "bg-east" : "bg-west"}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-display font-medium truncate"><RikishiName id={entry.id} name={entry.shikona} /></div>
+                        <div className="text-sm text-muted-foreground">
+                          {entry.rankLabelJa}
+                          {entry.rankNumber && ` ${entry.rankNumber}枚目`}
                         </div>
                       </div>
-                    );
-                  })}
+                      <div className="text-right">
+                        <div className="text-sm font-mono">
+                          {entry.record}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Career: {entry.careerRecord}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-center flex-wrap justify-end">
+                        {entry.momentum !== 0 &&
+                          (entry.momentum > 0 ? (
+                            <span className="text-xs text-success flex items-center gap-1">
+                              <TrendingUp className="h-3 w-3" /> Hot
+                            </span>
+                          ) : (
+                            <span className="text-xs text-destructive flex items-center gap-1">
+                              <TrendingDown className="h-3 w-3" /> Cold
+                            </span>
+                          ))}
+                        {entry.isInjured && (
+                          <span className="text-xs text-destructive flex items-center gap-1">
+                            <Activity className="h-3 w-3" /> Injured
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
