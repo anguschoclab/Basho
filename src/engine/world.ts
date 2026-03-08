@@ -27,7 +27,7 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
-import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking } from "./media";
+import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
