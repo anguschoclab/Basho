@@ -376,17 +376,17 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, shukunsho: true
   });
 
-  // Index all rikishi who participated (via standings if available)
-  if (bashoResult.standings) {
-    const standings = bashoResult.standings instanceof Map
-      ? bashoResult.standings
-      : new Map(Object.entries(bashoResult.standings));
+  // Index all rikishi who participated (via basho state standings if available)
+  const bashoState = (world as any).currentBasho;
+  const standingsMap = bashoState?.standings;
+  if (standingsMap) {
+    const entries = standingsMap instanceof Map
+      ? standingsMap
+      : new Map(Object.entries(standingsMap));
 
-    for (const [rid, stats] of standings) {
-      // Only add if not already added via prizes
+    for (const [rid, stats] of entries) {
       const existing = idx.rikishi[rid]?.find(e => e.bashoKey === bashoKey);
       if (existing) {
-        // Enrich with W/L data
         existing.wins = (stats as any).wins;
         existing.losses = (stats as any).losses;
       } else {

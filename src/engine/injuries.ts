@@ -740,7 +740,7 @@ export function onBoutResolved(
   boutChance *= durabilityMult;
 
   // Age factor
-  const age = loser.age ?? 25;
+  const age = (loser as any).age ?? 25;
   if (age >= 32) boutChance *= 1.3;
   if (age >= 35) boutChance *= 1.2;
 
