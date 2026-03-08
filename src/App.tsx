@@ -23,6 +23,7 @@ import RecapPage from "./pages/RecapPage";
 import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
 import SettingsPage from "./pages/SettingsPage";
+import OyakataPage from "./pages/OyakataPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
