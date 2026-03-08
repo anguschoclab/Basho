@@ -199,7 +199,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
     ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
-    hallOfFame: (serialized as any).hallOfFame || undefined,
+    ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
