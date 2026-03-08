@@ -1,8 +1,10 @@
 // RecapPage.tsx - Post-Basho Narrative Recap
 // Summarizes prestige changes, retirements, new recruits, governance, and meta shifts
 
-import React from "react";
+import React, { useState } from "react";
 import { PlayoffBracket } from "@/components/game/PlayoffBracket";
+import { ProgressionTracker } from "@/components/game/ProgressionTracker";
+import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -693,6 +695,29 @@ export default function RecapPage() {
           </Card>
         )}
 
+        {/* PROGRESSION ARCS — Ozeki Runs, Yokozuna Deliberation, Kadoban */}
+        <ProgressionTracker world={world} />
+
+        {/* INTAI CEREMONIES for retired rikishi */}
+        {(() => {
+          const retiredEvents = groupedEvents.retirements.filter(e => 
+            e.type.includes("RETIRE") && e.rikishiId
+          );
+          const firstRetired = retiredEvents[0];
+          const retiredRikishi = firstRetired?.rikishiId ? world.rikishi.get(firstRetired.rikishiId) : null;
+          
+          if (retiredRikishi) {
+            return (
+              <IntaiCeremonyTrigger
+                rikishi={retiredRikishi}
+                reason={firstRetired?.summary || ""}
+                world={world}
+              />
+            );
+          }
+          return null;
+        })()}
+
         {/* NAVIGATION */}
         <div className="flex flex-wrap gap-4">
           <Button onClick={handleContinue}>
@@ -707,5 +732,19 @@ export default function RecapPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+// Helper: auto-shows intai ceremony for a retired rikishi
+function IntaiCeremonyTrigger({ rikishi, reason, world }: { rikishi: any; reason: string; world: any }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <IntaiCeremony
+      rikishi={rikishi}
+      reason={reason}
+      world={world}
+      open={open}
+      onClose={() => setOpen(false)}
+    />
   );
 }

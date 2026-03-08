@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight } from "lucide-react";
 import { getMonthlyMaintenanceCost } from "@/engine/facilities";
+import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
@@ -58,7 +59,7 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    if (state.phase === "basho_recap") navigate("/recap");
+    if (state.phase === "basho_recap" || state.phase === "basho_results") navigate("/recap");
   }, [state.phase, navigate]);
 
   useEffect(() => {
@@ -164,6 +165,9 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+
+        {/* ═══════════ PROGRESSION ARCS ═══════════ */}
+        {world && <ProgressionTracker world={world} />}
 
         {/* ═══════════ WIDGET GRID ═══════════ */}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
