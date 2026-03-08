@@ -565,7 +565,7 @@ export default function StablePage() {
                         } ${!isViewingOwnStable ? "opacity-60 cursor-not-allowed" : ""}`}
                       >
                         <div className="font-display font-medium">
-                          {label.ja} <span className="text-sm opacity-80">({label.en})</span>
+                          {label}
                         </div>
                         <p className="text-xs mt-1 opacity-70">{emphasisText}</p>
                       </button>
