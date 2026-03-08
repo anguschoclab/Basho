@@ -538,7 +538,7 @@ export default function StablePage() {
                     <Target className="h-5 w-5" />
                     Training Focus
                   </CardTitle>
-                  <CardDescription>{focusEffect.description}</CardDescription>
+                  <CardDescription>{focusEffect.strength > 1 ? "Focused training" : "Balanced development"}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {(Object.keys(FOCUS_EFFECTS) as TrainingFocus[]).map((focus) => {
