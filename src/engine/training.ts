@@ -203,28 +203,34 @@ function calculateGrowthVector(
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
   const bias = FOCUS_BIAS_MATRIX[profile.focus];
 
+  // Career phase growth modifier
+  const phase = getCareerPhase(rikishi.experience);
+  const phaseMult = PHASE_EFFECTS[phase].growthMult;
+
   const BASE_GROWTH = 0.5; 
+  const totalMult = intensityMult * focusModeMult * phaseMult * BASE_GROWTH;
+
+  const talentSeed = rikishi.talentSeed ?? 50;
 
   const growth: Record<keyof RikishiStats, number> = {
-    strength: 0,
-    speed: 0,
-    technique: 0,
-    balance: 0,
-    weight: 0,
-    stamina: 0,
-    mental: 0,
-    adaptability: 0
+    strength: 0, speed: 0, technique: 0, balance: 0,
+    weight: 0, stamina: 0, mental: 0, adaptability: 0
   };
 
-  const totalMult = intensityMult * focusModeMult * BASE_GROWTH;
+  // Apply diminishing returns per stat based on talent ceiling
+  const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
+    const ceiling = getStatCeiling(talentSeed, stat);
+    const drMult = diminishingReturnsMult(currentVal, ceiling);
+    return totalMult * rawMult * drMult;
+  };
 
-  growth.strength = totalMult * bias.strength;
-  growth.speed = totalMult * bias.speed;
-  growth.technique = totalMult * bias.technique;
-  growth.balance = totalMult * bias.balance;
-  growth.stamina = totalMult * 0.5; 
-  growth.mental = totalMult * 0.2; 
-  growth.adaptability = totalMult * 0.2;
+  growth.strength = applyCapped('strength', bias.strength, rikishi.stats.strength);
+  growth.speed = applyCapped('speed', bias.speed, rikishi.stats.speed);
+  growth.technique = applyCapped('technique', bias.technique, rikishi.stats.technique);
+  growth.balance = applyCapped('balance', bias.balance, rikishi.stats.balance);
+  growth.stamina = applyCapped('stamina', 0.5, rikishi.stats.stamina);
+  growth.mental = applyCapped('mental', 0.2, rikishi.stats.mental);
+  growth.adaptability = applyCapped('adaptability', 0.2, rikishi.stats.adaptability);
 
   return growth;
 }
