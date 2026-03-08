@@ -227,8 +227,9 @@ export function BoutReplayViewer({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const W = canvas.width;
-    const H = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.width / dpr;
+    const H = canvas.height / dpr;
     const cx = W / 2;
     const cy = H / 2;
     const dohyoRadius = Math.min(W, H) * 0.42;
@@ -308,7 +309,6 @@ export function BoutReplayViewer({
     ctx.stroke();
 
     // Draw particles
-    const now = Date.now();
     particlesRef.current.forEach(p => {
       const alpha = Math.max(0, p.life);
       ctx.globalAlpha = alpha;
@@ -630,9 +630,8 @@ function drawRikishi(
   isDark: boolean,
   isWinner: boolean
 ) {
-  const dpr = window.devicePixelRatio || 1;
-  const drawW = W / dpr;
-  const drawH = H / dpr;
+  const drawW = W;
+  const drawH = H;
   
   const x = state.pos.x * drawW;
   const y = state.pos.y * drawH;
