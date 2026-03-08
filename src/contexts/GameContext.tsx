@@ -63,6 +63,7 @@ type GameAction =
   | { type: "SIMULATE_ALL_BOUTS" }
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
+  | { type: "SIM_FULL_BASHO" }
   | { type: "ADVANCE_INTERIM"; weeks: number }
   | { type: "ADVANCE_ONE_DAY" }
   | { type: "RUN_HOLIDAY"; result: HolidayResult }
