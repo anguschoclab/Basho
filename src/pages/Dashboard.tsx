@@ -70,6 +70,7 @@ export default function Dashboard() {
           <div className="space-y-4">
             <CalendarWidget />
             <StableWidget />
+            <TrainingWidget />
             <FinancesWidget />
           </div>
 
