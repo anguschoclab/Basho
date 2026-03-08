@@ -259,10 +259,12 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                               {formatEventTime(e)}
                             </span>
                           </div>
-                        <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                          {!isExpanded && (
+                            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                               {e.summary}
                             </p>
-                            {renderEntityTags(e)}
+                          )}
+                          {!isExpanded && renderEntityTags(e)}
                         </div>
                       </div>
                     </button>
