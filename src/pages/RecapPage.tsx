@@ -26,9 +26,11 @@ import {
   Heart,
   Award,
   Star,
-  Medal
+  Medal,
+  ShieldAlert
 } from "lucide-react";
 import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
+import type { OzekiKadobanMap } from "@/engine/banzuke";
 
 // Narrative band descriptors for prestige changes
 function describePrestigeShift(oldBand: string | undefined, newBand: string | undefined): string | null {
