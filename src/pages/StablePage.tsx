@@ -619,7 +619,7 @@ export default function StablePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="h-5 w-5" />
-                  Individual Focus ({trainingState.focusSlots.length}/{trainingState.maxFocusSlots} slots)
+                  Individual Focus ({trainingState.focusSlots.length}/{Math.min(6, sekitori.length)} slots)
                 </CardTitle>
                 <CardDescription>Assign specific training programs to key wrestlers</CardDescription>
               </CardHeader>
