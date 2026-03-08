@@ -66,6 +66,9 @@ export {
 
 export * from "./almanac";
 
+// Daily Tick Pipeline
+export { advanceOneDay, advanceDays, advanceFullInterim, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
+
 // H2H and Lifecycle Systems
 export * from "./h2h";
 export * from "./lifecycle";
