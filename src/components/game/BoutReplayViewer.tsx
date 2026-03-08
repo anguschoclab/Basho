@@ -1,11 +1,10 @@
-// BoutReplayViewer.tsx
-// Bout Replay Viewer - Animated visual replay of bout with graphics
-// Per Constitution: Renders combat facts visually with dohyo, rikishi positions, kimarite finish
+// BoutReplayViewer.tsx — Premium visual bout replay
+// Canvas-rendered dohyo with detailed rikishi figures, impact particles,
+// crowd atmosphere, smooth interpolated animations, and full playback controls
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { BoutResult, Rikishi } from "@/engine/types";
@@ -22,25 +21,61 @@ interface BoutReplayViewerProps {
 
 type ReplayPhase = "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
 
-interface RikishiPosition {
-  x: number; // -50 to 50 (center is 0)
-  y: number; // -50 to 50 (center is 0)
-  rotation: number; // degrees
+interface Vec2 { x: number; y: number; }
+
+interface RikishiState {
+  pos: Vec2;
+  rotation: number;
   scale: number;
-  state: "standing" | "charging" | "grappling" | "pushing" | "falling" | "victory";
+  phase: "standing" | "bowing" | "charging" | "grappling" | "pushing" | "throwing" | "falling" | "victory";
+  opacity: number;
+}
+
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  size: number;
+  color: string;
+  type: "impact" | "salt" | "sweat" | "dust" | "spark";
 }
 
 const PHASE_DURATIONS: Record<ReplayPhase, number> = {
-  ritual: 3000,
-  tachiai: 1500,
-  clinch: 2000,
-  momentum: 3000,
-  finish: 2000,
-  ceremony: 2000,
-  complete: 0
+  ritual: 2500,
+  tachiai: 1200,
+  clinch: 2200,
+  momentum: 2800,
+  finish: 1800,
+  ceremony: 2200,
+  complete: 0,
 };
 
 const PHASES: ReplayPhase[] = ["ritual", "tachiai", "clinch", "momentum", "finish", "ceremony", "complete"];
+
+// Smooth interpolation helper
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+function easeInOut(t: number): number {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+// Crowd mood derived from phase
+function getCrowdMood(phase: ReplayPhase, progress: number): { text: string; intensity: number } {
+  switch (phase) {
+    case "ritual": return { text: "Silence fills the arena…", intensity: 0.1 };
+    case "tachiai": return { text: "TACHIAI!", intensity: 1.0 };
+    case "clinch": return { text: "The crowd holds its breath…", intensity: 0.4 + progress * 0.003 };
+    case "momentum": return { text: "Rising tension!", intensity: 0.6 + progress * 0.004 };
+    case "finish": return { text: "決まり手！", intensity: 1.0 };
+    case "ceremony": return { text: "The crowd erupts!", intensity: 0.8 };
+    case "complete": return { text: "", intensity: 0 };
+  }
+}
 
 export function BoutReplayViewer({
   result,
@@ -48,180 +83,347 @@ export function BoutReplayViewer({
   westRikishi,
   className,
   autoPlay = false,
-  onComplete
+  onComplete,
 }: BoutReplayViewerProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [currentPhase, setCurrentPhase] = useState<ReplayPhase>("ritual");
   const [phaseProgress, setPhaseProgress] = useState(0);
-  const [currentLogIndex, setCurrentLogIndex] = useState(-1);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [soundEnabled, setSoundEnabled] = useState(false);
-
-  const [eastPos, setEastPos] = useState<RikishiPosition>({
-    x: -30,
-    y: 0,
-    rotation: 0,
-    scale: 1,
-    state: "standing"
-  });
-  const [westPos, setWestPos] = useState<RikishiPosition>({
-    x: 30,
-    y: 0,
-    rotation: 180,
-    scale: 1,
-    state: "standing"
-  });
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const particleIdRef = useRef(0);
 
   const animationRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(0);
 
-  // Avoid stale closures by reading the "latest" values from refs inside RAF.
-  const phaseRef = useRef<ReplayPhase>("ritual");
-  const logIndexRef = useRef<number>(-1);
-  const speedRef = useRef<number>(1);
+  // Refs for RAF closure safety
+  const phaseRef = useRef(currentPhase);
+  const progressRef = useRef(phaseProgress);
+  const speedRef = useRef(playbackSpeed);
+  const particlesRef = useRef(particles);
 
-  useEffect(() => {
-    phaseRef.current = currentPhase;
-  }, [currentPhase]);
-  useEffect(() => {
-    logIndexRef.current = currentLogIndex;
-  }, [currentLogIndex]);
-  useEffect(() => {
-    speedRef.current = playbackSpeed;
-  }, [playbackSpeed]);
+  useEffect(() => { phaseRef.current = currentPhase; }, [currentPhase]);
+  useEffect(() => { progressRef.current = phaseProgress; }, [phaseProgress]);
+  useEffect(() => { speedRef.current = playbackSpeed; }, [playbackSpeed]);
+  useEffect(() => { particlesRef.current = particles; }, [particles]);
 
-  // Result.log might be missing/undefined depending on earlier engine versions; never crash.
   const safeLog = useMemo(() => (Array.isArray((result as any)?.log) ? (result as any).log : []), [result]);
 
-  const updatePositionsForPhase = useCallback(
-    (phase: ReplayPhase) => {
-      const winner = result.winner;
+  // Compute target positions for each phase
+  const getTargetState = useCallback((phase: ReplayPhase, progress01: number): { east: RikishiState; west: RikishiState } => {
+    const winner = result.winner;
+    const p = easeInOut(progress01);
 
-      switch (phase) {
-        case "ritual":
-          setEastPos({ x: -30, y: 0, rotation: 0, scale: 1, state: "standing" });
-          setWestPos({ x: 30, y: 0, rotation: 180, scale: 1, state: "standing" });
-          break;
-
-        case "tachiai":
-          setEastPos({ x: -10, y: 0, rotation: 0, scale: 1.1, state: "charging" });
-          setWestPos({ x: 10, y: 0, rotation: 180, scale: 1.1, state: "charging" });
-          break;
-
-        case "clinch":
-          setEastPos({ x: -5, y: 0, rotation: 5, scale: 1, state: "grappling" });
-          setWestPos({ x: 5, y: 0, rotation: -175, scale: 1, state: "grappling" });
-          break;
-
-        case "momentum":
-          if (winner === "east") {
-            setEastPos({ x: 5, y: 0, rotation: 10, scale: 1.05, state: "pushing" });
-            setWestPos({ x: 25, y: 0, rotation: -170, scale: 0.95, state: "grappling" });
-          } else {
-            setEastPos({ x: -25, y: 0, rotation: -10, scale: 0.95, state: "grappling" });
-            setWestPos({ x: -5, y: 0, rotation: 190, scale: 1.05, state: "pushing" });
-          }
-          break;
-
-        case "finish":
-          if (winner === "east") {
-            setEastPos({ x: 20, y: 0, rotation: 15, scale: 1.1, state: "victory" });
-            setWestPos({ x: 40, y: 10, rotation: -120, scale: 0.8, state: "falling" });
-          } else {
-            setEastPos({ x: -40, y: 10, rotation: 60, scale: 0.8, state: "falling" });
-            setWestPos({ x: -20, y: 0, rotation: 165, scale: 1.1, state: "victory" });
-          }
-          break;
-
-        case "ceremony":
-          if (winner === "east") {
-            setEastPos({ x: 0, y: 0, rotation: 0, scale: 1.15, state: "victory" });
-            setWestPos({ x: 35, y: 0, rotation: 180, scale: 0.9, state: "standing" });
-          } else {
-            setEastPos({ x: -35, y: 0, rotation: 0, scale: 0.9, state: "standing" });
-            setWestPos({ x: 0, y: 0, rotation: 180, scale: 1.15, state: "victory" });
-          }
-          break;
-
-        case "complete":
-          // Keep whatever the ceremony set; UI shows "complete" state.
-          break;
+    switch (phase) {
+      case "ritual":
+        return {
+          east: { pos: { x: 0.25, y: 0.5 }, rotation: 0, scale: 1, phase: progress01 < 0.5 ? "standing" : "bowing", opacity: 1 },
+          west: { pos: { x: 0.75, y: 0.5 }, rotation: 0, scale: 1, phase: progress01 < 0.5 ? "standing" : "bowing", opacity: 1 },
+        };
+      case "tachiai":
+        return {
+          east: { pos: { x: lerp(0.25, 0.42, p), y: 0.5 }, rotation: lerp(0, 8, p), scale: lerp(1, 1.12, p), phase: "charging", opacity: 1 },
+          west: { pos: { x: lerp(0.75, 0.58, p), y: 0.5 }, rotation: lerp(0, -8, p), scale: lerp(1, 1.12, p), phase: "charging", opacity: 1 },
+        };
+      case "clinch": {
+        const wobble = Math.sin(progress01 * Math.PI * 4) * 0.01;
+        return {
+          east: { pos: { x: 0.44, y: 0.5 + wobble }, rotation: lerp(8, 5, p), scale: 1.05, phase: "grappling", opacity: 1 },
+          west: { pos: { x: 0.56, y: 0.5 - wobble }, rotation: lerp(-8, -5, p), scale: 1.05, phase: "grappling", opacity: 1 },
+        };
       }
-    },
-    [result.winner]
-  );
-
-  const updatePositionsDuringPhase = useCallback((phase: ReplayPhase, progress: number) => {
-    const wobble = Math.sin(progress * 0.1) * 2;
-
-    if (phase === "clinch" || phase === "momentum") {
-      setEastPos((prev) => ({ ...prev, y: wobble }));
-      setWestPos((prev) => ({ ...prev, y: -wobble }));
+      case "momentum": {
+        const wobble = Math.sin(progress01 * Math.PI * 6) * 0.008;
+        if (winner === "east") {
+          return {
+            east: { pos: { x: lerp(0.44, 0.55, p), y: 0.5 + wobble }, rotation: lerp(5, 12, p), scale: lerp(1.05, 1.1, p), phase: "pushing", opacity: 1 },
+            west: { pos: { x: lerp(0.56, 0.68, p), y: 0.5 - wobble }, rotation: lerp(-5, -15, p), scale: lerp(1.05, 0.95, p), phase: "grappling", opacity: 1 },
+          };
+        } else {
+          return {
+            east: { pos: { x: lerp(0.44, 0.32, p), y: 0.5 + wobble }, rotation: lerp(5, 15, p), scale: lerp(1.05, 0.95, p), phase: "grappling", opacity: 1 },
+            west: { pos: { x: lerp(0.56, 0.45, p), y: 0.5 - wobble }, rotation: lerp(-5, -12, p), scale: lerp(1.05, 1.1, p), phase: "pushing", opacity: 1 },
+          };
+        }
+      }
+      case "finish": {
+        if (winner === "east") {
+          return {
+            east: { pos: { x: lerp(0.55, 0.6, p), y: 0.5 }, rotation: lerp(12, 5, p), scale: lerp(1.1, 1.15, p), phase: "throwing", opacity: 1 },
+            west: { pos: { x: lerp(0.68, 0.78, p), y: lerp(0.5, 0.62, p) }, rotation: lerp(-15, -60, p), scale: lerp(0.95, 0.75, p), phase: "falling", opacity: lerp(1, 0.85, p) },
+          };
+        } else {
+          return {
+            east: { pos: { x: lerp(0.32, 0.22, p), y: lerp(0.5, 0.62, p) }, rotation: lerp(15, 60, p), scale: lerp(0.95, 0.75, p), phase: "falling", opacity: lerp(1, 0.85, p) },
+            west: { pos: { x: lerp(0.45, 0.4, p), y: 0.5 }, rotation: lerp(-12, -5, p), scale: lerp(1.1, 1.15, p), phase: "throwing", opacity: 1 },
+          };
+        }
+      }
+      case "ceremony": {
+        if (winner === "east") {
+          return {
+            east: { pos: { x: 0.5, y: 0.48 }, rotation: 0, scale: lerp(1.15, 1.2, p), phase: "victory", opacity: 1 },
+            west: { pos: { x: 0.75, y: 0.55 }, rotation: 0, scale: 0.9, phase: "standing", opacity: 0.7 },
+          };
+        } else {
+          return {
+            east: { pos: { x: 0.25, y: 0.55 }, rotation: 0, scale: 0.9, phase: "standing", opacity: 0.7 },
+            west: { pos: { x: 0.5, y: 0.48 }, rotation: 0, scale: lerp(1.15, 1.2, p), phase: "victory", opacity: 1 },
+          };
+        }
+      }
+      case "complete":
+      default:
+        return getTargetState("ceremony", 1);
     }
+  }, [result.winner]);
+
+  // Current rikishi states
+  const [eastState, setEastState] = useState<RikishiState>(() => getTargetState("ritual", 0).east);
+  const [westState, setWestState] = useState<RikishiState>(() => getTargetState("ritual", 0).west);
+
+  // Spawn particles
+  const spawnParticles = useCallback((type: Particle["type"], x: number, y: number, count: number) => {
+    const newParticles: Particle[] = [];
+    for (let i = 0; i < count; i++) {
+      const id = particleIdRef.current++;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.5 + Math.random() * 2;
+      const colors: Record<Particle["type"], string[]> = {
+        impact: ["#ff6b35", "#ffd700", "#ff4500"],
+        salt: ["#ffffff", "#e8e8e8", "#f0f0f0"],
+        sweat: ["#87ceeb", "#add8e6"],
+        dust: ["#d4a574", "#c4956a", "#b4855a"],
+        spark: ["#ffd700", "#ffb700", "#ff9500"],
+      };
+      const colorArr = colors[type];
+      newParticles.push({
+        id,
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - (type === "salt" ? 1 : 0),
+        life: 1,
+        maxLife: 0.5 + Math.random() * 0.8,
+        size: type === "salt" ? 2 + Math.random() * 3 : 3 + Math.random() * 4,
+        color: colorArr[Math.floor(Math.random() * colorArr.length)],
+        type,
+      });
+    }
+    setParticles(prev => [...prev.slice(-40), ...newParticles]); // cap at ~60
   }, []);
 
-  const advanceLogIndex = useCallback(
-    (phase: ReplayPhase) => {
-      const phaseToLogPhase: Record<ReplayPhase, string> = {
-        ritual: "",
-        tachiai: "tachiai",
-        clinch: "clinch",
-        momentum: "momentum",
-        finish: "finish",
-        ceremony: "",
-        complete: ""
-      };
+  // Narration text
+  const currentNarration = useMemo(() => {
+    return getPhaseNarration(currentPhase, phaseProgress / 100, result, eastRikishi, westRikishi);
+  }, [currentPhase, phaseProgress, result, eastRikishi, westRikishi]);
 
-      const targetPhase = phaseToLogPhase[phase];
-      if (!targetPhase) return;
+  const crowd = useMemo(() => getCrowdMood(currentPhase, phaseProgress), [currentPhase, phaseProgress]);
 
-      const startFrom = logIndexRef.current;
+  // Canvas rendering
+  const renderCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      const nextIndex = safeLog.findIndex(
-        (entry: any, i: number) => i > startFrom && entry?.phase === targetPhase
-      );
+    const W = canvas.width;
+    const H = canvas.height;
+    const cx = W / 2;
+    const cy = H / 2;
+    const dohyoRadius = Math.min(W, H) * 0.42;
 
-      if (nextIndex >= 0) setCurrentLogIndex(nextIndex);
-    },
-    [safeLog]
-  );
+    // Clear
+    ctx.clearRect(0, 0, W, H);
 
-  // Derive narration safely
-  const currentNarration =
-    currentLogIndex >= 0 && currentLogIndex < safeLog.length
-      ? (safeLog[currentLogIndex] as any)?.description ?? ""
-      : getPhaseNarration(currentPhase, result, eastRikishi, westRikishi);
+    // Background — arena floor
+    const isDark = document.documentElement.classList.contains("dark");
+    ctx.fillStyle = isDark ? "#1a1510" : "#f5e6d0";
+    ctx.fillRect(0, 0, W, H);
 
-  // Animation loop (RAF)
+    // Crowd ring (subtle atmosphere)
+    const crowdGrad = ctx.createRadialGradient(cx, cy, dohyoRadius * 0.95, cx, cy, dohyoRadius * 1.6);
+    crowdGrad.addColorStop(0, "transparent");
+    crowdGrad.addColorStop(0.3, isDark ? "rgba(30,20,10,0.5)" : "rgba(120,80,40,0.08)");
+    crowdGrad.addColorStop(1, isDark ? "rgba(10,8,5,0.8)" : "rgba(80,50,20,0.12)");
+    ctx.fillStyle = crowdGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Crowd intensity indicator (subtle pulse)
+    const crowdIntensity = crowd.intensity;
+    if (crowdIntensity > 0.3) {
+      const pulseAlpha = (0.02 + crowdIntensity * 0.06) * (0.5 + 0.5 * Math.sin(Date.now() * 0.004));
+      ctx.fillStyle = isDark ? `rgba(255,200,100,${pulseAlpha})` : `rgba(200,100,0,${pulseAlpha})`;
+      ctx.beginPath();
+      ctx.arc(cx, cy, dohyoRadius * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Raised dohyo platform
+    ctx.save();
+    ctx.fillStyle = isDark ? "#3d2b1a" : "#e8d4b8";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 8, dohyoRadius * 1.08, dohyoRadius * 0.85, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Dohyo surface (sand color)
+    const dohyoGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, dohyoRadius);
+    dohyoGrad.addColorStop(0, isDark ? "#6b5738" : "#f0dcc0");
+    dohyoGrad.addColorStop(0.85, isDark ? "#5a4830" : "#e6c8a0");
+    dohyoGrad.addColorStop(1, isDark ? "#4a3820" : "#d4b080");
+    ctx.fillStyle = dohyoGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, dohyoRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tawara (straw bales ring)
+    ctx.strokeStyle = isDark ? "#8b7355" : "#c4a060";
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(cx, cy, dohyoRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    // Second inner ring
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = isDark ? "#7a6245" : "#b8945a";
+    ctx.beginPath();
+    ctx.arc(cx, cy, dohyoRadius - 8, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Shikiri-sen (starting lines)
+    const lineLen = dohyoRadius * 0.18;
+    const lineGap = dohyoRadius * 0.08;
+    ctx.strokeStyle = isDark ? "#f5f5f5" : "#333333";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    // East line
+    ctx.beginPath();
+    ctx.moveTo(cx - lineGap, cy - lineLen);
+    ctx.lineTo(cx - lineGap, cy + lineLen);
+    ctx.stroke();
+    // West line
+    ctx.beginPath();
+    ctx.moveTo(cx + lineGap, cy - lineLen);
+    ctx.lineTo(cx + lineGap, cy + lineLen);
+    ctx.stroke();
+
+    // Draw particles
+    const now = Date.now();
+    particlesRef.current.forEach(p => {
+      const alpha = Math.max(0, p.life);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      if (p.type === "spark") {
+        // Star shape for sparks
+        ctx.beginPath();
+        const s = p.size * alpha;
+        for (let i = 0; i < 5; i++) {
+          const a = (i * Math.PI * 2) / 5 - Math.PI / 2;
+          const r = i % 2 === 0 ? s : s * 0.4;
+          const px = p.x * W + Math.cos(a) * r;
+          const py = p.y * H + Math.sin(a) * r;
+          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x * W, p.y * H, p.size * alpha, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    ctx.globalAlpha = 1;
+
+    // Draw rikishi
+    drawRikishi(ctx, eastState, W, H, "east", eastRikishi, isDark, result.winner === "east" && (currentPhase === "ceremony" || currentPhase === "complete"));
+    drawRikishi(ctx, westState, W, H, "west", westRikishi, isDark, result.winner === "west" && (currentPhase === "ceremony" || currentPhase === "complete"));
+
+  }, [eastState, westState, particles, crowd, currentPhase, result.winner, eastRikishi, westRikishi]);
+
+  // Render loop for canvas
+  useEffect(() => {
+    renderCanvas();
+  }, [renderCanvas]);
+
+  // Resize canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const observer = new ResizeObserver(() => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.scale(dpr, dpr);
+      renderCanvas();
+    });
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [renderCanvas]);
+
+  // Main animation loop
   useEffect(() => {
     if (!isPlaying) return;
 
+    let prevPhaseForParticles = phaseRef.current;
+
     const animate = (timestamp: number) => {
       if (!lastTickRef.current) lastTickRef.current = timestamp;
-
       const delta = (timestamp - lastTickRef.current) * speedRef.current;
       lastTickRef.current = timestamp;
 
       const phase = phaseRef.current;
-      const phaseDuration = PHASE_DURATIONS[phase] ?? 0;
+      const duration = PHASE_DURATIONS[phase] ?? 0;
 
-      setPhaseProgress((prev) => {
-        if (phaseDuration === 0) return 0;
+      // Update particles
+      setParticles(prev => prev
+        .map(p => ({
+          ...p,
+          x: p.x + p.vx * 0.004,
+          y: p.y + p.vy * 0.004,
+          vy: p.vy + 0.15, // gravity
+          life: p.life - (1 / 60) / p.maxLife,
+        }))
+        .filter(p => p.life > 0)
+      );
 
-        const next = prev + (delta / phaseDuration) * 100;
-        const clamped = Math.min(100, next);
+      setPhaseProgress(prev => {
+        if (duration === 0) return 0;
+        const next = Math.min(100, prev + (delta / duration) * 100);
+        const p01 = next / 100;
 
-        // Use the computed "clamped" progress (not stale state)
-        updatePositionsDuringPhase(phase, clamped);
+        // Update rikishi positions
+        const targets = getTargetState(phase, p01);
+        setEastState(targets.east);
+        setWestState(targets.west);
 
-        if (clamped >= 100) {
+        // Spawn particles at phase transitions
+        if (phase !== prevPhaseForParticles) {
+          prevPhaseForParticles = phase;
+          if (phase === "tachiai") {
+            spawnParticles("impact", 0.5, 0.5, 12);
+            spawnParticles("dust", 0.5, 0.55, 8);
+          } else if (phase === "finish") {
+            const winX = result.winner === "east" ? 0.6 : 0.4;
+            spawnParticles("spark", winX, 0.5, 15);
+            spawnParticles("dust", winX, 0.55, 6);
+          } else if (phase === "ritual") {
+            spawnParticles("salt", 0.35, 0.45, 6);
+            spawnParticles("salt", 0.65, 0.45, 6);
+          }
+        }
+
+        // Phase transitions during clinch/momentum — occasional sweat
+        if ((phase === "clinch" || phase === "momentum") && Math.random() < 0.02) {
+          spawnParticles("sweat", 0.5 + (Math.random() - 0.5) * 0.1, 0.48, 2);
+        }
+
+        if (next >= 100) {
           const idx = PHASES.indexOf(phase);
           const nextPhase = PHASES[idx + 1];
-
           if (nextPhase) {
             setCurrentPhase(nextPhase);
-            updatePositionsForPhase(nextPhase);
-            advanceLogIndex(nextPhase);
             return 0;
           } else {
             setIsPlaying(false);
@@ -229,29 +431,30 @@ export function BoutReplayViewer({
             return 100;
           }
         }
-
-        return clamped;
+        return next;
       });
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);
-
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     };
-  }, [isPlaying, updatePositionsDuringPhase, updatePositionsForPhase, advanceLogIndex, onComplete]);
+  }, [isPlaying, getTargetState, spawnParticles, result.winner, onComplete]);
 
-  // Ensure correct initial pose when autoplay starts or result changes
+  // Reset on result change
   useEffect(() => {
-    updatePositionsForPhase(currentPhase);
+    handleReset();
+    if (autoPlay) {
+      setTimeout(() => setIsPlaying(true), 100);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result.winner]);
+  }, [result.winner, (result as any).kimarite]);
 
   const handlePlayPause = () => {
-    setIsPlaying((p) => !p);
+    setIsPlaying(p => !p);
     lastTickRef.current = 0;
   };
 
@@ -259,8 +462,10 @@ export function BoutReplayViewer({
     setIsPlaying(false);
     setCurrentPhase("ritual");
     setPhaseProgress(0);
-    setCurrentLogIndex(-1);
-    updatePositionsForPhase("ritual");
+    setParticles([]);
+    const initial = getTargetState("ritual", 0);
+    setEastState(initial.east);
+    setWestState(initial.west);
     lastTickRef.current = 0;
   };
 
@@ -268,242 +473,328 @@ export function BoutReplayViewer({
     setCurrentPhase("complete");
     setPhaseProgress(100);
     setIsPlaying(false);
-
-    // show ceremony pose as final frame
-    updatePositionsForPhase("ceremony");
-
-    setCurrentLogIndex(safeLog.length > 0 ? safeLog.length - 1 : -1);
+    const final = getTargetState("ceremony", 1);
+    setEastState(final.east);
+    setWestState(final.west);
     onComplete?.();
   };
 
   const winnerName = result.winner === "east" ? eastRikishi.shikona : westRikishi.shikona;
+  const overallProgress = getOverallProgress(currentPhase, phaseProgress);
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Bout Replay</CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="capitalize">
-              {currentPhase}
-            </Badge>
-            {currentPhase === "complete" && (
-              <Badge variant="default">{winnerName} wins by {result.kimariteName}</Badge>
+    <div className={cn("rounded-xl overflow-hidden border border-border bg-card", className)}>
+      {/* Canvas Viewport */}
+      <div className="relative aspect-[4/3] w-full bg-muted">
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full"
+          style={{ imageRendering: "auto" }}
+        />
+
+        {/* Overlay: Phase Label */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2">
+          <Badge
+            variant="secondary"
+            className={cn(
+              "font-display text-xs backdrop-blur bg-background/80 border-border/50",
+              currentPhase === "tachiai" && "bg-red-500/20 text-red-400 border-red-500/30 animate-pulse",
+              currentPhase === "finish" && "bg-amber-500/20 text-amber-400 border-amber-500/30"
             )}
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        {/* Dohyo Visualization */}
-        <div className="relative aspect-square max-w-md mx-auto bg-amber-100 dark:bg-amber-900/30 rounded-full border-4 border-amber-600 dark:border-amber-700 overflow-hidden">
-          {/* Inner ring (shikiri-sen) */}
-          <div className="absolute inset-4 rounded-full border-2 border-amber-700/50" />
-
-          {/* Center line */}
-          <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-amber-700/30 -translate-y-1/2" />
-
-          {/* East Rikishi */}
-          <div
-            className="absolute transition-all duration-300 ease-out"
-            style={{
-              left: `${50 + eastPos.x}%`,
-              top: `${50 + eastPos.y}%`,
-              transform: `translate(-50%, -50%) rotate(${eastPos.rotation}deg) scale(${eastPos.scale})`
-            }}
           >
-            <RikishiFigure
-              name={eastRikishi.shikona}
-              side="east"
-              state={eastPos.state}
-              isWinner={result.winner === "east" && currentPhase === "complete"}
-            />
-          </div>
+            {getPhaseLabel(currentPhase)}
+          </Badge>
+        </div>
 
-          {/* West Rikishi */}
-          <div
-            className="absolute transition-all duration-300 ease-out"
-            style={{
-              left: `${50 + westPos.x}%`,
-              top: `${50 + westPos.y}%`,
-              transform: `translate(-50%, -50%) rotate(${westPos.rotation}deg) scale(${westPos.scale})`
-            }}
-          >
-            <RikishiFigure
-              name={westRikishi.shikona}
-              side="west"
-              state={westPos.state}
-              isWinner={result.winner === "west" && currentPhase === "complete"}
-            />
+        {/* Overlay: Names */}
+        <div className="absolute bottom-2 left-3 right-3 flex justify-between items-end pointer-events-none">
+          <div className={cn(
+            "px-2 py-1 rounded bg-background/80 backdrop-blur text-xs font-display font-medium",
+            result.winner === "east" && currentPhase === "complete" && "ring-2 ring-amber-400"
+          )}>
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5" />
+            {eastRikishi.shikona}
           </div>
-
-          {/* Phase label */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
-            <Badge variant="secondary" className="text-xs">
-              {getPhaseLabel(currentPhase)}
-            </Badge>
+          <div className={cn(
+            "px-2 py-1 rounded bg-background/80 backdrop-blur text-xs font-display font-medium",
+            result.winner === "west" && currentPhase === "complete" && "ring-2 ring-amber-400"
+          )}>
+            {westRikishi.shikona}
+            <span className="inline-block w-2 h-2 rounded-full bg-red-500 ml-1.5" />
           </div>
         </div>
 
-        {/* Narration */}
-        <div className="text-center p-4 bg-secondary/50 rounded-lg min-h-[3rem]">
-          <p className="text-sm font-medium">{currentNarration}</p>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="space-y-1">
-          <Progress value={getOverallProgress(currentPhase, phaseProgress)} className="h-2" />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Ritual</span>
-            <span>Tachiai</span>
-            <span>Battle</span>
-            <span>Finish</span>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={handleReset}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-
-            <Button variant={isPlaying ? "secondary" : "default"} size="icon" onClick={handlePlayPause}>
-              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
-
-            <Button variant="outline" size="icon" onClick={handleSkipToEnd}>
-              <SkipForward className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Speed:</span>
-            <div className="flex gap-1">
-              {[0.5, 1, 2].map((speed) => (
-                <Button
-                  key={speed}
-                  variant={playbackSpeed === speed ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs px-2"
-                  onClick={() => setPlaybackSpeed(speed)}
-                >
-                  {speed}x
-                </Button>
+        {/* Crowd atmosphere bar */}
+        {crowd.intensity > 0.2 && (
+          <div className="absolute top-3 right-3">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }, (_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "w-1 rounded-full transition-all duration-300",
+                    i < Math.ceil(crowd.intensity * 5)
+                      ? "bg-amber-400"
+                      : "bg-muted-foreground/20"
+                  )}
+                  style={{ height: `${8 + (i < Math.ceil(crowd.intensity * 5) ? crowd.intensity * 12 : 4)}px` }}
+                />
               ))}
             </div>
           </div>
+        )}
+      </div>
 
-          <Button variant="ghost" size="icon" onClick={() => setSoundEnabled((s) => !s)}>
-            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+      {/* Narration Bar */}
+      <div className="px-4 py-3 bg-muted/30 border-t border-border/50 min-h-[3.5rem] flex items-center justify-center">
+        <p className="text-sm text-center text-muted-foreground font-medium leading-snug">
+          {currentNarration}
+        </p>
+      </div>
+
+      {/* Progress */}
+      <div className="px-4 pt-2">
+        <Progress value={overallProgress} className="h-1.5" />
+        <div className="flex justify-between text-[10px] text-muted-foreground mt-1 px-1">
+          <span>儀式</span>
+          <span>立合</span>
+          <span>組み</span>
+          <span>決着</span>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} title="Reset">
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={isPlaying ? "secondary" : "default"}
+            size="icon"
+            className="h-9 w-9"
+            onClick={handlePlayPause}
+          >
+            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSkipToEnd} title="Skip">
+            <SkipForward className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Kimarite Display */}
-        {currentPhase === "complete" && (
-          <div className="text-center p-3 bg-primary/10 rounded-lg">
-            <p className="text-sm text-muted-foreground">Winning Technique</p>
-            <p className="text-xl font-display font-bold">{result.kimariteName}</p>
-            {result.upset && (
-              <Badge variant="destructive" className="mt-2">
-                UPSET!
-              </Badge>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+        <div className="flex items-center gap-1">
+          {[0.5, 1, 2, 3].map((speed) => (
+            <Button
+              key={speed}
+              variant={playbackSpeed === speed ? "default" : "ghost"}
+              size="sm"
+              className="text-xs px-2 h-7"
+              onClick={() => setPlaybackSpeed(speed)}
+            >
+              {speed}×
+            </Button>
+          ))}
+        </div>
 
-// Rikishi figure component
-interface RikishiFigureProps {
-  name: string;
-  side: "east" | "west";
-  state: RikishiPosition["state"];
-  isWinner: boolean;
-}
-
-function RikishiFigure({ name, side, state, isWinner }: RikishiFigureProps) {
-  const baseColor = side === "east" ? "bg-blue-600" : "bg-red-600";
-  const stateStyles: Record<RikishiPosition["state"], string> = {
-    standing: "scale-100",
-    charging: "scale-110 animate-pulse",
-    grappling: "scale-105",
-    pushing: "scale-110",
-    falling: "scale-75 opacity-70",
-    victory: "scale-115"
-  };
-
-  return (
-    <div className={cn("relative flex flex-col items-center transition-all duration-200", stateStyles[state])}>
-      {/* Body */}
-      <div className={cn("w-12 h-14 rounded-full", baseColor, isWinner && "ring-2 ring-yellow-400 ring-offset-1")} />
-
-      {/* Head */}
-      <div
-        className={cn(
-          "absolute -top-3 w-6 h-6 rounded-full bg-amber-200 dark:bg-amber-300",
-          state === "falling" && "bg-red-200"
-        )}
-      />
-
-      {/* Arms based on state */}
-      {(state === "grappling" || state === "pushing") && (
-        <>
-          <div className={cn("absolute top-4 -left-3 w-4 h-2 rounded-full", baseColor)} />
-          <div className={cn("absolute top-4 -right-3 w-4 h-2 rounded-full", baseColor)} />
-        </>
-      )}
-
-      {/* Name label */}
-      <div className="absolute -bottom-5 whitespace-nowrap">
-        <span className="text-[10px] font-medium bg-background/80 px-1 rounded">{name.slice(0, 8)}</span>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSoundEnabled(s => !s)}>
+          {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+        </Button>
       </div>
 
-      {/* Victory crown */}
-      {isWinner && state === "victory" && <div className="absolute -top-6 text-yellow-500">👑</div>}
+      {/* Result banner */}
+      {currentPhase === "complete" && (
+        <div className="px-4 pb-4">
+          <div className="text-center py-3 rounded-lg bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 border border-amber-500/20">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Winner</p>
+            <p className="text-lg font-display font-bold">{winnerName}</p>
+            <p className="text-sm text-muted-foreground">by {result.kimariteName}</p>
+            {result.upset && (
+              <Badge variant="destructive" className="mt-1.5">🎊 UPSET!</Badge>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
+// ─── Canvas Drawing Helpers ────────────────────────────────
+
+function drawRikishi(
+  ctx: CanvasRenderingContext2D,
+  state: RikishiState,
+  W: number,
+  H: number,
+  side: "east" | "west",
+  rikishi: Rikishi,
+  isDark: boolean,
+  isWinner: boolean
+) {
+  const dpr = window.devicePixelRatio || 1;
+  const drawW = W / dpr;
+  const drawH = H / dpr;
+  
+  const x = state.pos.x * drawW;
+  const y = state.pos.y * drawH;
+  const scale = state.scale;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate((state.rotation * Math.PI) / 180);
+  ctx.scale(scale, scale);
+  ctx.globalAlpha = state.opacity;
+
+  // Body sizing based on weight
+  const weightFactor = Math.min(1.4, Math.max(0.8, (rikishi.weight || 130) / 150));
+  const bodyW = 28 * weightFactor;
+  const bodyH = 32 * weightFactor;
+
+  // Shadow
+  ctx.fillStyle = "rgba(0,0,0,0.15)";
+  ctx.beginPath();
+  ctx.ellipse(0, bodyH * 0.45, bodyW * 0.8, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mawashi (belt)
+  const mawashiColor = side === "east" ? (isDark ? "#2563eb" : "#3b82f6") : (isDark ? "#dc2626" : "#ef4444");
+  ctx.fillStyle = mawashiColor;
+  ctx.beginPath();
+  ctx.ellipse(0, bodyH * 0.15, bodyW * 0.85, bodyH * 0.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body
+  const skinBase = isDark ? "#d4a574" : "#e8c4a0";
+  const skinDark = isDark ? "#b88a5c" : "#d4a574";
+  const bodyGrad = ctx.createRadialGradient(-bodyW * 0.2, -bodyH * 0.1, 0, 0, 0, bodyW);
+  bodyGrad.addColorStop(0, skinBase);
+  bodyGrad.addColorStop(1, skinDark);
+  ctx.fillStyle = bodyGrad;
+
+  // Rounded body shape
+  ctx.beginPath();
+  ctx.ellipse(0, 0, bodyW, bodyH * 0.65, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body outline
+  ctx.strokeStyle = isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Head
+  const headR = 10 * weightFactor;
+  ctx.fillStyle = skinBase;
+  ctx.beginPath();
+  ctx.arc(0, -bodyH * 0.55, headR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)";
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+
+  // Hair (chonmage topknot)
+  ctx.fillStyle = isDark ? "#2a1f14" : "#3d2b1a";
+  ctx.beginPath();
+  ctx.ellipse(0, -bodyH * 0.55 - headR * 0.7, headR * 0.5, headR * 0.35, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Topknot
+  ctx.beginPath();
+  ctx.ellipse(0, -bodyH * 0.55 - headR * 1.0, headR * 0.2, headR * 0.25, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Arms based on phase
+  ctx.fillStyle = skinDark;
+  ctx.lineWidth = 1;
+  if (state.phase === "grappling" || state.phase === "pushing" || state.phase === "throwing") {
+    // Extended arms
+    ctx.beginPath();
+    ctx.ellipse(-bodyW * 0.9, -bodyH * 0.1, 8, 5, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(bodyW * 0.9, -bodyH * 0.1, 8, 5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (state.phase === "charging") {
+    // Arms forward
+    ctx.beginPath();
+    ctx.ellipse(-bodyW * 0.7, -bodyH * 0.3, 9, 5, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(bodyW * 0.7, -bodyH * 0.3, 9, 5, 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // Arms at sides
+    ctx.beginPath();
+    ctx.ellipse(-bodyW * 0.75, bodyH * 0.1, 7, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(bodyW * 0.75, bodyH * 0.1, 7, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Victory crown
+  if (isWinner && (state.phase === "victory")) {
+    ctx.font = `${16 * weightFactor}px serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("👑", 0, -bodyH * 0.55 - headR * 1.5);
+  }
+
+  // Falling effect
+  if (state.phase === "falling") {
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = isDark ? "#8b7355" : "#d4b080";
+    // Dust cloud beneath
+    ctx.beginPath();
+    ctx.ellipse(0, bodyH * 0.4, bodyW * 1.2, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ─── Helpers ──────────────────────────────────
+
 function getPhaseLabel(phase: ReplayPhase): string {
   const labels: Record<ReplayPhase, string> = {
-    ritual: "Pre-Bout Ritual",
-    tachiai: "Tachiai!",
-    clinch: "Grip Battle",
-    momentum: "Exchange",
-    finish: "Decisive Moment",
-    ceremony: "Victory",
-    complete: "Bout Complete"
+    ritual: "塩撒き · Pre-Bout Ritual",
+    tachiai: "立合い · TACHIAI!",
+    clinch: "組み合い · Grip Battle",
+    momentum: "攻防 · Exchange",
+    finish: "決まり手 · Decisive Moment",
+    ceremony: "勝ち名乗り · Victory",
+    complete: "取組終了 · Bout Complete",
   };
   return labels[phase];
 }
 
-function getPhaseNarration(phase: ReplayPhase, result: BoutResult, east: Rikishi, west: Rikishi): string {
+function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, east: Rikishi, west: Rikishi): string {
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
   switch (phase) {
     case "ritual":
-      return `${east.shikona} vs ${west.shikona}. The wrestlers prepare.`;
+      if (p01 < 0.3) return `${east.shikona} takes position on the east side.`;
+      if (p01 < 0.6) return `${west.shikona} stares across the dohyo.`;
+      return "Salt is thrown. Both wrestlers prepare…";
     case "tachiai":
-      return "The fan drops... TACHIAI!";
+      return "The gyōji's fan drops — TACHIAI!";
     case "clinch":
-      return "Both wrestlers seek position...";
+      if (p01 < 0.5) return "Both wrestlers seek the inside grip position…";
+      return "A fierce struggle for belt control!";
     case "momentum":
-      return `${winner.shikona} presses the advantage!`;
+      if (p01 < 0.4) return `${winner.shikona} begins pressing forward!`;
+      if (p01 < 0.7) return `${loser.shikona} fights to hold ground at the edge!`;
+      return `${winner.shikona} drives with tremendous power!`;
     case "finish":
-      return `${winner.shikona} executes ${result.kimariteName}!`;
+      return `${winner.shikona} executes ${result.kimariteName || "the winning technique"}!`;
     case "ceremony":
-      return `${winner.shikona} receives the bow.`;
+      return `${winner.shikona} receives the bow. A decisive victory.`;
     case "complete":
-      return `${winner.shikona} defeats ${loser.shikona} by ${result.kimariteName}.`;
+      return `${winner.shikona} wins by ${result.kimariteName}.`;
   }
 }
 
 function getOverallProgress(phase: ReplayPhase, phaseProgress: number): number {
-  const phaseIndex = PHASES.indexOf(phase);
-  const phaseWeight = 100 / (PHASES.length - 1);
-  return phaseIndex * phaseWeight + (phaseProgress / 100) * phaseWeight;
+  const idx = PHASES.indexOf(phase);
+  if (idx < 0) return 0;
+  const totalPhases = PHASES.length - 1; // exclude "complete"
+  const phaseContrib = 100 / totalPhases;
+  return Math.min(100, idx * phaseContrib + (phaseProgress / 100) * phaseContrib);
 }
