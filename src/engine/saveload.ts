@@ -214,6 +214,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
     ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
     ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
+    ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
