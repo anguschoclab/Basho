@@ -248,6 +248,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     seed: actualSeed,
     year: currentYear,
     week: 1,
+    dayIndexGlobal: 0,
     cyclePhase: "interim",
     currentBashoName: initialBashoName,
     
