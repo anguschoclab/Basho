@@ -78,6 +78,8 @@ const navGroups: NavGroup[] = [
       { title: "Recap", url: "/recap", icon: Newspaper },
       { title: "History", url: "/history", icon: History },
       { title: "Almanac", url: "/almanac", icon: BookOpen },
+      { title: "Media", url: "/media", icon: Newspaper },
+      { title: "Hall of Fame", url: "/hall-of-fame", icon: History },
     ],
   },
 ];

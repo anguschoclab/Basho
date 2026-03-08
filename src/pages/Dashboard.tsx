@@ -17,6 +17,7 @@ import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
 import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
+import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 
@@ -35,6 +36,7 @@ const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "scouting",  column: 2, order: 1, component: ScoutingWidget,  label: "Scouting" },
   { id: "news",      column: 2, order: 2, component: NewsWidget,      label: "News" },
   { id: "rivals",    column: 2, order: 3, component: RivalsWidget,    label: "Rivals" },
+  { id: "digest",    column: 1, order: 2, component: DigestWidget,    label: "Weekly Digest" },
 ];
 
 const COLUMN_COUNT = 3;

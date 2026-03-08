@@ -24,6 +24,8 @@ import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
 import SettingsPage from "./pages/SettingsPage";
 import OyakataPage from "./pages/OyakataPage";
+import MediaPage from "./pages/MediaPage";
+import HallOfFamePage from "./pages/HallOfFamePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
               <Route path="/recap" element={<RecapPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/almanac" element={<AlmanacPage />} />
+              <Route path="/media" element={<MediaPage />} />
+              <Route path="/hall-of-fame" element={<HallOfFamePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

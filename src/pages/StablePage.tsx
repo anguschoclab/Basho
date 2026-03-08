@@ -66,6 +66,7 @@ import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { WelfarePanel } from "@/components/game/WelfarePanel";
 import { investInFacility } from "@/engine/facilities";
 
 // Narrative band displays (no raw numbers)
@@ -403,13 +404,14 @@ export default function StablePage() {
         </Card>
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-6">
             <TabsTrigger value="roster">Roster</TabsTrigger>
             <TabsTrigger value="training">Training</TabsTrigger>
             <TabsTrigger value="facilities">Facilities</TabsTrigger>
+            <TabsTrigger value="welfare">Welfare</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
-                    <TabsTrigger value="institution" className="gap-2"><Shield className="h-4 w-4" />Institution</TabsTrigger>
-</TabsList>
+            <TabsTrigger value="institution" className="gap-2"><Shield className="h-4 w-4" />Institution</TabsTrigger>
+          </TabsList>
 
           {/* Roster Tab */}
           <TabsContent value="roster" className="space-y-4">
@@ -859,6 +861,10 @@ export default function StablePage() {
             </Card>
           </TabsContent>
         
+        <TabsContent value="welfare" className="mt-6 space-y-4">
+          <WelfarePanel world={world} heya={heya} />
+        </TabsContent>
+
         <TabsContent value="institution" className="mt-6 space-y-4">
           <InstitutionPanel world={world} heya={heya} />
         </TabsContent>

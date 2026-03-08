@@ -26,6 +26,7 @@ import {
   Newspaper,
   Dumbbell,
   Crown,
+  Award,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
@@ -106,6 +107,16 @@ const items = [
     title: "Almanac",
     url: "/almanac",
     icon: BookOpen,
+  },
+  {
+    title: "Media",
+    url: "/media",
+    icon: Newspaper,
+  },
+  {
+    title: "Hall of Fame",
+    url: "/hall-of-fame",
+    icon: Award,
   },
 ];
 
