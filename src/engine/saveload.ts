@@ -104,8 +104,12 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     ftue: world.ftue,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
-    talentPool: (world as any).talentPool
-  };
+    talentPool: (world as any).talentPool,
+    // Extended fields
+    dayIndexGlobal: world.dayIndexGlobal,
+    almanacSnapshots: (world as any).almanacSnapshots,
+    calendar: world.calendar,
+  } as any;
 }
 
 /**
@@ -148,6 +152,8 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
   for (const k of Object.keys(heyasObj)) sanitizeHeya(heyasObj[k]);
   for (const k of Object.keys(rikishiObj)) sanitizeRikishi(rikishiObj[k]);
 
+  const savedCalendar = (serialized as any).calendar;
+
   return {
     id: crypto.randomUUID(),
     seed: serialized.seed,
@@ -166,7 +172,8 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     playerHeyaId: serialized.playerHeyaId,
     currentBanzuke: serialized.currentBanzuke,
     talentPool: (serialized as any).talentPool,
-    calendar: {
+    almanacSnapshots: (serialized as any).almanacSnapshots || [],
+    calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
       currentWeek: serialized.week || 1,

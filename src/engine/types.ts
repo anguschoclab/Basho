@@ -721,6 +721,8 @@ export interface WorldState {
 
   governanceLog?: GovernanceRuling[];
 
+  // Almanac snapshots (Constitution A5.2)
+  almanacSnapshots?: import("./almanac").AlmanacSnapshot[];
   ftue: FTUEState;
   playerHeyaId?: Id;
 

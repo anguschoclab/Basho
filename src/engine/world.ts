@@ -6,6 +6,8 @@
  * - 'endBasho' handles rankings, prizes, and crucially, the LIFECYCLE check (retirements/new recruits).
  * - 'advanceInterim' handles between-basho ticks (AI, scouting, economics).
  * - All lifecycle transitions emit canonical EventBus events.
+ * - Almanac snapshots are written at basho end (Constitution A5.1).
+ * - FTUE state is updated after first basho completion.
  */
 
 import { rngFromSeed, rngForWorld } from "./rng";
@@ -18,6 +20,8 @@ import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
 import { EventBus } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
+import { buildAlmanacSnapshot } from "./almanac";
+import { autosave } from "./saveload";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
@@ -216,11 +220,28 @@ export function endBasho(world: WorldState): WorldState {
 
   world.history.push(bashoResult);
 
+  // --- ALMANAC SNAPSHOT (Constitution A5.1) ---
+  safeCall(() => {
+    const snapshot = buildAlmanacSnapshot(world);
+    if (snapshot) {
+      if (!world.almanacSnapshots) world.almanacSnapshots = [];
+      world.almanacSnapshots.push(snapshot);
+    }
+  });
+
   safeCall(() => (historyIndex as any).indexBashoResult?.(world, bashoResult));
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
   enterPostBasho(world);
+
+  // --- FTUE UPDATE (Constitution A8) ---
+  if (world.ftue?.isActive) {
+    world.ftue.bashoCompleted += 1;
+    if (world.ftue.bashoCompleted >= 1) {
+      world.ftue.isActive = false;
+    }
+  }
 
   // --- LIFECYCLE MANAGEMENT ---
   console.log("Processing End of Basho Lifecycle...");
@@ -236,7 +257,6 @@ export function endBasho(world: WorldState): WorldState {
         if (r.heyaId) vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
 
         world.rikishi.delete(id);
-        // Clean up from heya
         const heya = world.heyas.get(r.heyaId);
         if (heya) {
             heya.rikishiIds = heya.rikishiIds.filter(rid => rid !== id);
@@ -246,6 +266,9 @@ export function endBasho(world: WorldState): WorldState {
 
   // Persistent Talent Pools: NPC stables fill their own vacancies from the shared pool.
   safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
+
+  // Autosave at basho-end boundary (Constitution §6)
+  safeCall(() => { autosave(world); });
 
   return world;
 }

@@ -263,8 +263,12 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
-    ftue: { isActive: false, bashoCompleted: 0, suppressedEvents: [] },
+    // FTUE: active for first basho per constitution A8
+    ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
     playerHeyaId: heyaList[0].id,
+    
+    // Almanac snapshots (Constitution A5.2)
+    almanacSnapshots: [],
     
     calendar: {
       year: currentYear,
@@ -273,7 +277,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       currentDay: 1
     },
     
-    currentDate: new Date(2024, 0, 1)
+    currentDate: new Date(currentYear, 0, 1)
   };
 
   // Persistent Talent Pools (created immediately so scouting has targets)
@@ -288,9 +292,11 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {
     const bName = bashoName.toLowerCase() as BashoName;
+    const BASHO_ORDER: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
+    const bashoNumber = (BASHO_ORDER.indexOf(bName) + 1) as 1 | 2 | 3 | 4 | 5 | 6;
     return {
         year: world.year,
-        bashoNumber: 1 as 1 | 2 | 3 | 4 | 5 | 6, // Type-safe basho number
+        bashoNumber: bashoNumber || 1,
         bashoName: bName,
         day: 1,
         matches: [],
