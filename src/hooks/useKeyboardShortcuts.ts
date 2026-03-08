@@ -8,6 +8,7 @@ import { useGame } from "@/contexts/GameContext";
 interface ShortcutOptions {
   eventLogOpen: boolean;
   onToggleEventLog: () => void;
+  onOpenSaveLoad?: () => void;
 }
 
 /** List of routes for number-key quick nav (1-9) */
@@ -23,10 +24,10 @@ const QUICK_NAV: Record<string, string> = {
   "9": "/rivalries",
 };
 
-export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog }: ShortcutOptions) {
+export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSaveLoad }: ShortcutOptions) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, endBasho, startBasho } = useGame();
+  const { state, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, endBasho, startBasho, quickSave } = useGame();
   const world = state.world;
 
   const handleKeyDown = useCallback(
@@ -36,25 +37,35 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog }: Shortcu
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       if ((e.target as HTMLElement)?.isContentEditable) return;
 
-      const key = e.key;
+      const key = e.key.toLowerCase();
       const ctrl = e.ctrlKey || e.metaKey;
 
+      // ── Ctrl+S: Quick save ──
+      if (key === "s" && ctrl && !e.shiftKey) {
+        e.preventDefault();
+        if (world) quickSave();
+        return;
+      }
+
+      // ── Ctrl+Shift+S: Open save/load dialog ──
+      if (key === "s" && ctrl && e.shiftKey) {
+        e.preventDefault();
+        onOpenSaveLoad?.();
+        return;
+      }
+
       // ── SPACE: Advance time ──
-      if (key === " " && !ctrl) {
+      if (e.key === " " && !ctrl) {
         e.preventDefault();
         if (!world) return;
 
         if (world.cyclePhase === "active_basho") {
-          // During basho, space simulates next bout or advances day
           if (location.pathname === "/basho") {
-            // Let BashoPage handle its own sim logic via the button
-            // We simulate all remaining bouts for the day
             simulateAllBouts();
           } else {
             advanceDay();
           }
         } else {
-          // Interim/pre/post: advance one day
           advanceOneDay();
         }
         return;
@@ -67,12 +78,10 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog }: Shortcu
         return;
       }
 
-      // ── T: Toggle theme (handled in TopNavBar, skip here) ──
-
       // ── Number keys 1-9: Quick navigation ──
-      if (!ctrl && !e.shiftKey && !e.altKey && QUICK_NAV[key]) {
+      if (!ctrl && !e.shiftKey && !e.altKey && QUICK_NAV[e.key]) {
         e.preventDefault();
-        navigate(QUICK_NAV[key]);
+        navigate(QUICK_NAV[e.key]);
         return;
       }
 
@@ -89,11 +98,8 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog }: Shortcu
         simulateAllBouts();
         return;
       }
-
-      // ── ?: Show shortcuts help (shift+/) ──
-      // Could be added later as a modal
     },
-    [world, state, location.pathname, navigate, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, onToggleEventLog]
+    [world, state, location.pathname, navigate, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, onToggleEventLog, onOpenSaveLoad, quickSave]
   );
 
   useEffect(() => {
@@ -105,6 +111,8 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog }: Shortcu
 /** Shortcut reference data for UI display */
 export const SHORTCUT_REFERENCE = [
   { key: "Space", action: "Advance time / Simulate bouts" },
+  { key: "Ctrl+S", action: "Quick save" },
+  { key: "Ctrl+⇧+S", action: "Save/Load dialog" },
   { key: "E", action: "Toggle event log" },
   { key: "N", action: "Simulate next bout (Basho)" },
   { key: "A", action: "Simulate all bouts (Basho)" },
