@@ -140,6 +140,12 @@ export default function RecapPage() {
   const hasRetirements = groupedEvents.retirements.length > 0;
   const hasGovernance = groupedEvents.governance.length > 0 || (world.governanceLog?.length || 0) > 0;
   const hasPrestigeChanges = prestigeChanges.length > 0;
+  const hasSponsors = groupedEvents.sponsors.length > 0;
+  
+  // Get player-specific sponsor events
+  const playerSponsorEvents = playerHeya 
+    ? groupedEvents.sponsors.filter(e => e.heyaId === playerHeya.id)
+    : [];
   
   const bashoName = lastBasho?.bashoName?.toUpperCase() || world.currentBashoName?.toUpperCase() || "RECENT";
 
