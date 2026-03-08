@@ -23,13 +23,13 @@ const STYLES: Record<Arch, string> = {
 };
 
 const STAT_PROFILES: Record<Arch, any> = {
-  oshi_specialist:    { power: 68, speed: 55, balance: 42, technique: 40, aggression: 65, mental: 45, weight: 145, experience: 50 },
+  oshi_specialist:    { power: 70, speed: 55, balance: 44, technique: 40, aggression: 65, mental: 48, weight: 148, experience: 50 },
   yotsu_specialist:   { power: 55, speed: 38, balance: 62, technique: 65, aggression: 45, mental: 55, weight: 155, experience: 55 },
   speedster:          { power: 40, speed: 72, balance: 50, technique: 52, aggression: 55, mental: 48, weight: 115, experience: 45 },
-  trickster:          { power: 38, speed: 60, balance: 48, technique: 58, aggression: 50, mental: 60, weight: 120, experience: 50 },
+  trickster:          { power: 38, speed: 60, balance: 48, technique: 58, aggression: 50, mental: 58, weight: 120, experience: 50 },
   all_rounder:        { power: 52, speed: 52, balance: 55, technique: 55, aggression: 50, mental: 55, weight: 140, experience: 55 },
   hybrid_oshi_yotsu:  { power: 58, speed: 48, balance: 55, technique: 55, aggression: 52, mental: 50, weight: 145, experience: 50 },
-  counter_specialist: { power: 45, speed: 50, balance: 60, technique: 62, aggression: 40, mental: 65, weight: 135, experience: 55 },
+  counter_specialist: { power: 45, speed: 50, balance: 58, technique: 60, aggression: 40, mental: 58, weight: 135, experience: 55 },
 };
 
 function mulberry32(a: number) {
