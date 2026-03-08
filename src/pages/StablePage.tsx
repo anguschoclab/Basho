@@ -65,6 +65,8 @@ import {
 import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
+import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { investInFacility } from "@/engine/facilities";
 
 // Narrative band displays (no raw numbers)
 const STATURE_DISPLAY: Record<StatureBand, { label: string; labelJa: string; color: string }> = {
@@ -698,60 +700,21 @@ export default function StablePage() {
             </Card>
           </TabsContent>
 
-          {/* Facilities Tab - Narrative-first */}
+          {/* Facilities Tab - Interactive Management */}
           <TabsContent value="facilities" className="space-y-4">
-            <Card className="paper">
-              <CardHeader>
-                <CardTitle>Facility Details</CardTitle>
-                <CardDescription>Your heya’s infrastructure shapes development over seasons.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Building className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Training Dohyo</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{safeFacilitiesCopy(facilitiesBand, "training")}</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Bed className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Recovery Center</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{safeFacilitiesCopy(facilitiesBand, "recovery")}</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <ChefHat className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Kitchen & Chanko</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{safeFacilitiesCopy(facilitiesBand, "nutrition")}</p>
-                  </div>
-                </div>
-
-                {/* If legacy numeric facilities exist in old saves, keep them hidden but acknowledged */}
-                {(heya as any).facilities && (
-                  <p className="text-xs text-muted-foreground mt-6">
-                    Notes: Detailed facility metrics are tracked internally and expressed here as narrative bands.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="paper">
-              <CardHeader>
-                <CardTitle>About Facilities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Facilities influence how quickly wrestlers improve, how well they recover, and how consistently they can hold form
-                  across the grueling basho cycle. Upgrades tend to compound over time—especially when paired with smart training profiles.
-                </p>
-              </CardContent>
-            </Card>
+            <FacilitiesManagementPanel
+              heya={heya}
+              world={world}
+              isOwner={isViewingOwnStable}
+              onUpgrade={(axis, points) => {
+                if (!isViewingOwnStable || !world) return;
+                const result = investInFacility(world, heya.id, axis, points);
+                if (result.success) {
+                  updateWorld({ ...world });
+                }
+                return result;
+              }}
+            />
           </TabsContent>
 
           {/* History Tab */}

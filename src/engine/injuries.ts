@@ -288,14 +288,16 @@ export function processWeeklyRecovery(args: {
     const facilityRecovery = typeof heya?.facilities?.recovery === "number" ? clamp(heya!.facilities.recovery, 0, 100) : 50;
 
     // base recovery = 1 week per week
-    // recovery emphasis can accelerate, facilities can accelerate slightly
+    // recovery emphasis can accelerate, facilities can accelerate significantly
+    // Recovery facility: 0→0.9x, 50→1.15x, 100→1.4x (stronger effect than before)
+    const facilityRecoveryMult = clamp(0.9 + facilityRecovery / 166, 0.9, 1.5);
     const recoveryMult =
       (profile ? computeTrainingMultipliers({ rikishi: dummyRikishiForRecovery(), heya, profile, individualMode: null }).injuryRecoveryMult : 1.0) *
-      clamp(0.9 + facilityRecovery / 200, 0.9, 1.4);
+      facilityRecoveryMult;
 
     // Convert multiplier to "weeks reduced" integer in a deterministic, conservative way.
-    // We always reduce by at least 1.
-    const weeksReduced = recoveryMult >= 1.25 ? 2 : 1;
+    // We always reduce by at least 1. High facilities + high recovery emphasis can yield 2.
+    const weeksReduced = recoveryMult >= 1.2 ? 2 : 1;
 
     const remaining = Math.max(0, inj.remainingWeeks - weeksReduced);
 
