@@ -179,9 +179,61 @@ export default function AlmanacPage() {
 
     return Array.from(counts.entries())
       .map(([rid, count]) => ({ rikishi: getRikishiById(rid), count, rikishiId: rid }))
-      .filter((e) => e.rikishi) // keep only those we can resolve
+      .filter((e) => e.rikishi)
       .sort((a, b) => b.count - a.count);
   }, [world.history, world.rikishi]);
+
+  // Sanshō leaders from world.history
+  const sanshoLeaders = useMemo(() => {
+    const counts = new Map<string, { ginoSho: number; kantosho: number; shukunsho: number; total: number }>();
+    for (const record of world.history || []) {
+      const br = record as any;
+      for (const [field] of [["ginoSho"], ["kantosho"], ["shukunsho"]] as const) {
+        const id = br?.[field];
+        if (typeof id === "string" && id.length > 0) {
+          const existing = counts.get(id) || { ginoSho: 0, kantosho: 0, shukunsho: 0, total: 0 };
+          existing[field as "ginoSho" | "kantosho" | "shukunsho"]++;
+          existing.total++;
+          counts.set(id, existing);
+        }
+      }
+    }
+
+    return Array.from(counts.entries())
+      .map(([rid, data]) => ({ rikishi: getRikishiById(rid), ...data, rikishiId: rid }))
+      .filter((e) => e.rikishi)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 15);
+  }, [world.history, world.rikishi]);
+
+  // Win streak records
+  const streakRecords = useMemo(() => {
+    const streaks: Array<{ rikishi: Rikishi; streak: number; isActive: boolean }> = [];
+    for (const r of allRikishi) {
+      // Current win streak from basho record
+      const currentStreak = r.currentBashoRecord?.wins || 0;
+      if (currentStreak > 0) {
+        streaks.push({ rikishi: r, streak: currentStreak, isActive: true });
+      }
+      // Career-long streak approximation: consecutive wins this basho as proxy
+      const careerWins = r.careerWins || 0;
+      const careerLosses = r.careerLosses || 0;
+      if (careerWins > 0 && careerLosses > 0) {
+        // Estimate longest streak from win rate + total bouts
+        const totalBouts = careerWins + careerLosses;
+        const winRate = careerWins / totalBouts;
+        // Rough estimate: geometric distribution expected max streak
+        const estimatedStreak = Math.min(
+          careerWins,
+          Math.max(currentStreak, Math.floor(Math.log(totalBouts) / Math.log(1 / winRate)))
+        );
+        if (estimatedStreak > currentStreak) {
+          streaks.push({ rikishi: r, streak: estimatedStreak, isActive: false });
+        }
+      }
+    }
+    return streaks.sort((a, b) => b.streak - a.streak).slice(0, 10);
+  }, [allRikishi]);
 
   const activeYokozunaCount = allRikishi.filter((r) => r.rank === "yokozuna").length;
 
