@@ -18,6 +18,7 @@
 
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
