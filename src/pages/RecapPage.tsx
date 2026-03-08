@@ -734,3 +734,17 @@ export default function RecapPage() {
     </AppLayout>
   );
 }
+
+// Helper: auto-shows intai ceremony for a retired rikishi
+function IntaiCeremonyTrigger({ rikishi, reason, world }: { rikishi: any; reason: string; world: any }) {
+  const [open, setOpen] = useState(true);
+  return (
+    <IntaiCeremony
+      rikishi={rikishi}
+      reason={reason}
+      world={world}
+      open={open}
+      onClose={() => setOpen(false)}
+    />
+  );
+}
