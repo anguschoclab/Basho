@@ -111,7 +111,12 @@ export interface OyakataRecord {
 export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
-  const careerBasho = Math.floor(6 + rankMult * 30 + rng() * 20);
+  // Realistic basho counts calibrated from real wrestlers:
+  // Hakuhō (GOAT yokozuna): ~120 basho over 20 years
+  // Hōshōryū (new yokozuna): ~42 basho over 7 years
+  // Terunofuji: ~84 basho over 14 years
+  // Most wrestlers have much shorter careers
+  const careerBasho = Math.floor(6 + rankMult * 12 + rng() * 10);
   const debutYear = world.year - Math.floor(careerBasho / 6);
   const debutBashoIndex = Math.floor(rng() * 6);
   const bashoNames: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
@@ -149,8 +154,8 @@ export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: (
 
     const performance = simulateBashoPerformance(currentRank, currentDivision, rikishi.rank, rankNumber, rng);
 
-    // Optional: inject absence texture lightly (kept deterministic)
-    const abs = rng() < 0.08 ? Math.floor(rng() * 3) : 0;
+    // Realistic absence rate (~5-8% of basho have some absences)
+    const abs = rng() < 0.06 ? Math.floor(1 + rng() * 2) : 0;
 
     const record: BashoPerformance = {
       year,
@@ -270,24 +275,40 @@ function simulateBashoPerformance(
   const isClimbing = targetMult > currentMult;
   const atTarget = targetRank === currentRank;
 
+  // Calibrated win rates:
+  // Climbing wrestlers dominate their current division (~60-70%)
+  // At-target wrestlers hover around 50-55% (realistic kachi-koshi rates)
+  // Past-peak wrestlers struggle (~40-50%)
   let baseWinRate = 0.5;
-  if (isClimbing) baseWinRate = 0.55 + rng() * 0.15;
-  else if (atTarget) baseWinRate = 0.48 + rng() * 0.12;
-  else baseWinRate = 0.35 + rng() * 0.2;
+  if (isClimbing) baseWinRate = 0.58 + rng() * 0.12;
+  else if (atTarget) baseWinRate = 0.47 + rng() * 0.10;
+  else baseWinRate = 0.38 + rng() * 0.15;
 
-  const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * 4);
+  const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * 3);
   const wins = Math.max(0, Math.min(boutCount, winsRaw));
   const losses = boutCount - wins;
 
-  const yusho = atTarget && wins >= boutCount - 1 && rng() < 0.02;
-  const junYusho = atTarget && wins >= boutCount - 2 && !yusho && rng() < 0.05;
+  // Yūshō calibration:
+  // Even Hakuhō only won 45/120 makuuchi basho (37%)
+  // A typical yokozuna wins ~3-8 yūshō in career
+  // Hōshōryū: 2 yūshō in ~28 makuuchi basho (~7%)
+  // Only possible with dominant records (13+ wins in makuuchi, 6+ in lower)
+  const yushoThreshold = boutCount === 15 ? 13 : 6;
+  const yusho = atTarget && wins >= yushoThreshold && rng() < 0.08;
+  const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < 0.10;
 
-  const ginoSho = currentDivision === "makuuchi" && wins >= 10 && rng() < 0.03;
-  const kantosho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.04;
-  const shukunsho = currentDivision === "makuuchi" && wins >= 10 && rng() < 0.02;
+  // Sanshō calibration:
+  // Only awarded in makuuchi, and quite rare
+  // Hakuhō: 6 total sanshō; Hōshōryū: 3 total sanshō
+  // Most wrestlers get 0-2 in their entire career
+  const ginoSho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.015;
+  const kantosho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.02;
+  const shukunsho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.01;
 
+  // Kinboshi: only maegashira beating a yokozuna
+  // Most maegashira get 0-1 in career, a few exceptional ones get 2-3
   const kinboshi =
-    currentRank === "maegashira" && wins >= 8 && rng() < 0.15 ? Math.floor(rng() * 2) + 1 : 0;
+    currentRank === "maegashira" && wins >= 9 && rng() < 0.08 ? 1 : 0;
 
   return { wins, losses, yusho, junYusho, ginoSho, kantosho, shukunsho, kinboshi };
 }
