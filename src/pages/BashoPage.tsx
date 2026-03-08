@@ -56,29 +56,22 @@ export default function BashoPage() {
   const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
   const lastAutoShownKeyRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (state.phase === "basho_recap") { navigate("/recap"); return; }
-    if (!world?.currentBasho) navigate("/");
-  }, [world, navigate, state.phase]);
-
-  if (!world?.currentBasho) return null;
-
-  const basho = world.currentBasho;
-  const bashoInfo = BASHO_CALENDAR[basho.bashoName];
-  const dayInfo = getDayName(basho.day);
+  const basho = world?.currentBasho ?? null;
+  const bashoInfo = basho ? BASHO_CALENDAR[basho.bashoName] : null;
+  const dayInfo = basho ? getDayName(basho.day) : null;
 
   const matches = (getCurrentDayMatches?.() as unknown as MatchLike[]) ?? [];
   const standings = (getStandings?.() ?? []).slice(0, 10);
 
   const playerRikishiIds = useMemo(() => {
-    if (!playerHeyaId) return new Set<string>();
+    if (!playerHeyaId || !world) return new Set<string>();
     const heya = world.heyas.get(playerHeyaId);
     return new Set(heya?.rikishiIds ?? []);
-  }, [playerHeyaId, world.heyas]);
+  }, [playerHeyaId, world]);
 
   const resolveRikishi = useCallback(
-    (id: string): Rikishi | null => world.rikishi.get(id) ?? null,
-    [world.rikishi]
+    (id: string): Rikishi | null => world?.rikishi.get(id) ?? null,
+    [world]
   );
 
   const isPlayerBout = useCallback(
@@ -91,14 +84,6 @@ export default function BashoPage() {
   const remainingBouts = matches.length - completedBouts;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
-  const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
-  const handleSimulateAll = () => { simulateAllBouts(); };
-  const handleNextDay = () => {
-    if (basho.day >= 15) setShowEndBashoConfirm(true);
-    else advanceDay();
-  };
-  const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate("/"); };
-
   // Auto-show player bout
   const lastBoutKey = useMemo(() => {
     const last = (state as any).lastBoutResult as BoutResult | undefined;
@@ -107,8 +92,13 @@ export default function BashoPage() {
     const l = (last as any).loserRikishiId;
     if (typeof w !== "string" || typeof l !== "string") return null;
     const km = typeof (last as any).kimariteId === "string" ? (last as any).kimariteId : "";
-    return `${makePairKey(w, l)}::${basho.day}::${km}`;
-  }, [(state as any).lastBoutResult]);
+    return `${makePairKey(w, l)}::${basho?.day ?? 0}::${km}`;
+  }, [(state as any).lastBoutResult, basho?.day]);
+
+  useEffect(() => {
+    if (state.phase === "basho_recap") { navigate("/recap"); return; }
+    if (!world?.currentBasho) navigate("/");
+  }, [world, navigate, state.phase]);
 
   useEffect(() => {
     const last = (state as any).lastBoutResult as BoutResult | undefined;
@@ -131,6 +121,8 @@ export default function BashoPage() {
       lastAutoShownKeyRef.current = lastBoutKey;
     }
   }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
+
+  if (!world || !basho) return null;
 
   const competitionTabs = [
     { id: "basho", label: "Basho" },
