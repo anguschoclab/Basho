@@ -5,6 +5,7 @@ import { TopNavBar } from "./TopNavBar";
 import { EventLogPanel } from "./EventLogPanel";
 import { SubNavTabs, type SubNavTab } from "./SubNavTabs";
 import { useKeyboardShortcuts, SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
+import { openSaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { Badge } from "@/components/ui/badge";
 import { Keyboard } from "lucide-react";
 import {
@@ -29,6 +30,7 @@ export function AppLayout({ children, subNavTabs, activeSubTab, onSubTabChange, 
   useKeyboardShortcuts({
     eventLogOpen,
     onToggleEventLog: () => setEventLogOpen((v) => !v),
+    onOpenSaveLoad: openSaveLoadDialog,
   });
 
   // Don't show layout on menu screen

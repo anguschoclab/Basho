@@ -159,7 +159,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
     : "";
 
   const phaseLabel = world?.cyclePhase === "active_basho"
-    ? `Day ${bashoDay}日目`
+    ? (bashoDay != null ? `Day ${bashoDay}日目` : "Active Basho")
     : world?.cyclePhase === "pre_basho"
       ? "Pre-Basho"
       : world?.cyclePhase === "post_basho"
@@ -309,6 +309,8 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
         <QuickNavLink url="/stable" label="Stable" icon={Home} />
         <QuickNavLink url="/economy" label="Economy" icon={Coins} />
         <QuickNavLink url="/scouting" label="Scouting" icon={Search} />
+        <div className="flex-1" />
+        <QuickNavLink url="/settings" label="Settings" icon={Settings} />
       </div>
     </header>
   );

@@ -1,6 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -27,7 +38,9 @@ export function TimeControls() {
     runAutoSimAction,
   } = useGame();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   const world = state.world;
   if (!world) return null;
@@ -39,6 +52,7 @@ export function TimeControls() {
   const handleStartBasho = () => {
     startBasho();
     toast({ title: "Basho started", description: "The tournament is underway." });
+    navigate("/basho");
   };
 
   const handleSimDay = () => {
@@ -52,6 +66,11 @@ export function TimeControls() {
   };
 
   const handleEndBasho = () => {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEndBasho = () => {
+    setShowEndConfirm(false);
     endBasho();
     toast({ title: "Basho concluded", description: "Results logged and banzuke updated." });
   };
@@ -78,6 +97,7 @@ export function TimeControls() {
   };
 
   return (
+    <>
     <Card>
       <CardContent className="p-4 flex flex-wrap gap-2 items-center">
         {!inBasho ? (
@@ -131,5 +151,21 @@ export function TimeControls() {
         )}
       </CardContent>
     </Card>
+
+    <AlertDialog open={showEndConfirm} onOpenChange={setShowEndConfirm}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will finalize results, update banzuke rankings, and advance to the off-season.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

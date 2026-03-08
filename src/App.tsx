@@ -22,6 +22,7 @@ import ScoutingPage from "./pages/ScoutingPage";
 import RecapPage from "./pages/RecapPage";
 import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/recap" element={<RecapPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/almanac" element={<AlmanacPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

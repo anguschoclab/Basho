@@ -22,6 +22,16 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { BASHO_CALENDAR, getDayName } from "@/engine/calendar";
 import { RANK_NAMES as SCOUT_RANK_NAMES } from "@/engine/scouting";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
@@ -63,6 +73,7 @@ export default function BashoPage() {
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
   const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
+  const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
 
   // Prevent auto-show loops
   const lastAutoShownKeyRef = useRef<string | null>(null);
@@ -138,11 +149,16 @@ export default function BashoPage() {
 
   const handleNextDay = () => {
     if (basho.day >= 15) {
-      endBasho();
-      navigate("/");
+      setShowEndBashoConfirm(true);
     } else {
       advanceDay();
     }
+  };
+
+  const confirmEndBasho = () => {
+    setShowEndBashoConfirm(false);
+    endBasho();
+    navigate("/");
   };
 
   const handleBoutClick = (match: MatchLike) => {
@@ -372,6 +388,24 @@ export default function BashoPage() {
           day={basho.day}
         />
       )}
+
+      {/* End Basho confirmation */}
+      <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will finalize the basho results, update the banzuke rankings, and advance to the off-season. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndBasho}>
+              End Basho
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
