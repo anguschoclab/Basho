@@ -15,7 +15,7 @@
 // =======================================================
 import { rngFromSeed, rngForWorld } from "./rng";
 import { SeededRNG } from "./utils/SeededRNG";
-import type { Id, WorldState, BoutResult, BashoName, Division } from "./types";
+import type { Id, WorldState, BoutResult, BashoName, Division, BashoState } from "./types";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
 
 /** =========================
