@@ -131,6 +131,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
     // Ozeki kadoban tracking
     ozekiKadoban: (world as any).ozekiKadoban,
+    // Hall of Fame
+    hallOfFame: (world as any).hallOfFame,
   } as any;
 }
 
@@ -197,6 +199,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
     ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
+    ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
