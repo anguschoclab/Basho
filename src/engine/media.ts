@@ -870,5 +870,211 @@ export function resetBashoMediaTracking(state: MediaState): MediaState {
     bashoStreaks: {},
     streakHeadlinesFired: {},
     promoWatchFired: {},
+    retirementWatchFired: {},
+    titleRaceDayFired: {},
   };
+}
+
+/** =========================
+ *  Retirement Watch Headlines
+ *  ========================= */
+
+const VETERAN_AGE_THRESHOLD = 33;
+
+function checkRetirementWatch(args: {
+  state: MediaState;
+  world: WorldState;
+  result: BoutResult;
+  day?: number;
+  bashoName?: BashoName;
+  rng: SeededRNG;
+}): { state: MediaState; headline: MediaHeadline | null } {
+  const { world, result, rng } = args;
+  const week = world.week ?? 0;
+  const day = args.day ?? 0;
+
+  // Only fire on day 8+ (mid-basho when record matters)
+  if (day < 8) return { state: args.state, headline: null };
+
+  // Check the loser — retirement watch is about the struggling veteran
+  const loserId = result.loserRikishiId;
+  const loser = world.rikishi.get(loserId);
+  if (!loser) return { state: args.state, headline: null };
+
+  // Already fired?
+  if (args.state.retirementWatchFired[loserId]) return { state: args.state, headline: null };
+
+  // Age check
+  const age = world.year - (loser.birthYear || world.year - 25);
+  if (age < VETERAN_AGE_THRESHOLD) return { state: args.state, headline: null };
+
+  // Get standings — need a losing record
+  const basho = world.currentBasho;
+  const standings = basho?.standings;
+  if (!standings) return { state: args.state, headline: null };
+
+  const record = standings instanceof Map
+    ? standings.get(loserId)
+    : (standings as any)[loserId];
+  if (!record) return { state: args.state, headline: null };
+
+  const { wins, losses } = record;
+
+  // Must have more losses than wins and at least 6 losses
+  if (losses < 6 || wins >= losses) return { state: args.state, headline: null };
+
+  // Check career record for pattern of decline (optional — if available)
+  const prevBasho = loser.currentBashoRecord;
+  const hadPriorMakeKoshi = prevBasho && prevBasho.losses > prevBasho.wins;
+
+  // Fire if: veteran with 6+ losses, OR veteran with consecutive make-koshi pattern
+  const shouldFire = losses >= 8 || (losses >= 6 && hadPriorMakeKoshi);
+  if (!shouldFire) return { state: args.state, headline: null };
+
+  // Mark as fired
+  const nextRetire = { ...args.state.retirementWatchFired, [loserId]: true };
+  const state: MediaState = { ...args.state, retirementWatchFired: nextRetire };
+
+  const shikona = loser.shikona ?? "Unknown";
+  const rank = loser.rank ?? "unknown";
+
+  const isHighRank = rankImpact(rank) >= 5;
+  const impact = clampInt(isHighRank ? 65 : 40 + age - VETERAN_AGE_THRESHOLD, 0, 100);
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+
+  const titles = hadPriorMakeKoshi
+    ? [
+        `Is This the End? ${shikona} Stumbles Again at ${age}`,
+        `${shikona}'s Decline Continues — Retirement Whispers Grow`,
+      ]
+    : [
+        `${shikona} Struggles at ${age} — ${wins}-${losses}`,
+        `Retirement Watch: ${shikona} Faces Another Tough Basho`,
+      ];
+
+  const subtitles = isHighRank
+    ? "A once-dominant force now battles time as much as opponents."
+    : "The veteran's body tells a story that grit alone can't rewrite.";
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-retire-${week}-${day}-${loserId}`),
+    week,
+    bashoName: args.bashoName,
+    tier,
+    beat: "retirement_watch",
+    tone: "concern",
+    rikishiIds: [loserId],
+    heyaIds: [loser.heyaId].filter(Boolean) as Id[],
+    title: titles[Math.floor(rng.next() * titles.length)],
+    subtitle: subtitles,
+    impact,
+    tags: ["basho", "retirement_watch", `age_${age}`],
+  };
+
+  return { state, headline };
+}
+
+/** =========================
+ *  Title Race Headlines
+ *  ========================= */
+
+function checkTitleRace(args: {
+  state: MediaState;
+  world: WorldState;
+  day?: number;
+  bashoName?: BashoName;
+  rng: SeededRNG;
+}): { state: MediaState; headline: MediaHeadline | null } {
+  const { world, rng } = args;
+  const week = world.week ?? 0;
+  const day = args.day ?? 0;
+
+  // Only fire on day 12+ (final stretch)
+  if (day < 12) return { state: args.state, headline: null };
+
+  // Only fire once per day
+  if (args.state.titleRaceDayFired[day]) return { state: args.state, headline: null };
+
+  const basho = world.currentBasho;
+  const standings = basho?.standings;
+  if (!standings) return { state: args.state, headline: null };
+
+  // Collect all standings into array
+  const entries: Array<{ id: Id; wins: number; losses: number }> = [];
+  if (standings instanceof Map) {
+    standings.forEach((v, k) => entries.push({ id: k, wins: v.wins, losses: v.losses }));
+  } else {
+    for (const [k, v] of Object.entries(standings as Record<string, { wins: number; losses: number }>)) {
+      entries.push({ id: k, wins: v.wins, losses: v.losses });
+    }
+  }
+
+  if (entries.length === 0) return { state: args.state, headline: null };
+
+  // Sort by wins desc
+  entries.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+
+  const topWins = entries[0].wins;
+  // Leaders: all rikishi within 1 win of top
+  const leaders = entries.filter(e => e.wins >= topWins - 1 && e.wins >= 8);
+
+  // Need at least 2 contenders to have a "race"
+  if (leaders.length < 2) return { state: args.state, headline: null };
+
+  // Mark day as fired
+  const nextFired = { ...args.state.titleRaceDayFired, [day]: true };
+  const state: MediaState = { ...args.state, titleRaceDayFired: nextFired };
+
+  const tiedAtTop = leaders.filter(e => e.wins === topWins);
+  const chasers = leaders.filter(e => e.wins === topWins - 1);
+
+  // Build names
+  const getName = (id: Id) => world.rikishi.get(id)?.shikona ?? "Unknown";
+  const topNames = tiedAtTop.slice(0, 3).map(e => getName(e.id));
+  const chaserNames = chasers.slice(0, 2).map(e => getName(e.id));
+
+  let title: string;
+  let subtitle: string;
+
+  if (tiedAtTop.length >= 3) {
+    title = rng.next() < 0.5
+      ? `Three-Way Tie at ${topWins} Wins — Who Takes the Yusho?`
+      : `${topNames[0]}, ${topNames[1]}, ${topNames[2]} Deadlocked at ${topWins}`;
+    subtitle = "The most chaotic title race in memory enters its final act.";
+  } else if (tiedAtTop.length === 2) {
+    title = rng.next() < 0.5
+      ? `${topNames[0]} and ${topNames[1]} Share the Lead at ${topWins} Wins`
+      : `Yusho Race: ${topNames[0]} vs ${topNames[1]}`;
+    subtitle = "Two warriors. One Emperor's Cup. The final days will decide everything.";
+  } else if (chasers.length > 0) {
+    title = rng.next() < 0.5
+      ? `${topNames[0]} Leads at ${topWins} — ${chaserNames.join(", ")} ${chasers.length > 1 ? "Lurk" : "Lurks"} Behind`
+      : `Can Anyone Catch ${topNames[0]}?`;
+    subtitle = `Just one win separates the leader from the pack with ${15 - day} days remaining.`;
+  } else {
+    return { state, headline: null };
+  }
+
+  const impact = clampInt(70 + tiedAtTop.length * 5, 0, 100);
+  const tier: HeadlineTier = "main_event";
+
+  const allIds = leaders.slice(0, 4).map(e => e.id);
+  const heyaIds = allIds.map(id => world.rikishi.get(id)?.heyaId).filter(Boolean) as Id[];
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-title-${week}-${day}-${topWins}`),
+    week,
+    bashoName: args.bashoName,
+    tier,
+    beat: "title_race",
+    tone: "hype",
+    rikishiIds: allIds,
+    heyaIds: [...new Set(heyaIds)],
+    title,
+    subtitle,
+    impact,
+    tags: ["basho", "title_race", `day_${day}`],
+  };
+
+  return { state, headline };
 }
