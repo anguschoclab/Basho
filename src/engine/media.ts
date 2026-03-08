@@ -276,6 +276,24 @@ export function updateMediaFromBout(args: {
     next = promoHL.state;
   }
 
+  // --- Retirement watch headlines ---
+  const retireHL = checkRetirementWatch({ state: next, world, result, day: args.day, bashoName: args.bashoName, rng });
+  if (retireHL.headline) {
+    next = applyHeadlineEffects(retireHL.state, world, retireHL.headline);
+    extraHeadlines.push(retireHL.headline);
+  } else {
+    next = retireHL.state;
+  }
+
+  // --- Title race headlines ---
+  const titleHL = checkTitleRace({ state: next, world, day: args.day, bashoName: args.bashoName, rng });
+  if (titleHL.headline) {
+    next = applyHeadlineEffects(titleHL.state, world, titleHL.headline);
+    extraHeadlines.push(titleHL.headline);
+  } else {
+    next = titleHL.state;
+  }
+
   return { state: next, headlines: [headline, ...extraHeadlines] };
 }
 /**
