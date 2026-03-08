@@ -158,6 +158,18 @@ function sanitizeRikishi(r: Rikishi): Rikishi {
     anyR.fatigue = Math.max(0, Math.min(100, anyR.fatigue));
   }
 
+  // Derive talentSeed deterministically for legacy rikishi missing it
+  if (typeof anyR.talentSeed !== "number") {
+    // Simple deterministic hash from rikishi id
+    let hash = 0;
+    const id = String(r.id || "");
+    for (let i = 0; i < id.length; i++) {
+      hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+    }
+    // Map to 30-90 range (legacy rikishi get reasonable spread)
+    anyR.talentSeed = 30 + Math.abs(hash % 61);
+  }
+
   return r;
 }
 
