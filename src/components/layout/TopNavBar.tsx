@@ -259,7 +259,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
                 <path d="M4 12a8 8 0 018-8" className="opacity-75" />
               </svg>
             ) : (
-              <svg className="h-3.5 w-3.5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg className="h-3.5 w-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             )}
