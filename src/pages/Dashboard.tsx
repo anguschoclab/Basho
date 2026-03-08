@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
-import { GripVertical, RotateCcw } from "lucide-react";
+import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield } from "lucide-react";
+import { getMonthlyMaintenanceCost } from "@/engine/facilities";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
