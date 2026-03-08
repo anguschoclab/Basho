@@ -63,7 +63,7 @@ import {
   Zap
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { OyakataName } from "@/components/ClickableName";
+import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 
 // Narrative band displays (no raw numbers)
