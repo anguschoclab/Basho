@@ -149,11 +149,16 @@ export default function BashoPage() {
 
   const handleNextDay = () => {
     if (basho.day >= 15) {
-      endBasho();
-      navigate("/");
+      setShowEndBashoConfirm(true);
     } else {
       advanceDay();
     }
+  };
+
+  const confirmEndBasho = () => {
+    setShowEndBashoConfirm(false);
+    endBasho();
+    navigate("/");
   };
 
   const handleBoutClick = (match: MatchLike) => {
