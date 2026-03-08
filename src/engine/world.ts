@@ -311,9 +311,8 @@ export function endBasho(world: WorldState): WorldState {
 
   // Snapshot media heat for sparkline history
   safeCall(() => {
-    const w = world as any;
-    if (w.mediaState) {
-      w.mediaState = snapshotMediaHeatForBasho(w.mediaState, basho.bashoName);
+    if (world.mediaState) {
+      world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
     }
   });
 
