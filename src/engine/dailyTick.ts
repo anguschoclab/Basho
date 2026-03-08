@@ -304,7 +304,7 @@ function tickRecruitmentWindowClose(world: WorldState): void {
 function tickMidInterimRecruitment(world: WorldState): void {
   if (world.cyclePhase !== "interim") return;
 
-  const interimDaysRemaining = (world as any)._interimDaysRemaining ?? 0;
+  const interimDaysRemaining = world._interimDaysRemaining ?? 0;
   const totalInterimDays = 42; // 6 weeks
   const elapsedDays = totalInterimDays - interimDaysRemaining;
   const elapsedWeeks = Math.floor(elapsedDays / 7);
@@ -313,13 +313,13 @@ function tickMidInterimRecruitment(world: WorldState): void {
   if (elapsedWeeks !== 3) return;
 
   // Don't re-open if a window is already open
-  const existingWindow = (world as any)._recruitmentWindow;
+  const existingWindow = world._recruitmentWindow;
   if (existingWindow?.isOpen) return;
 
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
   if (playerHeya) {
-    (world as any)._recruitmentWindow = {
+    world._recruitmentWindow = {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 2, // Shorter 2-week window
       vacancies: 0,
