@@ -9,6 +9,7 @@ import { WeeklyDigest } from "@/components/game/WeeklyDigest";
 import { TimeControls } from "@/components/game/TimeControls";
 import { RivalStablesPanel } from "@/components/game/RivalStablesPanel";
 import { StableOverviewPanel } from "@/components/game/StableOverviewPanel";
+import { BashoSummaryBanner } from "@/components/game/BashoSummaryBanner";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
@@ -68,6 +69,9 @@ export default function Dashboard() {
 
         {/* TIME CONTROLS - PRIMARY ACTION AREA */}
         <TimeControls />
+
+        {/* BASHO SUMMARY BANNER - during active basho */}
+        {world.cyclePhase === "active_basho" && <BashoSummaryBanner />}
 
         {/* STABLE OVERVIEW + KEY METRICS */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
