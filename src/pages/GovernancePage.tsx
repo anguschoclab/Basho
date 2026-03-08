@@ -39,16 +39,24 @@ export default function GovernancePage() {
   const scandal = heya.scandalScore || 0;
   const history = heya.governanceHistory || [];
 
+  const managementTabs = [
+    { id: "economy", label: "Economy", href: "/economy" },
+    { id: "scouting", label: "Scouting", href: "/scouting" },
+    { id: "talent", label: "Talent Pools", href: "/talent" },
+    { id: "governance", label: "Governance" },
+  ];
+
   return (
-    <AppLayout>
+    <AppLayout
+      pageTitle="Governance & Compliance"
+      subNavTabs={managementTabs}
+      activeSubTab="governance"
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Governance & Compliance</h1>
-            <p className="text-muted-foreground">
-              Official records of the Sumo Association regarding {heya.name}.
-            </p>
-          </div>
+          <p className="text-muted-foreground">
+            Official records of the Sumo Association regarding {heya.name}.
+          </p>
           <Badge variant={status === "good_standing" ? "outline" : "destructive"} className="text-lg px-4 py-1">
             <Scale className="mr-2 h-4 w-4" />
             {getStatusLabel(status)}
