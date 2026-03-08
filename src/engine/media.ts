@@ -249,11 +249,27 @@ export function updateMediaFromBout(args: {
 
   const next = applyHeadlineEffects(state, world, headline);
 
-  return { state: next, headlines: [headline] };
-}
+  // --- Streak tracking & headlines ---
+  const extraHeadlines: MediaHeadline[] = [];
+  const streakHL = updateStreakAndGenerateHeadline({ state: next, world, winnerId: result.winnerRikishiId, loserId: result.loserRikishiId, day: args.day, bashoName: args.bashoName, rng });
+  if (streakHL.headline) {
+    next = applyHeadlineEffects(streakHL.state, world, streakHL.headline);
+    extraHeadlines.push(streakHL.headline);
+  } else {
+    next = streakHL.state;
+  }
 
-/**
- * Weekly media boundary:
+  // --- Promotion/demotion watch headlines ---
+  const promoHL = checkPromotionWatch({ state: next, world, result, day: args.day, bashoName: args.bashoName, rng });
+  if (promoHL.headline) {
+    next = applyHeadlineEffects(promoHL.state, world, promoHL.headline);
+    extraHeadlines.push(promoHL.headline);
+  } else {
+    next = promoHL.state;
+  }
+
+  return { state: next, headlines: [headline, ...extraHeadlines] };
+}
  * - decay heat/pressure
  * - optionally generate a weekly feature / heya story
  */
