@@ -286,6 +286,7 @@ interface GameContextValue {
 
   // Interim control
   advanceInterim: (weeks?: number) => void;
+  advanceOneDay: () => void;
   
   // Save/Load
   saveToSlot: (slotName: string) => boolean;
