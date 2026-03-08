@@ -155,23 +155,24 @@ export default function RecapPage() {
   
   const bashoName = lastBasho?.bashoName?.toUpperCase() || world.currentBashoName?.toUpperCase() || "RECENT";
 
+  const dashboardTabs = [
+    { id: "overview", label: "Overview", href: "/dashboard" },
+    { id: "basho", label: "Basho", href: "/basho" },
+    { id: "recap", label: "Recap" },
+    { id: "history", label: "History", href: "/history" },
+    { id: "almanac", label: "Almanac", href: "/almanac" },
+  ];
+
   return (
-    <AppLayout>
+    <AppLayout
+      pageTitle="Post-Basho Recap"
+      subNavTabs={dashboardTabs}
+      activeSubTab="recap"
+    >
       <div className="space-y-6">
-        {/* HEADER */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <NavLink to="/dashboard">
-              <ArrowLeft className="h-5 w-5" />
-            </NavLink>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Post-Basho Recap</h1>
-            <p className="text-muted-foreground">
-              {bashoName} {world.year} — The dust settles on another tournament
-            </p>
-          </div>
-        </div>
+        <p className="text-muted-foreground">
+          {bashoName} {world.year} — The dust settles on another tournament
+        </p>
 
         {/* YUSHO / CHAMPIONSHIP SECTION - Always show if we have basho data */}
         {lastBasho && (
