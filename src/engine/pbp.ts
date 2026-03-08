@@ -123,7 +123,16 @@ export interface FinishFact extends PbpFactBase {
   closeCall?: boolean;
 }
 
-export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact;
+export interface TacticalFact extends PbpFactBase {
+  phase: "tactical";
+  side: Side;
+  archetype?: TacticalArchetype;
+  opponentArchetype?: TacticalArchetype;
+  clinchPreference?: "belt" | "push" | "neutral";
+  strategy: string;
+}
+
+export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact;
 
 export interface PbpContext {
   seed: string;
