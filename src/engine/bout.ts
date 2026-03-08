@@ -185,9 +185,9 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
     stat(west, "balance") * 0.10 +
     jitter(rng, 6);
 
-  // Archetype Bonus
-  const eastArchBonus = east.archetype === "oshi_specialist" ? 10 : 0;
-  const westArchBonus = west.archetype === "oshi_specialist" ? 10 : 0;
+  // Archetype Bonus — oshi gets significant tachiai advantage
+  const eastArchBonus = east.archetype === "oshi_specialist" ? 14 : east.archetype === "hybrid_oshi_yotsu" ? 5 : 0;
+  const westArchBonus = west.archetype === "oshi_specialist" ? 14 : west.archetype === "hybrid_oshi_yotsu" ? 5 : 0;
 
   const finalEast = eastForce + eastArchBonus;
   const finalWest = westForce + westArchBonus;
