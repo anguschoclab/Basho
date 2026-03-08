@@ -225,8 +225,102 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { (scoutingStore as any).tickWeek?.(world); }) && subs.push("scouting");
   safeCall(() => { (talentpool as any).tickWeek?.(world); }) && subs.push("talentpool");
 
+  // Recruitment window lifecycle — check if window should close
+  safeCall(() => { tickRecruitmentWindowClose(world); }) && subs.push("recruitment_window");
+
+  // Mid-interim recruitment window (Constitution: recruitment at week 3 of interim)
+  safeCall(() => { tickMidInterimRecruitment(world); }) && subs.push("mid_interim_recruitment");
+
   // Autosave at weekly boundary (Constitution §6)
   safeCall(() => { autosave(world); });
+}
+
+/**
+ * Check if the player's recruitment window should close.
+ * Per A3.4, windows have a fixed duration set at open time.
+ */
+function tickRecruitmentWindowClose(world: WorldState): void {
+  const rw = (world as any)._recruitmentWindow;
+  if (!rw || !rw.isOpen) return;
+
+  if (world.week >= rw.closesAtWeek) {
+    rw.isOpen = false;
+
+    if (world.playerHeyaId) {
+      logEngineEvent(world, {
+        type: "RECRUITMENT_WINDOW_CLOSED",
+        category: "career",
+        importance: "notable",
+        scope: "heya",
+        heyaId: world.playerHeyaId,
+        title: "Recruitment window closed",
+        summary: `The ${rw.phase === "post_basho" ? "post-basho" : "mid-interim"} recruitment window has closed.`,
+        data: { phase: rw.phase, openedAtWeek: rw.openedAtWeek, closedAtWeek: world.week }
+      });
+    }
+  }
+}
+
+/**
+ * Mid-interim recruitment window (Constitution: recruitment occurs at mid-interim week 3).
+ * Opens a second, shorter window for player and triggers NPC opportunistic recruitment.
+ */
+function tickMidInterimRecruitment(world: WorldState): void {
+  if (world.cyclePhase !== "interim") return;
+
+  const interimDaysRemaining = (world as any)._interimDaysRemaining ?? 0;
+  const totalInterimDays = 42; // 6 weeks
+  const elapsedDays = totalInterimDays - interimDaysRemaining;
+  const elapsedWeeks = Math.floor(elapsedDays / 7);
+
+  // Fire at week 3 of interim (roughly day 21)
+  if (elapsedWeeks !== 3) return;
+
+  // Don't re-open if a window is already open
+  const existingWindow = (world as any)._recruitmentWindow;
+  if (existingWindow?.isOpen) return;
+
+  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+
+  if (playerHeya) {
+    (world as any)._recruitmentWindow = {
+      openedAtWeek: world.week,
+      closesAtWeek: world.week + 2, // Shorter 2-week window
+      vacancies: 0,
+      isOpen: true,
+      phase: "mid_interim"
+    };
+
+    logEngineEvent(world, {
+      type: "RECRUITMENT_WINDOW_OPEN",
+      category: "career",
+      importance: "notable",
+      scope: "heya",
+      heyaId: playerHeya.id,
+      title: "Mid-interim recruitment window",
+      summary: "A brief mid-interim recruitment window opens. Scout and sign for 2 weeks.",
+      data: {
+        rosterSize: playerHeya.rikishiIds.length,
+        windowDuration: 2,
+        closesAtWeek: world.week + 2,
+        phase: "mid_interim"
+      }
+    });
+  }
+
+  // NPC opportunistic recruitment during mid-interim
+  safeCall(() => {
+    const smallStables: Record<string, number> = {};
+    for (const heya of world.heyas.values()) {
+      if (heya.id === world.playerHeyaId) continue;
+      if (heya.rikishiIds.length < 6) {
+        smallStables[heya.id] = Math.max(1, 6 - heya.rikishiIds.length);
+      }
+    }
+    if (Object.keys(smallStables).length > 0) {
+      (talentpool as any).fillVacanciesForNPC?.(world, smallStables);
+    }
+  });
 }
 
 /**
