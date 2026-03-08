@@ -66,23 +66,31 @@ export default function GovernancePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          {/* Scandal Score */}
+          {/* Scandal Perception */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <ShieldAlert className="h-4 w-4" />
-                Scandal Score
+                Public Perception
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{scandal}</div>
-              <Progress 
-                value={Math.min(scandal, 100)} 
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground mt-2">
-                {scandal < 25 ? "Clean record" : scandal < 50 ? "Minor concerns" : scandal < 75 ? "Significant issues" : "Critical situation"}
-              </p>
+              {(() => {
+                const band = toScandalBand(scandal);
+                return (
+                  <div>
+                    <div className="text-2xl font-bold">{SCANDAL_LABELS[band]}</div>
+                    <Progress value={Math.min(scandal, 100)} className="mt-2" />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {band === "clean" ? "Clean record — no concerns." :
+                       band === "whispers" ? "Minor concerns circulating." :
+                       band === "scrutiny" ? "Under increasing public scrutiny." :
+                       band === "scandal" ? "Significant reputational damage." :
+                       "Crisis-level public perception."}
+                    </p>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
 
