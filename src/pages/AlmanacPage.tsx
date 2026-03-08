@@ -505,7 +505,7 @@ export default function AlmanacPage() {
 
           {/* Leaderboards Tab */}
           <TabsContent value="leaderboards">
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-2">
               {/* Yūshō Leaderboard */}
               <Card className="paper">
                 <CardHeader>
