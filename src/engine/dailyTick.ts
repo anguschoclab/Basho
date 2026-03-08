@@ -156,7 +156,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
       const remaining = world._postBashoDays ?? 7;
       if (remaining <= 0) {
         world.cyclePhase = "interim";
-        (world as any)._interimDaysRemaining = getInterimDaysTotal() - 7;
+        world._interimDaysRemaining = getInterimDaysTotal() - 7;
         logEngineEvent(world, {
           type: "PHASE_TRANSITION",
           category: "basho",
