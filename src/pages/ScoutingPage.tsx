@@ -9,6 +9,7 @@
 
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
