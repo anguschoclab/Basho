@@ -26,6 +26,8 @@ import SettingsPage from "./pages/SettingsPage";
 import OyakataPage from "./pages/OyakataPage";
 import MediaPage from "./pages/MediaPage";
 import HallOfFamePage from "./pages/HallOfFamePage";
+import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
+import SponsorManagementPage from "./pages/SponsorManagementPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
