@@ -240,6 +240,12 @@ export default function RecapPage() {
                         <p className="text-2xl font-bold">{champion ? <RikishiName id={champion.id} name={champion.shikona} /> : "Unknown"}</p>
                         <p className="text-muted-foreground">
                           {championHeya ? <StableName id={championHeya.id} name={championHeya.name} /> : "Unknown Stable"} • {champion?.rank?.toUpperCase()}
+                          {champion && (() => {
+                            const w = champion.currentBashoWins ?? 0;
+                            const l = champion.currentBashoLosses ?? 0;
+                            const kk = isKachiKoshi(w, l, champion.rank as Rank);
+                            return kk ? ` • ${w}-${l} 勝ち越し` : ` • ${w}-${l}`;
+                          })()}
                         </p>
                         {isPlayerChampion && (
                           <Badge className="mt-2 bg-primary">Your Stable's Champion!</Badge>
