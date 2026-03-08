@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
+import { BASHO_CALENDAR, getBashoInfo, SEASONAL_FLAVOR, getSeasonalFlavor } from "@/engine/calendar";
+import type { BashoName } from "@/engine/types";
 
 const BASHO_NAMES: Record<string, string> = {
   hatsu: "January", haru: "March", natsu: "May",
