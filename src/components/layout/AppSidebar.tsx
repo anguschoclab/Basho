@@ -76,9 +76,14 @@ const items = [
     icon: UserSearch,
   },
   {
-    title: "Governance", // NEW MENU ITEM
+    title: "Governance",
     url: "/governance",
     icon: Scale,
+  },
+  {
+    title: "Recap",
+    url: "/recap",
+    icon: Newspaper,
   },
   {
     title: "History",
