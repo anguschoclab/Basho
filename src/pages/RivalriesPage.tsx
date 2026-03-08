@@ -473,6 +473,6 @@ export default function RivalriesPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </AppLayout>
   );
 }
