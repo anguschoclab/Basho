@@ -109,13 +109,27 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
     case "pre_basho": {
       const remaining = (world as any)._interimDaysRemaining ?? 0;
       if (remaining <= 0) {
-        // Auto-start the basho via world.ts startBasho
+        // Auto-start the basho inline (avoid circular import with world.ts)
+        const bashoName = world.currentBashoName || "hatsu";
+        const basho = initializeBasho(world, bashoName);
+        world.currentBasho = basho;
+        world.cyclePhase = "active_basho";
+
+        // Generate day 1 schedule
         try {
-          const { startBasho } = require("./world");
-          startBasho(world, world.currentBashoName);
-        } catch (_) {
-          world.cyclePhase = "active_basho";
+          if (typeof (schedule as any).generateDaySchedule === "function") {
+            (schedule as any).generateDaySchedule(world, basho, 1, world.seed);
+          }
+        } catch (_) { /* schedule optional */ }
+
+        // Reset basho-scoped media tracking
+        const w = world as any;
+        if (w.mediaState) {
+          w.mediaState = resetBashoMediaTracking(w.mediaState);
         }
+
+        EventBus.bashoStarted(world, bashoName);
+
         logEngineEvent(world, {
           type: "PHASE_TRANSITION",
           category: "basho",
