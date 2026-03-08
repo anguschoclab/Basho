@@ -70,6 +70,11 @@ export function TimeControls() {
     setShowEndConfirm(true);
   };
 
+  const handleSimFullBasho = () => {
+    simFullBasho();
+    toast({ title: "Basho complete!", description: "All 15 days simulated and results recorded." });
+  };
+
   const confirmEndBasho = () => {
     setShowEndConfirm(false);
     endBasho();
