@@ -602,6 +602,6 @@ export default function ScoutingPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </AppLayout>
   );
 }

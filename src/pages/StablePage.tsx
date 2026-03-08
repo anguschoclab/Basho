@@ -911,6 +911,6 @@ export default function StablePage() {
           {/* Facilities & recruiting actions are managed via the Training panel above */}
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 }
