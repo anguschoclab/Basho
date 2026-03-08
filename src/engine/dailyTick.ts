@@ -38,7 +38,9 @@ import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as talentpool from "./talentpool";
 import * as facilities from "./facilities";
-import { processWeeklyMediaBoundary, createDefaultMediaState } from "./media";
+import { processWeeklyMediaBoundary, createDefaultMediaState, resetBashoMediaTracking } from "./media";
+import { initializeBasho } from "./worldgen";
+import * as schedule from "./schedule";
 
 // ============================================================================
 // TYPES
