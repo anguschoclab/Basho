@@ -891,9 +891,13 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     mizuiriDeclared: false
   };
 
-  // Phases
-  resolveTachiai(rng, east, west, st);
-  resolveClinch(rng, east, west, st);
+  // Compute opponent-aware tactical modifiers per side
+  const eastTactics = computeTacticalModifiers(east, west);
+  const westTactics = computeTacticalModifiers(west, east);
+
+  // Phases — pass tactical modifiers
+  resolveTachiai(rng, east, west, st, eastTactics, westTactics);
+  resolveClinch(rng, east, west, st, eastTactics, westTactics);
 
   // BOUT LENGTH SIMULATION (Realistic Distribution)
   const roll = rng.next();
@@ -911,10 +915,10 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   }
 
   for (let i = 0; i < targetTicks; i++) {
-    resolveMomentumTick(rng, east, west, st);
+    resolveMomentumTick(rng, east, west, st, eastTactics, westTactics);
   }
 
-  const { winner, kimarite } = resolveFinish(rng, east, west, st);
+  const { winner, kimarite } = resolveFinish(rng, east, west, st, eastTactics, westTactics);
 
   // Upset heuristic
   // Kinboshi: Maegashira defeats Yokozuna
