@@ -37,6 +37,8 @@ import {
   describeStyleVerbose,
   describeInjuryVerbose
 } from "@/engine/narrativeDescriptions";
+import { toPotentialBand, POTENTIAL_LABELS } from "@/engine/descriptorBands";
+import type { PotentialBand } from "@/engine/descriptorBands";
 import {
   RANK_NAMES,
   STYLE_NAMES,
