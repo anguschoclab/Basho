@@ -674,13 +674,19 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       // Counter specialist bonus reduced to prevent dominance
       const archBonus = disR.archetype === "counter_specialist" ? 0.08 : disR.archetype === "trickster" ? 0.10 : 0;
       
+      // Tactical AI: the advantaged side's counterResist reduces opponent counter chance
+      const advSide = currentAdv as Side;
+      const advTac = advSide === "east" ? eastTac : westTac;
+      const counterResistMod = advTac?.counterResist ?? 0;
+
       const counterChance = clamp01(
         0.08 +
           stat(disR, "technique") / 250 +
           stat(disR, "balance") / 300 +
           stat(disR, "experience") / 400 +
           fatiguePressure * 0.15 + 
-          archBonus
+          archBonus -
+          counterResistMod  // opponent's tactical counter-resistance
       );
 
       if (rng.next() < counterChance) {
