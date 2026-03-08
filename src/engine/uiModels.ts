@@ -197,6 +197,7 @@ export interface UIRosterEntry {
   careerLosses: number;
   isInjured: boolean;
   condition: number;
+  fatigue: number;
   momentum: number;
   potentialBand: PotentialBand;
 }
