@@ -74,15 +74,16 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   const net = supporterIncome - totalBurn;
   heya.funds += net;
 
-  // 4. Solvency Check (Bankruptcy)
+  // 4. Runway calculation
+  const runwayWeeks = totalBurn > 0 ? heya.funds / totalBurn : 999;
+
+  // 5. Solvency Check (Bankruptcy)
   if (heya.funds < 0) {
     handleInsolvency(heya, world);
     EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayWeeks: Math.floor(runwayWeeks) });
   }
 
-  // 5. Update Financial Risk Indicator
-  // Risk if runway < 8 weeks
-  const runwayWeeks = totalBurn > 0 ? heya.funds / totalBurn : 999;
+  // 6. Update Financial Risk Indicator
   heya.riskIndicators.financial = heya.funds < 0 || runwayWeeks < 8;
 }
 
