@@ -65,6 +65,8 @@ import {
 import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
+import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { investInFacility } from "@/engine/facilities";
 
 // Narrative band displays (no raw numbers)
 const STATURE_DISPLAY: Record<StatureBand, { label: string; labelJa: string; color: string }> = {
