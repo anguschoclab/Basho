@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Trophy, Shield, Target, Award, Swords, Crown, TrendingUp, Star, Calendar } from "lucide-react";
+import { HoFTimeline } from "@/components/game/HoFTimeline";
 import { getHallOfFame, HOF_CATEGORY_LABELS, type HoFInductee, type HoFCategory } from "@/engine/hallOfFame";
 import type { WorldState, Rikishi, BashoResult } from "@/engine/types";
 
@@ -358,6 +359,11 @@ export default function HallOfFamePage() {
             </div>
           )}
         </div>
+
+        {/* Timeline Visualization */}
+        {totalInductees > 0 && (
+          <HoFTimeline inductees={hof?.inductees ?? []} world={world} />
+        )}
 
         {/* Tabs */}
         <Tabs defaultValue="all">
