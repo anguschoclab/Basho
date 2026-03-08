@@ -104,8 +104,12 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     ftue: world.ftue,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
-    talentPool: (world as any).talentPool
-  };
+    talentPool: (world as any).talentPool,
+    // Extended fields
+    dayIndexGlobal: world.dayIndexGlobal,
+    almanacSnapshots: (world as any).almanacSnapshots,
+    calendar: world.calendar,
+  } as any;
 }
 
 /**
