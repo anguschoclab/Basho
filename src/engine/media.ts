@@ -99,6 +99,12 @@ export interface MediaState {
 
   /** Track which promotion_watch headlines fired this basho (rikishiId → true) */
   promoWatchFired: Record<Id, boolean>;
+
+  /** Track which retirement_watch headlines fired this basho (rikishiId → true) */
+  retirementWatchFired: Record<Id, boolean>;
+
+  /** Whether title_race headline has fired this basho (fires once per day threshold) */
+  titleRaceDayFired: Record<number, boolean>;
 }
 
 /** Digest output for UI */
