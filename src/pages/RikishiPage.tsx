@@ -268,11 +268,6 @@ export default function RikishiPage() {
                 <Progress value={scouted.scoutingLevel} className="h-2" />
               </div>
 
-              <div className="text-right">
-                <div className="text-lg font-mono font-bold">{Math.round(scouted.scoutingLevel)}%</div>
-                <div className="text-xs text-muted-foreground">Intel</div>
-              </div>
-
               {isOwned && (
                 <Badge variant="default" className="ml-2">
                   Your Heya

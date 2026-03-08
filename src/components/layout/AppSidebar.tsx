@@ -118,9 +118,14 @@ export function AppSidebar() {
           <div className="mt-4">
             <div className="text-sm font-medium text-muted-foreground">My Stable</div>
             <div className="font-bold truncate">{playerHeya.name}</div>
-            <div className="text-xs text-green-600 font-mono mt-1">
-              {formatCurrency(playerHeya.funds)}
-            </div>
+            {(() => {
+              const runway = describeRunwayBrief(playerHeya.funds);
+              return (
+                <div className={`text-xs font-medium mt-1 ${runway.color}`}>
+                  {runway.label}
+                </div>
+              );
+            })()}
           </div>
         )}
       </SidebarHeader>

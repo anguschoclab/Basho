@@ -172,7 +172,7 @@ function ScoutingBadge({ level }: { level: number }) {
   return (
     <span className={`flex items-center gap-1 ${info.color}`} title={info.description}>
       <Search className="h-3 w-3" />
-      <span>{Math.round(level)}%</span>
+      <span>{info.label}</span>
     </span>
   );
 }
