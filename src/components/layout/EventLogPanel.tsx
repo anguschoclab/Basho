@@ -123,6 +123,22 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const world = state.world;
+
+  /** Render inline clickable entity tags for rikishi/stable referenced by an event */
+  const renderEntityTags = useCallback((e: EngineEvent) => {
+    if (!world) return null;
+    const tags: React.ReactNode[] = [];
+    if (e.rikishiId) {
+      const r = world.rikishi.get(e.rikishiId);
+      if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shpikonaName || r.id} className="text-[11px] font-medium" />);
+    }
+    if (e.heyaId) {
+      const h = world.heyas.get(e.heyaId);
+      if (h) tags.push(<StableName key={`h-${h.id}`} id={h.id} name={h.name} className="text-[11px] font-medium" />);
+    }
+    if (tags.length === 0) return null;
+    return <span className="inline-flex items-center gap-1.5 flex-wrap">{tags}</span>;
+  }, [world]);
   const events = useMemo(() => {
     if (!world?.events?.log) return [];
     const all = [...world.events.log];
