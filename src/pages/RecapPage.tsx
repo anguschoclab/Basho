@@ -695,6 +695,29 @@ export default function RecapPage() {
           </Card>
         )}
 
+        {/* PROGRESSION ARCS — Ozeki Runs, Yokozuna Deliberation, Kadoban */}
+        <ProgressionTracker world={world} />
+
+        {/* INTAI CEREMONIES for retired rikishi */}
+        {(() => {
+          const retiredEvents = groupedEvents.retirements.filter(e => 
+            e.type.includes("RETIRE") && e.rikishiId
+          );
+          const firstRetired = retiredEvents[0];
+          const retiredRikishi = firstRetired?.rikishiId ? world.rikishi.get(firstRetired.rikishiId) : null;
+          
+          if (retiredRikishi) {
+            return (
+              <IntaiCeremonyTrigger
+                rikishi={retiredRikishi}
+                reason={firstRetired?.summary || ""}
+                world={world}
+              />
+            );
+          }
+          return null;
+        })()}
+
         {/* NAVIGATION */}
         <div className="flex flex-wrap gap-4">
           <Button onClick={handleContinue}>
