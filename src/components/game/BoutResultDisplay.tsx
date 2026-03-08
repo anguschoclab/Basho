@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { BoutResult, Rikishi } from "@/engine/types";
 import { Badge } from "@/components/ui/badge";
 import { getKimarite } from "@/engine/kimarite";
+import { RikishiName } from "@/components/ClickableName";
 
 interface BoutResultDisplayProps {
   result: BoutResult;
