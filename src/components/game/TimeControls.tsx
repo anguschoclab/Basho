@@ -150,5 +150,21 @@ export function TimeControls() {
         )}
       </CardContent>
     </Card>
+
+    <AlertDialog open={showEndConfirm} onOpenChange={setShowEndConfirm}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will finalize results, update banzuke rankings, and advance to the off-season.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
