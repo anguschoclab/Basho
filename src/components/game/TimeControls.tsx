@@ -31,6 +31,7 @@ export function TimeControls() {
     simulateAllBouts,
     endDay,
     endBasho,
+    simFullBasho,
     setPhase,
     advanceInterim,
     advanceOneDay,
