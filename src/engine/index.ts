@@ -82,4 +82,5 @@ export { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 // NPC AI (Canon A7)
 export { makeNPCWeeklyDecision, getManagerPersona } from "./npcAI";
 export type { NPCWeeklyDecision } from "./npcAI";
+export { buildPerceptionSnapshot, buildAllPerceptionSnapshots, getCachedPerception } from "./perception";
 export type { PerceptionSnapshot, RikishiPerception, HealthBand, WelfareRiskBand, GovernancePressureBand, MediaHeatBand, RivalryPerceptionBand, RosterStrengthBand, MoraleBand } from "./perception";
