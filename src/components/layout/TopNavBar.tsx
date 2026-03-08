@@ -145,6 +145,7 @@ interface TopNavBarProps {
 export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
   const { state, advanceInterim, advanceOneDay, startBasho } = useGame();
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const autosaveStatus = useAutosaveIndicator();
   const navigate = useNavigate();
   const world = state.world;
 
