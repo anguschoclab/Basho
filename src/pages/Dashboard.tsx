@@ -99,12 +99,14 @@ export default function Dashboard() {
                 <CardContent>
                 <div className="text-2xl font-bold">
                     {playerHeya ? (() => {
-                      const f = playerHeya.funds;
-                      if (f >= 50_000_000) return "Secure";
-                      if (f >= 20_000_000) return "Comfortable";
-                      if (f >= 5_000_000) return "Tight";
-                      if (f >= 1_000_000) return "Critical";
-                      return "Desperate";
+                      // Use the heya's persisted runway band — never derive from raw funds
+                      const band = (playerHeya as any).runwayBand;
+                      if (band === "secure") return "Secure";
+                      if (band === "comfortable") return "Comfortable";
+                      if (band === "tight") return "Tight";
+                      if (band === "critical") return "Critical";
+                      if (band === "desperate") return "Desperate";
+                      return "Unknown";
                     })() : "—"}
                 </div>
                 <p className="text-xs text-muted-foreground">

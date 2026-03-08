@@ -39,15 +39,20 @@ function severityWeight(sev: string | number | undefined): number {
   return 2;
 }
 
-function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number } {
+function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number; negligenceCount: number } {
   let pressure = 0;
   let seriousCount = 0;
+  let negligenceCount = 0;
+
+  // Get training state to detect negligence (forcing injured rikishi to train)
+  const trainingState = ensureHeyaTrainingState(world, heya.id);
+  const intensity = trainingState.activeProfile.intensity;
+  const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
   for (const rid of heya.rikishiIds) {
     const r = world.rikishi.get(rid);
     if (!r) continue;
 
-    // Prefer rich injuryStatus, fallback to injured boolean/weeks
     const status = (r as any).injuryStatus ?? (r as any).injury;
     const injured = Boolean(status?.isInjured) || Boolean((r as any).injured);
     if (!injured) continue;
@@ -56,9 +61,18 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
     const w = severityWeight(sev);
     pressure += w;
     if (sev === "serious" || sev === "high" || sev === 3) seriousCount += 1;
+
+    // NEGLIGENCE DETECTION (Constitution §A7):
+    // If an injured rikishi is in a harsh training regime without "protect" or "rebuild" focus,
+    // that counts as negligence (not just misfortune).
+    const individualFocus = trainingState.focusSlots.find(f => f.rikishiId === rid);
+    const isProtected = individualFocus?.focusType === "protect" || individualFocus?.focusType === "rebuild";
+    if (isHarshTraining && !isProtected) {
+      negligenceCount += 1;
+    }
   }
 
-  return { pressure, seriousCount };
+  return { pressure, seriousCount, negligenceCount };
 }
 
 function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: number; reasons: string[] } {
@@ -66,20 +80,23 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   const state = ensureHeyaWelfareState(heya);
 
   // Injuries are the primary driver
-  const { pressure, seriousCount } = computeHeyaInjuryPressure(world, heya);
-  if (pressure > 0) {
-    const injDelta = clamp(Math.round(pressure / 3), 0, 12);
-    if (injDelta > 0) {
-      reasons.push(`injury_pressure+${injDelta}`);
-      state.welfareRisk += injDelta; // temporary, we'll compute delta separately as well
-      state.welfareRisk -= injDelta;
-    }
-  }
+  const { pressure, seriousCount, negligenceCount } = computeHeyaInjuryPressure(world, heya);
 
   let delta = clamp(Math.round(pressure / 3), 0, 12);
   if (seriousCount > 0) {
     delta += 2;
     reasons.push(`serious_injuries+2`);
+  }
+
+  // NEGLIGENCE vs MISFORTUNE (Constitution §A7):
+  // Negligence = forcing injured to train without protection. Escalates faster.
+  // Misfortune = injuries with proper protection in place. Normal escalation.
+  if (negligenceCount > 0) {
+    const negligencePenalty = negligenceCount * 3;
+    delta += negligencePenalty;
+    reasons.push(`negligence+${negligencePenalty}(${negligenceCount}_unprotected_injured)`);
+  } else if (pressure > 0) {
+    reasons.push(`misfortune(protected_or_mild)`);
   }
 
   // Training profile and intensity
@@ -153,10 +170,13 @@ export function tickWeek(world: WorldState): number {
     const riskUp = w.welfareRisk - beforeRisk;
 
     // Transition logic
-    const { seriousCount } = computeHeyaInjuryPressure(world, heya);
+    const { seriousCount, negligenceCount } = computeHeyaInjuryPressure(world, heya);
+    const hasNegligence = negligenceCount > 0;
 
     if (w.complianceState === "compliant") {
-      if (w.welfareRisk >= 45 || seriousCount >= 2) {
+      // Negligence lowers the threshold for entering watch
+      const watchThreshold = hasNegligence ? 30 : 45;
+      if (w.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && w.welfareRisk >= 20)) {
         setComplianceState(w, "watch");
         logEngineEvent(world, {
           type: "COMPLIANCE_WATCH",
@@ -164,9 +184,11 @@ export function tickWeek(world: WorldState): number {
           importance: "notable",
           scope: "heya",
           heyaId: heya.id,
-          title: "Compliance Watch",
-          summary: `${heya.name} has been placed under watch for welfare concerns.`,
-          data: { welfareRisk: w.welfareRisk, reasons: reasons.join("|") }
+          title: hasNegligence ? "Compliance Watch — Negligence Suspected" : "Compliance Watch",
+          summary: hasNegligence
+            ? `${heya.name} placed under watch. Injured wrestlers are training without protection — regulators suspect negligence.`
+            : `${heya.name} has been placed under watch for welfare concerns.`,
+          data: { welfareRisk: w.welfareRisk, negligenceCount, reasons: reasons.join("|") }
         });
         events += 1;
       }

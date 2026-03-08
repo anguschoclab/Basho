@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
 import type { Oyakata } from "@/engine/types";
 import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
+import { toTraitBand, TRAIT_LABELS } from "@/engine/descriptorBands";
 
 export default function OyakataPage() {
   const { state } = useGame();
@@ -79,16 +80,19 @@ export default function OyakataPage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {traitItems.map(trait => (
-                <div key={trait.key} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <trait.icon className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">{trait.label}</span>
-                    <span className="ml-auto text-sm text-muted-foreground">{Math.round(trait.value)}</span>
+              {traitItems.map(trait => {
+                const band = toTraitBand(trait.value);
+                return (
+                  <div key={trait.key} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <trait.icon className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">{trait.label}</span>
+                      <span className="ml-auto text-sm text-muted-foreground">{TRAIT_LABELS[band]}</span>
+                    </div>
+                    <Progress value={trait.value} className="h-2" />
                   </div>
-                  <Progress value={trait.value} className="h-2" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

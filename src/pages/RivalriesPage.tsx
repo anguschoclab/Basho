@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Flame, Swords, Users, Trophy, TrendingUp } from "lucide-react";
+import { toRivalryHeatBand as toRHBand, RIVALRY_HEAT_LABELS } from "@/engine/descriptorBands";
 import {
   type RivalryPairState,
   type RivalryHeatBand,
@@ -278,10 +279,10 @@ function RivalryCard({ pair, world, isPlayerRivalry }: RivalryCardProps) {
         <div className="pt-2">
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Rivalry Heat</span>
-            <span>{Math.round(heat)}%</span>
+            <span>{RIVALRY_HEAT_LABELS[toRHBand(heat)]}</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div className={`h-full transition-all ${heatBarClass(heatBand)}`} style={{ width: `${heat}%` }} />
+            <div className={`h-full transition-all ${heatBarClass(heatBand)}`} style={{ width: `${Math.min(heat, 100)}%` }} />
           </div>
         </div>
       </CardContent>

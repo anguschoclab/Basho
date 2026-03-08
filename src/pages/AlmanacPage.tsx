@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { toWinRateAssessment, WIN_RATE_LABELS } from "@/engine/descriptorBands";
 import type { Rikishi, Heya } from "@/engine/types";
 import {
   Building2,
@@ -41,10 +42,11 @@ function computeCareerStats(rikishi: Rikishi) {
   const losses = rikishi.careerLosses || 0;
   const totalBouts = wins + losses;
 
-  const winRate = totalBouts > 0 ? ((wins / totalBouts) * 100).toFixed(1) : "0.0";
+  // No-Leak: show win rate as assessment band, not percentage
+  const assessment = WIN_RATE_LABELS[toWinRateAssessment(wins, losses)];
   const estimatedBasho = Math.floor(totalBouts / 15);
 
-  return { winRate, totalBouts, estimatedBasho };
+  return { winRateLabel: assessment, totalBouts, estimatedBasho };
 }
 
 // Get stable tier color (robust)
@@ -308,7 +310,7 @@ export default function AlmanacPage() {
                             <div className="font-mono font-bold">
                               {rikishi.careerWins}-{rikishi.careerLosses}
                             </div>
-                            <div className="text-xs text-muted-foreground">{stats.winRate}% win rate</div>
+                            <div className="text-xs text-muted-foreground">{stats.winRateLabel}</div>
                           </div>
 
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
@@ -463,8 +465,7 @@ export default function AlmanacPage() {
 
                       if (!best) return null;
 
-                      const denom = Math.max(1, (best.careerWins || 0) + (best.careerLosses || 0));
-                      const rate = (((best.careerWins || 0) / denom) * 100).toFixed(1);
+                      const rateLabel = WIN_RATE_LABELS[toWinRateAssessment(best.careerWins || 0, best.careerLosses || 0)];
 
                       return (
                         <div className="p-4 rounded-lg bg-secondary/50">
@@ -473,7 +474,7 @@ export default function AlmanacPage() {
                             <Link to={`/rikishi/${best.id}`} className="font-display font-bold text-lg hover:text-primary">
                               {best.shikona}
                             </Link>
-                            <span className="font-mono text-success">{rate}%</span>
+                            <span className="font-mono text-success">{rateLabel}</span>
                           </div>
                         </div>
                       );

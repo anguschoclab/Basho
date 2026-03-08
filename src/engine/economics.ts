@@ -66,12 +66,16 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   const totalBurn = rikishiSalaries + facilityUpkeep + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
   // 2. Calculate Income (Koenkai / Supporters)
-  // Income is derived from Reputation (Prestige)
-  // High reputation = strong supporters
   const supporterIncome = (heya.reputation || 10) * SUPPORTER_INCOME_FACTOR;
 
+  // KŌENKAI TIER-1 SURVIVAL FLOOR (Constitution §A6):
+  // Guarantees minimum base funding that covers staff/roster costs for new heya
+  // without sekitori. Prevents instant insolvency.
+  const KOENKAI_SURVIVAL_FLOOR = 350_000; // Covers basic roster + minimal facilities
+  const effectiveIncome = Math.max(supporterIncome, KOENKAI_SURVIVAL_FLOOR);
+
   // 3. Apply to Funds
-  const net = supporterIncome - totalBurn;
+  const net = effectiveIncome - totalBurn;
   heya.funds += net;
 
   // 4. Runway calculation

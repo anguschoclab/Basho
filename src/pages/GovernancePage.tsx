@@ -9,11 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning } from "lucide-react";
 import type { GovernanceStatus, GovernanceRuling, Heya } from "@/engine/types";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
+import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 
-function formatCurrency(amount: number): string {
-  if (amount >= 1_000_000) return `¥${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1_000) return `¥${(amount / 1_000).toFixed(0)}K`;
-  return `¥${amount}`;
+function formatFinePenalty(amount: number): string {
+  if (amount >= 10_000_000) return "Severe fine";
+  if (amount >= 3_000_000) return "Significant fine";
+  if (amount >= 500_000) return "Moderate fine";
+  return "Minor fine";
 }
 
 export default function GovernancePage() {
@@ -64,23 +66,31 @@ export default function GovernancePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          {/* Scandal Score */}
+          {/* Scandal Perception */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <ShieldAlert className="h-4 w-4" />
-                Scandal Score
+                Public Perception
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{scandal}</div>
-              <Progress 
-                value={Math.min(scandal, 100)} 
-                className="mt-2"
-              />
-              <p className="text-xs text-muted-foreground mt-2">
-                {scandal < 25 ? "Clean record" : scandal < 50 ? "Minor concerns" : scandal < 75 ? "Significant issues" : "Critical situation"}
-              </p>
+              {(() => {
+                const band = toScandalBand(scandal);
+                return (
+                  <div>
+                    <div className="text-2xl font-bold">{SCANDAL_LABELS[band]}</div>
+                    <Progress value={Math.min(scandal, 100)} className="mt-2" />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {band === "clean" ? "Clean record — no concerns." :
+                       band === "whispers" ? "Minor concerns circulating." :
+                       band === "scrutiny" ? "Under increasing public scrutiny." :
+                       band === "scandal" ? "Significant reputational damage." :
+                       "Crisis-level public perception."}
+                    </p>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
 
@@ -97,22 +107,28 @@ export default function GovernancePage() {
               {(() => {
                 const welfare = (heya as any).welfareState;
                 const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
-                const state = String(welfare?.complianceState ?? "compliant");
+                const compState = String(welfare?.complianceState ?? "compliant");
+                const { bandWelfareLabel } = (() => {
+                  if (risk <= 20) return { bandWelfareLabel: "Safe" };
+                  if (risk <= 44) return { bandWelfareLabel: "Cautious" };
+                  if (risk <= 69) return { bandWelfareLabel: "Elevated" };
+                  return { bandWelfareLabel: "Critical" };
+                })();
                 return (
                   <div>
                     <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold">{risk}</div>
-                      <Badge variant={state === "compliant" ? "outline" : state === "watch" ? "secondary" : "destructive"} className="text-xs">
-                        {state.toUpperCase()}
+                      <div className="text-2xl font-bold">{bandWelfareLabel}</div>
+                      <Badge variant={compState === "compliant" ? "outline" : compState === "watch" ? "secondary" : "destructive"} className="text-xs">
+                        {compState.toUpperCase()}
                       </Badge>
                     </div>
                     <Progress value={risk} className="mt-2" />
                     <p className="text-xs text-muted-foreground mt-2">
-                      {state === "compliant"
+                      {compState === "compliant"
                         ? "No active concerns."
-                        : state === "watch"
+                        : compState === "watch"
                         ? "Under monitoring for welfare risk."
-                        : state === "investigation"
+                        : compState === "investigation"
                         ? "Investigation open — remediation required."
                         : "Sanctions active — recruitment/training may be restricted."}
                     </p>
@@ -192,7 +208,7 @@ export default function GovernancePage() {
                       <p className="text-xs text-muted-foreground mt-1">{ruling.date}</p>
                       {ruling.effects?.fineAmount && (
                         <p className="text-sm text-destructive mt-1">
-                          Fine: {formatCurrency(ruling.effects.fineAmount)}
+                          Fine: {formatFinePenalty(ruling.effects.fineAmount)}
                         </p>
                       )}
                     </div>

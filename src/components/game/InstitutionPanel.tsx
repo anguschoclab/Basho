@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
+import { toTraitBand, TRAIT_LABELS, toScandalBand, SCANDAL_LABELS } from "@/engine/descriptorBands";
 import type { Heya, WorldState } from "@/engine/types";
 import { getStatusLabel } from "@/engine/governance";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
@@ -106,7 +107,7 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
             <Gavel className="h-4 w-4" />
             <div className="text-sm font-medium">Governance</div>
             <Badge variant="outline">{getStatusLabel(heya.governanceStatus)}</Badge>
-            {heya.scandalScore >= 20 && <Badge variant="outline">Scandal {Math.floor(heya.scandalScore)}</Badge>}
+            {heya.scandalScore >= 20 && <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>}
           </div>
           <div className="text-xs text-muted-foreground">
             Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster.
@@ -136,15 +137,18 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
                 ["Risk", traits.risk],
                 ["Tradition", traits.tradition],
                 ["Compassion", traits.compassion],
-              ] as Array<[string, number]>).map(([label, v]) => (
-                <div key={label} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{label}</span>
-                    <span className="font-medium">{Math.round(v)}</span>
+              ] as Array<[string, number]>).map(([label, v]) => {
+                const band = toTraitBand(v);
+                return (
+                  <div key={label} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{label}</span>
+                      <span className="font-medium">{TRAIT_LABELS[band]}</span>
+                    </div>
+                    <Progress value={clamp(v, 0, 100)} />
                   </div>
-                  <Progress value={clamp(v, 0, 100)} />
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
