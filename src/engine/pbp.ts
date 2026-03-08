@@ -318,6 +318,39 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     ]
   },
 
+  tactical: {
+    oshi_strategy: [
+      { id: "tac_oshi_1", text: "📋 {leader}'s game plan: deny the belt, full forward pressure." },
+      { id: "tac_oshi_2", text: "📋 {leader} comes in with a clear oshi strategy — no belt wrestling today." },
+      { id: "tac_oshi_3", text: "📋 The commentators note {leader} is set up for relentless pushing." },
+    ],
+    yotsu_strategy: [
+      { id: "tac_yotsu_1", text: "📋 {leader}'s approach: get to the belt at all costs." },
+      { id: "tac_yotsu_2", text: "📋 {leader} wants this on the mawashi — a patient belt-hunting plan." },
+      { id: "tac_yotsu_3", text: "📋 Classic yotsu preparation from {leader} — absorb and grapple." },
+    ],
+    speedster_strategy: [
+      { id: "tac_speed_1", text: "📋 {leader} will use footwork — movement sumo is the plan." },
+      { id: "tac_speed_2", text: "📋 Quick feet, sharp angles — {leader} aims to stay mobile." },
+      { id: "tac_speed_3", text: "📋 The commentators say {leader} will rely on lateral movement today." },
+    ],
+    trickster_strategy: [
+      { id: "tac_trick_1", text: "📋 Expect the unexpected — {leader} is reading the opponent's habits." },
+      { id: "tac_trick_2", text: "📋 {leader} has that look in his eyes — something tricky is coming." },
+      { id: "tac_trick_3", text: "📋 Misdirection and feints — that's {leader}'s plan today." },
+    ],
+    counter_strategy: [
+      { id: "tac_ctr_1", text: "📋 {leader} is set to absorb and redirect — a counter strategy." },
+      { id: "tac_ctr_2", text: "📋 Patient and calculated — {leader} waits for the opponent to overcommit." },
+      { id: "tac_ctr_3", text: "📋 The analysis desk notes {leader} is fighting reactively today." },
+    ],
+    adaptive_strategy: [
+      { id: "tac_adapt_1", text: "📋 {leader} reads the matchup and adjusts — a flexible approach." },
+      { id: "tac_adapt_2", text: "📋 No fixed plan — {leader} adapts to whatever comes." },
+      { id: "tac_adapt_3", text: "📋 A calculated game plan from {leader} — exploiting the opponent's weakness." },
+    ],
+  },
+
   connective: {
     short: [
       { id: "x_1", text: "Now…", weight: 1 },
