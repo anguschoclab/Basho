@@ -73,6 +73,7 @@ export default function BashoPage() {
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
   const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
+  const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
 
   // Prevent auto-show loops
   const lastAutoShownKeyRef = useRef<string | null>(null);
