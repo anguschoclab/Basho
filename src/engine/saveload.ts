@@ -131,6 +131,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
     // Ozeki kadoban tracking
     ozekiKadoban: (world as any).ozekiKadoban,
+    // Hall of Fame
+    hallOfFame: (world as any).hallOfFame,
   } as any;
 }
 

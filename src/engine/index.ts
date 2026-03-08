@@ -65,6 +65,8 @@ export {
 } from "./timeBoundary";
 
 export * from "./almanac";
+export * from "./hallOfFame";
+export { getVoiceMatrix, validateDiversityGates } from "./pbpMatrix";
 
 // Daily Tick Pipeline
 export { advanceOneDay, advanceDays, advanceFullInterim, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";

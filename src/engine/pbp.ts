@@ -369,7 +369,7 @@ export function buildPbp(
 export function buildPbpFromBoutResult(
   result: BoutResult,
   ctx: Omit<PbpContext, "seed"> & { seed: string },
-  lib: PbpLibrary = DEFAULT_PBP_LIBRARY
+  lib?: PbpLibrary
 ): PbpLine[] {
   const facts: PbpFact[] = [];
 

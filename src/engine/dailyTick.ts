@@ -438,13 +438,36 @@ function tickYearBoundary(world: WorldState, subs: string[]): void {
   const newYear = world.calendar.year;
   world.year = newYear;
 
-  // 1. Hall of Fame eligibility scan
-  const hofCandidates: string[] = [];
-  for (const r of world.rikishi.values()) {
-    if (r.rank === "yokozuna" && r.careerWins >= 500) {
-      hofCandidates.push(r.shikona || r.name || r.id);
+  // 1. Hall of Fame induction pipeline (deterministic, from immutable history)
+  let hofInductees: string[] = [];
+  safeCall(() => {
+    const { processYearEndInduction } = require("./hallOfFame");
+    const inductees = processYearEndInduction(world);
+    hofInductees = inductees.map((i: any) => i.shikona);
+
+    // Log each induction as an event
+    for (const inductee of inductees) {
+      const { HOF_CATEGORY_LABELS } = require("./hallOfFame");
+      const catLabel = HOF_CATEGORY_LABELS[inductee.category]?.name || inductee.category;
+      logEngineEvent(world, {
+        type: "HOF_INDUCTION",
+        category: "milestone",
+        importance: "headline",
+        scope: "world",
+        rikishiId: inductee.rikishiId,
+        title: `Hall of Fame: ${inductee.shikona}`,
+        summary: `${inductee.shikona} has been inducted into the Hall of Fame as a ${catLabel}.`,
+        data: {
+          category: inductee.category,
+          year: newYear,
+          yushoCount: inductee.stats.yushoCount ?? 0,
+          consecutiveBasho: inductee.stats.consecutiveBasho ?? 0,
+          ginoShoCount: inductee.stats.ginoShoCount ?? 0,
+        },
+        tags: ["hall_of_fame", "milestone"]
+      });
     }
-  }
+  }) && subs.push("hall_of_fame");
 
   // 2. Era label check (every 10 years)
   const isDecadeBoundary = newYear % 10 === 0;
@@ -456,9 +479,9 @@ function tickYearBoundary(world: WorldState, subs: string[]): void {
     scope: "world",
     title: `Year ${newYear} begins`,
     summary: isDecadeBoundary
-      ? `A new decade dawns. ${hofCandidates.length > 0 ? `HoF candidates: ${hofCandidates.join(", ")}.` : "No HoF candidates this year."}`
-      : `The sumo world enters year ${newYear}.`,
-    data: { year: newYear, hofCandidates: hofCandidates.length, isDecade: isDecadeBoundary },
+      ? `A new decade dawns. ${hofInductees.length > 0 ? `Hall of Fame inductees: ${hofInductees.join(", ")}.` : "No new Hall of Fame inductees this year."}`
+      : `The sumo world enters year ${newYear}.${hofInductees.length > 0 ? ` HoF: ${hofInductees.join(", ")}.` : ""}`,
+    data: { year: newYear, hofInductees: hofInductees.length, isDecade: isDecadeBoundary },
     tags: ["boundary", "year"]
   });
 
