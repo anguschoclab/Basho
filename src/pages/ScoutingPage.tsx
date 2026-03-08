@@ -47,7 +47,7 @@ import {
   describeScoutingLevel,
   type ScoutingInvestment,
 } from "@/engine/scouting";
-import { getOrCreateScouted, setScoutingInvestment } from "@/engine/scoutingStore";
+import { getOrCreateScouted, setScoutingInvestment, getScoutingLevel, warmScoutingForRikishiList } from "@/engine/scoutingStore";
 import * as talentpool from "@/engine/talentpool";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { RikishiName, StableName } from "@/components/ClickableName";
