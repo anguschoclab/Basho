@@ -123,11 +123,14 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const scoutItems: DigestItem[] = [];
   const govItems: DigestItem[] = [];
   const welfareItems: DigestItem[] = [];
+  const trainingItems: DigestItem[] = [];
+  const careerItems: DigestItem[] = [];
+  const rivalryItems: DigestItem[] = [];
 
   for (const e of weekEvents) {
     const item: DigestItem = {
       id: e.id,
-      kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "discipline" ? "generic" : "generic",
+      kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
       title: e.title,
       detail: e.summary,
       rikishiId: e.rikishiId,
@@ -136,10 +139,16 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
     if (e.category === "economy" || e.category === "sponsor") econItems.push({ ...item, kind: "economy" });
     else if (e.category === "scouting") scoutItems.push({ ...item, kind: "scouting" });
-    else if (e.type.startsWith("GOVERNANCE") || e.type.includes("SCANDAL")) govItems.push({ ...item, kind: "generic" });
-    else if (e.type.startsWith("COMPLIANCE") || e.type.startsWith("WELFARE")) welfareItems.push({ ...item, kind: "generic" });
+    else if (e.category === "training") trainingItems.push({ ...item, kind: "training" });
+    else if (e.category === "career") careerItems.push(item);
+    else if (e.category === "rivalry") rivalryItems.push(item);
+    else if (e.type.startsWith("GOVERNANCE") || e.type.includes("SCANDAL") || e.category === "discipline") govItems.push(item);
+    else if (e.category === "welfare" || e.type.startsWith("COMPLIANCE") || e.type.startsWith("WELFARE")) welfareItems.push(item);
   }
 
+  if (trainingItems.length) sections.push({ id: "training", title: "Training", items: trainingItems });
+  if (careerItems.length) sections.push({ id: "career", title: "Career Updates", items: careerItems });
+  if (rivalryItems.length) sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });
   if (welfareItems.length) sections.push({ id: "welfare", title: "Welfare & Compliance", items: welfareItems });
   if (govItems.length) sections.push({ id: "governance", title: "Governance", items: govItems });
   if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });

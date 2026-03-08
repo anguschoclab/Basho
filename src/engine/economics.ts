@@ -7,7 +7,8 @@ import { rngFromSeed, rngForWorld } from "./rng";
 import { SeededRNG } from "./utils/SeededRNG";
 import type { WorldState, Heya, BoutResult, MatchSchedule, Rikishi, Id } from "./types";
 import { reportScandal } from "./governance";
-import { RANK_HIERARCHY } from "./banzuke"; // Need salary data
+import { RANK_HIERARCHY } from "./banzuke";
+import { EventBus } from "./events";
 
 // === CONSTANTS ===
 
@@ -73,14 +74,16 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   const net = supporterIncome - totalBurn;
   heya.funds += net;
 
-  // 4. Solvency Check (Bankruptcy)
+  // 4. Runway calculation
+  const runwayWeeks = totalBurn > 0 ? heya.funds / totalBurn : 999;
+
+  // 5. Solvency Check (Bankruptcy)
   if (heya.funds < 0) {
     handleInsolvency(heya, world);
+    EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayWeeks: Math.floor(runwayWeeks) });
   }
 
-  // 5. Update Financial Risk Indicator
-  // Risk if runway < 8 weeks
-  const runwayWeeks = totalBurn > 0 ? heya.funds / totalBurn : 999;
+  // 6. Update Financial Risk Indicator
   heya.riskIndicators.financial = heya.funds < 0 || runwayWeeks < 8;
 }
 
@@ -136,26 +139,21 @@ export function onBoutResolved(
   if (rng.bool(0.5)) kenshoCount += 1;
 
   if (kenshoCount > 0 && winnerHeya) {
-    const AMOUNT_PER_KENSHO = 62_000; // Real value approx
+    const AMOUNT_PER_KENSHO = 62_000;
     const total = kenshoCount * AMOUNT_PER_KENSHO;
 
-    // Split: 50% to Rikishi Cash (Taxed/Saved), 50% to Stable (Operating Revenue)?
-    // Canon: Kensho belongs to the Rikishi, but Stable takes a cut or 'management fee'?
-    // Actually, Spec 11.0 says: "RikishiCash... StableFunds".
-    // Usually Rikishi keeps Kensho. Stable survives on Koenkai.
-    // However, to make the game fun, let's say Stable takes a small admin fee (10%)
-    
     const rikishiShare = total * 0.9;
     const stableShare = total * 0.1;
 
-    // Update Rikishi Economics
     if (!winner.economics) winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
     
     winner.economics.cash += rikishiShare;
     winner.economics.currentBashoEarnings += rikishiShare;
     winner.economics.careerKenshoWon += kenshoCount;
 
-    // Update Stable Funds
     winnerHeya.funds += stableShare;
+
+    // Emit kensho event
+    EventBus.kenshoAwarded(world, winner.id, winnerHeya.id, total, kenshoCount);
   }
 }

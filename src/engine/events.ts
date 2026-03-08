@@ -132,11 +132,12 @@ export function queryEvents(
   }).slice(0, filters.limit ?? 50);
 }
 
-/** Convenience factories */
+/** Convenience factories — one per subsystem domain */
 export const EventBus = {
+  // --- Injury ---
   injury: (world: WorldState, rikishiId: Id, title: string, summary: string, data: Record<string, any>) =>
     logEngineEvent(world, {
-      type: "INJURY",
+      type: "INJURY_OCCURRED",
       category: "injury",
       importance: data?.severity === "serious" ? "headline" : data?.severity === "moderate" ? "major" : "notable",
       scope: "rikishi",
@@ -147,6 +148,20 @@ export const EventBus = {
       tags: ["injury"]
     }),
 
+  recovery: (world: WorldState, rikishiId: Id, heyaId: Id | undefined, summary: string) =>
+    logEngineEvent(world, {
+      type: "INJURY_RECOVERED",
+      category: "injury",
+      importance: "notable",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title: "Recovery complete",
+      summary,
+      tags: ["injury", "recovery"]
+    }),
+
+  // --- Governance ---
   governance: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any>, importance: EventImportance = "major") =>
     logEngineEvent(world, {
       type: "GOVERNANCE_RULING",
@@ -158,7 +173,199 @@ export const EventBus = {
       summary,
       data,
       tags: ["governance"]
-    })
+    }),
+
+  // --- Training ---
+  trainingMilestone: (world: WorldState, rikishiId: Id, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
+    logEngineEvent(world, {
+      type: "TRAINING_MILESTONE",
+      category: "training",
+      importance: "notable",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["training"]
+    }),
+
+  trainingProfileChanged: (world: WorldState, heyaId: Id, summary: string) =>
+    logEngineEvent(world, {
+      type: "TRAINING_PROFILE_CHANGED",
+      category: "training",
+      importance: "minor",
+      scope: "heya",
+      heyaId,
+      title: "Training profile updated",
+      summary,
+      tags: ["training"]
+    }),
+
+  // --- Economics ---
+  financialAlert: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
+    logEngineEvent(world, {
+      type: "FINANCIAL_ALERT",
+      category: "economy",
+      importance: data?.insolvency ? "headline" : "major",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["economy"]
+    }),
+
+  kenshoAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, amount: number, envelopes: number) =>
+    logEngineEvent(world, {
+      type: "KENSHO_AWARDED",
+      category: "economy",
+      phase: "basho_day",
+      importance: envelopes >= 5 ? "notable" : "minor",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title: "Kensho prize money",
+      summary: `${envelopes} envelope${envelopes === 1 ? "" : "s"} awarded (¥${amount.toLocaleString()}).`,
+      data: { amount, envelopes },
+      tags: ["economy", "kensho"]
+    }),
+
+  // --- Rivalries ---
+  rivalryEscalated: (world: WorldState, aId: Id, bId: Id, heatBand: string, tone: string, summary: string) =>
+    logEngineEvent(world, {
+      type: "RIVALRY_ESCALATED",
+      category: "rivalry",
+      importance: heatBand === "inferno" ? "headline" : heatBand === "hot" ? "major" : "notable",
+      scope: "world",
+      title: `Rivalry intensifies (${heatBand})`,
+      summary,
+      data: { aId, bId, heatBand, tone },
+      tags: ["rivalry"]
+    }),
+
+  rivalryFormed: (world: WorldState, aId: Id, bId: Id, tone: string, summary: string) =>
+    logEngineEvent(world, {
+      type: "RIVALRY_FORMED",
+      category: "rivalry",
+      importance: "notable",
+      scope: "world",
+      title: "New rivalry emerges",
+      summary,
+      data: { aId, bId, tone },
+      tags: ["rivalry"]
+    }),
+
+  // --- Lifecycle ---
+  retirement: (world: WorldState, rikishiId: Id, heyaId: Id, name: string, reason: string) =>
+    logEngineEvent(world, {
+      type: "RETIREMENT",
+      category: "career",
+      importance: "major",
+      phase: "basho_wrap",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title: `${name} retires`,
+      summary: `Retirement reason: ${reason}.`,
+      data: { reason },
+      tags: ["lifecycle", "retirement"]
+    }),
+
+  rookieDebut: (world: WorldState, rikishiId: Id, heyaId: Id, name: string) =>
+    logEngineEvent(world, {
+      type: "ROOKIE_DEBUT",
+      category: "career",
+      importance: "notable",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title: `${name} debuts`,
+      summary: `A new rikishi joins the ranks.`,
+      tags: ["lifecycle", "debut"]
+    }),
+
+  // --- Scouting ---
+  scoutingInvestmentChanged: (world: WorldState, rikishiId: Id, level: string) =>
+    logEngineEvent(world, {
+      type: "SCOUTING_INVESTMENT_CHANGED",
+      category: "scouting",
+      importance: "minor",
+      scope: "rikishi",
+      rikishiId,
+      title: "Scouting investment updated",
+      summary: `Investment level set to ${level}.`,
+      data: { level },
+      tags: ["scouting"]
+    }),
+
+  // --- Basho lifecycle ---
+  bashoStarted: (world: WorldState, bashoName: string) =>
+    logEngineEvent(world, {
+      type: "BASHO_STARTED",
+      category: "basho",
+      importance: "headline",
+      phase: "basho_day",
+      scope: "world",
+      title: `${bashoName.charAt(0).toUpperCase() + bashoName.slice(1)} Basho begins`,
+      summary: `The ${bashoName} tournament has officially started.`,
+      data: { bashoName },
+      tags: ["basho"]
+    }),
+
+  bashoEnded: (world: WorldState, bashoName: string, yushoId: Id, yushoName: string) =>
+    logEngineEvent(world, {
+      type: "BASHO_ENDED",
+      category: "basho",
+      importance: "headline",
+      phase: "basho_wrap",
+      scope: "world",
+      title: `${bashoName.charAt(0).toUpperCase() + bashoName.slice(1)} Basho concludes`,
+      summary: `${yushoName} wins the Emperor's Cup.`,
+      data: { bashoName, yushoId, yushoName },
+      tags: ["basho", "yusho"]
+    }),
+
+  bashoDay: (world: WorldState, day: number) =>
+    logEngineEvent(world, {
+      type: "BASHO_DAY_ADVANCED",
+      category: "basho",
+      importance: day === 15 ? "major" : day === 1 ? "notable" : "minor",
+      phase: "basho_day",
+      scope: "world",
+      title: `Day ${day}`,
+      summary: `Tournament day ${day} begins.`,
+      data: { day },
+      tags: ["basho"]
+    }),
+
+  // --- Welfare ---
+  welfareAlert: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
+    logEngineEvent(world, {
+      type: "WELFARE_ALERT",
+      category: "welfare",
+      importance: data?.complianceState === "sanctioned" ? "headline" : "major",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare"]
+    }),
+
+  // --- Bout result (for almanac) ---
+  boutResult: (world: WorldState, winnerId: Id, loserId: Id, kimarite: string, day: number) =>
+    logEngineEvent(world, {
+      type: "BOUT_RESULT",
+      category: "basho",
+      importance: "minor",
+      phase: "basho_day",
+      scope: "world",
+      title: "Bout concluded",
+      summary: `Winner decided by ${kimarite}.`,
+      data: { winnerId, loserId, kimarite, day },
+      tags: ["basho", "bout"]
+    }),
 };
 
 /** Flavor tick */

@@ -5,6 +5,7 @@
  * - 'advanceDay' runs bouts for the current day using 'resolveBout' (which handles H2H).
  * - 'endBasho' handles rankings, prizes, and crucially, the LIFECYCLE check (retirements/new recruits).
  * - 'advanceInterim' handles between-basho ticks (AI, scouting, economics).
+ * - All lifecycle transitions emit canonical EventBus events.
  */
 
 import { rngFromSeed, rngForWorld } from "./rng";
@@ -15,7 +16,7 @@ import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
-
+import { EventBus } from "./events";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
@@ -49,7 +50,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   world.cyclePhase = "active_basho"; 
 
   ensureDaySchedule(world, basho.day);
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_STARTED", bashoName: name }));
+  EventBus.bashoStarted(world, name);
 
   return world;
 }
@@ -93,7 +94,7 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   if (nextDay <= 15) ensureDaySchedule(world, nextDay);
 
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_DAY_ADVANCED", day: nextDay }));
+  EventBus.bashoDay(world, nextDay);
   return world;
 }
 
@@ -155,8 +156,10 @@ export function applyBoutResult(
   safeCall(() => (injuries as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (rivalries as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (economics as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (events as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (scoutingStore as any).onBoutResolved?.(world, { match, result, east, west }));
+
+  // Emit canonical bout result event
+  EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
 
   return world;
 }
@@ -213,7 +216,8 @@ export function endBasho(world: WorldState): WorldState {
   world.history.push(bashoResult);
 
   safeCall(() => (historyIndex as any).indexBashoResult?.(world, bashoResult));
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_ENDED", bashoName: basho.bashoName, yusho }));
+  const yushoRikishi = world.rikishi.get(yusho);
+  EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
   world.cyclePhase = "post_basho";
 
@@ -225,7 +229,7 @@ export function endBasho(world: WorldState): WorldState {
   for (const [id, r] of world.rikishi) {
     const reason = checkRetirement(r as any, world.year, world.seed);
     if (reason) {
-        console.log(`${r.shikona} has retired due to: ${reason}`);
+        EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
         retiredRikishiIds.push(id);
 
         if (r.heyaId) vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
