@@ -39,15 +39,20 @@ function severityWeight(sev: string | number | undefined): number {
   return 2;
 }
 
-function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number } {
+function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number; negligenceCount: number } {
   let pressure = 0;
   let seriousCount = 0;
+  let negligenceCount = 0;
+
+  // Get training state to detect negligence (forcing injured rikishi to train)
+  const trainingState = ensureHeyaTrainingState(world, heya.id);
+  const intensity = trainingState.activeProfile.intensity;
+  const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
   for (const rid of heya.rikishiIds) {
     const r = world.rikishi.get(rid);
     if (!r) continue;
 
-    // Prefer rich injuryStatus, fallback to injured boolean/weeks
     const status = (r as any).injuryStatus ?? (r as any).injury;
     const injured = Boolean(status?.isInjured) || Boolean((r as any).injured);
     if (!injured) continue;
@@ -56,9 +61,18 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
     const w = severityWeight(sev);
     pressure += w;
     if (sev === "serious" || sev === "high" || sev === 3) seriousCount += 1;
+
+    // NEGLIGENCE DETECTION (Constitution §A7):
+    // If an injured rikishi is in a harsh training regime without "protect" or "rebuild" focus,
+    // that counts as negligence (not just misfortune).
+    const individualFocus = trainingState.focusSlots.find(f => f.rikishiId === rid);
+    const isProtected = individualFocus?.focusType === "protect" || individualFocus?.focusType === "rebuild";
+    if (isHarshTraining && !isProtected) {
+      negligenceCount += 1;
+    }
   }
 
-  return { pressure, seriousCount };
+  return { pressure, seriousCount, negligenceCount };
 }
 
 function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: number; reasons: string[] } {
