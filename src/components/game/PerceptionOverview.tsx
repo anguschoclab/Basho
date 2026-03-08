@@ -1,13 +1,14 @@
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Uses buildPerceptionSnapshot from perception.ts for banded intel
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StableName } from "@/components/ClickableName";
-import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users } from "lucide-react";
+import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, X } from "lucide-react";
 import type { WorldState } from "@/engine/types";
 import { buildPerceptionSnapshot, type PerceptionSnapshot } from "@/engine/perception";
 
