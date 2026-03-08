@@ -355,6 +355,7 @@ interface GameContextValue {
   simulateAllBouts: () => void;
   endDay: () => void;
   endBasho: () => void;
+  simFullBasho: () => void;
 
   // Interim control
   advanceInterim: (weeks?: number) => void;
