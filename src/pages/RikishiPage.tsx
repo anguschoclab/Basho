@@ -78,15 +78,15 @@ function safeStr(v: any, fallback = ""): string {
 
 export default function RikishiPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { rikishiId } = useParams<{ rikishiId: string }>();
   const { state } = useGame();
   const { world, playerHeyaId } = state;
 
-  if (!world || !id) {
+  if (!world || !rikishiId) {
     return null;
   }
 
-  const rikishi = world.rikishi.get(id);
+  const rikishi = world.rikishi.get(rikishiId);
   if (!rikishi) {
     return (
       <div className="p-6 max-w-4xl mx-auto space-y-4">
