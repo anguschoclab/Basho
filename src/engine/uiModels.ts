@@ -221,6 +221,7 @@ export function projectRosterEntry(r: Rikishi): UIRosterEntry {
     careerLosses: r.careerLosses,
     isInjured: r.injured,
     condition: r.condition,
+    fatigue: r.fatigue,
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
   };

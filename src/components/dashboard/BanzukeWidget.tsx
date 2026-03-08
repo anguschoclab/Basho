@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollText, ChevronRight, Crown } from "lucide-react";
 import { ClickableName } from "@/components/ClickableName";
+import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4, juryo: 5,
@@ -26,15 +27,19 @@ export function BanzukeWidget() {
 
   const topRanked = useMemo(() => {
     if (!world) return [];
-    const all = Array.from(world.rikishi.values())
+    return Array.from(world.rikishi.values())
       .filter(r => !r.isRetired)
       .sort((a, b) => {
         const ra = RANK_ORDER[a.rank] ?? 99;
         const rb = RANK_ORDER[b.rank] ?? 99;
         if (ra !== rb) return ra - rb;
         return (a.rankNumber || 0) - (b.rankNumber || 0);
-      });
-    return all.slice(0, 10);
+      })
+      .slice(0, 10)
+      .map(r => ({
+        entry: projectRosterEntry(r),
+        isPlayer: r.heyaId === world.playerHeyaId,
+      }));
   }, [world]);
 
   if (!world) return null;
@@ -52,27 +57,22 @@ export function BanzukeWidget() {
       </div>
 
       <div className="space-y-0.5">
-        {topRanked.map((r, i) => {
-          const isPlayer = r.heyaId === world.playerHeyaId;
-          return (
-            <div
-              key={r.id}
-              className={`flex items-center gap-2 py-1.5 px-2 rounded text-xs ${
-                isPlayer ? "bg-primary/10 border border-primary/20" : i % 2 === 0 ? "bg-muted/30" : ""
-              }`}
-            >
-              <span className={`w-16 shrink-0 capitalize text-[11px] ${RANK_STYLE[r.rank] || ""}`}>
-                {r.rank === "maegashira" ? `M${r.rankNumber || ""}` : r.rank === "juryo" ? `J${r.rankNumber || ""}` : r.rank}
-              </span>
-              <span className="text-[10px] text-muted-foreground w-4">{r.side === "east" ? "E" : "W"}</span>
-              <ClickableName id={r.id} name={r.shikona || r.name} type="rikishi" className="flex-1 font-medium truncate" />
-              <span className="text-[10px] text-muted-foreground font-mono">
-                {r.currentBashoRecord?.wins ?? 0}-{r.currentBashoRecord?.losses ?? 0}
-              </span>
-              {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
-            </div>
-          );
-        })}
+        {topRanked.map(({ entry, isPlayer }, i) => (
+          <div
+            key={entry.id}
+            className={`flex items-center gap-2 py-1.5 px-2 rounded text-xs ${
+              isPlayer ? "bg-primary/10 border border-primary/20" : i % 2 === 0 ? "bg-muted/30" : ""
+            }`}
+          >
+            <span className={`w-16 shrink-0 capitalize text-[11px] ${RANK_STYLE[entry.rank] || ""}`}>
+              {entry.rank === "maegashira" ? `M${entry.rankNumber || ""}` : entry.rank === "juryo" ? `J${entry.rankNumber || ""}` : entry.rank}
+            </span>
+            <span className="text-[10px] text-muted-foreground w-4">{entry.side === "east" ? "E" : "W"}</span>
+            <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="flex-1 font-medium truncate" />
+            <span className="text-[10px] text-muted-foreground font-mono">{entry.record}</span>
+            {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
+          </div>
+        ))}
       </div>
     </div>
   );
