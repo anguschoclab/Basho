@@ -157,7 +157,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       // Autosave on each day advance
-      try { autosave(state.world); } catch { /* silent */ }
+      try { autosaveWithSignal(state.world); } catch { /* silent */ }
 
       return {
         ...state,
