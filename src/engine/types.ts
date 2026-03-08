@@ -623,6 +623,9 @@ export interface Rikishi {
   personalityTraits: string[];
   condition: number;
   motivation: number;
+
+  // Potential (latent ceiling — set at recruitment, never shown as raw number)
+  talentSeed?: number; // 0-100, persisted from talent pool on signing
 }
 
 export interface Heya {

@@ -294,6 +294,32 @@ export const SCANDAL_LABELS: Record<ScandalBand, string> = {
   crisis: "Crisis",
 };
 
+// === Potential / Growth Trajectory Band ===
+
+export type PotentialBand = "generational" | "star" | "solid" | "average" | "limited" | "unknown";
+
+export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
+  { band: "generational", min: 88, max: 100 },
+  { band: "star",         min: 72, max: 87 },
+  { band: "solid",        min: 55, max: 71 },
+  { band: "average",      min: 35, max: 54 },
+  { band: "limited",      min: 0,  max: 34 },
+];
+
+export function toPotentialBand(talentSeed: number | undefined, prev?: PotentialBand): PotentialBand {
+  if (talentSeed == null) return "unknown";
+  return toBand(talentSeed, POTENTIAL_BANDS, prev) ?? "unknown";
+}
+
+export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; description: string }> = {
+  generational: { label: "Generational Talent", description: "A once-in-a-decade prospect with limitless ceiling." },
+  star:         { label: "Star Potential",       description: "Could reach the very top with proper development." },
+  solid:        { label: "Solid Prospect",       description: "Reliable growth trajectory with a respectable ceiling." },
+  average:      { label: "Average Ceiling",      description: "Moderate potential — hard work can compensate." },
+  limited:      { label: "Limited Upside",        description: "Growth ceiling is low, but grit may surprise." },
+  unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
+};
+
 // === Aggregated Rikishi Descriptor (for UI cards) ===
 
 export interface RikishiDescriptor {
@@ -304,6 +330,7 @@ export interface RikishiDescriptor {
   conditionBand: ConditionBand;
   fatigueBand: FatigueBand;
   momentumBand: MomentumBand;
+  potentialBand?: PotentialBand;
 }
 
 export function toRikishiDescriptor(r: {
@@ -314,6 +341,7 @@ export function toRikishiDescriptor(r: {
   condition: number;
   fatigue: number;
   momentum: number;
+  talentSeed?: number;
 }, prev?: Partial<RikishiDescriptor>): RikishiDescriptor {
   return {
     powerBand: toStatBand(r.power, prev?.powerBand),
@@ -323,5 +351,6 @@ export function toRikishiDescriptor(r: {
     conditionBand: toConditionBand(r.condition, prev?.conditionBand),
     fatigueBand: toFatigueBand(r.fatigue, prev?.fatigueBand),
     momentumBand: toMomentumBand(r.momentum),
+    potentialBand: toPotentialBand(r.talentSeed, prev?.potentialBand),
   };
 }

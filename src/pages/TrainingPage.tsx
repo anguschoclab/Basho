@@ -28,7 +28,7 @@ import {
   createDefaultTrainingState
 } from "@/engine/training";
 import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
-import { toFatigueBand, FATIGUE_LABELS } from "@/engine/descriptorBands";
+import { toFatigueBand, toPotentialBand, FATIGUE_LABELS, POTENTIAL_LABELS } from "@/engine/descriptorBands";
 import {
   Activity,
   Dumbbell,
@@ -335,6 +335,21 @@ export default function TrainingPage() {
                         <span className="capitalize">{phase} phase</span>
                         <span>•</span>
                         <span>Injury sensitivity: {phaseEffect.injurySensitivity > 1.1 ? "High" : phaseEffect.injurySensitivity < 0.9 ? "Low" : "Normal"}</span>
+                        {(() => {
+                          const potBand = toPotentialBand((rikishi as any).talentSeed);
+                          if (potBand === "unknown") return null;
+                          const info = POTENTIAL_LABELS[potBand];
+                          const potColor = potBand === "generational" ? "text-amber-500"
+                            : potBand === "star" ? "text-purple-500"
+                            : potBand === "solid" ? "text-blue-500"
+                            : "";
+                          return potBand !== "average" && potBand !== "limited" ? (
+                            <>
+                              <span>•</span>
+                              <span className={potColor}>{info.label}</span>
+                            </>
+                          ) : null;
+                        })()}
                         {rikishi.fatigue !== undefined && rikishi.fatigue > 0 && (() => {
                           const fb = toFatigueBand(rikishi.fatigue);
                           return (

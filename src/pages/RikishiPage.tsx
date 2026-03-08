@@ -37,6 +37,8 @@ import {
   describeStyleVerbose,
   describeInjuryVerbose
 } from "@/engine/narrativeDescriptions";
+import { toPotentialBand, POTENTIAL_LABELS } from "@/engine/descriptorBands";
+import type { PotentialBand } from "@/engine/descriptorBands";
 import {
   RANK_NAMES,
   STYLE_NAMES,
@@ -236,6 +238,21 @@ export default function RikishiPage() {
                 {weightText}
               </span>
               <span>{nationalityText}</span>
+              {(() => {
+                const potBand = toPotentialBand((rikishi as any).talentSeed);
+                if (potBand === "unknown") return null;
+                const info = POTENTIAL_LABELS[potBand];
+                const potColor = potBand === "generational" ? "text-amber-500"
+                  : potBand === "star" ? "text-purple-500"
+                  : potBand === "solid" ? "text-blue-500"
+                  : potBand === "average" ? "text-muted-foreground"
+                  : "text-destructive/70";
+                return (
+                  <span className={`flex items-center gap-1 ${potColor} font-medium`} title={info.description}>
+                    ✦ {info.label}
+                  </span>
+                );
+              })()}
             </div>
           </div>
 
