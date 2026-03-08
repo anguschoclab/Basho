@@ -229,6 +229,25 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "RUN_HOLIDAY": {
+      if (!state.world) return state;
+      const hPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : "interim";
+      return {
+        ...state,
+        world: { ...state.world },
+        phase: hPhase as GamePhase,
+      };
+    }
+
+    case "RUN_AUTO_SIM": {
+      if (!action.result.finalWorld) return state;
+      return {
+        ...state,
+        world: { ...action.result.finalWorld },
+        phase: "interim",
+      };
+    }
+
     case "SELECT_RIKISHI": {
       return { 
         ...state, 
