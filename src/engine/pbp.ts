@@ -16,6 +16,7 @@
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
+import type { Advantage, Position } from "./bout";
 
 /** =========================
  *  Fact Layer Types
