@@ -66,6 +66,11 @@ export function TimeControls() {
   };
 
   const handleEndBasho = () => {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEndBasho = () => {
+    setShowEndConfirm(false);
     endBasho();
     toast({ title: "Basho concluded", description: "Results logged and banzuke updated." });
   };
