@@ -451,6 +451,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     endDay,
     endBasho,
     advanceInterim,
+    advanceOneDay: advanceOneDayAction,
     saveToSlot,
     loadFromSlot,
     quickSave: quickSaveAction,
