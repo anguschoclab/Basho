@@ -11,6 +11,7 @@ import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
 import { BashoWidget } from "@/components/dashboard/BashoWidget";
 import { NewsWidget } from "@/components/dashboard/NewsWidget";
 import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
+import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
@@ -77,9 +78,10 @@ export default function Dashboard() {
             <BanzukeWidget />
           </div>
 
-          {/* Column 3: Roster + News + Rivals */}
+          {/* Column 3: Roster + Scouting + News + Rivals */}
           <div className="space-y-4">
             <RosterWidget />
+            <ScoutingWidget />
             <NewsWidget />
             <RivalsWidget />
           </div>
