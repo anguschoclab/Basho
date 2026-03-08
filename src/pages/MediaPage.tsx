@@ -19,6 +19,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import type { MediaHeadline, MediaDigest, MediaState, MediaBeat } from "@/engine/media";
 import { buildMediaDigest, createDefaultMediaState } from "@/engine/media";
 
@@ -91,7 +92,7 @@ function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any
 }
 
 function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange: (s: Set<MediaBeat>) => void }) {
-  const allSelected = selected.size === 0; // empty = show all
+  const allSelected = selected.size === 0;
 
   const toggle = (beat: MediaBeat) => {
     const next = new Set(selected);
@@ -131,6 +132,31 @@ function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange
   );
 }
 
+function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> }) {
+  if (data.length < 2) return <span className="text-[10px] text-muted-foreground">—</span>;
+  return (
+    <div className="w-20 h-6">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data}>
+          <YAxis domain={[0, 100]} hide />
+          <Tooltip
+            contentStyle={{ fontSize: 10, padding: "2px 6px" }}
+            formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
+            labelFormatter={(l: string) => l.toUpperCase()}
+          />
+          <Line
+            type="monotone"
+            dataKey="heat"
+            stroke="hsl(var(--primary))"
+            strokeWidth={1.5}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 /* ── Page ── */
 
 export default function MediaPage() {
@@ -158,11 +184,16 @@ export default function MediaPage() {
 
   const hotRikishi = useMemo(() => {
     return Object.entries(mediaState.mediaHeat || {})
-      .map(([id, heat]) => ({ id, heat, r: world?.rikishi?.get(id) }))
+      .map(([id, heat]) => ({
+        id,
+        heat,
+        r: world?.rikishi?.get(id),
+        history: mediaState.mediaHeatHistory?.[id] ?? [],
+      }))
       .filter(x => x.r)
       .sort((a, b) => b.heat - a.heat)
       .slice(0, 10);
-  }, [mediaState.mediaHeat, world]);
+  }, [mediaState.mediaHeat, mediaState.mediaHeatHistory, world]);
 
   const pressuredHeya = useMemo(() => {
     return Object.entries(mediaState.heyaPressure || {})
@@ -228,26 +259,27 @@ export default function MediaPage() {
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2">
-          {/* Hot Rikishi */}
+          {/* Hot Rikishi with Sparklines */}
           <Card className="paper">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" /> Media Heat — Rikishi
               </CardTitle>
-              <CardDescription>Most covered wrestlers</CardDescription>
+              <CardDescription>Most covered wrestlers with basho-over-basho trend</CardDescription>
             </CardHeader>
             <CardContent>
               {hotRikishi.length === 0 ? (
                 <p className="text-muted-foreground text-sm text-center py-4">No media heat data yet.</p>
               ) : (
                 <div className="space-y-2">
-                  {hotRikishi.map(({ id, heat, r }) => (
+                  {hotRikishi.map(({ id, heat, r, history }) => (
                     <div key={id} className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <RikishiName id={id} name={r!.shikona} className="font-medium text-sm" />
                         <div className="text-xs text-muted-foreground">{r!.rank}</div>
                       </div>
-                      <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
+                      <HeatSparkline data={history} />
+                      <div className="w-20 h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className="h-full rounded-full bg-primary transition-all"
                           style={{ width: `${Math.min(100, heat)}%` }}
