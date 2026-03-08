@@ -48,6 +48,63 @@ function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
 
+interface ScheduleOverviewProps {
+  currentDay: number;
+}
+
+function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
+  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  
+  return (
+    <div className="space-y-3">
+      <div className="text-xs text-muted-foreground">
+        <strong>Schedule Legend:</strong> Lower divisions fight on odd days only (1,3,5,7,9,11,13)
+      </div>
+      
+      {divisions.map((division) => {
+        const totalDays = getTotalBashodays(division);
+        const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
+        
+        return (
+          <div key={division} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">{divisionName}</span>
+              <span className="text-xs text-muted-foreground">{totalDays} days</span>
+            </div>
+            
+            <div className="grid grid-cols-15 gap-1">
+              {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
+                const needsScheduling = needsScheduleForDay(division, day);
+                const isCurrent = day === currentDay;
+                const isPast = day < currentDay;
+                
+                return (
+                  <div
+                    key={day}
+                    className={`
+                      h-6 w-6 rounded text-xs font-mono flex items-center justify-center
+                      ${needsScheduling 
+                        ? isCurrent 
+                          ? "bg-primary text-primary-foreground" 
+                          : isPast 
+                            ? "bg-muted text-muted-foreground" 
+                            : "bg-primary/20 text-primary"
+                        : "bg-transparent text-muted-foreground/30 line-through"
+                      }
+                    `}
+                  >
+                    {day}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function BashoPage() {
   const navigate = useNavigate();
   const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();
