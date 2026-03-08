@@ -482,7 +482,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const quickSaveAction = useCallback(() => {
     if (!state.world) return false;
-    autosave(state.world);
+    autosaveWithSignal(state.world);
     return true;
   }, [state.world]);
 
