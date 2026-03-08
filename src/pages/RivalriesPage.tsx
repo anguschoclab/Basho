@@ -12,6 +12,7 @@
 // - Improves empty states and guards for unknown tone/trigger keys
 
 import { Helmet } from "react-helmet";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
