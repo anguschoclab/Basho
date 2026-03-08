@@ -27,7 +27,7 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
-import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking } from "./media";
+import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
@@ -310,6 +310,14 @@ export function endBasho(world: WorldState): WorldState {
   safeCall(() => historyIndex.indexBashoResult(world, bashoResult));
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
+
+  // Snapshot media heat for sparkline history
+  safeCall(() => {
+    const w = world as any;
+    if (w.mediaState) {
+      w.mediaState = snapshotMediaHeatForBasho(w.mediaState, basho.bashoName);
+    }
+  });
 
   enterPostBasho(world);
 

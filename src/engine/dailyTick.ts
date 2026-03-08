@@ -107,14 +107,20 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
     case "pre_basho": {
       const remaining = (world as any)._interimDaysRemaining ?? 0;
       if (remaining <= 0) {
-        world.cyclePhase = "active_basho";
+        // Auto-start the basho via world.ts startBasho
+        try {
+          const { startBasho } = require("./world");
+          startBasho(world, world.currentBashoName);
+        } catch (_) {
+          world.cyclePhase = "active_basho";
+        }
         logEngineEvent(world, {
           type: "PHASE_TRANSITION",
           category: "basho",
           importance: "major",
           scope: "world",
-          title: "Pre-basho preparation complete",
-          summary: "The tournament is about to begin.",
+          title: "Basho begins automatically",
+          summary: "The tournament is now underway.",
           data: { from: prev, to: world.cyclePhase },
           tags: ["phase"]
         });

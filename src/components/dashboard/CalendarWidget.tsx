@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Play, FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
+  FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
 
 const BASHO_NAMES: Record<string, string> = {
@@ -21,7 +21,7 @@ const PHASE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export function CalendarWidget() {
-  const { state, advanceInterim, advanceOneDay, startBasho, simulateAllBouts, endDay, advanceDay, simFullBasho } = useGame();
+  const { state, advanceInterim, advanceOneDay, simulateAllBouts, endDay, advanceDay, simFullBasho } = useGame();
   const { toast } = useToast();
   const navigate = useNavigate();
   const world = state.world;
@@ -42,11 +42,7 @@ export function CalendarWidget() {
     toast({ title: "Week advanced" });
   };
 
-  const handleStartBasho = () => {
-    startBasho();
-    toast({ title: "Basho started!" });
-    navigate("/basho");
-  };
+  // Basho now auto-starts via time advancement (pre_basho → active_basho)
 
   const handleSimDay = () => {
     simulateAllBouts();
@@ -103,9 +99,6 @@ export function CalendarWidget() {
             </Button>
             <Button size="sm" variant="secondary" onClick={handleAdvanceWeek} className="gap-1.5 h-7 text-xs">
               <Repeat className="h-3 w-3" /> Week
-            </Button>
-            <Button size="sm" onClick={handleStartBasho} className="gap-1.5 h-7 text-xs">
-              <Play className="h-3 w-3" /> Start Basho
             </Button>
           </>
         ) : (

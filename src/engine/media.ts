@@ -108,6 +108,9 @@ export interface MediaState {
 
   /** Track which injury withdrawal headlines fired this basho (rikishiId → true) */
   injuryWithdrawalFired: Record<Id, boolean>;
+
+  /** Per-rikishi media heat history snapshots (bashoName → heat value) for sparklines */
+  mediaHeatHistory: Record<Id, Array<{ basho: string; heat: number }>>;
 }
 
 /** Digest output for UI */
@@ -134,6 +137,7 @@ export function createDefaultMediaState(): MediaState {
     retirementWatchFired: {},
     titleRaceDayFired: {},
     injuryWithdrawalFired: {},
+    mediaHeatHistory: {},
   };
 }
 
@@ -981,6 +985,98 @@ export function generateInjuryWithdrawalHeadline(args: {
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** =========================
+ *  Scandal / Discipline Headlines
+ *  ========================= */
+
+/**
+ * Generate a headline when governance sanctions or scandals affect a heya.
+ * Called from governance.ts on status changes and scandal reports.
+ */
+export function generateScandalHeadline(args: {
+  world: WorldState;
+  heyaId: Id;
+  type: "scandal" | "status_change";
+  severity: "minor" | "major" | "critical";
+  reason: string;
+  description: string;
+  fineAmount?: number;
+}): MediaHeadline | null {
+  const { world, heyaId, type, severity, reason, description } = args;
+  const w = world as any;
+  if (!w.mediaState) w.mediaState = createDefaultMediaState();
+
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return null;
+
+  const week = world.week ?? 0;
+  const rng = rngForWorld(world, "media", `scandal::${heyaId}::w${week}`);
+
+  const impact = clampInt(
+    severity === "critical" ? 80 : severity === "major" ? 55 : 30,
+    0, 100
+  );
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+  const tone: MediaTone = severity === "critical" ? "controversy" : severity === "major" ? "concern" : "neutral";
+
+  let title: string;
+  let subtitle: string;
+
+  if (type === "scandal") {
+    const titles = severity === "critical"
+      ? [`${heya.name} Rocked by Major Scandal`, `Crisis at ${heya.name} — JSA Steps In`]
+      : severity === "major"
+      ? [`${heya.name} Under Fire: ${reason}`, `Scandal Clouds Hang Over ${heya.name}`]
+      : [`${heya.name} Receives JSA Warning`, `Minor Infraction at ${heya.name}`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+    subtitle = args.fineAmount
+      ? `A ¥${args.fineAmount.toLocaleString()} fine has been levied. ${description}`
+      : description;
+  } else {
+    const titles = severity === "critical"
+      ? [`${heya.name} Sanctioned by JSA`, `${heya.name} Faces Unprecedented Sanctions`]
+      : severity === "major"
+      ? [`${heya.name} Placed on Probation`, `JSA Puts ${heya.name} on Notice`]
+      : [`${heya.name} Under Review`, `JSA Issues Warning to ${heya.name}`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+    subtitle = description;
+  }
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-scandal-${week}-${heyaId}-${type}`),
+    week,
+    bashoName: world.currentBashoName,
+    tier,
+    beat: "discipline",
+    tone,
+    rikishiIds: [],
+    heyaIds: [heyaId],
+    title,
+    subtitle,
+    impact,
+    tags: ["discipline", type, severity],
+  };
+
+  let nextState: MediaState = w.mediaState;
+  nextState = applyHeadlineEffects(nextState, world, headline);
+  w.mediaState = nextState;
+
+  return headline;
+}
+
+/**
+ * Snapshot current media heat values for sparkline history.
+ * Call once at basho end to record the heat state for each rikishi.
+ */
+export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string): MediaState {
+  const history = { ...state.mediaHeatHistory };
+  for (const [id, heat] of Object.entries(state.mediaHeat)) {
+    if (!history[id]) history[id] = [];
+    history[id] = [...history[id], { basho: bashoName, heat }].slice(-12); // Keep last 12 basho
+  }
+  return { ...state, mediaHeatHistory: history };
 }
 
 /** =========================

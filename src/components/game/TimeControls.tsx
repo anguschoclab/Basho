@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
+import { FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/components/ui/use-toast";
 import { HolidayControls } from "./HolidayControls";
@@ -26,7 +26,6 @@ import { AutoSimControls } from "./AutoSimControls";
 export function TimeControls() {
   const {
     state,
-    startBasho,
     advanceDay,
     simulateAllBouts,
     endDay,
@@ -50,11 +49,7 @@ export function TimeControls() {
   const inInterim = world.cyclePhase === "interim";
   const playerHeyaId = world.playerHeyaId;
 
-  const handleStartBasho = () => {
-    startBasho();
-    toast({ title: "Basho started", description: "The tournament is underway." });
-    navigate("/basho");
-  };
+  // Basho now auto-starts via time advancement (pre_basho → active_basho)
 
   const handleSimDay = () => {
     simulateAllBouts();
@@ -120,10 +115,6 @@ export function TimeControls() {
                 </Button>
               </>
             )}
-            <Button onClick={handleStartBasho} className="gap-2">
-              <Play className="h-4 w-4" />
-              Start Basho
-            </Button>
             <HolidayControls
               onHoliday={goOnHoliday}
               playerHeyaId={playerHeyaId}
