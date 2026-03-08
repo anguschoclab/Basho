@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { HolidayControls } from "./HolidayControls";
 import { AutoSimControls } from "./AutoSimControls";
 

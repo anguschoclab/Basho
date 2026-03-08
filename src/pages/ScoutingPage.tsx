@@ -51,7 +51,7 @@ import { getOrCreateScouted, setScoutingInvestment } from "@/engine/scoutingStor
 import * as talentpool from "@/engine/talentpool";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 import type { Rikishi, Rank, TacticalArchetype } from "@/engine/types";
 import {
