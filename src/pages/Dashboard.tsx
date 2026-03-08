@@ -70,15 +70,7 @@ export default function Dashboard() {
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
-  if (!isLoaded || !world) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center h-full text-muted-foreground">Loading...</div>
-      </AppLayout>
-    );
-  }
-
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
   const columns = getColumns();
 
   // Compute alert conditions
@@ -86,7 +78,6 @@ export default function Dashboard() {
     if (!playerHeya) return [];
     const a: { icon: any; text: string; color: string; link: string }[] = [];
     
-    // Facility maintenance risk
     const maintenance = getMonthlyMaintenanceCost(playerHeya);
     if (playerHeya.funds < maintenance) {
       a.push({
@@ -97,7 +88,6 @@ export default function Dashboard() {
       });
     }
     
-    // Financial distress
     if (playerHeya.riskIndicators?.financial) {
       a.push({
         icon: Coins,
@@ -107,7 +97,6 @@ export default function Dashboard() {
       });
     }
     
-    // Governance warning
     if (playerHeya.riskIndicators?.governance) {
       a.push({
         icon: Shield,
@@ -119,6 +108,14 @@ export default function Dashboard() {
     
     return a;
   }, [playerHeya]);
+
+  if (!isLoaded || !world) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center h-full text-muted-foreground">Loading...</div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout pageTitle="Dashboard">
