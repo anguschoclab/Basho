@@ -316,7 +316,7 @@ function generateCandidate(
   const nat = nationalityPool(config);
 
   if (config.preferPrestigious) {
-    if (rng.next() < rankRule.prestigeChance) {
+    if (rng() < rankRule.prestigeChance) {
       const base = pick(PRESTIGIOUS_FULL_NAMES, rng);
       if (attempt > 0) {
         const extra = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
