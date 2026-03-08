@@ -69,6 +69,9 @@ export * from "./almanac";
 // Daily Tick Pipeline
 export { advanceOneDay, advanceDays, advanceFullInterim, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 
+// Holiday System
+export { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult, type HolidayTarget, type SafetyGate, type DelegationPolicy } from "./holiday";
+
 // H2H and Lifecycle Systems
 export * from "./h2h";
 export * from "./lifecycle";
