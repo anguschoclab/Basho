@@ -90,6 +90,15 @@ export interface MediaState {
 
   /** Per-heya running pressure (0..100) */
   heyaPressure: Record<Id, number>;
+
+  /** Per-rikishi consecutive win count within current basho (reset between basho) */
+  bashoStreaks: Record<Id, number>;
+
+  /** Track which streak milestones already fired to avoid duplicates */
+  streakHeadlinesFired: Record<Id, number[]>;
+
+  /** Track which promotion_watch headlines fired this basho (rikishiId → true) */
+  promoWatchFired: Record<Id, boolean>;
 }
 
 /** Digest output for UI */
