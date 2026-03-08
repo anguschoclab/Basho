@@ -218,6 +218,15 @@ export interface PbpLibrary {
     kinboshi: PhraseBucket;
   };
 
+  tactical: {
+    oshi_strategy: PhraseBucket;
+    yotsu_strategy: PhraseBucket;
+    speedster_strategy: PhraseBucket;
+    trickster_strategy: PhraseBucket;
+    counter_strategy: PhraseBucket;
+    adaptive_strategy: PhraseBucket;
+  };
+
   connective: {
     short: PhraseBucket;
   };
