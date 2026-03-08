@@ -188,9 +188,9 @@ export default function RikishiPage() {
 
   // Safe physical fields (don’t crash if some are missing in older saves)
   const heightText =
-    typeof (rikishi as any).height === "number" && isFinite((rikishi as any).height) ? `${(rikishi as any).height}cm` : "—";
+    typeof (rikishi as any).height === "number" && isFinite((rikishi as any).height) ? `${Math.round((rikishi as any).height)}cm` : "—";
   const weightText =
-    typeof (rikishi as any).weight === "number" && isFinite((rikishi as any).weight) ? `${(rikishi as any).weight}kg` : "—";
+    typeof (rikishi as any).weight === "number" && isFinite((rikishi as any).weight) ? `${Math.round((rikishi as any).weight)}kg` : "—";
   const nationalityText = safeStr((rikishi as any).nationality, "—");
 
   return (
