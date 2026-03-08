@@ -61,6 +61,11 @@ export function TimeControls() {
     toast({ title: "Week advanced", description: "Training, economy, and governance have progressed." });
   };
 
+  const handleAdvanceOneDay = () => {
+    advanceOneDay();
+    toast({ title: "Day advanced", description: `Day ${(world.dayIndexGlobal || 0) + 1} complete.` });
+  };
+
   const handleAutoSim = async (config: any) => {
     setIsSimulating(true);
     try {
