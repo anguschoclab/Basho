@@ -877,7 +877,7 @@ export default function StablePage() {
                         {idx + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{r.shikona}</div>
+                        <div className="font-medium truncate"><RikishiName id={r.id} name={r.shikona} /></div>
                         <div className="text-xs text-muted-foreground">
                           {RANK_HIERARCHY[r.rank].nameJa}
                           {r.rankNumber && ` ${r.rankNumber}枚目`}

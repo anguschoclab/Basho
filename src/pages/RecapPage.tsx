@@ -491,7 +491,7 @@ export default function RecapPage() {
                         <Badge variant="outline" className="text-xs">
                           {pc.heya.statureBand}
                         </Badge>
-                        <span>{pc.heya.name}: {pc.change}</span>
+                        <span><StableName id={pc.heya.id} name={pc.heya.name} />: {pc.change}</span>
                       </div>
                     ))}
                   </div>

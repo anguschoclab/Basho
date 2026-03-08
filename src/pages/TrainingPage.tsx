@@ -320,7 +320,7 @@ export default function TrainingPage() {
                       onClick={() => navigate(`/rikishi/${rikishi.id}`)}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-display font-medium truncate">{rikishi.shikona}</span>
+                        <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
                         <Badge variant="outline" className="text-xs shrink-0">
                           {rankInfo.nameJa}
                         </Badge>
