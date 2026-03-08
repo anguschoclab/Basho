@@ -444,6 +444,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "END_BASHO" });
   }, []);
 
+  const simFullBasho = useCallback(() => {
+    dispatch({ type: "SIM_FULL_BASHO" });
+  }, []);
+
   const advanceInterim = useCallback((weeks: number = 1) => {
     dispatch({ type: "ADVANCE_INTERIM", weeks });
   }, []);
