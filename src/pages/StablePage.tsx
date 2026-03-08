@@ -63,7 +63,7 @@ import {
   Zap
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { OyakataName } from "@/components/ClickableName";
+import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 
 // Narrative band displays (no raw numbers)
@@ -432,7 +432,7 @@ export default function StablePage() {
                       >
                         <div className={`w-1 h-10 rounded-full ${rikishi.side === "east" ? "bg-east" : "bg-west"}`} />
                         <div className="flex-1 min-w-0">
-                          <div className="font-display font-medium truncate">{rikishi.shikona}</div>
+                          <div className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></div>
                           <div className="text-sm text-muted-foreground">
                             {rankInfo.nameJa}
                             {rikishi.rankNumber && ` ${rikishi.rankNumber}枚目`}
@@ -649,7 +649,7 @@ export default function StablePage() {
                         onClick={() => navigate(`/rikishi/${rikishi.id}`)}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-display font-medium truncate">{rikishi.shikona}</span>
+                          <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
                           <Badge variant="outline" className="text-xs">
                             {RANK_HIERARCHY[rikishi.rank].nameJa}
                           </Badge>
@@ -777,7 +777,7 @@ export default function StablePage() {
                         const r = world.rikishi.get(a.rikishiId);
                         return (
                           <Badge key={i} variant="outline" className="text-xs bg-gold/10 border-gold/30">
-                            {r?.shikona ?? "Unknown"} — {a.bashoName} {a.year}
+                            {r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"} — {a.bashoName} {a.year}
                           </Badge>
                         );
                       })}
@@ -797,7 +797,7 @@ export default function StablePage() {
                         const r = world.rikishi.get(a.rikishiId);
                         return (
                           <Badge key={i} variant="outline" className="text-xs">
-                            {r?.shikona ?? "Unknown"} — {a.bashoName} {a.year}
+                            {r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"} — {a.bashoName} {a.year}
                           </Badge>
                         );
                       })}
@@ -877,7 +877,7 @@ export default function StablePage() {
                         {idx + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{r.shikona}</div>
+                        <div className="font-medium truncate"><RikishiName id={r.id} name={r.shikona} /></div>
                         <div className="text-xs text-muted-foreground">
                           {RANK_HIERARCHY[r.rank].nameJa}
                           {r.rankNumber && ` ${r.rankNumber}枚目`}

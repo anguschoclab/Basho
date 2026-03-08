@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCachedPerception } from "@/engine/perception";
+import { StableName } from "@/components/ClickableName";
 import { Swords, ChevronRight, Flame } from "lucide-react";
 
 export function RivalsWidget() {
@@ -13,11 +14,12 @@ export function RivalsWidget() {
 
   const rivals = useMemo(() => {
     if (!world) return [];
-    const entries: { name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
+    const entries: { id: string; name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
     for (const heya of world.heyas.values()) {
       if (heya.id === world.playerHeyaId) continue;
       const p = getCachedPerception(world, heya.id);
       entries.push({
+        id: heya.id,
         name: p.heyaName,
         prestige: p.prestigeBand,
         roster: p.rosterStrengthBand,
@@ -46,8 +48,8 @@ export function RivalsWidget() {
 
       <div className="space-y-0.5">
         {rivals.map((r) => (
-          <div key={r.name} className="flex items-center gap-2 py-1.5 px-2 rounded text-xs hover:bg-muted/50 transition-colors">
-            <span className="font-medium flex-1 truncate">{r.name}</span>
+          <div key={r.id} className="flex items-center gap-2 py-1.5 px-2 rounded text-xs hover:bg-muted/50 transition-colors">
+            <StableName id={r.id} name={r.name} className="font-medium flex-1 truncate" />
             <Badge variant="outline" className="text-[10px] capitalize shrink-0">{r.prestige}</Badge>
             <span className="text-[10px] text-muted-foreground capitalize w-16 text-right">{r.roster}</span>
             {(r.heat === "blazing" || r.heat === "hot") && (

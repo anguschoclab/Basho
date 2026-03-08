@@ -46,6 +46,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { RikishiName } from "@/components/ClickableName";
 
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode }[] = [
   { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" /> },
@@ -320,7 +321,7 @@ export default function TrainingPage() {
                       onClick={() => navigate(`/rikishi/${rikishi.id}`)}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-display font-medium truncate">{rikishi.shikona}</span>
+                        <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
                         <Badge variant="outline" className="text-xs shrink-0">
                           {rankInfo.nameJa}
                         </Badge>

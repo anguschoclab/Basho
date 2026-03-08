@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { BoutResult, Rikishi } from "@/engine/types";
 import { Badge } from "@/components/ui/badge";
 import { getKimarite } from "@/engine/kimarite";
+import { RikishiName } from "@/components/ClickableName";
 
 interface BoutResultDisplayProps {
   result: BoutResult;
@@ -81,11 +82,11 @@ export function BoutResultDisplay({
         )}
 
         <h2 className="font-display text-3xl font-bold text-foreground mb-1 animate-fade-in">
-          {winner?.shikona ?? "Unknown"}
+          {winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}
         </h2>
 
         <p className="text-muted-foreground">
-          defeats <span className="font-medium">{loser?.shikona ?? "Unknown"}</span>
+          defeats <span className="font-medium">{loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}</span>
         </p>
       </div>
 

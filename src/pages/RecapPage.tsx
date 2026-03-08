@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { NavLink, useNavigate } from "react-router-dom";
+import { RikishiName, StableName } from "@/components/ClickableName";
 import { 
   Trophy, 
   TrendingUp, 
@@ -196,9 +197,9 @@ export default function RecapPage() {
                         <Trophy className="h-8 w-8 text-amber-500" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-2xl font-bold">{champion?.shikona || "Unknown"}</p>
+                        <p className="text-2xl font-bold">{champion ? <RikishiName id={champion.id} name={champion.shikona} /> : "Unknown"}</p>
                         <p className="text-muted-foreground">
-                          {championHeya?.name || "Unknown Stable"} • {champion?.rank?.toUpperCase()}
+                          {championHeya ? <StableName id={championHeya.id} name={championHeya.name} /> : "Unknown Stable"} • {champion?.rank?.toUpperCase()}
                         </p>
                         {isPlayerChampion && (
                           <Badge className="mt-2 bg-primary">Your Stable's Champion!</Badge>
@@ -225,7 +226,7 @@ export default function RecapPage() {
                       const r = world.rikishi.get(id);
                       return (
                         <Badge key={id} variant="secondary" className="text-sm">
-                          {r?.shikona || "Unknown"}
+                          {r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"}
                         </Badge>
                       );
                     })}
@@ -248,7 +249,7 @@ export default function RecapPage() {
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">Shukun-shō (Outstanding Performance)</p>
                     {lastBasho.shukunsho ? (
-                      <p className="font-medium">{world.rikishi.get(lastBasho.shukunsho)?.shikona || "Unknown"}</p>
+                      <p className="font-medium">{(() => { const r = world.rikishi.get(lastBasho.shukunsho); return r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"; })()}</p>
                     ) : (
                       <p className="text-muted-foreground italic text-sm">Not awarded</p>
                     )}
@@ -262,7 +263,7 @@ export default function RecapPage() {
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">Kantō-shō (Fighting Spirit)</p>
                     {lastBasho.kantosho ? (
-                      <p className="font-medium">{world.rikishi.get(lastBasho.kantosho)?.shikona || "Unknown"}</p>
+                      <p className="font-medium">{(() => { const r = world.rikishi.get(lastBasho.kantosho); return r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"; })()}</p>
                     ) : (
                       <p className="text-muted-foreground italic text-sm">Not awarded</p>
                     )}
@@ -276,7 +277,7 @@ export default function RecapPage() {
                     </div>
                     <p className="text-xs text-muted-foreground mb-1">Ginō-shō (Technique)</p>
                     {lastBasho.ginoSho ? (
-                      <p className="font-medium">{world.rikishi.get(lastBasho.ginoSho)?.shikona || "Unknown"}</p>
+                      <p className="font-medium">{(() => { const r = world.rikishi.get(lastBasho.ginoSho); return r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"; })()}</p>
                     ) : (
                       <p className="text-muted-foreground italic text-sm">Not awarded</p>
                     )}
@@ -320,11 +321,11 @@ export default function RecapPage() {
                           <div key={idx} className={`p-3 rounded-lg border ${isPlayerKinboshi ? 'border-primary bg-primary/5' : 'border-yellow-500/30 bg-yellow-500/10'}`}>
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="font-bold">{winner?.shikona || "Unknown"}</p>
-                                <p className="text-xs text-muted-foreground">{winnerHeya?.name} • Day {m.day}</p>
+                                <p className="font-bold">{winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}</p>
+                                <p className="text-xs text-muted-foreground">{winnerHeya ? <StableName id={winnerHeya.id} name={winnerHeya.name} /> : ""} • Day {m.day}</p>
                               </div>
                               <div className="text-right">
-                                <p className="text-sm">defeated <span className="font-medium">{loser?.shikona || "Yokozuna"}</span></p>
+                                <p className="text-sm">defeated <span className="font-medium">{loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Yokozuna"}</span></p>
                                 <p className="text-xs text-muted-foreground">via {m.result.kimariteName}</p>
                               </div>
                               {isPlayerKinboshi && (
@@ -411,8 +412,8 @@ export default function RecapPage() {
                                 <ShieldAlert className={`h-5 w-5 ${isDemoted ? 'text-destructive' : 'text-amber-500'}`} />
                               </div>
                               <div>
-                                <p className="font-bold">{r.shikona}</p>
-                                <p className="text-xs text-muted-foreground">{heya?.name || "Unknown Stable"}</p>
+                                <p className="font-bold">{<RikishiName id={r.id} name={r.shikona} />}</p>
+                                <p className="text-xs text-muted-foreground">{heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"}</p>
                               </div>
                             </div>
                             <div className="text-right">
@@ -490,7 +491,7 @@ export default function RecapPage() {
                         <Badge variant="outline" className="text-xs">
                           {pc.heya.statureBand}
                         </Badge>
-                        <span>{pc.heya.name}: {pc.change}</span>
+                        <span><StableName id={pc.heya.id} name={pc.heya.name} />: {pc.change}</span>
                       </div>
                     ))}
                   </div>
