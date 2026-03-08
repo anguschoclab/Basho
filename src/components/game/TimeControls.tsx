@@ -40,6 +40,7 @@ export function TimeControls() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   const world = state.world;
   if (!world) return null;
