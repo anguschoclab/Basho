@@ -129,6 +129,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     calendar: world.calendar,
     // Sponsor pool (Constitution A6.4)
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
+    // Ozeki kadoban tracking
+    ozekiKadoban: (world as any).ozekiKadoban,
   } as any;
 }
 
