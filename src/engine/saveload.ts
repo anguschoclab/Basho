@@ -193,6 +193,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     currentBanzuke: serialized.currentBanzuke,
     talentPool: (serialized as any).talentPool,
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
+    sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
