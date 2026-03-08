@@ -1,18 +1,28 @@
 // MediaPage.tsx — Media & Press coverage dashboard
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Newspaper, Flame, TrendingUp, Building2, Zap, AlertTriangle } from "lucide-react";
-import type { MediaHeadline, MediaDigest, MediaState } from "@/engine/media";
+import { Newspaper, Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import type { MediaHeadline, MediaDigest, MediaState, MediaBeat } from "@/engine/media";
 import { buildMediaDigest, createDefaultMediaState } from "@/engine/media";
+
+/* ── Style maps ── */
 
 const TIER_STYLE: Record<string, { label: string; class: string }> = {
   main_event: { label: "Main Event", class: "bg-primary/20 text-primary border-primary/30" },
@@ -29,17 +39,37 @@ const TONE_STYLE: Record<string, { label: string; class: string }> = {
   neutral: { label: "Neutral", class: "bg-muted text-muted-foreground" },
 };
 
+const BEAT_LABELS: Record<MediaBeat, string> = {
+  daily_bout: "Bout",
+  streak: "Streak",
+  upset: "Upset",
+  title_race: "Title Race",
+  rivalry: "Rivalry",
+  injury: "Injury",
+  promotion_watch: "Promo Watch",
+  heya_story: "Heya Story",
+  feature: "Feature",
+  retirement_watch: "Retirement",
+  discipline: "Discipline",
+};
+
+const ALL_BEATS = Object.keys(BEAT_LABELS) as MediaBeat[];
+
+/* ── Sub-components ── */
+
 function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any }) {
   const tier = TIER_STYLE[headline.tier] ?? TIER_STYLE.local;
   const tone = TONE_STYLE[headline.tone] ?? TONE_STYLE.neutral;
+  const beatLabel = BEAT_LABELS[headline.beat] ?? headline.beat;
 
   return (
     <div className="p-3 rounded-lg border bg-card/50 hover:bg-card/80 transition-colors space-y-2">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-medium text-sm leading-tight">{headline.title}</h3>
-        <div className="flex gap-1 shrink-0">
+        <div className="flex gap-1 shrink-0 flex-wrap justify-end">
           <Badge variant="outline" className={`text-[10px] ${tier.class}`}>{tier.label}</Badge>
           <Badge variant="outline" className={`text-[10px] ${tone.class}`}>{tone.label}</Badge>
+          <Badge variant="secondary" className="text-[10px]">{beatLabel}</Badge>
         </div>
       </div>
       {headline.subtitle && (
@@ -60,9 +90,53 @@ function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any
   );
 }
 
+function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange: (s: Set<MediaBeat>) => void }) {
+  const allSelected = selected.size === 0; // empty = show all
+
+  const toggle = (beat: MediaBeat) => {
+    const next = new Set(selected);
+    if (next.has(beat)) next.delete(beat); else next.add(beat);
+    onChange(next);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+          <Filter className="h-3.5 w-3.5" />
+          {allSelected ? "All Beats" : `${selected.size} Beat${selected.size > 1 ? "s" : ""}`}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel className="text-xs">Filter by Beat</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuCheckboxItem
+          checked={allSelected}
+          onCheckedChange={() => onChange(new Set())}
+        >
+          Show All
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        {ALL_BEATS.map(beat => (
+          <DropdownMenuCheckboxItem
+            key={beat}
+            checked={selected.has(beat)}
+            onCheckedChange={() => toggle(beat)}
+          >
+            {BEAT_LABELS[beat]}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/* ── Page ── */
+
 export default function MediaPage() {
   const { state } = useGame();
   const world = state.world;
+  const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
   const mediaState: MediaState = (world as any)?.mediaState ?? createDefaultMediaState();
 
@@ -72,10 +146,15 @@ export default function MediaPage() {
   }, [world, mediaState]);
 
   const allHeadlines = useMemo(() => {
-    return [...(mediaState.headlines || [])]
-      .sort((a, b) => b.impact - a.impact || b.week - a.week)
-      .slice(0, 50);
-  }, [mediaState.headlines]);
+    let list = [...(mediaState.headlines || [])]
+      .sort((a, b) => b.impact - a.impact || b.week - a.week);
+
+    if (beatFilter.size > 0) {
+      list = list.filter(h => beatFilter.has(h.beat));
+    }
+
+    return list.slice(0, 50);
+  }, [mediaState.headlines, beatFilter]);
 
   const hotRikishi = useMemo(() => {
     return Object.entries(mediaState.mediaHeat || {})
@@ -117,17 +196,24 @@ export default function MediaPage() {
         {/* Top Headlines */}
         <Card className="paper">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-primary" /> Top Headlines
-            </CardTitle>
-            <CardDescription>
-              {digest ? `Week ${digest.week} — ${allHeadlines.length} stories tracked` : "No media data yet"}
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Flame className="h-5 w-5 text-primary" /> Top Headlines
+                </CardTitle>
+                <CardDescription>
+                  {digest ? `Week ${digest.week} — ${allHeadlines.length} stories tracked` : "No media data yet"}
+                </CardDescription>
+              </div>
+              <BeatFilter selected={beatFilter} onChange={setBeatFilter} />
+            </div>
           </CardHeader>
           <CardContent>
             {allHeadlines.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
-                No headlines generated yet. Play through some basho days for media coverage to build up.
+                {beatFilter.size > 0
+                  ? "No headlines match the selected filters."
+                  : "No headlines generated yet. Play through some basho days for media coverage to build up."}
               </p>
             ) : (
               <ScrollArea className="max-h-[500px]">

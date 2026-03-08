@@ -795,4 +795,19 @@ export function onBoutResolved(
     summary: `${description} Suffered during a bout against ${winner?.shikona ?? winner?.name ?? "opponent"}.`,
     data: { severity, weeksOut, area, type: injury.type, causedBy: "basho" }
   });
+
+  // Generate media headline for the injury withdrawal
+  try {
+    const { generateInjuryWithdrawalHeadline } = require("./media");
+    generateInjuryWithdrawalHeadline({
+      world,
+      rikishiId: loserId,
+      severity,
+      area,
+      description,
+      opponentId: winnerId,
+      day: context.match?.day,
+      bashoName: (world as any).currentBashoName,
+    });
+  } catch (_) { /* media module optional */ }
 }
