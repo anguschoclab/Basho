@@ -756,6 +756,23 @@ export default function RecapPage() {
           return null;
         })()}
 
+        {/* NARRATIVE CEREMONIES */}
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" size="sm" onClick={() => setShowPressConference(true)}>
+            🎤 Press Conference
+          </Button>
+          {yokozunaCandidate && (
+            <Button variant="outline" size="sm" onClick={() => setShowYokozunaDelib(true)}>
+              👑 Yokozuna Deliberation
+            </Button>
+          )}
+          {newInductees.length > 0 && (
+            <Button variant="outline" size="sm" onClick={() => setShowHoFCeremony(newInductees[0])}>
+              🏆 Hall of Fame Induction
+            </Button>
+          )}
+        </div>
+
         {/* NAVIGATION */}
         <div className="flex flex-wrap gap-4">
           <Button onClick={handleContinue}>
@@ -768,6 +785,29 @@ export default function RecapPage() {
             <NavLink to="/banzuke">View Banzuke</NavLink>
           </Button>
         </div>
+
+        {/* MODALS */}
+        {showPressConference && world && (
+          <PressConference world={world} open={showPressConference} onClose={handlePressConferenceClose} />
+        )}
+        {showYokozunaDelib && yokozunaCandidate && world && (
+          <YokozunaDeliberation
+            rikishi={yokozunaCandidate}
+            world={world}
+            open={showYokozunaDelib}
+            onClose={() => setShowYokozunaDelib(false)}
+            verdict={yokozunaCandidate.careerRecord?.yusho && yokozunaCandidate.careerRecord.yusho >= 2 ? "promoted" : "deferred"}
+            reasoning={["Recent tournament performances reviewed", "Hinkaku (dignity) assessment conducted"]}
+          />
+        )}
+        {showHoFCeremony && world && (
+          <HoFInductionCeremony
+            inductee={showHoFCeremony}
+            world={world}
+            open={!!showHoFCeremony}
+            onClose={() => setShowHoFCeremony(null)}
+          />
+        )}
       </div>
     </AppLayout>
   );
