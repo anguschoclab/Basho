@@ -66,6 +66,7 @@ import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { WelfarePanel } from "@/components/game/WelfarePanel";
 import { investInFacility } from "@/engine/facilities";
 
 // Narrative band displays (no raw numbers)
