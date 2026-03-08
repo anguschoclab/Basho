@@ -60,9 +60,8 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   EventBus.bashoStarted(world, name);
 
   // Reset basho-scoped media tracking (streaks, promo watch)
-  const w = world as any;
-  if (w.mediaState) {
-    w.mediaState = resetBashoMediaTracking(w.mediaState);
+  if (world.mediaState) {
+    world.mediaState = resetBashoMediaTracking(world.mediaState);
   }
 
   return world;
