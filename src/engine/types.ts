@@ -873,6 +873,7 @@ export interface SerializedWorldState {
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;
+  ozekiKadoban?: import("./banzuke").OzekiKadobanMap;
 
   // Talent pool persistence
   talentPool?: TalentPoolWorldState;
