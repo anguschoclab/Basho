@@ -118,7 +118,10 @@ export function createDefaultMediaState(): MediaState {
     version: "1.0.0",
     headlines: [],
     mediaHeat: {},
-    heyaPressure: {}
+    heyaPressure: {},
+    bashoStreaks: {},
+    streakHeadlinesFired: {},
+    promoWatchFired: {},
   };
 }
 
