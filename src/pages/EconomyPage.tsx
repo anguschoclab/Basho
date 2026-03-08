@@ -435,6 +435,6 @@ export default function EconomyPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </AppLayout>
   );
 }
