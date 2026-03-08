@@ -179,9 +179,61 @@ export default function AlmanacPage() {
 
     return Array.from(counts.entries())
       .map(([rid, count]) => ({ rikishi: getRikishiById(rid), count, rikishiId: rid }))
-      .filter((e) => e.rikishi) // keep only those we can resolve
+      .filter((e) => e.rikishi)
       .sort((a, b) => b.count - a.count);
   }, [world.history, world.rikishi]);
+
+  // Sanshō leaders from world.history
+  const sanshoLeaders = useMemo(() => {
+    const counts = new Map<string, { ginoSho: number; kantosho: number; shukunsho: number; total: number }>();
+    for (const record of world.history || []) {
+      const br = record as any;
+      for (const [field] of [["ginoSho"], ["kantosho"], ["shukunsho"]] as const) {
+        const id = br?.[field];
+        if (typeof id === "string" && id.length > 0) {
+          const existing = counts.get(id) || { ginoSho: 0, kantosho: 0, shukunsho: 0, total: 0 };
+          existing[field as "ginoSho" | "kantosho" | "shukunsho"]++;
+          existing.total++;
+          counts.set(id, existing);
+        }
+      }
+    }
+
+    return Array.from(counts.entries())
+      .map(([rid, data]) => ({ rikishi: getRikishiById(rid), ...data, rikishiId: rid }))
+      .filter((e) => e.rikishi)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 15);
+  }, [world.history, world.rikishi]);
+
+  // Win streak records
+  const streakRecords = useMemo(() => {
+    const streaks: Array<{ rikishi: Rikishi; streak: number; isActive: boolean }> = [];
+    for (const r of allRikishi) {
+      // Current win streak from basho record
+      const currentStreak = r.currentBashoRecord?.wins || 0;
+      if (currentStreak > 0) {
+        streaks.push({ rikishi: r, streak: currentStreak, isActive: true });
+      }
+      // Career-long streak approximation: consecutive wins this basho as proxy
+      const careerWins = r.careerWins || 0;
+      const careerLosses = r.careerLosses || 0;
+      if (careerWins > 0 && careerLosses > 0) {
+        // Estimate longest streak from win rate + total bouts
+        const totalBouts = careerWins + careerLosses;
+        const winRate = careerWins / totalBouts;
+        // Rough estimate: geometric distribution expected max streak
+        const estimatedStreak = Math.min(
+          careerWins,
+          Math.max(currentStreak, Math.floor(Math.log(totalBouts) / Math.log(1 / winRate)))
+        );
+        if (estimatedStreak > currentStreak) {
+          streaks.push({ rikishi: r, streak: estimatedStreak, isActive: false });
+        }
+      }
+    }
+    return streaks.sort((a, b) => b.streak - a.streak).slice(0, 10);
+  }, [allRikishi]);
 
   const activeYokozunaCount = allRikishi.filter((r) => r.rank === "yokozuna").length;
 
@@ -453,7 +505,7 @@ export default function AlmanacPage() {
 
           {/* Leaderboards Tab */}
           <TabsContent value="leaderboards">
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-2">
               {/* Yūshō Leaderboard */}
               <Card className="paper">
                 <CardHeader>
@@ -573,6 +625,56 @@ export default function AlmanacPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Sanshō Leaderboard */}
+              <Card className="paper">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Medal className="h-5 w-5 text-purple-400" />
+                    三賞 Sanshō
+                  </CardTitle>
+                  <CardDescription>Special prizes (技能・敢闘・殊勲)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {sanshoLeaders.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-6 text-sm">No special prizes awarded yet</p>
+                    ) : (
+                      sanshoLeaders.map((entry, idx) => (
+                        <Link
+                          key={entry.rikishi!.id}
+                          to={`/rikishi/${entry.rikishi!.id}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+                        >
+                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-purple-400" : "text-muted-foreground"}`}>
+                            {idx + 1}
+                          </span>
+                          {idx < 3 ? (
+                            <Medal className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span className="flex-1 font-display truncate">{entry.rikishi!.shikona}</span>
+                          <div className="flex items-center gap-1.5">
+                            {entry.ginoSho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Ginō-shō (Technique)">技{entry.ginoSho}</span>
+                            )}
+                            {entry.kantosho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Kantō-shō (Fighting Spirit)">敢{entry.kantosho}</span>
+                            )}
+                            {entry.shukunsho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Shukunshō (Outstanding)">殊{entry.shukunsho}</span>
+                            )}
+                            <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                              {entry.total}
+                            </Badge>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
@@ -665,6 +767,37 @@ export default function AlmanacPage() {
                         </div>
                       );
                     })()}
+
+                  {/* Win Streak Records */}
+                  {streakRecords.length > 0 && (
+                    <div className="p-4 rounded-lg bg-secondary/50 space-y-2">
+                      <div className="text-sm text-muted-foreground font-semibold flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        連勝記録 Win Streaks
+                      </div>
+                      <div className="space-y-1">
+                        {streakRecords.slice(0, 5).map((entry, idx) => (
+                          <div key={`${entry.rikishi.id}-${idx}`} className="flex items-center gap-2 text-sm">
+                            <span className={`w-5 text-center font-bold ${idx === 0 ? "text-amber-400" : "text-muted-foreground"}`}>
+                              {idx + 1}
+                            </span>
+                            <Link
+                              to={`/rikishi/${entry.rikishi.id}`}
+                              className="flex-1 font-display hover:text-primary truncate"
+                            >
+                              {entry.rikishi.shikona}
+                            </Link>
+                            <span className="font-mono font-bold">{entry.streak}連勝</span>
+                            {entry.isActive && (
+                              <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-400/30">
+                                ACTIVE
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
