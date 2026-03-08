@@ -14,6 +14,7 @@
 // - narrativeDescriptions.ts remains for static bands; pbp.ts is for dynamic commentary.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
 
 /** =========================
