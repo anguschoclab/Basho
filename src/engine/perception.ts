@@ -120,9 +120,9 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
     }
   }
 
-  if (maxIntensity >= 75) return "fierce";
-  if (maxIntensity >= 50) return "heated";
-  if (maxIntensity >= 25) return "simmering";
+  if (maxHeat >= 75) return "fierce";
+  if (maxHeat >= 50) return "heated";
+  if (maxHeat >= 25) return "simmering";
   return "dormant";
 }
 
