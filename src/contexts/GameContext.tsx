@@ -310,6 +310,10 @@ interface GameContextValue {
   // Interim control
   advanceInterim: (weeks?: number) => void;
   advanceOneDay: () => void;
+
+  // Holiday & Auto-Sim
+  goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
+  runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   
   // Save/Load
   saveToSlot: (slotName: string) => boolean;
