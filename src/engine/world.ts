@@ -27,7 +27,7 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
-import { updateMediaFromBout, createDefaultMediaState } from "./media";
+import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
@@ -58,6 +58,12 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
 
   ensureDaySchedule(world, basho.day);
   EventBus.bashoStarted(world, name);
+
+  // Reset basho-scoped media tracking (streaks, promo watch)
+  const w = world as any;
+  if (w.mediaState) {
+    w.mediaState = resetBashoMediaTracking(w.mediaState);
+  }
 
   return world;
 }
