@@ -214,7 +214,8 @@ export function endBasho(world: WorldState): WorldState {
   world.history.push(bashoResult);
 
   safeCall(() => (historyIndex as any).indexBashoResult?.(world, bashoResult));
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_ENDED", bashoName: basho.bashoName, yusho }));
+  const yushoRikishi = world.rikishi.get(yusho);
+  EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
   world.cyclePhase = "post_basho";
 
