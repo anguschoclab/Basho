@@ -8,6 +8,7 @@
 import { rngForWorld } from "./rng";
 import type { WorldState, Style, OyakataArchetype, Oyakata } from "./types";
 import { ensureHeyaTrainingState, type TrainingIntensity } from "./training";
+import { buildPerceptionSnapshot, type PerceptionSnapshot } from "./perception";
 
 export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
   const stable = world.heyas.get(stableId);
@@ -82,9 +83,12 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
   welfareDiscipline: number;
   /** 0..1: how hard they push intensity/risk */
   riskAppetite: number;
+  /** Banded perception of the heya (A7.1) */
+  perception: PerceptionSnapshot;
 } {
   const heya = world.heyas.get(heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  const perception = buildPerceptionSnapshot(world, heyaId);
 
   if (!heya || !oyakata) {
     return {
@@ -94,7 +98,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
       flags: { welfareHawk: false, disciplineHawk: false, publicityHawk: false, nepotist: false },
       styleBias: "neutral",
       welfareDiscipline: 0.4,
-      riskAppetite: 0.5
+      riskAppetite: 0.5,
+      perception
     };
   }
 
@@ -128,7 +133,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
     flags,
     styleBias: determineNPCStyleBias(world, heyaId),
     welfareDiscipline,
-    riskAppetite
+    riskAppetite,
+    perception
   };
 }
 
