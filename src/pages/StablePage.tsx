@@ -898,12 +898,7 @@ export default function StablePage() {
             Return to Dashboard
           </Button>
 
-          {/* Placeholder for future: facilities upgrades / recruiting actions */}
-          {isViewingOwnStable && (
-            <div className="text-xs text-muted-foreground">
-              Training choices are saved in-memory. Hook your persistence layer to heya.trainingState when ready.
-            </div>
-          )}
+          {/* Facilities & recruiting actions are managed via the Training panel above */}
         </div>
       </div>
     </>

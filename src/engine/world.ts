@@ -159,10 +159,10 @@ export function applyBoutResult(
   standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
   standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
 
-  safeCall(() => (injuries as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (rivalries as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (economics as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (scoutingStore as any).onBoutResolved?.(world, { match, result, east, west }));
+  safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => scoutingStore.onBoutResolved(world, { match, result, east, west }));
 
   // Emit canonical bout result event
   EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
@@ -229,7 +229,7 @@ export function endBasho(world: WorldState): WorldState {
     }
   });
 
-  safeCall(() => (historyIndex as any).indexBashoResult?.(world, bashoResult));
+  safeCall(() => historyIndex.indexBashoResult(world, bashoResult));
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
@@ -674,7 +674,7 @@ function runRetirements(world: WorldState): Record<string, number> {
  */
 function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): void {
   // NPC stables auto-fill from talent pool
-  safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
+  safeCall(() => talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
 
   // Track recruitment window state for player
   const playerHeyaId = world.playerHeyaId;

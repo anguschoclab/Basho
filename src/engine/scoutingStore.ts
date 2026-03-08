@@ -185,3 +185,40 @@ export function getScoutingLevel(world: WorldState, rikishiId: Id, baselineObser
 export function warmScoutingForRikishiList(world: WorldState, rikishiIds: Id[], baselineObservation: number = 0): void {
   for (const id of rikishiIds) getOrCreateScouted(world, id, baselineObservation);
 }
+
+/** =========================
+ *  World-level hooks (called via safeCall in world.ts / dailyTick.ts)
+ *  ========================= */
+
+/**
+ * Hook called after each bout resolution.
+ * Auto-observes both participants if the player watched (player bouts are always observed).
+ */
+export function onBoutResolved(
+  world: WorldState,
+  context: { match: any; result: any; east: any; west: any }
+): void {
+  const playerHeyaId = getPlayerHeyaId(world);
+  if (!playerHeyaId) return;
+
+  const eastId = context.east?.id;
+  const westId = context.west?.id;
+  if (!eastId || !westId) return;
+
+  // Auto-observe if player's rikishi is involved (always watched)
+  const eastRikishi = getRikishi(world, eastId);
+  const westRikishi = getRikishi(world, westId);
+  const isPlayerBout =
+    eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
+
+  if (isPlayerBout) {
+    observeBout(world, eastId, westId);
+  }
+}
+
+/**
+ * Weekly tick: apply scouting decay across all stored entries.
+ */
+export function tickWeek(world: WorldState): void {
+  applyWeeklyScoutingDecay(world);
+}

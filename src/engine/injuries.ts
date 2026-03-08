@@ -696,3 +696,101 @@ function clamp(n: number, lo: number, hi: number): number {
 function clampInt(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }
+
+/** =========================
+ *  World-level bout hook — called from world.ts after each bout
+ *  ========================= */
+
+/**
+ * Process potential bout-caused injuries after a bout resolution.
+ * Bout injuries are rarer than training injuries but can be more severe.
+ * Deterministic via world seed + bout participants.
+ */
+export function onBoutResolved(
+  world: WorldState,
+  context: { match: any; result: any; east: Rikishi; west: Rikishi }
+): void {
+  const { result, east, west } = context;
+  let state = ensureWorldInjuriesState(world);
+
+  // Only losers (and rarely winners) can be injured in bouts
+  const loserId = result.loserRikishiId ?? (result.winner === "east" ? west.id : east.id);
+  const winnerId = result.winnerRikishiId ?? (result.winner === "east" ? east.id : west.id);
+  const loser = world.rikishi.get(loserId);
+  const winner = world.rikishi.get(winnerId);
+
+  // Skip if already injured
+  if (!loser || state.activeByRikishi[loserId]) return;
+
+  const rng = rngForWorld(world, "injuries", `bout::${east.id}::${west.id}::w${world.week}`);
+
+  // Bout injury chance is lower than training but scales with result intensity
+  const duration = typeof result.duration === "number" ? result.duration : 5;
+  const isHard = duration <= 3; // very fast = hard landing
+  const isUpset = !!result.upset;
+
+  let boutChance = 0.008; // 0.8% base per bout
+  if (isHard) boutChance += 0.005; // fast finishes are more violent
+  if (isUpset) boutChance += 0.003; // upsets involve more force
+
+  // Durability affects bout injuries too
+  const { durability } = getOrInitDurability({ state, worldSeed: world.seed, rikishiId: loserId });
+  state = { ...state, durability: { ...state.durability, [loserId]: durability } };
+  const durabilityMult = clamp(1.3 - durability / 100, 0.5, 1.3);
+  boutChance *= durabilityMult;
+
+  // Age factor
+  const age = (loser as any).age ?? 25;
+  if (age >= 32) boutChance *= 1.3;
+  if (age >= 35) boutChance *= 1.2;
+
+  boutChance = clamp(boutChance, 0, 0.06); // cap at 6%
+
+  if (rng.next() >= boutChance) return;
+
+  const sevRoll = rng.next();
+  const severity: InjurySeverity = sevRoll < 0.6 ? "minor" : sevRoll < 0.9 ? "moderate" : "serious";
+  const area = pickArea(rng);
+  const type = pickType(rng, severity);
+  const weeksOut = getWeeksOut(rng, severity, area, type);
+  const { title, description } = describeInjury({ rng, severity, area, type });
+
+  const injury: InjuryRecord = {
+    id: `inj-bout-${world.week}-${loserId}-${Math.floor(rng.next() * 1e9)}`,
+    rikishiId: loserId,
+    startWeek: world.week ?? 0,
+    expectedWeeksOut: weeksOut,
+    remainingWeeks: weeksOut,
+    severity,
+    area,
+    type,
+    title,
+    description,
+    causedBy: "basho",
+    fatigueAtInjury: typeof loser.fatigue === "number" ? clampInt(loser.fatigue, 0, 100) : 30
+  };
+
+  state = applyInjuryRecord(state, injury);
+  (world as any).injuriesState = state;
+
+  // Sync rikishi flags
+  (loser as any).injured = true;
+  (loser as any).injuryWeeksRemaining = weeksOut;
+  (loser as any).injuryStatus = {
+    type: injury.type, isInjured: true, severity: injury.severity,
+    location: injury.area, weeksRemaining: injury.remainingWeeks
+  };
+  (loser as any).injury = (loser as any).injuryStatus;
+
+  logEngineEvent(world, {
+    type: "INJURY_OCCURRED",
+    category: "injury",
+    importance: severity === "serious" ? "headline" : severity === "moderate" ? "major" : "notable",
+    scope: "rikishi",
+    rikishiId: loserId,
+    heyaId: loser.heyaId,
+    title: `${loser.shikona ?? loser.name} injured during bout`,
+    summary: `${description} Suffered during a bout against ${winner?.shikona ?? winner?.name ?? "opponent"}.`,
+    data: { severity, weeksOut, area, type: injury.type, causedBy: "basho" }
+  });
+}
