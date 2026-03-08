@@ -18,6 +18,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -228,13 +229,23 @@ export default function BashoPage() {
     lastAutoShownKeyRef.current = lastBoutKey;
   }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
 
+  const competitionTabs = [
+    { id: "basho", label: "Basho" },
+    { id: "banzuke", label: "Banzuke", href: "/banzuke" },
+    { id: "rivalries", label: "Rivalries", href: "/rivalries" },
+  ];
+
   return (
-    <>
+    <AppLayout
+      pageTitle={bashoInfo?.nameEn || "Tournament"}
+      subNavTabs={competitionTabs}
+      activeSubTab="basho"
+    >
       <Helmet>
         <title>{`${bashoInfo?.nameEn || "Tournament"} Day ${basho.day} - Basho`}</title>
       </Helmet>
 
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Header with Controls at Top */}
         <div className="flex items-center justify-between">
           <div>
@@ -414,6 +425,6 @@ export default function BashoPage() {
           day={basho.day}
         />
       )}
-    </>
+    </AppLayout>
   );
 }

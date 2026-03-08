@@ -47,17 +47,22 @@ export default function BanzukePage() {
 
   const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
+  const competitionTabs = [
+    { id: "basho", label: "Basho", href: "/basho" },
+    { id: "banzuke", label: "Banzuke" },
+    { id: "rivalries", label: "Rivalries", href: "/rivalries" },
+  ];
+
   return (
-    <AppLayout>
+    <AppLayout
+      pageTitle="Official Banzuke"
+      subNavTabs={competitionTabs}
+      activeSubTab="banzuke"
+    >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Official Banzuke</h1>
-            <p className="text-muted-foreground">
-              {world.year} {world.currentBashoName?.toUpperCase() || "UPCOMING"} Rankings
-            </p>
-          </div>
-        </div>
+        <p className="text-muted-foreground">
+          {world.year} {world.currentBashoName?.toUpperCase() || "UPCOMING"} Rankings
+        </p>
 
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList>

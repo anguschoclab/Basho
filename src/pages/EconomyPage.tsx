@@ -18,6 +18,7 @@
 
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -217,21 +218,24 @@ export default function EconomyPage() {
 
   const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
 
+  const managementTabs = [
+    { id: "economy", label: "Economy" },
+    { id: "scouting", label: "Scouting", href: "/scouting" },
+    { id: "talent", label: "Talent Pools", href: "/talent" },
+    { id: "governance", label: "Governance", href: "/governance" },
+  ];
+
   return (
-    <>
+    <AppLayout
+      pageTitle="Economy"
+      subNavTabs={managementTabs}
+      activeSubTab="economy"
+    >
       <Helmet>
         <title>Economy — {playerHeya.name} | Basho</title>
       </Helmet>
 
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="font-display text-3xl font-bold flex items-center gap-3">
-            <CircleDollarSign className="h-8 w-8" />
-            Economy
-          </h1>
-          <p className="text-muted-foreground mt-1">{playerHeya.name} — Financial Overview</p>
-        </div>
+      <div className="space-y-6">
 
         {/* Financial Health Overview */}
         <Card className="paper">
@@ -431,6 +435,6 @@ export default function EconomyPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </AppLayout>
   );
 }

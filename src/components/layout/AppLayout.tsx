@@ -1,14 +1,21 @@
-// App Layout - FM-inspired layout with top nav and left event log
+// App Layout - FM-inspired layout with top nav, sub-nav tabs, and left event log
 import { ReactNode, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { TopNavBar } from "./TopNavBar";
 import { EventLogPanel } from "./EventLogPanel";
+import { SubNavTabs, type SubNavTab } from "./SubNavTabs";
 
 interface AppLayoutProps {
   children: ReactNode;
+  /** Optional sub-navigation tabs for the current page */
+  subNavTabs?: SubNavTab[];
+  activeSubTab?: string;
+  onSubTabChange?: (tabId: string) => void;
+  /** Page title shown in the sub-nav bar */
+  pageTitle?: string;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, subNavTabs, activeSubTab, onSubTabChange, pageTitle }: AppLayoutProps) {
   const { state } = useGame();
   const [eventLogOpen, setEventLogOpen] = useState(true);
 
@@ -23,6 +30,17 @@ export function AppLayout({ children }: AppLayoutProps) {
         eventLogOpen={eventLogOpen}
         onToggleEventLog={() => setEventLogOpen((v) => !v)}
       />
+      
+      {/* Sub-navigation tabs */}
+      {subNavTabs && subNavTabs.length > 0 && activeSubTab && (
+        <SubNavTabs
+          tabs={subNavTabs}
+          activeTab={activeSubTab}
+          onTabChange={onSubTabChange}
+          pageTitle={pageTitle}
+        />
+      )}
+      
       <div className="flex flex-1 overflow-hidden">
         {/* Event log panel - collapsible */}
         {eventLogOpen && (
