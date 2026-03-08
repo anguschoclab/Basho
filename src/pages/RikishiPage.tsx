@@ -194,7 +194,7 @@ export default function RikishiPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
                   <Badge className={`rank-${ui.rank} text-xs`}>
-                    {formatRank({ rank: rikishi.rank, side: rikishi.side ?? "east", rankNumber: rikishi.rankNumber })}
+                    {formatRank({ rank: rikishi.rank, side: rikishi.side ?? "east", rankNumber: rikishi.rankNumber } as any)}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
                     {ui.side === "east" ? "東 East" : "西 West"}

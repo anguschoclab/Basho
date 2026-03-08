@@ -120,8 +120,8 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
 
       // Then by rank (higher-ranked bouts first)
-      const aPos: RankPosition = { rank: a.east.rank, side: a.east.side ?? "east", rankNumber: a.east.rankNumber };
-      const bPos: RankPosition = { rank: b.east.rank, side: b.east.side ?? "east", rankNumber: b.east.rankNumber };
+      const aPos = { rank: a.east.rank, side: a.east.side ?? "east", rankNumber: a.east.rankNumber } as RankPosition;
+      const bPos = { rank: b.east.rank, side: b.east.side ?? "east", rankNumber: b.east.rankNumber } as RankPosition;
       return compareRanks(aPos, bPos);
     });
   }, [resolvedMatches]);
