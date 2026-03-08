@@ -331,6 +331,7 @@ function RecruitingTab({
   const [activePool, setActivePool] = useState<"high_school" | "university" | "foreign">(
     "high_school"
   );
+  const [signingCandidate, setSigningCandidate] = useState<any>(null);
 
   const candidates = useMemo(() => {
     if (!world) return [];
@@ -378,17 +379,21 @@ function RecruitingTab({
     }
   };
 
-  const handleOffer = (candidateId: string) => {
-    if (!world || !playerHeyaId) return;
+  const handleOfferClick = (candidate: any) => {
+    setSigningCandidate(candidate);
+  };
+
+  const handleConfirmSigning = () => {
+    if (!world || !playerHeyaId || !signingCandidate) return;
     try {
-      const result = talentpool.offerCandidate(world, candidateId, playerHeyaId);
+      const result = talentpool.offerCandidate(world, signingCandidate.candidateId, playerHeyaId);
       updateWorld({ ...world });
       if (result.ok) {
         toast({
-          title: "Offer submitted",
+          title: (result as any).signed ? "🎉 Prospect signed!" : "Offer submitted",
           description: (result as any).signed
-            ? "The prospect has signed!"
-            : "Decision pending.",
+            ? `${signingCandidate.shikona || "The prospect"} has joined your stable!`
+            : "Decision pending — the prospect is considering offers.",
         });
       } else {
         toast({
@@ -399,7 +404,10 @@ function RecruitingTab({
     } catch {
       toast({ title: "Offer failed" });
     }
+    setSigningCandidate(null);
   };
+
+  const playerHeya = playerHeyaId ? world?.heyas?.get(playerHeyaId) : null;
 
   const poolIcons = {
     high_school: <School className="h-4 w-4" />,
