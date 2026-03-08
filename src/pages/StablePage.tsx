@@ -276,9 +276,9 @@ export default function StablePage() {
     });
   };
 
-  const intensityEffect = INTENSITY_EFFECTS[trainingState.profile.intensity];
-  const focusEffect = FOCUS_EFFECTS[trainingState.profile.focus];
-  const recoveryEffect = RECOVERY_EFFECTS[trainingState.profile.recovery];
+  const intensityEffect = INTENSITY_EFFECTS[trainingState.activeProfile.intensity];
+  const focusEffect = FOCUS_EFFECTS[trainingState.activeProfile.focus];
+  const recoveryEffect = RECOVERY_EFFECTS[trainingState.activeProfile.recovery];
 
   // Band fallbacks (in case older saves are missing fields)
   const statureBand: StatureBand = heya.statureBand ?? "new";
