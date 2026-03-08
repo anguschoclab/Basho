@@ -5,7 +5,17 @@ import React, { createContext, useContext, useReducer, useCallback, ReactNode } 
 import type { WorldState, Rikishi, Heya, BoutResult } from "@/engine/types";
 import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
-import { saveGame, loadGame, autosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { saveGame, loadGame, autosave as rawAutosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { signalAutosave } from "@/hooks/useAutosaveIndicator";
+
+/** Autosave with visual indicator signal */
+function autosaveWithSignal(world: any): boolean {
+  signalAutosave("saving");
+  const ok = rawAutosave(world);
+  setTimeout(() => signalAutosave("done"), 50);
+  setTimeout(() => signalAutosave("idle"), 2000);
+  return ok;
+}
 import { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 
@@ -141,13 +151,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       const day = state.world.currentBasho.day;
       if (day > 15) {
         // Autosave at end of tournament
-        try { autosave(state.world); } catch { /* silent */ }
+        try { autosaveWithSignal(state.world); } catch { /* silent */ }
         // Tournament is over; UI can route to results.
         return { ...state, world: { ...state.world }, phase: "basho_results" };
       }
 
       // Autosave on each day advance
-      try { autosave(state.world); } catch { /* silent */ }
+      try { autosaveWithSignal(state.world); } catch { /* silent */ }
 
       return {
         ...state,
@@ -184,7 +194,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       // Autosave after completing all bouts for the day
-      try { autosave(state.world); } catch { /* silent */ }
+      try { autosaveWithSignal(state.world); } catch { /* silent */ }
 
       return {
         ...state,
@@ -472,7 +482,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const quickSaveAction = useCallback(() => {
     if (!state.world) return false;
-    autosave(state.world);
+    autosaveWithSignal(state.world);
     return true;
   }, [state.world]);
 
