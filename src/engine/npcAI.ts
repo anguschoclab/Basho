@@ -8,6 +8,7 @@
 import { rngForWorld } from "./rng";
 import type { WorldState, Style, OyakataArchetype, Oyakata } from "./types";
 import { ensureHeyaTrainingState, type TrainingIntensity } from "./training";
+import { buildPerceptionSnapshot, type PerceptionSnapshot } from "./perception";
 
 export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
   const stable = world.heyas.get(stableId);
