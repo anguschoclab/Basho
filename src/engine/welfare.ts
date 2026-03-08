@@ -87,12 +87,12 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   const intensity = trainingState.activeProfile.intensity;
   const recovery = trainingState.activeProfile.recovery;
 
-  if (intensity === "high") {
+  if (intensity === "punishing") {
     delta += 3;
-    reasons.push("high_intensity+3");
-  } else if (intensity === "medium") {
+    reasons.push("punishing_intensity+3");
+  } else if (intensity === "intensive") {
     delta += 1;
-    reasons.push("med_intensity+1");
+    reasons.push("intensive_intensity+1");
   }
 
   if (recovery === "low") {
@@ -122,7 +122,7 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   if (persona.welfareDiscipline > 0) reasons.push(`manager_welfare-${Math.round(persona.welfareDiscipline * 2)}`);
 
   // Natural drift downward when stable is healthy
-  const healthy = pressure === 0 && intensity !== "high" && recovery !== "low";
+  const healthy = pressure === 0 && intensity !== "punishing" && intensity !== "intensive" && recovery !== "low";
   if (healthy) {
     delta -= 2;
     reasons.push("healthy_drift-2");

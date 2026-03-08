@@ -394,7 +394,6 @@ export default function BashoPage() {
           result={selectedBout.result}
           bashoName={basho.bashoName}
           day={basho.day}
-          isPlayerBout={selectedBout.isPlayerBout}
         />
       )}
 
@@ -408,7 +407,6 @@ export default function BashoPage() {
           result={autoShowPlayerBout.result}
           bashoName={basho.bashoName}
           day={basho.day}
-          isPlayerBout={true}
         />
       )}
     </>

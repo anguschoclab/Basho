@@ -111,12 +111,12 @@ function handleInsolvency(heya: Heya, world: WorldState): void {
  */
 export function onBoutResolved(
   world: WorldState,
-  context: { match: BashoMatch; result: BoutResult; east: Rikishi; west: Rikishi }
+  context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): void {
   const { result, east, west } = context;
   
   
-  const rng = rngForWorld(world, "kensho", `${context.match?.id ?? context.match?.day ?? "bout"}::${east.id}::${west.id}`);
+  const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
 // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return;
 

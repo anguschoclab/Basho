@@ -469,7 +469,7 @@ export function generateScoutCandidates(world: WorldState, count: number, curren
   return candidates;
 }
 
-export function recruitCandidate(state: GameState, candidateId: string, targetHeyaId: string): GameState {
+export function recruitCandidate(state: WorldState, candidateId: string, targetHeyaId: string): WorldState {
   console.log(`Recruiting candidate ${candidateId} to heya ${targetHeyaId}`);
   return state;
 }

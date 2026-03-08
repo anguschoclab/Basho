@@ -9,7 +9,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { RikishiUIModel } from '../../engine/uiModels';
+import { RikishiUIModel } from '@/engine/uiModels';
 import { Link } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Zap, Shield, Brain, Activity, Sword, Anchor } from "lucide-react"; // Importing icons for stats

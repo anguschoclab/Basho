@@ -9,7 +9,9 @@
 
 import { rngFromSeed, rngForWorld } from "./rng";
 import { SeededRNG } from "./utils/SeededRNG";
-import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoPerformance, BanzukeEntry, BashoState } from "./types";
+import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoState } from "./types";
+import { toRankPosition } from "./types";
+import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
@@ -254,7 +256,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
-      position: { rank: r.rank, rankNumber: r.rankNumber, side: r.side }
+      position: toRankPosition({ rank: r.rank, rankNumber: r.rankNumber, side: r.side })
     });
   }
 

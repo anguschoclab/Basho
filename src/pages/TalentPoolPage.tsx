@@ -108,7 +108,7 @@ export default function TalentPoolPage() {
     const res = talentpool.offerCandidate(world, candidateId, playerHeyaId, "standard", "high");
     updateWorld({ ...world });
     if (!res.ok) {
-      toast({ title: "Offer blocked", description: res.reason });
+      toast({ title: "Offer blocked", description: (res as any).reason ?? "Unknown reason" });
       return;
     }
     toast({ title: "Offer submitted", description: "The prospect will decide within a few weeks." });

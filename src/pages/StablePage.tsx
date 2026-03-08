@@ -239,7 +239,7 @@ export default function StablePage() {
   const [trainingState, setTrainingState] = useState<BeyaTrainingState>(() => {
     const existing = (heya as any).trainingState as BeyaTrainingState | undefined;
     const defaultSlots = Math.max(1, Math.min(6, sekitori.length || 3));
-    return existing ?? createDefaultTrainingState(defaultSlots);
+    return existing ?? createDefaultTrainingState(heya.id);
   });
 
   const persistTrainingState = (next: BeyaTrainingState) => {
@@ -252,7 +252,7 @@ export default function StablePage() {
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, intensity } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
       persistTrainingState(next);
       return next;
     });
@@ -261,7 +261,7 @@ export default function StablePage() {
   const handleFocusChange = (focus: TrainingFocus) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, focus } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
       persistTrainingState(next);
       return next;
     });
@@ -270,15 +270,15 @@ export default function StablePage() {
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, recovery } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
       persistTrainingState(next);
       return next;
     });
   };
 
-  const intensityEffect = INTENSITY_EFFECTS[trainingState.profile.intensity];
-  const focusEffect = FOCUS_EFFECTS[trainingState.profile.focus];
-  const recoveryEffect = RECOVERY_EFFECTS[trainingState.profile.recovery];
+  const intensityEffect = INTENSITY_EFFECTS[trainingState.activeProfile.intensity];
+  const focusEffect = FOCUS_EFFECTS[trainingState.activeProfile.focus];
+  const recoveryEffect = RECOVERY_EFFECTS[trainingState.activeProfile.recovery];
 
   // Band fallbacks (in case older saves are missing fields)
   const statureBand: StatureBand = heya.statureBand ?? "new";
@@ -479,13 +479,13 @@ export default function StablePage() {
                     <Dumbbell className="h-5 w-5" />
                     Training Intensity
                   </CardTitle>
-                  <CardDescription>{intensityEffect.description}</CardDescription>
+                  <CardDescription>{intensityEffect.fatigue > 1 ? "Higher fatigue" : "Standard fatigue"}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {(Object.keys(INTENSITY_EFFECTS) as TrainingIntensity[]).map((intensity) => {
                     const label = getIntensityLabel(intensity);
                     const effect = INTENSITY_EFFECTS[intensity];
-                    const isActive = trainingState.profile.intensity === intensity;
+                    const isActive = trainingState.activeProfile.intensity === intensity;
 
                     return (
                       <button
@@ -498,23 +498,23 @@ export default function StablePage() {
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="font-display font-medium">
-                            {label.ja} <span className="text-sm opacity-80">({label.en})</span>
+                            {label}
                           </span>
                           <div className="flex gap-3 text-xs">
                             <span
                               className={
-                                effect.growthMult > 1
+                                effect.growth > 1
                                   ? isActive
                                     ? ""
                                     : "text-success"
-                                  : effect.growthMult < 1
+                                  : effect.growth < 1
                                     ? isActive
                                       ? ""
                                       : "text-destructive"
                                     : ""
                               }
                             >
-                              Growth: {describeTrainingEffect(effect.growthMult)}
+                              Growth: {describeTrainingEffect(effect.growth)}
                             </span>
                           </div>
                         </div>
@@ -538,16 +538,16 @@ export default function StablePage() {
                     <Target className="h-5 w-5" />
                     Training Focus
                   </CardTitle>
-                  <CardDescription>{focusEffect.description}</CardDescription>
+                  <CardDescription>{focusEffect.strength > 1 ? "Focused training" : "Balanced development"}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {(Object.keys(FOCUS_EFFECTS) as TrainingFocus[]).map((focus) => {
                     const label = getFocusLabel(focus);
                     const effect = FOCUS_EFFECTS[focus];
-                    const isActive = trainingState.profile.focus === focus;
+                    const isActive = trainingState.activeProfile.focus === focus;
 
                     const emphases: string[] = [];
-                    if (effect.power > 1) emphases.push("power");
+                    if (effect.strength > 1) emphases.push("power");
                     if (effect.speed > 1) emphases.push("speed");
                     if (effect.technique > 1) emphases.push("technique");
                     if (effect.balance > 1) emphases.push("balance");
@@ -565,7 +565,7 @@ export default function StablePage() {
                         } ${!isViewingOwnStable ? "opacity-60 cursor-not-allowed" : ""}`}
                       >
                         <div className="font-display font-medium">
-                          {label.ja} <span className="text-sm opacity-80">({label.en})</span>
+                          {label}
                         </div>
                         <p className="text-xs mt-1 opacity-70">{emphasisText}</p>
                       </button>
@@ -581,14 +581,14 @@ export default function StablePage() {
                     <Heart className="h-5 w-5" />
                     Recovery Emphasis
                   </CardTitle>
-                  <CardDescription>{recoveryEffect.description}</CardDescription>
+                  <CardDescription>{recoveryEffect.fatigueDecay > 1 ? "Enhanced recovery" : "Standard recovery"}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-3 flex-col md:flex-row">
                     {(Object.keys(RECOVERY_EFFECTS) as RecoveryEmphasis[]).map((recovery) => {
                       const label = getRecoveryLabel(recovery);
                       const effect = RECOVERY_EFFECTS[recovery];
-                      const isActive = trainingState.profile.recovery === recovery;
+                      const isActive = trainingState.activeProfile.recovery === recovery;
 
                       let narrative = "Standard recovery protocols";
                       if (effect.fatigueDecay > 1.2) narrative = "Prioritizes rest and rejuvenation";
@@ -603,8 +603,8 @@ export default function StablePage() {
                             isActive ? "bg-primary text-primary-foreground" : "bg-secondary/50 hover:bg-secondary"
                           } ${!isViewingOwnStable ? "opacity-60 cursor-not-allowed" : ""}`}
                         >
-                          <div className="font-display font-medium text-lg">{label.ja}</div>
-                          <div className="text-sm opacity-80">{label.en}</div>
+                          <div className="font-display font-medium text-lg">{label}</div>
+                          <div className="text-sm opacity-80">{recovery}</div>
                           <p className="mt-2 text-xs opacity-70">{narrative}</p>
                         </button>
                       );
@@ -619,7 +619,7 @@ export default function StablePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="h-5 w-5" />
-                  Individual Focus ({trainingState.focusSlots.length}/{trainingState.maxFocusSlots} slots)
+                  Individual Focus ({trainingState.focusSlots.length}/{Math.min(6, sekitori.length)} slots)
                 </CardTitle>
                 <CardDescription>Assign specific training programs to key wrestlers</CardDescription>
               </CardHeader>
@@ -648,7 +648,7 @@ export default function StablePage() {
                           <span className="capitalize">{phase} phase</span>
                           {focus && (
                             <Badge variant="secondary" className="text-xs">
-                              {getFocusModeLabel(focus.mode).en}
+                              {getFocusModeLabel(focus.focusType)}
                             </Badge>
                           )}
                         </div>

@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatRank } from "@/engine/banzuke";
+import { toRankPosition } from "@/engine/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClickableName } from "@/components/ClickableName";
@@ -83,7 +84,7 @@ export default function BanzukePage() {
                                         {list.map((r) => (
                                             <tr key={r.id} className="border-b hover:bg-muted/50 transition-colors">
                                                 <td className="p-3 font-mono text-muted-foreground w-32">
-                                                    {formatRank({ rank: r.rank, rankNumber: r.rankNumber, side: r.side })}
+                                                    {formatRank(toRankPosition({ rank: r.rank, rankNumber: r.rankNumber, side: r.side }))}
                                                 </td>
                                                 <td className="p-3" colSpan={2}>
                                                     <div className="flex items-center gap-3">

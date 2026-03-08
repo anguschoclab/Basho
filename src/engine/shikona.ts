@@ -192,14 +192,14 @@ function seededRandom(seed: string): () => number {
 // ----------------------------
 
 function pick<T>(arr: readonly T[], rng: () => number): T {
-  return arr[Math.floor(rng.next() * arr.length)];
+  return arr[Math.floor(rng() * arr.length)];
 }
 
 function weightedPick<T>(items: Array<{ item: T; w: number }>, rng: () => number): T {
   const total = items.reduce((s, x) => s + Math.max(0, x.w), 0);
   if (total <= 0) return items[0].item;
 
-  let r = rng.next() * total;
+  let r = rng() * total;
   for (const x of items) {
     r -= Math.max(0, x.w);
     if (r <= 0) return x.item;
@@ -316,7 +316,7 @@ function generateCandidate(
   const nat = nationalityPool(config);
 
   if (config.preferPrestigious) {
-    if (rng.next() < rankRule.prestigeChance) {
+    if (rng() < rankRule.prestigeChance) {
       const base = pick(PRESTIGIOUS_FULL_NAMES, rng);
       if (attempt > 0) {
         const extra = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
@@ -332,7 +332,7 @@ function generateCandidate(
   switch (pattern) {
     case "nat+terrain": {
       const prefix = pick(nat, rng);
-      const suffix = rng.next() < 0.5 ? pick(SHIKONA_SUFFIXES.mountain, rng) : pick(SHIKONA_SUFFIXES.water, rng);
+      const suffix = rng() < 0.5 ? pick(SHIKONA_SUFFIXES.mountain, rng) : pick(SHIKONA_SUFFIXES.water, rng);
       return prefix + suffix;
     }
     case "power+any": {
@@ -361,7 +361,7 @@ function generateCandidate(
       return prefix + suffix;
     }
     case "triple": {
-      if (rng.next() > rankRule.tripleChance) {
+      if (rng() > rankRule.tripleChance) {
         const prefix = pickPrefixByCategoryBias(rng, house.prefixCategoryBias);
         const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
         return prefix + suffix;
@@ -406,7 +406,7 @@ export function generateOyakataName(seed: string): string {
         "Kasugano", "Oguruma", "Kise", "Tamanoi", "Oshima"
     ];
     // Deterministic pick using the same internal seeded RNG core as shikona generation.
-    const rng = createSeededRNG(seed + "::oyakataName");
-    const idx = Math.floor(rng.nextFloat() * names.length);
+    const rng = seededRandom(seed + "::oyakataName");
+    const idx = Math.floor(rng() * names.length);
     return names[Math.max(0, Math.min(names.length - 1, idx))];
 }
