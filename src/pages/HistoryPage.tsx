@@ -20,7 +20,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BASHO_CALENDAR } from "@/engine/calendar";
+import { BASHO_CALENDAR, getBashoByNumber, getBashoIndex } from "@/engine/calendar";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { Trophy, Medal, Award, Star, ArrowLeft, Calendar } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
