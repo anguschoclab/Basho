@@ -18,7 +18,7 @@ import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
-import { EventBus } from "./events";
+import { EventBus, logEngineEvent } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 import { buildAlmanacSnapshot } from "./almanac";
 import { autosave } from "./saveload";
