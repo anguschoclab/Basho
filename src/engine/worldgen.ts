@@ -192,6 +192,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
         recovery: Math.round(facilityBase + hRng.next() * 20),
         nutrition: Math.round(facilityBase + hRng.next() * 20)
       },
+      facilitiesBand: facilityBase >= 55 ? "world_class" as const : facilityBase >= 40 ? "excellent" as const : facilityBase >= 25 ? "adequate" as const : facilityBase >= 15 ? "basic" as const : "minimal" as const,
       
       riskIndicators: {
         financial: runwayIdx >= 3,
