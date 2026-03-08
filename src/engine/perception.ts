@@ -234,7 +234,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
         momentum: bandRikishiMomentum(r.momentum ?? 0)
       };
     })
-    .filter((x): x is RikishiPerception => x !== null);
+    .filter((x): x is RikishiPerception => x != null);
 
   // Determine style bias
   let oshi = 0, yotsu = 0;
