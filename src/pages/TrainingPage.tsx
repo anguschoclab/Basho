@@ -28,6 +28,7 @@ import {
   createDefaultTrainingState
 } from "@/engine/training";
 import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
+import { toFatigueBand, FATIGUE_LABELS } from "@/engine/descriptorBands";
 import {
   Activity,
   Dumbbell,

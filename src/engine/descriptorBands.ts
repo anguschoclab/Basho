@@ -19,7 +19,7 @@
  *   const band = toBand(value, POWER_BANDS, previousBand);
  */
 
-const HYSTERESIS_DELTA = 5;
+export const HYSTERESIS_DELTA = 5;
 
 export interface BandDef<T extends string> {
   band: T;
