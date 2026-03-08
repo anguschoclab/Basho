@@ -70,6 +70,9 @@ export default function Dashboard() {
         {/* TIME CONTROLS - PRIMARY ACTION AREA */}
         <TimeControls />
 
+        {/* BASHO SUMMARY BANNER - during active basho */}
+        {world.cyclePhase === "active_basho" && <BashoSummaryBanner />}
+
         {/* STABLE OVERVIEW + KEY METRICS */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* Stable Overview — full banded perception panel */}
