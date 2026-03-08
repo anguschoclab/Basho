@@ -180,18 +180,17 @@ export function applyBoutResult(
 
   // Update media from bout (generates headlines, media heat, heya pressure)
   safeCall(() => {
-    const w = world as any;
-    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    if (!world.mediaState) world.mediaState = createDefaultMediaState();
     const { state } = updateMediaFromBout({
-      state: w.mediaState,
+      state: world.mediaState,
       world,
       result,
       day: match.day,
       bashoName: world.currentBashoName,
       division: east.division,
-      rivalries: (world as any).rivalriesState,
+      rivalries: world.rivalriesState,
     });
-    w.mediaState = state;
+    world.mediaState = state;
   });
 
   // Emit canonical bout result event
