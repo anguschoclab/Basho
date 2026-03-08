@@ -86,6 +86,24 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
   };
 }
 
+// === SPONSOR POOL SERIALIZATION ===
+
+function serializeSponsorPool(pool: any): any {
+  if (!pool) return undefined;
+  return {
+    sponsors: pool.sponsors instanceof Map ? mapToObject(pool.sponsors) : (pool.sponsors || {}),
+    koenkais: pool.koenkais instanceof Map ? mapToObject(pool.koenkais) : (pool.koenkais || {}),
+  };
+}
+
+function deserializeSponsorPool(data: any): any {
+  if (!data) return undefined;
+  return {
+    sponsors: data.sponsors instanceof Map ? data.sponsors : objectToMap(data.sponsors || {}),
+    koenkais: data.koenkais instanceof Map ? data.koenkais : objectToMap(data.koenkais || {}),
+  };
+}
+
 // === WORLD SERIALIZATION ===
 
 export function serializeWorld(world: WorldState): SerializedWorldState {
