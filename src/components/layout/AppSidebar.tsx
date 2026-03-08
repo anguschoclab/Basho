@@ -109,6 +109,16 @@ const items = [
     url: "/almanac",
     icon: BookOpen,
   },
+  {
+    title: "Media",
+    url: "/media",
+    icon: Newspaper,
+  },
+  {
+    title: "Hall of Fame",
+    url: "/hall-of-fame",
+    icon: Award,
+  },
 ];
 
 function describeRunwayBrief(funds: number): { label: string; color: string } {

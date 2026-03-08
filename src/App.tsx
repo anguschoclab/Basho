@@ -59,6 +59,8 @@ const App = () => (
               <Route path="/recap" element={<RecapPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/almanac" element={<AlmanacPage />} />
+              <Route path="/media" element={<MediaPage />} />
+              <Route path="/hall-of-fame" element={<HallOfFamePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
