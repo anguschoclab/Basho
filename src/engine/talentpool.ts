@@ -208,16 +208,20 @@ export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   return count;
 }
 
-function getForeignCommitmentsInTalks(world: WorldState, heyaId: Id): number {
+function getForeignCommitmentsInTalksEarly(world: WorldState, heyaId: Id): number {
   const tp = ensureWorldPool(world);
   let n = 0;
   for (const c of Object.values(tp.candidates)) {
     if (!c) continue;
     if (c.availabilityState !== "in_talks") continue;
-    if (!countsAsForeign(c)) continue;
+    if (!countsAsForeignEarly(c)) continue;
     if (c.competingSuitors.some((s) => s.heyaId === heyaId)) n += 1;
   }
   return n;
+}
+
+function countsAsForeignEarly(candidate: TalentCandidate): boolean {
+  return (candidate.nationality || "Japan") !== "Japan";
 }
 
 export function ensureTalentPools(world: WorldState): TalentPoolWorldState {
