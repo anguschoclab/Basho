@@ -109,6 +109,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     dayIndexGlobal: world.dayIndexGlobal,
     almanacSnapshots: (world as any).almanacSnapshots,
     calendar: world.calendar,
+    // Sponsor pool (Constitution A6.4)
+    sponsorPool: serializeSponsorPool((world as any).sponsorPool),
   } as any;
 }
 
