@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BASHO_CALENDAR, getDayName } from "@/engine/calendar";
+import { BASHO_CALENDAR, getDayName, getSeasonalFlavor, isKeyDay } from "@/engine/calendar";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown } from "lucide-react";
@@ -152,10 +152,18 @@ export default function BashoPage() {
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
                 Day {basho.day}/15
               </Badge>
+              {isKeyDay(basho.day) && (
+                <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs">Key Day</Badge>
+              )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {dayInfo?.dayJa ?? `Day ${basho.day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/{matches.length} bouts complete
             </p>
+            {bashoInfo?.season && (
+              <p className="text-xs text-muted-foreground/70 italic mt-0.5">
+                {getSeasonalFlavor(bashoInfo.season, world?.seed)}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={handleSimulateNext} disabled={remainingBouts === 0 || nextBoutIndex < 0} className="gap-1.5">

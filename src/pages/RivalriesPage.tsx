@@ -26,7 +26,9 @@ import {
   type RivalryHeatBand,
   type RivalryTone,
   type RivalryTrigger,
-  createDefaultRivalriesState
+  type RivalryDigestRow,
+  createDefaultRivalriesState,
+  buildRivalryDigest
 } from "@/engine/rivalries";
 
 // -----------------------------

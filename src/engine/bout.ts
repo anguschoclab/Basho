@@ -24,7 +24,7 @@ import { KIMARITE_REGISTRY, type Kimarite } from "./kimarite";
 import { buildPbpFromBoutResult, type PbpContext, type PbpLine } from "./pbp";
 import { generateNarrative } from "./narrative";
 
-/** Engine position vocabulary (IMPORTANT) */
+/** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
 export type Position = "front" | "lateral" | "rear";
 export type Advantage = "east" | "west" | "none";
 

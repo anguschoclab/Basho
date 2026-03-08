@@ -16,6 +16,7 @@
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
+import type { Advantage, Position } from "./bout";
 
 /** =========================
  *  Fact Layer Types
@@ -38,8 +39,8 @@ export type PbpTag =
   | "dominant"
   | "close_call";
 
-export type Advantage = "east" | "west" | "none";
-export type Position = "front" | "lateral" | "rear";
+// Re-export canonical types from bout.ts
+export type { Advantage, Position } from "./bout";
 
 /** Legacy tolerance (older logs used "frontal") */
 type LegacyPosition = "frontal" | "front" | "lateral" | "rear";

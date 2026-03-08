@@ -20,7 +20,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BASHO_CALENDAR } from "@/engine/calendar";
+import { BASHO_CALENDAR, getBashoByNumber, getBashoIndex } from "@/engine/calendar";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { Trophy, Medal, Award, Star, ArrowLeft, Calendar } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
@@ -91,10 +91,13 @@ export default function HistoryPage() {
         ) : (
           <div className="space-y-6">
             {history.map((basho) => {
-              const bashoInfo = (BASHO_CALENDAR as any)?.[basho.bashoName];
+              const bashoInfo = basho.bashoNumber
+                ? getBashoByNumber(basho.bashoNumber as 1|2|3|4|5|6)
+                : (BASHO_CALENDAR as any)?.[basho.bashoName];
               const bashoNameJa = bashoInfo?.nameJa ?? basho.bashoName;
               const bashoNameEn = bashoInfo?.nameEn ?? "Tournament";
               const bashoLocation = bashoInfo?.location ?? "—";
+              const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as any) : -1;
 
               const yushoRikishi = basho.yusho ? getRikishi?.(basho.yusho) ?? null : null;
               const yushoHeya = yushoRikishi ? world.heyas.get(yushoRikishi.heyaId) : null;
@@ -124,7 +127,7 @@ export default function HistoryPage() {
                           <span>{basho.year}年</span>
                           <span>{bashoLocation}</span>
                           <Badge variant="secondary" className="text-xs">
-                            Basho #{basho.bashoNumber}
+                            {bashoIdx >= 0 ? `${bashoIdx + 1}/6` : `#${basho.bashoNumber}`}
                           </Badge>
                         </CardDescription>
                       </div>
