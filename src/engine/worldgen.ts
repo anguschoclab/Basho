@@ -42,6 +42,82 @@ function getRandom<T>(rng: SeededRNG, arr: T[]): T {
   return arr[rng.int(0, arr.length - 1)];
 }
 
+/**
+ * Generate realistic synthetic career records for worldgen rikishi.
+ * Based on real sumo data:
+ * - Sekitori fight 15 bouts/basho (6 basho/year)
+ * - Lower divisions fight 7 bouts/basho
+ * - Win rates correlate strongly with rank
+ * - Time in career correlates with rank (yokozuna = veteran)
+ */
+function generateSyntheticCareer(
+  rng: SeededRNG,
+  rank: Rank,
+  division: Division,
+  birthYear: number,
+  currentYear: number,
+): { careerWins: number; careerLosses: number; careerRecord: { wins: number; losses: number; yusho: number } } {
+  const age = currentYear - birthYear;
+  // Debut age typically 15-18 for lower division, older for college recruits
+  const debutAge = rank === "yokozuna" || rank === "ozeki" ? 15 + rng.int(0, 3)
+    : rank === "sekiwake" || rank === "komusubi" ? 16 + rng.int(0, 3)
+    : rank === "maegashira" ? 17 + rng.int(0, 4)
+    : rank === "juryo" ? 18 + rng.int(0, 3)
+    : 18 + rng.int(0, 2);
+
+  const yearsActive = Math.max(1, age - debutAge);
+  const bashoCount = yearsActive * 6;
+
+  // Bouts per basho depends on division
+  const boutsPerBasho = ["makuuchi", "juryo"].includes(division) ? 15 : 7;
+
+  // Win rate by rank (realistic ranges from real sumo data)
+  let winRateBase: number;
+  let winRateVariance: number;
+  let yushoChance: number; // per basho chance of yusho
+
+  switch (rank) {
+    case "yokozuna":
+      winRateBase = 0.72; winRateVariance = 0.06; yushoChance = 0.15;
+      break;
+    case "ozeki":
+      winRateBase = 0.62; winRateVariance = 0.05; yushoChance = 0.05;
+      break;
+    case "sekiwake":
+      winRateBase = 0.57; winRateVariance = 0.05; yushoChance = 0.02;
+      break;
+    case "komusubi":
+      winRateBase = 0.52; winRateVariance = 0.06; yushoChance = 0.01;
+      break;
+    case "maegashira":
+      winRateBase = 0.48; winRateVariance = 0.08; yushoChance = 0.003;
+      break;
+    case "juryo":
+      winRateBase = 0.47; winRateVariance = 0.08; yushoChance = 0.005;
+      break;
+    default: // lower divisions
+      winRateBase = 0.45; winRateVariance = 0.10; yushoChance = 0.002;
+      break;
+  }
+
+  const winRate = Math.max(0.25, Math.min(0.85, winRateBase + (rng.next() - 0.5) * winRateVariance * 2));
+  const totalBouts = bashoCount * boutsPerBasho;
+  const wins = Math.round(totalBouts * winRate);
+  const losses = totalBouts - wins;
+
+  // Yusho count
+  let yusho = 0;
+  for (let i = 0; i < bashoCount; i++) {
+    if (rng.next() < yushoChance) yusho++;
+  }
+
+  return {
+    careerWins: wins,
+    careerLosses: losses,
+    careerRecord: { wins, losses, yusho },
+  };
+}
+
 function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArchetype): RikishiStats {
   const base = rank === "yokozuna" ? 85 :
                rank === "ozeki" ? 75 :
