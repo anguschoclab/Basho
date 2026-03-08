@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight } from "lucide-react";
 import { getMonthlyMaintenanceCost } from "@/engine/facilities";
+import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
