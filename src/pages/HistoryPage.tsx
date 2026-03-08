@@ -91,10 +91,13 @@ export default function HistoryPage() {
         ) : (
           <div className="space-y-6">
             {history.map((basho) => {
-              const bashoInfo = (BASHO_CALENDAR as any)?.[basho.bashoName];
+              const bashoInfo = basho.bashoNumber
+                ? getBashoByNumber(basho.bashoNumber as 1|2|3|4|5|6)
+                : (BASHO_CALENDAR as any)?.[basho.bashoName];
               const bashoNameJa = bashoInfo?.nameJa ?? basho.bashoName;
               const bashoNameEn = bashoInfo?.nameEn ?? "Tournament";
               const bashoLocation = bashoInfo?.location ?? "—";
+              const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as any) : -1;
 
               const yushoRikishi = basho.yusho ? getRikishi?.(basho.yusho) ?? null : null;
               const yushoHeya = yushoRikishi ? world.heyas.get(yushoRikishi.heyaId) : null;
