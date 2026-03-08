@@ -108,6 +108,9 @@ export interface MediaState {
 
   /** Track which injury withdrawal headlines fired this basho (rikishiId → true) */
   injuryWithdrawalFired: Record<Id, boolean>;
+
+  /** Per-rikishi media heat history snapshots (bashoName → heat value) for sparklines */
+  mediaHeatHistory: Record<Id, Array<{ basho: string; heat: number }>>;
 }
 
 /** Digest output for UI */
@@ -134,6 +137,7 @@ export function createDefaultMediaState(): MediaState {
     retirementWatchFired: {},
     titleRaceDayFired: {},
     injuryWithdrawalFired: {},
+    mediaHeatHistory: {},
   };
 }
 
