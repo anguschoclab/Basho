@@ -21,7 +21,7 @@ import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types
  *  Fact Layer Types
  *  ========================= */
 
-export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish";
+export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish" | "tactical";
 
 export type PbpTag =
   | "crowd_roar"
@@ -123,7 +123,16 @@ export interface FinishFact extends PbpFactBase {
   closeCall?: boolean;
 }
 
-export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact;
+export interface TacticalFact extends PbpFactBase {
+  phase: "tactical";
+  side: Side;
+  archetype?: TacticalArchetype;
+  opponentArchetype?: TacticalArchetype;
+  clinchPreference?: "belt" | "push" | "neutral";
+  strategy: string;
+}
+
+export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact;
 
 export interface PbpContext {
   seed: string;
@@ -207,6 +216,15 @@ export interface PbpLibrary {
     upset: PhraseBucket;
     close_call: PhraseBucket;
     kinboshi: PhraseBucket;
+  };
+
+  tactical: {
+    oshi_strategy: PhraseBucket;
+    yotsu_strategy: PhraseBucket;
+    speedster_strategy: PhraseBucket;
+    trickster_strategy: PhraseBucket;
+    counter_strategy: PhraseBucket;
+    adaptive_strategy: PhraseBucket;
   };
 
   connective: {
@@ -300,6 +318,39 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     ]
   },
 
+  tactical: {
+    oshi_strategy: [
+      { id: "tac_oshi_1", text: "📋 {leader}'s game plan: deny the belt, full forward pressure." },
+      { id: "tac_oshi_2", text: "📋 {leader} comes in with a clear oshi strategy — no belt wrestling today." },
+      { id: "tac_oshi_3", text: "📋 The commentators note {leader} is set up for relentless pushing." },
+    ],
+    yotsu_strategy: [
+      { id: "tac_yotsu_1", text: "📋 {leader}'s approach: get to the belt at all costs." },
+      { id: "tac_yotsu_2", text: "📋 {leader} wants this on the mawashi — a patient belt-hunting plan." },
+      { id: "tac_yotsu_3", text: "📋 Classic yotsu preparation from {leader} — absorb and grapple." },
+    ],
+    speedster_strategy: [
+      { id: "tac_speed_1", text: "📋 {leader} will use footwork — movement sumo is the plan." },
+      { id: "tac_speed_2", text: "📋 Quick feet, sharp angles — {leader} aims to stay mobile." },
+      { id: "tac_speed_3", text: "📋 The commentators say {leader} will rely on lateral movement today." },
+    ],
+    trickster_strategy: [
+      { id: "tac_trick_1", text: "📋 Expect the unexpected — {leader} is reading the opponent's habits." },
+      { id: "tac_trick_2", text: "📋 {leader} has that look in his eyes — something tricky is coming." },
+      { id: "tac_trick_3", text: "📋 Misdirection and feints — that's {leader}'s plan today." },
+    ],
+    counter_strategy: [
+      { id: "tac_ctr_1", text: "📋 {leader} is set to absorb and redirect — a counter strategy." },
+      { id: "tac_ctr_2", text: "📋 Patient and calculated — {leader} waits for the opponent to overcommit." },
+      { id: "tac_ctr_3", text: "📋 The analysis desk notes {leader} is fighting reactively today." },
+    ],
+    adaptive_strategy: [
+      { id: "tac_adapt_1", text: "📋 {leader} reads the matchup and adjusts — a flexible approach." },
+      { id: "tac_adapt_2", text: "📋 No fixed plan — {leader} adapts to whatever comes." },
+      { id: "tac_adapt_3", text: "📋 A calculated game plan from {leader} — exploiting the opponent's weakness." },
+    ],
+  },
+
   connective: {
     short: [
       { id: "x_1", text: "Now…", weight: 1 },
@@ -387,9 +438,24 @@ export function buildPbpFromBoutResult(
   let clinchBeat = 0;
   let momentumBeat = 0;
 
+  let tacticalBeat = 0;
+
   if (Array.isArray((result as any).log)) {
     for (const entry of (result as any).log) {
-      if (entry.phase === "clinch") {
+      // Tactical strategy entries (emitted before tachiai)
+      if (entry.data?.tacticalEntry) {
+        const side = entry.data.side as Side;
+        facts.push({
+          phase: "tactical",
+          beat: ++tacticalBeat,
+          side,
+          archetype: entry.data.archetype,
+          opponentArchetype: entry.data.opponentArchetype,
+          clinchPreference: entry.data.clinchPreference,
+          strategy: entry.data.strategy ?? "Standard approach",
+          leader: side,
+        } as TacticalFact);
+      } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
         facts.push({
           phase: "clinch",
@@ -496,6 +562,20 @@ function selectPhraseForFact(
         tags: mergeTags(chosen.tags, extra)
       };
     }
+
+    case "tactical": {
+      const arch = (fact as TacticalFact).archetype;
+      let bucket = lib.tactical.adaptive_strategy;
+      if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
+      else if (arch === "yotsu_specialist") bucket = lib.tactical.yotsu_strategy;
+      else if (arch === "speedster") bucket = lib.tactical.speedster_strategy;
+      else if (arch === "trickster") bucket = lib.tactical.trickster_strategy;
+      else if (arch === "counter_specialist") bucket = lib.tactical.counter_strategy;
+      else if (arch === "hybrid_oshi_yotsu" || arch === "all_rounder") bucket = lib.tactical.adaptive_strategy;
+
+      const chosen = weightedPick(bucket, rng);
+      return { phrase: chosen, tags: mergeTags(chosen.tags) };
+    }
   }
 }
 
@@ -505,6 +585,8 @@ function selectPhraseForFact(
 
 function phaseOrder(p: BoutPhase): number {
   switch (p) {
+    case "tactical":
+      return -1;
     case "tachiai":
       return 0;
     case "clinch":

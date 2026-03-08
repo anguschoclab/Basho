@@ -16,6 +16,7 @@ import { generateNarrative } from "@/engine/narrative";
 import { buildPbpFromBoutResult, type PbpLine, type PbpContext } from "@/engine/pbp";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
+  tactical: { label: "Strategy", color: "text-cyan-400",     bg: "bg-cyan-500/15 border-cyan-500/30" },
   tachiai:  { label: "Tachiai",  color: "text-blue-400",    bg: "bg-blue-500/15 border-blue-500/30" },
   clinch:   { label: "Clinch",   color: "text-amber-400",   bg: "bg-amber-500/15 border-amber-500/30" },
   momentum: { label: "Struggle", color: "text-purple-400",  bg: "bg-purple-500/15 border-purple-500/30" },

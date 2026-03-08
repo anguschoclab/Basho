@@ -43,6 +43,14 @@ export function loadVoiceMatrix(): PbpLibrary {
     connective: {
       short: castBucket(matrixData.connective.short),
     },
+    tactical: {
+      oshi_strategy: [{ id: "tac_oshi_vm", text: "📋 {leader} sets up for forward pressure — oshi game plan." }],
+      yotsu_strategy: [{ id: "tac_yotsu_vm", text: "📋 {leader} wants the belt — yotsu strategy in play." }],
+      speedster_strategy: [{ id: "tac_speed_vm", text: "📋 {leader} will use movement and angles." }],
+      trickster_strategy: [{ id: "tac_trick_vm", text: "📋 {leader} is reading habits — expect deception." }],
+      counter_strategy: [{ id: "tac_ctr_vm", text: "📋 {leader} sets up to absorb and redirect." }],
+      adaptive_strategy: [{ id: "tac_adapt_vm", text: "📋 {leader} adapts the approach to the matchup." }],
+    },
   };
 }
 
