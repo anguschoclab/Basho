@@ -406,6 +406,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "UPDATE_WORLD", world });
   }, []);
 
+  const goOnHoliday = useCallback((config: HolidayConfig): HolidayResult | null => {
+    if (!state.world) return null;
+    const result = runHoliday(state.world, config);
+    dispatch({ type: "RUN_HOLIDAY", result });
+    return result;
+  }, [state.world]);
+
+  const runAutoSimAction = useCallback(async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
+    if (!state.world) return null;
+    const result = runAutoSim(state.world, config);
+    dispatch({ type: "RUN_AUTO_SIM", result });
+    return result;
+  }, [state.world]);
+
   const getRikishi = useCallback((id: string) => {
     return state.world?.rikishi.get(id);
   }, [state.world]);
