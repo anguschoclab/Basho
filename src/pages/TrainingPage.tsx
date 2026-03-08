@@ -46,6 +46,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { RikishiName } from "@/components/ClickableName";
 
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode }[] = [
   { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" /> },
