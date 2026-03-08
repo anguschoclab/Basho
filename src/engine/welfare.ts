@@ -174,7 +174,9 @@ export function tickWeek(world: WorldState): number {
     const hasNegligence = negligenceCount > 0;
 
     if (w.complianceState === "compliant") {
-      if (w.welfareRisk >= 45 || seriousCount >= 2) {
+      // Negligence lowers the threshold for entering watch
+      const watchThreshold = hasNegligence ? 30 : 45;
+      if (w.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && w.welfareRisk >= 20)) {
         setComplianceState(w, "watch");
         logEngineEvent(world, {
           type: "COMPLIANCE_WATCH",
@@ -182,9 +184,11 @@ export function tickWeek(world: WorldState): number {
           importance: "notable",
           scope: "heya",
           heyaId: heya.id,
-          title: "Compliance Watch",
-          summary: `${heya.name} has been placed under watch for welfare concerns.`,
-          data: { welfareRisk: w.welfareRisk, reasons: reasons.join("|") }
+          title: hasNegligence ? "Compliance Watch — Negligence Suspected" : "Compliance Watch",
+          summary: hasNegligence
+            ? `${heya.name} placed under watch. Injured wrestlers are training without protection — regulators suspect negligence.`
+            : `${heya.name} has been placed under watch for welfare concerns.`,
+          data: { welfareRisk: w.welfareRisk, negligenceCount, reasons: reasons.join("|") }
         });
         events += 1;
       }
