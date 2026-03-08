@@ -212,6 +212,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       injuryWeeksRemaining: 0,
       condition: 90 + rrng.next() * 10,
       motivation: 50 + rrng.next() * 50,
+      talentSeed: Math.round(25 + rrng.next() * 65), // 25-90 potential ceiling
       
       // Style
       style: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid",
