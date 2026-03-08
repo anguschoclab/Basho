@@ -61,8 +61,13 @@ export default function Dashboard() {
         {/* TIME CONTROLS - PRIMARY ACTION AREA */}
         <TimeControls />
 
-        {/* ALERTS & NOTIFICATIONS */}
+        {/* STABLE OVERVIEW + KEY METRICS */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Stable Overview — full banded perception panel */}
+            <div className="lg:row-span-2">
+              <StableOverviewPanel />
+            </div>
+
             {/* Financial Status — narrative band, no raw ¥ */}
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
