@@ -309,7 +309,6 @@ export function BoutReplayViewer({
     ctx.stroke();
 
     // Draw particles
-    const now = Date.now();
     particlesRef.current.forEach(p => {
       const alpha = Math.max(0, p.life);
       ctx.globalAlpha = alpha;
