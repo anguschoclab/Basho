@@ -341,6 +341,11 @@ export default function RecapPage() {
           </Card>
         )}
 
+        {/* PLAYOFF BRACKET - if there were playoff matches */}
+        {lastBasho?.playoffMatches && lastBasho.playoffMatches.length > 0 && (
+          <PlayoffBracket matches={lastBasho.playoffMatches} world={world} />
+        )}
+
         <div className="grid gap-6 md:grid-cols-2">
           {/* PROMOTIONS & DEMOTIONS */}
           <Card>
