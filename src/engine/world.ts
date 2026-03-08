@@ -159,10 +159,10 @@ export function applyBoutResult(
   standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
   standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
 
-  safeCall(() => (injuries as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (rivalries as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (economics as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (scoutingStore as any).onBoutResolved?.(world, { match, result, east, west }));
+  safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => scoutingStore.onBoutResolved(world, { match, result, east, west }));
 
   // Emit canonical bout result event
   EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
