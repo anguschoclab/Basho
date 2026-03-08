@@ -27,6 +27,8 @@ import {
   Dumbbell,
   Crown,
   Award,
+  Heart,
+  HandshakeIcon,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
