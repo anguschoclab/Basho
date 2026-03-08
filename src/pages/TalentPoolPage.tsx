@@ -243,7 +243,7 @@ export default function TalentPoolPage() {
                                   const oy = h ? world.oyakata.get(h.oyakataId) : null;
                                   return (
                                     <div key={s.heyaId} className="flex justify-between">
-                                      <span>{h?.name ?? s.heyaId}</span>
+                                      <span>{h ? <StableName id={h.id} name={h.name} /> : s.heyaId}</span>
                                       <span className="opacity-80">{oy?.archetype ?? "oyakata"}</span>
                                     </div>
                                   );
