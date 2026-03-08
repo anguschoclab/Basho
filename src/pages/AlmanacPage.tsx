@@ -574,6 +574,9 @@ export default function AlmanacPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Records Tab */}
           <TabsContent value="records">
             <Card className="paper">
               <CardHeader>
