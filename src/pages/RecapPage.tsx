@@ -11,7 +11,6 @@ import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { getHallOfFame, type HoFInductee } from "@/engine/hallOfFame";
-import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
