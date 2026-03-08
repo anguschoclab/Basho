@@ -26,6 +26,8 @@ import {
   Newspaper,
   Dumbbell,
   Crown,
+  Newspaper,
+  Award,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
