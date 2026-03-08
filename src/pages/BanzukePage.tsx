@@ -3,7 +3,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
+import type { OzekiKadobanMap, RankInfo } from "@/engine/banzuke";
+import { RANK_HIERARCHY, getRankTitleJa, formatRank } from "@/engine/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClickableName } from "@/components/ClickableName";
@@ -11,7 +12,7 @@ import { ArrowUp, ArrowDown, Minus, ChevronsUp, ChevronsDown, ArrowUpRight, Sear
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Division, BanzukeSnapshot } from "@/engine/types";
+import type { Division, BanzukeSnapshot, RankPosition } from "@/engine/types";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
 // ── Helpers ──
