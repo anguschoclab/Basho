@@ -17,6 +17,8 @@ export default function BanzukePage() {
 
   if (!world) return null;
 
+  const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
+
   // We group rikishi by division and sort them
   const rikishiList = Array.from(world.rikishi.values());
   
