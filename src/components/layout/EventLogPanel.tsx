@@ -274,6 +274,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                         <p className="text-[11px] text-muted-foreground">
                           {e.summary}
                         </p>
+                        {renderEntityTags(e)}
                         <div className="flex items-center gap-1 flex-wrap">
                           <Badge variant="outline" className="text-[9px] h-4">
                             {meta.label}
