@@ -6,6 +6,8 @@ import type { WorldState, Rikishi, Heya, BoutResult } from "@/engine/types";
 import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
 import { saveGame, loadGame, autosave, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import { runHoliday, DEFAULT_CRITICAL_GATES, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
+import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 
 // === STATE TYPES ===
 
@@ -50,6 +52,8 @@ type GameAction =
   | { type: "END_BASHO" }
   | { type: "ADVANCE_INTERIM"; weeks: number }
   | { type: "ADVANCE_ONE_DAY" }
+  | { type: "RUN_HOLIDAY"; result: HolidayResult }
+  | { type: "RUN_AUTO_SIM"; result: AutoSimResult }
   | { type: "SELECT_RIKISHI"; id: string | null }
   | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_AUTO_PLAY"; value: boolean }
@@ -225,6 +229,25 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "RUN_HOLIDAY": {
+      if (!state.world) return state;
+      const hPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : "interim";
+      return {
+        ...state,
+        world: { ...state.world },
+        phase: hPhase as GamePhase,
+      };
+    }
+
+    case "RUN_AUTO_SIM": {
+      if (!action.result.finalWorld) return state;
+      return {
+        ...state,
+        world: { ...action.result.finalWorld },
+        phase: "interim",
+      };
+    }
+
     case "SELECT_RIKISHI": {
       return { 
         ...state, 
@@ -287,6 +310,10 @@ interface GameContextValue {
   // Interim control
   advanceInterim: (weeks?: number) => void;
   advanceOneDay: () => void;
+
+  // Holiday & Auto-Sim
+  goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
+  runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   
   // Save/Load
   saveToSlot: (slotName: string) => boolean;
@@ -379,6 +406,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "UPDATE_WORLD", world });
   }, []);
 
+  const goOnHoliday = useCallback((config: HolidayConfig): HolidayResult | null => {
+    if (!state.world) return null;
+    const result = runHoliday(state.world, config);
+    dispatch({ type: "RUN_HOLIDAY", result });
+    return result;
+  }, [state.world]);
+
+  const runAutoSimAction = useCallback(async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
+    if (!state.world) return null;
+    const result = runAutoSim(state.world, config);
+    dispatch({ type: "RUN_AUTO_SIM", result });
+    return result;
+  }, [state.world]);
+
   const getRikishi = useCallback((id: string) => {
     return state.world?.rikishi.get(id);
   }, [state.world]);
@@ -463,6 +504,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     getCurrentDayMatches,
     getStandings,
     updateWorld,
+    goOnHoliday,
+    runAutoSimAction,
   };
 
   return (
