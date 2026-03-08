@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY, formatRank } from "@/engine/banzuke";
 import { KIMARITE_REGISTRY } from "@/engine/kimarite";
 import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "@/engine/almanac";
 import { projectRikishi } from "@/engine/uiModels";
