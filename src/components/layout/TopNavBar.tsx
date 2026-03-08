@@ -26,6 +26,7 @@ import {
   UserSearch,
   Newspaper,
   Dumbbell,
+  Crown,
   ChevronDown,
   Sun,
   Moon,
