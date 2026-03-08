@@ -562,8 +562,21 @@ function selectPhraseForFact(
         tags: mergeTags(chosen.tags, extra)
       };
     }
+
+    case "tactical": {
+      const arch = (fact as TacticalFact).archetype;
+      let bucket = lib.tactical.adaptive_strategy;
+      if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
+      else if (arch === "yotsu_specialist") bucket = lib.tactical.yotsu_strategy;
+      else if (arch === "speedster") bucket = lib.tactical.speedster_strategy;
+      else if (arch === "trickster") bucket = lib.tactical.trickster_strategy;
+      else if (arch === "counter_specialist") bucket = lib.tactical.counter_strategy;
+      else if (arch === "hybrid_oshi_yotsu" || arch === "all_rounder") bucket = lib.tactical.adaptive_strategy;
+
+      const chosen = weightedPick(bucket, rng);
+      return { phrase: chosen, tags: mergeTags(chosen.tags) };
+    }
   }
-}
 
 /** =========================
  *  Utilities
