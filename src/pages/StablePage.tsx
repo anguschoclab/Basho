@@ -544,10 +544,10 @@ export default function StablePage() {
                   {(Object.keys(FOCUS_EFFECTS) as TrainingFocus[]).map((focus) => {
                     const label = getFocusLabel(focus);
                     const effect = FOCUS_EFFECTS[focus];
-                    const isActive = trainingState.profile.focus === focus;
+                    const isActive = trainingState.activeProfile.focus === focus;
 
                     const emphases: string[] = [];
-                    if (effect.power > 1) emphases.push("power");
+                    if (effect.strength > 1) emphases.push("power");
                     if (effect.speed > 1) emphases.push("speed");
                     if (effect.technique > 1) emphases.push("technique");
                     if (effect.balance > 1) emphases.push("balance");
