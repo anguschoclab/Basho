@@ -7,9 +7,8 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { 
   Trophy, 
   TrendingUp, 
@@ -105,8 +104,14 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
 }
 
 export default function RecapPage() {
-  const { state } = useGame();
+  const { state, setPhase } = useGame();
+  const navigate = useNavigate();
   const world = state.world;
+
+  const handleContinue = () => {
+    setPhase("interim");
+    navigate("/dashboard");
+  };
 
   if (!world) {
     return (
@@ -390,9 +395,9 @@ export default function RecapPage() {
         )}
 
         {/* NAVIGATION */}
-        <div className="flex gap-4">
-          <Button asChild>
-            <NavLink to="/dashboard">Return to Dashboard</NavLink>
+        <div className="flex flex-wrap gap-4">
+          <Button onClick={handleContinue}>
+            Continue to Off-Season
           </Button>
           <Button variant="outline" asChild>
             <NavLink to="/history">View Full History</NavLink>
