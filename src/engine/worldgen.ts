@@ -362,6 +362,9 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     // swallow
   }
 
+  // Initialize media state (Constitution: media system drives headlines + popularity)
+  (world as any).mediaState = createDefaultMediaState();
+
   return world as WorldState;
 }
 

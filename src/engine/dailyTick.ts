@@ -227,6 +227,18 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
   safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
 
+  // Media weekly boundary — decay heat/pressure, generate features
+  safeCall(() => {
+    const w = world as any;
+    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    const { state } = processWeeklyMediaBoundary({
+      state: w.mediaState,
+      world,
+      rivalries: (world as any).rivalriesState,
+    });
+    w.mediaState = state;
+  }) && subs.push("media");
+
   // Recruitment window lifecycle — check if window should close
   safeCall(() => { tickRecruitmentWindowClose(world); }) && subs.push("recruitment_window");
 
