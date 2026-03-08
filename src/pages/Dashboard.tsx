@@ -124,34 +124,38 @@ export default function Dashboard() {
             </Card>
         </div>
         
+        {/* WEEKLY DIGEST - VISIBLE IN ALL PHASES */}
+        <WeeklyDigest />
+
         {/* CONTEXTUAL CONTENT BASED ON PHASE */}
-        {phase === "interim" ? (
-             <div className="grid gap-6 md:grid-cols-2">
-                <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>Training Focus</CardTitle>
-                        <CardDescription>Adjust intensity for the off-season.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button asChild className="w-full">
-                            <NavLink to="/stable">Manage Training</NavLink>
-                        </Button>
-                    </CardContent>
-                </Card>
-                 <Card className="col-span-1">
-                    <CardHeader>
-                        <CardTitle>Scouting Report</CardTitle>
-                        <CardDescription>New recruits available.</CardDescription>
-                    </CardHeader>
-                     <CardContent>
-                         <div className="text-sm text-muted-foreground mb-4">
-                             The interim period is the best time to scout new talent.
-                         </div>
-                    </CardContent>
-                </Card>
-             </div>
-        ) : (
-            <WeeklyDigest />
+        {phase === "interim" && (
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="col-span-1">
+              <CardHeader>
+                <CardTitle>Training Focus</CardTitle>
+                <CardDescription>Adjust intensity for the off-season.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild className="w-full">
+                  <NavLink to="/stable">Manage Training</NavLink>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="col-span-1">
+              <CardHeader>
+                <CardTitle>Scouting Report</CardTitle>
+                <CardDescription>New recruits available.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground mb-4">
+                  The interim period is the best time to scout new talent.
+                </div>
+                <Button asChild variant="outline" className="w-full">
+                  <NavLink to="/scouting">View Prospects</NavLink>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* RIVAL STABLES — banded perception data */}
