@@ -166,6 +166,9 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* ═══════════ PROGRESSION ARCS ═══════════ */}
+        {world && <ProgressionTracker world={world} />}
+
         {/* ═══════════ WIDGET GRID ═══════════ */}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {columns.map((col, colIdx) => (
