@@ -66,7 +66,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   return world;
 }
 
-export function ensureDaySchedule(world: WorldState, day: number): WorldState {
+function ensureDaySchedule(world: WorldState, day: number): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
 
