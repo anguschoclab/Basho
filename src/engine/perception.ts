@@ -278,3 +278,14 @@ export function buildAllPerceptionSnapshots(world: WorldState): Map<Id, Percepti
   }
   return snapshots;
 }
+
+/**
+ * getCachedPerception
+ * Returns the cached weekly snapshot if available, otherwise builds fresh.
+ * Consumers should prefer this over buildPerceptionSnapshot for reads.
+ */
+export function getCachedPerception(world: WorldState, heyaId: Id): PerceptionSnapshot {
+  const cached = world.perceptionCache?.[heyaId];
+  if (cached) return cached;
+  return buildPerceptionSnapshot(world, heyaId);
+}
