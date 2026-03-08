@@ -22,11 +22,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { BASHO_CALENDAR, getDayName, getSeasonalFlavor, isKeyDay } from "@/engine/calendar";
-import { getTotalBashodays } from "@/engine/schedule";
+import { getTotalBashodays, needsScheduleForDay, DEFAULT_DIVISION_DAYS } from "@/engine/schedule";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
-import { Play, FastForward, ChevronRight, Trophy, Star, Crown } from "lucide-react";
-import type { Rikishi, BoutResult, Rank } from "@/engine/types";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
+import type { Rikishi, BoutResult, Division } from "@/engine/types";
 
 type MatchLike = {
   day?: number;
