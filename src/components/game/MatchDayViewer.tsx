@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Rikishi, WorldState, BoutResult, RivalriesState } from "@/engine/types";
-import { getRivalry, type RivalryHeatBand, type RivalryPairState } from "@/engine/rivalries";
+import type { Rikishi, WorldState, BoutResult } from "@/engine/types";
+import { getRivalry, type RivalryHeatBand, type RivalryPairState, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
 import { 
   Flame, 
