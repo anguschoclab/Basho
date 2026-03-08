@@ -644,4 +644,3 @@ export function enterInterim(world: WorldState): void {
   world.cyclePhase = "interim";
   world._interimDaysRemaining = getInterimDaysTotal();
 }
-}
