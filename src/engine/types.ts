@@ -26,8 +26,10 @@ export type EventCategory =
   | "discipline"
   | "facility"
   | "milestone"
-  | "match"       // Added for match results
-  | "basho"       // Added for basho lifecycle
+  | "match"
+  | "basho"
+  | "career"
+  | "welfare"
   | "misc";
 
 export type EventImportance = "minor" | "notable" | "major" | "headline";
