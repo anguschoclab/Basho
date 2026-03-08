@@ -226,7 +226,7 @@ export default function RecapPage() {
                       const r = world.rikishi.get(id);
                       return (
                         <Badge key={id} variant="secondary" className="text-sm">
-                          {r?.shikona || "Unknown"}
+                          {r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"}
                         </Badge>
                       );
                     })}
