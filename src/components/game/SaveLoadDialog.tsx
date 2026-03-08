@@ -1,8 +1,14 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
 import { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
+
+// Global open signal for keyboard shortcut integration
+const openListeners = new Set<() => void>();
+export function openSaveLoadDialog() {
+  openListeners.forEach((fn) => fn());
+}
 import {
   Dialog,
   DialogContent,
