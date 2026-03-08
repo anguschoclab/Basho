@@ -637,10 +637,11 @@ export function advanceFullInterim(world: WorldState): DailyTickReport[] {
 
 export function enterPostBasho(world: WorldState): void {
   world.cyclePhase = "post_basho";
-  (world as any)._postBashoDays = 7;
+  world._postBashoDays = 7;
 }
 
 export function enterInterim(world: WorldState): void {
   world.cyclePhase = "interim";
-  (world as any)._interimDaysRemaining = getInterimDaysTotal();
+  world._interimDaysRemaining = getInterimDaysTotal();
+}
 }
