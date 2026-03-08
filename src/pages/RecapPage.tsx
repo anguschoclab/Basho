@@ -120,14 +120,48 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
 }
 
 export default function RecapPage() {
-  const { state, setPhase } = useGame();
+  const { state, setPhase, updateWorld } = useGame();
   const navigate = useNavigate();
   const world = state.world;
+
+  const [showPressConference, setShowPressConference] = useState(false);
+  const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
+  const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
 
   const handleContinue = () => {
     setPhase("interim");
     navigate("/dashboard");
   };
+
+  const handlePressConferenceClose = (effects: { reputation: number; morale: number; mediaHeat: number }) => {
+    setShowPressConference(false);
+    if (world && world.playerHeyaId) {
+      const heya = world.heyas.get(world.playerHeyaId);
+      if (heya) {
+        heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+      }
+      updateWorld({ ...world });
+    }
+  };
+
+  // Detect yokozuna deliberation candidates
+  const yokozunaCandidate = useMemo(() => {
+    if (!world) return null;
+    for (const r of world.rikishi.values()) {
+      if (r.rank !== "ozeki") continue;
+      const recentYusho = (r.careerRecord?.yusho ?? 0) >= 2;
+      const strongRecord = (r.currentBashoWins ?? 0) >= 12;
+      if (recentYusho && strongRecord) return r;
+    }
+    return null;
+  }, [world]);
+
+  // Detect HoF inductees this year
+  const newInductees = useMemo(() => {
+    if (!world) return [];
+    const hof = getHallOfFame(world);
+    return hof.inductees.filter(i => i.inductionYear === world.year);
+  }, [world]);
 
   if (!world) {
     return (
