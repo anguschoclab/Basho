@@ -206,6 +206,14 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
     world.calendar.currentWeek = world.week;
   }
 
+  // Build perception cache FIRST — consumed by npcAI and UI (A7.1)
+  safeCall(() => {
+    const snapshots = buildAllPerceptionSnapshots(world);
+    const cache: Record<string, import("./perception").PerceptionSnapshot> = {};
+    for (const [id, snap] of snapshots) cache[id] = snap;
+    world.perceptionCache = cache;
+  }) && subs.push("perception_cache");
+
   safeCall(() => { npcAI.tickWeek?.(world); }) && subs.push("npcAI");
   safeCall(() => { training.tickWeek(world); }) && subs.push("training");
   safeCall(() => { (injuries as any).tickWeek?.(world); }) && subs.push("injuries");
