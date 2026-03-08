@@ -316,8 +316,17 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
 export function buildPbp(
   facts: PbpFact[],
   ctx: PbpContext,
-  lib: PbpLibrary = DEFAULT_PBP_LIBRARY
+  lib?: PbpLibrary
 ): PbpLine[] {
+  // Use voice matrix as default library (lazy-loaded singleton)
+  if (!lib) {
+    try {
+      const { getVoiceMatrix } = require("./pbpMatrix");
+      lib = getVoiceMatrix();
+    } catch {
+      lib = DEFAULT_PBP_LIBRARY;
+    }
+  }
   const ordered = [...facts].sort((a, b) => {
     if (a.phase !== b.phase) return phaseOrder(a.phase) - phaseOrder(b.phase);
     return a.beat - b.beat;
