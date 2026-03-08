@@ -128,10 +128,44 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const renderEntityTags = useCallback((e: EngineEvent) => {
     if (!world) return null;
     const tags: React.ReactNode[] = [];
-    if (e.rikishiId) {
-      const r = world.rikishi.get(e.rikishiId);
+    const seen = new Set<string>();
+
+    const addRikishi = (id: string) => {
+      if (seen.has(id)) return;
+      seen.add(id);
+      const r = world.rikishi.get(id);
       if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shikona || r.id} className="text-[11px] font-medium" />);
+    };
+
+    // Primary entity
+    if (e.rikishiId) addRikishi(e.rikishiId);
+
+    // Bout events: show winner & loser as clickable names with "vs" separator
+    if ((e.category === "match" || e.category === "basho") && e.data) {
+      const winnerId = e.data.winnerId as string | undefined;
+      const loserId = e.data.loserId as string | undefined;
+      if (winnerId && loserId) {
+        // Clear primary tag, show bout-specific layout instead
+        tags.length = 0;
+        seen.clear();
+        const winner = world.rikishi.get(winnerId);
+        const loser = world.rikishi.get(loserId);
+        if (winner && loser) {
+          tags.push(
+            <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
+              <RikishiName id={winner.id} name={winner.shikona || winner.id} className="text-[11px] font-medium text-primary" />
+              <span className="text-muted-foreground">def.</span>
+              <RikishiName id={loser.id} name={loser.shikona || loser.id} className="text-[11px] font-medium" />
+              {e.data.kimarite && <span className="text-muted-foreground">({e.data.kimarite})</span>}
+            </span>
+          );
+          // Mark both as seen so they're not duplicated
+          seen.add(winnerId);
+          seen.add(loserId);
+        }
+      }
     }
+
     if (e.heyaId) {
       const h = world.heyas.get(e.heyaId);
       if (h) tags.push(<StableName key={`h-${h.id}`} id={h.id} name={h.name} className="text-[11px] font-medium" />);
