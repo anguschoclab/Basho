@@ -3,6 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { RikishiName, StableName } from "@/components/ClickableName";
 import {
   Trophy,
   Swords,
@@ -16,7 +17,7 @@ import {
   Search,
   ExternalLink,
 } from "lucide-react";
-import type { EngineEvent } from "@/engine/types";
+import type { EngineEvent, WorldState } from "@/engine/types";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
