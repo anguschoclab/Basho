@@ -332,7 +332,7 @@ function generateCandidate(
   switch (pattern) {
     case "nat+terrain": {
       const prefix = pick(nat, rng);
-      const suffix = rng.next() < 0.5 ? pick(SHIKONA_SUFFIXES.mountain, rng) : pick(SHIKONA_SUFFIXES.water, rng);
+      const suffix = rng() < 0.5 ? pick(SHIKONA_SUFFIXES.mountain, rng) : pick(SHIKONA_SUFFIXES.water, rng);
       return prefix + suffix;
     }
     case "power+any": {
