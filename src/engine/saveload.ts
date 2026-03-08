@@ -129,6 +129,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     calendar: world.calendar,
     // Sponsor pool (Constitution A6.4)
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
+    // Ozeki kadoban tracking
+    ozekiKadoban: (world as any).ozekiKadoban,
   } as any;
 }
 
@@ -194,6 +196,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     talentPool: (serialized as any).talentPool,
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
+    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,

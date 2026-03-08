@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatRank } from "@/engine/banzuke";
+import type { OzekiKadobanMap } from "@/engine/banzuke";
 import { toRankPosition } from "@/engine/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +16,8 @@ export default function BanzukePage() {
   const world = state.world;
 
   if (!world) return null;
+
+  const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
 
   // We group rikishi by division and sort them
   const rikishiList = Array.from(world.rikishi.values());
@@ -90,9 +93,11 @@ export default function BanzukePage() {
                                                     <div className="flex items-center gap-3">
                                                         <ClickableName id={r.id} name={r.shikona} type="rikishi" className="font-bold text-base" />
                                                         <span className="text-xs text-muted-foreground">{world.heyas.get(r.heyaId)?.name}</span>
-                                                        {r.rank === "ozeki" && (
+                                                        {r.rank === "ozeki" && kadobanMap[r.id]?.isKadoban ? (
+                                                            <Badge variant="outline" className="ml-auto text-[10px] border-amber-600 text-amber-600">角番 KADOBAN</Badge>
+                                                        ) : r.rank === "ozeki" ? (
                                                             <Badge variant="outline" className="ml-auto text-[10px] border-yellow-500 text-yellow-600">OZEKI</Badge>
-                                                        )}
+                                                        ) : null}
                                                         {r.rank === "yokozuna" && (
                                                             <Badge variant="default" className="ml-auto text-[10px] bg-purple-900 hover:bg-purple-800">YOKOZUNA</Badge>
                                                         )}
