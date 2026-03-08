@@ -134,21 +134,11 @@ export interface ScoutedRikishi {
   attributes: ScoutedAttributeTruthSnapshot;
 }
 
-// --- Helper: Simple Deterministic RNG (LCG) ---
+// --- Helper: Deterministic value from seed string ---
 function seededRandom(seed: string): number {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  const a = 1664525;
-  const c = 1013904223;
-  const m = 4294967296;
-  let x = Math.abs(hash);
-  return function() {
-    x = (a * x + c) % m;
-    return x / m;
-  }();
+  // Use the canonical RNG for a single draw
+  const rng = rngFromSeed(seed, "scouting", "random");
+  return rng.next();
 }
 
 // --- Logic: Scouting Level ---
