@@ -3,7 +3,6 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatRank, RANK_HIERARCHY } from "@/engine/banzuke";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,15 +11,16 @@ import { ArrowUp, ArrowDown, Minus, ChevronsUp, ChevronsDown, ArrowUpRight, Sear
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Rikishi, Rank, Division, Side, BanzukeSnapshot, BanzukeAssignment, RankPosition } from "@/engine/types";
+import type { Division, BanzukeSnapshot } from "@/engine/types";
+import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
 // ── Helpers ──
 
 interface RankRow {
   rankLabel: string;
   rankKey: string;
-  east: Rikishi | null;
-  west: Rikishi | null;
+  east: UIRosterEntry | null;
+  west: UIRosterEntry | null;
 }
 
 const RANK_TIER: Record<string, number> = {
@@ -36,16 +36,16 @@ function rankScore(rank: string, rankNumber?: number, side?: string): number {
   return tier * 1000 + num * 2 + sideVal;
 }
 
-function buildRankRows(rikishiList: Rikishi[], division: string, searchQuery: string): RankRow[] {
-  const divRikishi = rikishiList.filter(r => r.division === division);
-  const groups = new Map<string, { east: Rikishi | null; west: Rikishi | null }>();
+function buildRankRows(entries: UIRosterEntry[], division: string, searchQuery: string): RankRow[] {
+  const divEntries = entries.filter(e => e.division === division);
+  const groups = new Map<string, { east: UIRosterEntry | null; west: UIRosterEntry | null }>();
 
-  for (const r of divRikishi) {
-    const key = `${r.rank}_${r.rankNumber ?? 1}`;
+  for (const e of divEntries) {
+    const key = `${e.rank}_${e.rankNumber ?? 1}`;
     if (!groups.has(key)) groups.set(key, { east: null, west: null });
     const g = groups.get(key)!;
-    if (r.side === "east") g.east = r;
-    else g.west = r;
+    if (e.side === "east") g.east = e;
+    else g.west = e;
   }
 
   const q = searchQuery.toLowerCase().trim();
@@ -63,8 +63,8 @@ function buildRankRows(rikishiList: Rikishi[], division: string, searchQuery: st
     })
     .filter(row => {
       if (!q) return true;
-      const eastMatch = row.east?.shikona?.toLowerCase().includes(q) || row.east?.name?.toLowerCase().includes(q);
-      const westMatch = row.west?.shikona?.toLowerCase().includes(q) || row.west?.name?.toLowerCase().includes(q);
+      const eastMatch = row.east?.shikona?.toLowerCase().includes(q);
+      const westMatch = row.west?.shikona?.toLowerCase().includes(q);
       return eastMatch || westMatch;
     })
     .sort((a, b) => a._tier - b._tier || a._num - b._num);
@@ -138,44 +138,42 @@ function RankChangeIndicator({ rikishiId, currentRank, currentRankNumber, curren
 }
 
 function RikishiCell({
-  r, kadobanMap, heyaName, showChanges, prevRankMap, searchQuery,
+  entry, kadobanMap, heyaName, showChanges, prevRankMap, searchQuery,
 }: {
-  r: Rikishi | null;
+  entry: UIRosterEntry | null;
   kadobanMap: OzekiKadobanMap;
   heyaName?: string;
   showChanges: boolean;
   prevRankMap: Map<string, { rank: string; rankNumber?: number; side?: string; score: number }>;
   searchQuery: string;
 }) {
-  if (!r) return <td className="p-3 text-muted-foreground/40 text-center">—</td>;
+  if (!entry) return <td className="p-3 text-muted-foreground/40 text-center">—</td>;
 
   const q = searchQuery.toLowerCase().trim();
-  const isMatch = q && (r.shikona?.toLowerCase().includes(q) || r.name?.toLowerCase().includes(q));
-  const wins = r.currentBashoRecord?.wins ?? r.currentBashoWins ?? 0;
-  const losses = r.currentBashoRecord?.losses ?? r.currentBashoLosses ?? 0;
+  const isMatch = q && entry.shikona?.toLowerCase().includes(q);
 
   return (
     <td className={`p-3 ${isMatch ? "bg-primary/10" : ""}`}>
       <div className="flex items-center gap-2">
-        <ClickableName id={r.id} name={r.shikona} type="rikishi" className="font-bold text-sm" />
-        <span className="text-[10px] font-mono text-muted-foreground">{wins}-{losses}</span>
+        <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="font-bold text-sm" />
+        <span className="text-[10px] font-mono text-muted-foreground">{entry.record}</span>
         <span className="text-[11px] text-muted-foreground hidden lg:inline">{heyaName}</span>
         {showChanges && (
           <RankChangeIndicator
-            rikishiId={r.id}
-            currentRank={r.rank}
-            currentRankNumber={r.rankNumber}
-            currentSide={r.side}
+            rikishiId={entry.id}
+            currentRank={entry.rank}
+            currentRankNumber={entry.rankNumber}
+            currentSide={entry.side}
             prevRankMap={prevRankMap}
           />
         )}
-        {r.rank === "ozeki" && kadobanMap[r.id]?.isKadoban && (
+        {entry.rank === "ozeki" && kadobanMap[entry.id]?.isKadoban && (
           <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-600 ml-auto">角番</Badge>
         )}
-        {r.rank === "yokozuna" && (
+        {entry.rank === "yokozuna" && (
           <Badge variant="default" className="text-[9px] bg-purple-900 hover:bg-purple-800 ml-auto">横綱</Badge>
         )}
-        {r.injured && (
+        {entry.isInjured && (
           <Badge variant="destructive" className="text-[9px] ml-auto">休場</Badge>
         )}
       </div>
@@ -196,10 +194,29 @@ export default function BanzukePage() {
     return buildPrevRankMap(world.history);
   }, [world]);
 
+  // Project all active rikishi into UIRosterEntry DTOs
+  const rosterEntries = useMemo(() => {
+    if (!world) return [];
+    return Array.from(world.rikishi.values())
+      .filter(r => !r.isRetired)
+      .map(r => projectRosterEntry(r));
+  }, [world]);
+
+  // Build a heyaName lookup by rikishi id
+  const heyaNameMap = useMemo(() => {
+    if (!world) return new Map<string, string>();
+    const map = new Map<string, string>();
+    for (const r of world.rikishi.values()) {
+      if (r.isRetired) continue;
+      const heya = world.heyas.get(r.heyaId);
+      if (heya) map.set(r.id, heya.name);
+    }
+    return map;
+  }, [world]);
+
   if (!world) return null;
 
   const kadobanMap: OzekiKadobanMap = world.ozekiKadoban ?? {};
-  const rikishiList = Array.from(world.rikishi.values()).filter(r => !r.isRetired);
   const hasPrevBasho = prevRankMap.size > 0;
 
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
@@ -267,7 +284,7 @@ export default function BanzukePage() {
           </TabsList>
           
           {divisions.map(div => {
-            const rows = buildRankRows(rikishiList, div, searchQuery);
+            const rows = buildRankRows(rosterEntries, div, searchQuery);
             return (
               <TabsContent key={div} value={div}>
                 <Card>
@@ -285,9 +302,9 @@ export default function BanzukePage() {
                           {rows.map((row) => (
                             <tr key={row.rankKey} className="border-b hover:bg-muted/50 transition-colors">
                               <RikishiCell
-                                r={row.east}
+                                entry={row.east}
                                 kadobanMap={kadobanMap}
-                                heyaName={row.east ? world.heyas.get(row.east.heyaId)?.name : undefined}
+                                heyaName={row.east ? heyaNameMap.get(row.east.id) : undefined}
                                 showChanges={showChanges && hasPrevBasho}
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
@@ -296,9 +313,9 @@ export default function BanzukePage() {
                                 {row.rankLabel}
                               </td>
                               <RikishiCell
-                                r={row.west}
+                                entry={row.west}
                                 kadobanMap={kadobanMap}
-                                heyaName={row.west ? world.heyas.get(row.west.heyaId)?.name : undefined}
+                                heyaName={row.west ? heyaNameMap.get(row.west.id) : undefined}
                                 showChanges={showChanges && hasPrevBasho}
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
