@@ -631,9 +631,8 @@ function drawRikishi(
   isDark: boolean,
   isWinner: boolean
 ) {
-  const dpr = window.devicePixelRatio || 1;
-  const drawW = W / dpr;
-  const drawH = H / dpr;
+  const drawW = W;
+  const drawH = H;
   
   const x = state.pos.x * drawW;
   const y = state.pos.y * drawH;
