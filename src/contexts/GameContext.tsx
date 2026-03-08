@@ -504,6 +504,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     getCurrentDayMatches,
     getStandings,
     updateWorld,
+    goOnHoliday,
+    runAutoSimAction,
   };
 
   return (
