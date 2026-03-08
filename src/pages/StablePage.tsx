@@ -649,7 +649,7 @@ export default function StablePage() {
                         onClick={() => navigate(`/rikishi/${rikishi.id}`)}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-display font-medium truncate">{rikishi.shikona}</span>
+                          <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
                           <Badge variant="outline" className="text-xs">
                             {RANK_HIERARCHY[rikishi.rank].nameJa}
                           </Badge>
