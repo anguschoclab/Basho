@@ -84,3 +84,6 @@ export { makeNPCWeeklyDecision, getManagerPersona } from "./npcAI";
 export type { NPCWeeklyDecision } from "./npcAI";
 export { buildPerceptionSnapshot, buildAllPerceptionSnapshots, getCachedPerception } from "./perception";
 export type { PerceptionSnapshot, RikishiPerception, HealthBand, WelfareRiskBand, GovernancePressureBand, MediaHeatBand, RivalryPerceptionBand, RosterStrengthBand, MoraleBand } from "./perception";
+
+// Descriptor Bands (No-Leak Observability Layer — A7.1)
+export * from "./descriptorBands";

@@ -334,13 +334,18 @@ export default function TrainingPage() {
                         <span className="capitalize">{phase} phase</span>
                         <span>•</span>
                         <span>Injury sensitivity: {phaseEffect.injurySensitivity > 1.1 ? "High" : phaseEffect.injurySensitivity < 0.9 ? "Low" : "Normal"}</span>
-                        {rikishi.fatigue !== undefined && rikishi.fatigue > 0 && (
-                          <>
-                            <span>•</span>
-                            <span className={rikishi.fatigue > 60 ? "text-destructive" : rikishi.fatigue > 30 ? "text-warning" : ""}>
-                              Fatigue: {Math.round(rikishi.fatigue)}%
-                            </span>
-                          </>
+                        {rikishi.fatigue !== undefined && rikishi.fatigue > 0 && (() => {
+                          const { toFatigueBand, FATIGUE_LABELS } = require("@/engine/descriptorBands");
+                          const fb = toFatigueBand(rikishi.fatigue);
+                          return (
+                            <>
+                              <span>•</span>
+                              <span className={fb === "exhausted" || fb === "spent" ? "text-destructive" : fb === "tired" ? "text-warning" : ""}>
+                                {FATIGUE_LABELS[fb]}
+                              </span>
+                            </>
+                          );
+                        })(
                         )}
                       </div>
                     </div>

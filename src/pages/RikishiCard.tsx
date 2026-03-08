@@ -1,9 +1,8 @@
 /**
- * File Name: src/components/game/RikishiCard.tsx
+ * File Name: src/pages/RikishiCard.tsx
  * Notes:
- * - Updated to display the full suite of simulation stats (Power, Speed, Tech, Mental, Stamina, Adaptability).
- * - Added visual badges for 'Archetype' and 'Origin'.
- * - Added a compact mode toggle within the logic.
+ * - NO-LEAK RETROFIT: replaced raw stat bars with descriptor bands.
+ * - No raw 0–100 numbers shown to player.
  */
 
 import React from 'react';
@@ -12,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiUIModel } from '@/engine/uiModels';
 import { Link } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Zap, Shield, Brain, Activity, Sword, Anchor } from "lucide-react"; // Importing icons for stats
+import { Zap, Shield, Brain, Activity, Sword, Anchor } from "lucide-react";
+import { toStatBand, toConditionBand, STAT_BAND_LABELS, CONDITION_LABELS } from "@/engine/descriptorBands";
 
 interface RikishiCardProps {
   rikishi: RikishiUIModel;
@@ -20,13 +20,11 @@ interface RikishiCardProps {
 }
 
 const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) => {
-  // Helper to determine bar color based on value
-  const getBarColor = (val: number) => {
-    if (val >= 90) return "bg-purple-500";
-    if (val >= 75) return "bg-green-500";
-    if (val >= 50) return "bg-blue-500";
-    if (val >= 30) return "bg-yellow-500";
-    return "bg-red-500";
+  const bandColor = (band: string) => {
+    if (band === "exceptional" || band === "outstanding") return "text-primary";
+    if (band === "strong" || band === "capable") return "text-foreground";
+    if (band === "developing") return "text-muted-foreground";
+    return "text-destructive";
   };
 
   return (
@@ -59,11 +57,14 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
                 {rikishi.injuryStatus.severity} Injury
               </Badge>
             )}
-            {rikishi.condition < 50 && !rikishi.injuryStatus.isInjured && (
-               <Badge variant="outline" className="text-[10px] h-5 border-orange-400 text-orange-600 bg-orange-50">
-                Fatigued
-              </Badge>
-            )}
+            {(() => {
+              const condBand = toConditionBand(rikishi.condition);
+              return condBand === "worn" || condBand === "fragile" ? (
+                <Badge variant="outline" className="text-[10px] h-5 border-orange-400 text-orange-600 bg-orange-50">
+                  {CONDITION_LABELS[condBand].label}
+                </Badge>
+              ) : null;
+            })()}
           </div>
         </div>
 
@@ -77,25 +78,25 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Archetype influences fight style and stat growth.</p>
+                <p>Archetype influences fight style and development trajectory.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
-          <Badge variant="outline" className="text-[10px] text-gray-500 border-gray-200">
+          <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted">
             {rikishi.origin}
           </Badge>
         </div>
 
-        {/* Expanded Stat Grid (Non-compact only) */}
+        {/* Stat Descriptors (Non-compact only) — NO RAW NUMBERS */}
         {!compact && (
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 border-t border-dashed mt-2">
-            <StatBar icon={<Sword size={12} />} label="Pwr" value={rikishi.stats.strength} color={getBarColor(rikishi.stats.strength)} />
-            <StatBar icon={<Shield size={12} />} label="Tech" value={rikishi.stats.technique} color={getBarColor(rikishi.stats.technique)} />
-            <StatBar icon={<Zap size={12} />} label="Spd" value={rikishi.stats.speed} color={getBarColor(rikishi.stats.speed)} />
-            <StatBar icon={<Anchor size={12} />} label="Wgt" value={Math.min(100, rikishi.stats.weight / 2.5)} displayValue={`${Math.round(rikishi.stats.weight)}kg`} color="bg-slate-500" />
-            <StatBar icon={<Brain size={12} />} label="Men" value={rikishi.stats.mental} color={getBarColor(rikishi.stats.mental)} />
-            <StatBar icon={<Activity size={12} />} label="Adp" value={rikishi.stats.adaptability} color="bg-teal-500" />
+            <StatDescriptor icon={<Sword size={12} />} label="Power" value={rikishi.stats.strength} />
+            <StatDescriptor icon={<Shield size={12} />} label="Technique" value={rikishi.stats.technique} />
+            <StatDescriptor icon={<Zap size={12} />} label="Speed" value={rikishi.stats.speed} />
+            <StatDescriptor icon={<Anchor size={12} />} label="Weight" displayValue={`${Math.round(rikishi.stats.weight)}kg`} />
+            <StatDescriptor icon={<Brain size={12} />} label="Mental" value={rikishi.stats.mental} />
+            <StatDescriptor icon={<Activity size={12} />} label="Adaptability" value={rikishi.stats.adaptability} />
           </div>
         )}
       </CardContent>
@@ -103,20 +104,27 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
   );
 };
 
-// Sub-component for individual stat bars
-const StatBar: React.FC<{ icon: React.ReactNode; label: string; value: number; displayValue?: string; color: string }> = ({ icon, label, value, displayValue, color }) => (
-  <div className="flex flex-col gap-0.5">
-    <div className="flex justify-between items-center text-[10px] text-muted-foreground uppercase font-semibold">
+// Sub-component: shows band label instead of raw number
+const StatDescriptor: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  value?: number;
+  displayValue?: string;
+}> = ({ icon, label, value, displayValue }) => {
+  const band = value != null ? toStatBand(value) : undefined;
+  const bandLabel = band ? STAT_BAND_LABELS[band] : displayValue ?? "—";
+
+  return (
+    <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase font-semibold py-1">
       <div className="flex items-center gap-1">
         {icon}
         <span>{label}</span>
       </div>
-      <span>{displayValue || Math.round(value)}</span>
+      <span className={band === "exceptional" || band === "outstanding" ? "text-primary" : band === "limited" || band === "struggling" ? "text-destructive" : "text-foreground"}>
+        {bandLabel}
+      </span>
     </div>
-    <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-      <div className={`h-full rounded-full ${color} transition-all duration-500`} style={{ width: `${value}%` }}></div>
-    </div>
-  </div>
-);
+  );
+};
 
 export default RikishiCard;
