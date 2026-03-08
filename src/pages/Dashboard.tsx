@@ -17,6 +17,14 @@ export default function Dashboard() {
   const world = state.world;
   const isLoaded = !!world;
 
+  // Redirect to recap page after basho ends
+  useEffect(() => {
+    if (state.phase === "basho_recap") {
+      navigate("/recap");
+      return;
+    }
+  }, [state.phase, navigate]);
+
   useEffect(() => {
     // If a user has an autosave, load it automatically.
     if (!isLoaded && hasAutosave()) {
