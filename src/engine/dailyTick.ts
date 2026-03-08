@@ -354,7 +354,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
       }
     }
     if (Object.keys(smallStables).length > 0) {
-      (talentpool as any).fillVacanciesForNPC?.(world, smallStables);
+      talentpool.fillVacanciesForNPC(world, smallStables);
     }
   });
 }
