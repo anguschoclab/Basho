@@ -76,6 +76,11 @@ const items = [
     icon: Swords,
   },
   {
+    title: "Injuries",
+    url: "/injuries",
+    icon: Heart,
+  },
+  {
     title: "Economy",
     url: "/economy",
     icon: Coins,
