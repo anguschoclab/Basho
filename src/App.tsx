@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GameProvider } from "./contexts/GameContext";
 import { ThemeProvider } from "./components/ThemeProvider";
 
-import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import StablePage from "./pages/StablePage";
 import RikishiPage from "./pages/RikishiPage";
