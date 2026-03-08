@@ -9,6 +9,7 @@ import { WeeklyDigest } from "@/components/game/WeeklyDigest";
 import { TimeControls } from "@/components/game/TimeControls";
 import { RivalStablesPanel } from "@/components/game/RivalStablesPanel";
 import { StableOverviewPanel } from "@/components/game/StableOverviewPanel";
+import { BashoSummaryBanner } from "@/components/game/BashoSummaryBanner";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
