@@ -18,6 +18,8 @@ import {
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./utils/SeededRNG";
 import { ensureTalentPools } from "./talentpool";
+import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
+import { rngForWorld } from "./rng";
 
 
 // Constants
