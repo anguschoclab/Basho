@@ -246,6 +246,27 @@ export default function BashoPage() {
         {/* ═══════════ MAIN LAYOUT ═══════════ */}
         <div className="grid gap-4 lg:grid-cols-4">
 
+          {/* Schedule Overview - Collapsible */}
+          <Collapsible 
+            open={showScheduleOverview} 
+            onOpenChange={setShowScheduleOverview}
+            className="lg:order-3 lg:col-span-4"
+          >
+            <Card className="paper">
+              <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-muted/30 transition-colors rounded-lg">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" /> Division Schedule
+                </h3>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showScheduleOverview ? "rotate-180" : ""}`} />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="px-4 pb-4 pt-0">
+                  <ScheduleOverview currentDay={basho.day} />
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+
           {/* Standings sidebar */}
           <Card className="paper lg:order-2">
             <CardContent className="p-4 space-y-3">
