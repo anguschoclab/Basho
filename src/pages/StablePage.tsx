@@ -498,7 +498,7 @@ export default function StablePage() {
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="font-display font-medium">
-                            {label.ja} <span className="text-sm opacity-80">({label.en})</span>
+                            {label}
                           </span>
                           <div className="flex gap-3 text-xs">
                             <span
