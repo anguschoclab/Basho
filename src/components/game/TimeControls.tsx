@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
+import { FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/components/ui/use-toast";
 import { HolidayControls } from "./HolidayControls";
