@@ -66,9 +66,14 @@ export default function BashoPage() {
   const lastAutoShownKeyRef = useRef<string | null>(null);
 
   // Guard: no world / no current basho => go home
+  // Redirect to recap page after basho ends
   useEffect(() => {
+    if (state.phase === "basho_recap") {
+      navigate("/recap");
+      return;
+    }
     if (!world?.currentBasho) navigate("/");
-  }, [world, navigate]);
+  }, [world, navigate, state.phase]);
 
   if (!world?.currentBasho) return null;
 
