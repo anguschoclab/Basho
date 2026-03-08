@@ -100,9 +100,6 @@ export function CalendarWidget() {
             <Button size="sm" variant="secondary" onClick={handleAdvanceWeek} className="gap-1.5 h-7 text-xs">
               <Repeat className="h-3 w-3" /> Week
             </Button>
-            <Button size="sm" onClick={handleStartBasho} className="gap-1.5 h-7 text-xs">
-              <Play className="h-3 w-3" /> Start Basho
-            </Button>
           </>
         ) : (
           <>

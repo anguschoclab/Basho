@@ -116,10 +116,6 @@ export function TimeControls() {
                 </Button>
               </>
             )}
-            <Button onClick={handleStartBasho} className="gap-2">
-              <Play className="h-4 w-4" />
-              Start Basho
-            </Button>
             <HolidayControls
               onHoliday={goOnHoliday}
               playerHeyaId={playerHeyaId}
