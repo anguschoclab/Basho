@@ -923,3 +923,12 @@ export function fillVacanciesForNPC(world: WorldState, vacanciesByHeyaId: Record
     }
   }
 }
+
+/**
+ * Yearly tick: refresh talent pool cohorts for the new year.
+ * Called from dailyTick year boundary via safeCall.
+ */
+export function tickYear(world: WorldState): void {
+  ensureTalentPools(world);
+  refreshYearlyCohort(world, world.year);
+}
