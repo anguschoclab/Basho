@@ -42,7 +42,9 @@ const App = () => (
               <Route path="/main-menu" element={<MainMenu />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/stable" element={<StablePage />} />
+              <Route path="/stable/:id" element={<StablePage />} />
               <Route path="/training" element={<TrainingPage />} />
+              <Route path="/oyakata" element={<OyakataPage />} />
               <Route path="/rikishi/:rikishiId?" element={<RikishiPage />} />
               <Route path="/basho" element={<BashoPage />} />
               <Route path="/banzuke" element={<BanzukePage />} />
