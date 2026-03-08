@@ -432,7 +432,7 @@ export default function StablePage() {
                       >
                         <div className={`w-1 h-10 rounded-full ${rikishi.side === "east" ? "bg-east" : "bg-west"}`} />
                         <div className="flex-1 min-w-0">
-                          <div className="font-display font-medium truncate">{rikishi.shikona}</div>
+                          <div className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></div>
                           <div className="text-sm text-muted-foreground">
                             {rankInfo.nameJa}
                             {rikishi.rankNumber && ` ${rikishi.rankNumber}枚目`}
