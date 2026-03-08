@@ -21,6 +21,7 @@ import {
 } from "./timeBoundary";
 import { RANK_HIERARCHY } from "./banzuke";
 import { initializeBasho, generateDaySchedule } from "./worldgen";
+import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, type DivisionScheduleConfig } from "./schedule";
 
 // === AUTO-SIM CONFIGURATION ===
 
