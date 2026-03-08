@@ -123,13 +123,24 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
               <Card
                 key={snap.heyaId}
                 className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
-                onClick={() => comparing ? handleToggleCompare(snap.heyaId) : navigate(`/stable/${snap.heyaId}`)}
+                onClick={(e) => {
+                  if (comparing) {
+                    e.preventDefault();
+                    handleToggleCompare(snap.heyaId);
+                  } else {
+                    navigate(`/stable/${snap.heyaId}`);
+                  }
+                }}
               >
                 <CardContent className="p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <StableName id={snap.heyaId} name={snap.heyaName} className="font-medium text-sm" />
+                        {comparing ? (
+                          <span className="font-medium text-sm">{snap.heyaName}</span>
+                        ) : (
+                          <StableName id={snap.heyaId} name={snap.heyaName} className="font-medium text-sm" />
+                        )}
                         {snap.isPlayer && (
                           <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
                             Your Stable
