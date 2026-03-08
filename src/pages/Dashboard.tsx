@@ -81,6 +81,45 @@ export default function Dashboard() {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   const columns = getColumns();
 
+  // Compute alert conditions
+  const alerts = useMemo(() => {
+    if (!playerHeya) return [];
+    const a: { icon: any; text: string; color: string; link: string }[] = [];
+    
+    // Facility maintenance risk
+    const maintenance = getMonthlyMaintenanceCost(playerHeya);
+    if (playerHeya.funds < maintenance) {
+      a.push({
+        icon: Wrench,
+        text: "Facilities at risk — funds won't cover monthly maintenance",
+        color: "text-destructive",
+        link: "/stable",
+      });
+    }
+    
+    // Financial distress
+    if (playerHeya.riskIndicators?.financial) {
+      a.push({
+        icon: Coins,
+        text: "Financial distress — high insolvency risk",
+        color: "text-destructive",
+        link: "/economy",
+      });
+    }
+    
+    // Governance warning
+    if (playerHeya.riskIndicators?.governance) {
+      a.push({
+        icon: Shield,
+        text: "Governance watch — the JSA council has concerns",
+        color: "text-warning",
+        link: "/governance",
+      });
+    }
+    
+    return a;
+  }, [playerHeya]);
+
   return (
     <AppLayout pageTitle="Dashboard">
       <div className="space-y-4">
