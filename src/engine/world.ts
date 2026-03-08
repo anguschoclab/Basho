@@ -5,6 +5,7 @@
  * - 'advanceDay' runs bouts for the current day using 'resolveBout' (which handles H2H).
  * - 'endBasho' handles rankings, prizes, and crucially, the LIFECYCLE check (retirements/new recruits).
  * - 'advanceInterim' handles between-basho ticks (AI, scouting, economics).
+ * - All lifecycle transitions emit canonical EventBus events.
  */
 
 import { rngFromSeed, rngForWorld } from "./rng";
