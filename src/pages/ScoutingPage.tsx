@@ -545,6 +545,16 @@ function RecruitingTab({
           )}
         </div>
       </ScrollArea>
+
+      {/* Signing confirmation dialog */}
+      <RecruitSigningDialog
+        open={!!signingCandidate}
+        onConfirm={handleConfirmSigning}
+        onCancel={() => setSigningCandidate(null)}
+        candidate={signingCandidate}
+        playerHeyaName={playerHeya?.name}
+        rosterSize={playerHeya?.rikishiIds?.length}
+      />
     </div>
   );
 }
