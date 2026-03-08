@@ -69,7 +69,7 @@ export function RosterWidget() {
               <ClickableName id={r.id} name={r.shikona || r.name} type="rikishi" className="flex-1 font-medium truncate" />
               <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{r.rank}</span>
               {r.injured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
-              {(potential === "Star Potential" || potential === "Generational Talent") && (
+              {(potential === "star" || potential === "generational") && (
                 <Star className="h-3 w-3 text-gold shrink-0" />
               )}
               {/* Fatigue bar */}
