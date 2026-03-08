@@ -13,11 +13,12 @@ import BashoPage from "./pages/BashoPage";
 import BanzukePage from "./pages/BanzukePage";
 import RivalriesPage from "./pages/RivalriesPage";
 import EconomyPage from "./pages/EconomyPage";
-import GovernancePage from "./pages/GovernancePage"; // NEW IMPORT
+import GovernancePage from "./pages/GovernancePage";
 import HistoryPage from "./pages/HistoryPage";
 import AlmanacPage from "./pages/AlmanacPage";
 import TalentPoolPage from "./pages/TalentPoolPage";
 import ScoutingPage from "./pages/ScoutingPage";
+import RecapPage from "./pages/RecapPage";
 import MainMenu from "./pages/MainMenu";
 import NotFound from "./pages/NotFound";
 
