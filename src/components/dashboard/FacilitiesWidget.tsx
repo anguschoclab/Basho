@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
@@ -46,12 +47,31 @@ export function FacilitiesWidget() {
   const canAfford = heya.funds >= maintenance;
   const axes = ["training", "recovery", "nutrition"] as const;
 
+  // Check for any axis at risk of degradation (below 20 or can't afford maintenance)
+  const atRisk = !canAfford;
+  const lowestAxis = axes.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, axes[0]);
+  const lowestLevel = heya.facilities[lowestAxis];
+  const isLow = lowestLevel <= 25;
+
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className={`rounded-lg border bg-card p-4 space-y-3 ${
+      atRisk ? "border-destructive/50 ring-1 ring-destructive/20" : "border-border"
+    }`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-muted-foreground" />
+          <Wrench className={`h-4 w-4 ${atRisk ? "text-destructive" : "text-muted-foreground"}`} />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Facilities</span>
+          {atRisk && (
+            <span className="flex items-center gap-1 text-[10px] font-medium text-destructive bg-destructive/10 px-1.5 py-0.5 rounded-full">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              At Risk
+            </span>
+          )}
+          {!atRisk && isLow && (
+            <span className="flex items-center gap-1 text-[10px] font-medium text-warning bg-warning/10 px-1.5 py-0.5 rounded-full">
+              Low
+            </span>
+          )}
         </div>
         <Button variant="ghost" size="sm" onClick={() => navigate("/stable")} className="h-6 text-xs gap-1 text-muted-foreground">
           Manage <ChevronRight className="h-3 w-3" />
@@ -77,13 +97,15 @@ export function FacilitiesWidget() {
 
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
         <span>Monthly upkeep</span>
-        <span className="font-mono">¥{maintenance.toLocaleString()}</span>
+        <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
+          ¥{maintenance.toLocaleString()}
+        </span>
       </div>
 
-      {!canAfford && (
-        <div className="flex items-center gap-1.5 text-[10px] text-destructive bg-destructive/10 px-2 py-1 rounded">
-          <AlertTriangle className="h-3 w-3" />
-          <span>Can't cover maintenance — facilities will decay</span>
+      {atRisk && (
+        <div className="flex items-center gap-1.5 text-[10px] text-destructive bg-destructive/10 px-2 py-1.5 rounded">
+          <AlertTriangle className="h-3 w-3 shrink-0" />
+          <span>Funds won't cover maintenance — facilities will decay next month. Invest or earn more.</span>
         </div>
       )}
     </div>
