@@ -488,3 +488,51 @@ function clamp(n: number, lo: number, hi: number): number {
 function clamp01(n: number): number {
   return clamp(n, 0, 1);
 }
+
+/** =========================
+ *  World-level hooks (called via safeCall in world.ts / dailyTick.ts)
+ *  ========================= */
+
+/**
+ * Hook called after each bout resolution.
+ * Wraps updateRivalriesFromBout with world state management.
+ */
+export function onBoutResolved(
+  world: WorldState,
+  context: { match: any; result: any; east: any; west: any }
+): void {
+  const { result } = context;
+  if (!result.winnerRikishiId || !result.loserRikishiId) return;
+
+  const rivalriesState = ensureRivalriesState(world);
+  const { state: newState } = updateRivalriesFromBout({
+    state: rivalriesState,
+    world,
+    result,
+    day: context.match?.day,
+    isKinboshi: !!result.isKinboshi,
+    isTitleStakes: !!result.isTitleStakes
+  });
+
+  (world as any).rivalriesState = newState;
+}
+
+/**
+ * Weekly tick: apply decay to all rivalries.
+ */
+export function tickWeek(world: WorldState): void {
+  const rivalriesState = ensureRivalriesState(world);
+  const newState = applyRivalryWeeklyDecay(rivalriesState, world.week ?? 0);
+  (world as any).rivalriesState = newState;
+}
+
+/**
+ * Ensure rivalries state exists on world.
+ */
+function ensureRivalriesState(world: WorldState): RivalriesState {
+  const w = world as any;
+  if (!w.rivalriesState) {
+    w.rivalriesState = createDefaultRivalriesState();
+  }
+  return w.rivalriesState as RivalriesState;
+}

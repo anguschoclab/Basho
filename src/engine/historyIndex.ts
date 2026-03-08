@@ -309,3 +309,99 @@ export function rebuildHistoryIndexIntoWorld(world: WorldWithHistoryIndex, perfo
   world.historyIndex = idx;
   return idx;
 }
+
+/**
+ * Index a single BashoResult into the world's history index.
+ * Called from world.ts endBasho via safeCall.
+ * Incrementally updates the index without full rebuild.
+ */
+export function indexBashoResult(world: WorldState, bashoResult: BashoResult): void {
+  const w = world as WorldWithHistoryIndex;
+  if (!w.historyIndex) {
+    w.historyIndex = createEmptyHistoryIndex();
+  }
+
+  const idx = w.historyIndex;
+  const bashoKey = makeBashoKey(bashoResult.year, bashoResult.bashoNumber);
+
+  // Skip if already indexed
+  if (idx.basho[bashoKey]) return;
+
+  const summary: BashoHistorySummary = {
+    bashoKey,
+    year: bashoResult.year,
+    bashoNumber: bashoResult.bashoNumber,
+    bashoName: bashoResult.bashoName,
+    yusho: bashoResult.yusho,
+    junYusho: bashoResult.junYusho,
+    ginoSho: bashoResult.ginoSho,
+    kantosho: bashoResult.kantosho,
+    shukunsho: bashoResult.shukunsho,
+    hasBanzukeSnapshot: !!bashoResult.nextBanzuke,
+    sortKey: `${bashoResult.year}${String(bashoResult.bashoNumber).padStart(2, "0")}`
+  };
+
+  idx.basho[bashoKey] = summary;
+  idx.bashoKeys.push(bashoKey);
+  idx.bashoKeys.sort((a, b) => {
+    const [ay, an] = a.split("-").map(Number);
+    const [by, bn] = b.split("-").map(Number);
+    return ay !== by ? ay - by : an - bn;
+  });
+
+  if (bashoResult.nextBanzuke) {
+    idx.banzukeByBasho[bashoKey] = bashoResult.nextBanzuke;
+  }
+
+  // Index prize winners
+  if (bashoResult.yusho) {
+    pushRikishiEntry(idx, bashoResult.yusho, {
+      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber,
+      bashoName: bashoResult.bashoName, yusho: true
+    });
+  }
+  for (const rid of bashoResult.junYusho || []) {
+    pushRikishiEntry(idx, rid, {
+      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber,
+      bashoName: bashoResult.bashoName, junYusho: true
+    });
+  }
+  if (bashoResult.ginoSho) pushRikishiEntry(idx, bashoResult.ginoSho, {
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, ginoSho: true
+  });
+  if (bashoResult.kantosho) pushRikishiEntry(idx, bashoResult.kantosho, {
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, kantosho: true
+  });
+  if (bashoResult.shukunsho) pushRikishiEntry(idx, bashoResult.shukunsho, {
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, shukunsho: true
+  });
+
+  // Index all rikishi who participated (via standings if available)
+  if (bashoResult.standings) {
+    const standings = bashoResult.standings instanceof Map
+      ? bashoResult.standings
+      : new Map(Object.entries(bashoResult.standings));
+
+    for (const [rid, stats] of standings) {
+      // Only add if not already added via prizes
+      const existing = idx.rikishi[rid]?.find(e => e.bashoKey === bashoKey);
+      if (existing) {
+        // Enrich with W/L data
+        existing.wins = (stats as any).wins;
+        existing.losses = (stats as any).losses;
+      } else {
+        const r = world.rikishi.get(rid);
+        pushRikishiEntry(idx, rid, {
+          bashoKey,
+          year: bashoResult.year,
+          bashoNumber: bashoResult.bashoNumber,
+          bashoName: bashoResult.bashoName,
+          rikishiId: rid,
+          division: r?.division,
+          wins: (stats as any).wins,
+          losses: (stats as any).losses
+        });
+      }
+    }
+  }
+}
