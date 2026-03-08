@@ -2,6 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Play, FastForward, Trophy, Calendar, ArrowRight, Repeat } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/components/ui/use-toast";
