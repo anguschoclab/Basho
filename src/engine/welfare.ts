@@ -122,7 +122,7 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   if (persona.welfareDiscipline > 0) reasons.push(`manager_welfare-${Math.round(persona.welfareDiscipline * 2)}`);
 
   // Natural drift downward when stable is healthy
-  const healthy = pressure === 0 && intensity !== "high" && recovery !== "low";
+  const healthy = pressure === 0 && intensity !== "punishing" && intensity !== "intensive" && recovery !== "low";
   if (healthy) {
     delta -= 2;
     reasons.push("healthy_drift-2");

@@ -9,7 +9,8 @@
 
 import { rngFromSeed, rngForWorld } from "./rng";
 import { SeededRNG } from "./utils/SeededRNG";
-import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoPerformance, BanzukeEntry, BashoState } from "./types";
+import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoState } from "./types";
+import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";

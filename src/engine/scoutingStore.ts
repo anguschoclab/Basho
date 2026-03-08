@@ -9,9 +9,29 @@ import {
   type ScoutingInvestment,
   createScoutedView,
   recordObservation,
-  applyScoutingDecay,
-  refreshTruthSnapshot
 } from "./scouting";
+
+// Local implementations for missing scouting functions
+function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): ScoutedRikishi {
+  const weeksSince = currentWeek - entry.lastObservedWeek;
+  if (weeksSince <= 0 || entry.isOwned) return entry;
+  const decayRate = 0.02;
+  const decay = Math.min(entry.scoutingLevel, weeksSince * decayRate * 100);
+  return { ...entry, scoutingLevel: Math.max(0, entry.scoutingLevel - decay) };
+}
+
+function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRikishi {
+  return {
+    ...entry,
+    publicInfo: {
+      ...entry.publicInfo,
+      shikona: truth.shikona,
+      rank: truth.rank,
+      height: truth.height,
+      weight: truth.weight,
+    }
+  };
+}
 
 /**
  * Where scouting data lives in the WorldState.

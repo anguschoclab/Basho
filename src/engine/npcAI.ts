@@ -146,7 +146,7 @@ export function tickWeek(world: WorldState): void {
       const state = ensureHeyaTrainingState(world, heya.id);
       const current = state.activeProfile.intensity;
 
-      const rank = (x: TrainingIntensity) => (x === "low" ? 0 : x === "medium" ? 1 : 2);
+      const rank = (x: TrainingIntensity) => (x === "conservative" ? 0 : x === "balanced" ? 1 : x === "intensive" ? 2 : 3);
       if (rank(current) > rank(cap)) {
         state.activeProfile = { ...state.activeProfile, intensity: cap };
       }

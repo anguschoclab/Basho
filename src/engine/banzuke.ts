@@ -249,7 +249,7 @@ export interface SpecialPrizesResult {
 }
 
 export function determineSpecialPrizes(
-  matches: BashoMatch[],
+  matches: MatchSchedule[],
   rikishiMap: Map<string, Rikishi>,
   yushoId: string
 ): SpecialPrizesResult {

@@ -406,7 +406,7 @@ export function generateOyakataName(seed: string): string {
         "Kasugano", "Oguruma", "Kise", "Tamanoi", "Oshima"
     ];
     // Deterministic pick using the same internal seeded RNG core as shikona generation.
-    const rng = createSeededRNG(seed + "::oyakataName");
-    const idx = Math.floor(rng.nextFloat() * names.length);
+    const rng = seededRandom(seed + "::oyakataName");
+    const idx = Math.floor(rng() * names.length);
     return names[Math.max(0, Math.min(names.length - 1, idx))];
 }

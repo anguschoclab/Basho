@@ -566,21 +566,14 @@ function advanceInterBashoDeterministic(
   void seed;
 
   // Advance whole weeks using existing engine function
-  advanceWeeks(world, weeks, timeState);
+  advanceWeeks(world, weeks);
 
   // Ensure weekly/monthly boundary processors run deterministically after advancement.
-  // If your engine expects these processors to run *during* week progression,
-  // move these calls into advanceWeeks() instead; this is a safe fallback.
   for (let i = 0; i < weeks; i++) {
-    // Create a deterministic seed string for this week
-    const weekSeed = `${seed}-week-${timeState.year}-${timeState.week + i}`;
-    processWeeklyBoundary(world, weekSeed);
+    processWeeklyBoundary(world, timeState);
 
-    // Heuristic: run monthly boundary when month changes or each 4 weeks.
-    // If your TimeState exposes a precise calendar day, replace this with your canonical trigger.
     if ((timeState.week + i + 1) % 4 === 0) {
-      const monthSeed = `${seed}-month-${timeState.year}-${timeState.month}`;
-      processMonthlyBoundary(world, monthSeed);
+      processMonthlyBoundary(world, timeState);
     }
   }
 }

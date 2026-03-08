@@ -111,7 +111,7 @@ function handleInsolvency(heya: Heya, world: WorldState): void {
  */
 export function onBoutResolved(
   world: WorldState,
-  context: { match: BashoMatch; result: BoutResult; east: Rikishi; west: Rikishi }
+  context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): void {
   const { result, east, west } = context;
   
