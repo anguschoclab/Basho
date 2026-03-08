@@ -22,6 +22,7 @@ import { EventBus } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 import { buildAlmanacSnapshot } from "./almanac";
 import { autosave } from "./saveload";
+import { runSponsorChurn } from "./economics";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
