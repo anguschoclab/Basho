@@ -229,7 +229,7 @@ export function endBasho(world: WorldState): WorldState {
     }
   });
 
-  safeCall(() => (historyIndex as any).indexBashoResult?.(world, bashoResult));
+  safeCall(() => historyIndex.indexBashoResult(world, bashoResult));
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
