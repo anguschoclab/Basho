@@ -170,7 +170,8 @@ export function tickWeek(world: WorldState): number {
     const riskUp = w.welfareRisk - beforeRisk;
 
     // Transition logic
-    const { seriousCount } = computeHeyaInjuryPressure(world, heya);
+    const { seriousCount, negligenceCount } = computeHeyaInjuryPressure(world, heya);
+    const hasNegligence = negligenceCount > 0;
 
     if (w.complianceState === "compliant") {
       if (w.welfareRisk >= 45 || seriousCount >= 2) {
