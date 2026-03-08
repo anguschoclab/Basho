@@ -25,6 +25,7 @@ import type {
   Heya
 } from './types';
 import { SeededRNG } from './utils/SeededRNG';
+import { EventBus } from './events';
 
 // Re-export types for UI consumption
 export type { TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState, TrainingProfile } from './types';
