@@ -861,6 +861,10 @@ export default function StablePage() {
             </Card>
           </TabsContent>
         
+        <TabsContent value="welfare" className="mt-6 space-y-4">
+          <WelfarePanel world={world} heya={heya} />
+        </TabsContent>
+
         <TabsContent value="institution" className="mt-6 space-y-4">
           <InstitutionPanel world={world} heya={heya} />
         </TabsContent>
