@@ -92,7 +92,10 @@ function OpponentScoutingTab({
       if (ta !== tb) return ta - tb;
       return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
     });
-    return list.slice(0, 40);
+    const sliced = list.slice(0, 40);
+    // Pre-warm scouting entries for all opponents shown
+    warmScoutingForRikishiList(world, sliced.map(r => r.id));
+    return sliced;
   }, [world, playerHeyaId, filterDivision]);
 
   const handleInvestScouting = (rikishiId: string, level: ScoutingInvestment) => {
