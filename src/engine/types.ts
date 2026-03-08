@@ -304,6 +304,7 @@ export interface BoutResult {
   tachiaiWinner: Side;
   duration: number;
   upset: boolean;
+  isKinboshi?: boolean; // Maegashira defeating Yokozuna
   log: BoutLogEntry[];
   narrative?: string[]; // Legacy compat for UI display
 }

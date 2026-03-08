@@ -697,9 +697,14 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   const { winner, kimarite } = resolveFinish(rng, east, west, st);
 
   // Upset heuristic
+  // Kinboshi: Maegashira defeats Yokozuna
   const eastTier = tierOf(east);
   const westTier = tierOf(west);
   const upset = (winner === "east" && eastTier > westTier + 1) || (winner === "west" && westTier > eastTier + 1);
+  
+  // Kinboshi check - maegashira (tier 5) beating yokozuna (tier 1)
+  const isKinboshi = (winner === "east" && eastTier === 5 && westTier === 1) || 
+                     (winner === "west" && westTier === 5 && eastTier === 1);
 
   const result: BoutResult = {
     boutId: bout.id,
@@ -712,6 +717,7 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     tachiaiWinner: st.tachiaiWinner,
     duration: Math.round(st.timeSeconds), // Seconds
     upset,
+    isKinboshi,
     log: st.log
   } as any;
 
