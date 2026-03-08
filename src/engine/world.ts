@@ -259,54 +259,60 @@ export function endBasho(world: WorldState): WorldState {
 /**
  * runPostBashoResolution
  * Authoritative post-basho pipeline per Constitution A3.4 & §6.3:
- *  1. Prestige decay & recalculation
- *  2. Governance institutional review
- *  3. Lifecycle management (retirements)
- *  4. Recruitment windows (NPC vacancy filling)
- *  5. Sponsor churn
- *  6. Records/streaks/career journal updates
+ *  1. Prestige decay & recalculation (with Constitution erosion curves)
+ *  2. Governance institutional review (council reactions, loans, mergers, succession)
+ *  3. AI meta drift seeding (A6.1 — recognition delay)
+ *  4. Lifecycle management (retirements)
+ *  5. Recruitment windows (NPC vacancy filling + player notification + window state)
+ *  6. Sponsor churn (Addendum D — satisfaction-based churn)
+ *  7. Records/streaks/career journal updates
  */
 function runPostBashoResolution(world: WorldState): void {
-  const basho = getCurrentBasho(world);
-
   // === 1. PRESTIGE DECAY & RECALCULATION ===
   runPrestigeDecay(world);
 
   // === 2. GOVERNANCE INSTITUTIONAL REVIEW ===
   runGovernanceReview(world);
 
-  // === 3. LIFECYCLE MANAGEMENT (retirements) ===
+  // === 3. AI META DRIFT SEEDING (A6.1) ===
+  safeCall(() => runAIMetaDrift(world));
+
+  // === 4. LIFECYCLE MANAGEMENT (retirements) ===
   const vacanciesByHeyaId = runRetirements(world);
 
-  // === 4. RECRUITMENT WINDOWS (NPC stables fill vacancies) ===
+  // === 5. RECRUITMENT WINDOWS (NPC stables fill vacancies) ===
   runRecruitmentWindow(world, vacanciesByHeyaId);
 
-  // === 5. SPONSOR CHURN (Constitution Addendum D) ===
+  // === 6. SPONSOR CHURN (Constitution Addendum D) ===
   safeCall(() => { runSponsorChurn(world); });
 
-  // === 6. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
+  // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
   runCareerJournalUpdates(world);
 }
 
+// ─── 1. PRESTIGE DECAY (Constitution A3.4) ─────────────────────
+
+const PRESTIGE_ORDER: import("./types").PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
+const bandIndex = (b: import("./types").PrestigeBand) => PRESTIGE_ORDER.indexOf(b);
+
 /**
- * Prestige decay — stables that didn't perform well see prestige erode.
- * Yūshō winners and strong performers gain prestige.
- * Per A3.4: "prestige shifts" happen post-basho.
+ * Prestige decay per A3.4:
+ * - Elite stables must maintain performance or erode
+ * - Multi-basho stagnation accelerates decay
+ * - Yūshō/sanshō provide upward shifts
+ * - Small stables face extra fragility
  */
 function runPrestigeDecay(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  const PRESTIGE_ORDER: import("./types").PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
-  const bandIndex = (b: import("./types").PrestigeBand) => PRESTIGE_ORDER.indexOf(b);
-
   for (const heya of world.heyas.values()) {
-    // Compute heya performance this basho
     let totalWins = 0;
     let totalLosses = 0;
     let hasYusho = false;
     let hasJunYusho = false;
-    let hasSanshoPrize = false;
+    let sanshoPrizeCount = 0;
+    let sekitoriCount = 0;
 
     for (const rId of heya.rikishiIds) {
       const r = world.rikishi.get(rId);
@@ -316,9 +322,11 @@ function runPrestigeDecay(world: WorldState): void {
 
       if (lastBasho.yusho === rId) hasYusho = true;
       if (lastBasho.junYusho.includes(rId)) hasJunYusho = true;
-      if (lastBasho.ginoSho === rId || lastBasho.kantosho === rId || lastBasho.shukunsho === rId) {
-        hasSanshoPrize = true;
-      }
+      if (lastBasho.ginoSho === rId) sanshoPrizeCount++;
+      if (lastBasho.kantosho === rId) sanshoPrizeCount++;
+      if (lastBasho.shukunsho === rId) sanshoPrizeCount++;
+
+      if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
     }
 
     const totalBouts = totalWins + totalLosses;
@@ -327,19 +335,36 @@ function runPrestigeDecay(world: WorldState): void {
     const currentIdx = bandIndex(heya.prestigeBand);
     let shift = 0;
 
-    // Positive prestige
+    // === Positive prestige gains ===
     if (hasYusho) shift += 2;
     else if (hasJunYusho) shift += 1;
-    if (hasSanshoPrize) shift += 1;
+    if (sanshoPrizeCount >= 2) shift += 1;
+    else if (sanshoPrizeCount === 1) shift += (winRate >= 0.55 ? 1 : 0);
     if (winRate >= 0.65 && totalBouts >= 10) shift += 1;
 
-    // Prestige decay — passive erosion for average/poor performance
+    // === Prestige decay — passive erosion for average/poor performance ===
     if (winRate < 0.4 && totalBouts >= 10) shift -= 1;
-    if (winRate < 0.3 && totalBouts >= 10) shift -= 1;
+    if (winRate < 0.3 && totalBouts >= 10) shift -= 1; // double penalty for terrible basho
 
-    // Natural decay for elite stables — must maintain performance
-    if (heya.prestigeBand === "elite" && !hasYusho && !hasJunYusho && winRate < 0.55) {
-      shift -= 1;
+    // === Elite erosion — must maintain excellence ===
+    if (heya.prestigeBand === "elite") {
+      if (!hasYusho && !hasJunYusho && winRate < 0.55) shift -= 1;
+      if (sekitoriCount === 0) shift -= 1; // no sekitori = severe erosion
+    }
+
+    // === Multi-basho stagnation check ===
+    // If a stable has been "struggling" or "unknown" for multiple consecutive basho,
+    // recovery becomes harder (no free climb without results)
+    if (heya.prestigeBand === "unknown" && winRate < 0.5 && !hasYusho) {
+      shift = Math.min(shift, 0); // can't climb from "unknown" without a strong result
+    }
+    if (heya.prestigeBand === "struggling" && winRate < 0.45 && !hasJunYusho && !hasYusho) {
+      shift = Math.min(shift, 0); // gate recovery behind results
+    }
+
+    // === Small stable fragility ===
+    if (heya.rikishiIds.length < 5 && heya.prestigeBand !== "unknown") {
+      shift -= 1; // tiny stables slowly lose prestige
     }
 
     // Apply clamped shift
@@ -355,7 +380,9 @@ function runPrestigeDecay(world: WorldState): void {
         scope: "heya",
         heyaId: heya.id,
         title: `${heya.name} prestige ${direction}`,
-        summary: `${heya.name}'s prestige ${direction} to "${newBand}" after the basho.`,
+        summary: `${heya.name}'s prestige ${direction} to "${newBand}" after the basho.${
+          shift <= -2 ? " A sharp decline — the sumo world takes notice." : ""
+        }`,
         data: { from: heya.prestigeBand, to: newBand, winRate: Math.round(winRate * 100), shift }
       });
       heya.prestigeBand = newBand;
@@ -400,19 +427,22 @@ function updateStatureBand(world: WorldState, heya: import("./types").Heya): voi
   else heya.statureBand = "new";
 }
 
+// ─── 2. GOVERNANCE INSTITUTIONAL REVIEW (§6.3 step 6) ──────────
+
 /**
- * Governance institutional review — post-basho sanctions, warnings, reviews.
- * Per §6.3 step 6: "Governance review pass (sanction triggers, merger/closure pressures)"
+ * Post-basho governance: institutional sanctions, council reactions,
+ * loans/benefactors escalation, succession checks, merger/closure pressure.
  */
 function runGovernanceReview(world: WorldState): void {
   for (const heya of world.heyas.values()) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
-    // Financial insolvency check
+    // === Financial insolvency check ===
     if (heya.funds < 0 && heya.runwayBand === "desperate") {
       heya.riskIndicators.financial = true;
       governance.reportScandal(world, heya.id, "minor", "Financial insolvency at basho end");
+
       logEngineEvent(world, {
         type: "INSOLVENCY_WARNING",
         category: "economy",
@@ -420,12 +450,37 @@ function runGovernanceReview(world: WorldState): void {
         scope: "heya",
         heyaId: heya.id,
         title: `${heya.name} facing insolvency`,
-        summary: `${heya.name} ended the basho with negative funds and desperate runway.`,
+        summary: `${heya.name} ended the basho with negative funds and desperate runway. The Association may intervene.`,
         data: { funds: heya.funds, runway: heya.runwayBand }
       });
+
+      // === Loans/benefactors escalation (Constitution §4.4) ===
+      // If a stable is insolvent, the Association may provide an emergency loan
+      // or a benefactor may step in — but at a cost to autonomy.
+      if (heya.funds < -5_000_000) {
+        const emergencyLoan = Math.abs(heya.funds) * 0.5; // Cover half the deficit
+        heya.funds += emergencyLoan;
+
+        logEngineEvent(world, {
+          type: "EMERGENCY_LOAN_ISSUED",
+          category: "economy",
+          importance: "major",
+          scope: "heya",
+          heyaId: heya.id,
+          title: `Emergency loan for ${heya.name}`,
+          summary: `The Association issues an emergency loan to prevent ${heya.name}'s collapse. Increased scrutiny follows.`,
+          data: { loanAmount: emergencyLoan, remainingDebt: heya.funds }
+        });
+
+        // Loans bring governance scrutiny
+        heya.scandalScore = Math.min(100, (heya.scandalScore ?? 0) + 5);
+      }
+    } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
+      // Clear financial risk indicator when no longer desperate
+      heya.riskIndicators.financial = false;
     }
 
-    // Welfare review escalation
+    // === Welfare review escalation ===
     if (welfareState && welfareState.complianceState === "sanctioned") {
       logEngineEvent(world, {
         type: "POST_BASHO_WELFARE_REVIEW",
@@ -437,34 +492,157 @@ function runGovernanceReview(world: WorldState): void {
         summary: `Post-basho institutional review: ${heya.name} remains under sanctions for welfare violations.`,
         data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
       });
+
+      // Sanctioned stables face additional prestige erosion
+      const currentIdx = bandIndex(heya.prestigeBand);
+      if (currentIdx > 0) {
+        const newBand = PRESTIGE_ORDER[currentIdx - 1];
+        heya.prestigeBand = newBand;
+        logEngineEvent(world, {
+          type: "PRESTIGE_SHIFT",
+          category: "discipline",
+          importance: "notable",
+          scope: "heya",
+          heyaId: heya.id,
+          title: `${heya.name} prestige damaged by sanctions`,
+          summary: `Ongoing sanctions erode ${heya.name}'s standing in the sumo world.`,
+          data: { from: PRESTIGE_ORDER[currentIdx], to: newBand, reason: "sanctions" }
+        });
+      }
     }
 
-    // Merger/closure pressure for extremely small stables
-    if (heya.rikishiIds.length < 3 && heya.id !== world.playerHeyaId) {
+    // === Council scandal reaction ===
+    if (scandalScore >= 40) {
+      const severityLabel = scandalScore >= 80 ? "severe" : scandalScore >= 60 ? "significant" : "concerning";
       logEngineEvent(world, {
-        type: "CLOSURE_PRESSURE",
+        type: "COUNCIL_SCANDAL_REVIEW",
         category: "discipline",
-        importance: "major",
+        importance: scandalScore >= 60 ? "major" : "notable",
         scope: "heya",
         heyaId: heya.id,
-        title: `${heya.name} under closure pressure`,
-        summary: `${heya.name} has fewer than 3 wrestlers — the association is reviewing viability.`,
-        data: { rosterSize: heya.rikishiIds.length }
+        title: `Council reviews ${heya.name}`,
+        summary: `The Sumo Association council notes ${severityLabel} conduct issues at ${heya.name}. Score: ${Math.floor(scandalScore)}.`,
+        data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
       });
     }
 
-    // Post-basho scandal score review: slight additional decay reward for clean basho
+    // === Merger/closure pressure for extremely small stables ===
+    if (heya.rikishiIds.length < 3) {
+      if (heya.id !== world.playerHeyaId) {
+        logEngineEvent(world, {
+          type: "CLOSURE_PRESSURE",
+          category: "discipline",
+          importance: "major",
+          scope: "heya",
+          heyaId: heya.id,
+          title: `${heya.name} under closure pressure`,
+          summary: `${heya.name} has fewer than 3 wrestlers — the Association is reviewing viability.`,
+          data: { rosterSize: heya.rikishiIds.length }
+        });
+
+        // If roster is 0 or 1, mark for eventual closure (NPC only)
+        if (heya.rikishiIds.length <= 1) {
+          logEngineEvent(world, {
+            type: "FORCED_MERGER_CANDIDATE",
+            category: "discipline",
+            importance: "headline",
+            scope: "heya",
+            heyaId: heya.id,
+            title: `${heya.name} merger imminent`,
+            summary: `With only ${heya.rikishiIds.length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
+            data: { rosterSize: heya.rikishiIds.length }
+          });
+        }
+      } else {
+        // Player stable — warn but don't force closure
+        logEngineEvent(world, {
+          type: "ROSTER_WARNING",
+          category: "career",
+          importance: "major",
+          scope: "heya",
+          heyaId: heya.id,
+          title: "Roster critically low",
+          summary: `Your stable has fewer than 3 wrestlers. Recruit urgently or face Association review.`,
+          data: { rosterSize: heya.rikishiIds.length }
+        });
+      }
+    }
+
+    // === Succession check — aging oyakata ===
+    const oyakata = world.oyakata.get(heya.oyakataId);
+    if (oyakata && oyakata.age >= 63) {
+      logEngineEvent(world, {
+        type: "SUCCESSION_UPCOMING",
+        category: "career",
+        importance: oyakata.age >= 65 ? "major" : "notable",
+        scope: "heya",
+        heyaId: heya.id,
+        title: `${heya.name} succession looming`,
+        summary: `Oyakata ${oyakata.name} (age ${oyakata.age}) ${
+          oyakata.age >= 65 ? "must retire soon — succession is urgent." : "is approaching mandatory retirement age."
+        }`,
+        data: { oyakataAge: oyakata.age, oyakataName: oyakata.name }
+      });
+    }
+
+    // === Post-basho scandal score decay reward for clean basho ===
     if (scandalScore > 0 && heya.governanceStatus === "good_standing") {
       heya.scandalScore = Math.max(0, scandalScore - 2);
     }
   }
 }
 
+// ─── 3. AI META DRIFT (A6.1) ───────────────────────────────────
+
+/**
+ * AI Meta Drift recognition delays per A6.1:
+ * NPC managers observe public outcomes and can adjust strategy,
+ * but only after a recognition delay based on manager profile.
+ * We seed the eligibility here; actual changes happen in future weekly ticks.
+ */
+function runAIMetaDrift(world: WorldState): void {
+  const lastBasho = world.history[world.history.length - 1];
+  if (!lastBasho) return;
+
+  // Compute basho meta: dominant style this basho
+  let oshiWins = 0, yotsuWins = 0;
+  for (const r of world.rikishi.values()) {
+    if ((r.currentBashoWins ?? 0) > (r.currentBashoLosses ?? 0)) {
+      if (r.style === "oshi") oshiWins++;
+      else if (r.style === "yotsu") yotsuWins++;
+    }
+  }
+  const metaBias: "oshi" | "yotsu" | "neutral" = 
+    oshiWins > yotsuWins * 1.3 ? "oshi" : 
+    yotsuWins > oshiWins * 1.3 ? "yotsu" : "neutral";
+
+  // Write meta state for NPC AI to consume in future weeks
+  (world as any)._postBashoMeta = {
+    bashoNumber: lastBasho.bashoNumber,
+    metaBias,
+    yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
+    recognitionEligibleWeek: world.week + 2 // 2-week recognition delay baseline
+  };
+
+  if (metaBias !== "neutral") {
+    logEngineEvent(world, {
+      type: "META_SHIFT_OBSERVED",
+      category: "basho",
+      importance: "minor",
+      scope: "world",
+      title: `Meta trend: ${metaBias} style dominance`,
+      summary: `${metaBias === "oshi" ? "Pushing" : "Belt"} specialists dominated this basho. NPC managers may adjust.`,
+      data: { metaBias, oshiWins, yotsuWins }
+    });
+  }
+}
+
+// ─── 4. RETIREMENTS ────────────────────────────────────────────
+
 /**
  * Process retirements and return vacancy counts per heya.
  */
 function runRetirements(world: WorldState): Record<string, number> {
-  console.log("Processing End of Basho Lifecycle...");
   const vacanciesByHeyaId: Record<string, number> = {};
 
   for (const [id, r] of world.rikishi) {
@@ -484,20 +662,35 @@ function runRetirements(world: WorldState): Record<string, number> {
   return vacanciesByHeyaId;
 }
 
+// ─── 5. RECRUITMENT WINDOWS (Constitution A3.4) ────────────────
+
 /**
- * Recruitment window — NPC stables fill vacancies from talent pool.
- * Player heya gets notified of available recruits but doesn't auto-fill.
- * Per A3.4: "recruitment windows fire (player + NPC)"
+ * Recruitment window — per Constitution, recruitment occurs at:
+ *   1) Post-basho review (here)
+ *   2) Mid-interim (week 3) — handled in dailyTick weekly gate
+ *
+ * NPC stables auto-fill from talent pool.
+ * Player gets a recruitment window event with duration tracking.
  */
 function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): void {
   // NPC stables auto-fill from talent pool
   safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
 
-  // Emit recruitment window event for player
-  const playerVacancies = world.playerHeyaId ? (vacanciesByHeyaId[world.playerHeyaId] ?? 0) : 0;
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  // Track recruitment window state for player
+  const playerHeyaId = world.playerHeyaId;
+  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerVacancies = playerHeyaId ? (vacanciesByHeyaId[playerHeyaId] ?? 0) : 0;
 
   if (playerHeya) {
+    // Set recruitment window state on world (consumed by UI and dailyTick)
+    (world as any)._recruitmentWindow = {
+      openedAtWeek: world.week,
+      closesAtWeek: world.week + 4, // 4-week window per Constitution
+      vacancies: playerVacancies,
+      isOpen: true,
+      phase: "post_basho"
+    };
+
     logEngineEvent(world, {
       type: "RECRUITMENT_WINDOW_OPEN",
       category: "career",
@@ -506,15 +699,20 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
       heyaId: playerHeya.id,
       title: "Recruitment window open",
       summary: playerVacancies > 0
-        ? `${playerVacancies} spot(s) opened due to retirements. Visit Talent Pools to recruit.`
-        : "The post-basho recruitment window is open. Scout and sign new talent.",
-      data: { vacancies: playerVacancies, rosterSize: playerHeya.rikishiIds.length }
+        ? `${playerVacancies} spot(s) opened due to retirements. You have 4 weeks to recruit from the talent pools.`
+        : "The post-basho recruitment window is open for 4 weeks. Scout and sign new talent.",
+      data: {
+        vacancies: playerVacancies,
+        rosterSize: playerHeya.rikishiIds.length,
+        windowDuration: 4,
+        closesAtWeek: world.week + 4
+      }
     });
   }
 
   // Log total NPC recruitment activity
   const totalNPCVacancies = Object.entries(vacanciesByHeyaId)
-    .filter(([id]) => id !== world.playerHeyaId)
+    .filter(([id]) => id !== playerHeyaId)
     .reduce((sum, [, v]) => sum + v, 0);
 
   if (totalNPCVacancies > 0) {
@@ -529,6 +727,8 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
     });
   }
 }
+
+// ─── 7. CAREER JOURNAL UPDATES (A3.4) ──────────────────────────
 
 /**
  * Update career records, streaks, and HoF eligibility.
