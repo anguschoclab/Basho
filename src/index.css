@@ -83,44 +83,45 @@
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 40 15% 92%;
+    /* Deep FM-inspired dark palette */
+    --background: 230 20% 8%;
+    --foreground: 220 15% 90%;
 
-    --card: 220 18% 13%;
-    --card-foreground: 40 15% 92%;
+    --card: 230 18% 11%;
+    --card-foreground: 220 15% 90%;
 
-    --popover: 220 18% 12%;
-    --popover-foreground: 40 15% 92%;
+    --popover: 230 18% 10%;
+    --popover-foreground: 220 15% 90%;
 
-    /* Primary - Lighter indigo for dark mode */
-    --primary: 225 50% 65%;
-    --primary-foreground: 220 20% 10%;
+    /* Primary - Bright accent for dark */
+    --primary: 225 60% 60%;
+    --primary-foreground: 230 20% 8%;
 
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 40 15% 90%;
+    --secondary: 230 15% 16%;
+    --secondary-foreground: 220 15% 85%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 230 15% 14%;
+    --muted-foreground: 220 10% 50%;
 
     /* Accent - Brighter crimson */
     --accent: 0 65% 55%;
-    --accent-foreground: 40 20% 97%;
+    --accent-foreground: 220 15% 95%;
 
-    --destructive: 0 60% 45%;
-    --destructive-foreground: 40 20% 97%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 220 15% 95%;
 
     --success: 145 55% 45%;
-    --success-foreground: 220 20% 10%;
+    --success-foreground: 230 20% 8%;
 
     --warning: 40 85% 55%;
-    --warning-foreground: 220 20% 10%;
+    --warning-foreground: 230 20% 8%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 20%;
-    --ring: 225 50% 65%;
+    --border: 230 15% 18%;
+    --input: 230 15% 16%;
+    --ring: 225 60% 60%;
 
     /* Sumo tokens - dark */
-    --dohyo: 35 30% 25%;
+    --dohyo: 35 30% 20%;
     --dohyo-border: 0 50% 35%;
     --east: 0 65% 55%;
     --west: 215 55% 55%;
@@ -129,20 +130,20 @@
     --bronze: 25 55% 50%;
 
     /* Shadows - dark */
-    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.4);
-    --shadow-paper: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px hsl(0 0% 0% / 0.4);
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.5);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5);
+    --shadow-paper: 0 1px 3px hsl(0 0% 0% / 0.4), 0 1px 2px hsl(0 0% 0% / 0.5);
 
-    /* Sidebar - dark */
-    --sidebar-background: 220 18% 12%;
-    --sidebar-foreground: 40 15% 90%;
-    --sidebar-primary: 225 50% 65%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 40 15% 90%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 225 50% 65%;
+    /* Sidebar - dark (used by event log) */
+    --sidebar-background: 230 18% 10%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 225 60% 60%;
+    --sidebar-primary-foreground: 230 20% 8%;
+    --sidebar-accent: 230 15% 16%;
+    --sidebar-accent-foreground: 220 15% 85%;
+    --sidebar-border: 230 15% 18%;
+    --sidebar-ring: 225 60% 60%;
   }
 }
 
