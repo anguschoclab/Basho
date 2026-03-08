@@ -21,7 +21,7 @@ import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types
  *  Fact Layer Types
  *  ========================= */
 
-export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish";
+export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish" | "tactical";
 
 export type PbpTag =
   | "crowd_roar"
