@@ -485,7 +485,7 @@ export default function StablePage() {
                   {(Object.keys(INTENSITY_EFFECTS) as TrainingIntensity[]).map((intensity) => {
                     const label = getIntensityLabel(intensity);
                     const effect = INTENSITY_EFFECTS[intensity];
-                    const isActive = trainingState.profile.intensity === intensity;
+                    const isActive = trainingState.activeProfile.intensity === intensity;
 
                     return (
                       <button
