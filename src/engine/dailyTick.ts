@@ -153,7 +153,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
     }
 
     case "post_basho": {
-      const remaining = (world as any)._postBashoDays ?? 7;
+      const remaining = world._postBashoDays ?? 7;
       if (remaining <= 0) {
         world.cyclePhase = "interim";
         (world as any)._interimDaysRemaining = getInterimDaysTotal() - 7;
