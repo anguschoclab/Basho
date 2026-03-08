@@ -55,8 +55,10 @@ function simulateFight(archA: Arch, archB: Arch, seed: string): "east" | "west" 
   const collisionForce = (r: any) => r.power * 0.7 + Math.max(0, (r.weight - 100) * 0.5) * 0.3;
   let eastScore = a.speed * 0.35 + a.aggression * 0.25 + collisionForce(a) * 0.30 + a.balance * 0.10 + (rng() - 0.5) * 6;
   let westScore = b.speed * 0.35 + b.aggression * 0.25 + collisionForce(b) * 0.30 + b.balance * 0.10 + (rng() - 0.5) * 6;
-  if (a.archetype === "oshi_specialist") eastScore += 10;
-  if (b.archetype === "oshi_specialist") westScore += 10;
+  if (a.archetype === "oshi_specialist") eastScore += 14;
+  if (b.archetype === "oshi_specialist") westScore += 14;
+  if (a.archetype === "hybrid_oshi_yotsu") eastScore += 5;
+  if (b.archetype === "hybrid_oshi_yotsu") westScore += 5;
   let advantage: "east" | "west" = eastScore >= westScore ? "east" : "west";
 
   let stance = "no-grip";
