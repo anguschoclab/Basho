@@ -767,6 +767,37 @@ export default function AlmanacPage() {
                         </div>
                       );
                     })()}
+
+                  {/* Win Streak Records */}
+                  {streakRecords.length > 0 && (
+                    <div className="p-4 rounded-lg bg-secondary/50 space-y-2">
+                      <div className="text-sm text-muted-foreground font-semibold flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        連勝記録 Win Streaks
+                      </div>
+                      <div className="space-y-1">
+                        {streakRecords.slice(0, 5).map((entry, idx) => (
+                          <div key={`${entry.rikishi.id}-${idx}`} className="flex items-center gap-2 text-sm">
+                            <span className={`w-5 text-center font-bold ${idx === 0 ? "text-amber-400" : "text-muted-foreground"}`}>
+                              {idx + 1}
+                            </span>
+                            <Link
+                              to={`/rikishi/${entry.rikishi.id}`}
+                              className="flex-1 font-display hover:text-primary truncate"
+                            >
+                              {entry.rikishi.shikona}
+                            </Link>
+                            <span className="font-mono font-bold">{entry.streak}連勝</span>
+                            {entry.isActive && (
+                              <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-400/30">
+                                ACTIVE
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
