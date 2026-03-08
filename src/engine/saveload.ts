@@ -153,6 +153,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     seed: serialized.seed,
     year: serialized.year,
     week: serialized.week,
+    dayIndexGlobal: (serialized as any).dayIndexGlobal ?? 0,
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),

@@ -696,13 +696,14 @@ export interface BashoResult {
  * WORLD STATE
  * ========================= */
 
-export type CyclePhase = "active_basho" | "post_basho" | "interim";
+export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
 
 export interface WorldState {
   id: string;
   seed: string;
   year: number;
   week: number;
+  dayIndexGlobal: number;
   cyclePhase: CyclePhase; 
 
   currentBashoName?: BashoName;

@@ -49,6 +49,7 @@ type GameAction =
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
   | { type: "ADVANCE_INTERIM"; weeks: number }
+  | { type: "ADVANCE_ONE_DAY" }
   | { type: "SELECT_RIKISHI"; id: string | null }
   | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_AUTO_PLAY"; value: boolean }
@@ -203,10 +204,24 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case "ADVANCE_INTERIM": {
       if (!state.world) return state;
       worldEngine.advanceInterim(state.world, action.weeks);
+      // Phase may have changed due to daily tick transitions
+      const newPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return {
         ...state,
         world: { ...state.world },
-        phase: "interim",
+        phase: newPhase,
+      };
+    }
+
+    case "ADVANCE_ONE_DAY": {
+      if (!state.world) return state;
+      worldEngine.advanceDay(state.world);
+      const dayPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : 
+                       state.world.cyclePhase === "pre_basho" ? "interim" : "interim";
+      return {
+        ...state,
+        world: { ...state.world },
+        phase: dayPhase,
       };
     }
 
@@ -271,6 +286,7 @@ interface GameContextValue {
 
   // Interim control
   advanceInterim: (weeks?: number) => void;
+  advanceOneDay: () => void;
   
   // Save/Load
   saveToSlot: (slotName: string) => boolean;
@@ -355,6 +371,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "ADVANCE_INTERIM", weeks });
   }, []);
 
+  const advanceOneDayAction = useCallback(() => {
+    dispatch({ type: "ADVANCE_ONE_DAY" });
+  }, []);
+
   const updateWorld = useCallback((world: WorldState) => {
     dispatch({ type: "UPDATE_WORLD", world });
   }, []);
@@ -431,6 +451,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     endDay,
     endBasho,
     advanceInterim,
+    advanceOneDay: advanceOneDayAction,
     saveToSlot,
     loadFromSlot,
     quickSave: quickSaveAction,
