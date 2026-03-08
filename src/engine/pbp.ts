@@ -584,6 +584,8 @@ function selectPhraseForFact(
 
 function phaseOrder(p: BoutPhase): number {
   switch (p) {
+    case "tactical":
+      return -1;
     case "tachiai":
       return 0;
     case "clinch":
