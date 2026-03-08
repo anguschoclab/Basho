@@ -42,11 +42,7 @@ export function CalendarWidget() {
     toast({ title: "Week advanced" });
   };
 
-  const handleStartBasho = () => {
-    startBasho();
-    toast({ title: "Basho started!" });
-    navigate("/basho");
-  };
+  // Basho now auto-starts via time advancement (pre_basho → active_basho)
 
   const handleSimDay = () => {
     simulateAllBouts();
