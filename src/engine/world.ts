@@ -674,7 +674,7 @@ function runRetirements(world: WorldState): Record<string, number> {
  */
 function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): void {
   // NPC stables auto-fill from talent pool
-  safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
+  safeCall(() => talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
 
   // Track recruitment window state for player
   const playerHeyaId = world.playerHeyaId;
