@@ -227,7 +227,7 @@ export function endBasho(world: WorldState): WorldState {
   for (const [id, r] of world.rikishi) {
     const reason = checkRetirement(r as any, world.year, world.seed);
     if (reason) {
-        console.log(`${r.shikona} has retired due to: ${reason}`);
+        EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
         retiredRikishiIds.push(id);
 
         if (r.heyaId) vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
