@@ -94,7 +94,7 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   if (nextDay <= 15) ensureDaySchedule(world, nextDay);
 
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_DAY_ADVANCED", day: nextDay }));
+  EventBus.bashoDay(world, nextDay);
   return world;
 }
 
