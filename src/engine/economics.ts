@@ -111,6 +111,8 @@ function handleInsolvency(heya: Heya, world: WorldState): void {
 
 /**
  * Called when a bout concludes to settle Kensho (Prize Money).
+ * Constitution §6: ¥70,000/banner, 50/50 rikishi/heya split.
+ * 30% of rikishi share → retirement fund.
  */
 export function onBoutResolved(
   world: WorldState,
@@ -118,19 +120,14 @@ export function onBoutResolved(
 ): void {
   const { result, east, west } = context;
   
-  
   const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
-// Only Makuuchi bouts generate Kensho normally
+  // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return;
 
-  // Simple stochastic kensho for now (random 0-5 envelopes for top ranks)
-  // In full sim, this would be based on popularity matchups.
-  // We'll give a small chance of Kensho.
-  
   const winner = result.winner === "east" ? east : west;
   const winnerHeya = world.heyas.get(winner.heyaId);
 
-  // Determine Kensho count based on rank
+  // Determine Kensho count based on rank + popularity
   let kenshoCount = 0;
   if (east.rank === "yokozuna" || west.rank === "yokozuna") kenshoCount += 5;
   else if (east.rank === "ozeki" || west.rank === "ozeki") kenshoCount += 2;
@@ -139,14 +136,16 @@ export function onBoutResolved(
   if (rng.bool(0.5)) kenshoCount += 1;
 
   if (kenshoCount > 0 && winnerHeya) {
-    const AMOUNT_PER_KENSHO = 62_000;
+    // Constitution: ¥70,000 per banner
+    const AMOUNT_PER_KENSHO = 70_000;
     const total = kenshoCount * AMOUNT_PER_KENSHO;
 
-    // Constitution A6.2: 50/50 split between rikishi cash and heya.
-    // Retirement fund diversion: 5% of rikishi share goes to retirement fund.
+    // Constitution: 50/50 split rikishi/heya
     const rikishiGross = total * 0.5;
     const stableShare = total * 0.5;
-    const retirementDiversion = rikishiGross * 0.05;
+
+    // Constitution: 30% of rikishi share → retirement fund
+    const retirementDiversion = rikishiGross * 0.3;
     const rikishiNet = rikishiGross - retirementDiversion;
 
     if (!winner.economics) winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
@@ -162,4 +161,83 @@ export function onBoutResolved(
     // Emit kensho event
     EventBus.kenshoAwarded(world, winner.id, winnerHeya.id, total, kenshoCount);
   }
+}
+
+// === POST-BASHO SPONSOR CHURN (Constitution Addendum D) ===
+
+/**
+ * Run post-basho sponsor churn checks per Constitution Addendum D.
+ * Each sponsor computes satisfaction; those below threshold churn out.
+ */
+export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
+  const pool = (world as any).sponsorPool;
+  if (!pool?.sponsors) return { churned: [], retained: 0 };
+
+  const churned: string[] = [];
+  let retained = 0;
+
+  for (const heya of world.heyas.values()) {
+    const koenkaiId = `koenkai_${heya.id}`;
+    const koenkai = pool.koenkais?.get(koenkaiId);
+    if (!koenkai) continue;
+
+    // Compute heya satisfaction inputs (banded per fog-of-war)
+    const prestigeScore = heya.reputation ?? 50;
+    const starPower = computeStarPower(heya, world);
+    const scandalSeverity = heya.scandalScore ?? 0;
+
+    // Satisfaction = (Prestige × 0.5) + (StarPower × 0.3) - (ScandalSeverity × 20)
+    const satisfaction = (prestigeScore * 0.5) + (starPower * 0.3) - (scandalSeverity * 0.2);
+
+    // Check each kōenkai member
+    const survivingMembers = koenkai.members.filter((rel: any) => {
+      const sponsor = pool.sponsors.get(rel.sponsorId);
+      if (!sponsor || !sponsor.active) return false;
+
+      // Churn thresholds per Addendum D2
+      const isLocal = sponsor.category === "local_business";
+      const isCorporate = sponsor.category === "regional_corporation" || sponsor.category === "national_brand";
+      const threshold = isLocal ? 20 : isCorporate ? 50 : 70;
+
+      if (satisfaction < threshold) {
+        sponsor.active = false;
+        churned.push(sponsor.displayName);
+
+        EventBus.financialAlert(world, heya.id,
+          "Sponsor departure",
+          `${sponsor.displayName} has withdrawn support from ${heya.name}.`,
+          { sponsorId: sponsor.sponsorId, satisfaction: Math.round(satisfaction) }
+        );
+        return false;
+      }
+      retained++;
+      return true;
+    });
+
+    koenkai.members = survivingMembers;
+
+    // Update kōenkai band based on remaining members
+    const memberCount = survivingMembers.length;
+    const hasPillar = survivingMembers.some((m: any) => m.role === "koenkai_pillar");
+    if (memberCount === 0) heya.koenkaiBand = "none";
+    else if (memberCount <= 2 && !hasPillar) heya.koenkaiBand = "weak";
+    else if (memberCount <= 4) heya.koenkaiBand = "moderate";
+    else if (memberCount <= 6 || !hasPillar) heya.koenkaiBand = "strong";
+    else heya.koenkaiBand = "powerful";
+  }
+
+  return { churned, retained };
+}
+
+function computeStarPower(heya: Heya, world: WorldState): number {
+  let starPower = 0;
+  for (const rId of heya.rikishiIds) {
+    const r = world.rikishi.get(rId);
+    if (!r) continue;
+    if (r.rank === "yokozuna") starPower += 30;
+    else if (r.rank === "ozeki") starPower += 20;
+    else if (r.rank === "sekiwake" || r.rank === "komusubi") starPower += 10;
+    else if (r.division === "makuuchi") starPower += 5;
+  }
+  return Math.min(100, starPower);
 }
