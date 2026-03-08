@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
+import { toTraitBand, TRAIT_LABELS, toScandalBand, SCANDAL_LABELS } from "@/engine/descriptorBands";
 import type { Heya, WorldState } from "@/engine/types";
 import { getStatusLabel } from "@/engine/governance";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
