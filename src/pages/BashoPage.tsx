@@ -425,6 +425,6 @@ export default function BashoPage() {
           day={basho.day}
         />
       )}
-    </>
+    </AppLayout>
   );
 }
