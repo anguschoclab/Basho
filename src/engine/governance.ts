@@ -5,6 +5,7 @@
 
 import type { WorldState, Heya, GovernanceStatus, GovernanceRuling } from "./types";
 import { logEngineEvent } from "./events";
+import { generateScandalHeadline } from "./media";
 
 // === CONSTANTS ===
 
