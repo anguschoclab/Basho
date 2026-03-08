@@ -12,7 +12,7 @@ import { rngFromSeed } from "./rng";
 import {
   WorldState, Rikishi, Heya, Oyakata, 
   Rank, TacticalArchetype, StatureBand, PrestigeBand, 
-  FacilitiesBand, KoenkaiBandType, OyakataArchetype, 
+  FacilitiesBand, KoenkaiBandType, OyakataArchetype, RunwayBand,
   BashoName, Division, RikishiStats, Side, BashoState
 } from "./types";
 import { generateRikishiName } from "./shikona";
