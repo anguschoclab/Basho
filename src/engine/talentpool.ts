@@ -28,6 +28,7 @@ import type {
 import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
+import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
