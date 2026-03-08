@@ -806,7 +806,7 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
   return weighted[weighted.length - 1]?.k ?? fallback;
 }
 
-function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): { winner: Side; kimarite: Kimarite } {
+function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: Side; kimarite: Kimarite } {
   const adv = st.advantage !== "none" ? st.advantage : st.tachiaiWinner;
   const attacker = adv === "east" ? east : west;
   const defender = adv === "east" ? west : east;
