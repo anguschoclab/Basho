@@ -89,8 +89,10 @@ function simulateFight(archA: Arch, archB: Arch, seed: string): "east" | "west" 
     const momB = b.speed * 0.25 + b.power * 0.2 + b.technique * 0.2 + b.mental * 0.15 + (rng() - 0.5) * 10 - fatigueB * 0.3;
     if (a.archetype === "trickster") fatigueB += 2;
     if (b.archetype === "trickster") fatigueA += 2;
-    if (a.archetype === "counter_specialist" && advantage === "west" && rng() < 0.25) advantage = "east";
-    if (b.archetype === "counter_specialist" && advantage === "east" && rng() < 0.25) advantage = "west";
+    if (a.archetype === "counter_specialist" && advantage === "west" && rng() < 0.15) advantage = "east";
+    if (b.archetype === "counter_specialist" && advantage === "east" && rng() < 0.15) advantage = "west";
+    if (a.archetype === "trickster" && advantage === "west" && rng() < 0.10) advantage = "east";
+    if (b.archetype === "trickster" && advantage === "east" && rng() < 0.10) advantage = "west";
     if (momA > momB + 3) advantage = "east";
     else if (momB > momA + 3) advantage = "west";
     fatigueA += a.weight * 0.008 + (a.style === "oshi" ? 1.5 : 0.8);
@@ -99,9 +101,10 @@ function simulateFight(archA: Arch, archB: Arch, seed: string): "east" | "west" 
 
   let winP = 0.5;
   winP += (advantage === "east" ? 0.18 : -0.18);
-  winP += (a.balance - b.balance) / 400;
-  winP += (a.technique - b.technique) / 450;
-  winP += (fatigueB - fatigueA) / 120;
+  winP += (a.balance - b.balance) / 450;
+  winP += (a.technique - b.technique) / 500;
+  winP += (a.power - b.power) / 600;
+  winP += (fatigueB - fatigueA) / 140;
   winP += (rng() - 0.5) * 0.06;
   if (stance === "push-dominant") {
     const massDiff = (a.weight - b.weight) / 300;
