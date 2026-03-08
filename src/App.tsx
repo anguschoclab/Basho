@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GameProvider } from "./contexts/GameContext";
 import { ThemeProvider } from "./components/ThemeProvider";
 
-import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import StablePage from "./pages/StablePage";
 import RikishiPage from "./pages/RikishiPage";
@@ -42,7 +41,6 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/demo" element={<Index />} />
               <Route path="/main-menu" element={<MainMenu />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/stable" element={<StablePage />} />
@@ -55,7 +53,6 @@ const App = () => (
               <Route path="/rivalries" element={<RivalriesPage />} />
               <Route path="/economy" element={<EconomyPage />} />
               <Route path="/talent" element={<TalentPoolPage />} />
-              <Route path="/talent-pool" element={<TalentPoolPage />} />
               <Route path="/scouting" element={<ScoutingPage />} />
               <Route path="/governance" element={<GovernancePage />} />
               <Route path="/recap" element={<RecapPage />} />

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, AlertTriangle, Clock, Star, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { StableName } from "@/components/ClickableName";
 import type { WorldState } from "@/engine/types";
