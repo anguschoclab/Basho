@@ -830,7 +830,10 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     });
   }
 
-  const result = updateBanzuke(currentBanzukeList, performanceList, {}); 
+  const result = updateBanzuke(currentBanzukeList, performanceList, world.ozekiKadoban ?? {}); 
+  
+  // Persist updated kadoban state
+  world.ozekiKadoban = result.updatedOzekiKadoban;
 
   for (const newEntry of result.newBanzuke) {
     const rikishi = world.rikishi.get(newEntry.rikishiId);
