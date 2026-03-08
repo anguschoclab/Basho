@@ -700,7 +700,7 @@ function runAIMetaDrift(world: WorldState): void {
     yotsuWins > oshiWins * 1.3 ? "yotsu" : "neutral";
 
   // Write meta state for NPC AI to consume in future weeks
-  (world as any)._postBashoMeta = {
+  world._postBashoMeta = {
     bashoNumber: lastBasho.bashoNumber,
     metaBias,
     yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
