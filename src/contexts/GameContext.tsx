@@ -371,6 +371,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "ADVANCE_INTERIM", weeks });
   }, []);
 
+  const advanceOneDayAction = useCallback(() => {
+    dispatch({ type: "ADVANCE_ONE_DAY" });
+  }, []);
+
   const updateWorld = useCallback((world: WorldState) => {
     dispatch({ type: "UPDATE_WORLD", world });
   }, []);
