@@ -87,6 +87,34 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
           <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted">
             {rikishi.origin}
           </Badge>
+
+          {/* Potential Band Indicator */}
+          {(() => {
+            const r = rikishi as any;
+            const potBand = toPotentialBand(r.talentSeed);
+            if (potBand === "unknown") return null;
+            const info = POTENTIAL_LABELS[potBand];
+            const potColor = potBand === "generational" ? "border-amber-400 text-amber-600 bg-amber-50/50"
+              : potBand === "star" ? "border-purple-400 text-purple-600 bg-purple-50/50"
+              : potBand === "solid" ? "border-blue-400 text-blue-600 bg-blue-50/50"
+              : potBand === "average" ? "border-muted text-muted-foreground"
+              : "border-destructive/40 text-destructive/70";
+            return (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="outline" className={`text-[10px] cursor-help ${potColor}`}>
+                      <Sparkles size={10} className="mr-0.5" />
+                      {info.label}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{info.description}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })()}
         </div>
 
         {/* Stat Descriptors (Non-compact only) — NO RAW NUMBERS */}

@@ -93,13 +93,13 @@ export {
   toBand,
   toStatBand, toConditionBand, toFatigueBand, toMomentumBand,
   toFinancialBand, toRivalryHeatBand, toTraitBand, toWinRateAssessment,
-  toPrizeBand, toScandalBand, toRikishiDescriptor,
-  STAT_BANDS, CONDITION_BANDS, FATIGUE_BANDS, RIVALRY_HEAT_BANDS, TRAIT_BANDS, SCANDAL_BANDS,
+  toPrizeBand, toScandalBand, toRikishiDescriptor, toPotentialBand,
+  STAT_BANDS, CONDITION_BANDS, FATIGUE_BANDS, RIVALRY_HEAT_BANDS, TRAIT_BANDS, SCANDAL_BANDS, POTENTIAL_BANDS,
   STAT_BAND_LABELS, CONDITION_LABELS, FATIGUE_LABELS, MOMENTUM_LABELS,
-  RIVALRY_HEAT_LABELS, TRAIT_LABELS, WIN_RATE_LABELS, PRIZE_LABELS, SCANDAL_LABELS,
+  RIVALRY_HEAT_LABELS, TRAIT_LABELS, WIN_RATE_LABELS, PRIZE_LABELS, SCANDAL_LABELS, POTENTIAL_LABELS,
 } from "./descriptorBands";
 export type {
   BandDef, StatBand, ConditionBand, FatigueBand, MomentumBand,
   FinancialBand, TraitBand, WinRateAssessment, PrizeBand, ScandalBand,
-  RikishiDescriptor,
+  RikishiDescriptor, PotentialBand,
 } from "./descriptorBands";
