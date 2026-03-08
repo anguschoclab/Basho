@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { BASHO_CALENDAR, getDayName, getSeasonalFlavor, isKeyDay } from "@/engine/calendar";
+import { getTotalBashodays } from "@/engine/schedule";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown } from "lucide-react";
