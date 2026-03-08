@@ -250,7 +250,22 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Save/Load + Theme toggle */}
+        {/* Autosave indicator + Save/Load + Theme toggle */}
+        {world && autosaveStatus !== "idle" && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground animate-in fade-in-0 duration-300">
+            {autosaveStatus === "saving" ? (
+              <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" className="opacity-25" />
+                <path d="M4 12a8 8 0 018-8" className="opacity-75" />
+              </svg>
+            ) : (
+              <svg className="h-3.5 w-3.5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+            <span className="hidden sm:inline">{autosaveStatus === "saving" ? "Saving…" : "Saved"}</span>
+          </div>
+        )}
         {world && <SaveLoadDialog />}
         <Button
           variant="ghost"
