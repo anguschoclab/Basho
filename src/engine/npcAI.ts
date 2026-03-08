@@ -378,19 +378,24 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const perception = persona.perception;
   const reasoning: string[] = [];
 
-  // Get compliance cap from sanctions
+  // Fetch oyakata style profile for philosophy-driven decisions
   const heya = world.heyas.get(heyaId);
+  const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  const styleProfile = oyakata ? getOyakataStyleProfile(world, oyakata) : undefined;
+  const philosophy = styleProfile?.philosophy;
+
+  // Get compliance cap from sanctions
   const complianceCap = heya?.welfareState?.sanctions?.trainingIntensityCap as TrainingIntensity | undefined;
 
-  // 1. Training intensity
+  // 1. Training intensity (now philosophy-aware)
   const intensityDecision = decideTrainingIntensity(
-    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap
+    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap, philosophy
   );
   reasoning.push(`[Training] ${intensityDecision.reason}`);
 
-  // 2. Training focus
+  // 2. Training focus (now philosophy-aware)
   const focusDecision = decideTrainingFocus(
-    perception, persona.styleBias, persona.traits.tradition
+    perception, persona.styleBias, persona.traits.tradition, philosophy
   );
   reasoning.push(`[Focus] ${focusDecision.reason}`);
 
@@ -411,6 +416,44 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     reasoning.push(`[Protect] ${protectDecision.reason}`);
   }
 
+  // 6. Philosophy-driven individual focus: develop wrestlers matching preferred style/archetype
+  const individualDevelops: Id[] = [];
+  const individualPushes: Id[] = [];
+  const protectedSet = new Set(protectDecision.protectIds);
+
+  if (styleProfile && perception.rikishiPerceptions.length > 0) {
+    for (const rp of perception.rikishiPerceptions) {
+      if (protectedSet.has(rp.rikishiId)) continue;
+      const rikishi = world.rikishi.get(rp.rikishiId);
+      if (!rikishi) continue;
+
+      const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
+      const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype);
+
+      // Style purists and traditionalists push wrestlers that match, develop the rest less
+      if (matchesArchetype && matchesStyle) {
+        if (rp.healthBand === "healthy" && (philosophy === "style_purist" || philosophy === "size_matters")) {
+          individualPushes.push(rp.rikishiId);
+        } else if (rp.healthBand === "healthy") {
+          individualDevelops.push(rp.rikishiId);
+        }
+      } else if (matchesArchetype || matchesStyle) {
+        individualDevelops.push(rp.rikishiId);
+      }
+    }
+
+    // Cap individual focuses to avoid overwhelming the system (max 3 push, 5 develop)
+    individualPushes.splice(3);
+    individualDevelops.splice(5);
+
+    if (individualPushes.length > 0) {
+      reasoning.push(`[Philosophy] Pushing ${individualPushes.length} wrestler(s) matching ${styleProfile.description.split(".")[0]}`);
+    }
+    if (individualDevelops.length > 0) {
+      reasoning.push(`[Philosophy] Developing ${individualDevelops.length} wrestler(s) aligned with philosophy`);
+    }
+  }
+
   return {
     heyaId,
     archetype: persona.archetype,
@@ -419,6 +462,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     recovery: recoveryDecision.recovery,
     scoutingPriority: scoutingDecision.priority,
     individualProtects: protectDecision.protectIds,
+    individualDevelops,
+    individualPushes,
     reasoning
   };
 }
