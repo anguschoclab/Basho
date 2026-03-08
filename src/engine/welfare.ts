@@ -87,12 +87,12 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   const intensity = trainingState.activeProfile.intensity;
   const recovery = trainingState.activeProfile.recovery;
 
-  if (intensity === "high") {
+  if (intensity === "punishing") {
     delta += 3;
-    reasons.push("high_intensity+3");
-  } else if (intensity === "medium") {
+    reasons.push("punishing_intensity+3");
+  } else if (intensity === "intensive") {
     delta += 1;
-    reasons.push("med_intensity+1");
+    reasons.push("intensive_intensity+1");
   }
 
   if (recovery === "low") {
