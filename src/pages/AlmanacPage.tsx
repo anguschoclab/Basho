@@ -465,8 +465,7 @@ export default function AlmanacPage() {
 
                       if (!best) return null;
 
-                      const { toWinRateAssessment: toWRA, WIN_RATE_LABELS: WRL } = require("@/engine/descriptorBands");
-                      const rateLabel = WRL[toWRA(best.careerWins || 0, best.careerLosses || 0)];
+                      const rateLabel = WIN_RATE_LABELS[toWinRateAssessment(best.careerWins || 0, best.careerLosses || 0)];
 
                       return (
                         <div className="p-4 rounded-lg bg-secondary/50">
