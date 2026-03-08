@@ -503,18 +503,18 @@ export default function StablePage() {
                           <div className="flex gap-3 text-xs">
                             <span
                               className={
-                                effect.growthMult > 1
+                                effect.growth > 1
                                   ? isActive
                                     ? ""
                                     : "text-success"
-                                  : effect.growthMult < 1
+                                  : effect.growth < 1
                                     ? isActive
                                       ? ""
                                       : "text-destructive"
                                     : ""
                               }
                             >
-                              Growth: {describeTrainingEffect(effect.growthMult)}
+                              Growth: {describeTrainingEffect(effect.growth)}
                             </span>
                           </div>
                         </div>
