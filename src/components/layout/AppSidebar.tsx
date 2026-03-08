@@ -20,7 +20,8 @@ import {
   History, 
   BookOpen, 
   Menu,
-  Scale 
+  Scale,
+  Search,
 } from "lucide-react";
 import { UserSearch } from "lucide-react";
 import { NavLink } from "react-router-dom";
