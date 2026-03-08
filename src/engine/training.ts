@@ -268,7 +268,8 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
     
     // 3. Growth
     if (!rikishi.injured) {
-      const growth = calculateGrowthVector(profile, focus, rikishi);
+      const heya = world.heyas.get(rikishi.heyaId);
+      const growth = calculateGrowthVector(profile, focus, rikishi, heya);
 
       const prevPower = Math.floor(rikishi.power);
       rikishi.power = Math.min(100, rikishi.power + growth.strength);
