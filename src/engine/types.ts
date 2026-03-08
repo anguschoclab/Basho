@@ -734,6 +734,9 @@ export interface WorldState {
   // Talent Pools (Persistent pipelines of recruits)
   talentPool?: TalentPoolWorldState;
 
+  // Sponsor system (Constitution A6.4 — persistent actors)
+  sponsorPool?: import("./sponsors").SponsorPool;
+
   // Legacy / UI Helpers
   currentDate?: Date;
   heyasArray?: Heya[]; // Optional helper for array-based UI mapping
