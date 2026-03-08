@@ -151,7 +151,7 @@ export default function BashoPage() {
             <div className="flex items-center gap-3">
               <h1 className="font-display text-2xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
-                Day {basho.day}/15
+                Day {basho.day}/{getTotalBashodays("makuuchi")}
               </Badge>
               {isKeyDay(basho.day) && (
                 <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs">Key Day</Badge>

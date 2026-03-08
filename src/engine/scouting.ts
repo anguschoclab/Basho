@@ -9,7 +9,7 @@
 
 import { rngFromSeed, rngForWorld } from "./rng";
 import { WorldState, Rikishi, RikishiStats, Rank, Style, TacticalArchetype } from "./types";
-import { describeAttribute, describeAggression, describeExperience } from "./narrativeDescriptions";
+import { describeAttribute, describeAggression, describeExperience, type AttributeKey } from "./narrativeDescriptions";
 import { generateRookie } from "./lifecycle"; 
 
 // ============================================
