@@ -3,6 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { RikishiName, StableName } from "@/components/ClickableName";
 import {
   Trophy,
   Swords,
@@ -16,7 +17,7 @@ import {
   Search,
   ExternalLink,
 } from "lucide-react";
-import type { EngineEvent } from "@/engine/types";
+import type { EngineEvent, WorldState } from "@/engine/types";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -122,6 +123,22 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const world = state.world;
+
+  /** Render inline clickable entity tags for rikishi/stable referenced by an event */
+  const renderEntityTags = useCallback((e: EngineEvent) => {
+    if (!world) return null;
+    const tags: React.ReactNode[] = [];
+    if (e.rikishiId) {
+      const r = world.rikishi.get(e.rikishiId);
+      if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shikona || r.id} className="text-[11px] font-medium" />);
+    }
+    if (e.heyaId) {
+      const h = world.heyas.get(e.heyaId);
+      if (h) tags.push(<StableName key={`h-${h.id}`} id={h.id} name={h.name} className="text-[11px] font-medium" />);
+    }
+    if (tags.length === 0) return null;
+    return <span className="inline-flex items-center gap-1.5 flex-wrap">{tags}</span>;
+  }, [world]);
   const events = useMemo(() => {
     if (!world?.events?.log) return [];
     const all = [...world.events.log];
@@ -247,6 +264,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                               {e.summary}
                             </p>
                           )}
+                          {!isExpanded && renderEntityTags(e)}
                         </div>
                       </div>
                     </button>
@@ -256,6 +274,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                         <p className="text-[11px] text-muted-foreground">
                           {e.summary}
                         </p>
+                        {renderEntityTags(e)}
                         <div className="flex items-center gap-1 flex-wrap">
                           <Badge variant="outline" className="text-[9px] h-4">
                             {meta.label}
