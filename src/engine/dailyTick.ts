@@ -38,6 +38,7 @@ import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as talentpool from "./talentpool";
 import * as facilities from "./facilities";
+import { processWeeklyMediaBoundary, createDefaultMediaState } from "./media";
 
 // ============================================================================
 // TYPES
@@ -225,6 +226,18 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { events.tickWeek(world); }) && subs.push("events");
   safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
   safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
+
+  // Media weekly boundary — decay heat/pressure, generate features
+  safeCall(() => {
+    const w = world as any;
+    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    const { state } = processWeeklyMediaBoundary({
+      state: w.mediaState,
+      world,
+      rivalries: (world as any).rivalriesState,
+    });
+    w.mediaState = state;
+  }) && subs.push("media");
 
   // Recruitment window lifecycle — check if window should close
   safeCall(() => { tickRecruitmentWindowClose(world); }) && subs.push("recruitment_window");

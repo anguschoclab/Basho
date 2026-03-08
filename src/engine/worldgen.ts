@@ -20,6 +20,7 @@ import { SeededRNG } from "./utils/SeededRNG";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { rngForWorld } from "./rng";
+import { createDefaultMediaState } from "./media";
 
 
 // Constants
@@ -360,6 +361,9 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   } catch {
     // swallow
   }
+
+  // Initialize media state (Constitution: media system drives headlines + popularity)
+  (world as any).mediaState = createDefaultMediaState();
 
   return world as WorldState;
 }

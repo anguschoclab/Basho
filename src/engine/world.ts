@@ -27,6 +27,7 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
+import { updateMediaFromBout, createDefaultMediaState } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
@@ -171,6 +172,22 @@ export function applyBoutResult(
   safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => scoutingStore.onBoutResolved(world, { match, result, east, west }));
+
+  // Update media from bout (generates headlines, media heat, heya pressure)
+  safeCall(() => {
+    const w = world as any;
+    if (!w.mediaState) w.mediaState = createDefaultMediaState();
+    const { state } = updateMediaFromBout({
+      state: w.mediaState,
+      world,
+      result,
+      day: match.day,
+      bashoName: world.currentBashoName,
+      division: east.division,
+      rivalries: (world as any).rivalriesState,
+    });
+    w.mediaState = state;
+  });
 
   // Emit canonical bout result event
   EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
