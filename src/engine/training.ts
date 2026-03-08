@@ -24,7 +24,7 @@ import type {
   RikishiStats,
   Heya
 } from './types';
-import { SeededRNG } from './utils/SeededRNG';
+import { rngFromSeed } from './rng';
 import { EventBus } from './events';
 
 // Re-export types for UI consumption

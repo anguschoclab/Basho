@@ -702,6 +702,21 @@ export interface BashoResult {
 
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
 
+export interface RecruitmentWindow {
+  openedAtWeek: number;
+  closesAtWeek: number;
+  vacancies: number;
+  isOpen: boolean;
+  phase: "post_basho" | "mid_interim";
+}
+
+export interface PostBashoMeta {
+  bashoNumber: number;
+  metaBias: "oshi" | "yotsu" | "neutral";
+  yushoStyle: string;
+  recognitionEligibleWeek: number;
+}
+
 export interface WorldState {
   id: string;
   seed: string;
@@ -719,8 +734,7 @@ export interface WorldState {
   currentBasho?: BashoState;
   history: BashoResult[];
   
-  // THE NEW KE_YSTONE SYSTEM (Events Bus)
-  // Replaces the static historyLog array with the robust EventsState system
+  // Event Bus — authoritative append-only log
   events: EventsState;
 
   governanceLog?: GovernanceRuling[];
@@ -744,19 +758,29 @@ export interface WorldState {
   // Sponsor system (Constitution A6.4 — persistent actors)
   sponsorPool?: import("./sponsors").SponsorPool;
 
+  // Media system state (headlines, heat, pressure)
+  mediaState?: import("./media").MediaState;
+
   // Perception cache (A7.1) — rebuilt at weekly boundary, consumed by NPC AI + UI
   perceptionCache?: Record<Id, import("./perception").PerceptionSnapshot>;
 
   // NPC scouting priorities (A7/A8) — written by npcAI, consumed by talentpool
   npcScoutingPriorities?: Record<Id, "none" | "passive" | "active" | "aggressive">;
 
-  // Legacy / UI Helpers
-  currentDate?: Date;
-  heyasArray?: Heya[]; // Optional helper for array-based UI mapping
-  rikishiArray?: Rikishi[];
-  oyakataArray?: Oyakata[];
+  // Phase-internal day counters (managed by dailyTick.ts)
+  _interimDaysRemaining?: number;
+  _postBashoDays?: number;
   
-  // Calendar compat
+  // Recruitment window state
+  _recruitmentWindow?: RecruitmentWindow;
+
+  // Post-basho meta drift (A6.1) — consumed by NPC AI in future weeks
+  _postBashoMeta?: PostBashoMeta;
+
+  // Rivalries state
+  rivalriesState?: import("./rivalries").RivalriesState;
+
+  // Calendar
   calendar: {
     year: number;
     month: number;
