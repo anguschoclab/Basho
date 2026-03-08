@@ -277,10 +277,11 @@ function buildHolidayDigest(
 ): HolidayDigest {
   const categories: HolidayDigestCategory[] = [];
 
-  // Gather all events from the holiday period
+  // Gather all events from the holiday period using week-based filtering
   const allEvents = world.events?.log ?? [];
+  const startWeek = Math.max(0, Math.floor(startDay / 7));
   const holidayEvents = allEvents.filter(
-    e => (e.dayIndexGlobal ?? 0) > startDay
+    e => e.week >= startWeek
   );
 
   // Stable category
