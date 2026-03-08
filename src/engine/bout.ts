@@ -714,7 +714,15 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
     const westDrive = stat(west, "power") + stat(west, "balance") - st.fatigueWest * 1.2 + jitter(rng, 8);
 
     if (Math.abs(eastDrive - westDrive) > 10) {
-      st.advantage = eastDrive > westDrive ? "east" : "west";
+      const newAdv: Side = eastDrive > westDrive ? "east" : "west";
+      // Tactical AI: momentum persistence — current leader resists swing
+      const currentLeaderTac = st.advantage === "east" ? eastTac : st.advantage === "west" ? westTac : undefined;
+      const persistChance = currentLeaderTac?.momentumPersistence ?? 0;
+      if (newAdv !== st.advantage && st.advantage !== "none" && rng.next() < persistChance) {
+        // Leader holds position through tactical discipline — no swing
+      } else {
+        st.advantage = newAdv;
+      }
       st.log.push({
         phase: "momentum",
         description: "Fatigue shows—momentum swings!",
