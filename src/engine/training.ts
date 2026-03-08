@@ -74,11 +74,46 @@ const INDIVIDUAL_FOCUS_MODES: Record<IndividualFocusType, { growth: number; fati
 };
 
 export const PHASE_EFFECTS = {
-  rookie: { injurySensitivity: 0.8 },
-  prime: { injurySensitivity: 1.0 },
-  veteran: { injurySensitivity: 1.2 },
-  twilight: { injurySensitivity: 1.5 }
+  rookie: { injurySensitivity: 0.8, growthMult: 1.25 },
+  prime: { injurySensitivity: 1.0, growthMult: 1.0 },
+  veteran: { injurySensitivity: 1.2, growthMult: 0.65 },
+  twilight: { injurySensitivity: 1.5, growthMult: 0.35 }
 };
+
+// ============================================================================
+// TALENT CEILING SYSTEM
+// ============================================================================
+
+/**
+ * Derives the stat ceiling for a given attribute from talentSeed.
+ * talentSeed 0-100 maps to a ceiling of ~45-99.
+ * Each stat gets a slight per-attribute offset so ceilings aren't uniform.
+ */
+const STAT_CEILING_KEYS: (keyof RikishiStats)[] = [
+  'strength', 'speed', 'technique', 'balance', 'stamina', 'mental', 'adaptability'
+];
+
+export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
+  // Base ceiling: linear map from talentSeed
+  // talentSeed 0 → ceiling 45, talentSeed 100 → ceiling 99
+  const baseCeiling = 45 + (talentSeed / 100) * 54;
+  // Small per-stat offset for variety (deterministic by stat index)
+  const idx = STAT_CEILING_KEYS.indexOf(statKey);
+  const offset = idx >= 0 ? ((idx * 7) % 5) - 2 : 0; // -2 to +2
+  return Math.min(99, Math.max(30, Math.round(baseCeiling + offset)));
+}
+
+/**
+ * Diminishing returns multiplier: as current stat approaches ceiling,
+ * growth tapers off smoothly.  Returns 0-1.
+ *   ratio = current / ceiling
+ *   mult  = (1 - ratio^3)  — cubic falloff gives gentle taper then hard wall
+ */
+export function diminishingReturnsMult(currentStat: number, ceiling: number): number {
+  if (ceiling <= 0) return 0;
+  const ratio = Math.min(currentStat / ceiling, 1);
+  return Math.max(0, 1 - ratio * ratio * ratio);
+}
 
 export function getCareerPhase(experience: number): keyof typeof PHASE_EFFECTS {
   if (experience < 30) return "rookie";
