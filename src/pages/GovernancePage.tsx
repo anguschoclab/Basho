@@ -107,22 +107,28 @@ export default function GovernancePage() {
               {(() => {
                 const welfare = (heya as any).welfareState;
                 const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
-                const state = String(welfare?.complianceState ?? "compliant");
+                const compState = String(welfare?.complianceState ?? "compliant");
+                const { bandWelfareLabel } = (() => {
+                  if (risk <= 20) return { bandWelfareLabel: "Safe" };
+                  if (risk <= 44) return { bandWelfareLabel: "Cautious" };
+                  if (risk <= 69) return { bandWelfareLabel: "Elevated" };
+                  return { bandWelfareLabel: "Critical" };
+                })();
                 return (
                   <div>
                     <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold">{risk}</div>
-                      <Badge variant={state === "compliant" ? "outline" : state === "watch" ? "secondary" : "destructive"} className="text-xs">
-                        {state.toUpperCase()}
+                      <div className="text-2xl font-bold">{bandWelfareLabel}</div>
+                      <Badge variant={compState === "compliant" ? "outline" : compState === "watch" ? "secondary" : "destructive"} className="text-xs">
+                        {compState.toUpperCase()}
                       </Badge>
                     </div>
                     <Progress value={risk} className="mt-2" />
                     <p className="text-xs text-muted-foreground mt-2">
-                      {state === "compliant"
+                      {compState === "compliant"
                         ? "No active concerns."
-                        : state === "watch"
+                        : compState === "watch"
                         ? "Under monitoring for welfare risk."
-                        : state === "investigation"
+                        : compState === "investigation"
                         ? "Investigation open — remediation required."
                         : "Sanctions active — recruitment/training may be restricted."}
                     </p>
