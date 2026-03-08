@@ -53,7 +53,6 @@ const App = () => (
               <Route path="/rivalries" element={<RivalriesPage />} />
               <Route path="/economy" element={<EconomyPage />} />
               <Route path="/talent" element={<TalentPoolPage />} />
-              <Route path="/talent-pool" element={<TalentPoolPage />} />
               <Route path="/scouting" element={<ScoutingPage />} />
               <Route path="/governance" element={<GovernancePage />} />
               <Route path="/recap" element={<RecapPage />} />
