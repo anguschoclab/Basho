@@ -553,23 +553,25 @@ export default function ScoutingPage() {
     return <div className="p-6 text-center text-muted-foreground">No world loaded.</div>;
   }
 
+  const managementTabs = [
+    { id: "economy", label: "Economy", href: "/economy" },
+    { id: "scouting", label: "Scouting" },
+    { id: "talent", label: "Talent Pools", href: "/talent" },
+    { id: "governance", label: "Governance", href: "/governance" },
+  ];
+
   return (
-    <>
+    <AppLayout
+      pageTitle="Scouting & Recruitment"
+      subNavTabs={managementTabs}
+      activeSubTab="scouting"
+    >
       <Helmet>
         <title>Scouting & Recruitment — Basho</title>
         <meta name="description" content="Scout opponents, evaluate prospects, and build your roster in Basho sumo management simulation." />
       </Helmet>
 
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="font-display text-3xl font-bold flex items-center gap-3">
-            <Binoculars className="h-8 w-8" />
-            Scouting & Recruitment
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Gather intelligence on opponents. Discover and sign new talent.
-          </p>
-        </div>
+      <div className="space-y-6">
 
         <Tabs defaultValue="opponents" className="space-y-4">
           <TabsList className="grid w-full max-w-md grid-cols-3">
