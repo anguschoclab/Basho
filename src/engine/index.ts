@@ -65,6 +65,7 @@ export {
 } from "./timeBoundary";
 
 export * from "./almanac";
+export { investInFacility, getUpgradeCostEstimate, getMonthlyMaintenanceCost, computeFacilitiesBand, type FacilityAxis, type UpgradeResult } from "./facilities";
 export * from "./hallOfFame";
 export { getVoiceMatrix, validateDiversityGates } from "./pbpMatrix";
 

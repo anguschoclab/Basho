@@ -37,6 +37,7 @@ import * as rivalries from "./rivalries";
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as talentpool from "./talentpool";
+import * as facilities from "./facilities";
 
 // ============================================================================
 // TYPES
@@ -329,6 +330,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
  */
 function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
   safeCall(() => { tickMonthlyEconomics(world); }) && subs.push("economics_monthly");
+  safeCall(() => { facilities.tickMonthly(world); }) && subs.push("facilities");
 
   logEngineEvent(world, {
     type: "MONTHLY_BOUNDARY",
