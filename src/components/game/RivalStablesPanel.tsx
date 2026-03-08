@@ -4,7 +4,7 @@
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { buildPerceptionSnapshot, type PerceptionSnapshot } from "@/engine/perception";
+import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
 import { Swords, Search, Shield, Flame, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useMemo } from "react";
 

@@ -99,7 +99,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
 } {
   const heya = world.heyas.get(heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
-  const perception = buildPerceptionSnapshot(world, heyaId);
+  const perception = getCachedPerception(world, heyaId);
 
   if (!heya || !oyakata) {
     return {
