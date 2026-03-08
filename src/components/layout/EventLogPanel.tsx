@@ -130,7 +130,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     const tags: React.ReactNode[] = [];
     if (e.rikishiId) {
       const r = world.rikishi.get(e.rikishiId);
-      if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shpikonaName || r.id} className="text-[11px] font-medium" />);
+      if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shikona || r.id} className="text-[11px] font-medium" />);
     }
     if (e.heyaId) {
       const h = world.heyas.get(e.heyaId);
