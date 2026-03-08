@@ -96,6 +96,11 @@ const items = [
     icon: UserSearch,
   },
   {
+    title: "Sponsors",
+    url: "/sponsors",
+    icon: HandshakeIcon,
+  },
+  {
     title: "Governance",
     url: "/governance",
     icon: Scale,
