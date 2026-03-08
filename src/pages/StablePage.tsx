@@ -14,6 +14,7 @@
 // Drop-in compatibility with updated engine/types + engine/training from earlier messages.
 
 import { Helmet } from "react-helmet";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
