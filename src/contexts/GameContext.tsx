@@ -545,6 +545,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     simulateAllBouts,
     endDay,
     endBasho,
+    simFullBasho,
     advanceInterim,
     advanceOneDay: advanceOneDayAction,
     saveToSlot,
