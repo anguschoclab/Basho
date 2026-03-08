@@ -872,7 +872,111 @@ export function resetBashoMediaTracking(state: MediaState): MediaState {
     promoWatchFired: {},
     retirementWatchFired: {},
     titleRaceDayFired: {},
+    injuryWithdrawalFired: {},
   };
+}
+
+/** =========================
+ *  Injury Withdrawal Headlines
+ *  ========================= */
+
+/**
+ * Generate a headline when a rikishi is injured during a basho and forced to withdraw.
+ * Call from injuries.onBoutResolved after an injury is applied.
+ */
+export function generateInjuryWithdrawalHeadline(args: {
+  world: WorldState;
+  rikishiId: Id;
+  severity: string;
+  area: string;
+  description: string;
+  opponentId?: Id;
+  day?: number;
+  bashoName?: BashoName;
+}): MediaHeadline | null {
+  const { world, rikishiId, severity, area, description, opponentId, day, bashoName } = args;
+  const w = world as any;
+  if (!w.mediaState) w.mediaState = createDefaultMediaState();
+  const mediaState: MediaState = w.mediaState;
+
+  // Only fire once per rikishi per basho
+  if (mediaState.injuryWithdrawalFired?.[rikishiId]) return null;
+
+  const r = world.rikishi.get(rikishiId);
+  if (!r) return null;
+
+  const week = world.week ?? 0;
+  const shikona = r.shikona ?? "Unknown";
+  const rank = r.rank ?? "unknown";
+  const rng = rngForWorld(world, "media", `injury-withdraw::${rikishiId}::w${week}`);
+
+  const isSerious = severity === "serious";
+  const isModerate = severity === "moderate";
+  const isHighRank = rankImpact(rank) >= 5;
+
+  const impact = clampInt(
+    (isSerious ? 70 : isModerate ? 50 : 35) + (isHighRank ? 15 : 0),
+    0, 100
+  );
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+  const tone: MediaTone = isSerious ? "concern" : isModerate ? "concern" : "neutral";
+
+  const opponent = opponentId ? world.rikishi.get(opponentId) : null;
+  const oppName = opponent?.shikona ?? "opponent";
+
+  const titles = isSerious
+    ? [
+        `${shikona} Withdraws — Serious ${capitalize(area)} Injury`,
+        `Basho Over for ${shikona} After ${capitalize(area)} Injury`,
+      ]
+    : isModerate
+    ? [
+        `${shikona} Forced Out With ${capitalize(area)} Problem`,
+        `Injury Sidelines ${shikona} Mid-Tournament`,
+      ]
+    : [
+        `${shikona} Pulls Out After ${capitalize(area)} Concern`,
+        `${shikona} Withdraws — Minor Injury Cited`,
+      ];
+
+  const subtitles = isSerious
+    ? `A devastating blow — ${shikona} was carried off after the bout with ${oppName}.`
+    : isModerate
+    ? `The ${rank} could not continue after ${description.toLowerCase()}`
+    : `A precautionary withdrawal. The stable hopes for a quick recovery.`;
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-injury-${week}-${day ?? 0}-${rikishiId}`),
+    week,
+    bashoName,
+    tier,
+    beat: "injury",
+    tone,
+    rikishiIds: opponentId ? [rikishiId, opponentId] : [rikishiId],
+    heyaIds: [r.heyaId, opponent?.heyaId].filter(Boolean) as Id[],
+    title: titles[Math.floor(rng.next() * titles.length)],
+    subtitle: subtitles,
+    impact,
+    tags: ["basho", "injury", severity, area],
+    bout: opponentId ? {
+      winnerId: opponentId,
+      loserId: rikishiId,
+      upset: false,
+      day,
+    } : undefined,
+  };
+
+  // Apply effects and mark as fired
+  const nextFired = { ...(mediaState.injuryWithdrawalFired || {}), [rikishiId]: true };
+  let nextState: MediaState = { ...mediaState, injuryWithdrawalFired: nextFired };
+  nextState = applyHeadlineEffects(nextState, world, headline);
+  w.mediaState = nextState;
+
+  return headline;
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 /** =========================
