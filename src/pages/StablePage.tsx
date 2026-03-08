@@ -777,7 +777,7 @@ export default function StablePage() {
                         const r = world.rikishi.get(a.rikishiId);
                         return (
                           <Badge key={i} variant="outline" className="text-xs bg-gold/10 border-gold/30">
-                            {r?.shikona ?? "Unknown"} — {a.bashoName} {a.year}
+                            {r ? <RikishiName id={r.id} name={r.shikona} /> : "Unknown"} — {a.bashoName} {a.year}
                           </Badge>
                         );
                       })}
