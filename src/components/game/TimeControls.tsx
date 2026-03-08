@@ -97,6 +97,7 @@ export function TimeControls() {
   };
 
   return (
+    <>
     <Card>
       <CardContent className="p-4 flex flex-wrap gap-2 items-center">
         {!inBasho ? (
