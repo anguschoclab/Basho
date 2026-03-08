@@ -197,7 +197,8 @@ function calculateFatigueDelta(
 function calculateGrowthVector(
   profile: TrainingProfile,
   focus: IndividualFocus | undefined,
-  rikishi: Rikishi
+  rikishi: Rikishi,
+  heya?: Heya
 ): Record<keyof RikishiStats, number> {
   const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
@@ -207,8 +208,16 @@ function calculateGrowthVector(
   const phase = getCareerPhase(rikishi.experience);
   const phaseMult = PHASE_EFFECTS[phase].growthMult;
 
+  // Facility bonus: training facility level 0-100 → 0.85 to 1.20 multiplier
+  const trainingFacility = heya?.facilities?.training ?? 50;
+  const facilityGrowthMult = 0.85 + (Math.min(100, Math.max(0, trainingFacility)) / 100) * 0.35;
+
+  // Nutrition facility bonus: small additional growth for strength/stamina/weight
+  const nutritionFacility = heya?.facilities?.nutrition ?? 50;
+  const nutritionMult = 0.92 + (Math.min(100, Math.max(0, nutritionFacility)) / 100) * 0.16;
+
   const BASE_GROWTH = 0.5; 
-  const totalMult = intensityMult * focusModeMult * phaseMult * BASE_GROWTH;
+  const totalMult = intensityMult * focusModeMult * phaseMult * facilityGrowthMult * BASE_GROWTH;
 
   const talentSeed = rikishi.talentSeed ?? 50;
 
@@ -224,11 +233,11 @@ function calculateGrowthVector(
     return totalMult * rawMult * drMult;
   };
 
-  growth.strength = applyCapped('strength', bias.strength, rikishi.stats.strength);
+  growth.strength = applyCapped('strength', bias.strength, rikishi.stats.strength) * nutritionMult;
   growth.speed = applyCapped('speed', bias.speed, rikishi.stats.speed);
   growth.technique = applyCapped('technique', bias.technique, rikishi.stats.technique);
   growth.balance = applyCapped('balance', bias.balance, rikishi.stats.balance);
-  growth.stamina = applyCapped('stamina', 0.5, rikishi.stats.stamina);
+  growth.stamina = applyCapped('stamina', 0.5, rikishi.stats.stamina) * nutritionMult;
   growth.mental = applyCapped('mental', 0.2, rikishi.stats.mental);
   growth.adaptability = applyCapped('adaptability', 0.2, rikishi.stats.adaptability);
 
