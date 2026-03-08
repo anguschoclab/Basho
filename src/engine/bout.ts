@@ -553,7 +553,7 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
  * Phase 3 — Momentum ticks
  * ========================= */
 
-function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   st.tick += 1;
 
   // PHYSICS: Pushing a heavier opponent drains more stamina
