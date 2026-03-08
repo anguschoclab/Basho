@@ -118,9 +118,9 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
         world.currentBasho = basho;
         world.cyclePhase = "active_basho";
 
-        // Generate day 1 schedule
+        // Generate day 1 schedule (guard with needsScheduleForDay)
         try {
-          if (typeof schedule.generateDaySchedule === "function") {
+          if (needsScheduleForDay("makuuchi", 1) && typeof schedule.generateDaySchedule === "function") {
             schedule.generateDaySchedule(world, basho, 1, world.seed);
           }
         } catch (_) { /* schedule optional */ }
