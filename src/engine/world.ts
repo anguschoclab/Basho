@@ -138,7 +138,7 @@ export function simulateBoutForToday(
   return { world, result };
 }
 
-export function applyBoutResult(
+function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
   result: BoutResult,

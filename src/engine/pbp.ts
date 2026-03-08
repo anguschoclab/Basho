@@ -38,8 +38,8 @@ export type PbpTag =
   | "dominant"
   | "close_call";
 
-export type Advantage = "east" | "west" | "none";
-export type Position = "front" | "lateral" | "rear";
+// Re-export canonical types from bout.ts
+export type { Advantage, Position } from "./bout";
 
 /** Legacy tolerance (older logs used "frontal") */
 type LegacyPosition = "frontal" | "front" | "lateral" | "rear";

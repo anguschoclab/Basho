@@ -14,7 +14,7 @@ function castBucket(raw: RawPhrase[]): any[] {
   }));
 }
 
-export function loadVoiceMatrix(): PbpLibrary {
+function loadVoiceMatrix(): PbpLibrary {
   return {
     tachiai: {
       decisive: castBucket(matrixData.tachiai.decisive),
