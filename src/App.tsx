@@ -17,6 +17,7 @@ import GovernancePage from "./pages/GovernancePage"; // NEW IMPORT
 import HistoryPage from "./pages/HistoryPage";
 import AlmanacPage from "./pages/AlmanacPage";
 import TalentPoolPage from "./pages/TalentPoolPage";
+import ScoutingPage from "./pages/ScoutingPage";
 import MainMenu from "./pages/MainMenu";
 import NotFound from "./pages/NotFound";
 
