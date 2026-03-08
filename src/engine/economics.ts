@@ -138,26 +138,21 @@ export function onBoutResolved(
   if (rng.bool(0.5)) kenshoCount += 1;
 
   if (kenshoCount > 0 && winnerHeya) {
-    const AMOUNT_PER_KENSHO = 62_000; // Real value approx
+    const AMOUNT_PER_KENSHO = 62_000;
     const total = kenshoCount * AMOUNT_PER_KENSHO;
 
-    // Split: 50% to Rikishi Cash (Taxed/Saved), 50% to Stable (Operating Revenue)?
-    // Canon: Kensho belongs to the Rikishi, but Stable takes a cut or 'management fee'?
-    // Actually, Spec 11.0 says: "RikishiCash... StableFunds".
-    // Usually Rikishi keeps Kensho. Stable survives on Koenkai.
-    // However, to make the game fun, let's say Stable takes a small admin fee (10%)
-    
     const rikishiShare = total * 0.9;
     const stableShare = total * 0.1;
 
-    // Update Rikishi Economics
     if (!winner.economics) winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
     
     winner.economics.cash += rikishiShare;
     winner.economics.currentBashoEarnings += rikishiShare;
     winner.economics.careerKenshoWon += kenshoCount;
 
-    // Update Stable Funds
     winnerHeya.funds += stableShare;
+
+    // Emit kensho event
+    EventBus.kenshoAwarded(world, winner.id, winnerHeya.id, total, kenshoCount);
   }
 }
