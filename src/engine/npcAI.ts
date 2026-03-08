@@ -172,13 +172,12 @@ function decideTrainingIntensity(
   perception: PerceptionSnapshot,
   riskAppetite: number,
   welfareDiscipline: number,
-  complianceCap: TrainingIntensity | undefined
+  complianceCap: TrainingIntensity | undefined,
+  philosophy?: RecruitmentPhilosophy
 ): { intensity: TrainingIntensity; reason: string } {
-  // Welfare override: compliance sanctions cap intensity
   const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
   const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
 
-  // Count injured/fragile wrestlers
   const fragileCount = perception.rikishiPerceptions.filter(
     r => r.healthBand === "fragile" || r.healthBand === "worn"
   ).length;
@@ -192,38 +191,40 @@ function decideTrainingIntensity(
     intensity = "conservative";
     reason = "Welfare risk critical — forced conservative training";
   }
-  // Elevated welfare + welfare-conscious manager → conservative
   else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
     intensity = "conservative";
     reason = "Elevated welfare risk — cautious approach";
   }
-  // Many fragile wrestlers → dial back
   else if (fragileRatio >= 0.4) {
     intensity = "conservative";
     reason = `${fragileCount} wrestlers worn/fragile — reducing intensity`;
   }
-  // Mutinous morale → ease off
   else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled") {
     intensity = "balanced";
     reason = "Low morale — maintaining balanced training";
   }
-  // High risk appetite + strong roster → push hard
+  // Philosophy-driven intensity biases
+  else if (philosophy === "size_matters" && perception.welfareRiskBand === "safe") {
+    intensity = "intensive";
+    reason = "Size-obsessed philosophy — pushing hard to build mass";
+  }
+  else if (philosophy === "underdog_hunter" || philosophy === "balanced") {
+    intensity = "balanced";
+    reason = `${philosophy === "underdog_hunter" ? "Diamond Seeker" : "Open-Minded"} — steady development`;
+  }
   else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
     intensity = "intensive";
     reason = "Strong roster + ambitious manager — intensive training";
   }
-  // Very high risk appetite → punishing
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
     reason = "Extremely ambitious manager — punishing regimen";
   }
-  // Default
   else {
     intensity = "balanced";
     reason = "Standard balanced training";
   }
 
-  // Apply compliance cap if active
   if (complianceCap && rank(intensity) > rank(complianceCap)) {
     intensity = complianceCap;
     reason += ` (capped by sanctions to ${complianceCap})`;
