@@ -61,7 +61,7 @@ export default function Dashboard() {
 
         {/* ALERTS & NOTIFICATIONS */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Financial Status */}
+            {/* Financial Status — narrative band, no raw ¥ */}
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Stable Finances</CardTitle>
@@ -69,12 +69,19 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                 <div className="text-2xl font-bold">
-                    {playerHeya ? `¥${(playerHeya.funds / 1_000_000).toFixed(1)}M` : "—"}
+                    {playerHeya ? (() => {
+                      const f = playerHeya.funds;
+                      if (f >= 50_000_000) return "Secure";
+                      if (f >= 20_000_000) return "Comfortable";
+                      if (f >= 5_000_000) return "Tight";
+                      if (f >= 1_000_000) return "Critical";
+                      return "Desperate";
+                    })() : "—"}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    {playerHeya?.riskIndicators.financial 
+                    {playerHeya?.riskIndicators?.financial 
                     ? <span className="text-destructive font-bold">High Insolvency Risk</span> 
-                    : "Runway Secure"}
+                    : "Runway within expected parameters"}
                 </p>
                 </CardContent>
             </Card>

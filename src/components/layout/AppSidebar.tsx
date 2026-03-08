@@ -20,7 +20,8 @@ import {
   History, 
   BookOpen, 
   Menu,
-  Scale 
+  Scale,
+  Search,
 } from "lucide-react";
 import { UserSearch } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -64,6 +65,11 @@ const items = [
     icon: Coins,
   },
   {
+    title: "Scouting",
+    url: "/scouting",
+    icon: Search,
+  },
+  {
     title: "Talent Pools",
     url: "/talent",
     icon: UserSearch,
@@ -85,14 +91,12 @@ const items = [
   },
 ];
 
-function formatCurrency(amount: number): string {
-  if (amount >= 1_000_000) {
-    return `¥${(amount / 1_000_000).toFixed(1)}M`;
-  }
-  if (amount >= 1_000) {
-    return `¥${(amount / 1_000).toFixed(0)}K`;
-  }
-  return `¥${amount}`;
+function describeRunwayBrief(funds: number): { label: string; color: string } {
+  if (funds >= 50_000_000) return { label: "Secure", color: "text-emerald-500" };
+  if (funds >= 20_000_000) return { label: "Comfortable", color: "text-green-500" };
+  if (funds >= 5_000_000) return { label: "Tight", color: "text-yellow-500" };
+  if (funds >= 1_000_000) return { label: "Critical", color: "text-orange-500" };
+  return { label: "Desperate", color: "text-red-500" };
 }
 
 export function AppSidebar() {
@@ -114,9 +118,14 @@ export function AppSidebar() {
           <div className="mt-4">
             <div className="text-sm font-medium text-muted-foreground">My Stable</div>
             <div className="font-bold truncate">{playerHeya.name}</div>
-            <div className="text-xs text-green-600 font-mono mt-1">
-              {formatCurrency(playerHeya.funds)}
-            </div>
+            {(() => {
+              const runway = describeRunwayBrief(playerHeya.funds);
+              return (
+                <div className={`text-xs font-medium mt-1 ${runway.color}`}>
+                  {runway.label}
+                </div>
+              );
+            })()}
           </div>
         )}
       </SidebarHeader>

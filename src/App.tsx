@@ -17,6 +17,7 @@ import GovernancePage from "./pages/GovernancePage"; // NEW IMPORT
 import HistoryPage from "./pages/HistoryPage";
 import AlmanacPage from "./pages/AlmanacPage";
 import TalentPoolPage from "./pages/TalentPoolPage";
+import ScoutingPage from "./pages/ScoutingPage";
 import MainMenu from "./pages/MainMenu";
 import NotFound from "./pages/NotFound";
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/rivalries" element={<RivalriesPage />} />
             <Route path="/economy" element={<EconomyPage />} />
             <Route path="/talent" element={<TalentPoolPage />} />
+            <Route path="/scouting" element={<ScoutingPage />} />
             <Route path="/governance" element={<GovernancePage />} /> {/* NEW ROUTE */}
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/almanac" element={<AlmanacPage />} />
