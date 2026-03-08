@@ -1,12 +1,16 @@
 // RecapPage.tsx - Post-Basho Narrative Recap
 // Summarizes prestige changes, retirements, new recruits, governance, and meta shifts
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
+import { PressConference } from "@/components/game/PressConference";
+import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
+import { getHallOfFame, type HoFInductee } from "@/engine/hallOfFame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -116,14 +120,48 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
 }
 
 export default function RecapPage() {
-  const { state, setPhase } = useGame();
+  const { state, setPhase, updateWorld } = useGame();
   const navigate = useNavigate();
   const world = state.world;
+
+  const [showPressConference, setShowPressConference] = useState(false);
+  const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
+  const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
 
   const handleContinue = () => {
     setPhase("interim");
     navigate("/dashboard");
   };
+
+  const handlePressConferenceClose = (effects: { reputation: number; morale: number; mediaHeat: number }) => {
+    setShowPressConference(false);
+    if (world && world.playerHeyaId) {
+      const heya = world.heyas.get(world.playerHeyaId);
+      if (heya) {
+        heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+      }
+      updateWorld({ ...world });
+    }
+  };
+
+  // Detect yokozuna deliberation candidates
+  const yokozunaCandidate = useMemo(() => {
+    if (!world) return null;
+    for (const r of world.rikishi.values()) {
+      if (r.rank !== "ozeki") continue;
+      const recentYusho = (r.careerRecord?.yusho ?? 0) >= 2;
+      const strongRecord = (r.currentBashoWins ?? 0) >= 12;
+      if (recentYusho && strongRecord) return r;
+    }
+    return null;
+  }, [world]);
+
+  // Detect HoF inductees this year
+  const newInductees = useMemo(() => {
+    if (!world) return [];
+    const hof = getHallOfFame(world);
+    return hof.inductees.filter(i => i.inductionYear === world.year);
+  }, [world]);
 
   if (!world) {
     return (
@@ -718,6 +756,23 @@ export default function RecapPage() {
           return null;
         })()}
 
+        {/* NARRATIVE CEREMONIES */}
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" size="sm" onClick={() => setShowPressConference(true)}>
+            🎤 Press Conference
+          </Button>
+          {yokozunaCandidate && (
+            <Button variant="outline" size="sm" onClick={() => setShowYokozunaDelib(true)}>
+              👑 Yokozuna Deliberation
+            </Button>
+          )}
+          {newInductees.length > 0 && (
+            <Button variant="outline" size="sm" onClick={() => setShowHoFCeremony(newInductees[0])}>
+              🏆 Hall of Fame Induction
+            </Button>
+          )}
+        </div>
+
         {/* NAVIGATION */}
         <div className="flex flex-wrap gap-4">
           <Button onClick={handleContinue}>
@@ -730,6 +785,29 @@ export default function RecapPage() {
             <NavLink to="/banzuke">View Banzuke</NavLink>
           </Button>
         </div>
+
+        {/* MODALS */}
+        {showPressConference && world && (
+          <PressConference world={world} open={showPressConference} onClose={handlePressConferenceClose} />
+        )}
+        {showYokozunaDelib && yokozunaCandidate && world && (
+          <YokozunaDeliberation
+            rikishi={yokozunaCandidate}
+            world={world}
+            open={showYokozunaDelib}
+            onClose={() => setShowYokozunaDelib(false)}
+            verdict={yokozunaCandidate.careerRecord?.yusho && yokozunaCandidate.careerRecord.yusho >= 2 ? "promoted" : "deferred"}
+            reasoning={["Recent tournament performances reviewed", "Hinkaku (dignity) assessment conducted"]}
+          />
+        )}
+        {showHoFCeremony && world && (
+          <HoFInductionCeremony
+            inductee={showHoFCeremony}
+            world={world}
+            open={!!showHoFCeremony}
+            onClose={() => setShowHoFCeremony(null)}
+          />
+        )}
       </div>
     </AppLayout>
   );

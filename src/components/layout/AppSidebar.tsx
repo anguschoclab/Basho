@@ -27,6 +27,8 @@ import {
   Dumbbell,
   Crown,
   Award,
+  Heart,
+  HandshakeIcon,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
@@ -74,6 +76,11 @@ const items = [
     icon: Swords,
   },
   {
+    title: "Injuries",
+    url: "/injuries",
+    icon: Heart,
+  },
+  {
     title: "Economy",
     url: "/economy",
     icon: Coins,
@@ -87,6 +94,11 @@ const items = [
     title: "Talent Pools",
     url: "/talent",
     icon: UserSearch,
+  },
+  {
+    title: "Sponsors",
+    url: "/sponsors",
+    icon: HandshakeIcon,
   },
   {
     title: "Governance",

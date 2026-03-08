@@ -26,6 +26,8 @@ import SettingsPage from "./pages/SettingsPage";
 import OyakataPage from "./pages/OyakataPage";
 import MediaPage from "./pages/MediaPage";
 import HallOfFamePage from "./pages/HallOfFamePage";
+import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
+import SponsorManagementPage from "./pages/SponsorManagementPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +63,8 @@ const App = () => (
               <Route path="/almanac" element={<AlmanacPage />} />
               <Route path="/media" element={<MediaPage />} />
               <Route path="/hall-of-fame" element={<HallOfFamePage />} />
+              <Route path="/injuries" element={<InjuryRecoveryPage />} />
+              <Route path="/sponsors" element={<SponsorManagementPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
