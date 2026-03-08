@@ -11,6 +11,7 @@ import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
 import { BashoWidget } from "@/components/dashboard/BashoWidget";
 import { NewsWidget } from "@/components/dashboard/NewsWidget";
 import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
+import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
