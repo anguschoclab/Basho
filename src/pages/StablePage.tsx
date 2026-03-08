@@ -252,7 +252,7 @@ export default function StablePage() {
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     if (!isViewingOwnStable) return;
     setTrainingState((prev) => {
-      const next = { ...prev, profile: { ...prev.profile, intensity } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
       persistTrainingState(next);
       return next;
     });
