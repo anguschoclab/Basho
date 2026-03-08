@@ -104,8 +104,14 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
 }
 
 export default function RecapPage() {
-  const { state } = useGame();
+  const { state, setPhase } = useGame();
+  const navigate = useNavigate();
   const world = state.world;
+
+  const handleContinue = () => {
+    setPhase("interim");
+    navigate("/dashboard");
+  };
 
   if (!world) {
     return (
