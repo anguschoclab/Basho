@@ -129,8 +129,9 @@ function OpponentScoutingTab({
         <div className="space-y-3 pr-2">
           {opponents.map((r) => {
             const scouted = getOrCreateScouted(world, r.id, 1);
+            const scoutLevel = getScoutingLevel(world, r.id, 1);
             const attrs = getScoutedAttributes(scouted, r, seed);
-            const scoutInfo = describeScoutingLevel(scouted.scoutingLevel);
+            const scoutInfo = describeScoutingLevel(scoutLevel);
             const rankNames = RANK_NAMES[r.rank] || { ja: r.rank, en: r.rank };
             const heya = world.heyas.get(r.heyaId);
 
