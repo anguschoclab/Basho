@@ -20,6 +20,7 @@ import AlmanacPage from "./pages/AlmanacPage";
 import TalentPoolPage from "./pages/TalentPoolPage";
 import ScoutingPage from "./pages/ScoutingPage";
 import RecapPage from "./pages/RecapPage";
+import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/main-menu" element={<MainMenu />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/stable" element={<StablePage />} />
+              <Route path="/training" element={<TrainingPage />} />
               <Route path="/rikishi/:rikishiId?" element={<RikishiPage />} />
               <Route path="/basho" element={<BashoPage />} />
               <Route path="/banzuke" element={<BanzukePage />} />
