@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Trophy } from "lucide-react";
 import { WeeklyDigest } from "@/components/game/WeeklyDigest";
 import { TimeControls } from "@/components/game/TimeControls";
+import { RivalStablesPanel } from "@/components/game/RivalStablesPanel";
 import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
