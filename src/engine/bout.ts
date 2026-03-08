@@ -925,6 +925,36 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   const eastTactics = computeTacticalModifiers(east, west);
   const westTactics = computeTacticalModifiers(west, east);
 
+  // Emit tactical strategy entries into the log for PBP consumption
+  if (eastTactics.description !== "Standard approach") {
+    st.log.push({
+      phase: "tachiai",
+      description: `${east.shikona}'s strategy: ${eastTactics.description}`,
+      data: {
+        tacticalEntry: true,
+        side: "east",
+        archetype: east.archetype,
+        opponentArchetype: west.archetype,
+        clinchPreference: eastTactics.clinchPreference,
+        strategy: eastTactics.description,
+      }
+    } as any);
+  }
+  if (westTactics.description !== "Standard approach") {
+    st.log.push({
+      phase: "tachiai",
+      description: `${west.shikona}'s strategy: ${westTactics.description}`,
+      data: {
+        tacticalEntry: true,
+        side: "west",
+        archetype: west.archetype,
+        opponentArchetype: east.archetype,
+        clinchPreference: westTactics.clinchPreference,
+        strategy: westTactics.description,
+      }
+    } as any);
+  }
+
   // Phases — pass tactical modifiers
   resolveTachiai(rng, east, west, st, eastTactics, westTactics);
   resolveClinch(rng, east, west, st, eastTactics, westTactics);
