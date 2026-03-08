@@ -145,6 +145,10 @@ export function TimeControls() {
               <FastForward className="h-4 w-4" />
               Simulate Day
             </Button>
+            <Button variant="secondary" onClick={handleSimFullBasho} className="gap-2">
+              <SkipForward className="h-4 w-4" />
+              Sim Full Basho
+            </Button>
             <Button variant="outline" onClick={handleAdvanceDay} className="gap-2">
               <ArrowRight className="h-4 w-4" />
               Next Day
