@@ -310,8 +310,22 @@ export default function BanzukePage() {
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
                               />
-                              <td className="p-3 font-mono text-muted-foreground text-center text-xs">
-                                {row.rankLabel}
+                              <td className="p-3 text-center">
+                                <div className="font-mono text-muted-foreground text-xs">{row.rankLabel}</div>
+                                {(() => {
+                                  const sample = row.east || row.west;
+                                  if (!sample) return null;
+                                  const pos: RankPosition = { rank: sample.rank as any, side: (sample.side ?? "east") as any, rankNumber: sample.rankNumber };
+                                  const titleJa = getRankTitleJa(pos);
+                                  const titleEn = formatRank(pos);
+                                  const info: RankInfo | undefined = RANK_HIERARCHY[sample.rank as keyof typeof RANK_HIERARCHY];
+                                  return (
+                                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5" title={titleEn}>
+                                      {titleJa}
+                                      {info?.isSanyaku && <span className="ml-1 text-primary/50">三役</span>}
+                                    </div>
+                                  );
+                                })()}
                               </td>
                               <RikishiCell
                                 entry={row.west}

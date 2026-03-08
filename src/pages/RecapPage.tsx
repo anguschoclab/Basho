@@ -37,8 +37,8 @@ import {
   Medal,
   ShieldAlert
 } from "lucide-react";
-import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
+import type { EngineEvent, BashoResult, Heya, Rank } from "@/engine/types";
+import { isKachiKoshi, isMakeKoshi, type OzekiKadobanMap, type MovementEvent } from "@/engine/banzuke";
 
 // Narrative band descriptors for prestige changes
 function describePrestigeShift(oldBand: string | undefined, newBand: string | undefined): string | null {
