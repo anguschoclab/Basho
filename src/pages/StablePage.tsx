@@ -404,13 +404,14 @@ export default function StablePage() {
         </Card>
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-6">
             <TabsTrigger value="roster">Roster</TabsTrigger>
             <TabsTrigger value="training">Training</TabsTrigger>
             <TabsTrigger value="facilities">Facilities</TabsTrigger>
+            <TabsTrigger value="welfare">Welfare</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
-                    <TabsTrigger value="institution" className="gap-2"><Shield className="h-4 w-4" />Institution</TabsTrigger>
-</TabsList>
+            <TabsTrigger value="institution" className="gap-2"><Shield className="h-4 w-4" />Institution</TabsTrigger>
+          </TabsList>
 
           {/* Roster Tab */}
           <TabsContent value="roster" className="space-y-4">
