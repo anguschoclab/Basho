@@ -292,6 +292,50 @@ export default function RecapPage() {
                   </p>
                 </div>
               )}
+
+              {/* KINBOSHI - Gold Star Victories */}
+              {(() => {
+                // Find all kinboshi from the basho matches
+                const bashoState = world.currentBasho;
+                const matches = bashoState?.matches || [];
+                const kinboshiList = matches.filter((m: any) => m.result?.isKinboshi);
+                
+                if (kinboshiList.length === 0) return null;
+                
+                return (
+                  <div className="pt-4 border-t">
+                    <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      金星 Kinboshi (Gold Star Victories)
+                    </p>
+                    <div className="space-y-2">
+                      {kinboshiList.map((m: any, idx: number) => {
+                        const winner = world.rikishi.get(m.result.winnerRikishiId);
+                        const loser = world.rikishi.get(m.result.loserRikishiId);
+                        const winnerHeya = winner?.heyaId ? world.heyas.get(winner.heyaId) : null;
+                        const isPlayerKinboshi = winner?.heyaId === world.playerHeyaId;
+                        return (
+                          <div key={idx} className={`p-3 rounded-lg border ${isPlayerKinboshi ? 'border-primary bg-primary/5' : 'border-yellow-500/30 bg-yellow-500/10'}`}>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-bold">{winner?.shikona || "Unknown"}</p>
+                                <p className="text-xs text-muted-foreground">{winnerHeya?.name} • Day {m.day}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm">defeated <span className="font-medium">{loser?.shikona || "Yokozuna"}</span></p>
+                                <p className="text-xs text-muted-foreground">via {m.result.kimariteName}</p>
+                              </div>
+                              {isPlayerKinboshi && (
+                                <Badge className="ml-2 bg-yellow-500 text-black">YOUR STABLE!</Badge>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         )}
