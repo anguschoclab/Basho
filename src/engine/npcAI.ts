@@ -161,6 +161,8 @@ export interface NPCWeeklyDecision {
   recovery: RecoveryEmphasis;
   scoutingPriority: "none" | "passive" | "active" | "aggressive";
   individualProtects: Id[];  // rikishi to set to "protect" focus
+  individualDevelops: Id[];  // rikishi to set to "develop" focus (philosophy-driven)
+  individualPushes: Id[];    // rikishi to set to "push" focus (philosophy-driven)
   reasoning: string[];       // audit log entries (A7.3)
 }
 
