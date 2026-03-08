@@ -479,7 +479,7 @@ export default function StablePage() {
                     <Dumbbell className="h-5 w-5" />
                     Training Intensity
                   </CardTitle>
-                  <CardDescription>{intensityEffect.description}</CardDescription>
+                  <CardDescription>{intensityEffect.fatigue > 1 ? "Higher fatigue" : "Standard fatigue"}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {(Object.keys(INTENSITY_EFFECTS) as TrainingIntensity[]).map((intensity) => {
