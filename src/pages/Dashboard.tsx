@@ -17,6 +17,7 @@ import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
 import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
+import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 
