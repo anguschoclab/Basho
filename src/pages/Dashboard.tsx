@@ -12,6 +12,7 @@ import { BashoWidget } from "@/components/dashboard/BashoWidget";
 import { NewsWidget } from "@/components/dashboard/NewsWidget";
 import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
 import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
+import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
@@ -69,6 +70,7 @@ export default function Dashboard() {
           <div className="space-y-4">
             <CalendarWidget />
             <StableWidget />
+            <TrainingWidget />
             <FinancesWidget />
           </div>
 
