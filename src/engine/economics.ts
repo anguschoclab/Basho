@@ -77,6 +77,7 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   // 4. Solvency Check (Bankruptcy)
   if (heya.funds < 0) {
     handleInsolvency(heya, world);
+    EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayWeeks: Math.floor(runwayWeeks) });
   }
 
   // 5. Update Financial Risk Indicator
