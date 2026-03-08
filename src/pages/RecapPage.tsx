@@ -20,7 +20,10 @@ import {
   ArrowLeft,
   AlertTriangle,
   Crown,
-  Shield
+  Shield,
+  Coins,
+  UserX,
+  Heart
 } from "lucide-react";
 import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
 
@@ -137,6 +140,12 @@ export default function RecapPage() {
   const hasRetirements = groupedEvents.retirements.length > 0;
   const hasGovernance = groupedEvents.governance.length > 0 || (world.governanceLog?.length || 0) > 0;
   const hasPrestigeChanges = prestigeChanges.length > 0;
+  const hasSponsors = groupedEvents.sponsors.length > 0;
+  
+  // Get player-specific sponsor events
+  const playerSponsorEvents = playerHeya 
+    ? groupedEvents.sponsors.filter(e => e.heyaId === playerHeya.id)
+    : [];
   
   const bashoName = lastBasho?.bashoName?.toUpperCase() || world.currentBashoName?.toUpperCase() || "RECENT";
 
@@ -342,9 +351,106 @@ export default function RecapPage() {
               </ScrollArea>
             </CardContent>
           </Card>
+
+          {/* SPONSOR CHURN / KŌENKAI CHANGES */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Coins className="h-5 w-5 text-amber-500" />
+                Kōenkai Changes
+              </CardTitle>
+              <CardDescription>Sponsor arrivals and departures</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                {hasSponsors ? (
+                  <div className="space-y-2">
+                    {groupedEvents.sponsors.map((e, i) => {
+                      const isDeparture = e.title.toLowerCase().includes("departure") || 
+                                          e.title.toLowerCase().includes("withdrawn") ||
+                                          e.summary.toLowerCase().includes("withdrawn");
+                      const isArrival = e.title.toLowerCase().includes("join") || 
+                                        e.title.toLowerCase().includes("new sponsor") ||
+                                        e.title.toLowerCase().includes("arrival");
+                      return (
+                        <div key={e.id || i} className="flex items-start gap-2 text-sm">
+                          {isDeparture ? (
+                            <UserX className="h-3 w-3 text-destructive mt-1" />
+                          ) : isArrival ? (
+                            <Heart className="h-3 w-3 text-emerald-500 mt-1" />
+                          ) : (
+                            <Coins className="h-3 w-3 text-amber-500 mt-1" />
+                          )}
+                          <div>
+                            <span className="font-medium">{e.title}</span>
+                            <p className="text-muted-foreground">{e.summary}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    Kōenkai relationships remain stable. No sponsor changes this period.
+                  </p>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* PLAYER STABLE STATUS */}
+        {/* PLAYER KOENKAI STATUS */}
+        {playerHeya && (
+          <Card className="border-amber-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Coins className="h-5 w-5 text-amber-500" />
+                Your Kōenkai: {playerHeya.name}
+              </CardTitle>
+              <CardDescription>Supporter association status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Support Level</p>
+                  <p className="font-medium capitalize">{playerHeya.koenkaiBand || "Unknown"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Recent Changes</p>
+                  <p className="font-medium">
+                    {playerSponsorEvents.length > 0 
+                      ? `${playerSponsorEvents.length} sponsor event${playerSponsorEvents.length > 1 ? 's' : ''}`
+                      : "No changes"}
+                  </p>
+                </div>
+              </div>
+              {playerSponsorEvents.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {playerSponsorEvents.map((e, i) => {
+                    const isDeparture = e.title.toLowerCase().includes("departure") || 
+                                        e.summary.toLowerCase().includes("withdrawn");
+                    return (
+                      <div key={i} className="flex items-center gap-2 text-sm">
+                        {isDeparture ? (
+                          <Badge variant="destructive" className="gap-1">
+                            <UserX className="h-3 w-3" />
+                            Lost
+                          </Badge>
+                        ) : (
+                          <Badge className="gap-1 bg-emerald-500">
+                            <Heart className="h-3 w-3" />
+                            Gained
+                          </Badge>
+                        )}
+                        <span>{e.summary}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
         {playerHeya && (
           <Card className="border-primary/30">
             <CardHeader>
