@@ -588,7 +588,7 @@ export default function StablePage() {
                     {(Object.keys(RECOVERY_EFFECTS) as RecoveryEmphasis[]).map((recovery) => {
                       const label = getRecoveryLabel(recovery);
                       const effect = RECOVERY_EFFECTS[recovery];
-                      const isActive = trainingState.profile.recovery === recovery;
+                      const isActive = trainingState.activeProfile.recovery === recovery;
 
                       let narrative = "Standard recovery protocols";
                       if (effect.fatigueDecay > 1.2) narrative = "Prioritizes rest and rejuvenation";
