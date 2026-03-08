@@ -200,7 +200,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         world: { ...state.world },
-        phase: "interim",
+        phase: "basho_recap", // Redirect to recap screen after basho ends
         currentBoutIndex: 0,
         lastBoutResult: null,
       };
