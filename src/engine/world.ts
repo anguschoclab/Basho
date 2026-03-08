@@ -255,7 +255,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
-      position: { rank: r.rank, rankNumber: r.rankNumber, side: r.side }
+      position: toRankPosition({ rank: r.rank, rankNumber: r.rankNumber, side: r.side })
     });
   }
 

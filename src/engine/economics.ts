@@ -116,7 +116,7 @@ export function onBoutResolved(
   const { result, east, west } = context;
   
   
-  const rng = rngForWorld(world, "kensho", `${context.match?.id ?? context.match?.day ?? "bout"}::${east.id}::${west.id}`);
+  const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
 // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return;
 
