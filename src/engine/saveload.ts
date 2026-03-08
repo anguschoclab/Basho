@@ -86,6 +86,24 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
   };
 }
 
+// === SPONSOR POOL SERIALIZATION ===
+
+function serializeSponsorPool(pool: any): any {
+  if (!pool) return undefined;
+  return {
+    sponsors: pool.sponsors instanceof Map ? mapToObject(pool.sponsors) : (pool.sponsors || {}),
+    koenkais: pool.koenkais instanceof Map ? mapToObject(pool.koenkais) : (pool.koenkais || {}),
+  };
+}
+
+function deserializeSponsorPool(data: any): any {
+  if (!data) return undefined;
+  return {
+    sponsors: data.sponsors instanceof Map ? data.sponsors : objectToMap(data.sponsors || {}),
+    koenkais: data.koenkais instanceof Map ? data.koenkais : objectToMap(data.koenkais || {}),
+  };
+}
+
 // === WORLD SERIALIZATION ===
 
 export function serializeWorld(world: WorldState): SerializedWorldState {
@@ -109,6 +127,8 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     dayIndexGlobal: world.dayIndexGlobal,
     almanacSnapshots: (world as any).almanacSnapshots,
     calendar: world.calendar,
+    // Sponsor pool (Constitution A6.4)
+    sponsorPool: serializeSponsorPool((world as any).sponsorPool),
   } as any;
 }
 
@@ -173,6 +193,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     currentBanzuke: serialized.currentBanzuke,
     talentPool: (serialized as any).talentPool,
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
+    sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,

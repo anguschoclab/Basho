@@ -18,6 +18,8 @@ import {
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./utils/SeededRNG";
 import { ensureTalentPools } from "./talentpool";
+import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
+import { rngForWorld } from "./rng";
 
 
 // Constants
@@ -283,6 +285,22 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   // Persistent Talent Pools (created immediately so scouting has targets)
   try {
     ensureTalentPools(world as WorldState);
+  } catch {
+    // swallow
+  }
+
+  // Sponsor Pool & Kōenkai initialization (Constitution A6.4)
+  try {
+    const sponsorPool = generateSponsorPool(actualSeed);
+    world.sponsorPool = sponsorPool;
+
+    // Create kōenkai for each heya
+    for (const heya of heyaMap.values()) {
+      const koenkaiRng = rngFromSeed(actualSeed, "sponsors", `koenkai::${heya.id}`);
+      const koenkai = createKoenkai(heya.id, sponsorPool, heya.prestigeBand, koenkaiRng, 0);
+      sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
+      heya.koenkaiBand = koenkai.strengthBand;
+    }
   } catch {
     // swallow
   }

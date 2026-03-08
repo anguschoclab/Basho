@@ -22,6 +22,7 @@ import { EventBus } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 import { buildAlmanacSnapshot } from "./almanac";
 import { autosave } from "./saveload";
+import { runSponsorChurn } from "./economics";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
@@ -266,6 +267,9 @@ export function endBasho(world: WorldState): WorldState {
 
   // Persistent Talent Pools: NPC stables fill their own vacancies from the shared pool.
   safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
+
+  // Post-basho sponsor churn (Constitution Addendum D)
+  safeCall(() => { runSponsorChurn(world); });
 
   // Autosave at basho-end boundary (Constitution §6)
   safeCall(() => { autosave(world); });
