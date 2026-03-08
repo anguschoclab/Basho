@@ -238,9 +238,21 @@ function decideTrainingIntensity(
 function decideTrainingFocus(
   perception: PerceptionSnapshot,
   styleBias: Style | "neutral",
-  tradition: number
+  tradition: number,
+  philosophy?: RecruitmentPhilosophy
 ): { focus: TrainingFocus; reason: string } {
-  // Traditionalists emphasize power/balance (yotsu fundamentals)
+  // Philosophy-driven focus overrides (oyakata style preferences)
+  if (philosophy === "size_matters") {
+    return { focus: "power", reason: "Size-obsessed philosophy — power focus to bulk up roster" };
+  }
+  if (philosophy === "innovator") {
+    return { focus: "speed", reason: "Innovator philosophy — speed & agility focus" };
+  }
+  if (philosophy === "traditionalist" || (philosophy === "style_purist" && styleBias === "yotsu")) {
+    return { focus: "balance", reason: "Traditional philosophy — balance & fundamentals" };
+  }
+
+  // Traditionalist oyakata emphasize power/balance (yotsu fundamentals)
   if (tradition >= 75 && styleBias === "yotsu") {
     return { focus: "balance", reason: "Traditionalist yotsu — emphasizing balance" };
   }
