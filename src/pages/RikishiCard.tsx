@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiUIModel } from '@/engine/uiModels';
 import { Link } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Zap, Shield, Brain, Activity, Sword, Anchor } from "lucide-react";
-import { toStatBand, toConditionBand, STAT_BAND_LABELS, CONDITION_LABELS } from "@/engine/descriptorBands";
+import { Zap, Shield, Brain, Activity, Sword, Anchor, Sparkles } from "lucide-react";
+import { toStatBand, toConditionBand, toPotentialBand, STAT_BAND_LABELS, CONDITION_LABELS, POTENTIAL_LABELS } from "@/engine/descriptorBands";
+import type { PotentialBand } from "@/engine/descriptorBands";
 
 interface RikishiCardProps {
   rikishi: RikishiUIModel;
