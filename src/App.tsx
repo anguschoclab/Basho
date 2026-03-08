@@ -24,6 +24,8 @@ import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
 import SettingsPage from "./pages/SettingsPage";
 import OyakataPage from "./pages/OyakataPage";
+import MediaPage from "./pages/MediaPage";
+import HallOfFamePage from "./pages/HallOfFamePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
