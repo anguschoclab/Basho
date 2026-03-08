@@ -310,7 +310,7 @@ export default function AlmanacPage() {
                             <div className="font-mono font-bold">
                               {rikishi.careerWins}-{rikishi.careerLosses}
                             </div>
-                            <div className="text-xs text-muted-foreground">{stats.winRate}% win rate</div>
+                            <div className="text-xs text-muted-foreground">{stats.winRateLabel}</div>
                           </div>
 
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
