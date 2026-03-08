@@ -50,7 +50,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   world.cyclePhase = "active_basho"; 
 
   ensureDaySchedule(world, basho.day);
-  safeCall(() => (events as any).emit?.(world, { type: "BASHO_STARTED", bashoName: name }));
+  EventBus.bashoStarted(world, name);
 
   return world;
 }
