@@ -181,7 +181,6 @@ export function simulateEntireBasho(
 
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    if (!needsScheduleForDay("makuuchi", day)) continue;
 
     const dayMatches = basho.matches.filter((m) => m.day === day && !m.result);
 
