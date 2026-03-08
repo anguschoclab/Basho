@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
