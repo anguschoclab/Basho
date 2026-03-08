@@ -128,6 +128,8 @@ export function createDefaultMediaState(): MediaState {
     bashoStreaks: {},
     streakHeadlinesFired: {},
     promoWatchFired: {},
+    retirementWatchFired: {},
+    titleRaceDayFired: {},
   };
 }
 
