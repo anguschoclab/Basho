@@ -21,7 +21,17 @@ const Index = () => {
       </Helmet>
 
       <main className="min-h-screen bg-background py-8">
-        <BoutViewer />
+        <div className="container mx-auto px-4">
+          <div className="mb-4">
+            <a 
+              href="/dashboard" 
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Back to Dashboard
+            </a>
+          </div>
+          <BoutViewer />
+        </div>
       </main>
     </>
   );

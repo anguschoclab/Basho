@@ -22,8 +22,9 @@ import {
   Menu,
   Scale,
   Search,
+  UserSearch,
+  Newspaper,
 } from "lucide-react";
-import { UserSearch } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 
@@ -75,9 +76,14 @@ const items = [
     icon: UserSearch,
   },
   {
-    title: "Governance", // NEW MENU ITEM
+    title: "Governance",
     url: "/governance",
     icon: Scale,
+  },
+  {
+    title: "Recap",
+    url: "/recap",
+    icon: Newspaper,
   },
   {
     title: "History",

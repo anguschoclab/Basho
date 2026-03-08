@@ -1,0 +1,407 @@
+// RecapPage.tsx - Post-Basho Narrative Recap
+// Summarizes prestige changes, retirements, new recruits, governance, and meta shifts
+
+import React from "react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { useGame } from "@/contexts/GameContext";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { NavLink } from "react-router-dom";
+import { 
+  Trophy, 
+  TrendingUp, 
+  TrendingDown, 
+  UserMinus, 
+  UserPlus, 
+  Scale, 
+  Sparkles,
+  ArrowLeft,
+  AlertTriangle,
+  Crown,
+  Shield
+} from "lucide-react";
+import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
+
+// Narrative band descriptors for prestige changes
+function describePrestigeShift(oldBand: string | undefined, newBand: string | undefined): string | null {
+  if (!oldBand || !newBand || oldBand === newBand) return null;
+  
+  const bands = ["fragile", "rebuilding", "established", "powerful", "legendary"];
+  const oldIdx = bands.indexOf(oldBand);
+  const newIdx = bands.indexOf(newBand);
+  
+  if (newIdx > oldIdx) {
+    return `rose to ${newBand.toUpperCase()} status`;
+  } else {
+    return `fell to ${newBand.toUpperCase()} status`;
+  }
+}
+
+// Extract recent basho-relevant events
+function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
+  return events.filter(e => 
+    (e.phase === "basho_wrap" || e.category === "basho" || e.category === "career" || e.category === "promotion") &&
+    (bashoNumber === undefined || e.bashoNumber === bashoNumber)
+  ).slice(-50); // Last 50 relevant events
+}
+
+// Group events by category for narrative display
+function groupEventsByNarrative(events: EngineEvent[]) {
+  const groups: Record<string, EngineEvent[]> = {
+    yusho: [],
+    promotions: [],
+    retirements: [],
+    injuries: [],
+    governance: [],
+    sponsors: [],
+    other: []
+  };
+  
+  for (const e of events) {
+    if (e.type.includes("YUSHO") || e.type.includes("CHAMPIONSHIP")) {
+      groups.yusho.push(e);
+    } else if (e.category === "promotion" || e.type.includes("PROMOTION") || e.type.includes("DEMOTION")) {
+      groups.promotions.push(e);
+    } else if (e.type.includes("RETIRE") || e.category === "career") {
+      groups.retirements.push(e);
+    } else if (e.category === "injury") {
+      groups.injuries.push(e);
+    } else if (e.category === "discipline" || e.type.includes("GOVERNANCE")) {
+      groups.governance.push(e);
+    } else if (e.category === "sponsor") {
+      groups.sponsors.push(e);
+    } else {
+      groups.other.push(e);
+    }
+  }
+  
+  return groups;
+}
+
+// Get prestige changes from recent history
+function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
+  const changes: Array<{ heya: Heya; change: string }> = [];
+  
+  if (!world?.heyas) return changes;
+  
+  // Check events for prestige-related changes
+  const prestige_events = (world.events?.log || []).filter((e: EngineEvent) => 
+    e.type.includes("PRESTIGE") || e.type.includes("STATURE") || e.category === "milestone"
+  ).slice(-20);
+  
+  for (const e of prestige_events) {
+    if (e.heyaId) {
+      const heya = world.heyas.get(e.heyaId);
+      if (heya) {
+        changes.push({ heya, change: e.summary });
+      }
+    }
+  }
+  
+  return changes;
+}
+
+export default function RecapPage() {
+  const { state } = useGame();
+  const world = state.world;
+
+  if (!world) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">No world data available</p>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  const lastBasho = world.history?.[world.history.length - 1];
+  const events = world.events?.log || [];
+  const bashoEvents = getBashoWrapEvents(events, lastBasho?.bashoNumber);
+  const groupedEvents = groupEventsByNarrative(bashoEvents);
+  const prestigeChanges = getPrestigeChanges(world);
+  
+  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+
+  // Build narrative sections
+  const hasYusho = groupedEvents.yusho.length > 0;
+  const hasPromotions = groupedEvents.promotions.length > 0;
+  const hasRetirements = groupedEvents.retirements.length > 0;
+  const hasGovernance = groupedEvents.governance.length > 0 || (world.governanceLog?.length || 0) > 0;
+  const hasPrestigeChanges = prestigeChanges.length > 0;
+  
+  const bashoName = lastBasho?.bashoName?.toUpperCase() || world.currentBashoName?.toUpperCase() || "RECENT";
+
+  return (
+    <AppLayout>
+      <div className="space-y-6">
+        {/* HEADER */}
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <NavLink to="/dashboard">
+              <ArrowLeft className="h-5 w-5" />
+            </NavLink>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Post-Basho Recap</h1>
+            <p className="text-muted-foreground">
+              {bashoName} {world.year} — The dust settles on another tournament
+            </p>
+          </div>
+        </div>
+
+        {/* YUSHO / CHAMPIONSHIP SECTION */}
+        {hasYusho && (
+          <Card className="border-amber-500/30 bg-amber-500/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-amber-500" />
+                Championship Results
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {groupedEvents.yusho.map((e, i) => (
+                  <div key={e.id || i} className="flex items-start gap-3">
+                    <Trophy className="h-4 w-4 text-amber-500 mt-1 shrink-0" />
+                    <div>
+                      <p className="font-medium">{e.title}</p>
+                      <p className="text-sm text-muted-foreground">{e.summary}</p>
+                    </div>
+                  </div>
+                ))}
+                {groupedEvents.yusho.length === 0 && lastBasho && (
+                  <p className="text-muted-foreground italic">
+                    Championship details will be recorded after the tournament concludes.
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* LAST BASHO SUMMARY (fallback if no yusho events) */}
+        {!hasYusho && lastBasho && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                {lastBasho.bashoName?.toUpperCase()} {lastBasho.year} Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                The {lastBasho.bashoName} basho has concluded. Review the standings and results in the History page.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* PROMOTIONS & DEMOTIONS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                Rank Changes
+              </CardTitle>
+              <CardDescription>Promotions and demotions following the tournament</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                {hasPromotions ? (
+                  <div className="space-y-2">
+                    {groupedEvents.promotions.map((e, i) => (
+                      <div key={e.id || i} className="flex items-center gap-2 text-sm">
+                        {e.type.includes("DEMOTION") ? (
+                          <TrendingDown className="h-3 w-3 text-destructive" />
+                        ) : (
+                          <TrendingUp className="h-3 w-3 text-emerald-500" />
+                        )}
+                        <span>{e.summary || e.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    Banzuke adjustments pending. Rank changes will be announced before the next basho.
+                  </p>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* RETIREMENTS & DEPARTURES */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserMinus className="h-5 w-5 text-orange-500" />
+                Retirements
+              </CardTitle>
+              <CardDescription>Rikishi who have left the dohyo</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                {hasRetirements ? (
+                  <div className="space-y-2">
+                    {groupedEvents.retirements.map((e, i) => (
+                      <div key={e.id || i} className="flex items-start gap-2 text-sm">
+                        <UserMinus className="h-3 w-3 text-orange-500 mt-1" />
+                        <div>
+                          <span className="font-medium">{e.title}</span>
+                          <p className="text-muted-foreground">{e.summary}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    No retirements announced this basho. The roster remains stable.
+                  </p>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* PRESTIGE SHIFTS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-purple-500" />
+                Prestige Shifts
+              </CardTitle>
+              <CardDescription>Stable reputation changes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                {hasPrestigeChanges ? (
+                  <div className="space-y-2">
+                    {prestigeChanges.map((pc, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm">
+                        <Badge variant="outline" className="text-xs">
+                          {pc.heya.statureBand}
+                        </Badge>
+                        <span>{pc.heya.name}: {pc.change}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    Stable standings remain unchanged. Prestige shifts occur after significant results.
+                  </p>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* GOVERNANCE RULINGS */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Scale className="h-5 w-5 text-blue-500" />
+                Governance Rulings
+              </CardTitle>
+              <CardDescription>JSA decisions and disciplinary actions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-48">
+                {hasGovernance ? (
+                  <div className="space-y-2">
+                    {groupedEvents.governance.map((e, i) => (
+                      <div key={e.id || i} className="flex items-start gap-2 text-sm">
+                        <Scale className="h-3 w-3 text-blue-500 mt-1" />
+                        <div>
+                          <span className="font-medium">{e.title}</span>
+                          <p className="text-muted-foreground">{e.summary}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {(world.governanceLog || []).slice(-5).map((ruling: any, i: number) => (
+                      <div key={`ruling-${i}`} className="flex items-start gap-2 text-sm">
+                        <Shield className="h-3 w-3 text-blue-500 mt-1" />
+                        <div>
+                          <span className="font-medium">{ruling.type}</span>
+                          <p className="text-muted-foreground">{ruling.summary || ruling.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    No governance actions this period. The JSA maintains its steady oversight.
+                  </p>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* PLAYER STABLE STATUS */}
+        {playerHeya && (
+          <Card className="border-primary/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Your Stable: {playerHeya.name}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="font-medium capitalize">{playerHeya.statureBand}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Roster Size</p>
+                  <p className="font-medium">{playerHeya.rikishiIds?.length || 0} Rikishi</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Financial Health</p>
+                  <p className="font-medium">
+                    {playerHeya.funds >= 50_000_000 ? "Secure" :
+                     playerHeya.funds >= 20_000_000 ? "Comfortable" :
+                     playerHeya.funds >= 5_000_000 ? "Tight" :
+                     playerHeya.funds >= 1_000_000 ? "Critical" : "Desperate"}
+                  </p>
+                </div>
+              </div>
+              
+              {playerHeya.riskIndicators && (
+                <div className="mt-4 flex gap-2 flex-wrap">
+                  {playerHeya.riskIndicators.financial && (
+                    <Badge variant="destructive" className="gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      Financial Risk
+                    </Badge>
+                  )}
+                  {playerHeya.riskIndicators.governance && (
+                    <Badge variant="outline" className="gap-1 border-yellow-500 text-yellow-500">
+                      <Scale className="h-3 w-3" />
+                      Governance Watch
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* NAVIGATION */}
+        <div className="flex gap-4">
+          <Button asChild>
+            <NavLink to="/dashboard">Return to Dashboard</NavLink>
+          </Button>
+          <Button variant="outline" asChild>
+            <NavLink to="/history">View Full History</NavLink>
+          </Button>
+          <Button variant="outline" asChild>
+            <NavLink to="/banzuke">View Banzuke</NavLink>
+          </Button>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}

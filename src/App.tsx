@@ -13,11 +13,12 @@ import BashoPage from "./pages/BashoPage";
 import BanzukePage from "./pages/BanzukePage";
 import RivalriesPage from "./pages/RivalriesPage";
 import EconomyPage from "./pages/EconomyPage";
-import GovernancePage from "./pages/GovernancePage"; // NEW IMPORT
+import GovernancePage from "./pages/GovernancePage";
 import HistoryPage from "./pages/HistoryPage";
 import AlmanacPage from "./pages/AlmanacPage";
 import TalentPoolPage from "./pages/TalentPoolPage";
 import ScoutingPage from "./pages/ScoutingPage";
+import RecapPage from "./pages/RecapPage";
 import MainMenu from "./pages/MainMenu";
 import NotFound from "./pages/NotFound";
 
@@ -49,7 +50,8 @@ const App = () => (
             <Route path="/economy" element={<EconomyPage />} />
             <Route path="/talent" element={<TalentPoolPage />} />
             <Route path="/scouting" element={<ScoutingPage />} />
-            <Route path="/governance" element={<GovernancePage />} /> {/* NEW ROUTE */}
+            <Route path="/governance" element={<GovernancePage />} />
+            <Route path="/recap" element={<RecapPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/almanac" element={<AlmanacPage />} />
             <Route path="*" element={<NotFound />} />
