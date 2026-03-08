@@ -142,14 +142,20 @@ export function onBoutResolved(
     const AMOUNT_PER_KENSHO = 62_000;
     const total = kenshoCount * AMOUNT_PER_KENSHO;
 
-    const rikishiShare = total * 0.9;
-    const stableShare = total * 0.1;
+    // Constitution A6.2: 50/50 split between rikishi cash and heya.
+    // Retirement fund diversion: 5% of rikishi share goes to retirement fund.
+    const rikishiGross = total * 0.5;
+    const stableShare = total * 0.5;
+    const retirementDiversion = rikishiGross * 0.05;
+    const rikishiNet = rikishiGross - retirementDiversion;
 
     if (!winner.economics) winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
     
-    winner.economics.cash += rikishiShare;
-    winner.economics.currentBashoEarnings += rikishiShare;
+    winner.economics.cash += rikishiNet;
+    winner.economics.retirementFund += retirementDiversion;
+    winner.economics.currentBashoEarnings += rikishiNet;
     winner.economics.careerKenshoWon += kenshoCount;
+    winner.economics.totalEarnings += rikishiNet;
 
     winnerHeya.funds += stableShare;
 
