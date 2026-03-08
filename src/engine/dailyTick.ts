@@ -26,6 +26,7 @@ import type { WorldState, CyclePhase } from "./types";
 import { EventBus, logEngineEvent } from "./events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
 import { autosave } from "./saveload";
+import { buildAllPerceptionSnapshots } from "./perception";
 import * as training from "./training";
 import * as injuries from "./injuries";
 import * as economics from "./economics";
@@ -204,6 +205,14 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   if (world.calendar) {
     world.calendar.currentWeek = world.week;
   }
+
+  // Build perception cache FIRST — consumed by npcAI and UI (A7.1)
+  safeCall(() => {
+    const snapshots = buildAllPerceptionSnapshots(world);
+    const cache: Record<string, import("./perception").PerceptionSnapshot> = {};
+    for (const [id, snap] of snapshots) cache[id] = snap;
+    world.perceptionCache = cache;
+  }) && subs.push("perception_cache");
 
   safeCall(() => { npcAI.tickWeek?.(world); }) && subs.push("npcAI");
   safeCall(() => { training.tickWeek(world); }) && subs.push("training");

@@ -4,7 +4,7 @@
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { buildPerceptionSnapshot, type PerceptionSnapshot } from "@/engine/perception";
+import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
 import { Swords, Search, Shield, Flame, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useMemo } from "react";
 
@@ -47,7 +47,7 @@ export function RivalStablesPanel() {
     for (const heya of world.heyas.values()) {
       if (heya.id === world.playerHeyaId) continue;
 
-      const perception = buildPerceptionSnapshot(world, heya.id);
+      const perception = getCachedPerception(world, heya.id);
 
       // Infer NPC training intensity from perception bands (mirrors npcAI logic)
       let trainingIntensity = "balanced";

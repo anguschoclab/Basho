@@ -737,6 +737,9 @@ export interface WorldState {
   // Sponsor system (Constitution A6.4 — persistent actors)
   sponsorPool?: import("./sponsors").SponsorPool;
 
+  // Perception cache (A7.1) — rebuilt at weekly boundary, consumed by NPC AI + UI
+  perceptionCache?: Record<Id, import("./perception").PerceptionSnapshot>;
+
   // Legacy / UI Helpers
   currentDate?: Date;
   heyasArray?: Heya[]; // Optional helper for array-based UI mapping
