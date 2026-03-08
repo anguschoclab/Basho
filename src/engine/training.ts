@@ -220,6 +220,7 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
     if (!rikishi.injured) {
       const growth = calculateGrowthVector(profile, focus, rikishi);
 
+      const prevPower = Math.floor(rikishi.power);
       rikishi.power = Math.min(100, rikishi.power + growth.strength);
       rikishi.speed = Math.min(100, rikishi.speed + growth.speed);
       rikishi.technique = Math.min(100, rikishi.technique + growth.technique);
@@ -236,6 +237,16 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
       rikishi.stats.stamina = Math.floor(rikishi.stamina);
       rikishi.stats.adaptability = Math.floor(rikishi.adaptability);
       rikishi.stats.mental = Math.floor(rikishi.experience);
+
+      // Emit milestone when a stat crosses a 10-point threshold
+      const newPower = Math.floor(rikishi.power);
+      if (Math.floor(newPower / 10) > Math.floor(prevPower / 10)) {
+        EventBus.trainingMilestone(world, rikishi.id, rikishi.heyaId,
+          `${rikishi.shikona ?? rikishi.name} training breakthrough`,
+          `Shows marked improvement in overall conditioning.`,
+          { focus: profile.focus, intensity: profile.intensity }
+        );
+      }
     }
   });
 
