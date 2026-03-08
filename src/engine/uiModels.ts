@@ -9,13 +9,18 @@
  */
 
 import type {
-  Id, Rikishi, Heya, Oyakata, WorldState, Rank, Division, Side,
+  Id, Rikishi, Heya, WorldState, Rank, Division, Side,
   Style, TacticalArchetype, BoutResult, BashoResult,
 } from "./types";
-import { RANK_HIERARCHY } from "./banzuke";
 import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
-import { getCareerPhase, type CareerPhase } from "./training";
+import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
+
+// ─────────────────────────────────────────
+//  CareerPhase type (inferred from training.ts)
+// ─────────────────────────────────────────
+
+export type CareerPhase = ReturnType<typeof getCareerPhase>;
 
 // ─────────────────────────────────────────
 //  UIRikishi — Full profile projection
@@ -52,7 +57,7 @@ export interface UIRikishi {
   // Status
   isRetired: boolean;
   isInjured: boolean;
-  injurySummary: string; // "Healthy", "Minor knee sprain (2w)", "Major shoulder tear (8w)"
+  injurySummary: string; // "Healthy", "Minor knee (2w)", etc.
   condition: number; // 0-100 (allowed to show)
   motivation: number; // 0-100 (allowed to show)
   fatigue: number; // 0-100 (allowed to show)
@@ -64,10 +69,10 @@ export interface UIRikishi {
   // Records (public numbers — always OK to show)
   currentBashoWins: number;
   currentBashoLosses: number;
-  currentBashoRecord: string; // "8-7"
+  currentBashoRecord: string;
   careerWins: number;
   careerLosses: number;
-  careerRecord: string; // "145-120"
+  careerRecord: string;
   careerYusho: number;
 
   // Descriptor bands (narrative-safe stat proxies)
@@ -87,7 +92,7 @@ export interface UIRivalEntry {
   opponentShikona: string;
   wins: number;
   losses: number;
-  record: string; // "5-3"
+  record: string;
   totalBouts: number;
 }
 
@@ -123,9 +128,12 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     .sort((a, b) => b.totalBouts - a.totalBouts)
     .slice(0, 5);
 
-  // Rank label
-  const rankEntry = RANK_HIERARCHY.find(rh => rh.rank === r.rank);
-  const rankLabel = RANK_NAMES[r.rank] ?? r.rank;
+  const rankInfo = RANK_NAMES[r.rank];
+  const rankLabel = rankInfo?.en ?? r.rank;
+  const styleInfo = STYLE_NAMES[r.style];
+  const styleName = styleInfo?.label ?? r.style;
+  const archInfo = ARCHETYPE_NAMES[r.archetype];
+  const archetypeName = archInfo?.label ?? r.archetype;
 
   return {
     id: r.id,
@@ -145,9 +153,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     division: r.division,
     side: r.side,
     style: r.style,
-    styleName: STYLE_NAMES[r.style] ?? r.style,
+    styleName,
     archetype: r.archetype,
-    archetypeName: ARCHETYPE_NAMES[r.archetype] ?? r.archetype,
+    archetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary,
@@ -155,7 +163,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     motivation: r.motivation,
     fatigue: r.fatigue,
     momentum: r.momentum,
-    careerPhase: getCareerPhase(r),
+    careerPhase: getCareerPhase(r.experience),
     currentBashoWins: r.currentBashoWins,
     currentBashoLosses: r.currentBashoLosses,
     currentBashoRecord: `${r.currentBashoWins}-${r.currentBashoLosses}`,
@@ -189,11 +197,12 @@ export interface UIRosterEntry {
 }
 
 export function projectRosterEntry(r: Rikishi): UIRosterEntry {
+  const rankInfo = RANK_NAMES[r.rank];
   return {
     id: r.id,
     shikona: r.shikona,
     rank: r.rank,
-    rankLabel: RANK_NAMES[r.rank] ?? r.rank,
+    rankLabel: rankInfo?.en ?? r.rank,
     division: r.division,
     side: r.side,
     record: `${r.currentBashoWins}-${r.currentBashoLosses}`,
@@ -229,7 +238,7 @@ export interface UIHeya {
 
   // Roster summary
   rosterSize: number;
-  sekitoriCount: number; // juryo + makuuchi
+  sekitoriCount: number;
 
   // Finance
   funds: number;
@@ -294,29 +303,30 @@ export interface UIBoutRow {
   westShikona: string;
   westRank: string;
   westHeyaName: string;
-  winnerId?: Id;
-  kimarite?: string;
+  winnerId: Id;
+  kimarite: string;
   isUpset: boolean;
 }
 
 export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
-  const east = world.rikishi.get(bout.eastId);
-  const west = world.rikishi.get(bout.westId);
+  const east = world.rikishi.get(bout.winnerRikishiId);
+  const west = world.rikishi.get(bout.loserRikishiId);
+  // Determine actual east/west from bout log or use winner=east, loser=west as approximation
   const eastHeya = east ? world.heyas.get(east.heyaId) : undefined;
   const westHeya = west ? world.heyas.get(west.heyaId) : undefined;
 
   return {
-    eastId: bout.eastId,
+    eastId: bout.winnerRikishiId,
     eastShikona: east?.shikona ?? "Unknown",
     eastRank: east?.rank ?? "unknown",
     eastHeyaName: eastHeya?.name ?? "",
-    westId: bout.westId,
+    westId: bout.loserRikishiId,
     westShikona: west?.shikona ?? "Unknown",
     westRank: west?.rank ?? "unknown",
     westHeyaName: westHeya?.name ?? "",
-    winnerId: bout.winnerId,
-    kimarite: bout.kimarite,
-    isUpset: bout.isUpset ?? false,
+    winnerId: bout.winnerRikishiId,
+    kimarite: bout.kimariteName ?? bout.kimarite,
+    isUpset: bout.upset,
   };
 }
 
@@ -357,3 +367,11 @@ export function projectBashoSummary(result: BashoResult, world: WorldState): UIB
     shukunshoShikona: lookup(result.shukunsho),
   };
 }
+
+// ─────────────────────────────────────────
+//  Legacy compat: RikishiUIModel alias
+// ─────────────────────────────────────────
+/** @deprecated Use UIRikishi + projectRikishi instead */
+export type RikishiUIModel = UIRikishi;
+/** @deprecated Use projectRikishi instead */
+export const toRikishiUIModel = projectRikishi;
