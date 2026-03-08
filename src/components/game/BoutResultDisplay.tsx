@@ -82,11 +82,11 @@ export function BoutResultDisplay({
         )}
 
         <h2 className="font-display text-3xl font-bold text-foreground mb-1 animate-fade-in">
-          {winner?.shikona ?? "Unknown"}
+          {winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}
         </h2>
 
         <p className="text-muted-foreground">
-          defeats <span className="font-medium">{loser?.shikona ?? "Unknown"}</span>
+          defeats <span className="font-medium">{loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}</span>
         </p>
       </div>
 
