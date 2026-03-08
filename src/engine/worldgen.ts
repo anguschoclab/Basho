@@ -317,11 +317,9 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       rankNumber: slot.rankNumber,
       side: slot.side,
       
-      careerWins: 0,
-      careerLosses: 0,
+      ...generateSyntheticCareer(rrng, slot.rank, slot.division, birthYear, currentYear),
       currentBashoWins: 0,
       currentBashoLosses: 0,
-      careerRecord: { wins: 0, losses: 0, yusho: 0 },
       currentBashoRecord: { wins: 0, losses: 0 },
       
       history: [],
