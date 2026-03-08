@@ -50,7 +50,6 @@ function getGreatestFights(world: WorldState, rikishiId: string): Array<{ year: 
     .map(m => {
       const opp = world.rikishi.get(m.opponentId);
       return {
-        year: m.year ?? 0,
         bashoName: m.bashoId ?? "",
         kimarite: m.kimarite,
         opponentName: opp?.shikona ?? "Unknown",
