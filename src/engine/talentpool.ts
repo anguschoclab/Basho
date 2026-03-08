@@ -462,7 +462,8 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     motivation: clamp(Math.round(45 + rng.next() * 45), 0, 100),
     personalityTraits: candidate.tags,
     favoredKimarite: [],
-    weakAgainstStyles: []
+    weakAgainstStyles: [],
+    talentSeed: candidate.talentSeed, // Persist potential ceiling
   } as any;
 }
 
