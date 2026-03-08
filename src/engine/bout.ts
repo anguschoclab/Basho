@@ -568,8 +568,12 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
 
   const baseDrain = 0.6 + rng.next() * 0.7;
 
-  st.fatigueEast += (baseDrain + eastLoad) * (st.advantage === "east" ? 0.9 : 1.15);
-  st.fatigueWest += (baseDrain + westLoad) * (st.advantage === "west" ? 0.9 : 1.15);
+  // Tactical AI: fatigue efficiency modifies drain rate
+  const eastEfficiency = eastTac?.fatigueEfficiency ?? 1.0;
+  const westEfficiency = westTac?.fatigueEfficiency ?? 1.0;
+
+  st.fatigueEast += (baseDrain + eastLoad) * (st.advantage === "east" ? 0.9 : 1.15) * eastEfficiency;
+  st.fatigueWest += (baseDrain + westLoad) * (st.advantage === "west" ? 0.9 : 1.15) * westEfficiency;
 
   const fatiguePressure = clamp01((st.fatigueEast + st.fatigueWest) / 80);
 
