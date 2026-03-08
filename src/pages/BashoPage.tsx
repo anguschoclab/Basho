@@ -22,11 +22,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { BASHO_CALENDAR, getDayName, getSeasonalFlavor, isKeyDay } from "@/engine/calendar";
-import { getTotalBashodays } from "@/engine/schedule";
+import { getTotalBashodays, needsScheduleForDay, DEFAULT_DIVISION_DAYS } from "@/engine/schedule";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
-import { Play, FastForward, ChevronRight, Trophy, Star, Crown } from "lucide-react";
-import type { Rikishi, BoutResult, Rank } from "@/engine/types";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
+import type { Rikishi, BoutResult, Division } from "@/engine/types";
 
 type MatchLike = {
   day?: number;
@@ -47,6 +48,63 @@ function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
 
+interface ScheduleOverviewProps {
+  currentDay: number;
+}
+
+function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
+  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  
+  return (
+    <div className="space-y-3">
+      <div className="text-xs text-muted-foreground">
+        <strong>Schedule Legend:</strong> Lower divisions fight on odd days only (1,3,5,7,9,11,13)
+      </div>
+      
+      {divisions.map((division) => {
+        const totalDays = getTotalBashodays(division);
+        const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
+        
+        return (
+          <div key={division} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">{divisionName}</span>
+              <span className="text-xs text-muted-foreground">{totalDays} days</span>
+            </div>
+            
+            <div className="grid grid-cols-15 gap-1">
+              {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
+                const needsScheduling = needsScheduleForDay(division, day);
+                const isCurrent = day === currentDay;
+                const isPast = day < currentDay;
+                
+                return (
+                  <div
+                    key={day}
+                    className={`
+                      h-6 w-6 rounded text-xs font-mono flex items-center justify-center
+                      ${needsScheduling 
+                        ? isCurrent 
+                          ? "bg-primary text-primary-foreground" 
+                          : isPast 
+                            ? "bg-muted text-muted-foreground" 
+                            : "bg-primary/20 text-primary"
+                        : "bg-transparent text-muted-foreground/30 line-through"
+                      }
+                    `}
+                  >
+                    {day}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function BashoPage() {
   const navigate = useNavigate();
   const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();
@@ -55,6 +113,7 @@ export default function BashoPage() {
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
   const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
   const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
+  const [showScheduleOverview, setShowScheduleOverview] = useState(false);
   const lastAutoShownKeyRef = useRef<string | null>(null);
 
   const basho = world?.currentBasho ?? null;
@@ -186,6 +245,27 @@ export default function BashoPage() {
 
         {/* ═══════════ MAIN LAYOUT ═══════════ */}
         <div className="grid gap-4 lg:grid-cols-4">
+
+          {/* Schedule Overview - Collapsible */}
+          <Collapsible 
+            open={showScheduleOverview} 
+            onOpenChange={setShowScheduleOverview}
+            className="lg:order-3 lg:col-span-4"
+          >
+            <Card className="paper">
+              <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-muted/30 transition-colors rounded-lg">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" /> Division Schedule
+                </h3>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showScheduleOverview ? "rotate-180" : ""}`} />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="px-4 pb-4 pt-0">
+                  <ScheduleOverview currentDay={basho.day} />
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
 
           {/* Standings sidebar */}
           <Card className="paper lg:order-2">
