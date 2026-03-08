@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
-import { GripVertical, RotateCcw } from "lucide-react";
+import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield } from "lucide-react";
+import { getMonthlyMaintenanceCost } from "@/engine/facilities";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
@@ -69,6 +70,45 @@ export default function Dashboard() {
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
+  const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
+  const columns = getColumns();
+
+  // Compute alert conditions
+  const alerts = useMemo(() => {
+    if (!playerHeya) return [];
+    const a: { icon: any; text: string; color: string; link: string }[] = [];
+    
+    const maintenance = getMonthlyMaintenanceCost(playerHeya);
+    if (playerHeya.funds < maintenance) {
+      a.push({
+        icon: Wrench,
+        text: "Facilities at risk — funds won't cover monthly maintenance",
+        color: "text-destructive",
+        link: "/stable",
+      });
+    }
+    
+    if (playerHeya.riskIndicators?.financial) {
+      a.push({
+        icon: Coins,
+        text: "Financial distress — high insolvency risk",
+        color: "text-destructive",
+        link: "/economy",
+      });
+    }
+    
+    if (playerHeya.riskIndicators?.governance) {
+      a.push({
+        icon: Shield,
+        text: "Governance watch — the JSA council has concerns",
+        color: "text-warning",
+        link: "/governance",
+      });
+    }
+    
+    return a;
+  }, [playerHeya]);
+
   if (!isLoaded || !world) {
     return (
       <AppLayout>
@@ -76,9 +116,6 @@ export default function Dashboard() {
       </AppLayout>
     );
   }
-
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
-  const columns = getColumns();
 
   return (
     <AppLayout pageTitle="Dashboard">
@@ -124,6 +161,23 @@ export default function Dashboard() {
           <p className="text-[11px] text-muted-foreground bg-muted/50 rounded-md px-3 py-1.5">
             Drag widgets to rearrange your dashboard. Changes are saved automatically.
           </p>
+        )}
+
+        {/* Alert banner */}
+        {alerts.length > 0 && (
+          <div className="space-y-1.5">
+            {alerts.map((alert, i) => (
+              <button
+                key={i}
+                onClick={() => navigate(alert.link)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left"
+              >
+                <AlertTriangle className={`h-4 w-4 shrink-0 ${alert.color}`} />
+                <alert.icon className={`h-3.5 w-3.5 shrink-0 ${alert.color}`} />
+                <span className={`text-xs font-medium ${alert.color}`}>{alert.text}</span>
+              </button>
+            ))}
+          </div>
         )}
 
         {/* FM-style modular grid */}

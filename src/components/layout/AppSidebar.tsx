@@ -24,6 +24,8 @@ import {
   Search,
   UserSearch,
   Newspaper,
+  Dumbbell,
+  Crown,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
@@ -39,6 +41,16 @@ const items = [
     title: "Stable",
     url: "/stable",
     icon: Home,
+  },
+  {
+    title: "Training",
+    url: "/training",
+    icon: Dumbbell,
+  },
+  {
+    title: "Oyakata",
+    url: "/oyakata",
+    icon: Crown,
   },
   {
     title: "Rikishi",

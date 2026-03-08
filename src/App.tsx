@@ -23,6 +23,7 @@ import RecapPage from "./pages/RecapPage";
 import TrainingPage from "./pages/TrainingPage";
 import MainMenu from "./pages/MainMenu";
 import SettingsPage from "./pages/SettingsPage";
+import OyakataPage from "./pages/OyakataPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,13 +42,16 @@ const App = () => (
               <Route path="/main-menu" element={<MainMenu />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/stable" element={<StablePage />} />
+              <Route path="/stable/:id" element={<StablePage />} />
               <Route path="/training" element={<TrainingPage />} />
+              <Route path="/oyakata" element={<OyakataPage />} />
               <Route path="/rikishi/:rikishiId?" element={<RikishiPage />} />
               <Route path="/basho" element={<BashoPage />} />
               <Route path="/banzuke" element={<BanzukePage />} />
               <Route path="/rivalries" element={<RivalriesPage />} />
               <Route path="/economy" element={<EconomyPage />} />
               <Route path="/talent" element={<TalentPoolPage />} />
+              <Route path="/talent-pool" element={<TalentPoolPage />} />
               <Route path="/scouting" element={<ScoutingPage />} />
               <Route path="/governance" element={<GovernancePage />} />
               <Route path="/recap" element={<RecapPage />} />
