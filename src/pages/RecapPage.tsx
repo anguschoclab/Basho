@@ -23,7 +23,10 @@ import {
   Shield,
   Coins,
   UserX,
-  Heart
+  Heart,
+  Award,
+  Star,
+  Medal
 } from "lucide-react";
 import type { EngineEvent, BashoResult, Heya } from "@/engine/types";
 
