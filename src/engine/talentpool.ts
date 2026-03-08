@@ -28,6 +28,7 @@ import type {
 import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
+import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -547,10 +548,24 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
   const arch = getArchetypeForHeya(world, heyaId);
   const styleBias = determineNPCStyleBias(world, heyaId);
 
+  // ── Oyakata Style Preference scoring (from oyakataStylePreferences.ts) ──
+  const heya = world.heyas.get(heyaId);
+  const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  let philosophyScore = 0;
+  if (oyakata) {
+    // scoreRecruitForOyakata returns 0-100; center it around 0 (-25..+25)
+    philosophyScore = (scoreRecruitForOyakata(world, oyakata, {
+      archetype: c.archetype,
+      style: c.style,
+      talentSeed: c.talentSeed,
+      weightPotentialKg: c.weightPotentialKg
+    }) - 50) * 0.5;
+  }
+
   const age = world.year - c.birthYear;
   const poolType = poolTypeOfCandidate(world, c);
 
-  let score = 0;
+  let score = philosophyScore;
 
   // Raw ceiling / readiness
   const ambitionWeight = 0.35 + traits.ambition / 250; // 0.35..0.75
@@ -575,14 +590,12 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
     score += traits.tradition * 0.06;
   }
 
-  // Style fit (NPC meta / roster bias)
+  // Style fit (NPC meta / roster bias) — reduced weight since philosophy covers this
   if (styleBias !== "neutral") {
-    if (c.style === styleBias) score += 10;
-    else if (c.style === "hybrid") score += 3;
-    else score -= 6;
+    if (c.style === styleBias) score += 5;
+    else if (c.style === "hybrid") score += 2;
+    else score -= 3;
   }
-  if (traits.tradition >= 70 && c.style === "yotsu") score += 4;
-  if (traits.tradition <= 30 && c.style === "oshi") score += 3;
 
   // Temperament alignment
   const disciplineDelta = (c.temperament.discipline - 50) / 50; // -1..1
@@ -592,7 +605,7 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
   if (c.tags.includes("disciplined")) score += 4 + traits.tradition * 0.03;
   if (c.tags.includes("volatile")) score += traits.risk * 0.05 - traits.compassion * 0.06;
 
-  // Archetype-specific tastes
+  // Archetype-specific tastes (layered on top of philosophy)
   if (arch === "gambler") {
     if (c.tags.includes("volatile")) score += 8;
     if (c.archetype === "trickster" || c.archetype === "speedster") score += 6;
@@ -611,7 +624,6 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
     if (c.isAmateurStar) score += 6;
   }
   if (arch === "strategist") {
-    // Strategy: align with roster bias and take flexible archetypes
     if (c.style === "hybrid") score += 5;
     if (c.archetype === "all_rounder" || c.archetype === "hybrid_oshi_yotsu") score += 6;
   }
