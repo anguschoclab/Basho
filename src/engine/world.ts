@@ -156,8 +156,10 @@ export function applyBoutResult(
   safeCall(() => (injuries as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (rivalries as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (economics as any).onBoutResolved?.(world, { match, result, east, west }));
-  safeCall(() => (events as any).onBoutResolved?.(world, { match, result, east, west }));
   safeCall(() => (scoutingStore as any).onBoutResolved?.(world, { match, result, east, west }));
+
+  // Emit canonical bout result event
+  EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
 
   return world;
 }
