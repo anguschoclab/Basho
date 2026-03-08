@@ -1,9 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Trophy,
   Swords,
@@ -14,11 +13,10 @@ import {
   Star,
   AlertTriangle,
   MessageCircle,
-  Filter,
   Search,
-  ChevronDown,
+  ExternalLink,
 } from "lucide-react";
-import type { EngineEvent, EventCategory } from "@/engine/types";
+import type { EngineEvent } from "@/engine/types";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -50,6 +48,69 @@ function formatEventTime(e: EngineEvent): string {
   return `W${e.week}`;
 }
 
+/**
+ * Derive the best navigation route for an event based on its category, type, and entity references.
+ */
+function getEventRoute(e: EngineEvent): string | null {
+  const cat = e.category;
+  const type = e.type?.toLowerCase() ?? "";
+
+  // Match/bout events → basho page
+  if (cat === "match" || type.includes("bout") || type.includes("match")) {
+    return "/basho";
+  }
+
+  // Basho-level events
+  if (cat === "basho") {
+    if (type.includes("recap") || type.includes("wrap") || type.includes("end")) return "/recap";
+    return "/basho";
+  }
+
+  // Rikishi-specific events → rikishi profile
+  if (e.rikishiId) {
+    // Training, injury, career, promotion for a specific rikishi
+    if (["training", "injury", "career", "promotion"].includes(cat)) {
+      return `/rikishi/${e.rikishiId}`;
+    }
+  }
+
+  // Scouting → talent pool
+  if (cat === "scouting") return "/talent-pool";
+
+  // Economy/sponsor → economy page
+  if (cat === "economy" || cat === "sponsor") return "/economy";
+
+  // Rivalry → rivalries page
+  if (cat === "rivalry") return "/rivalries";
+
+  // Discipline/governance → governance
+  if (cat === "discipline") return "/governance";
+
+  // Welfare → stable page (player's)
+  if (cat === "welfare" && e.heyaId) return `/stable/${e.heyaId}`;
+
+  // Media → almanac or stable
+  if (cat === "media") {
+    if (e.rikishiId) return `/rikishi/${e.rikishiId}`;
+    if (e.heyaId) return `/stable/${e.heyaId}`;
+  }
+
+  // Milestone → rikishi or stable
+  if (cat === "milestone") {
+    if (e.rikishiId) return `/rikishi/${e.rikishiId}`;
+    if (e.heyaId) return `/stable/${e.heyaId}`;
+  }
+
+  // Facility → stable
+  if (cat === "facility" && e.heyaId) return `/stable/${e.heyaId}`;
+
+  // Fallback: if we have a rikishi, link there; if heya, link there
+  if (e.rikishiId) return `/rikishi/${e.rikishiId}`;
+  if (e.heyaId) return `/stable/${e.heyaId}`;
+
+  return null;
+}
+
 interface EventLogPanelProps {
   className?: string;
 }
@@ -63,7 +124,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const world = state.world;
   const events = useMemo(() => {
     if (!world?.events?.log) return [];
-    // Show most recent 100 events, newest first
     const all = [...world.events.log];
     all.reverse();
     return all.slice(0, 100);
@@ -74,7 +134,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     return events.filter((e) => e.category === filter);
   }, [events, filter]);
 
-  // Group by date
   const grouped = useMemo(() => {
     const groups: { label: string; events: EngineEvent[] }[] = [];
     let currentLabel = "";
@@ -94,6 +153,13 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     return groups;
   }, [filteredEvents]);
 
+  const handleEventClick = useCallback((e: EngineEvent) => {
+    const route = getEventRoute(e);
+    if (route) {
+      navigate(route);
+    }
+  }, [navigate]);
+
   const filterOptions = [
     { value: "all", label: "All" },
     { value: "match", label: "Match" },
@@ -110,7 +176,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       {/* Header */}
       <div className="p-3 border-b border-border shrink-0">
         <h2 className="font-display font-semibold text-sm">Messages</h2>
-        {/* Filter tabs */}
         <div className="flex gap-1 mt-2 flex-wrap">
           {filterOptions.map((f) => (
             <button
@@ -150,61 +215,82 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                 const Icon = meta.icon;
                 const isExpanded = expandedId === e.id;
                 const isPlayerRelevant = e.heyaId === world.playerHeyaId;
+                const route = getEventRoute(e);
+                const hasLink = !!route;
 
                 return (
-                  <button
+                  <div
                     key={e.id}
-                    onClick={() => setExpandedId(isExpanded ? null : e.id)}
                     className={`w-full text-left p-2 rounded-md transition-colors mb-0.5 group ${
                       isExpanded ? "bg-muted" : "hover:bg-muted/50"
                     } ${isPlayerRelevant ? "border-l-2 border-l-primary" : ""}`}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className={`mt-0.5 shrink-0 ${meta.color}`}>
-                        <Icon className="h-3.5 w-3.5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="text-xs font-medium truncate">
-                            {e.title}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground shrink-0">
-                            {formatEventTime(e)}
-                          </span>
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : e.id)}
+                      className="w-full text-left"
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className={`mt-0.5 shrink-0 ${meta.color}`}>
+                          <Icon className="h-3.5 w-3.5" />
                         </div>
-                        {!isExpanded && (
-                          <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-                            {e.summary}
-                          </p>
-                        )}
-                        {isExpanded && (
-                          <div className="mt-1 space-y-1">
-                            <p className="text-[11px] text-muted-foreground">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-xs font-medium truncate">
+                              {e.title}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground shrink-0">
+                              {formatEventTime(e)}
+                            </span>
+                          </div>
+                          {!isExpanded && (
+                            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                               {e.summary}
                             </p>
-                            <div className="flex items-center gap-1 flex-wrap">
-                              <Badge variant="outline" className="text-[9px] h-4">
-                                {meta.label}
-                              </Badge>
-                              {e.importance !== "minor" && (
-                                <Badge
-                                  variant={e.importance === "headline" ? "default" : "secondary"}
-                                  className="text-[9px] h-4"
-                                >
-                                  {e.importance}
-                                </Badge>
-                              )}
-                              {isPlayerRelevant && (
-                                <Badge className="text-[9px] h-4 bg-primary/20 text-primary">
-                                  Your stable
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="mt-1 ml-6 space-y-1.5">
+                        <p className="text-[11px] text-muted-foreground">
+                          {e.summary}
+                        </p>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <Badge variant="outline" className="text-[9px] h-4">
+                            {meta.label}
+                          </Badge>
+                          {e.importance !== "minor" && (
+                            <Badge
+                              variant={e.importance === "headline" ? "default" : "secondary"}
+                              className="text-[9px] h-4"
+                            >
+                              {e.importance}
+                            </Badge>
+                          )}
+                          {isPlayerRelevant && (
+                            <Badge className="text-[9px] h-4 bg-primary/20 text-primary">
+                              Your stable
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Clickable navigation link */}
+                        {hasLink && (
+                          <button
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              handleEventClick(e);
+                            }}
+                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
+                          >
+                            <ExternalLink className="h-2.5 w-2.5" />
+                            {getLinkLabel(e)}
+                          </button>
                         )}
                       </div>
-                    </div>
-                  </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -213,4 +299,26 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       </ScrollArea>
     </aside>
   );
+}
+
+/** User-friendly label for the navigation link */
+function getLinkLabel(e: EngineEvent): string {
+  const cat = e.category;
+  const type = e.type?.toLowerCase() ?? "";
+
+  if (cat === "match" || type.includes("bout")) return "View bout →";
+  if (cat === "basho") {
+    if (type.includes("recap") || type.includes("wrap")) return "View recap →";
+    return "View tournament →";
+  }
+  if (cat === "scouting") return "View talent pool →";
+  if (cat === "economy" || cat === "sponsor") return "View finances →";
+  if (cat === "rivalry") return "View rivalries →";
+  if (cat === "discipline") return "View governance →";
+  if (e.rikishiId && ["training", "injury", "career", "promotion", "milestone"].includes(cat)) {
+    return "View rikishi →";
+  }
+  if (e.heyaId) return "View stable →";
+  if (e.rikishiId) return "View rikishi →";
+  return "View details →";
 }
