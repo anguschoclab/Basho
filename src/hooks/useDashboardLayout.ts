@@ -84,8 +84,7 @@ export function useDashboardLayout(defaults: WidgetDef[], columnCount: number) {
     setPlacements(prev => {
       const next = [...prev];
       const fromIdx = next.findIndex(p => p.id === fromId);
-      const toIdx = next.findIndex(p => p.id === to.id);
-      if (fromIdx < 0 || toIdx < 0) return prev;
+      if (fromIdx < 0) return prev;
 
       // Move dragged widget to target's column
       next[fromIdx] = { ...next[fromIdx], column: to.column };
@@ -98,8 +97,10 @@ export function useDashboardLayout(defaults: WidgetDef[], columnCount: number) {
       // Remove the dragged item and insert before/at the target
       const withoutDragged = colItems.filter(p => p.id !== fromId);
       const targetPos = withoutDragged.findIndex(p => p.id === to.id);
+      // If target not found (e.g. drop zone sentinel), append to end
       const insertAt = targetPos >= 0 ? targetPos : withoutDragged.length;
-      withoutDragged.splice(insertAt, 0, next[fromIdx]);
+      const draggedItem = next[fromIdx];
+      withoutDragged.splice(insertAt, 0, draggedItem);
 
       // Reassign order values
       for (let i = 0; i < withoutDragged.length; i++) {
