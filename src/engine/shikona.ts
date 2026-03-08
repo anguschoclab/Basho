@@ -361,7 +361,7 @@ function generateCandidate(
       return prefix + suffix;
     }
     case "triple": {
-      if (rng.next() > rankRule.tripleChance) {
+      if (rng() > rankRule.tripleChance) {
         const prefix = pickPrefixByCategoryBias(rng, house.prefixCategoryBias);
         const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
         return prefix + suffix;
