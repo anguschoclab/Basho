@@ -478,8 +478,14 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   let strikeEvent: StrikeEvent | undefined = undefined;
   let adv: Advantage = st.advantage;
 
-  const beltP = clamp01(0.48 + beltEdge / 120);
-  const pushP = clamp01(0.45 + pushEdge / 120);
+  // Tactical AI: leader's clinch preference shifts probabilities
+  const leaderTac = leader === "east" ? eastTac : westTac;
+  const tacBeltShift = leaderTac?.clinchPreference === "belt" ? 0.08 : leaderTac?.clinchPreference === "push" ? -0.06 : 0;
+  const tacPushShift = leaderTac?.clinchPreference === "push" ? 0.08 : leaderTac?.clinchPreference === "belt" ? -0.06 : 0;
+  const tacClinchBonus = leaderTac?.clinchBonus ?? 0;
+
+  const beltP = clamp01(0.48 + beltEdge / 120 + tacBeltShift + tacClinchBonus / 200);
+  const pushP = clamp01(0.45 + pushEdge / 120 + tacPushShift + tacClinchBonus / 200);
   const roll = rng.next();
 
   if (roll < beltP && beltP >= pushP) {
