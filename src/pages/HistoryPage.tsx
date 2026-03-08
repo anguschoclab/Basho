@@ -127,7 +127,7 @@ export default function HistoryPage() {
                           <span>{basho.year}年</span>
                           <span>{bashoLocation}</span>
                           <Badge variant="secondary" className="text-xs">
-                            Basho #{basho.bashoNumber}
+                            {bashoIdx >= 0 ? `${bashoIdx + 1}/6` : `#${basho.bashoNumber}`}
                           </Badge>
                         </CardDescription>
                       </div>
