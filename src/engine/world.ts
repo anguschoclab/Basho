@@ -268,6 +268,9 @@ export function endBasho(world: WorldState): WorldState {
   // Persistent Talent Pools: NPC stables fill their own vacancies from the shared pool.
   safeCall(() => (talentpool as any).fillVacanciesForNPC?.(world, vacanciesByHeyaId));
 
+  // Post-basho sponsor churn (Constitution Addendum D)
+  safeCall(() => { runSponsorChurn(world); });
+
   // Autosave at basho-end boundary (Constitution §6)
   safeCall(() => { autosave(world); });
 
