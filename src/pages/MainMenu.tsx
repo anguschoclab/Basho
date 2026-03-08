@@ -632,6 +632,21 @@ export default function MainMenu() {
                 variant="ghost"
                 size="sm"
                 className="h-7 text-xs gap-1"
+                onClick={() => {
+                  if (stables.length === 0) return;
+                  const random = stables[Math.floor(Math.random() * stables.length)];
+                  setSelectedHeyaId(random.id);
+                  setPreviewHeya(random);
+                }}
+              >
+                <Dices className="w-3 h-3" />
+                Random Stable
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
                 onClick={() => setShowSeedInput(!showSeedInput)}
               >
                 <Dices className="w-3 h-3" />
