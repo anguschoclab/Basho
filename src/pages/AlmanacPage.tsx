@@ -451,7 +451,129 @@ export default function AlmanacPage() {
             </div>
           </TabsContent>
 
-          {/* Records Tab */}
+          {/* Leaderboards Tab */}
+          <TabsContent value="leaderboards">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Yūshō Leaderboard */}
+              <Card className="paper">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Trophy className="h-5 w-5 text-amber-400" />
+                    優勝 Yūshō
+                  </CardTitle>
+                  <CardDescription>Championship titles won</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {yushoWinners.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-6 text-sm">No tournaments completed yet</p>
+                    ) : (
+                      yushoWinners.slice(0, 15).map((entry, idx) => (
+                        <Link
+                          key={entry.rikishi!.id}
+                          to={`/rikishi/${entry.rikishi!.id}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+                        >
+                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-amber-400" : "text-muted-foreground"}`}>
+                            {idx + 1}
+                          </span>
+                          {idx === 0 && <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
+                          {idx === 1 && <Medal className="h-3.5 w-3.5 text-gray-400 shrink-0" />}
+                          {idx === 2 && <Medal className="h-3.5 w-3.5 text-amber-600 shrink-0" />}
+                          {idx > 2 && <span className="w-3.5 shrink-0" />}
+                          <span className="flex-1 font-display truncate">{entry.rikishi!.shikona}</span>
+                          <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                            {entry.count}
+                          </Badge>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Career Wins Leaderboard */}
+              <Card className="paper">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <TrendingUp className="h-5 w-5 text-emerald-400" />
+                    通算勝利 Total Wins
+                  </CardTitle>
+                  <CardDescription>All-time career victories</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {topChampions.map((rikishi, idx) => {
+                      const totalBouts = (rikishi.careerWins || 0) + (rikishi.careerLosses || 0);
+                      return (
+                        <Link
+                          key={rikishi.id}
+                          to={`/rikishi/${rikishi.id}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+                        >
+                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-emerald-400" : "text-muted-foreground"}`}>
+                            {idx + 1}
+                          </span>
+                          {idx < 3 ? (
+                            <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0" fill="currentColor" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span className="flex-1 font-display truncate">{rikishi.shikona}</span>
+                          <div className="text-right">
+                            <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                              {rikishi.careerWins}勝
+                            </Badge>
+                            <div className="text-[10px] text-muted-foreground font-mono">
+                              {rikishi.careerWins}-{rikishi.careerLosses}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Kinboshi Leaderboard */}
+              <Card className="paper">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Star className="h-5 w-5 text-yellow-400" />
+                    金星 Kinboshi
+                  </CardTitle>
+                  <CardDescription>Gold stars (maegashira defeating yokozuna)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {kinboshiLeaders.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-6 text-sm">No kinboshi recorded yet</p>
+                    ) : (
+                      kinboshiLeaders.map((rikishi, idx) => (
+                        <Link
+                          key={rikishi.id}
+                          to={`/rikishi/${rikishi.id}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+                        >
+                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-yellow-400" : "text-muted-foreground"}`}>
+                            {idx + 1}
+                          </span>
+                          {idx < 3 ? (
+                            <Star className="h-3.5 w-3.5 text-yellow-400 shrink-0" fill="currentColor" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span className="flex-1 font-display truncate">{rikishi.shikona}</span>
+                          <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                            {rikishi.economics?.kinboshiCount || 0}★
+                          </Badge>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           <TabsContent value="records">
             <Card className="paper">
               <CardHeader>
