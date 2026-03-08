@@ -330,6 +330,65 @@ export default function RecapPage() {
             </CardContent>
           </Card>
 
+          {/* OZEKI KADOBAN STATUS */}
+          {(() => {
+            const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
+            const ozekiEntries = Object.entries(kadobanMap).filter(([_, s]) => s.isKadoban || s.consecutiveMakeKoshi >= 2);
+            if (ozekiEntries.length === 0) return null;
+            return (
+              <Card className="border-amber-600/30 bg-amber-600/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShieldAlert className="h-5 w-5 text-amber-600" />
+                    Ōzeki Kadoban Watch
+                  </CardTitle>
+                  <CardDescription>Ōzeki with makekoshi face demotion pressure</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {ozekiEntries.map(([rid, status]) => {
+                      const r = world.rikishi.get(rid);
+                      if (!r) return null;
+                      const heya = world.heyas.get(r.heyaId);
+                      const isPlayerRikishi = r.heyaId === world.playerHeyaId;
+                      const isDemoted = status.consecutiveMakeKoshi >= 2;
+                      return (
+                        <div key={rid} className={`p-3 rounded-lg border ${isDemoted ? 'border-destructive/50 bg-destructive/5' : 'border-amber-500/30 bg-amber-500/10'}`}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`h-10 w-10 rounded-full flex items-center justify-center ${isDemoted ? 'bg-destructive/20' : 'bg-amber-500/20'}`}>
+                                <ShieldAlert className={`h-5 w-5 ${isDemoted ? 'text-destructive' : 'text-amber-500'}`} />
+                              </div>
+                              <div>
+                                <p className="font-bold">{r.shikona}</p>
+                                <p className="text-xs text-muted-foreground">{heya?.name || "Unknown Stable"}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              {isDemoted ? (
+                                <Badge variant="destructive">DEMOTED TO SEKIWAKE</Badge>
+                              ) : (
+                                <Badge className="bg-amber-600 hover:bg-amber-700">角番 KADOBAN</Badge>
+                              )}
+                              {isPlayerRikishi && (
+                                <p className="text-xs text-primary mt-1 font-medium">Your rikishi</p>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {isDemoted
+                              ? "Two consecutive losing records — demoted from Ōzeki to Sekiwake."
+                              : "Must achieve kachi-koshi (winning record) next basho or face demotion."}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
           {/* RETIREMENTS & DEPARTURES */}
           <Card>
             <CardHeader>
