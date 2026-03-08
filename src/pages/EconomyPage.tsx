@@ -408,6 +408,9 @@ export default function EconomyPage() {
           </Card>
         )}
 
+        {/* Sponsors Panel */}
+        <SponsorsPanel />
+
         {/* Info Note */}
         <Card className="bg-muted/30 paper">
           <CardContent className="pt-4">
