@@ -249,7 +249,7 @@ function calculateGrowthVector(
 // ============================================================================
 
 export function applyWeeklyTraining(world: WorldState): WorldState {
-  const rng = new SeededRNG(world.id + world.calendar.currentWeek);
+  const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
 
   world.rikishi.forEach(rikishi => {
     if (rikishi.isRetired) return;
