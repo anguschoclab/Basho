@@ -521,7 +521,7 @@ function RecruitingTab({
                             className="h-7 text-xs gap-1"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleOffer(c.candidateId);
+                              handleOfferClick(c);
                             }}
                           >
                             <UserPlus className="h-3 w-3" />
