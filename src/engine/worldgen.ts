@@ -208,16 +208,58 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
   const currentYear = 2024;
-  const ranks: Rank[] = ["yokozuna", "ozeki", "ozeki", "sekiwake", "sekiwake", "komusubi", "komusubi"];
-  for (let i = 0; i < 35; i++) ranks.push("maegashira");  // 42 makuuchi total
-  for (let i = 0; i < 28; i++) ranks.push("juryo");       // 28 juryo
-  // Lower divisions to fill stables (makushita and below represented as "jonidan")
-  for (let i = 0; i < 180; i++) ranks.push("jonidan");    // ~250 total wrestlers
+
+  // Build rank slots with proper east/west pairing
+  interface RankSlot { rank: Rank; division: Division; rankNumber: number; side: Side }
+  const rankSlots: RankSlot[] = [];
+
+  // Sanyaku ranks (1 east, 1 west each — except yokozuna can have 1-2)
+  const sanyakuDef: Array<{ rank: Rank; count: number }> = [
+    { rank: "yokozuna", count: 1 },  // 1 yokozuna (east only initially)
+    { rank: "ozeki", count: 2 },
+    { rank: "sekiwake", count: 2 },
+    { rank: "komusubi", count: 2 },
+  ];
+  for (const { rank, count } of sanyakuDef) {
+    for (let i = 0; i < count; i++) {
+      rankSlots.push({ rank, division: "makuuchi", rankNumber: 1, side: i % 2 === 0 ? "east" : "west" });
+    }
+  }
+
+  // Maegashira: 16 ranks × 2 sides = 32 + 7 sanyaku ≈ 42 makuuchi
+  for (let n = 1; n <= 17; n++) {
+    rankSlots.push({ rank: "maegashira", division: "makuuchi", rankNumber: n, side: "east" });
+    rankSlots.push({ rank: "maegashira", division: "makuuchi", rankNumber: n, side: "west" });
+  }
+
+  // Juryo: 14 ranks × 2 sides = 28
+  for (let n = 1; n <= 14; n++) {
+    rankSlots.push({ rank: "juryo", division: "juryo", rankNumber: n, side: "east" });
+    rankSlots.push({ rank: "juryo", division: "juryo", rankNumber: n, side: "west" });
+  }
+
+  // Lower divisions to fill stables
+  const lowerDivisions: Array<{ rank: Rank; division: Division; count: number }> = [
+    { rank: "makushita", division: "makushita", count: 120 },
+    { rank: "sandanme", division: "sandanme", count: 100 },
+    { rank: "jonidan", division: "jonidan", count: 80 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 30 },
+  ];
+  for (const { rank, division, count } of lowerDivisions) {
+    for (let i = 0; i < count; i++) {
+      rankSlots.push({
+        rank,
+        division,
+        rankNumber: Math.floor(i / 2) + 1,
+        side: i % 2 === 0 ? "east" : "west",
+      });
+    }
+  }
 
   let rikishiCounter = 0;
   const heyaList = Array.from(heyaMap.values());
 
-  ranks.forEach((rank, idx) => {
+  rankSlots.forEach((slot) => {
     const rid = `rikishi_${rikishiCounter++}`;
     const rrng = rngFromSeed(actualSeed, "worldgen", `rikishi::${rid}`);
     
@@ -226,7 +268,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     const origin = getRandom(rrng, ORIGINS);
     const birthYear = currentYear - (20 + rrng.int(0, 11));
     
-    const stats = generateRikishiStats(rrng, rank, archetype);
+    const stats = generateRikishiStats(rrng, slot.rank, archetype);
 
     const newRikishi: Rikishi = {
       id: rid,
@@ -234,14 +276,12 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       name: `Rikishi ${rid}`,
       heyaId: heya.id,
       nationality: origin === "Mongolia" ? "Mongolia" : "Japan",
-      origin: origin, // Legacy compat
+      origin: origin,
       birthYear: birthYear,
       
-      // Physicals
       height: 170 + rrng.next() * 25,
       weight: stats.weight,
       
-      // Attributes (Stats)
       stats: stats,
       power: stats.strength,
       speed: stats.speed,
@@ -255,7 +295,6 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       momentum: 50,
       stamina: stats.stamina,
       
-      // Status
       injuryStatus: {
         type: "none",
         isInjured: false,
@@ -268,19 +307,16 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       injuryWeeksRemaining: 0,
       condition: 90 + rrng.next() * 10,
       motivation: 50 + rrng.next() * 50,
-      talentSeed: Math.round(25 + rrng.next() * 65), // 25-90 potential ceiling
+      talentSeed: Math.round(25 + rrng.next() * 65),
       
-      // Style
       style: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid",
       archetype: archetype,
       
-      // Rank
-      division: rank === "juryo" ? "juryo" : "makuuchi",
-      rank: rank,
-      rankNumber: Math.floor(idx / 2) + 1,
-      side: idx % 2 === 0 ? "east" : "west",
+      division: slot.division,
+      rank: slot.rank,
+      rankNumber: slot.rankNumber,
+      side: slot.side,
       
-      // Records
       careerWins: 0,
       careerLosses: 0,
       currentBashoWins: 0,

@@ -155,6 +155,19 @@ export function reportScandal(
     summary: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}.`,
     data: { severity, fineAmount: fine, scandalScoreDelta: points }
   });
+
+  // Generate media headline for scandal
+  try {
+    generateScandalHeadline({
+      world,
+      heyaId: heya.id,
+      type: "scandal",
+      severity,
+      reason,
+      description: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}.`,
+      fineAmount: fine,
+    });
+  } catch (_) { /* media optional */ }
   
   // Force immediate re-evaluation of status
   processHeyaGovernance(heya, world);
