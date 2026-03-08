@@ -47,7 +47,7 @@ export function RivalStablesPanel() {
     for (const heya of world.heyas.values()) {
       if (heya.id === world.playerHeyaId) continue;
 
-      const perception = buildPerceptionSnapshot(world, heya.id);
+      const perception = getCachedPerception(world, heya.id);
 
       // Infer NPC training intensity from perception bands (mirrors npcAI logic)
       let trainingIntensity = "balanced";
