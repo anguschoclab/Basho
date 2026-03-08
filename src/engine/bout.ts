@@ -591,13 +591,14 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   const attacker = adv === "east" ? east : west;
   const defender = adv === "east" ? west : east;
 
-  // Base Chance
+  // Base Chance — power now contributes to finish (helps oshi)
   const eastWinBase = 
     0.5 + 
     (adv === "east" ? 0.18 : adv === "west" ? -0.18 : 0) +
-    (stat(east, "balance") - stat(west, "balance")) / 400 +
-    (stat(east, "technique") - stat(west, "technique")) / 450 +
-    (st.fatigueWest - st.fatigueEast) / 120 +
+    (stat(east, "balance") - stat(west, "balance")) / 450 +
+    (stat(east, "technique") - stat(west, "technique")) / 500 +
+    (stat(east, "power") - stat(west, "power")) / 600 +
+    (st.fatigueWest - st.fatigueEast) / 140 +
     jitter(rng, 0.06);
 
   let eastWinP = clamp01(eastWinBase);
