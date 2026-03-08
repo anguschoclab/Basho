@@ -8,6 +8,7 @@
 // - Talent pool integration from talentpool.ts
 
 import { useMemo, useState } from "react";
+import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useNavigate } from "react-router-dom";
