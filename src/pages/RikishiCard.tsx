@@ -2,32 +2,24 @@
  * File Name: src/pages/RikishiCard.tsx
  * Notes:
  * - NO-LEAK RETROFIT: replaced raw stat bars with descriptor bands.
- * - No raw 0–100 numbers shown to player.
+ * - Uses UIRikishi projection DTO from uiModels.ts.
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { RikishiUIModel } from '@/engine/uiModels';
+import type { UIRikishi } from '@/engine/uiModels';
 import { Link } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Zap, Shield, Brain, Activity, Sword, Anchor, Sparkles } from "lucide-react";
-import { toStatBand, toConditionBand, toPotentialBand, STAT_BAND_LABELS, CONDITION_LABELS, POTENTIAL_LABELS } from "@/engine/descriptorBands";
-import type { PotentialBand } from "@/engine/descriptorBands";
+import { toConditionBand, CONDITION_LABELS, STAT_BAND_LABELS, POTENTIAL_LABELS } from "@/engine/descriptorBands";
 
 interface RikishiCardProps {
-  rikishi: RikishiUIModel;
+  rikishi: UIRikishi;
   compact?: boolean;
 }
 
 const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) => {
-  const bandColor = (band: string) => {
-    if (band === "exceptional" || band === "outstanding") return "text-primary";
-    if (band === "strong" || band === "capable") return "text-foreground";
-    if (band === "developing") return "text-muted-foreground";
-    return "text-destructive";
-  };
-
   return (
     <Card className="hover:shadow-md transition-all duration-200 overflow-hidden border-l-4 border-l-primary/40">
       <CardHeader className={`${compact ? 'p-3' : 'p-4'} bg-secondary/5 pb-2`}>
@@ -37,25 +29,25 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
               {rikishi.shikona}
             </Link>
             <div className="text-xs text-muted-foreground font-mono mt-0.5">
-              {rikishi.heya}
+              {rikishi.heyaName}
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
             <Badge variant={rikishi.rank === "yokozuna" ? "default" : "secondary"} className="text-[10px] font-bold uppercase tracking-wider">
-              {rikishi.rank}
+              {rikishi.rankLabel}
             </Badge>
-            <span className="text-[10px] text-muted-foreground">{rikishi.record}</span>
+            <span className="text-[10px] text-muted-foreground">{rikishi.currentBashoRecord}</span>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className={`${compact ? 'p-3' : 'p-4'} space-y-3 pt-2`}>
         {/* Status Line */}
         <div className="flex justify-between items-center text-xs">
           <div className="flex gap-2">
-             {rikishi.injuryStatus.isInjured && (
+            {rikishi.isInjured && (
               <Badge variant="destructive" className="text-[10px] h-5 px-1.5 py-0">
-                {rikishi.injuryStatus.severity} Injury
+                {rikishi.injurySummary}
               </Badge>
             )}
             {(() => {
@@ -75,7 +67,7 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
             <Tooltip>
               <TooltipTrigger asChild>
                 <Badge variant="outline" className="text-[10px] bg-blue-50/50 text-blue-700 hover:bg-blue-100 cursor-help border-blue-200">
-                  {rikishi.archetype}
+                  {rikishi.archetypeName}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
@@ -89,10 +81,8 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
           </Badge>
 
           {/* Potential Band Indicator */}
-          {(() => {
-            const r = rikishi as any;
-            const potBand = toPotentialBand(r.talentSeed);
-            if (potBand === "unknown") return null;
+          {rikishi.potentialBand !== "unknown" && (() => {
+            const potBand = rikishi.potentialBand;
             const info = POTENTIAL_LABELS[potBand];
             const potColor = potBand === "generational" ? "border-amber-400 text-amber-600 bg-amber-50/50"
               : potBand === "star" ? "border-purple-400 text-purple-600 bg-purple-50/50"
@@ -117,15 +107,15 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
           })()}
         </div>
 
-        {/* Stat Descriptors (Non-compact only) — NO RAW NUMBERS */}
+        {/* Stat Descriptors (Non-compact only) — Uses descriptor bands */}
         {!compact && (
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 border-t border-dashed mt-2">
-            <StatDescriptor icon={<Sword size={12} />} label="Power" value={rikishi.stats.strength} />
-            <StatDescriptor icon={<Shield size={12} />} label="Technique" value={rikishi.stats.technique} />
-            <StatDescriptor icon={<Zap size={12} />} label="Speed" value={rikishi.stats.speed} />
-            <StatDescriptor icon={<Anchor size={12} />} label="Weight" displayValue={`${Math.round(rikishi.stats.weight)}kg`} />
-            <StatDescriptor icon={<Brain size={12} />} label="Mental" value={rikishi.stats.mental} />
-            <StatDescriptor icon={<Activity size={12} />} label="Adaptability" value={rikishi.stats.adaptability} />
+            <StatDescriptor icon={<Sword size={12} />} label="Power" band={rikishi.descriptor.powerBand} />
+            <StatDescriptor icon={<Shield size={12} />} label="Technique" band={rikishi.descriptor.techniqueBand} />
+            <StatDescriptor icon={<Zap size={12} />} label="Speed" band={rikishi.descriptor.speedBand} />
+            <StatDescriptor icon={<Anchor size={12} />} label="Balance" band={rikishi.descriptor.balanceBand} />
+            <StatDescriptor icon={<Brain size={12} />} label="Condition" band={rikishi.descriptor.conditionBand} />
+            <StatDescriptor icon={<Activity size={12} />} label="Momentum" band={rikishi.descriptor.momentumBand} />
           </div>
         )}
       </CardContent>
@@ -137,11 +127,15 @@ const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi, compact = false }) =
 const StatDescriptor: React.FC<{
   icon: React.ReactNode;
   label: string;
-  value?: number;
-  displayValue?: string;
-}> = ({ icon, label, value, displayValue }) => {
-  const band = value != null ? toStatBand(value) : undefined;
-  const bandLabel = band ? STAT_BAND_LABELS[band] : displayValue ?? "—";
+  band: string;
+}> = ({ icon, label, band }) => {
+  const bandLabel = (STAT_BAND_LABELS as any)[band]?.label
+    ?? (CONDITION_LABELS as any)[band]?.label
+    ?? band;
+
+  const color = band === "exceptional" || band === "outstanding" ? "text-primary"
+    : band === "limited" || band === "struggling" || band === "fragile" ? "text-destructive"
+    : "text-foreground";
 
   return (
     <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase font-semibold py-1">
@@ -149,9 +143,7 @@ const StatDescriptor: React.FC<{
         {icon}
         <span>{label}</span>
       </div>
-      <span className={band === "exceptional" || band === "outstanding" ? "text-primary" : band === "limited" || band === "struggling" ? "text-destructive" : "text-foreground"}>
-        {bandLabel}
-      </span>
+      <span className={color}>{bandLabel}</span>
     </div>
   );
 };

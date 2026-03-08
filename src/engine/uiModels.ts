@@ -61,7 +61,7 @@ export interface UIRikishi {
   momentum: number; // 0-100 (allowed to show)
 
   // Career Phase
-  careerPhase: CareerPhase;
+  careerPhase: TrainingCareerPhase;
 
   // Records (public numbers — always OK to show)
   currentBashoWins: number;
