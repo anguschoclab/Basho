@@ -208,7 +208,7 @@ export default function GovernancePage() {
                       <p className="text-xs text-muted-foreground mt-1">{ruling.date}</p>
                       {ruling.effects?.fineAmount && (
                         <p className="text-sm text-destructive mt-1">
-                          Fine: {formatCurrency(ruling.effects.fineAmount)}
+                          Fine: {formatFinePenalty(ruling.effects.fineAmount)}
                         </p>
                       )}
                     </div>

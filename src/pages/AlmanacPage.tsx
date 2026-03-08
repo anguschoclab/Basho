@@ -41,10 +41,12 @@ function computeCareerStats(rikishi: Rikishi) {
   const losses = rikishi.careerLosses || 0;
   const totalBouts = wins + losses;
 
-  const winRate = totalBouts > 0 ? ((wins / totalBouts) * 100).toFixed(1) : "0.0";
+  // No-Leak: show win rate as assessment band, not percentage
+  const { toWinRateAssessment, WIN_RATE_LABELS } = require("@/engine/descriptorBands");
+  const assessment = WIN_RATE_LABELS[toWinRateAssessment(wins, losses)];
   const estimatedBasho = Math.floor(totalBouts / 15);
 
-  return { winRate, totalBouts, estimatedBasho };
+  return { winRateLabel: assessment, totalBouts, estimatedBasho };
 }
 
 // Get stable tier color (robust)
