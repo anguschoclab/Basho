@@ -76,6 +76,18 @@ function processHeyaGovernance(heya: Heya, world: WorldState): void {
       summary: ruling.reason,
       data: { governanceStatus: newStatus, scandalScore: Math.floor(heya.scandalScore) }
     });
+
+    // Generate media headline for governance status change
+    try {
+      generateScandalHeadline({
+        world,
+        heyaId: heya.id,
+        type: "status_change",
+        severity: newStatus === "sanctioned" ? "critical" : newStatus === "probation" ? "major" : "minor",
+        reason: `${heya.name} placed ${getStatusLabel(newStatus).toLowerCase()} by JSA`,
+        description: ruling.reason,
+      });
+    } catch (_) { /* media optional */ }
   }
 
   // 4. Update Risk Indicator
