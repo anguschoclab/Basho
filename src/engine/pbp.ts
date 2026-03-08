@@ -666,7 +666,6 @@ export function buildPbp(
   // Use voice matrix as default library (lazy-loaded singleton)
   if (!lib) {
     try {
-      const { getVoiceMatrix } = require("./pbpMatrix");
       lib = getVoiceMatrix();
     } catch {
       lib = DEFAULT_PBP_LIBRARY;
