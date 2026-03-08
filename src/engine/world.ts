@@ -173,6 +173,13 @@ function applyBoutResult(
     winner.economics.kinboshiCount = (winner.economics.kinboshiCount || 0) + 1;
   }
 
+  // Update head-to-head records
+  safeCall(() => {
+    const bashoId = world.currentBasho?.id ?? "unknown";
+    const year = world.year ?? 0;
+    updateH2H(winner, loser, result, bashoId, year, match.day);
+  });
+
   safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
