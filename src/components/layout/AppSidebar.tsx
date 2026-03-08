@@ -91,14 +91,12 @@ const items = [
   },
 ];
 
-function formatCurrency(amount: number): string {
-  if (amount >= 1_000_000) {
-    return `¥${(amount / 1_000_000).toFixed(1)}M`;
-  }
-  if (amount >= 1_000) {
-    return `¥${(amount / 1_000).toFixed(0)}K`;
-  }
-  return `¥${amount}`;
+function describeRunwayBrief(funds: number): { label: string; color: string } {
+  if (funds >= 50_000_000) return { label: "Secure", color: "text-emerald-500" };
+  if (funds >= 20_000_000) return { label: "Comfortable", color: "text-green-500" };
+  if (funds >= 5_000_000) return { label: "Tight", color: "text-yellow-500" };
+  if (funds >= 1_000_000) return { label: "Critical", color: "text-orange-500" };
+  return { label: "Desperate", color: "text-red-500" };
 }
 
 export function AppSidebar() {
