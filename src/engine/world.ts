@@ -159,6 +159,14 @@ export function applyBoutResult(
   standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
   standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
 
+  // Track kinboshi count on winner's economics
+  if (result.isKinboshi) {
+    if (!winner.economics) {
+      winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
+    }
+    winner.economics.kinboshiCount = (winner.economics.kinboshiCount || 0) + 1;
+  }
+
   safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
   safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
