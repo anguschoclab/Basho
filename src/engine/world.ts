@@ -308,7 +308,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   world.year = nextYear;
   world.currentBashoName = next;
   world.currentBasho = undefined;
-  world.cyclePhase = "interim";
+  enterInterim(world);
 
   return world;
 }
