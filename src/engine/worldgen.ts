@@ -289,6 +289,22 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     // swallow
   }
 
+  // Sponsor Pool & Kōenkai initialization (Constitution A6.4)
+  try {
+    const sponsorPool = generateSponsorPool(actualSeed);
+    world.sponsorPool = sponsorPool;
+
+    // Create kōenkai for each heya
+    for (const heya of heyaMap.values()) {
+      const koenkaiRng = rngFromSeed(actualSeed, "sponsors", `koenkai::${heya.id}`);
+      const koenkai = createKoenkai(heya.id, sponsorPool, heya.prestigeBand, koenkaiRng, 0);
+      sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
+      heya.koenkaiBand = koenkai.strengthBand;
+    }
+  } catch {
+    // swallow
+  }
+
   return world as WorldState;
 }
 
