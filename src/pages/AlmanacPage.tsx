@@ -625,6 +625,56 @@ export default function AlmanacPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Sanshō Leaderboard */}
+              <Card className="paper">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Medal className="h-5 w-5 text-purple-400" />
+                    三賞 Sanshō
+                  </CardTitle>
+                  <CardDescription>Special prizes (技能・敢闘・殊勲)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    {sanshoLeaders.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-6 text-sm">No special prizes awarded yet</p>
+                    ) : (
+                      sanshoLeaders.map((entry, idx) => (
+                        <Link
+                          key={entry.rikishi!.id}
+                          to={`/rikishi/${entry.rikishi!.id}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+                        >
+                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-purple-400" : "text-muted-foreground"}`}>
+                            {idx + 1}
+                          </span>
+                          {idx < 3 ? (
+                            <Medal className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span className="flex-1 font-display truncate">{entry.rikishi!.shikona}</span>
+                          <div className="flex items-center gap-1.5">
+                            {entry.ginoSho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Ginō-shō (Technique)">技{entry.ginoSho}</span>
+                            )}
+                            {entry.kantosho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Kantō-shō (Fighting Spirit)">敢{entry.kantosho}</span>
+                            )}
+                            {entry.shukunsho > 0 && (
+                              <span className="text-[10px] text-muted-foreground" title="Shukunshō (Outstanding)">殊{entry.shukunsho}</span>
+                            )}
+                            <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                              {entry.total}
+                            </Badge>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
