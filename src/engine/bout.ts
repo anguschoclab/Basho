@@ -440,7 +440,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
  * Phase 2 — Clinch / Stance
  * ========================= */
 
-function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState) {
+function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
   const leader: Side = st.advantage === "none" ? st.tachiaiWinner : (st.advantage as Side);
   const leaderR = leader === "east" ? east : west;
   const trailerR = leader === "east" ? west : east;
