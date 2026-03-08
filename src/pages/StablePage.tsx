@@ -239,7 +239,7 @@ export default function StablePage() {
   const [trainingState, setTrainingState] = useState<BeyaTrainingState>(() => {
     const existing = (heya as any).trainingState as BeyaTrainingState | undefined;
     const defaultSlots = Math.max(1, Math.min(6, sekitori.length || 3));
-    return existing ?? createDefaultTrainingState(defaultSlots);
+    return existing ?? createDefaultTrainingState(heya.id);
   });
 
   const persistTrainingState = (next: BeyaTrainingState) => {
