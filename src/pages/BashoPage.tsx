@@ -97,6 +97,7 @@ export default function BashoPage() {
 
   useEffect(() => {
     if (state.phase === "basho_recap") { navigate("/recap"); return; }
+    if (state.phase === "basho_results") { navigate("/recap"); return; }
     if (!world?.currentBasho) navigate("/");
   }, [world, navigate, state.phase]);
 

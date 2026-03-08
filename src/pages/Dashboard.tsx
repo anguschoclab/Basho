@@ -58,7 +58,7 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    if (state.phase === "basho_recap") navigate("/recap");
+    if (state.phase === "basho_recap" || state.phase === "basho_results") navigate("/recap");
   }, [state.phase, navigate]);
 
   useEffect(() => {
