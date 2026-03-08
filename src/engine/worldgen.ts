@@ -12,7 +12,7 @@ import { rngFromSeed } from "./rng";
 import {
   WorldState, Rikishi, Heya, Oyakata, 
   Rank, TacticalArchetype, StatureBand, PrestigeBand, 
-  FacilitiesBand, KoenkaiBandType, OyakataArchetype, 
+  FacilitiesBand, KoenkaiBandType, OyakataArchetype, RunwayBand,
   BashoName, Division, RikishiStats, Side, BashoState
 } from "./types";
 import { generateRikishiName } from "./shikona";
@@ -85,34 +85,87 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   const rikishiMap = new Map<string, Rikishi>();
   const oyakataMap = new Map<string, Oyakata>();
 
-  const heyaNames = ["Isegahama", "Kokonoe", "Takadagawa", "Sadogatake", "Futagoyama", "Arashio", "Miyagino", "Tatsunami"];
+  // Authentic heya names — 46 stables per Constitution requirement (45+)
+  const heyaNames = [
+    // Legendary / Powerful stables
+    "Isegahama", "Kokonoe", "Takadagawa", "Sadogatake", "Futagoyama",
+    "Dewanoumi", "Tokitsukaze", "Tagonoura", "Nishonoseki", "Kasugano",
+    // Established stables
+    "Arashio", "Miyagino", "Tatsunami", "Musashigawa", "Takasago",
+    "Azumazeki", "Hakkaku", "Oguruma", "Michinoku", "Onomatsu",
+    "Isenoumi", "Oitekaze", "Shikoroyama", "Minezaki", "Tamanoi",
+    // Mid-tier stables
+    "Tomozuna", "Naruto", "Kise", "Sakaigawa", "Irumagawa",
+    "Onogawa", "Asakayama", "Takekuma", "Oshiogawa", "Hanakago",
+    "Shikihide", "Minato", "Kataonami", "Nishikido", "Asahiyama",
+    // Rebuilding / Fragile stables
+    "Kagamiyama", "Tatsutagawa", "Chiganoura", "Otake", "Kiriyama",
+    "Magaki",
+  ];
+
+  const STATURE_BANDS: StatureBand[] = ["legendary", "powerful", "established", "rebuilding", "fragile"];
+  const PRESTIGE_BANDS: PrestigeBand[] = ["elite", "respected", "modest", "struggling", "unknown"];
+  const FACILITY_BANDS: FacilitiesBand[] = ["world_class", "excellent", "adequate", "basic", "minimal"];
+  const RUNWAY_BANDS: RunwayBand[] = ["secure", "comfortable", "tight", "critical"];
 
   // 1. Create Heyas & Oyakata
   heyaNames.forEach((name, idx) => {
     const heyaId = `heya_${idx}`;
     const oyakataId = `oyakata_${idx}`;
-    
+    const hRng = rngFromSeed(actualSeed, "worldgen", `heya::${heyaId}`);
+
+    // Tier distribution: first ~10 are strong, middle ~15 are established, rest are weaker
+    const tierPos = idx / heyaNames.length; // 0..1
+    let statureIdx: number, prestigeIdx: number, facilityIdx: number, runwayIdx: number;
+    if (tierPos < 0.22) {
+      // Top tier
+      statureIdx = hRng.int(0, 1);   // legendary or powerful
+      prestigeIdx = hRng.int(0, 1);  // elite or respected
+      facilityIdx = hRng.int(0, 1);  // world_class or excellent
+      runwayIdx = hRng.int(0, 1);    // secure or comfortable
+    } else if (tierPos < 0.55) {
+      // Mid tier
+      statureIdx = hRng.int(1, 2);   // powerful or established
+      prestigeIdx = hRng.int(1, 2);  // respected or modest
+      facilityIdx = hRng.int(1, 2);  // excellent or adequate
+      runwayIdx = hRng.int(1, 2);    // comfortable or tight
+    } else if (tierPos < 0.85) {
+      // Lower-mid tier
+      statureIdx = hRng.int(2, 3);   // established or rebuilding
+      prestigeIdx = hRng.int(2, 3);  // modest or struggling
+      facilityIdx = hRng.int(2, 3);  // adequate or basic
+      runwayIdx = hRng.int(1, 2);
+    } else {
+      // Bottom tier
+      statureIdx = hRng.int(3, 4);   // rebuilding or fragile
+      prestigeIdx = hRng.int(3, 4);  // struggling or unknown
+      facilityIdx = hRng.int(3, 4);  // basic or minimal
+      runwayIdx = hRng.int(2, 3);    // tight or critical
+    }
+
     // Detailed Oyakata Generation
-    const oyArchetype = getRandom(rng, OYAKATA_ARCHETYPES);
+    const oyArchetype = getRandom(hRng, OYAKATA_ARCHETYPES);
     const oyakata: Oyakata = {
       id: oyakataId,
       heyaId: heyaId,
       name: `${name} Oyakata`,
-      age: 45 + rng.int(0, 19),
+      age: 45 + hRng.int(0, 19),
       archetype: oyArchetype,
       traits: {
-        ambition: 50 + rng.next() * 50,
-        patience: 50 + rng.next() * 50,
-        risk: 50 + rng.next() * 50,
-        tradition: 50 + rng.next() * 50,
-        compassion: 50 + rng.next() * 50
+        ambition: 50 + hRng.next() * 50,
+        patience: 50 + hRng.next() * 50,
+        risk: 50 + hRng.next() * 50,
+        tradition: 50 + hRng.next() * 50,
+        compassion: 50 + hRng.next() * 50
       },
-      yearsInCharge: 1 + rng.int(0, 14),
-      // Legacy compat
+      yearsInCharge: 1 + hRng.int(0, 14),
       stats: { scouting: 50, training: 50, politics: 50 },
       personality: oyArchetype
     };
     oyakataMap.set(oyakataId, oyakata);
+
+    const baseFunds = tierPos < 0.22 ? 40_000_000 : tierPos < 0.55 ? 20_000_000 : tierPos < 0.85 ? 10_000_000 : 5_000_000;
+    const facilityBase = tierPos < 0.22 ? 70 : tierPos < 0.55 ? 55 : tierPos < 0.85 ? 40 : 25;
 
     // Detailed Heya Generation
     const heya: Heya = {
@@ -121,42 +174,44 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
       oyakataId: oyakataId,
       rikishiIds: [],
       
-      statureBand: "established",
-      prestigeBand: "respected",
-      facilitiesBand: "adequate",
+      statureBand: STATURE_BANDS[statureIdx],
+      prestigeBand: PRESTIGE_BANDS[prestigeIdx],
+      facilitiesBand: FACILITY_BANDS[facilityIdx],
       koenkaiBand: "moderate",
-      runwayBand: "comfortable",
+      runwayBand: RUNWAY_BANDS[runwayIdx],
 
-      reputation: 50,
-      funds: 10_000_000 + rng.int(0, 50_000_000),
+      reputation: Math.round(80 - tierPos * 60 + (hRng.next() * 20 - 10)),
+      funds: baseFunds + hRng.int(0, 20_000_000),
       
       scandalScore: 0,
       governanceStatus: "good_standing",
       welfareState: { welfareRisk: 10, complianceState: "compliant", weeksInState: 0, lastReviewedWeek: 0 },
       
       facilities: {
-        training: 50,
-        recovery: 50,
-        nutrition: 50
+        training: Math.round(facilityBase + hRng.next() * 20),
+        recovery: Math.round(facilityBase + hRng.next() * 20),
+        nutrition: Math.round(facilityBase + hRng.next() * 20)
       },
       
       riskIndicators: {
-        financial: false,
+        financial: runwayIdx >= 3,
         governance: false,
         rivalry: false
       },
       
-      // Legacy
-      location: "Tokyo"
+      location: getRandom(hRng, ["Tokyo", "Tokyo", "Tokyo", "Osaka", "Nagoya", "Fukuoka"])
     };
     heyaMap.set(heyaId, heya);
   });
 
-  // 2. Create Rikishi (Top Division Population)
+  // 2. Create Rikishi — enough to populate 46 stables realistically
+  // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
   const currentYear = 2024;
   const ranks: Rank[] = ["yokozuna", "ozeki", "ozeki", "sekiwake", "sekiwake", "komusubi", "komusubi"];
-  for (let i = 0; i < 35; i++) ranks.push("maegashira");
-  for (let i = 0; i < 20; i++) ranks.push("juryo");
+  for (let i = 0; i < 35; i++) ranks.push("maegashira");  // 42 makuuchi total
+  for (let i = 0; i < 28; i++) ranks.push("juryo");       // 28 juryo
+  // Lower divisions to fill stables (makushita and below represented as "jonidan")
+  for (let i = 0; i < 180; i++) ranks.push("jonidan");    // ~250 total wrestlers
 
   let rikishiCounter = 0;
   const heyaList = Array.from(heyaMap.values());
