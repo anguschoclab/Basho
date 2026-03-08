@@ -19,6 +19,7 @@
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
+import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
