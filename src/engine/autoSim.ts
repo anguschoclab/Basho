@@ -168,11 +168,20 @@ export function simulateEntireBasho(
     }
   }
 
+  // Pre-generate all 15 days of schedules at once for efficiency
+  try {
+    generateFullBashoSchedule({ world, basho, seed });
+  } catch {
+    // Fallback: generate day-by-day
+    for (let day = 1; day <= 15; day++) {
+      const daySeed = `${seed}-day${day}`;
+      generateDaySchedule(world, basho, day, daySeed);
+    }
+  }
+
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    // IMPORTANT: per-day seed so schedule generation cannot accidentally repeat
-    const daySeed = `${seed}-day${day}`;
-    generateDaySchedule(world, basho, day, daySeed);
+    if (!needsScheduleForDay("makuuchi", day)) continue;
 
     const dayMatches = basho.matches.filter((m) => m.day === day && !m.result);
 
