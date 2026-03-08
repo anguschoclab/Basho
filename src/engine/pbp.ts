@@ -438,9 +438,24 @@ export function buildPbpFromBoutResult(
   let clinchBeat = 0;
   let momentumBeat = 0;
 
+  let tacticalBeat = 0;
+
   if (Array.isArray((result as any).log)) {
     for (const entry of (result as any).log) {
-      if (entry.phase === "clinch") {
+      // Tactical strategy entries (emitted before tachiai)
+      if (entry.data?.tacticalEntry) {
+        const side = entry.data.side as Side;
+        facts.push({
+          phase: "tactical",
+          beat: ++tacticalBeat,
+          side,
+          archetype: entry.data.archetype,
+          opponentArchetype: entry.data.opponentArchetype,
+          clinchPreference: entry.data.clinchPreference,
+          strategy: entry.data.strategy ?? "Standard approach",
+          leader: side,
+        } as TacticalFact);
+      } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
         facts.push({
           phase: "clinch",
