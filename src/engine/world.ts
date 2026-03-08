@@ -194,8 +194,55 @@ export function endBasho(world: WorldState): WorldState {
   let yusho = topCandidates[0];
   const playoffMatches: MatchSchedule[] = [];
   
+  // === PLAYOFF RESOLUTION ===
   if (topCandidates.length > 1) {
-      yusho = topCandidates[0]; 
+    // Run single-elimination playoff bouts between tied rikishi
+    let remaining = [...topCandidates];
+    let playoffRound = 1;
+    
+    while (remaining.length > 1) {
+      const nextRound: string[] = [];
+      
+      for (let i = 0; i < remaining.length; i += 2) {
+        if (i + 1 >= remaining.length) {
+          // Bye — odd one advances
+          nextRound.push(remaining[i]);
+          continue;
+        }
+        
+        const eastId = remaining[i];
+        const westId = remaining[i + 1];
+        const east = world.rikishi.get(eastId);
+        const west = world.rikishi.get(westId);
+        
+        if (!east || !west) {
+          nextRound.push(eastId);
+          continue;
+        }
+        
+        const boutCtx = {
+          id: `playoff-r${playoffRound}-${i}`,
+          day: 16 + playoffRound - 1, // Day 16+
+          rikishiEastId: eastId,
+          rikishiWestId: westId,
+        };
+        
+        const result = resolveBout(boutCtx, east, west, basho);
+        const match: MatchSchedule = {
+          day: 16 + playoffRound - 1,
+          eastRikishiId: eastId,
+          westRikishiId: westId,
+          result,
+        };
+        playoffMatches.push(match);
+        nextRound.push(result.winnerRikishiId);
+      }
+      
+      remaining = nextRound;
+      playoffRound++;
+    }
+    
+    yusho = remaining[0];
   }
 
   const runnerWins = bestWins - 1;
