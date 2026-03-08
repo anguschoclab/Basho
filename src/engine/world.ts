@@ -17,6 +17,7 @@ import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
 import { EventBus } from "./events";
+import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
