@@ -68,12 +68,19 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const [confirmOverwrite, setConfirmOverwrite] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const refreshSlots = () => setSlots(getSaveSlots());
+  const refreshSlots = useCallback(() => setSlots(getSaveSlots()), [getSaveSlots]);
 
   const handleOpen = (newOpen: boolean) => {
     if (newOpen) refreshSlots();
     setOpen(newOpen);
   };
+
+  // Listen for global open signal (keyboard shortcut)
+  useEffect(() => {
+    const handler = () => { refreshSlots(); setOpen(true); };
+    openListeners.add(handler);
+    return () => { openListeners.delete(handler); };
+  }, [refreshSlots]);
 
   const emptySlots = useMemo(() => {
     const used = new Set(slots.filter(s => /^slot_\d+$/.test(s.slotName)).map(s => s.slotName));
