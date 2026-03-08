@@ -575,7 +575,7 @@ export default function ScoutingPage() {
       <div className="space-y-6">
 
         <Tabs defaultValue="opponents" className="space-y-4">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="opponents" className="gap-2">
               <Target className="h-4 w-4" />
               Opponents
@@ -583,6 +583,10 @@ export default function ScoutingPage() {
             <TabsTrigger value="stable" className="gap-2">
               <Shield className="h-4 w-4" />
               My Stable
+            </TabsTrigger>
+            <TabsTrigger value="perception" className="gap-2">
+              <Eye className="h-4 w-4" />
+              Intel
             </TabsTrigger>
             <TabsTrigger value="recruit" className="gap-2">
               <UserPlus className="h-4 w-4" />
@@ -596,6 +600,10 @@ export default function ScoutingPage() {
 
           <TabsContent value="stable">
             <StableIntelTab world={world} playerHeyaId={playerHeyaId} />
+          </TabsContent>
+
+          <TabsContent value="perception">
+            <PerceptionOverview world={world} playerHeyaId={playerHeyaId} />
           </TabsContent>
 
           <TabsContent value="recruit">
