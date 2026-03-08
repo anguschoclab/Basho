@@ -3,8 +3,7 @@
 // Manages Money, Solvency, Salaries, and Support.
 // Aligned with Institutional Economy V2.0 Spec.
 
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { WorldState, Heya, BoutResult, MatchSchedule, Rikishi, Id } from "./types";
 import { reportScandal } from "./governance";
 import { RANK_HIERARCHY } from "./banzuke";

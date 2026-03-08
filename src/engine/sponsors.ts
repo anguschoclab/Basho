@@ -14,8 +14,7 @@
 // - Guards for bannerCount < 0 / empty sponsor pools.
 //
 // NOTE: This module stays RNG-driven but deterministic given the provided rng + inputs.
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 // === SPONSOR TIER SYSTEM ===
 
 export type SponsorTier = "T0" | "T1" | "T2" | "T3" | "T4" | "T5";

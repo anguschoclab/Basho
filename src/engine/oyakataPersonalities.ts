@@ -2,8 +2,7 @@
 // Defines the archetypes and traits for NPC Managers.
 // Used to generate diverse and believing opponents.
 
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Oyakata, OyakataArchetype, OyakataTraits } from "./types";
 
 export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {

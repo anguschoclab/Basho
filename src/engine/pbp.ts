@@ -13,8 +13,7 @@
 // - bout.ts emits BoutResult.log with phases + data; buildPbpFromBoutResult derives facts.
 // - narrativeDescriptions.ts remains for static bands; pbp.ts is for dynamic commentary.
 // =======================================================
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
 
 /** =========================

@@ -7,8 +7,7 @@
 // - Deterministic: no Math.random; all stochasticity via seedrandom + stable salts
 // - JSON-safe persistence: store as Records/arrays; no Maps/Sets in saved state
 // =======================================================
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Id, Side, WorldState, BoutResult } from "./types";
 
 /** =========================

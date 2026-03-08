@@ -13,8 +13,7 @@
 // - scouting.ts: media coverage can slightly increase "public knowledge" confidence
 // - sponsors.ts: high coverage can raise sponsor tier chances
 // =======================================================
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Id, WorldState, BoutResult, BashoName, Division, BashoState } from "./types";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
 

@@ -16,7 +16,7 @@ import {
   BashoName, Division, RikishiStats, Side, BashoState
 } from "./types";
 import { generateRikishiName } from "./shikona";
-import { SeededRNG } from "./utils/SeededRNG";
+import { SeededRNG } from "./rng";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { rngForWorld } from "./rng";

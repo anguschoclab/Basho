@@ -13,8 +13,7 @@
 // - This module supports optional richer injury state stored externally (recommended),
 //   while still providing "compat mode" helpers that update those fields.
 // =======================================================
-import { rngFromSeed, rngForWorld } from "./rng";
-import { SeededRNG } from "./utils/SeededRNG";
+import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Id, Rikishi, WorldState, Heya } from "./types";
 import type { TrainingProfile } from "./training";
 import { computeTrainingMultipliers, getCareerPhase, PHASE_EFFECTS } from "./training";
