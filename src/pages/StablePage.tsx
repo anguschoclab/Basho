@@ -581,7 +581,7 @@ export default function StablePage() {
                     <Heart className="h-5 w-5" />
                     Recovery Emphasis
                   </CardTitle>
-                  <CardDescription>{recoveryEffect.description}</CardDescription>
+                  <CardDescription>{recoveryEffect.fatigueDecay > 1 ? "Enhanced recovery" : "Standard recovery"}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-3 flex-col md:flex-row">
