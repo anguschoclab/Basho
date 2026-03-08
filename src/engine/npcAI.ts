@@ -482,17 +482,27 @@ function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void 
     recovery: decision.recovery
   };
 
-  // Update individual focus slots for protected wrestlers
-  if (decision.individualProtects.length > 0) {
-    const existingFocus = state.focusSlots.filter(
-      f => !decision.individualProtects.includes(f.rikishiId)
-    );
-    const protectSlots = decision.individualProtects.map(id => ({
-      rikishiId: id,
-      focusType: "protect" as const
-    }));
-    state.focusSlots = [...existingFocus, ...protectSlots];
-  }
+  // Rebuild individual focus slots: protect > push > develop
+  const allManagedIds = new Set([
+    ...decision.individualProtects,
+    ...decision.individualPushes,
+    ...decision.individualDevelops,
+  ]);
+
+  // Keep existing slots for rikishi not managed this tick
+  const existingFocus = state.focusSlots.filter(f => !allManagedIds.has(f.rikishiId));
+
+  const protectSlots = decision.individualProtects.map(id => ({
+    rikishiId: id, focusType: "protect" as const
+  }));
+  const pushSlots = decision.individualPushes.map(id => ({
+    rikishiId: id, focusType: "push" as const
+  }));
+  const developSlots = decision.individualDevelops.map(id => ({
+    rikishiId: id, focusType: "develop" as const
+  }));
+
+  state.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
 }
 
 // ─── Weekly Tick (Orchestrator Entry Point) ─────────────
