@@ -122,6 +122,14 @@ export default function BashoPage() {
     }
   }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
 
+  const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
+  const handleSimulateAll = () => { simulateAllBouts(); };
+  const handleNextDay = () => {
+    if (basho.day >= 15) setShowEndBashoConfirm(true);
+    else advanceDay();
+  };
+  const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate("/"); };
+
   if (!world || !basho) return null;
 
   const competitionTabs = [
