@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Play, FastForward, ArrowRight, Repeat, Calendar, ChevronRight,
+  Play, FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
 
 const BASHO_NAMES: Record<string, string> = {
