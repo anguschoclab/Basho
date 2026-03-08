@@ -309,6 +309,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
         <QuickNavLink url="/banzuke" label="Banzuke" icon={ScrollText} />
         <QuickNavLink url="/rikishi" label="Rikishi" icon={Users} />
         <QuickNavLink url="/stable" label="Stable" icon={Home} />
+        <QuickNavLink url="/training" label="Training" icon={Dumbbell} />
         <QuickNavLink url="/economy" label="Economy" icon={Coins} />
         <QuickNavLink url="/scouting" label="Scouting" icon={Search} />
         <div className="flex-1" />
