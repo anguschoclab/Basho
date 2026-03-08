@@ -216,15 +216,37 @@ export default function StablePage() {
 
   // Training state: prefer persisted heya trainingState if present, else default.
   const [trainingState, setTrainingState] = useState<BeyaTrainingState>(() => {
+    if (!heya) return createDefaultTrainingState(viewingHeyaId || "");
     const existing = (heya as any).trainingState as BeyaTrainingState | undefined;
-    const defaultSlots = Math.max(1, Math.min(6, sekitori.length || 3));
     return existing ?? createDefaultTrainingState(heya.id);
   });
+
+  // === EARLY RETURN GUARDS (after all hooks) ===
+  if (!world || !playerHeyaId) {
+    return null;
+  }
+
+  if (!heya) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto space-y-4">
+        <Card className="paper">
+          <CardHeader>
+            <CardTitle>Stable not found</CardTitle>
+            <CardDescription>The requested heya could not be loaded.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" onClick={() => navigate("/")}>
+              Return to Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const persistTrainingState = (next: BeyaTrainingState) => {
     if (!isViewingOwnStable) return;
     (heya as any).trainingState = next;
-    // Ensure React subscribers re-render and the state can be saved.
     updateWorld({ ...world });
   };
 
