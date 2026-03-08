@@ -55,6 +55,12 @@ export function CalendarWidget() {
     toast({ title: "Day simulated" });
   };
 
+  const handleSimFullBasho = () => {
+    simFullBasho();
+    toast({ title: "Basho complete!", description: "All 15 days simulated." });
+    navigate("/basho");
+  };
+
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-3">
       {/* Header */}
