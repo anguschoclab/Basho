@@ -178,6 +178,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         lastResult = result;
       }
 
+      // Autosave after completing all bouts for the day
+      try { autosave(state.world); } catch { /* silent */ }
+
       return {
         ...state,
         world: { ...state.world },
