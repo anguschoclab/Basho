@@ -185,9 +185,9 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
     stat(west, "balance") * 0.10 +
     jitter(rng, 6);
 
-  // Archetype Bonus
-  const eastArchBonus = east.archetype === "oshi_specialist" ? 10 : 0;
-  const westArchBonus = west.archetype === "oshi_specialist" ? 10 : 0;
+  // Archetype Bonus — oshi gets significant tachiai advantage
+  const eastArchBonus = east.archetype === "oshi_specialist" ? 14 : east.archetype === "hybrid_oshi_yotsu" ? 5 : 0;
+  const westArchBonus = west.archetype === "oshi_specialist" ? 14 : west.archetype === "hybrid_oshi_yotsu" ? 5 : 0;
 
   const finalEast = eastForce + eastArchBonus;
   const finalWest = westForce + westArchBonus;
@@ -441,14 +441,15 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       const disR = disadvantaged === "east" ? east : west;
       
       // Counter chance: technique + balance + archetype bonus
-      const archBonus = (disR.archetype === "trickster" || disR.archetype === "counter_specialist") ? 0.15 : 0;
+      // Counter specialist bonus reduced to prevent dominance
+      const archBonus = disR.archetype === "counter_specialist" ? 0.08 : disR.archetype === "trickster" ? 0.10 : 0;
       
       const counterChance = clamp01(
-        0.10 +
-          stat(disR, "technique") / 220 +
-          stat(disR, "balance") / 260 +
-          stat(disR, "experience") / 350 +
-          fatiguePressure * 0.20 + 
+        0.08 +
+          stat(disR, "technique") / 250 +
+          stat(disR, "balance") / 300 +
+          stat(disR, "experience") / 400 +
+          fatiguePressure * 0.15 + 
           archBonus
       );
 
@@ -590,13 +591,14 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   const attacker = adv === "east" ? east : west;
   const defender = adv === "east" ? west : east;
 
-  // Base Chance
+  // Base Chance — power now contributes to finish (helps oshi)
   const eastWinBase = 
     0.5 + 
     (adv === "east" ? 0.18 : adv === "west" ? -0.18 : 0) +
-    (stat(east, "balance") - stat(west, "balance")) / 400 +
-    (stat(east, "technique") - stat(west, "technique")) / 450 +
-    (st.fatigueWest - st.fatigueEast) / 120 +
+    (stat(east, "balance") - stat(west, "balance")) / 450 +
+    (stat(east, "technique") - stat(west, "technique")) / 500 +
+    (stat(east, "power") - stat(west, "power")) / 600 +
+    (st.fatigueWest - st.fatigueEast) / 140 +
     jitter(rng, 0.06);
 
   let eastWinP = clamp01(eastWinBase);
