@@ -728,6 +728,9 @@ export interface WorldState {
 
   currentBanzuke?: BanzukeSnapshot;
   
+  // Ozeki kadoban tracking (persisted between basho)
+  ozekiKadoban?: import("./banzuke").OzekiKadobanMap;
+  
   // Training State Store (HeyaId -> State)
   trainingState?: Record<Id, BeyaTrainingState>;
 
