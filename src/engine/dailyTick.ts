@@ -330,6 +330,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
  */
 function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
   safeCall(() => { tickMonthlyEconomics(world); }) && subs.push("economics_monthly");
+  safeCall(() => { facilities.tickMonthly(world); }) && subs.push("facilities");
 
   logEngineEvent(world, {
     type: "MONTHLY_BOUNDARY",
