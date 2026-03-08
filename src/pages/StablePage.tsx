@@ -648,7 +648,7 @@ export default function StablePage() {
                           <span className="capitalize">{phase} phase</span>
                           {focus && (
                             <Badge variant="secondary" className="text-xs">
-                              {getFocusModeLabel(focus.mode).en}
+                              {getFocusModeLabel(focus.focusType)}
                             </Badge>
                           )}
                         </div>
