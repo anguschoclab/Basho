@@ -847,6 +847,10 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
   let eastWinP = clamp01(eastWinBase);
 
+  // Tactical AI: finish bonus from opponent-aware heuristics
+  eastWinP += (eastTac?.finishBonus ?? 0);
+  eastWinP -= (westTac?.finishBonus ?? 0);
+
   // Physics Modifier: Mass helps defend against force outs
   if (st.stance === "push-dominant") {
      const massDiff = (east.weight - west.weight) / 300; // Positive if east heavier
