@@ -23,6 +23,7 @@ import {
   Search,
   UserSearch,
   Newspaper,
+  Dumbbell,
   ChevronDown,
   Sun,
   Moon,
