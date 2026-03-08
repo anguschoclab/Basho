@@ -26,7 +26,7 @@ export type MoraleBand = "inspired" | "content" | "neutral" | "disgruntled" | "m
 export interface RikishiPerception {
   rikishiId: Id;
   shikona: string;
-  rank: string;
+  rank: Rank;
   style: Style;
   healthBand: HealthBand;
   mediaHeatBand: MediaHeatBand;
