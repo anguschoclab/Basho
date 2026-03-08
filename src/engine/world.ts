@@ -220,7 +220,7 @@ export function endBasho(world: WorldState): WorldState {
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
-  world.cyclePhase = "post_basho";
+  enterPostBasho(world);
 
   // --- LIFECYCLE MANAGEMENT ---
   console.log("Processing End of Basho Lifecycle...");
