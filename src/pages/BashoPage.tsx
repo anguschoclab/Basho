@@ -1,18 +1,5 @@
-// BashoPage.tsx
-// Basho Page - Tournament gameplay with clickable narrative bouts
-//
-// DROP-IN FIXES:
-// - Removes reliance on non-canonical match.east/match.west fields (often undefined)
-// - Resolves rikishi objects via world.rikishi Map (safe + deterministic)
-// - Auto-show player bout uses lastBoutResult + derived bout ids (no array index coupling)
-// - Safer navigation when world/currentBasho missing
-// - Keeps UI behavior: player bouts first, click-to-open narrative, Next/All sim controls
-//
-// ADDITIONAL HARDENING:
-// - Graceful fallback if RANK_NAMES missing or incomplete
-// - Stable keys for match rows (even when duplicate pairings happen across days)
-// - Auto-show modal only once per lastBoutResult (prevents re-open loops)
-// - Avoids stale closures by keying off a derived lastBoutKey
+// BashoPage.tsx — Redesigned Tournament Page
+// Clean layout with prominent day controls, better standings, and bout cards
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
@@ -20,8 +7,10 @@ import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,15 +22,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { BASHO_CALENDAR, getDayName } from "@/engine/calendar";
-import { RANK_NAMES as SCOUT_RANK_NAMES } from "@/engine/scouting";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
-import { Play, FastForward, ChevronRight, Trophy, Star, Eye } from "lucide-react";
+import { Play, FastForward, ChevronRight, Trophy, Star, Crown } from "lucide-react";
 import type { Rikishi, BoutResult, Rank } from "@/engine/types";
 
 type MatchLike = {
   day?: number;
-  boutId?: string; // optional if your engine provides it
+  boutId?: string;
   eastRikishiId: string;
   westRikishiId: string;
   result?: BoutResult;
@@ -54,13 +42,6 @@ interface SelectedBout {
   isPlayerBout: boolean;
 }
 
-function safeRankNames(rank: Rank): { ja: string; en: string } | null {
-  const any = SCOUT_RANK_NAMES as any;
-  const val = any?.[rank];
-  if (val && typeof val === "object" && typeof val.ja === "string" && typeof val.en === "string") return val;
-  return null;
-}
-
 function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
@@ -68,23 +49,15 @@ function makePairKey(a: string, b: string) {
 export default function BashoPage() {
   const navigate = useNavigate();
   const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();
-
   const { world, playerHeyaId } = state;
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
   const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
   const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
-
-  // Prevent auto-show loops
   const lastAutoShownKeyRef = useRef<string | null>(null);
 
-  // Guard: no world / no current basho => go home
-  // Redirect to recap page after basho ends
   useEffect(() => {
-    if (state.phase === "basho_recap") {
-      navigate("/recap");
-      return;
-    }
+    if (state.phase === "basho_recap") { navigate("/recap"); return; }
     if (!world?.currentBasho) navigate("/");
   }, [world, navigate, state.phase]);
 
@@ -97,7 +70,6 @@ export default function BashoPage() {
   const matches = (getCurrentDayMatches?.() as unknown as MatchLike[]) ?? [];
   const standings = (getStandings?.() ?? []).slice(0, 10);
 
-  // Identify player stable rikishi
   const playerRikishiIds = useMemo(() => {
     if (!playerHeyaId) return new Set<string>();
     const heya = world.heyas.get(playerHeyaId);
@@ -105,10 +77,7 @@ export default function BashoPage() {
   }, [playerHeyaId, world.heyas]);
 
   const resolveRikishi = useCallback(
-    (id: string): Rikishi | null => {
-      const r = world.rikishi.get(id);
-      return r ?? null;
-    },
+    (id: string): Rikishi | null => world.rikishi.get(id) ?? null,
     [world.rikishi]
   );
 
@@ -117,133 +86,50 @@ export default function BashoPage() {
     [playerRikishiIds]
   );
 
-  // Sort matches: player bouts first, then unplayed first (so the next sim is visible)
-  const sortedMatches = useMemo(() => {
-    return [...matches].sort((a, b) => {
-      const aIsPlayer = isPlayerBout(a);
-      const bIsPlayer = isPlayerBout(b);
-
-      if (aIsPlayer !== bIsPlayer) return aIsPlayer ? -1 : 1;
-
-      const aPlayed = !!a.result;
-      const bPlayed = !!b.result;
-      if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-
-      return 0;
-    });
-  }, [matches, isPlayerBout]);
-
-  // Find next unplayed bout index in original matches array
   const nextBoutIndex = useMemo(() => matches.findIndex((m) => !m.result), [matches]);
-
   const completedBouts = useMemo(() => matches.filter((m) => !!m.result).length, [matches]);
   const remainingBouts = matches.length - completedBouts;
+  const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
-  const handleSimulateNext = () => {
-    if (nextBoutIndex >= 0) simulateBout(nextBoutIndex);
-  };
-
-  const handleSimulateAll = () => {
-    simulateAllBouts();
-  };
-
+  const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
+  const handleSimulateAll = () => { simulateAllBouts(); };
   const handleNextDay = () => {
-    if (basho.day >= 15) {
-      setShowEndBashoConfirm(true);
-    } else {
-      advanceDay();
-    }
+    if (basho.day >= 15) setShowEndBashoConfirm(true);
+    else advanceDay();
   };
+  const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate("/"); };
 
-  const confirmEndBasho = () => {
-    setShowEndBashoConfirm(false);
-    endBasho();
-    navigate("/");
-  };
-
-  const handleBoutClick = (match: MatchLike) => {
-    if (!match.result) return;
-
-    const east = resolveRikishi(match.eastRikishiId);
-    const west = resolveRikishi(match.westRikishiId);
-    if (!east || !west) return;
-
-    setSelectedBout({
-      east,
-      west,
-      result: match.result,
-      isPlayerBout: isPlayerBout(match)
-    });
-  };
-
-  // Derived key for lastBoutResult to avoid dependency on object identity changes
+  // Auto-show player bout
   const lastBoutKey = useMemo(() => {
     const last = (state as any).lastBoutResult as BoutResult | undefined;
     if (!last) return null;
     const w = (last as any).winnerRikishiId;
     const l = (last as any).loserRikishiId;
     if (typeof w !== "string" || typeof l !== "string") return null;
-    const k = makePairKey(w, l);
-    // If kimarite/day available in result, include to disambiguate rematches (rare same-day)
     const km = typeof (last as any).kimariteId === "string" ? (last as any).kimariteId : "";
-    const dn = typeof (last as any).day === "number" ? String((last as any).day) : "";
-    return `${k}::${dn}::${km}`;
+    return `${makePairKey(w, l)}::${basho.day}::${km}`;
   }, [(state as any).lastBoutResult]);
 
-  // Auto-show modal for last simulated player bout (no dependence on match.east/match.west)
   useEffect(() => {
     const last = (state as any).lastBoutResult as BoutResult | undefined;
-    if (!last) return;
-
-    if (!lastBoutKey) return;
-
-    // Already auto-shown for this result
-    if (lastAutoShownKeyRef.current === lastBoutKey) return;
-
-    // Don't override a user-open modal
-    if (selectedBout) return;
-
+    if (!last || !lastBoutKey || lastAutoShownKeyRef.current === lastBoutKey || selectedBout) return;
     const winnerId = (last as any).winnerRikishiId;
     const loserId = (last as any).loserRikishiId;
-
     if (typeof winnerId !== "string" || typeof loserId !== "string") return;
-
     const winner = resolveRikishi(winnerId);
     const loser = resolveRikishi(loserId);
     if (!winner || !loser) return;
-
-    const playerInBout = playerRikishiIds.has(winner.id) || playerRikishiIds.has(loser.id);
-    if (!playerInBout) return;
-
-    // Determine which side was east/west for the modal:
-    // Prefer to infer from today's match list; fallback to winner/loser orientation.
-    let east: Rikishi | null = null;
-    let west: Rikishi | null = null;
-
-    const matchToday = matches.find(
-      (m) =>
-        (m.eastRikishiId === winner.id && m.westRikishiId === loser.id) ||
-        (m.eastRikishiId === loser.id && m.westRikishiId === winner.id)
+    if (!playerRikishiIds.has(winner.id) && !playerRikishiIds.has(loser.id)) return;
+    const matchToday = matches.find(m =>
+      (m.eastRikishiId === winner.id && m.westRikishiId === loser.id) ||
+      (m.eastRikishiId === loser.id && m.westRikishiId === winner.id)
     );
-
-    if (matchToday) {
-      east = resolveRikishi(matchToday.eastRikishiId);
-      west = resolveRikishi(matchToday.westRikishiId);
+    const east = matchToday ? resolveRikishi(matchToday.eastRikishiId) : winner;
+    const west = matchToday ? resolveRikishi(matchToday.westRikishiId) : loser;
+    if (east && west) {
+      setAutoShowPlayerBout({ east, west, result: last, isPlayerBout: true });
+      lastAutoShownKeyRef.current = lastBoutKey;
     }
-
-    if (!east || !west) {
-      east = winner;
-      west = loser;
-    }
-
-    setAutoShowPlayerBout({
-      east,
-      west,
-      result: last,
-      isPlayerBout: true
-    });
-
-    lastAutoShownKeyRef.current = lastBoutKey;
   }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
 
   const competitionTabs = [
@@ -253,72 +139,76 @@ export default function BashoPage() {
   ];
 
   return (
-    <AppLayout
-      pageTitle={bashoInfo?.nameEn || "Tournament"}
-      subNavTabs={competitionTabs}
-      activeSubTab="basho"
-    >
-      <Helmet>
-        <title>{`${bashoInfo?.nameEn || "Tournament"} Day ${basho.day} - Basho`}</title>
-      </Helmet>
+    <AppLayout pageTitle={bashoInfo?.nameEn || "Tournament"} subNavTabs={competitionTabs} activeSubTab="basho">
+      <Helmet><title>{`${bashoInfo?.nameEn || "Tournament"} Day ${basho.day}`}</title></Helmet>
 
-      <div className="space-y-6">
-        {/* Header with Controls at Top */}
-        <div className="flex items-center justify-between">
+      <div className="space-y-4">
+        {/* ═══════════ DAY HEADER ═══════════ */}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="font-display text-3xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
-            <p className="text-muted-foreground">
-              {dayInfo?.dayJa ?? `Day ${basho.day}`} • {bashoInfo?.location ?? "—"}
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-2xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
+              <Badge variant="outline" className="font-mono text-sm px-3 py-1">
+                Day {basho.day}/15
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {dayInfo?.dayJa ?? `Day ${basho.day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/{matches.length} bouts complete
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-lg px-4 py-2">
-              Day {basho.day}/15
-            </Badge>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={handleSimulateNext} disabled={remainingBouts === 0 || nextBoutIndex < 0} className="gap-1.5">
+              <Play className="h-3.5 w-3.5" /> Next Bout
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleSimulateAll} disabled={remainingBouts === 0} className="gap-1.5">
+              <FastForward className="h-3.5 w-3.5" /> Sim All
+            </Button>
             {remainingBouts === 0 && (
-              <Button onClick={handleNextDay} className="gap-2">
-                {basho.day >= 15 ? "End Basho" : "Next Day"} <ChevronRight className="h-4 w-4" />
+              <Button size="sm" onClick={handleNextDay} className="gap-1.5">
+                {basho.day >= 15 ? "End Basho" : "Next Day"} <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
         </div>
 
-        {/* Current Basho Records */}
-        <Card className="paper">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-6 overflow-x-auto">
-              <div className="text-sm text-muted-foreground shrink-0">Basho Standings:</div>
-              {standings.slice(0, 8).map((entry: any, idx: number) => {
-                const isPlayer = !!entry?.rikishi?.id && playerRikishiIds.has(entry.rikishi.id);
-                return (
-                  <div
-                    key={entry?.rikishi?.id ?? `stand-${idx}`}
-                    className={`flex items-center gap-2 shrink-0 ${isPlayer ? "text-primary font-semibold" : ""}`}
-                  >
-                    {idx === 0 && <Trophy className="h-4 w-4 text-amber-400" />}
-                    {isPlayer && <Star className="h-3 w-3" fill="currentColor" />}
-                    <span className="font-display">{entry?.rikishi?.shikona ?? "—"}</span>
-                    <span className="font-mono text-sm">
-                      {entry?.wins ?? 0}-{entry?.losses ?? 0}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Day progress */}
+        <Progress value={dayProgress} className="h-1" />
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Match Day Viewer with H2H and Rivalry Heat */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex gap-2 justify-end">
-              <Button size="sm" onClick={handleSimulateNext} disabled={remainingBouts === 0 || nextBoutIndex < 0}>
-                <Play className="h-4 w-4 mr-1" /> Next
-              </Button>
-              <Button size="sm" variant="secondary" onClick={handleSimulateAll} disabled={remainingBouts === 0}>
-                <FastForward className="h-4 w-4 mr-1" /> All
-              </Button>
-            </div>
+        {/* ═══════════ MAIN LAYOUT ═══════════ */}
+        <div className="grid gap-4 lg:grid-cols-4">
+
+          {/* Standings sidebar */}
+          <Card className="paper lg:order-2">
+            <CardContent className="p-4 space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Trophy className="h-3.5 w-3.5" /> Standings
+              </h3>
+              <div className="space-y-1">
+                {standings.map((entry: any, idx: number) => {
+                  const rid = entry?.rikishi?.id as string | undefined;
+                  const isPlayer = !!rid && playerRikishiIds.has(rid);
+                  return (
+                    <div
+                      key={rid ?? `l-${idx}`}
+                      className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
+                        isPlayer ? "bg-primary/10 text-primary font-semibold" : idx % 2 === 0 ? "bg-muted/30" : ""
+                      }`}
+                    >
+                      <span className="w-4 text-muted-foreground text-right shrink-0">
+                        {idx === 0 ? <Crown className="h-3 w-3 text-gold inline" /> : `${idx + 1}`}
+                      </span>
+                      {isPlayer && <Star className="h-2.5 w-2.5 shrink-0" fill="currentColor" />}
+                      <span className="flex-1 font-display truncate">{entry?.rikishi?.shikona ?? "—"}</span>
+                      <span className="font-mono shrink-0">{entry?.wins ?? 0}-{entry?.losses ?? 0}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Match viewer */}
+          <div className="lg:col-span-3 lg:order-1 space-y-3">
             <MatchDayViewer
               matches={matches}
               world={world}
@@ -332,77 +222,37 @@ export default function BashoPage() {
               }}
             />
           </div>
-
-          {/* Standings */}
-          <Card className="paper">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" /> Leaders
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {standings.map((entry: any, idx: number) => {
-                const rid = entry?.rikishi?.id as string | undefined;
-                const isPlayer = !!rid && playerRikishiIds.has(rid);
-                return (
-                  <div
-                    key={rid ?? `leader-${idx}`}
-                    className={`flex items-center gap-2 text-sm ${isPlayer ? "font-semibold text-primary" : ""}`}
-                  >
-                    <span className="w-5 text-muted-foreground">{idx + 1}.</span>
-                    {isPlayer && <Star className="h-3 w-3" fill="currentColor" />}
-                    <span className="flex-1 font-display truncate">{entry?.rikishi?.shikona ?? "—"}</span>
-                    <span className="font-mono">
-                      {entry?.wins ?? 0}-{entry?.losses ?? 0}
-                    </span>
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
         </div>
       </div>
 
-      {/* Narrative Modal - User clicked */}
+      {/* Modals */}
       {selectedBout && (
         <BoutNarrativeModal
           open={!!selectedBout}
           onOpenChange={(open) => !open && setSelectedBout(null)}
-          east={selectedBout.east}
-          west={selectedBout.west}
-          result={selectedBout.result}
-          bashoName={basho.bashoName}
-          day={basho.day}
+          east={selectedBout.east} west={selectedBout.west}
+          result={selectedBout.result} bashoName={basho.bashoName} day={basho.day}
         />
       )}
-
-      {/* Auto-show modal for player bouts */}
       {autoShowPlayerBout && !selectedBout && (
         <BoutNarrativeModal
           open={!!autoShowPlayerBout}
           onOpenChange={(open) => !open && setAutoShowPlayerBout(null)}
-          east={autoShowPlayerBout.east}
-          west={autoShowPlayerBout.west}
-          result={autoShowPlayerBout.result}
-          bashoName={basho.bashoName}
-          day={basho.day}
+          east={autoShowPlayerBout.east} west={autoShowPlayerBout.west}
+          result={autoShowPlayerBout.result} bashoName={basho.bashoName} day={basho.day}
         />
       )}
-
-      {/* End Basho confirmation */}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>End Tournament?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will finalize the basho results, update the banzuke rankings, and advance to the off-season. This cannot be undone.
+              This will finalize results, update rankings, and advance to the off-season.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmEndBasho}>
-              End Basho
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
