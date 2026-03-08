@@ -7,7 +7,8 @@ import { rngFromSeed, rngForWorld } from "./rng";
 import { SeededRNG } from "./utils/SeededRNG";
 import type { WorldState, Heya, BoutResult, MatchSchedule, Rikishi, Id } from "./types";
 import { reportScandal } from "./governance";
-import { RANK_HIERARCHY } from "./banzuke"; // Need salary data
+import { RANK_HIERARCHY } from "./banzuke";
+import { EventBus } from "./events";
 
 // === CONSTANTS ===
 
