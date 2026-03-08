@@ -557,11 +557,11 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   const { monthBoundary, yearBoundary } = advanceCalendarDay(world);
 
   // Decrement phase-specific day counters
-  if ((world as any)._interimDaysRemaining != null) {
-    (world as any)._interimDaysRemaining -= 1;
+  if (world._interimDaysRemaining != null) {
+    world._interimDaysRemaining -= 1;
   }
-  if ((world as any)._postBashoDays != null) {
-    (world as any)._postBashoDays -= 1;
+  if (world._postBashoDays != null) {
+    world._postBashoDays -= 1;
   }
 
   // Phase transition check
