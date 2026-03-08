@@ -171,7 +171,6 @@ export default function StablePage() {
   const stableAchievements = useMemo<StableAchievements>(() => {
     if (!heya || !world) return { yusho: [], junYusho: [], ginoSho: [], kantosho: [], shukunsho: [] };
     const stableRikishiIds = new Set(heya.rikishiIds);
-    const stableRikishiIds = new Set(heya.rikishiIds);
     const achievements: StableAchievements = { yusho: [], junYusho: [], ginoSho: [], kantosho: [], shukunsho: [] };
 
     for (const record of world.history || []) {
