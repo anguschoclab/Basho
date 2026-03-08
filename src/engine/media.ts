@@ -624,3 +624,225 @@ function makeId(s: string): Id {
   // Keep it deterministic and short-ish; you can swap for uuid later if needed.
   return s;
 }
+
+/** =========================
+ *  Streak Tracking & Headlines
+ *  ========================= */
+
+const STREAK_MILESTONES = [5, 8, 10, 12, 15];
+
+function updateStreakAndGenerateHeadline(args: {
+  state: MediaState;
+  world: WorldState;
+  winnerId: Id;
+  loserId: Id;
+  day?: number;
+  bashoName?: BashoName;
+  rng: SeededRNG;
+}): { state: MediaState; headline: MediaHeadline | null } {
+  const { world, winnerId, loserId, rng } = args;
+  const week = world.week ?? 0;
+
+  const nextStreaks = { ...args.state.bashoStreaks };
+  const nextFired = { ...args.state.streakHeadlinesFired };
+
+  // Winner's streak increments
+  nextStreaks[winnerId] = (nextStreaks[winnerId] ?? 0) + 1;
+  // Loser's streak resets
+  nextStreaks[loserId] = 0;
+
+  const streak = nextStreaks[winnerId];
+  const firedList = nextFired[winnerId] ?? [];
+
+  // Check if we hit a new milestone
+  const milestone = STREAK_MILESTONES.find(m => streak >= m && !firedList.includes(m));
+
+  let state: MediaState = { ...args.state, bashoStreaks: nextStreaks, streakHeadlinesFired: nextFired };
+
+  if (!milestone) return { state, headline: null };
+
+  // Record milestone as fired
+  nextFired[winnerId] = [...firedList, milestone];
+  state = { ...state, streakHeadlinesFired: nextFired };
+
+  const r = world.rikishi.get(winnerId);
+  if (!r) return { state, headline: null };
+
+  const impact = clampInt(35 + milestone * 4, 0, 100);
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+  const tone: MediaTone = milestone >= 10 ? "hype" : milestone >= 8 ? "praise" : "neutral";
+
+  const titles = milestone >= 10
+    ? [`${r.shikona} Is Unstoppable — ${streak} Straight Wins`, `${streak}-0: ${r.shikona} Rewrites the Narrative`]
+    : milestone >= 8
+    ? [`${r.shikona} Surges to ${streak} Consecutive Victories`, `${streak} and Counting for ${r.shikona}`]
+    : [`${r.shikona} Extends Win Streak to ${streak}`, `Hot Streak: ${r.shikona} Now ${streak}-0`];
+
+  const subtitles = milestone >= 10
+    ? "The entire division is watching. This is history in the making."
+    : milestone >= 8
+    ? "A kachi-koshi secured — but the momentum says there's more to come."
+    : "Consistency is building into something the press can't ignore.";
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-streak-${week}-${args.day ?? 0}-${winnerId}-${streak}`),
+    week,
+    bashoName: args.bashoName,
+    tier,
+    beat: "streak",
+    tone,
+    rikishiIds: [winnerId],
+    heyaIds: [r.heyaId].filter(Boolean) as Id[],
+    title: titles[Math.floor(rng.next() * titles.length)],
+    subtitle: subtitles,
+    impact,
+    tags: ["basho", "streak", `streak_${streak}`],
+  };
+
+  return { state, headline };
+}
+
+/** =========================
+ *  Promotion / Demotion Watch Headlines
+ *  ========================= */
+
+function checkPromotionWatch(args: {
+  state: MediaState;
+  world: WorldState;
+  result: BoutResult;
+  day?: number;
+  bashoName?: BashoName;
+  rng: SeededRNG;
+}): { state: MediaState; headline: MediaHeadline | null } {
+  const { world, result, rng } = args;
+  const week = world.week ?? 0;
+  const day = args.day ?? 0;
+
+  // Only fire on days 10+ (late basho, when bubble matters)
+  if (day < 10) return { state: args.state, headline: null };
+
+  const winner = world.rikishi.get(result.winnerRikishiId);
+  if (!winner) return { state: args.state, headline: null };
+
+  // Already fired for this rikishi this basho?
+  if (args.state.promoWatchFired[result.winnerRikishiId]) {
+    return { state: args.state, headline: null };
+  }
+
+  // Get standings
+  const basho = (world as any).basho as BashoState | undefined;
+  const standings = basho?.standings;
+  if (!standings) return { state: args.state, headline: null };
+
+  const record = standings instanceof Map
+    ? standings.get(result.winnerRikishiId)
+    : (standings as any)[result.winnerRikishiId];
+  if (!record) return { state: args.state, headline: null };
+
+  const { wins, losses } = record;
+  const rank = winner.rank;
+
+  // Determine if this is a noteworthy promotion/demotion scenario
+  let scenario: { title: string; subtitle: string; tone: MediaTone; beat: MediaBeat } | null = null;
+
+  // Ozeki promotion run: sekiwake/komusubi with 10+ wins
+  if ((rank === "sekiwake" || rank === "komusubi") && wins >= 10) {
+    scenario = {
+      title: rng.next() < 0.5
+        ? `${winner.shikona} on the Ozeki Doorstep — ${wins}-${losses}`
+        : `Ozeki Talk Swirls Around ${winner.shikona}`,
+      subtitle: "The committee will be watching every remaining bout with pen in hand.",
+      tone: "hype",
+      beat: "promotion_watch",
+    };
+  }
+  // Yokozuna promotion: ozeki with 12+ wins
+  else if (rank === "ozeki" && wins >= 12) {
+    scenario = {
+      title: rng.next() < 0.5
+        ? `${winner.shikona} Eyes the Rope — ${wins}-${losses}`
+        : `Yokozuna Deliberation Looms for ${winner.shikona}`,
+      subtitle: "A performance worthy of the highest honour. The YDC convenes.",
+      tone: "hype",
+      beat: "promotion_watch",
+    };
+  }
+  // Kachi-koshi clinch (exactly 8 wins) for makuuchi rikishi
+  else if (rank === "maegashira" && wins === 8 && losses <= 7) {
+    scenario = {
+      title: rng.next() < 0.5
+        ? `${winner.shikona} Clinches Winning Record`
+        : `Kachi-Koshi Secured for ${winner.shikona}`,
+      subtitle: "A winning record means safety — and perhaps a step up the banzuke.",
+      tone: "praise",
+      beat: "promotion_watch",
+    };
+  }
+  // Demotion danger: juryo rikishi with 8+ losses
+  else if (rank === "juryo" && losses >= 8) {
+    scenario = {
+      title: rng.next() < 0.5
+        ? `${winner.shikona} Fights to Survive in Juryo — ${wins}-${losses}`
+        : `Demotion Looms for ${winner.shikona}`,
+      subtitle: "Every remaining bout is do-or-die at the bottom of the paid ranks.",
+      tone: "concern",
+      beat: "promotion_watch",
+    };
+  }
+  // Make-koshi: high-ranker (sanyaku) with 8+ losses
+  else if ((rank === "sekiwake" || rank === "komusubi") && losses >= 8) {
+    scenario = {
+      title: `${winner.shikona} Drops Below .500 — Sanyaku Spot in Jeopardy`,
+      subtitle: "A make-koshi at this level means a painful fall down the rankings.",
+      tone: "concern",
+      beat: "promotion_watch",
+    };
+  }
+  // Ozeki kadoban: ozeki with 8+ losses
+  else if (rank === "ozeki" && losses >= 8) {
+    scenario = {
+      title: rng.next() < 0.5
+        ? `Kadoban Alert: ${winner.shikona} Posts Make-Koshi`
+        : `${winner.shikona}'s Ozeki Rank in Peril`,
+      subtitle: "A losing record at ozeki triggers kadoban — one more and it's over.",
+      tone: "controversy",
+      beat: "promotion_watch",
+    };
+  }
+
+  if (!scenario) return { state: args.state, headline: null };
+
+  // Mark as fired
+  const nextPromo = { ...args.state.promoWatchFired, [result.winnerRikishiId]: true };
+  const state: MediaState = { ...args.state, promoWatchFired: nextPromo };
+
+  const impact = clampInt(55 + rankImpact(rank) * 3, 0, 100);
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-promo-${week}-${day}-${result.winnerRikishiId}`),
+    week,
+    bashoName: args.bashoName,
+    tier,
+    beat: scenario.beat,
+    tone: scenario.tone,
+    rikishiIds: [result.winnerRikishiId],
+    heyaIds: [winner.heyaId].filter(Boolean) as Id[],
+    title: scenario.title,
+    subtitle: scenario.subtitle,
+    impact,
+    tags: ["basho", "promotion_watch", rank ?? "unknown"],
+  };
+
+  return { state, headline };
+}
+
+/** Reset basho-scoped streak/promo tracking (call at basho start) */
+export function resetBashoMediaTracking(state: MediaState): MediaState {
+  return {
+    ...state,
+    bashoStreaks: {},
+    streakHeadlinesFired: {},
+    promoWatchFired: {},
+  };
+}
