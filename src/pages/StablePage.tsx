@@ -603,8 +603,8 @@ export default function StablePage() {
                             isActive ? "bg-primary text-primary-foreground" : "bg-secondary/50 hover:bg-secondary"
                           } ${!isViewingOwnStable ? "opacity-60 cursor-not-allowed" : ""}`}
                         >
-                          <div className="font-display font-medium text-lg">{label.ja}</div>
-                          <div className="text-sm opacity-80">{label.en}</div>
+                          <div className="font-display font-medium text-lg">{label}</div>
+                          <div className="text-sm opacity-80">{recovery}</div>
                           <p className="mt-2 text-xs opacity-70">{narrative}</p>
                         </button>
                       );
