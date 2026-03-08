@@ -441,14 +441,15 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       const disR = disadvantaged === "east" ? east : west;
       
       // Counter chance: technique + balance + archetype bonus
-      const archBonus = (disR.archetype === "trickster" || disR.archetype === "counter_specialist") ? 0.15 : 0;
+      // Counter specialist bonus reduced to prevent dominance
+      const archBonus = disR.archetype === "counter_specialist" ? 0.08 : disR.archetype === "trickster" ? 0.10 : 0;
       
       const counterChance = clamp01(
-        0.10 +
-          stat(disR, "technique") / 220 +
-          stat(disR, "balance") / 260 +
-          stat(disR, "experience") / 350 +
-          fatiguePressure * 0.20 + 
+        0.08 +
+          stat(disR, "technique") / 250 +
+          stat(disR, "balance") / 300 +
+          stat(disR, "experience") / 400 +
+          fatiguePressure * 0.15 + 
           archBonus
       );
 
