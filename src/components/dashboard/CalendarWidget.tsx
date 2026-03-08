@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
+import { BASHO_CALENDAR, getBashoInfo, SEASONAL_FLAVOR, getSeasonalFlavor } from "@/engine/calendar";
+import type { BashoName } from "@/engine/types";
 
 const BASHO_NAMES: Record<string, string> = {
   hatsu: "January", haru: "March", natsu: "May",
@@ -83,12 +85,23 @@ export function CalendarWidget() {
         </div>
       </div>
 
-      {/* Next basho indicator */}
-      {!inBasho && (
-        <div className="text-xs text-muted-foreground">
-          Next: <span className="font-medium text-foreground">{BASHO_NAMES[bashoName] || bashoName} Basho</span>
-        </div>
-      )}
+      {/* Next basho indicator with seasonal flavor */}
+      {!inBasho && (() => {
+        const info = BASHO_CALENDAR[bashoName as BashoName];
+        const season = info?.season;
+        const flavorText = season ? getSeasonalFlavor(season, world.seed) : null;
+        return (
+          <div className="space-y-0.5">
+            <div className="text-xs text-muted-foreground">
+              Next: <span className="font-medium text-foreground">{BASHO_NAMES[bashoName] || bashoName} Basho</span>
+              {info?.location && <span className="ml-1">· {info.location}</span>}
+            </div>
+            {flavorText && (
+              <p className="text-[10px] text-muted-foreground/70 italic">{flavorText}</p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Actions */}
       <div className="flex flex-wrap gap-1.5 pt-1">

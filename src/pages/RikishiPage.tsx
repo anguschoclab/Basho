@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY, formatRank } from "@/engine/banzuke";
 import { KIMARITE_REGISTRY } from "@/engine/kimarite";
 import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "@/engine/almanac";
 import { projectRikishi } from "@/engine/uiModels";
@@ -194,7 +194,7 @@ export default function RikishiPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
                   <Badge className={`rank-${ui.rank} text-xs`}>
-                    {rankNames.ja}{ui.rankNumber ? ` ${ui.rankNumber}枚目` : ""}
+                    {formatRank({ rank: rikishi.rank, side: rikishi.side ?? "east", rankNumber: rikishi.rankNumber } as any)}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
                     {ui.side === "east" ? "東 East" : "西 West"}

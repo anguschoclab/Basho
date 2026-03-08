@@ -21,6 +21,7 @@ import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
+import { BASHO_ORDER } from "./calendar";
 
 
 // Constants
@@ -473,7 +474,6 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {
     const bName = bashoName.toLowerCase() as BashoName;
-    const BASHO_ORDER: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
     const bashoNumber = (BASHO_ORDER.indexOf(bName) + 1) as 1 | 2 | 3 | 4 | 5 | 6;
     return {
         year: world.year,

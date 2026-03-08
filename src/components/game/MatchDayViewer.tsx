@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Rikishi, WorldState, BoutResult } from "@/engine/types";
+import type { Rikishi, WorldState, BoutResult, RankPosition } from "@/engine/types";
 import { getRivalry, type RivalryHeatBand, type RivalryPairState, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
+import { compareRanks } from "@/engine/banzuke";
 import { 
   Flame, 
   Thermometer, 
@@ -118,7 +119,10 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
 
-      return 0;
+      // Then by rank (higher-ranked bouts first)
+      const aPos = { rank: a.east.rank, side: a.east.side ?? "east", rankNumber: a.east.rankNumber } as RankPosition;
+      const bPos = { rank: b.east.rank, side: b.east.side ?? "east", rankNumber: b.east.rankNumber } as RankPosition;
+      return compareRanks(aPos, bPos);
     });
   }, [resolvedMatches]);
 

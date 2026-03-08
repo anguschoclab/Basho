@@ -3,7 +3,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
+import type { OzekiKadobanMap, RankInfo } from "@/engine/banzuke";
+import { RANK_HIERARCHY, getRankTitleJa, formatRank } from "@/engine/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClickableName } from "@/components/ClickableName";
@@ -11,7 +12,7 @@ import { ArrowUp, ArrowDown, Minus, ChevronsUp, ChevronsDown, ArrowUpRight, Sear
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Division, BanzukeSnapshot } from "@/engine/types";
+import type { Division, BanzukeSnapshot, RankPosition } from "@/engine/types";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
 // ── Helpers ──
@@ -309,8 +310,22 @@ export default function BanzukePage() {
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
                               />
-                              <td className="p-3 font-mono text-muted-foreground text-center text-xs">
-                                {row.rankLabel}
+                              <td className="p-3 text-center">
+                                <div className="font-mono text-muted-foreground text-xs">{row.rankLabel}</div>
+                                {(() => {
+                                  const sample = row.east || row.west;
+                                  if (!sample) return null;
+                                  const pos: RankPosition = { rank: sample.rank as any, side: (sample.side ?? "east") as any, rankNumber: sample.rankNumber };
+                                  const titleJa = getRankTitleJa(pos);
+                                  const titleEn = formatRank(pos);
+                                  const info: RankInfo | undefined = RANK_HIERARCHY[sample.rank as keyof typeof RANK_HIERARCHY];
+                                  return (
+                                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5" title={titleEn}>
+                                      {titleJa}
+                                      {info?.isSanyaku && <span className="ml-1 text-primary/50">三役</span>}
+                                    </div>
+                                  );
+                                })()}
                               </td>
                               <RikishiCell
                                 entry={row.west}
