@@ -7,6 +7,7 @@
 // =======================================================
 
 import { rngForWorld } from "./rng";
+import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
 import type {
   WorldState, Style, OyakataArchetype, Oyakata, Id,
   TrainingIntensity, TrainingFocus, RecoveryEmphasis
