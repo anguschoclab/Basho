@@ -6,6 +6,8 @@
  * - 'endBasho' handles rankings, prizes, and crucially, the LIFECYCLE check (retirements/new recruits).
  * - 'advanceInterim' handles between-basho ticks (AI, scouting, economics).
  * - All lifecycle transitions emit canonical EventBus events.
+ * - Almanac snapshots are written at basho end (Constitution A5.1).
+ * - FTUE state is updated after first basho completion.
  */
 
 import { rngFromSeed, rngForWorld } from "./rng";
@@ -18,6 +20,8 @@ import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
 import { EventBus } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
+import { buildAlmanacSnapshot } from "./almanac";
+import { autosave } from "./saveload";
 import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
