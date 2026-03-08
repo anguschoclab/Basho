@@ -119,15 +119,14 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 
         // Generate day 1 schedule
         try {
-          if (typeof (schedule as any).generateDaySchedule === "function") {
-            (schedule as any).generateDaySchedule(world, basho, 1, world.seed);
+          if (typeof schedule.generateDaySchedule === "function") {
+            schedule.generateDaySchedule(world, basho, 1, world.seed);
           }
         } catch (_) { /* schedule optional */ }
 
         // Reset basho-scoped media tracking
-        const w = world as any;
-        if (w.mediaState) {
-          w.mediaState = resetBashoMediaTracking(w.mediaState);
+        if (world.mediaState) {
+          world.mediaState = resetBashoMediaTracking(world.mediaState);
         }
 
         EventBus.bashoStarted(world, bashoName);
