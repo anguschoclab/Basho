@@ -81,7 +81,8 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       if (!east || !west) return null;
 
       const h2h = getH2HRecord(east, west);
-      const rivalry = world.rivalries ? getRivalry(world.rivalries, east.id, west.id) : null;
+      const rivalriesState = (world as any).rivalriesState as RivalriesState | undefined;
+      const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
       const heatBand = rivalry ? getHeatBand(rivalry.heat) : null;
       const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
       const h2hCommentary = generateH2HCommentary(east, west);

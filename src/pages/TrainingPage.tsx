@@ -117,7 +117,7 @@ export default function TrainingPage() {
     setTrainingState((prev) => {
       const slots = prev.focusSlots.filter(s => s.rikishiId !== rikishiId);
       if (focusType) {
-        slots.push({ rikishiId, focusType, assignedWeek: world.week ?? 0 });
+        slots.push({ rikishiId, focusType });
       }
       const next = { ...prev, focusSlots: slots };
       persistTrainingState(next);
