@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Search,
   ExternalLink,
+  Wrench,
 } from "lucide-react";
 import type { EngineEvent, WorldState } from "@/engine/types";
 
