@@ -703,6 +703,7 @@ export interface WorldState {
   seed: string;
   year: number;
   week: number;
+  dayIndexGlobal: number;
   cyclePhase: CyclePhase; 
 
   currentBashoName?: BashoName;
