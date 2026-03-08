@@ -289,18 +289,27 @@ export default function StablePage() {
   const koenkaiBand: KoenkaiBandType = heya.koenkaiBand ?? "none";
   const facilitiesBand: FacilitiesBand = heya.facilitiesBand ?? "basic";
 
+  const stableTabs = [
+    { id: "stable", label: "My Stable" },
+    { id: "rikishi", label: "Rikishi", href: "/rikishi" },
+    { id: "dashboard", label: "Dashboard", href: "/dashboard" },
+  ];
+
   return (
-    <>
+    <AppLayout
+      pageTitle={heya.name}
+      subNavTabs={stableTabs}
+      activeSubTab="stable"
+    >
       <Helmet>
         <title>{heya.name} — Heya Management</title>
       </Helmet>
 
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Header with Narrative Bands */}
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1 flex-wrap">
-              <h1 className="font-display text-3xl font-bold">{heya.name}</h1>
               {heya.nameJa && <span className="text-muted-foreground font-display">{heya.nameJa}</span>}
               <Badge className={`${STATURE_DISPLAY[statureBand].color} border`}>
                 {STATURE_DISPLAY[statureBand].labelJa} ({STATURE_DISPLAY[statureBand].label})
