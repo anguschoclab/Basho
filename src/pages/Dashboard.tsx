@@ -50,19 +50,29 @@ export default function Dashboard() {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   const phase = world.cyclePhase || "active_basho";
 
+  const dashboardTabs = [
+    { id: "overview", label: "Overview" },
+    { id: "basho", label: "Basho", href: "/basho" },
+    { id: "banzuke", label: "Banzuke", href: "/banzuke" },
+    { id: "recap", label: "Recap", href: "/recap" },
+    { id: "history", label: "History", href: "/history" },
+  ];
+
   return (
-    <AppLayout>
+    <AppLayout
+      pageTitle="Oyakata Dashboard"
+      subNavTabs={dashboardTabs}
+      activeSubTab="overview"
+    >
       <div className="space-y-6">
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Oyakata Dashboard</h1>
             <p className="text-muted-foreground">
               {world.year} {world.currentBashoName?.toUpperCase() || "PRE-SEASON"} | {playerHeya?.name || "No Stable"}
             </p>
           </div>
-          {/* Phase Badge */}
-          <Badge variant="outline" className="w-fit text-lg px-4 py-1 uppercase tracking-widest">
+          <Badge variant="outline" className="w-fit text-sm px-3 py-0.5 uppercase tracking-widest">
              {phase.replace("_", " ")}
           </Badge>
         </div>
