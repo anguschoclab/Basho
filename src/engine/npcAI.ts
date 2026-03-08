@@ -13,15 +13,8 @@ import type {
 } from "./types";
 import { ensureHeyaTrainingState } from "./training";
 import {
-  buildPerceptionSnapshot,
   getCachedPerception,
   type PerceptionSnapshot,
-  type HealthBand,
-  type WelfareRiskBand,
-  type MoraleBand,
-  type RosterStrengthBand,
-  type RikishiPerception
-} from "./perception";
   type HealthBand,
   type WelfareRiskBand,
   type MoraleBand,
