@@ -27,7 +27,7 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
-import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho } from "./media";
+import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho, generateGovernanceHeadline } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
@@ -560,6 +560,14 @@ function runGovernanceReview(world: WorldState): void {
           data: { loanAmount: emergencyLoan, remainingDebt: heya.funds }
         });
 
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          type: "emergency_loan",
+          severity: "critical",
+          description: `The Association steps in with a ¥${emergencyLoan.toLocaleString()} loan to prevent ${heya.name}'s collapse.`
+        });
+
         // Loans bring governance scrutiny
         heya.scandalScore = Math.min(100, (heya.scandalScore ?? 0) + 5);
       }
@@ -579,6 +587,14 @@ function runGovernanceReview(world: WorldState): void {
         title: `${heya.name} welfare review`,
         summary: `Post-basho institutional review: ${heya.name} remains under sanctions for welfare violations.`,
         data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
+      });
+
+      generateGovernanceHeadline({
+        world,
+        heyaId: heya.id,
+        type: "welfare_review",
+        severity: "major",
+        description: `${heya.name} remains under sanctions for ongoing welfare violations following post-basho review.`
       });
 
       // Sanctioned stables face additional prestige erosion
@@ -612,6 +628,14 @@ function runGovernanceReview(world: WorldState): void {
         summary: `The Sumo Association council notes ${severityLabel} conduct issues at ${heya.name}. Score: ${Math.floor(scandalScore)}.`,
         data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
       });
+
+      generateGovernanceHeadline({
+        world,
+        heyaId: heya.id,
+        type: "council_review",
+        severity: scandalScore >= 60 ? "major" : "minor",
+        description: `The Sumo Association council formally noted concerns regarding conduct at ${heya.name}.`
+      });
     }
 
     // === Merger/closure pressure for extremely small stables ===
@@ -628,6 +652,14 @@ function runGovernanceReview(world: WorldState): void {
           data: { rosterSize: heya.rikishiIds.length }
         });
 
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          type: "merger_threat",
+          severity: "major",
+          description: `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
+        });
+
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (heya.rikishiIds.length <= 1) {
           logEngineEvent(world, {
@@ -639,6 +671,14 @@ function runGovernanceReview(world: WorldState): void {
             title: `${heya.name} merger imminent`,
             summary: `With only ${heya.rikishiIds.length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
             data: { rosterSize: heya.rikishiIds.length }
+          });
+
+          generateGovernanceHeadline({
+            world,
+            heyaId: heya.id,
+            type: "forced_merger",
+            severity: "critical",
+            description: `Due to critically low recruitment (${heya.rikishiIds.length} active wrestlers), ${heya.name} faces a forced merger.`
           });
         }
       } else {
