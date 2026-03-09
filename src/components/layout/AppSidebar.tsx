@@ -20,6 +20,7 @@ import {
   History, 
   BookOpen, 
   Menu,
+  CalendarDays,
   Scale,
   Search,
   UserSearch,
@@ -64,6 +65,11 @@ const items = [
     title: "Basho",
     url: "/basho",
     icon: Trophy,
+  },
+  {
+    title: "Schedule",
+    url: "/schedule",
+    icon: CalendarDays,
   },
   {
     title: "Banzuke",
