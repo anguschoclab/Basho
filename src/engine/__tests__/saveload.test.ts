@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, vi } from "vitest";
 import {
   serializeWorld,
   deserializeWorld,
@@ -13,23 +13,21 @@ import {
 } from "../saveload";
 import { WorldState, Rikishi, Heya, Oyakata } from "../types";
 
-// Setup localStorage mock
+// Setup localStorage mock using Vitest API
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => { store[key] = value.toString(); },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { store = {}; },
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => { store[key] = value.toString(); }),
+    removeItem: vi.fn((key: string) => { delete store[key]; }),
+    clear: vi.fn(() => { store = {}; }),
     get length() { return Object.keys(store).length; },
-    key: (i: number) => Object.keys(store)[i] || null
+    key: vi.fn((i: number) => Object.keys(store)[i] || null)
   };
 })();
 
-// Apply mock before all tests
 beforeAll(() => {
-  Object.defineProperty(global, 'localStorage', { value: localStorageMock });
-  Object.defineProperty(global, 'window', { value: { localStorage: localStorageMock } });
+  vi.stubGlobal('localStorage', localStorageMock);
 });
 
 // Helper to create basic world state
@@ -61,7 +59,7 @@ function createMockWorld(): WorldState {
 
 describe("Save/Load System", () => {
   beforeEach(() => {
-    localStorage.clear();
+    localStorageMock.clear();
   });
 
   it("should serialize and deserialize a WorldState correctly (Map translation)", () => {
