@@ -20,6 +20,7 @@ import {
   History, 
   BookOpen, 
   Menu,
+  CalendarDays,
   Scale,
   Search,
   UserSearch,
