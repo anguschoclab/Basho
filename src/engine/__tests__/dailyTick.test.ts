@@ -19,8 +19,9 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
     rikishiIds: ["r1", "r2", "r3"],
     oyakataId: "oyakata1",
     runwayBand: "comfortable",
-    koenkaiBand: "moderate"
-  };
+    koenkaiBand: "moderate",
+    ...overrides
+  } as unknown as Heya;
 
   return {
     seed: 12345,
