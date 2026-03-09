@@ -92,7 +92,10 @@ describe("Bout Simulation Engine", () => {
     let foundUpset = false;
     for (let i = 0; i < 500; i++) {
       const bout = { id: `bout-upset-${i}`, day: 1, rikishiEastId: "y1", rikishiWestId: "m1" };
-      const result = resolveBout(bout, yokozuna, maegashira, basho);
+      // Make maegashira extremely strong for this test to force an upset
+      const strongMaegashira = { ...maegashira, power: 100, technique: 100, speed: 100 };
+      const weakYokozuna = { ...yokozuna, power: 10, technique: 10, speed: 10 };
+      const result = resolveBout(bout, weakYokozuna as Rikishi, strongMaegashira as Rikishi, basho);
       if (result.upset) {
         foundUpset = true;
         break;
