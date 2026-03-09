@@ -18,12 +18,12 @@ describe("H2H System", () => {
     const r1 = createMockRikishi("r1", "Asashoryu");
     const r2 = createMockRikishi("r2", "Hakuho");
 
-    const result: BoutResult = {
+    const result = {
       winnerRikishiId: "r1",
       loserRikishiId: "r2",
       kimarite: "yorikiri",
       duration: 5,
-    };
+    } as unknown as BoutResult;
 
     updateH2H(r1, r2, result, "hatsu2026", 2026, 1);
 
