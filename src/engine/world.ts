@@ -560,6 +560,14 @@ function runGovernanceReview(world: WorldState): void {
           data: { loanAmount: emergencyLoan, remainingDebt: heya.funds }
         });
 
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          type: "emergency_loan",
+          severity: "critical",
+          description: `The Association steps in with a ¥${emergencyLoan.toLocaleString()} loan to prevent ${heya.name}'s collapse.`
+        });
+
         // Loans bring governance scrutiny
         heya.scandalScore = Math.min(100, (heya.scandalScore ?? 0) + 5);
       }
