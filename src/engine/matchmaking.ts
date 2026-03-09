@@ -71,8 +71,8 @@ function rankSimilarity(a: Rikishi, b: Rikishi): number {
 }
 
 function weightMismatchScore(a: Rikishi, b: Rikishi): number {
-  const wa = a.weight || 0;
-  const wb = b.weight || 0;
+  const wa = typeof a.weight === "number" ? a.weight : 0;
+  const wb = typeof b.weight === "number" ? b.weight : 0;
   if (wa <= 0 || wb <= 0) return 1;
 
   const diff = Math.abs(wa - wb);
