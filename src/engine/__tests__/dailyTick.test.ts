@@ -12,7 +12,6 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
   const heya: Heya = {
     id: "test-heya",
     name: "Test Heya",
-    foundedYear: 2024,
     funds: 10_000_000,
     prestige: 50,
     reputation: 50,
