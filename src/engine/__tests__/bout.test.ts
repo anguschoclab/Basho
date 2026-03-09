@@ -84,8 +84,8 @@ describe("Bout Simulation Engine", () => {
   });
 
   it("should detect upsets when lower-ranked rikishi wins", () => {
-    const yokozuna = mockRikishi("y1", { shikona: "Yokozuna", rank: "yokozuna", power: 90, technique: 90, balance: 90, speed: 80, aggression: 80, experience: 90, weight: 160 });
-    const maegashira = mockRikishi("m1", { shikona: "Maegashira", rank: "maegashira", power: 50, technique: 50, balance: 50, speed: 50 });
+    const yokozuna = mockRikishi("y1", { shikona: "Yokozuna", rank: "yokozuna", rankNumber: 1, power: 90, technique: 90, balance: 90, speed: 80, aggression: 80, experience: 90, weight: 160 });
+    const maegashira = mockRikishi("m1", { shikona: "Maegashira", rank: "maegashira", rankNumber: 10, power: 50, technique: 50, balance: 50, speed: 50 });
     const basho = mockBasho();
 
     // Run many bouts to check upset detection works when it happens
