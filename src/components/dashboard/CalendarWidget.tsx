@@ -122,8 +122,11 @@ export function CalendarWidget() {
             <Button size="sm" variant="secondary" onClick={handleSimFullBasho} className="gap-1.5 h-7 text-xs">
               <SkipForward className="h-3 w-3" /> Sim All
             </Button>
+            <Button size="sm" variant="secondary" onClick={() => navigate("/schedule")} className="gap-1.5 h-7 text-xs">
+              <Calendar className="h-3 w-3" /> Schedule
+            </Button>
             <Button size="sm" variant="secondary" onClick={() => navigate("/basho")} className="gap-1.5 h-7 text-xs">
-              <ChevronRight className="h-3 w-3" /> View Basho
+              <ChevronRight className="h-3 w-3" /> Basho
             </Button>
           </>
         )}

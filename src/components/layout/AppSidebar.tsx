@@ -67,6 +67,11 @@ const items = [
     icon: Trophy,
   },
   {
+    title: "Schedule",
+    url: "/schedule",
+    icon: CalendarDays,
+  },
+  {
     title: "Banzuke",
     url: "/banzuke",
     icon: ScrollText,
