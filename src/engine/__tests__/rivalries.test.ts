@@ -76,7 +76,7 @@ describe("Rivalries System", () => {
     let state = createDefaultRivalriesState();
     const world = createMockWorld();
     
-    const result: BoutResult = { winnerRikishiId: "a", loserRikishiId: "b" };
+    const result = { winnerRikishiId: "a", loserRikishiId: "b" } as unknown as BoutResult;
     state = updateRivalriesFromBout({ state, world, result }).state;
     
     const initialHeat = state.pairs["a|b"].heat;
