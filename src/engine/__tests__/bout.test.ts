@@ -104,8 +104,8 @@ describe("Bout Simulation Engine", () => {
   });
 
   it("should detect kinboshi when maegashira beats yokozuna", () => {
-    const yokozuna = mockRikishi("y1", { shikona: "Yokozuna", rank: "yokozuna" });
-    const maegashira = mockRikishi("m1", { shikona: "Maegashira", rank: "maegashira" });
+    const yokozuna = mockRikishi("y1", { shikona: "Yokozuna", rank: "yokozuna", rankNumber: 1 });
+    const maegashira = mockRikishi("m1", { shikona: "Maegashira", rank: "maegashira", rankNumber: 10 });
     const basho = mockBasho();
 
     let foundKinboshi = false;
