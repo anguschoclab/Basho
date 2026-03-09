@@ -174,9 +174,9 @@ describe("Bout Simulation Engine", () => {
           const key = `${archA}_vs_${archB}`;
           let eastWins = 0;
           for (let i = 0; i < 50; i++) {
-            const east = mockRikishi("e1", { archetype: archA, style: archA.includes("oshi") ? "oshi" : archA.includes("yotsu") ? "yotsu" : "hybrid" });
-            const west = mockRikishi("w1", { archetype: archB, style: archB.includes("oshi") ? "oshi" : archB.includes("yotsu") ? "yotsu" : "hybrid" });
-            const bout = { id: `tac-${key}-${i}`, day: 1, rikishiEastId: "e1", rikishiWestId: "w1" };
+            const east = mockRikishi(`e-${i}`, { archetype: archA, style: archA.includes("oshi") ? "oshi" : archA.includes("yotsu") ? "yotsu" : "hybrid" });
+            const west = mockRikishi(`w-${i}`, { archetype: archB, style: archB.includes("oshi") ? "oshi" : archB.includes("yotsu") ? "yotsu" : "hybrid" });
+            const bout = { id: `tac-${key}-${i}`, day: 1, rikishiEastId: `e-${i}`, rikishiWestId: `w-${i}` };
             const result = resolveBout(bout, east, west, mockBasho());
             if (result.winner === "east") eastWins++;
           }
