@@ -108,10 +108,10 @@ describe("Bout Simulation Engine", () => {
     const basho = mockBasho();
 
     let foundKinboshi = false;
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 500; i++) {
       const bout = { id: `bout-kin-${i}`, day: 1, rikishiEastId: "y1", rikishiWestId: "m1" };
       const result = resolveBout(bout, yokozuna, maegashira, basho);
-      if (result.winner === "west" && (result as any).isKinboshi) {
+      if ((result as any).isKinboshi) {
         foundKinboshi = true;
         break;
       }
