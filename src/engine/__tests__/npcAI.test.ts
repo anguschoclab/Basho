@@ -61,7 +61,7 @@ describe("NPC AI System", () => {
     expect(bias).toBe("oshi");
 
     // Equalize it
-    world.rikishi.set("r4", { id: "r4", style: "yotsu", heyaId: "heya1" } as Rikishi);
+    world.rikishi.set("r4", { id: "r4", style: "yotsu", heyaId: "heya1" } as unknown as Rikishi);
     world.heyas.get("heya1")!.rikishiIds.push("r4");
     
     const biasEqual = determineNPCStyleBias(world, "heya1");
