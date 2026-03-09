@@ -589,6 +589,14 @@ function runGovernanceReview(world: WorldState): void {
         data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
       });
 
+      generateGovernanceHeadline({
+        world,
+        heyaId: heya.id,
+        type: "welfare_review",
+        severity: "major",
+        description: `${heya.name} remains under sanctions for ongoing welfare violations following post-basho review.`
+      });
+
       // Sanctioned stables face additional prestige erosion
       const currentIdx = bandIndex(heya.prestigeBand);
       if (currentIdx > 0) {
