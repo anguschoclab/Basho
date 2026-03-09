@@ -45,9 +45,9 @@ describe("H2H System", () => {
     const r1 = createMockRikishi("r1", "Asashoryu");
     const r2 = createMockRikishi("r2", "Hakuho");
 
-    const result1: BoutResult = { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" };
-    const result2: BoutResult = { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "yorikiri" };
-    const result3: BoutResult = { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "uwatenage" };
+    const result1 = { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" } as unknown as BoutResult;
+    const result2 = { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "yorikiri" } as unknown as BoutResult;
+    const result3 = { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "uwatenage" } as unknown as BoutResult;
 
     // R1 wins two
     updateH2H(r1, r2, result1, "basho1", 2026, 1);
