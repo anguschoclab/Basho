@@ -82,21 +82,18 @@ describe("NPC AI System", () => {
   it("should output a structured weekly decision based on persona and perception", () => {
     const world = createMockWorld();
     
-    // Add health state for rikishi to be able to build perception
-    world.rikishi.get("r1")!.health = { fatigue: 100, injury: null }; // Exhausted -> fragile
-    world.rikishi.get("r1")!.rank = "yokozuna"; // High rank -> needs protection
-    world.rikishi.get("r2")!.health = { fatigue: 0, injury: null };
-    world.rikishi.get("r3")!.health = { fatigue: 0, injury: null };
-
     // To prevent error in perception building, ensure rikishi have minimum properties
     for(const r of world.rikishi.values()) {
         r.careerWins = 0; r.careerLosses = 0;
         r.currentBashoWins = 0; r.currentBashoLosses = 0;
-        r.condition = r.health?.fatigue === 100 ? 20 : 100;
+        r.condition = r.id === "r1" ? 20 : 100;
+        r.fatigue = r.id === "r1" ? 100 : 0;
         r.stats = { strength: 50, technique: 50, speed: 50, stamina: 50, mental: 50, adaptability: 50, balance: 50, weight: 150 } as RikishiStats;
-        r.morale = 50;
+        r.motivation = 50;
         r.injuryStatus = { isInjured: false, severity: 0, type: "none", location: "", weeksRemaining: 0, weeksToHeal: 0 };
     }
+
+    world.rikishi.get("r1")!.rank = "yokozuna"; // High rank -> needs protection
 
     const decision = makeNPCWeeklyDecision(world, "heya1");
 
