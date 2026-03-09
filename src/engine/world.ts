@@ -652,6 +652,14 @@ function runGovernanceReview(world: WorldState): void {
           data: { rosterSize: heya.rikishiIds.length }
         });
 
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          type: "merger_threat",
+          severity: "major",
+          description: `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
+        });
+
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (heya.rikishiIds.length <= 1) {
           logEngineEvent(world, {
