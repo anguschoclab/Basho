@@ -79,7 +79,7 @@ describe("H2H System", () => {
     
     // Simulate 5-0 record
     for(let i = 0; i < 5; i++) {
-        updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "hatakikomi" }, "b", 2026, i+1);
+        updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "hatakikomi" } as unknown as BoutResult, "b", 2026, i+1);
     }
 
     const commentary = generateH2HCommentary(r1, r2);
