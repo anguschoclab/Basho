@@ -127,7 +127,9 @@ describe("Bout Simulation Engine", () => {
 
     const kimariteSet = new Set<string>();
     for (let i = 0; i < 100; i++) {
-      const bout = { id: `bout-div-${i}`, day: 1, rikishiEastId: "e1", rikishiWestId: "w1" };
+      const east = mockRikishi(`e-${i}`, { shikona: "Asayama", style: "hybrid", archetype: "all_rounder" });
+      const west = mockRikishi(`w-${i}`, { shikona: "Takafuji", style: "hybrid", archetype: "all_rounder" });
+      const bout = { id: `bout-div-${i}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };
       const result = resolveBout(bout, east, west, basho);
       kimariteSet.add(result.kimarite);
     }
