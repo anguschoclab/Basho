@@ -61,11 +61,11 @@ describe("Rivalries System", () => {
     let state = createDefaultRivalriesState();
     const world = createMockWorld();
     
-    const result: BoutResult = {
+    const result = {
       winnerRikishiId: "a",
       loserRikishiId: "c", // Both heyaId: "h1"
       kimarite: "oshidashi"
-    };
+    } as unknown as BoutResult;
 
     const update = updateRivalriesFromBout({ state, world, result });
     expect(update.state.pairs["a|c"].sameHeya).toBe(true);
