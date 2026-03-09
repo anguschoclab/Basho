@@ -25,12 +25,12 @@ function createMockWorld(): WorldState {
            debt: 0, complianceRisk: 0, 
            sanctions: { cashFine: 0, rankPenalties: [], banWeeks: 0 }
         }
-      } as Heya]
+      } as unknown as Heya]
     ]),
     rikishi: new Map<string, Rikishi>([
-      ["r1", { id: "r1", style: "oshi", heyaId: "heya1", rank: "maegashira" } as Rikishi],
-      ["r2", { id: "r2", style: "oshi", heyaId: "heya1", rank: "juyro" } as Rikishi],
-      ["r3", { id: "r3", style: "yotsu", heyaId: "heya1", rank: "makushita" } as Rikishi],
+      ["r1", { id: "r1", style: "oshi", heyaId: "heya1", rank: "maegashira" } as unknown as Rikishi],
+      ["r2", { id: "r2", style: "oshi", heyaId: "heya1", rank: "juyro" } as unknown as Rikishi],
+      ["r3", { id: "r3", style: "yotsu", heyaId: "heya1", rank: "makushita" } as unknown as Rikishi],
     ]),
     oyakata: new Map<string, Oyakata>([
       ["oya1", {
@@ -40,7 +40,7 @@ function createMockWorld(): WorldState {
         archetype: "tyrant",
         traits: { ambition: 90, patience: 20, risk: 80, tradition: 80, compassion: 10 },
         quirks: ["Discipline Hawk", "Cold Pragmatist", "Media Operator"]
-      } as Oyakata]
+      } as unknown as Oyakata]
     ]),
     history: { bashoResults: [], yearEndAwards: [] },
     events: { version: "1.0.0", log: [], dedupe: {} },
