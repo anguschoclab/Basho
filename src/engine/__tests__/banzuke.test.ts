@@ -423,7 +423,12 @@ describe("Banzuke: Full Update - Demotions", () => {
     ozekiPerf.wins = 6;
     ozekiPerf.losses = 9;
     
-    const result = updateBanzuke(banzuke, performance, {});
+    // Initialize empty prev map properly to ensure tracking
+    const prevKadoban: OzekiKadobanMap = {
+      ozeki1: { isKadoban: false, consecutiveMakeKoshi: 0 }
+    };
+    
+    const result = updateBanzuke(banzuke, performance, prevKadoban);
     
     // Should now be kadoban
     expect(result.updatedOzekiKadoban.ozeki1.isKadoban).toBe(true);
