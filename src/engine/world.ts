@@ -672,6 +672,14 @@ function runGovernanceReview(world: WorldState): void {
             summary: `With only ${heya.rikishiIds.length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
             data: { rosterSize: heya.rikishiIds.length }
           });
+
+          generateGovernanceHeadline({
+            world,
+            heyaId: heya.id,
+            type: "forced_merger",
+            severity: "critical",
+            description: `Due to critically low recruitment (${heya.rikishiIds.length} active wrestlers), ${heya.name} faces a forced merger.`
+          });
         }
       } else {
         // Player stable — warn but don't force closure

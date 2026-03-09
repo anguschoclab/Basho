@@ -1066,6 +1066,77 @@ export function generateScandalHeadline(args: {
 }
 
 /**
+ * Generate a headline for institutional governance actions (mergers, loans, reviews).
+ * Called from world.ts post-basho pipeline.
+ */
+export function generateGovernanceHeadline(args: {
+  world: WorldState;
+  heyaId: Id;
+  type: "merger_threat" | "forced_merger" | "emergency_loan" | "council_review" | "welfare_review";
+  severity: "minor" | "major" | "critical";
+  description: string;
+}): MediaHeadline | null {
+  const { world, heyaId, type, severity, description } = args;
+  const w = world as any;
+  if (!w.mediaState) w.mediaState = createDefaultMediaState();
+
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return null;
+
+  const week = world.week ?? 0;
+  const rng = rngForWorld(world, "media", `gov::${heyaId}::${type}::w${week}`);
+
+  const impact = clampInt(
+    severity === "critical" ? 80 : severity === "major" ? 55 : 30,
+    0, 100
+  );
+  const tier: HeadlineTier = impact >= 70 ? "main_event" : impact >= 40 ? "national" : "local";
+  const tone: MediaTone = severity === "critical" ? "controversy" : severity === "major" ? "concern" : "neutral";
+
+  let title: string;
+  let subtitle: string = description;
+
+  if (type === "merger_threat") {
+    const titles = [`${heya.name} Faces Closure Threat`, `Association Reviews ${heya.name} Viability`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+  } else if (type === "forced_merger") {
+    const titles = [`Forced Merger Imminent for ${heya.name}`, `${heya.name} to Close Doors`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+  } else if (type === "emergency_loan") {
+    const titles = [`${heya.name} Bailed Out by Association`, `Financial Crisis at ${heya.name}`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+  } else if (type === "welfare_review") {
+    const titles = [`${heya.name} Fails Welfare Review`, `Sanctions Continue for ${heya.name}`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+  } else {
+    // council_review
+    const titles = [`Council Scrutinizes ${heya.name}`, `JSA Board Reviews ${heya.name} Conduct`];
+    title = titles[Math.floor(rng.next() * titles.length)];
+  }
+
+  const headline: MediaHeadline = {
+    id: makeId(`mh-gov-${week}-${heyaId}-${type}`),
+    week,
+    bashoName: world.currentBashoName,
+    tier,
+    beat: "discipline",
+    tone,
+    rikishiIds: [],
+    heyaIds: [heyaId],
+    title,
+    subtitle,
+    impact,
+    tags: ["discipline", type, severity],
+  };
+
+  let nextState: MediaState = w.mediaState;
+  nextState = applyHeadlineEffects(nextState, world, headline);
+  w.mediaState = nextState;
+
+  return headline;
+}
+
+/**
  * Snapshot current media heat values for sparkline history.
  * Call once at basho end to record the heat state for each rikishi.
  */
