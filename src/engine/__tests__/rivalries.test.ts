@@ -36,13 +36,13 @@ describe("Rivalries System", () => {
     let state = createDefaultRivalriesState();
     const world = createMockWorld();
     
-    const result: BoutResult = {
+    const result = {
       winnerRikishiId: "a",
       loserRikishiId: "b",
       kimarite: "yorikiri",
       duration: 10,
       upset: true
-    };
+    } as unknown as BoutResult;
 
     const update = updateRivalriesFromBout({ state, world, result, day: 1 });
     state = update.state;
