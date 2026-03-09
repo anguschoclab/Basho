@@ -28,6 +28,7 @@ import HallOfFamePage from "./pages/HallOfFamePage";
 import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
 import SponsorManagementPage from "./pages/SponsorManagementPage";
 import NotFound from "./pages/NotFound";
+import SchedulePage from "./pages/SchedulePage";
 
 const queryClient = new QueryClient();
 
