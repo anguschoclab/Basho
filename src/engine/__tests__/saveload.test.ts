@@ -13,6 +13,25 @@ import {
 } from "../saveload";
 import { WorldState, Rikishi, Heya, Oyakata } from "../types";
 
+// Setup localStorage mock
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => { store[key] = value.toString(); },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { store = {}; },
+    get length() { return Object.keys(store).length; },
+    key: (i: number) => Object.keys(store)[i] || null
+  };
+})();
+
+// Apply mock before all tests
+beforeAll(() => {
+  Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+  Object.defineProperty(global, 'window', { value: { localStorage: localStorageMock } });
+});
+
 // Helper to create basic world state
 function createMockWorld(): WorldState {
   return {
