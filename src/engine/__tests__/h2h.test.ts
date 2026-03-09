@@ -105,7 +105,7 @@ describe("H2H System", () => {
       const r2 = createMockRikishi("r2", "Takakeisho");
 
       // 1-0 shouldn't trigger lopsided or deadlock, will fallback to recent history or generic
-      updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "kimedashi" }, "b", 2026, 1);
+      updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "kimedashi" } as unknown as BoutResult, "b", 2026, 1);
 
       const commentary = generateH2HCommentary(r1, r2);
       expect(commentary).toMatch(/kimedashi|leads the series/i);

@@ -119,7 +119,7 @@ describe("Rivalries System", () => {
     }
     
     // A vs C is mild
-    state = updateRivalriesFromBout({ state, world, result: { winnerRikishiId: "a", loserRikishiId: "c" } }).state;
+    state = updateRivalriesFromBout({ state, world, result: { winnerRikishiId: "a", loserRikishiId: "c" } as unknown as BoutResult }).state;
 
     const digest = buildRivalryDigest({ state, world, rikishiId: "a" });
     expect(digest.length).toBe(2);
