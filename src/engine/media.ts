@@ -40,7 +40,7 @@ export type MediaBeat =
   | "heya_story"
   | "feature"
   | "retirement_watch"
-  | "discipline"; // placeholder for future governance events
+  | "discipline";
 
 export type HeadlineTier = "local" | "national" | "main_event";
 
