@@ -424,12 +424,12 @@ describe("Daily Tick: Event Logging", () => {
     const world = createTestWorld({
       cyclePhase: "interim",
       _interimDaysRemaining: 8,
-      eventLog: []
+      events: { version: "1.0.0", log: [], dedupe: {} }
     });
     
     advanceOneDay(world);
     
-    const phaseEvent = world.eventLog.find((e: any) => e.type === "PHASE_TRANSITION");
+    const phaseEvent = world.events?.log.find((e: any) => e.type === "PHASE_TRANSITION");
     expect(phaseEvent).toBeDefined();
   });
 });
