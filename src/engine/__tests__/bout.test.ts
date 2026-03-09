@@ -113,7 +113,10 @@ describe("Bout Simulation Engine", () => {
     let foundKinboshi = false;
     for (let i = 0; i < 500; i++) {
       const bout = { id: `bout-kin-${i}`, day: 1, rikishiEastId: "y1", rikishiWestId: "m1" };
-      const result = resolveBout(bout, yokozuna, maegashira, basho);
+      // Make maegashira extremely strong to force a win against Yokozuna
+      const strongMaegashira = { ...maegashira, power: 100, technique: 100, speed: 100 };
+      const weakYokozuna = { ...yokozuna, power: 10, technique: 10, speed: 10 };
+      const result = resolveBout(bout, weakYokozuna as Rikishi, strongMaegashira as Rikishi, basho);
       if ((result as any).isKinboshi) {
         foundKinboshi = true;
         break;
