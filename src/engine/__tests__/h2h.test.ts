@@ -91,10 +91,10 @@ describe("H2H System", () => {
     const r2 = createMockRikishi("r2", "Musashimaru");
     
     // Simulate 2-2 record
-    updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" }, "b", 2026, 1);
-    updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" }, "b", 2026, 2);
-    updateH2H(r2, r1, { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "oshidashi" }, "b", 2026, 3);
-    updateH2H(r2, r1, { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "oshidashi" }, "b", 2026, 4);
+    updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" } as unknown as BoutResult, "b", 2026, 1);
+    updateH2H(r1, r2, { winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "oshidashi" } as unknown as BoutResult, "b", 2026, 2);
+    updateH2H(r2, r1, { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "oshidashi" } as unknown as BoutResult, "b", 2026, 3);
+    updateH2H(r2, r1, { winnerRikishiId: "r2", loserRikishiId: "r1", kimarite: "oshidashi" } as unknown as BoutResult, "b", 2026, 4);
 
     const commentary = generateH2HCommentary(r1, r2);
     expect(commentary).toMatch(/close as it gets|true rivalry|Neither man/i);
