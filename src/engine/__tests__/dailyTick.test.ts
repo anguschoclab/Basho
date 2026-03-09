@@ -12,16 +12,20 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
   const heya: Heya = {
     id: "test-heya",
     name: "Test Heya",
-    funds: 10_000_000,
-    prestige: 50,
-    reputation: 50,
-    facilities: { training: 3, recovery: 3, nutrition: 3 },
-    rikishiIds: ["r1", "r2", "r3"],
     oyakataId: "oyakata1",
-    runwayBand: "comfortable",
+    rikishiIds: ["r1", "r2", "r3"],
+    statureBand: "established",
+    prestigeBand: "respected",
+    facilitiesBand: "adequate",
     koenkaiBand: "moderate",
-    ...overrides
-  } as unknown as Heya;
+    runwayBand: "comfortable",
+    reputation: 50,
+    funds: 10_000_000,
+    scandalScore: 0,
+    governanceStatus: "good_standing",
+    facilities: { training: 3, recovery: 3, nutrition: 3 },
+    riskIndicators: { financial: false, governance: false, rivalry: false }
+  };
 
   return {
     seed: 12345,
