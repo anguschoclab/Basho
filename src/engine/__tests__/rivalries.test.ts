@@ -97,7 +97,7 @@ describe("Rivalries System", () => {
     let state = createDefaultRivalriesState();
     const world = createMockWorld();
     
-    const result: BoutResult = { winnerRikishiId: "a", loserRikishiId: "b" };
+    const result = { winnerRikishiId: "a", loserRikishiId: "b" } as unknown as BoutResult;
     
     // Simulate intense rivalry
     for(let i=0; i<5; i++) {
