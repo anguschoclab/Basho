@@ -115,7 +115,7 @@ describe("Rivalries System", () => {
     
     // A vs B is hot
     for(let i=0; i<3; i++) {
-        state = updateRivalriesFromBout({ state, world, result: { winnerRikishiId: "a", loserRikishiId: "b" }, isTitleStakes: true }).state;
+        state = updateRivalriesFromBout({ state, world, result: { winnerRikishiId: "a", loserRikishiId: "b" } as unknown as BoutResult, isTitleStakes: true }).state;
     }
     
     // A vs C is mild
