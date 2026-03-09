@@ -628,6 +628,14 @@ function runGovernanceReview(world: WorldState): void {
         summary: `The Sumo Association council notes ${severityLabel} conduct issues at ${heya.name}. Score: ${Math.floor(scandalScore)}.`,
         data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
       });
+
+      generateGovernanceHeadline({
+        world,
+        heyaId: heya.id,
+        type: "council_review",
+        severity: scandalScore >= 60 ? "major" : "minor",
+        description: `The Sumo Association council formally noted concerns regarding conduct at ${heya.name}.`
+      });
     }
 
     // === Merger/closure pressure for extremely small stables ===
