@@ -28,6 +28,11 @@ const localStorageMock = (() => {
 
 beforeAll(() => {
   vi.stubGlobal('localStorage', localStorageMock);
+  if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+  } else {
+    vi.stubGlobal('window', { localStorage: localStorageMock });
+  }
 });
 
 // Helper to create basic world state

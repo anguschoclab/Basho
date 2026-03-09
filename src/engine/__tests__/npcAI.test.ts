@@ -39,7 +39,8 @@ function createMockWorld(): WorldState {
         name: "Test Oyakata",
         archetype: "tyrant",
         traits: { ambition: 90, patience: 20, risk: 80, tradition: 80, compassion: 10 },
-        quirks: ["Discipline Hawk", "Cold Pragmatist", "Media Operator"]
+        quirks: [],
+        managerFlags: { disciplineHawk: true, welfareHawk: false, publicityHawk: true, nepotist: false }
       } as unknown as Oyakata]
     ]),
     history: { bashoResults: [], yearEndAwards: [] },
