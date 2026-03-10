@@ -24,17 +24,14 @@ import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
-  // Column 0 — Time & Stable Management
   { id: "calendar",   column: 0, order: 0, component: CalendarWidget,   label: "Calendar" },
   { id: "stable",     column: 0, order: 1, component: StableWidget,     label: "Stable" },
   { id: "training",   column: 0, order: 2, component: TrainingWidget,   label: "Training" },
   { id: "finances",   column: 0, order: 3, component: FinancesWidget,   label: "Finances" },
   { id: "facilities", column: 0, order: 4, component: FacilitiesWidget, label: "Facilities" },
-  // Column 1 — Competition
   { id: "basho",      column: 1, order: 0, component: BashoWidget,      label: "Basho" },
   { id: "banzuke",    column: 1, order: 1, component: BanzukeWidget,    label: "Banzuke" },
   { id: "digest",     column: 1, order: 2, component: DigestWidget,     label: "Weekly Digest" },
-  // Column 2 — Intelligence
   { id: "roster",     column: 2, order: 0, component: RosterWidget,     label: "Roster" },
   { id: "scouting",   column: 2, order: 1, component: ScoutingWidget,   label: "Scouting" },
   { id: "news",       column: 2, order: 2, component: NewsWidget,       label: "News" },
@@ -42,6 +39,13 @@ const WIDGET_REGISTRY: WidgetDef[] = [
 ];
 
 const COLUMN_COUNT = 3;
+
+const PHASE_ACCENT: Record<string, string> = {
+  active_basho: "from-accent/20 via-accent/5 to-transparent",
+  pre_basho: "from-primary/15 via-primary/5 to-transparent",
+  post_basho: "from-primary/10 via-transparent to-transparent",
+  interim: "from-muted/30 via-transparent to-transparent",
+};
 
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
@@ -73,7 +77,6 @@ export default function Dashboard() {
   const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
   const columns = getColumns();
 
-  // Alerts
   const alerts = useMemo(() => {
     if (!playerHeya) return [];
     const a: { icon: any; text: string; color: string; link: string }[] = [];
@@ -104,42 +107,54 @@ export default function Dashboard() {
     : phase === "post_basho" ? "Post-Basho"
     : "Off-Season";
 
+  const gradientClass = PHASE_ACCENT[phase] ?? PHASE_ACCENT.interim;
+
   return (
     <AppLayout pageTitle="Dashboard">
-      <div className="space-y-4">
+      <div className="space-y-5">
         {/* ═══════════ HEADER ═══════════ */}
-        <div className="flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <span className="text-primary-foreground font-display text-xl font-bold">力</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-display font-bold leading-tight truncate">
-              {playerHeya?.name || "Stable"}
-            </h1>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>{world.year}</span>
-              <span>·</span>
-              <span className="capitalize">{world.currentBashoName}</span>
-              <span>·</span>
-              <span>Week {world.calendar?.currentWeek ?? world.week}</span>
-              <Badge variant="outline" className="text-[9px] h-4 px-1.5 ml-1">{phaseLabel}</Badge>
+        <div className={`relative -mx-4 -mt-2 px-4 pt-4 pb-5 bg-gradient-to-b ${gradientClass} rounded-b-xl`}>
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden">
+              <span className="text-primary-foreground font-display text-2xl font-bold relative z-10">力</span>
+              <div className="absolute inset-0 rank-shimmer" />
             </div>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {editMode && (
-              <Button variant="ghost" size="sm" onClick={resetLayout} className="h-7 text-xs gap-1 text-muted-foreground">
-                <RotateCcw className="h-3 w-3" /> Reset
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-display font-bold leading-tight truncate">
+                {playerHeya?.name || "Stable"}
+              </h1>
+              <div className="flex items-center gap-2 mt-1">
+                {/* Phase dots */}
+                <div className="flex items-center gap-1">
+                  <div className={`phase-dot ${phase === "interim" ? "phase-dot--active" : "phase-dot--interim"}`} />
+                  <div className={`phase-dot ${phase === "pre_basho" ? "phase-dot--active" : "phase-dot--pre"}`} />
+                  <div className={`phase-dot ${phase === "active_basho" ? "phase-dot--active" : "phase-dot--interim"}`} />
+                  <div className={`phase-dot ${phase === "post_basho" ? "phase-dot--active" : "phase-dot--post"}`} />
+                </div>
+                <span className="text-xs text-muted-foreground">{world.year}</span>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-muted-foreground capitalize">{world.currentBashoName}</span>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-muted-foreground">Week {world.calendar?.currentWeek ?? world.week}</span>
+                <Badge variant="outline" className="text-[9px] h-4 px-1.5 ml-1 border-primary/30 text-primary">{phaseLabel}</Badge>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {editMode && (
+                <Button variant="ghost" size="sm" onClick={resetLayout} className="h-7 text-xs gap-1 text-muted-foreground">
+                  <RotateCcw className="h-3 w-3" /> Reset
+                </Button>
+              )}
+              <Button
+                variant={editMode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setEditMode(!editMode)}
+                className="h-7 text-xs gap-1"
+              >
+                <GripVertical className="h-3 w-3" />
+                {editMode ? "Done" : "Customize"}
               </Button>
-            )}
-            <Button
-              variant={editMode ? "default" : "outline"}
-              size="sm"
-              onClick={() => setEditMode(!editMode)}
-              className="h-7 text-xs gap-1"
-            >
-              <GripVertical className="h-3 w-3" />
-              {editMode ? "Done" : "Customize"}
-            </Button>
+            </div>
           </div>
         </div>
 
@@ -151,12 +166,12 @@ export default function Dashboard() {
 
         {/* ═══════════ ALERTS ═══════════ */}
         {alerts.length > 0 && (
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 animate-slide-up">
             {alerts.map((alert, i) => (
               <button
                 key={i}
                 onClick={() => navigate(alert.link)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors text-left group"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-sm"
               >
                 <AlertTriangle className={`h-3.5 w-3.5 shrink-0 ${alert.color}`} />
                 <span className={`text-xs font-medium flex-1 ${alert.color}`}>{alert.text}</span>

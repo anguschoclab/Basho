@@ -35,10 +35,10 @@ export function RivalsWidget() {
   if (!world || !rivals.length) return null;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="widget-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Swords className="h-4 w-4 text-muted-foreground" />
+          <Swords className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rival Stables</span>
         </div>
         <Button variant="ghost" size="sm" onClick={() => navigate("/rivalries")} className="h-6 text-xs gap-1 text-muted-foreground">
@@ -48,12 +48,12 @@ export function RivalsWidget() {
 
       <div className="space-y-0.5">
         {rivals.map((r) => (
-          <div key={r.id} className="flex items-center gap-2 py-1.5 px-2 rounded text-xs hover:bg-muted/50 transition-colors">
+          <div key={r.id} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
             <StableName id={r.id} name={r.name} className="font-medium flex-1 truncate" />
             <Badge variant="outline" className="text-[10px] capitalize shrink-0">{r.prestige}</Badge>
             <span className="text-[10px] text-muted-foreground capitalize w-16 text-right">{r.roster}</span>
             {(r.heat === "blazing" || r.heat === "hot") && (
-              <Flame className="h-3 w-3 text-destructive/70 shrink-0" />
+              <Flame className="h-3 w-3 text-accent shrink-0 animate-pulse-glow" />
             )}
           </div>
         ))}
