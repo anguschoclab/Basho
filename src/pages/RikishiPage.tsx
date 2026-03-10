@@ -2,20 +2,20 @@
 // Clean, FM-inspired rikishi profile with clear hierarchy and fog of war
 // Uses projectRikishi() DTO for basic field display; raw Rikishi for scouting/career gen.
 
-import { rngFromSeed } from "@/engine/rng";
-import { Helmet } from "react-helmet";
+import { rngFromSeed } from "../engine/rng";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGame } from "@/contexts/GameContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { RANK_HIERARCHY, formatRank } from "@/engine/banzuke";
-import { KIMARITE_REGISTRY } from "@/engine/kimarite";
-import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "@/engine/almanac";
-import { projectRikishi } from "@/engine/uiModels";
+import { useGame } from "../contexts/GameContext";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Progress } from "../components/ui/progress";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Separator } from "../components/ui/separator";
+import { RANK_HIERARCHY, formatRank } from "../engine/banzuke";
+import { KIMARITE_REGISTRY } from "../engine/kimarite";
+import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "../engine/almanac";
+import { projectRikishi, projectRosterEntry, type UIRosterEntry } from "../engine/uiModels";
+import type { WorldState } from "../engine/types";
 import {
   describeAttributeVerbose,
   describeAggressionVerbose,
@@ -29,15 +29,15 @@ import {
   type StyleKey,
   type ArchetypeKey,
   type CareerPhase,
-} from "@/engine/narrativeDescriptions";
-import { POTENTIAL_LABELS } from "@/engine/descriptorBands";
+} from "../engine/narrativeDescriptions";
+import { POTENTIAL_LABELS } from "../engine/descriptorBands";
 import {
   RANK_NAMES,
   createScoutedView,
   getScoutedAttributes,
   describeScoutingLevel,
   type ScoutingInvestment
-} from "@/engine/scouting";
+} from "../engine/scouting";
 import {
   Activity,
   ArrowLeft,
@@ -59,8 +59,10 @@ import {
   User,
   MapPin,
   Calendar,
+  ChevronRight,
+  Users
 } from "lucide-react";
-import { StableName } from "@/components/ClickableName";
+import { StableName } from "../components/ClickableName";
 
 function findKimariteById(id: string) {
   const anyReg = KIMARITE_REGISTRY as any;
@@ -98,22 +100,109 @@ function InfoRow({ label, value, className }: { label: string; value: React.Reac
   );
 }
 
+// ═══════════════ DIRECTORY VIEW (FALLBACK) ═══════════════
+// Displayed when the user hits /rikishi without an ID
+function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, playerHeyaId: string | undefined }) {
+  const navigate = useNavigate();
+  
+  // Grab all rikishi belonging to the player's stable
+  const myRikishi = Array.from(world.rikishi.values())
+    .filter(r => r.heyaId === playerHeyaId)
+    .map(projectRosterEntry)
+    // Sort roughly by rank (lower index in hierarchy is better)
+    .sort((a, b) => RANK_HIERARCHY.indexOf(a.rank) - RANK_HIERARCHY.indexOf(b.rank));
+
+  return (
+    <>
+      <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-bold tracking-tight">Wrestler Directory</h1>
+            <p className="text-sm text-muted-foreground mt-1">Select a rikishi from your stable to view their full profile.</p>
+          </div>
+          <Users className="h-8 w-8 text-muted-foreground opacity-50" />
+        </div>
+
+        {myRikishi.length === 0 ? (
+          <Card className="paper border-dashed">
+            <CardContent className="py-12 text-center space-y-3">
+              <p className="text-muted-foreground">You currently have no wrestlers in your stable.</p>
+              <Button variant="outline" onClick={() => navigate("/banzuke")}>
+                <Search className="h-4 w-4 mr-2" /> Scout Banzuke
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-3">
+            {myRikishi.map((r: UIRosterEntry) => (
+              <Card 
+                key={r.id} 
+                className="hover:border-primary/50 transition-colors cursor-pointer group"
+                onClick={() => navigate(`/rikishi/${r.id}`)}
+              >
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Badge className={`rank-${r.rank} w-20 justify-center text-xs`}>
+                      {r.rankLabel} {r.rankNumber || ""}
+                    </Badge>
+                    <div>
+                      <div className="font-display font-bold text-lg group-hover:text-primary transition-colors">
+                        {r.shikona}
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                        <span className="font-mono">{r.record} This Basho</span>
+                        <span>•</span>
+                        <span>Condition: {Math.round(r.condition)}%</span>
+                        {r.isInjured && (
+                          <>
+                            <span>•</span>
+                            <span className="text-destructive flex items-center gap-1">
+                              <Activity className="h-3 w-3" /> Injured
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+
+// ═══════════════ MAIN COMPONENT ═══════════════
 export default function RikishiPage() {
   const navigate = useNavigate();
   const { rikishiId } = useParams<{ rikishiId: string }>();
   const { state } = useGame();
   const { world, playerHeyaId } = state;
 
-  if (!world || !rikishiId) return null;
+  // Protect against uninitialized world
+  if (!world) return null;
+
+  // If no ID is provided, show the directory fallback
+  if (!rikishiId) {
+    return <RikishiDirectoryView world={world} playerHeyaId={playerHeyaId} />;
+  }
 
   const rikishi = world.rikishi.get(rikishiId);
   if (!rikishi) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        <Card className="paper">
-          <CardContent className="py-8 text-center space-y-3">
-            <p className="text-muted-foreground">Rikishi not found</p>
-            <Button variant="outline" onClick={() => navigate("/")}>Return to Dashboard</Button>
+        <Card className="paper border-dashed">
+          <CardContent className="py-12 text-center space-y-3">
+            <Search className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+            <h2 className="text-xl font-bold">Rikishi Not Found</h2>
+            <p className="text-muted-foreground">The wrestler you are looking for has retired or doesn't exist.</p>
+            <Button variant="outline" onClick={() => navigate("/rikishi")} className="mt-4">
+              Return to Directory
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -174,8 +263,6 @@ export default function RikishiPage() {
 
   return (
     <>
-      <Helmet><title>{ui.shikona} — Profile</title></Helmet>
-
       <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
         {/* Top bar */}
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-muted-foreground">
