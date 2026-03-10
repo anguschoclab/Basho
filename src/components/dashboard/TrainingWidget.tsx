@@ -19,30 +19,19 @@ const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique"
 const RECOVERY_OPTIONS: RecoveryEmphasis[] = ["low", "normal", "high"];
 
 const INTENSITY_ICONS: Record<TrainingIntensity, string> = {
-  conservative: "🛡️",
-  balanced: "⚖️",
-  intensive: "🔥",
-  punishing: "💀",
+  conservative: "🛡️", balanced: "⚖️", intensive: "🔥", punishing: "💀",
 };
 
 const FOCUS_LABELS: Record<TrainingFocus, string> = {
-  neutral: "Neutral",
-  power: "Power",
-  speed: "Speed",
-  technique: "Technique",
-  balance: "Balance",
+  neutral: "Neutral", power: "Power", speed: "Speed", technique: "Technique", balance: "Balance",
 };
 
 const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
-  low: "Low",
-  normal: "Normal",
-  high: "High",
+  low: "Low", normal: "Normal", high: "High",
 };
 
 function ProfileRow({ label, icon, value, options, onChange }: {
-  label: string;
-  icon: React.ReactNode;
-  value: string;
+  label: string; icon: React.ReactNode; value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
 }) {
@@ -57,10 +46,10 @@ function ProfileRow({ label, icon, value, options, onChange }: {
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+            className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
               value === opt.value
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
             }`}
           >
             {opt.label}
@@ -96,10 +85,10 @@ export function TrainingWidget() {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="widget-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Dumbbell className="h-4 w-4 text-muted-foreground" />
+          <Dumbbell className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training</span>
         </div>
         <Button variant="ghost" size="sm" onClick={() => navigate("/training")} className="h-6 text-xs gap-1 text-muted-foreground">
@@ -107,7 +96,7 @@ export function TrainingWidget() {
         </Button>
       </div>
 
-      {/* Current profile summary */}
+      {/* Current profile */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="secondary" className="text-[10px] gap-1">
           {INTENSITY_ICONS[profile.intensity]} {profile.intensity}
@@ -120,23 +109,26 @@ export function TrainingWidget() {
         </Badge>
       </div>
 
-      {/* Multiplier indicators */}
-      <div className="flex gap-3 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Zap className="h-3 w-3" />
-          Growth: <span className="font-medium text-foreground">{(intensityInfo.growth * 100).toFixed(0)}%</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Activity className="h-3 w-3" />
-          Fatigue: <span className="font-medium text-foreground">{(intensityInfo.fatigue * 100).toFixed(0)}%</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Shield className="h-3 w-3" />
-          Recovery: <span className="font-medium text-foreground">{(recoveryInfo.fatigueDecay * 100).toFixed(0)}%</span>
-        </div>
+      {/* Multiplier bars */}
+      <div className="grid grid-cols-3 gap-2 text-[10px]">
+        {[
+          { label: "Growth", value: intensityInfo.growth, icon: Zap, color: "bg-primary" },
+          { label: "Fatigue", value: intensityInfo.fatigue, icon: Activity, color: intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning" },
+          { label: "Recovery", value: recoveryInfo.fatigueDecay, icon: Shield, color: "bg-success" },
+        ].map(m => (
+          <div key={m.label} className="space-y-1">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <m.icon className="h-3 w-3" />
+              <span>{m.label}</span>
+            </div>
+            <div className="h-1 rounded-full bg-muted overflow-hidden">
+              <div className={`h-full rounded-full ${m.color} transition-all`} style={{ width: `${Math.min(100, m.value * 60)}%` }} />
+            </div>
+            <span className="font-medium text-foreground">{(m.value * 100).toFixed(0)}%</span>
+          </div>
+        ))}
       </div>
 
-      {/* Quick-change toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors"
@@ -145,24 +137,21 @@ export function TrainingWidget() {
       </button>
 
       {expanded && (
-        <div className="space-y-2 pt-1 border-t border-border">
+        <div className="space-y-2 pt-1 border-t border-border/50 animate-slide-up">
           <ProfileRow
-            label="Intensity"
-            icon={<Zap className="h-3 w-3 text-muted-foreground" />}
+            label="Intensity" icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
             options={INTENSITY_OPTIONS.map(v => ({ value: v, label: v.charAt(0).toUpperCase() + v.slice(1) }))}
             onChange={(v) => updateProfile({ intensity: v as TrainingIntensity })}
           />
           <ProfileRow
-            label="Focus"
-            icon={<Target className="h-3 w-3 text-muted-foreground" />}
+            label="Focus" icon={<Target className="h-3 w-3 text-muted-foreground" />}
             value={profile.focus}
             options={FOCUS_OPTIONS.map(v => ({ value: v, label: FOCUS_LABELS[v] }))}
             onChange={(v) => updateProfile({ focus: v as TrainingFocus })}
           />
           <ProfileRow
-            label="Recovery"
-            icon={<Shield className="h-3 w-3 text-muted-foreground" />}
+            label="Recovery" icon={<Shield className="h-3 w-3 text-muted-foreground" />}
             value={profile.recovery}
             options={RECOVERY_OPTIONS.map(v => ({ value: v, label: RECOVERY_LABELS[v] }))}
             onChange={(v) => updateProfile({ recovery: v as RecoveryEmphasis })}

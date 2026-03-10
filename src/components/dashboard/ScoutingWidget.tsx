@@ -9,9 +9,9 @@ import * as talentpool from "@/engine/talentpool";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
-  generational: "text-amber-500",
-  star: "text-purple-400",
-  solid: "text-blue-400",
+  generational: "text-gold",
+  star: "text-primary",
+  solid: "text-primary/70",
   average: "text-muted-foreground",
   limited: "text-muted-foreground/60",
   unknown: "text-muted-foreground/40",
@@ -36,7 +36,6 @@ export function ScoutingWidget() {
         all.push({ ...c, pool });
       }
     }
-    // Sort by talent seed desc (best prospects first)
     return all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
   }, [world]);
 
@@ -51,10 +50,10 @@ export function ScoutingWidget() {
   const topProspects = prospects.slice(0, 6);
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="widget-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scouting</span>
         </div>
         <Button variant="ghost" size="sm" onClick={() => navigate("/talent-pool")} className="h-6 text-xs gap-1 text-muted-foreground">
@@ -62,24 +61,27 @@ export function ScoutingWidget() {
         </Button>
       </div>
 
-      {/* Pool summary */}
-      <div className="flex gap-3 text-xs">
+      {/* Pool summary with icons */}
+      <div className="flex gap-2 text-xs">
         {(["high_school", "university", "foreign"] as TalentPoolType[]).map(pool => {
           const Icon = POOL_ICONS[pool];
           return (
-            <div key={pool} className="flex items-center gap-1">
+            <div key={pool} className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-md">
               <Icon className="h-3 w-3 text-muted-foreground" />
               <span className="font-medium">{poolCounts[pool]}</span>
             </div>
           );
         })}
-        <span className="text-muted-foreground ml-auto">{prospects.length} visible</span>
+        <span className="text-muted-foreground ml-auto self-center text-[10px]">{prospects.length} visible</span>
       </div>
 
       {/* Top prospects */}
       <div className="space-y-0.5">
         {topProspects.length === 0 ? (
-          <p className="text-xs text-muted-foreground py-2 text-center">No prospects scouted yet. Search for leads.</p>
+          <div className="text-center py-4">
+            <Search className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
+            <p className="text-xs text-muted-foreground">No prospects scouted yet</p>
+          </div>
         ) : (
           topProspects.map(c => {
             const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
@@ -89,7 +91,7 @@ export function ScoutingWidget() {
             const Icon = POOL_ICONS[c.pool];
 
             return (
-              <div key={c.candidateId} className="flex items-center gap-2 py-1 px-2 rounded text-xs hover:bg-muted/50 transition-colors">
+              <div key={c.candidateId} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
                 <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
                 <span className="flex-1 font-medium truncate">
                   {canShowName ? c.name : "Unknown Prospect"}
@@ -111,9 +113,12 @@ export function ScoutingWidget() {
           })
         )}
         {prospects.length > 6 && (
-          <div className="text-[11px] text-muted-foreground text-center py-1">
-            +{prospects.length - 6} more prospects
-          </div>
+          <button
+            onClick={() => navigate("/talent-pool")}
+            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"
+          >
+            +{prospects.length - 6} more prospects →
+          </button>
         )}
       </div>
     </div>

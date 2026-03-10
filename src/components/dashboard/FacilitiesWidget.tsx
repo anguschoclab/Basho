@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
@@ -27,11 +26,11 @@ function getLevelLabel(level: number): string {
 }
 
 function getLevelColor(level: number): string {
-  if (level >= 85) return "text-amber-400";
-  if (level >= 65) return "text-purple-400";
-  if (level >= 45) return "text-blue-400";
-  if (level >= 25) return "text-orange-400";
-  return "text-red-400";
+  if (level >= 85) return "text-gold";
+  if (level >= 65) return "text-primary";
+  if (level >= 45) return "text-primary/70";
+  if (level >= 25) return "text-warning";
+  return "text-destructive";
 }
 
 export function FacilitiesWidget() {
@@ -47,19 +46,18 @@ export function FacilitiesWidget() {
   const canAfford = heya.funds >= maintenance;
   const axes = ["training", "recovery", "nutrition"] as const;
 
-  // Check for any axis at risk of degradation (below 20 or can't afford maintenance)
   const atRisk = !canAfford;
   const lowestAxis = axes.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, axes[0]);
   const lowestLevel = heya.facilities[lowestAxis];
   const isLow = lowestLevel <= 25;
 
   return (
-    <div className={`rounded-lg border bg-card p-4 space-y-3 ${
-      atRisk ? "border-destructive/50 ring-1 ring-destructive/20" : "border-border"
+    <div className={`widget-card p-4 space-y-3 ${
+      atRisk ? "border-destructive/40 ring-1 ring-destructive/20" : ""
     }`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Wrench className={`h-4 w-4 ${atRisk ? "text-destructive" : "text-muted-foreground"}`} />
+          <Wrench className={`h-4 w-4 ${atRisk ? "text-destructive" : "text-primary"}`} />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Facilities</span>
           {atRisk && (
             <span className="flex items-center gap-1 text-[10px] font-medium text-destructive bg-destructive/10 px-1.5 py-0.5 rounded-full">
@@ -68,7 +66,7 @@ export function FacilitiesWidget() {
             </span>
           )}
           {!atRisk && isLow && (
-            <span className="flex items-center gap-1 text-[10px] font-medium text-warning bg-warning/10 px-1.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-medium text-warning bg-warning/10 px-1.5 py-0.5 rounded-full">
               Low
             </span>
           )}
@@ -78,24 +76,28 @@ export function FacilitiesWidget() {
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {axes.map((axis) => {
           const Icon = AXIS_ICONS[axis];
           const level = heya.facilities[axis];
           return (
-            <div key={axis} className="flex items-center gap-2">
-              <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="text-[11px] text-muted-foreground w-16 shrink-0">{AXIS_LABELS[axis]}</span>
-              <Progress value={level} className="h-1.5 flex-1" />
-              <span className={`text-[10px] font-medium w-20 text-right ${getLevelColor(level)}`}>
-                {getLevelLabel(level)}
-              </span>
+            <div key={axis} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
+                </div>
+                <span className={`text-[10px] font-medium ${getLevelColor(level)}`}>
+                  {getLevelLabel(level)}
+                </span>
+              </div>
+              <Progress value={level} className="h-1.5" />
             </div>
           );
         })}
       </div>
 
-      <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border">
+      <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
         <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
           ¥{maintenance.toLocaleString()}
@@ -103,9 +105,9 @@ export function FacilitiesWidget() {
       </div>
 
       {atRisk && (
-        <div className="flex items-center gap-1.5 text-[10px] text-destructive bg-destructive/10 px-2 py-1.5 rounded">
+        <div className="flex items-center gap-1.5 text-[10px] text-destructive bg-destructive/10 px-2.5 py-1.5 rounded-md border border-destructive/20">
           <AlertTriangle className="h-3 w-3 shrink-0" />
-          <span>Funds won't cover maintenance — facilities will decay next month. Invest or earn more.</span>
+          <span>Funds won't cover maintenance — facilities will decay</span>
         </div>
       )}
     </div>

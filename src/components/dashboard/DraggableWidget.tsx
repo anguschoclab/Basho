@@ -36,7 +36,6 @@ export function DraggableWidget({
         setIsDragging(true);
         onDragStart(widgetId);
         e.dataTransfer.effectAllowed = "move";
-        // Ghost image
         if (ref.current) {
           e.dataTransfer.setDragImage(ref.current, 20, 20);
         }
@@ -58,7 +57,7 @@ export function DraggableWidget({
         setIsDragOver(false);
       }}
       className={cn(
-        "transition-all duration-200 relative",
+        "widget-enter relative",
         isEditMode && "cursor-grab active:cursor-grabbing",
         isDragging && "opacity-40 scale-[0.98]",
         isDragOver && isEditMode && "ring-2 ring-primary/50 ring-offset-2 ring-offset-background rounded-lg",
@@ -74,7 +73,6 @@ export function DraggableWidget({
   );
 }
 
-/** Empty column drop zone for dragging widgets into empty columns */
 export function ColumnDropZone({
   column,
   isEditMode,
@@ -95,7 +93,6 @@ export function ColumnDropZone({
       onDragOver={(e) => {
         e.preventDefault();
         setIsDragOver(true);
-        // Use a sentinel id for "end of column"
         onDragOver(`__col_end_${column}`, column);
       }}
       onDragLeave={() => setIsDragOver(false)}

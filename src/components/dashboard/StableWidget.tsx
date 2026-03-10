@@ -9,18 +9,15 @@ import {
 } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
-  // Positive
   inspired: "text-primary", content: "text-primary/80", safe: "text-primary",
   dominant: "text-primary", strong: "text-primary/80", secure: "text-primary",
   comfortable: "text-primary/70", powerful: "text-primary", hot: "text-primary",
-  // Neutral
   neutral: "text-muted-foreground", competitive: "text-muted-foreground",
   normal: "text-muted-foreground", cautious: "text-muted-foreground",
   cold: "text-muted-foreground", dormant: "text-muted-foreground",
   simmering: "text-muted-foreground", moderate: "text-muted-foreground",
   none: "text-muted-foreground", developing: "text-muted-foreground",
   warm: "text-muted-foreground", tight: "text-warning",
-  // Negative
   disgruntled: "text-warning", elevated: "text-warning",
   weak: "text-destructive/70", blazing: "text-destructive",
   fierce: "text-destructive", critical: "text-destructive",
@@ -28,15 +25,22 @@ const BAND_COLORS: Record<string, string> = {
   severe: "text-destructive",
 };
 
+const BAND_ICONS: Record<string, string> = {
+  inspired: "☀", content: "😊", neutral: "—", disgruntled: "😤", mutinous: "🔥",
+};
+
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
+  const emoji = BAND_ICONS[value.toLowerCase()];
   return (
     <div className="flex items-center justify-between py-1.5">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         {icon}
         <span>{label}</span>
       </div>
-      <span className={`text-xs font-medium capitalize ${color}`}>{value}</span>
+      <span className={`text-xs font-medium capitalize ${color}`}>
+        {emoji ? `${emoji} ` : ""}{value}
+      </span>
     </div>
   );
 }
@@ -54,14 +58,14 @@ export function StableWidget() {
   if (!p) return null;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="widget-card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
+          <Building2 className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stable Status</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Badge variant="outline" className="text-[10px] capitalize">{p.statureBand}</Badge>
+          <Badge variant="outline" className="text-[10px] capitalize border-gold/30 text-gold">{p.statureBand}</Badge>
           <Badge variant="secondary" className="text-[10px] capitalize">{p.prestigeBand}</Badge>
         </div>
       </div>
@@ -75,7 +79,7 @@ export function StableWidget() {
         <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={p.koenkaiBand === "none" ? "None" : p.koenkaiBand} />
       </div>
 
-      <Button variant="ghost" size="sm" onClick={() => navigate("/stable")} className="w-full h-7 text-xs gap-1 text-muted-foreground">
+      <Button variant="ghost" size="sm" onClick={() => navigate("/stable")} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors">
         Manage Stable <ChevronRight className="h-3 w-3" />
       </Button>
     </div>

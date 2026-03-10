@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
-import { BASHO_CALENDAR, getBashoInfo, SEASONAL_FLAVOR, getSeasonalFlavor } from "@/engine/calendar";
+import { BASHO_CALENDAR, getSeasonalFlavor } from "@/engine/calendar";
 import type { BashoName } from "@/engine/types";
 
 const BASHO_NAMES: Record<string, string> = {
@@ -14,12 +14,12 @@ const BASHO_NAMES: Record<string, string> = {
   nagoya: "July", aki: "September", kyushu: "November",
 };
 
-const PHASE_LABELS: Record<string, { label: string; color: string }> = {
-  interim: { label: "Off-Season", color: "bg-muted text-muted-foreground" },
-  pre_basho: { label: "Pre-Basho", color: "bg-primary/10 text-primary" },
-  active_basho: { label: "Tournament", color: "bg-accent/10 text-accent" },
-  post_basho: { label: "Post-Basho", color: "bg-primary/10 text-primary" },
-  basho_recap: { label: "Recap", color: "bg-muted text-muted-foreground" },
+const PHASE_LABELS: Record<string, { label: string; dotClass: string }> = {
+  interim:      { label: "Off-Season",  dotClass: "bg-muted-foreground/40" },
+  pre_basho:    { label: "Pre-Basho",   dotClass: "bg-primary" },
+  active_basho: { label: "Tournament",  dotClass: "bg-accent animate-pulse-glow" },
+  post_basho:   { label: "Post-Basho",  dotClass: "bg-primary/60" },
+  basho_recap:  { label: "Recap",       dotClass: "bg-muted-foreground/40" },
 };
 
 export function CalendarWidget() {
@@ -34,40 +34,27 @@ export function CalendarWidget() {
   const bashoName = world.currentBashoName || "hatsu";
   const inBasho = phase === "active_basho" && !!world.currentBasho;
 
-  const handleAdvanceDay = () => {
-    advanceOneDay();
-    toast({ title: "Day advanced" });
-  };
+  const handleAdvanceDay = () => { advanceOneDay(); toast({ title: "Day advanced" }); };
+  const handleAdvanceWeek = () => { advanceInterim(1); toast({ title: "Week advanced" }); };
+  const handleSimDay = () => { simulateAllBouts(); endDay(); advanceDay(); toast({ title: "Day simulated" }); };
+  const handleSimFullBasho = () => { simFullBasho(); toast({ title: "Basho complete!", description: "All 15 days simulated." }); navigate("/basho"); };
 
-  const handleAdvanceWeek = () => {
-    advanceInterim(1);
-    toast({ title: "Week advanced" });
-  };
-
-  // Basho now auto-starts via time advancement (pre_basho → active_basho)
-
-  const handleSimDay = () => {
-    simulateAllBouts();
-    endDay();
-    advanceDay();
-    toast({ title: "Day simulated" });
-  };
-
-  const handleSimFullBasho = () => {
-    simFullBasho();
-    toast({ title: "Basho complete!", description: "All 15 days simulated." });
-    navigate("/basho");
-  };
+  // Basho day progress (1-15)
+  const bashoDay = inBasho && world.currentBasho ? world.currentBasho.day : 0;
+  const dayProgress = bashoDay > 0 ? (bashoDay / 15) * 100 : 0;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="widget-card p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Calendar className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Calendar</span>
         </div>
-        <Badge className={`text-[10px] ${phaseInfo.color}`}>{phaseInfo.label}</Badge>
+        <div className="flex items-center gap-1.5">
+          <span className={`h-2 w-2 rounded-full ${phaseInfo.dotClass}`} />
+          <span className="text-[10px] font-medium text-muted-foreground">{phaseInfo.label}</span>
+        </div>
       </div>
 
       {/* Date display */}
@@ -79,11 +66,27 @@ export function CalendarWidget() {
           Week {world.calendar?.currentWeek ?? world.week}
           {inBasho && world.currentBasho && (
             <span className="ml-2 font-medium text-foreground">
-              · Day {world.currentBasho.day}日目
+              · Day {world.currentBasho.day}<span className="font-display text-xs ml-0.5">日目</span>
             </span>
           )}
         </div>
       </div>
+
+      {/* Basho day progress bar */}
+      {inBasho && (
+        <div className="space-y-1">
+          <div className="flex justify-between text-[10px] text-muted-foreground">
+            <span>Day 1</span>
+            <span>千秋楽 Day 15</span>
+          </div>
+          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+              style={{ width: `${dayProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Next basho indicator with seasonal flavor */}
       {!inBasho && (() => {
@@ -94,10 +97,10 @@ export function CalendarWidget() {
           <div className="space-y-0.5">
             <div className="text-xs text-muted-foreground">
               Next: <span className="font-medium text-foreground">{BASHO_NAMES[bashoName] || bashoName} Basho</span>
-              {info?.location && <span className="ml-1">· {info.location}</span>}
+              {info?.location && <span className="ml-1 opacity-70">· {info.location}</span>}
             </div>
             {flavorText && (
-              <p className="text-[10px] text-muted-foreground/70 italic">{flavorText}</p>
+              <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">{flavorText}</p>
             )}
           </div>
         );
