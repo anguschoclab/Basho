@@ -281,4 +281,49 @@
   .bg-west {
     background-color: hsl(var(--west));
   }
+
+  /* Staggered entrance animations for dashboard widgets */
+  .widget-enter {
+    animation: slideUp 0.4s ease-out both;
+  }
+  .widget-enter:nth-child(1) { animation-delay: 0ms; }
+  .widget-enter:nth-child(2) { animation-delay: 60ms; }
+  .widget-enter:nth-child(3) { animation-delay: 120ms; }
+  .widget-enter:nth-child(4) { animation-delay: 180ms; }
+  .widget-enter:nth-child(5) { animation-delay: 240ms; }
+  .widget-enter:nth-child(6) { animation-delay: 300ms; }
+
+  /* Widget card hover lift */
+  .widget-card {
+    @apply rounded-lg border border-border bg-card transition-all duration-200;
+    box-shadow: var(--shadow-sm);
+  }
+  .widget-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: hsl(var(--border) / 0.8);
+    transform: translateY(-1px);
+  }
+
+  /* Shimmer bar for loading / progress accents */
+  .shimmer-bar {
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.15) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  /* Phase indicator dot */
+  .phase-dot {
+    @apply h-2 w-2 rounded-full;
+  }
+  .phase-dot--active { background: hsl(var(--accent)); box-shadow: 0 0 6px hsl(var(--accent) / 0.5); }
+  .phase-dot--pre { background: hsl(var(--primary)); }
+  .phase-dot--post { background: hsl(var(--primary) / 0.5); }
+  .phase-dot--interim { background: hsl(var(--muted-foreground) / 0.3); }
+
+  /* Sumo rank shimmer for yokozuna/ozeki */
+  .rank-shimmer {
+    background: linear-gradient(90deg, hsl(var(--gold) / 0.1) 0%, hsl(var(--gold) / 0.3) 50%, hsl(var(--gold) / 0.1) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
 }
