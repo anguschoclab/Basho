@@ -11,7 +11,7 @@ import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Separator } from "../components/ui/separator";
-import { RANK_HIERARCHY, formatRank } from "../engine/banzuke";
+import { formatRank } from "../engine/banzuke";
 import { KIMARITE_REGISTRY } from "../engine/kimarite";
 import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "../engine/almanac";
 import { projectRikishi, projectRosterEntry, type UIRosterEntry } from "../engine/uiModels";
@@ -105,12 +105,28 @@ function InfoRow({ label, value, className }: { label: string; value: React.Reac
 function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, playerHeyaId: string | undefined }) {
   const navigate = useNavigate();
   
+  // Define a safe local rank order array to avoid external import type errors
+  const RANK_ORDER = [
+    'yokozuna', 'ozeki', 'sekiwake', 'komusubi', 'maegashira',
+    'juryo', 'makushita', 'sandanme', 'jonidan', 'jonokuchi'
+  ];
+
   // Grab all rikishi belonging to the player's stable
   const myRikishi = Array.from(world.rikishi.values())
     .filter(r => r.heyaId === playerHeyaId)
     .map(projectRosterEntry)
-    // Sort roughly by rank (lower index in hierarchy is better)
-    .sort((a, b) => RANK_HIERARCHY.indexOf(a.rank) - RANK_HIERARCHY.indexOf(b.rank));
+    // Sort safely by rank hierarchy, and then by rank number
+    .sort((a, b) => {
+      const rankA = RANK_ORDER.indexOf(a.rank);
+      const rankB = RANK_ORDER.indexOf(b.rank);
+      
+      if (rankA !== rankB) {
+        // Handle unexpected ranks by pushing them to the bottom
+        return (rankA === -1 ? 99 : rankA) - (rankB === -1 ? 99 : rankB);
+      }
+      
+      return (a.rankNumber || 0) - (b.rankNumber || 0);
+    });
 
   return (
     <>
