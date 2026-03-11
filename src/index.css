@@ -326,4 +326,105 @@
     background-size: 200% 100%;
     animation: shimmer 3s ease-in-out infinite;
   }
+
+  /* ═══ Bout card animations ═══ */
+
+  /* Staggered bout card entrance */
+  .bout-enter {
+    animation: boutSlideIn 0.35s ease-out both;
+  }
+  .bout-enter:nth-child(1) { animation-delay: 0ms; }
+  .bout-enter:nth-child(2) { animation-delay: 40ms; }
+  .bout-enter:nth-child(3) { animation-delay: 80ms; }
+  .bout-enter:nth-child(4) { animation-delay: 120ms; }
+  .bout-enter:nth-child(5) { animation-delay: 160ms; }
+  .bout-enter:nth-child(6) { animation-delay: 200ms; }
+  .bout-enter:nth-child(7) { animation-delay: 240ms; }
+  .bout-enter:nth-child(8) { animation-delay: 280ms; }
+  .bout-enter:nth-child(9) { animation-delay: 320ms; }
+  .bout-enter:nth-child(10) { animation-delay: 360ms; }
+
+  @keyframes boutSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Bout card hover/active state */
+  .bout-card {
+    @apply rounded-lg transition-all duration-200;
+    position: relative;
+    overflow: hidden;
+  }
+  .bout-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: linear-gradient(90deg, hsl(var(--east) / 0.03), transparent 30%, transparent 70%, hsl(var(--west) / 0.03));
+  }
+  .bout-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Player bout highlight pulse */
+  .bout-card--player {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.3), 0 0 12px -4px hsl(var(--primary) / 0.15);
+  }
+
+  /* Result reveal animation */
+  .result-reveal {
+    animation: resultPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes resultPop {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Winner name glow */
+  .winner-glow {
+    text-shadow: 0 0 8px hsl(var(--success) / 0.3);
+  }
+
+  /* VS divider */
+  .vs-divider {
+    @apply relative flex items-center justify-center;
+    min-width: 2.5rem;
+  }
+  .vs-divider::before,
+  .vs-divider::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 40%;
+    background: hsl(var(--border));
+  }
+  .vs-divider::before { top: 0; }
+  .vs-divider::after { bottom: 0; }
+
+  /* East/West side accent bars */
+  .east-accent {
+    border-left: 3px solid hsl(var(--east));
+  }
+  .west-accent {
+    border-right: 3px solid hsl(var(--west));
+  }
+
+  /* Kimarite badge shimmer on rare techniques */
+  .kimarite-rare {
+    background: linear-gradient(135deg, hsl(var(--gold) / 0.15), hsl(var(--accent) / 0.1));
+    border-color: hsl(var(--gold) / 0.3);
+  }
 }
