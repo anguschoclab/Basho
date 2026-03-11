@@ -1,18 +1,12 @@
-// BoutResultDisplay.tsx
-// Bout Result display - shows outcome with kimarite
-//
-// Fixes:
-// - Works with either `result.kimarite` OR `result.kimariteId` OR `result.kimariteName`
-// - Safely handles missing fields (stance/duration/log/tachiaiWinner)
-// - Robust kimarite lookup even if registry/getKimarite expects an id
-// - Avoids calling .replace on undefined stance
-// - Safe rarity badge even if rarity missing
+// BoutResultDisplay.tsx — Polished bout result with dramatic winner reveal
+// Supports kimarite/kimariteId/kimariteName fields across engine revisions
 
 import { cn } from "@/lib/utils";
 import type { BoutResult, Rikishi } from "@/engine/types";
 import { Badge } from "@/components/ui/badge";
 import { getKimarite } from "@/engine/kimarite";
 import { RikishiName } from "@/components/ClickableName";
+import { Trophy, Zap, Timer, Shield } from "lucide-react";
 
 interface BoutResultDisplayProps {
   result: BoutResult;
@@ -29,126 +23,124 @@ function safeNumber(v: unknown, fallback = 0): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
-function titleCase(s: string): string {
-  if (!s) return s;
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 function formatStance(raw: unknown): string {
   const s = safeString(raw, "");
   if (!s) return "—";
-  return titleCase(s.split("-").join(" "));
+  return s.charAt(0).toUpperCase() + s.split("-").join(" ").slice(1);
 }
 
 export function BoutResultDisplay({
   result,
   eastRikishi,
   westRikishi,
-  className
+  className,
 }: BoutResultDisplayProps) {
   const winner = result.winner === "east" ? eastRikishi : westRikishi;
   const loser = result.winner === "east" ? westRikishi : eastRikishi;
+  const winnerSide = result.winner;
 
-  // Support multiple possible fields across engine revisions
-  const kimariteId =
-    safeString((result as any).kimarite) ||
-    safeString((result as any).kimariteId) ||
-    "";
-
-  // Prefer explicit name from result; fallback to lookup; fallback to em dash
+  const kimariteId = safeString((result as any).kimarite) || safeString((result as any).kimariteId) || "";
   const kimariteFromLookup = kimariteId ? getKimarite(kimariteId) : null;
-  const kimariteName =
-    safeString((result as any).kimariteName) ||
-    safeString(kimariteFromLookup?.name) ||
-    "—";
-
+  const kimariteName = safeString((result as any).kimariteName) || safeString(kimariteFromLookup?.name) || "—";
   const kimariteNameJa = safeString(kimariteFromLookup?.nameJa);
   const kimariteDescription = safeString(kimariteFromLookup?.description);
-
   const rarity = safeString((kimariteFromLookup as any)?.rarity, "").toLowerCase();
-  const showRarity = Boolean(rarity);
-
   const duration = safeNumber((result as any).duration, 0);
   const tachiaiWinner = (result as any).tachiaiWinner as "east" | "west" | undefined;
+  const isUpset = Boolean((result as any).upset);
 
   return (
-    <div className={cn("paper p-6 text-center", className)}>
-      {/* Winner announcement */}
-      <div className="mb-4">
-        {Boolean((result as any).upset) && (
-          <Badge variant="destructive" className="mb-2 animate-scale-in">
-            🎊 UPSET!
-          </Badge>
-        )}
-
-        <h2 className="font-display text-3xl font-bold text-foreground mb-1 animate-fade-in">
-          {winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}
-        </h2>
-
-        <p className="text-muted-foreground">
-          defeats <span className="font-medium">{loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}</span>
-        </p>
+    <div className={cn("paper p-0 overflow-hidden text-center", className)}>
+      {/* Top color accent bar */}
+      <div className="flex h-1">
+        <div className={cn("flex-1 transition-all", winnerSide === "east" ? "bg-east" : "bg-east/20")} />
+        <div className={cn("flex-1 transition-all", winnerSide === "west" ? "bg-west" : "bg-west/20")} />
       </div>
 
-      {/* Kimarite */}
-      <div className="bg-secondary/50 rounded-lg p-4 mb-4">
-        <p className="text-sm text-muted-foreground uppercase tracking-wide mb-1">
-          Winning Technique
-        </p>
+      <div className="p-6 space-y-5">
+        {/* Winner announcement */}
+        <div className="result-reveal">
+          {isUpset && (
+            <Badge variant="destructive" className="mb-3 animate-scale-in gap-1">
+              <Zap className="h-3 w-3" /> UPSET!
+            </Badge>
+          )}
 
-        <p className="font-display text-2xl font-semibold text-foreground">
-          {kimariteName}
-        </p>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Trophy className="h-5 w-5 text-gold" />
+            <h2 className="font-display text-2xl font-bold text-foreground winner-glow">
+              {winner ? <RikishiName id={winner.id} name={winner.shikona} /> : "Unknown"}
+            </h2>
+          </div>
 
-        {kimariteNameJa && (
-          <p className="text-lg text-muted-foreground">{kimariteNameJa}</p>
-        )}
-
-        {kimariteDescription && (
-          <p className="text-sm text-muted-foreground mt-2">{kimariteDescription}</p>
-        )}
-
-        {showRarity && (
-          <Badge
-            variant="outline"
-            className={cn(
-              "mt-2 capitalize",
-              rarity === "legendary" && "border-gold text-gold",
-              rarity === "rare" && "border-accent text-accent",
-              rarity === "uncommon" && "border-primary text-primary"
-            )}
-          >
-            {rarity}
-          </Badge>
-        )}
-      </div>
-
-      {/* Match details */}
-      <div className="grid grid-cols-3 gap-4 text-sm">
-        <div>
-          <p className="text-muted-foreground">Tachiai</p>
-          <p
-            className={cn(
-              "font-medium",
-              tachiaiWinner === "east" ? "text-east" : tachiaiWinner === "west" ? "text-west" : "text-muted-foreground"
-            )}
-          >
-            {tachiaiWinner === "east"
-              ? eastRikishi?.shikona ?? "—"
-              : tachiaiWinner === "west"
-              ? westRikishi?.shikona ?? "—"
-              : "—"}
+          <p className="text-sm text-muted-foreground">
+            defeats{" "}
+            <span className="font-medium text-foreground/70">
+              {loser ? <RikishiName id={loser.id} name={loser.shikona} /> : "Unknown"}
+            </span>
           </p>
         </div>
 
-        <div>
-          <p className="text-muted-foreground">Stance</p>
-          <p className="font-medium text-foreground">{formatStance((result as any).stance)}</p>
+        {/* Kimarite card */}
+        <div className={cn(
+          "rounded-lg p-4 border",
+          rarity === "legendary" ? "kimarite-rare border-gold/30" :
+          rarity === "rare" ? "kimarite-rare" :
+          "bg-secondary/40 border-border/50"
+        )}>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
+            Winning Technique
+          </p>
+          <p className="font-display text-xl font-semibold text-foreground">{kimariteName}</p>
+          {kimariteNameJa && (
+            <p className="text-base text-muted-foreground/80 mt-0.5">{kimariteNameJa}</p>
+          )}
+          {kimariteDescription && (
+            <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{kimariteDescription}</p>
+          )}
+          {rarity && rarity !== "common" && (
+            <Badge
+              variant="outline"
+              className={cn(
+                "mt-2.5 capitalize text-[10px]",
+                rarity === "legendary" && "border-gold text-gold",
+                rarity === "rare" && "border-accent text-accent",
+                rarity === "uncommon" && "border-primary text-primary"
+              )}
+            >
+              {rarity}
+            </Badge>
+          )}
         </div>
 
-        <div>
-          <p className="text-muted-foreground">Duration</p>
-          <p className="font-medium text-foreground">{duration > 0 ? `${duration} ticks` : "—"}</p>
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3 text-xs">
+          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+            <Zap className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
+            <p className={cn(
+              "font-medium text-sm",
+              tachiaiWinner === "east" ? "text-east" : tachiaiWinner === "west" ? "text-west" : "text-muted-foreground"
+            )}>
+              {tachiaiWinner === "east"
+                ? eastRikishi?.shikona ?? "—"
+                : tachiaiWinner === "west"
+                ? westRikishi?.shikona ?? "—"
+                : "—"}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+            <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-[10px] text-muted-foreground uppercase">Stance</p>
+            <p className="font-medium text-sm text-foreground">{formatStance((result as any).stance)}</p>
+          </div>
+
+          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+            <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+            <p className="text-[10px] text-muted-foreground uppercase">Duration</p>
+            <p className="font-medium text-sm text-foreground">{duration > 0 ? `${duration} ticks` : "—"}</p>
+          </div>
         </div>
       </div>
     </div>

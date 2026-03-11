@@ -1,5 +1,5 @@
-// MatchDayViewer.tsx - Shows today's scheduled bouts with H2H records and rivalry heat
-// FM-style match day panel for the Basho page
+// MatchDayViewer.tsx - Polished match day panel with staggered animations,
+// east/west color coding, and immersive bout cards
 
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,20 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Rikishi, WorldState, BoutResult, RankPosition } from "@/engine/types";
-import { getRivalry, type RivalryHeatBand, type RivalryPairState, type RivalriesState } from "@/engine/rivalries";
+import { getRivalry, type RivalryHeatBand, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
 import { compareRanks } from "@/engine/banzuke";
-import { 
-  Flame, 
-  Thermometer, 
-  Snowflake, 
-  Star, 
-  Swords, 
+import {
+  Flame,
+  Thermometer,
+  Snowflake,
+  Star,
+  Swords,
   Users,
   TrendingUp,
   AlertTriangle,
-  Eye
+  Eye,
+  CircleDot,
 } from "lucide-react";
+
+// ── Types ──────────────────────────────────────────────
 
 interface MatchLike {
   day?: number;
@@ -37,6 +40,8 @@ interface MatchDayViewerProps {
   onBoutClick?: (match: MatchLike) => void;
 }
 
+// ── Helpers ────────────────────────────────────────────
+
 function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 75) return "inferno";
   if (heat >= 50) return "hot";
@@ -44,32 +49,146 @@ function getHeatBand(heat: number): RivalryHeatBand {
   return "cold";
 }
 
-const HEAT_ICONS: Record<RivalryHeatBand, React.ReactNode> = {
-  inferno: <Flame className="h-4 w-4 text-red-500" />,
-  hot: <Thermometer className="h-4 w-4 text-orange-500" />,
-  warm: <Thermometer className="h-4 w-4 text-amber-500" />,
-  cold: <Snowflake className="h-4 w-4 text-blue-400" />,
+const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: string; classes: string }> = {
+  inferno: {
+    icon: <Flame className="h-3.5 w-3.5" />,
+    label: "Inferno Rivalry",
+    classes: "bg-destructive/15 text-destructive border-destructive/25",
+  },
+  hot: {
+    icon: <Thermometer className="h-3.5 w-3.5" />,
+    label: "Heated Rivalry",
+    classes: "bg-warning/15 text-warning border-warning/25",
+  },
+  warm: {
+    icon: <Thermometer className="h-3.5 w-3.5" />,
+    label: "Warm Rivalry",
+    classes: "bg-warning/10 text-warning/80 border-warning/20",
+  },
+  cold: {
+    icon: <Snowflake className="h-3.5 w-3.5" />,
+    label: "Cold",
+    classes: "bg-muted text-muted-foreground border-border",
+  },
 };
 
-const HEAT_LABELS: Record<RivalryHeatBand, string> = {
-  inferno: "Inferno Rivalry",
-  hot: "Heated Rivalry",
-  warm: "Warm Rivalry",
-  cold: "Cold",
-};
-
-const HEAT_COLORS: Record<RivalryHeatBand, string> = {
-  inferno: "bg-red-500/20 text-red-400 border-red-500/30",
-  hot: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  warm: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  cold: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-};
-
-function getH2HRecord(r1: Rikishi, r2: Rikishi): { wins: number; losses: number } {
+function getH2HRecord(r1: Rikishi, r2: Rikishi) {
   const record = r1.h2h?.[r2.id];
-  if (!record) return { wins: 0, losses: 0 };
-  return { wins: record.wins, losses: record.losses };
+  return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
 }
+
+// ── Sub-components ─────────────────────────────────────
+
+function RikishiSide({
+  rikishi,
+  side,
+  isWinner,
+  onClick,
+}: {
+  rikishi: Rikishi;
+  side: "east" | "west";
+  isWinner: boolean;
+  onClick: () => void;
+}) {
+  const isEast = side === "east";
+  return (
+    <div className={`flex-1 min-w-0 ${isEast ? "text-right" : "text-left"}`}>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        className={`
+          font-display text-sm truncate max-w-full
+          transition-colors hover:text-primary cursor-pointer
+          ${isWinner ? "font-bold winner-glow text-success" : "text-foreground"}
+        `}
+      >
+        {rikishi.shikona}
+      </button>
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
+        style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
+      >
+        <span className="font-mono">
+          {rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoLosses ?? 0}
+        </span>
+        <span className={`h-1.5 w-1.5 rounded-full ${isEast ? "bg-east" : "bg-west"}`} />
+      </div>
+    </div>
+  );
+}
+
+function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
+  return (
+    <div className="vs-divider shrink-0 w-16 text-center px-1">
+      <div className="font-mono text-xs font-semibold tracking-wide">
+        <span className={wins > losses ? "text-success" : "text-foreground"}>{wins}</span>
+        <span className="text-muted-foreground mx-0.5">–</span>
+        <span className={losses > wins ? "text-success" : "text-foreground"}>{losses}</span>
+      </div>
+      <div className="text-[9px] text-muted-foreground uppercase tracking-widest mt-0.5">H2H</div>
+    </div>
+  );
+}
+
+function BoutTags({
+  match,
+}: {
+  match: NonNullable<ReturnType<typeof useResolvedMatch>>;
+}) {
+  const { heatBand, rivalry, h2h, east, west } = match;
+  const streak = east.h2h?.[west.id]?.streak ?? 0;
+
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap mt-2">
+      {/* Rivalry badge */}
+      {heatBand && heatBand !== "cold" && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge variant="outline" className={`text-[10px] gap-1 ${HEAT_CONFIG[heatBand].classes} border`}>
+              {HEAT_CONFIG[heatBand].icon}
+              {HEAT_CONFIG[heatBand].label}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p className="text-xs max-w-[200px]">
+              {rivalry?.tone && <span className="capitalize">{rivalry.tone.replace("_", " ")}</span>}
+              {rivalry && ` · ${rivalry.meetings} meetings`}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      )}
+
+      {/* First meeting */}
+      {h2h.wins === 0 && h2h.losses === 0 && (
+        <Badge variant="secondary" className="text-[10px] gap-1">
+          <Users className="h-3 w-3" /> First Meeting
+        </Badge>
+      )}
+
+      {/* Win streak */}
+      {streak >= 3 && (
+        <Badge variant="outline" className="text-[10px] text-success border-success/25 gap-1">
+          <TrendingUp className="h-3 w-3" />
+          {east.shikona} {streak}W streak
+        </Badge>
+      )}
+      {streak <= -3 && (
+        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/25 gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          {east.shikona} {Math.abs(streak)}L streak
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+// Just a type helper for the resolved match shape
+function useResolvedMatch() {
+  return null as any;
+}
+
+// ── Main Component ─────────────────────────────────────
 
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
   const navigate = useNavigate();
@@ -78,7 +197,6 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
     return matches.map((match) => {
       const east = world.rikishi.get(match.eastRikishiId);
       const west = world.rikishi.get(match.westRikishiId);
-      
       if (!east || !west) return null;
 
       const h2h = getH2HRecord(east, west);
@@ -88,38 +206,20 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
       const h2hCommentary = generateH2HCommentary(east, west);
 
-      return {
-        ...match,
-        east,
-        west,
-        h2h,
-        rivalry,
-        heatBand,
-        isPlayerBout,
-        h2hCommentary,
-      };
+      return { ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary };
     }).filter(Boolean);
   }, [matches, world, playerRikishiIds]);
 
-  // Sort: player bouts first, then by rivalry heat, then unplayed first
   const sortedMatches = useMemo(() => {
     return [...resolvedMatches].sort((a, b) => {
       if (!a || !b) return 0;
-      
-      // Player bouts first
       if (a.isPlayerBout !== b.isPlayerBout) return a.isPlayerBout ? -1 : 1;
-      
-      // Hot rivalries next
       const aHeat = a.rivalry?.heat ?? 0;
       const bHeat = b.rivalry?.heat ?? 0;
       if (aHeat !== bHeat) return bHeat - aHeat;
-      
-      // Unplayed first
       const aPlayed = !!a.result;
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-
-      // Then by rank (higher-ranked bouts first)
       const aPos = { rank: a.east.rank, side: a.east.side ?? "east", rankNumber: a.east.rankNumber } as RankPosition;
       const bPos = { rank: b.east.rank, side: b.east.side ?? "east", rankNumber: b.east.rankNumber } as RankPosition;
       return compareRanks(aPos, bPos);
@@ -129,156 +229,117 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
   if (sortedMatches.length === 0) {
     return (
       <Card className="paper">
-        <CardContent className="py-8 text-center text-muted-foreground">
-          No matches scheduled for today.
+        <CardContent className="py-12 text-center">
+          <CircleDot className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
+          <p className="text-muted-foreground text-sm">No matches scheduled for today.</p>
         </CardContent>
       </Card>
     );
   }
 
+  const completedCount = sortedMatches.filter((m) => !!m?.result).length;
+
   return (
-    <Card className="paper">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2">
-          <Swords className="h-5 w-5" />
-          Today's Card
-        </CardTitle>
+    <Card className="paper overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Swords className="h-4.5 w-4.5" />
+            Today's Card
+          </CardTitle>
+          <Badge variant="secondary" className="font-mono text-xs">
+            {completedCount}/{sortedMatches.length}
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-2 max-h-[600px] overflow-auto">
-        {sortedMatches.map((match, idx) => {
-          if (!match) return null;
-          const hasResult = !!match.result;
 
-          return (
-            <div
-              key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
-              onClick={() => hasResult && onBoutClick?.(match)}
-              className={`
-                p-4 rounded-lg transition-all
-                ${hasResult ? "cursor-pointer hover:bg-secondary/60" : ""}
-                ${match.isPlayerBout ? "ring-2 ring-primary/50 ring-offset-1 ring-offset-background" : ""}
-                ${match.heatBand && match.heatBand !== "cold" ? "bg-gradient-to-r from-secondary/50 to-transparent" : "bg-secondary/30"}
-              `}
-            >
-              {/* Main Bout Row */}
-              <div className="flex items-center gap-3">
-                {match.isPlayerBout && <Star className="h-4 w-4 text-primary shrink-0" fill="currentColor" />}
+      <CardContent className="p-0">
+        {/* Thin east/west color bar at top */}
+        <div className="flex h-0.5">
+          <div className="flex-1 bg-east/30" />
+          <div className="flex-1 bg-west/30" />
+        </div>
 
-                {/* East Rikishi */}
-                <div className="flex-1 text-right min-w-0">
-                  <div 
-                    className={`font-display truncate cursor-pointer hover:text-primary transition-colors ${
-                      match.result?.winner === "east" ? "font-bold text-success" : ""
-                    }`}
-                    onClick={(e) => { e.stopPropagation(); navigate(`/rikishi/${match.east.id}`); }}
-                  >
-                    {match.east.shikona}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {match.east.currentBashoWins ?? 0}-{match.east.currentBashoLosses ?? 0}
-                  </div>
-                </div>
+        <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
+          {sortedMatches.map((match, idx) => {
+            if (!match) return null;
+            const hasResult = !!match.result;
 
-                {/* H2H Center */}
-                <div className="shrink-0 w-20 text-center">
-                  <div className="text-xs text-muted-foreground mb-0.5">H2H</div>
-                  <div className="font-mono text-sm font-medium">
-                    <span className={match.h2h.wins > match.h2h.losses ? "text-success" : ""}>
-                      {match.h2h.wins}
-                    </span>
-                    <span className="text-muted-foreground mx-1">-</span>
-                    <span className={match.h2h.losses > match.h2h.wins ? "text-success" : ""}>
-                      {match.h2h.losses}
-                    </span>
-                  </div>
-                </div>
-
-                {/* West Rikishi */}
-                <div className="flex-1 min-w-0">
-                  <div 
-                    className={`font-display truncate cursor-pointer hover:text-primary transition-colors ${
-                      match.result?.winner === "west" ? "font-bold text-success" : ""
-                    }`}
-                    onClick={(e) => { e.stopPropagation(); navigate(`/rikishi/${match.west.id}`); }}
-                  >
-                    {match.west.shikona}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {match.west.currentBashoWins ?? 0}-{match.west.currentBashoLosses ?? 0}
-                  </div>
-                </div>
-
-                {/* Result/Status */}
-                <div className="shrink-0 flex items-center gap-2">
-                  {hasResult ? (
-                    <>
-                      <Badge variant="outline" className="text-xs">
-                        {match.result?.kimariteName ?? "—"}
-                      </Badge>
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    </>
-                  ) : (
-                    <Badge variant="secondary" className="text-xs">
-                      Pending
-                    </Badge>
+            return (
+              <div
+                key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
+                onClick={() => hasResult && onBoutClick?.(match)}
+                className={`
+                  bout-card bout-enter p-3 px-4
+                  ${hasResult ? "cursor-pointer" : ""}
+                  ${match.isPlayerBout ? "bout-card--player bg-primary/[0.03]" : ""}
+                  ${hasResult ? "bg-card" : "bg-card/60"}
+                `}
+              >
+                {/* Main row */}
+                <div className="flex items-center gap-2">
+                  {/* Player star */}
+                  {match.isPlayerBout && (
+                    <Star className="h-3.5 w-3.5 text-primary shrink-0" fill="currentColor" />
                   )}
-                </div>
-              </div>
 
-              {/* Rivalry & H2H Commentary */}
-              <div className="mt-2 flex items-center gap-3 flex-wrap">
-                {/* Rivalry Heat Badge */}
-                {match.heatBand && match.heatBand !== "cold" && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className={`text-xs ${HEAT_COLORS[match.heatBand]} border`}>
-                        {HEAT_ICONS[match.heatBand]}
-                        <span className="ml-1">{HEAT_LABELS[match.heatBand]}</span>
+                  {/* East */}
+                  <RikishiSide
+                    rikishi={match.east}
+                    side="east"
+                    isWinner={match.result?.winner === "east"}
+                    onClick={() => navigate(`/rikishi/${match.east.id}`)}
+                  />
+
+                  {/* H2H center */}
+                  <H2HCenter wins={match.h2h.wins} losses={match.h2h.losses} />
+
+                  {/* West */}
+                  <RikishiSide
+                    rikishi={match.west}
+                    side="west"
+                    isWinner={match.result?.winner === "west"}
+                    onClick={() => navigate(`/rikishi/${match.west.id}`)}
+                  />
+
+                  {/* Result badge */}
+                  <div className="shrink-0 ml-1 flex items-center gap-1.5">
+                    {hasResult ? (
+                      <div className="result-reveal flex items-center gap-1.5">
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] font-mono ${
+                            (match.result as any)?.rarity === "legendary" || (match.result as any)?.rarity === "rare"
+                              ? "kimarite-rare"
+                              : ""
+                          }`}
+                        >
+                          {match.result?.kimariteName ?? "—"}
+                        </Badge>
+                        <Eye className="h-3.5 w-3.5 text-muted-foreground/60" />
+                      </div>
+                    ) : (
+                      <Badge variant="secondary" className="text-[10px]">
+                        <CircleDot className="h-3 w-3 mr-0.5 animate-pulse-glow" />
+                        Pending
                       </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs text-sm">
-                        {match.rivalry?.tone && (
-                          <span className="capitalize">{match.rivalry.tone.replace("_", " ")} rivalry</span>
-                        )}
-                        {match.rivalry && ` • ${match.rivalry.meetings} meetings`}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
+                    )}
+                  </div>
+                </div>
 
-                {/* First Meeting Badge */}
-                {match.h2h.wins === 0 && match.h2h.losses === 0 && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Users className="h-3 w-3 mr-1" />
-                    First Meeting
-                  </Badge>
-                )}
+                {/* Tags row */}
+                <BoutTags match={match as any} />
 
-                {/* Streak Indicator */}
-                {(match.east.h2h?.[match.west.id]?.streak ?? 0) >= 3 && (
-                  <Badge variant="outline" className="text-xs text-success border-success/30">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    {match.east.shikona} on {match.east.h2h?.[match.west.id]?.streak ?? 0}-win streak
-                  </Badge>
-                )}
-                {(match.east.h2h?.[match.west.id]?.streak ?? 0) <= -3 && (
-                  <Badge variant="outline" className="text-xs text-destructive border-destructive/30">
-                    <AlertTriangle className="h-3 w-3 mr-1" />
-                    {match.east.shikona} on {Math.abs(match.east.h2h?.[match.west.id]?.streak ?? 0)}-loss streak
-                  </Badge>
+                {/* H2H commentary */}
+                {match.h2hCommentary && (match.h2h.wins > 0 || match.h2h.losses > 0) && (
+                  <p className="mt-1.5 text-[11px] text-muted-foreground/70 italic line-clamp-1 pl-5">
+                    {match.h2hCommentary}
+                  </p>
                 )}
               </div>
-
-              {/* H2H Commentary (abbreviated) */}
-              {match.h2hCommentary && (match.h2h.wins > 0 || match.h2h.losses > 0) && (
-                <p className="mt-2 text-xs text-muted-foreground italic line-clamp-1">
-                  {match.h2hCommentary}
-                </p>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
