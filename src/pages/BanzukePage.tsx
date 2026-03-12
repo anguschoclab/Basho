@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,182 +7,14 @@ import type { OzekiKadobanMap, RankInfo } from "@/engine/banzuke";
 import { RANK_HIERARCHY, getRankTitleJa, formatRank } from "@/engine/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ClickableName } from "@/components/ClickableName";
-import { ArrowUp, ArrowDown, Minus, ChevronsUp, ChevronsDown, ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Division, BanzukeSnapshot, RankPosition } from "@/engine/types";
-import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
-
-// ── Helpers ──
-
-interface RankRow {
-  rankLabel: string;
-  rankKey: string;
-  east: UIRosterEntry | null;
-  west: UIRosterEntry | null;
-}
-
-const RANK_TIER: Record<string, number> = {
-  yokozuna: 1, ozeki: 2, sekiwake: 3, komusubi: 4,
-  maegashira: 5, juryo: 6, makushita: 7,
-  sandanme: 8, jonidan: 9, jonokuchi: 10,
-};
-
-function rankScore(rank: string, rankNumber?: number, side?: string): number {
-  const tier = RANK_TIER[rank] ?? 99;
-  const num = rankNumber ?? 0;
-  const sideVal = side === "east" ? 0 : 0.5;
-  return tier * 1000 + num * 2 + sideVal;
-}
-
-function buildRankRows(entries: UIRosterEntry[], division: string, searchQuery: string): RankRow[] {
-  const divEntries = entries.filter(e => e.division === division);
-  const groups = new Map<string, { east: UIRosterEntry | null; west: UIRosterEntry | null }>();
-
-  for (const e of divEntries) {
-    const key = `${e.rank}_${e.rankNumber ?? 1}`;
-    if (!groups.has(key)) groups.set(key, { east: null, west: null });
-    const g = groups.get(key)!;
-    if (e.side === "east") g.east = e;
-    else g.west = e;
-  }
-
-  const q = searchQuery.toLowerCase().trim();
-
-  return Array.from(groups.entries())
-    .map(([key, { east, west }]) => {
-      const sample = east || west;
-      const rank = sample?.rank ?? "unknown";
-      const rankNumber = sample?.rankNumber ?? 1;
-      const isSanyaku = ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(rank);
-      const rankLabel = isSanyaku
-        ? rank.charAt(0).toUpperCase() + rank.slice(1)
-        : `${rank.charAt(0).toUpperCase() + rank.slice(1)} #${rankNumber}`;
-      return { rankLabel, rankKey: key, east, west, _tier: RANK_TIER[rank] ?? 99, _num: rankNumber };
-    })
-    .filter(row => {
-      if (!q) return true;
-      const eastMatch = row.east?.shikona?.toLowerCase().includes(q);
-      const westMatch = row.west?.shikona?.toLowerCase().includes(q);
-      return eastMatch || westMatch;
-    })
-    .sort((a, b) => a._tier - b._tier || a._num - b._num);
-}
-
-function buildPrevRankMap(history: { nextBanzuke?: BanzukeSnapshot }[]): Map<string, { rank: string; rankNumber?: number; side?: string; score: number }> {
-  const map = new Map<string, { rank: string; rankNumber?: number; side?: string; score: number }>();
-  for (let i = history.length - 1; i >= 0; i--) {
-    const banzuke = history[i].nextBanzuke;
-    if (!banzuke) continue;
-    for (const div of Object.values(banzuke.divisions)) {
-      for (const assignment of div.assignments) {
-        const pos = assignment.position;
-        map.set(assignment.rikishiId, {
-          rank: pos.rank,
-          rankNumber: (pos as any).rankNumber,
-          side: pos.side,
-          score: rankScore(pos.rank, (pos as any).rankNumber, pos.side),
-        });
-      }
-    }
-    break;
-  }
-  return map;
-}
-
-// ── Components ──
-
-function RankChangeIndicator({ rikishiId, currentRank, currentRankNumber, currentSide, prevRankMap }: {
-  rikishiId: string;
-  currentRank: string;
-  currentRankNumber?: number;
-  currentSide?: string;
-  prevRankMap: Map<string, { rank: string; rankNumber?: number; side?: string; score: number }>;
-}) {
-  const prev = prevRankMap.get(rikishiId);
-  if (!prev) {
-    return (
-      <Badge variant="outline" className="text-[8px] h-4 px-1 border-primary/40 text-primary gap-0.5">
-        <ArrowUpRight className="h-2.5 w-2.5" /> NEW
-      </Badge>
-    );
-  }
-
-  const currScore = rankScore(currentRank, currentRankNumber, currentSide);
-  const diff = prev.score - currScore;
-
-  if (Math.abs(diff) < 1) {
-    return <Minus className="h-3 w-3 text-muted-foreground/40" />;
-  }
-
-  const steps = Math.round(Math.abs(diff) / 2);
-
-  if (diff > 0) {
-    const Icon = steps >= 5 ? ChevronsUp : ArrowUp;
-    return (
-      <span className="flex items-center gap-0.5 text-emerald-500">
-        <Icon className="h-3 w-3" />
-        <span className="text-[9px] font-mono font-bold">+{steps}</span>
-      </span>
-    );
-  } else {
-    const Icon = steps >= 5 ? ChevronsDown : ArrowDown;
-    return (
-      <span className="flex items-center gap-0.5 text-destructive">
-        <Icon className="h-3 w-3" />
-        <span className="text-[9px] font-mono font-bold">−{steps}</span>
-      </span>
-    );
-  }
-}
-
-function RikishiCell({
-  entry, kadobanMap, heyaName, showChanges, prevRankMap, searchQuery,
-}: {
-  entry: UIRosterEntry | null;
-  kadobanMap: OzekiKadobanMap;
-  heyaName?: string;
-  showChanges: boolean;
-  prevRankMap: Map<string, { rank: string; rankNumber?: number; side?: string; score: number }>;
-  searchQuery: string;
-}) {
-  if (!entry) return <td className="p-3 text-muted-foreground/40 text-center">—</td>;
-
-  const q = searchQuery.toLowerCase().trim();
-  const isMatch = q && entry.shikona?.toLowerCase().includes(q);
-
-  return (
-    <td className={`p-3 ${isMatch ? "bg-primary/10" : ""}`}>
-      <div className="flex items-center gap-2">
-        <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="font-bold text-sm" />
-        <span className="text-[10px] font-mono text-muted-foreground">{entry.record}</span>
-        <span className="text-[11px] text-muted-foreground hidden lg:inline">{heyaName}</span>
-        {showChanges && (
-          <RankChangeIndicator
-            rikishiId={entry.id}
-            currentRank={entry.rank}
-            currentRankNumber={entry.rankNumber}
-            currentSide={entry.side}
-            prevRankMap={prevRankMap}
-          />
-        )}
-        {entry.rank === "ozeki" && kadobanMap[entry.id]?.isKadoban && (
-          <Badge variant="outline" className="text-[9px] border-amber-600 text-amber-600 ml-auto">角番</Badge>
-        )}
-        {entry.rank === "yokozuna" && (
-          <Badge variant="default" className="text-[9px] bg-purple-900 hover:bg-purple-800 ml-auto">横綱</Badge>
-        )}
-        {entry.isInjured && (
-          <Badge variant="destructive" className="text-[9px] ml-auto">休場</Badge>
-        )}
-      </div>
-    </td>
-  );
-}
-
-// ── Page ──
+import type { Division, RankPosition } from "@/engine/types";
+import { projectRosterEntry } from "@/engine/uiModels";
+import { RikishiCell } from "@/components/banzuke/RikishiCell";
+import { buildRankRows, buildPrevRankMap, rankRowClass } from "@/components/banzuke/banzukeHelpers";
 
 export default function BanzukePage() {
   const { state } = useGame();
@@ -195,7 +27,6 @@ export default function BanzukePage() {
     return buildPrevRankMap(world.history);
   }, [world]);
 
-  // Project all active rikishi into UIRosterEntry DTOs
   const rosterEntries = useMemo(() => {
     if (!world) return [];
     return Array.from(world.rikishi.values())
@@ -203,7 +34,6 @@ export default function BanzukePage() {
       .map(r => projectRosterEntry(r));
   }, [world]);
 
-  // Build a heyaName lookup by rikishi id
   const heyaNameMap = useMemo(() => {
     if (!world) return new Map<string, string>();
     const map = new Map<string, string>();
@@ -215,11 +45,18 @@ export default function BanzukePage() {
     return map;
   }, [world]);
 
+  // Build set of player stable rikishi IDs
+  const playerRikishiIds = useMemo(() => {
+    if (!world) return new Set<string>();
+    const playerHeya = Array.from(world.heyas.values()).find(h => h.isPlayerOwned);
+    if (!playerHeya) return new Set<string>();
+    return new Set(playerHeya.rikishiIds);
+  }, [world]);
+
   if (!world) return null;
 
   const kadobanMap: OzekiKadobanMap = world.ozekiKadoban ?? {};
   const hasPrevBasho = prevRankMap.size > 0;
-
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
   const competitionTabs = [
@@ -229,17 +66,26 @@ export default function BanzukePage() {
   ];
 
   return (
-    <AppLayout
-      pageTitle="Official Banzuke"
-      subNavTabs={competitionTabs}
-      activeSubTab="banzuke"
-    >
-      <div className="space-y-4">
+    <AppLayout pageTitle="Official Banzuke" subNavTabs={competitionTabs} activeSubTab="banzuke">
+      <div className="space-y-4 animate-fade-in">
+        {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-muted-foreground">
-            {world.year} {world.currentBashoName?.toUpperCase() || "UPCOMING"} Rankings
-          </p>
           <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-md rank-yokozuna flex items-center justify-center">
+              <span className="font-display text-primary-foreground text-sm font-bold">番</span>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-sm">
+                {world.year} {world.currentBashoName?.toUpperCase() || "UPCOMING"} Rankings
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Player stable legend */}
+            <div className="flex items-center gap-1.5 text-[10px] text-primary border border-primary/20 rounded-md px-2 py-1 bg-primary/5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              Your Stable
+            </div>
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
@@ -260,48 +106,58 @@ export default function BanzukePage() {
             {hasPrevBasho && (
               <div className="flex items-center gap-2">
                 <Switch id="show-changes" checked={showChanges} onCheckedChange={setShowChanges} />
-                <Label htmlFor="show-changes" className="text-xs text-muted-foreground cursor-pointer">
-                  Changes
-                </Label>
+                <Label htmlFor="show-changes" className="text-xs text-muted-foreground cursor-pointer">Changes</Label>
               </div>
             )}
           </div>
         </div>
 
+        {/* Legend */}
         {hasPrevBasho && showChanges && (
           <div className="flex items-center gap-4 text-[10px] text-muted-foreground border border-border/50 rounded-md px-3 py-1.5 bg-muted/20 w-fit">
-            <span className="flex items-center gap-1 text-emerald-500"><ArrowUp className="h-3 w-3" /> Promoted</span>
+            <span className="flex items-center gap-1 text-success"><ArrowUp className="h-3 w-3" /> Promoted</span>
             <span className="flex items-center gap-1 text-destructive"><ArrowDown className="h-3 w-3" /> Demoted</span>
             <span className="flex items-center gap-1 text-muted-foreground"><Minus className="h-3 w-3" /> Unchanged</span>
             <span className="flex items-center gap-1 text-primary"><ArrowUpRight className="h-2.5 w-2.5" /> New entry</span>
           </div>
         )}
 
+        {/* Division tabs */}
         <Tabs defaultValue="makuuchi" className="w-full">
-          <TabsList>
+          <TabsList className="bg-muted/50">
             {divisions.map(d => (
-              <TabsTrigger key={d} value={d} className="capitalize">{d}</TabsTrigger>
+              <TabsTrigger key={d} value={d} className="capitalize font-display text-xs">{d}</TabsTrigger>
             ))}
           </TabsList>
-          
+
           {divisions.map(div => {
             const rows = buildRankRows(rosterEntries, div, searchQuery);
             return (
               <TabsContent key={div} value={div}>
-                <Card>
+                <Card className="overflow-hidden">
                   <CardContent className="p-0">
                     <ScrollArea className="h-[600px]">
                       <table className="w-full text-sm">
                         <thead className="bg-muted/50 sticky top-0 z-10">
-                          <tr className="text-left border-b">
-                            <th className="p-3 font-medium text-right w-[240px]">East</th>
-                            <th className="p-3 font-medium text-center w-[120px]">Rank</th>
-                            <th className="p-3 font-medium w-[240px]">West</th>
+                          <tr className="border-b">
+                            <th className="p-3 font-display font-medium text-right w-[280px]">
+                              <span className="text-east text-[10px] uppercase tracking-widest">East 東</span>
+                            </th>
+                            <th className="p-3 font-display font-medium text-center w-[120px] text-muted-foreground text-[10px] uppercase tracking-widest">
+                              Rank
+                            </th>
+                            <th className="p-3 font-display font-medium w-[280px]">
+                              <span className="text-west text-[10px] uppercase tracking-widest">West 西</span>
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {rows.map((row) => (
-                            <tr key={row.rankKey} className="border-b hover:bg-muted/50 transition-colors">
+                          {rows.map((row, i) => (
+                            <tr
+                              key={row.rankKey}
+                              className={`border-b hover:bg-muted/50 transition-colors bout-enter ${rankRowClass(row.rankTier)}`}
+                              style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
+                            >
                               <RikishiCell
                                 entry={row.east}
                                 kadobanMap={kadobanMap}
@@ -309,20 +165,21 @@ export default function BanzukePage() {
                                 showChanges={showChanges && hasPrevBasho}
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
+                                isPlayerStable={row.east ? playerRikishiIds.has(row.east.id) : false}
+                                side="east"
                               />
                               <td className="p-3 text-center">
-                                <div className="font-mono text-muted-foreground text-xs">{row.rankLabel}</div>
+                                <div className="font-display text-muted-foreground text-xs font-medium">{row.rankLabel}</div>
                                 {(() => {
                                   const sample = row.east || row.west;
                                   if (!sample) return null;
                                   const pos: RankPosition = { rank: sample.rank as any, side: (sample.side ?? "east") as any, rankNumber: sample.rankNumber };
                                   const titleJa = getRankTitleJa(pos);
-                                  const titleEn = formatRank(pos);
                                   const info: RankInfo | undefined = RANK_HIERARCHY[sample.rank as keyof typeof RANK_HIERARCHY];
                                   return (
-                                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5" title={titleEn}>
+                                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
                                       {titleJa}
-                                      {info?.isSanyaku && <span className="ml-1 text-primary/50">三役</span>}
+                                      {info?.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
                                     </div>
                                   );
                                 })()}
@@ -334,12 +191,14 @@ export default function BanzukePage() {
                                 showChanges={showChanges && hasPrevBasho}
                                 prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
+                                isPlayerStable={row.west ? playerRikishiIds.has(row.west.id) : false}
+                                side="west"
                               />
                             </tr>
                           ))}
                           {rows.length === 0 && (
                             <tr>
-                              <td colSpan={3} className="p-8 text-center text-muted-foreground">
+                              <td colSpan={3} className="p-8 text-center text-muted-foreground font-display">
                                 {searchQuery ? "No wrestlers match your search" : "No wrestlers in this division"}
                               </td>
                             </tr>
