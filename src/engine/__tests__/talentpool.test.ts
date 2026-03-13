@@ -15,6 +15,8 @@ import {
   offerCandidate,
   getForeignCountInHeya,
   FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+  reinjectToTalentPool,
+  retireStaleCandidates,
 } from "../talentpool";
 import {
   calculateScoutingLevel,
@@ -531,6 +533,88 @@ describe("Talent Pool: Offer System", () => {
 // ============================================================================
 // YEARLY REFRESH
 // ============================================================================
+
+describe("Talent Pool: Reinjection & Retirement", () => {
+  it("should reinject a released rikishi back into the talent pool based on origin/age", () => {
+    const world = makeWorld({ year: 2025 });
+    ensureTalentPools(world);
+
+    // Create a mock domestic pro who is older (university age)
+    const domesticPro: any = {
+      id: "pro-1",
+      shikona: "Pro-1",
+      realName: "Test Name",
+      birthYear: 2000, // 25 years old
+      nationality: "Japan",
+      talentSeed: 60,
+      archetype: "pusher",
+      style: "oshi",
+      height: 180,
+      weight: 140,
+    };
+
+    reinjectToTalentPool(world, domesticPro);
+
+    const tp = (world as any).talentPool;
+    const cid = `cand-pro-1`;
+
+    expect(tp.candidates[cid]).toBeDefined();
+    expect(tp.candidates[cid].visibilityBand).toBe("scouted");
+    expect(tp.candidates[cid].tags).toContain("former_pro");
+    expect(tp.pools.university.candidatesVisible).toContain(cid);
+
+    // Create a foreign pro
+    const foreignPro: any = {
+      id: "pro-2",
+      shikona: "Pro-2",
+      birthYear: 2004,
+      nationality: "Mongolia",
+      talentSeed: 70,
+      archetype: "grappler",
+      style: "yotsu",
+      height: 190,
+      weight: 150,
+    };
+
+    reinjectToTalentPool(world, foreignPro);
+    const foreignCid = `cand-pro-2`;
+
+    expect(tp.candidates[foreignCid]).toBeDefined();
+    expect(tp.pools.foreign.candidatesVisible).toContain(foreignCid);
+  });
+
+  it("should retire candidates sitting in the pool who are older than 25", () => {
+    const world = makeWorld({ year: 2025 });
+    ensureTalentPools(world);
+    const tp = (world as any).talentPool;
+
+    // Add a young candidate (20 years old)
+    tp.candidates["young-1"] = {
+      candidateId: "young-1",
+      birthYear: 2005,
+      availabilityState: "available",
+    };
+    tp.pools.high_school.candidatesVisible.push("young-1");
+
+    // Add a stale candidate (26 years old)
+    tp.candidates["stale-1"] = {
+      candidateId: "stale-1",
+      birthYear: 1999,
+      availabilityState: "available",
+    };
+    tp.pools.university.candidatesVisible.push("stale-1");
+
+    retireStaleCandidates(world);
+
+    // Young should still be available
+    expect(tp.candidates["young-1"].availabilityState).toBe("available");
+    expect(tp.pools.high_school.candidatesVisible).toContain("young-1");
+
+    // Stale should be "signed" (retired out) and removed from lists
+    expect(tp.candidates["stale-1"].availabilityState).toBe("signed");
+    expect(tp.pools.university.candidatesVisible).not.toContain("stale-1");
+  });
+});
 
 describe("Talent Pool: Yearly Refresh", () => {
   it("should generate new cohort on year change", () => {
