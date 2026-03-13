@@ -140,7 +140,7 @@ export default function BashoPage() {
   );
 
   const nextBoutIndex = useMemo(() => matches.findIndex((m) => !m.result), [matches]);
-  const completedBouts = useMemo(() => matches.filter((m) => !!m.result).length, [matches]);
+  const completedBouts = useMemo(() => matches.reduce((count, m) => count + (m.result ? 1 : 0), 0), [matches]);
   const remainingBouts = matches.length - completedBouts;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
