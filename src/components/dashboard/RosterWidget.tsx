@@ -26,8 +26,14 @@ export function RosterWidget() {
 
   if (!world) return null;
 
-  const injuredCount = roster.filter(r => r.isInjured).length;
-  const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
+  let injuredCount = 0;
+  let totalFatigue = 0;
+  for (let i = 0; i < roster.length; i++) {
+    const r = roster[i];
+    if (r.isInjured) injuredCount++;
+    totalFatigue += r.fatigue;
+  }
+  const avgFatigue = roster.length ? Math.round(totalFatigue / roster.length) : 0;
 
   return (
     <div className="widget-card p-4 space-y-3">
