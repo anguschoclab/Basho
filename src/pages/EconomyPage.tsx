@@ -198,7 +198,7 @@ export default function EconomyPage() {
 
   // Top “sponsor draw” wrestlers (computed, displayed narratively)
   const topEarners = useMemo(() => {
-    return [...playerRikishi]
+    return playerRikishi
       .filter((r: any) => r && typeof r === "object")
       .sort((a: any, b: any) => {
         const av = Number((a as any)?.economics?.careerKenshoWon ?? 0) || 0;
