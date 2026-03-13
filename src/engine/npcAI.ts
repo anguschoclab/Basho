@@ -13,6 +13,7 @@ import type {
   TrainingIntensity, TrainingFocus, RecoveryEmphasis
 } from "./types";
 import { ensureHeyaTrainingState } from "./training";
+import { enforceHardCapRosterOverflow } from "./overflow";
 import {
   getCachedPerception,
   type PerceptionSnapshot,
@@ -560,6 +561,9 @@ export function tickWeek(world: WorldState): number {
 
   // Commit scouting priorities to world state for talentpool to read
   world.npcScoutingPriorities = scoutingMap;
+
+  // Enforce constitutional Hard-Cap Roster Overflow (C4.3)
+  enforceHardCapRosterOverflow(world);
 
   return decisionsApplied;
 }
