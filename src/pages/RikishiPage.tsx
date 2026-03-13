@@ -205,7 +205,7 @@ export default function RikishiPage() {
 
   // If no ID is provided, show the directory fallback
   if (!rikishiId) {
-    return <RikishiDirectoryView world={world} playerHeyaId={playerHeyaId} />;
+    return <RikishiDirectoryView world={world} playerHeyaId={playerHeyaId} navigate={navigate} />;
   }
 
   const rikishi = world.rikishi.get(rikishiId);
