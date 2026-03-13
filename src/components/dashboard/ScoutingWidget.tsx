@@ -41,11 +41,12 @@ export function ScoutingWidget() {
 
   if (!world) return null;
 
-  const poolCounts = {
-    high_school: prospects.filter(p => p.pool === "high_school").length,
-    university: prospects.filter(p => p.pool === "university").length,
-    foreign: prospects.filter(p => p.pool === "foreign").length,
-  };
+  const poolCounts = { high_school: 0, university: 0, foreign: 0 };
+  for (const p of prospects) {
+    if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
+      poolCounts[p.pool]++;
+    }
+  }
 
   const topProspects = prospects.slice(0, 6);
 
