@@ -239,11 +239,36 @@ describe("Facilities: Monthly Tick", () => {
     expect(heya.facilities.nutrition).toBe(5);
   });
 
-  it("should calculate monthly maintenance cost correctly", () => {
-    const heya = makeHeya({ facilities: { training: 50, recovery: 50, nutrition: 50 } });
-    const cost = getMonthlyMaintenanceCost(heya);
-    // 50 * 3000 * 3 axes = 450,000
-    expect(cost).toBe(450_000);
+  describe("getMonthlyMaintenanceCost", () => {
+    it("should calculate monthly maintenance cost correctly for symmetric levels", () => {
+      const heya = makeHeya({ facilities: { training: 50, recovery: 50, nutrition: 50 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // 50 * 3000 * 3 axes = 450,000
+      expect(cost).toBe(450_000);
+    });
+
+    it("should calculate correctly at minimum facility levels", () => {
+      // MIN_FACILITY = 5
+      const heya = makeHeya({ facilities: { training: 5, recovery: 5, nutrition: 5 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // 5 * 3000 * 3 axes = 45,000
+      expect(cost).toBe(45_000);
+    });
+
+    it("should calculate correctly at maximum facility levels", () => {
+      // MAX_FACILITY = 100
+      const heya = makeHeya({ facilities: { training: 100, recovery: 100, nutrition: 100 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // 100 * 3000 * 3 axes = 900,000
+      expect(cost).toBe(900_000);
+    });
+
+    it("should calculate correctly with asymmetric facility levels", () => {
+      const heya = makeHeya({ facilities: { training: 10, recovery: 20, nutrition: 30 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // (10 * 3000) + (20 * 3000) + (30 * 3000) = 30,000 + 60,000 + 90,000 = 180,000
+      expect(cost).toBe(180_000);
+    });
   });
 });
 
