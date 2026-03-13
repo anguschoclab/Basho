@@ -277,7 +277,7 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
     .filter(Boolean) as Rikishi[];
 
   const sekitoriDivisions = new Set(["makuuchi", "juryo"]);
-  const sekitoriCount = roster.filter(r => sekitoriDivisions.has(r.division)).length;
+  const sekitoriCount = roster.reduce((count, r) => sekitoriDivisions.has(r.division) ? count + 1 : count, 0);
 
   return {
     id: heya.id,
