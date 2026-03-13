@@ -126,10 +126,9 @@ export default function BanzukePage() {
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
             {divisions.map(d => {
-              const count = rosterEntries.filter(r => r.rank === d || (d === "maegashira" ? false : r.rank === d)).length;
-              // Count rikishi per division properly
+              const makuuchiRanks = ["yokozuna","ozeki","sekiwake","komusubi","maegashira"];
               const divCount = rosterEntries.filter(r => {
-                if (d === "makuuchi") return ["yokozuna","ozeki","sekiwake","komusubi","maegashira"].includes(r.rank);
+                if (d === "makuuchi") return makuuchiRanks.includes(r.rank);
                 return r.rank === d;
               }).length;
               return (
