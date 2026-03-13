@@ -296,7 +296,10 @@ export function determineSpecialPrizes(
   for (const c of candidates) {
     const s = stats.get(c.id)!;
     const beatYusho = s.opponents.includes(yushoId);
-    const kinboshiCount = s.opponents.filter(oppId => yokozunaIds.has(oppId)).length;
+    let kinboshiCount = 0;
+    for (const oppId of s.opponents) {
+      if (yokozunaIds.has(oppId)) kinboshiCount++;
+    }
     
     if (beatYusho || kinboshiCount > 0 || s.wins >= 12) {
       // Simple score: Kinboshi=3, BeatYusho=4, EachWin=0.1
