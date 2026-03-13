@@ -130,8 +130,8 @@ function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, play
     });
 
   return (
-    <>
-      <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+    <AppLayout pageTitle="Wrestler Directory">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Wrestler Directory</h1>
@@ -188,7 +188,7 @@ function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, play
           </div>
         )}
       </div>
-    </>
+    </AppLayout>
   );
 }
 
