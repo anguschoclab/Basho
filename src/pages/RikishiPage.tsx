@@ -279,8 +279,8 @@ export default function RikishiPage() {
       ];
 
   return (
-    <>
-      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+    <AppLayout pageTitle={ui.shikona}>
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Top bar */}
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-muted-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
