@@ -4,6 +4,7 @@
 
 import { rngFromSeed } from "../engine/rng";
 import { useNavigate, useParams } from "react-router-dom";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "../contexts/GameContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
