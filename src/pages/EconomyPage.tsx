@@ -190,10 +190,14 @@ export default function EconomyPage() {
   // Sekitori count (broad indicator; count is acceptable here)
   const sekitoriCount = useMemo(() => {
     if (!playerRikishi) return 0;
-    return playerRikishi.reduce(
-      (count, r: any) => (r?.division === "makuuchi" || r?.division === "juryo" ? count + 1 : count),
-      0
-    );
+    let count = 0;
+    for (let i = 0; i < playerRikishi.length; i++) {
+      const r: any = playerRikishi[i];
+      if (r?.division === "makuuchi" || r?.division === "juryo") {
+        count++;
+      }
+    }
+    return count;
   }, [playerRikishi]);
 
   // Top “sponsor draw” wrestlers (computed, displayed narratively)
