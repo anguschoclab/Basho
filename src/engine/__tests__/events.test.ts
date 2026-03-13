@@ -76,6 +76,93 @@ describe("Events Engine", () => {
     });
   });
 
+  describe("tickWeek", () => {
+    let world: WorldState;
+
+    beforeEach(() => {
+      world = createMockWorld();
+      world.calendar!.year = 2025;
+      world.calendar!.currentWeek = 1;
+
+      const addEvent = (overrides: Partial<EngineEvent>) => {
+        const ev: EngineEvent = {
+          id: `evt-${world.events.log.length}`,
+          type: "TEST",
+          year: 2024,
+          week: 1,
+          day: 1,
+          phase: "weekly",
+          category: "misc",
+          importance: "minor",
+          scope: "world",
+          title: "Test",
+          summary: "Test",
+          data: {},
+          truthLevel: "public",
+          ...overrides
+        };
+        world.events.log.push(ev);
+
+        // Also seed dedupe explicitly so we can verify cleanup
+        world.events.dedupe[`${ev.year}|${ev.week}|TEST_DEDUPE`] = true;
+      };
+
+      // Add a recent event (1 week old)
+      addEvent({ year: 2024, week: 52 }); // 1 week old
+
+      // Add an old event (> 52 weeks) that should be trimmed
+      addEvent({ year: 2023, week: 50 }); // > 52 weeks old
+
+      // Add an old event that is 'headline' importance (should be kept)
+      addEvent({ year: 2023, week: 1, importance: "headline" });
+
+      // Add an old event that is 'career' category (should be kept)
+      addEvent({ year: 2023, week: 2, category: "career" });
+
+      // Add an old event that is 'basho' category (should be kept)
+      addEvent({ year: 2023, week: 3, category: "basho" });
+    });
+
+    it("should return 0 and do nothing if events log is empty", () => {
+      world.events.log = [];
+      const trimmed = tickWeek(world);
+      expect(trimmed).toBe(0);
+      expect(world.events.log).toHaveLength(0);
+    });
+
+    it("should trim events older than 52 weeks that are not headline, career, or basho", () => {
+      expect(world.events.log).toHaveLength(5);
+
+      const trimmed = tickWeek(world);
+
+      expect(trimmed).toBe(1); // Only the 2023 week 50 one should be trimmed
+      expect(world.events.log).toHaveLength(4);
+
+      // Ensure the trimmed event is gone
+      expect(world.events.log.find(e => e.year === 2023 && e.week === 50)).toBeUndefined();
+
+      // Ensure the preserved events are still there
+      expect(world.events.log.find(e => e.year === 2024 && e.week === 52)).toBeDefined(); // Recent
+      expect(world.events.log.find(e => e.importance === "headline")).toBeDefined(); // Headline
+      expect(world.events.log.find(e => e.category === "career")).toBeDefined(); // Career
+      expect(world.events.log.find(e => e.category === "basho")).toBeDefined(); // Basho
+    });
+
+    it("should clean up corresponding dedupe keys when trimming events", () => {
+      const trimmed = tickWeek(world);
+
+      expect(trimmed).toBe(1);
+      // The dedupe key for year 2023, week 50 should be removed
+      expect(world.events.dedupe["2023|50|TEST_DEDUPE"]).toBeUndefined();
+
+      // Dedupe keys for other events should remain
+      expect(world.events.dedupe["2024|52|TEST_DEDUPE"]).toBe(true);
+      expect(world.events.dedupe["2023|1|TEST_DEDUPE"]).toBe(true);
+      expect(world.events.dedupe["2023|2|TEST_DEDUPE"]).toBe(true);
+      expect(world.events.dedupe["2023|3|TEST_DEDUPE"]).toBe(true);
+    });
+  });
+
   describe("queryEvents", () => {
     let world: WorldState;
 
