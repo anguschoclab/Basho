@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
+
 import {
   computeFacilitiesBand,
   updateFacilitiesBand,
@@ -121,10 +122,36 @@ describe("Facilities: Band Calculation", () => {
     expect(computeFacilitiesBand(heya)).toBe("minimal");
   });
 
-  it("updateFacilitiesBand should mutate heya.facilitiesBand", () => {
-    const heya = makeHeya({ facilities: { training: 90, recovery: 90, nutrition: 90 }, facilitiesBand: "minimal" });
-    updateFacilitiesBand(heya);
-    expect(heya.facilitiesBand).toBe("world_class");
+  describe("updateFacilitiesBand updates heya.facilitiesBand correctly", () => {
+    it("should set to world_class for exactly 85 average", () => {
+      const heya = makeHeya({ facilities: { training: 85, recovery: 85, nutrition: 85 }, facilitiesBand: "minimal" });
+      updateFacilitiesBand(heya);
+      expect(heya.facilitiesBand).toBe("world_class");
+    });
+
+    it("should set to excellent for exactly 65 average", () => {
+      const heya = makeHeya({ facilities: { training: 65, recovery: 65, nutrition: 65 }, facilitiesBand: "minimal" });
+      updateFacilitiesBand(heya);
+      expect(heya.facilitiesBand).toBe("excellent");
+    });
+
+    it("should set to adequate for exactly 45 average", () => {
+      const heya = makeHeya({ facilities: { training: 45, recovery: 45, nutrition: 45 }, facilitiesBand: "minimal" });
+      updateFacilitiesBand(heya);
+      expect(heya.facilitiesBand).toBe("adequate");
+    });
+
+    it("should set to basic for exactly 25 average", () => {
+      const heya = makeHeya({ facilities: { training: 25, recovery: 25, nutrition: 25 }, facilitiesBand: "minimal" });
+      updateFacilitiesBand(heya);
+      expect(heya.facilitiesBand).toBe("basic");
+    });
+
+    it("should set to minimal for less than 25 average", () => {
+      const heya = makeHeya({ facilities: { training: 24, recovery: 24, nutrition: 24 }, facilitiesBand: "world_class" });
+      updateFacilitiesBand(heya);
+      expect(heya.facilitiesBand).toBe("minimal");
+    });
   });
 });
 
