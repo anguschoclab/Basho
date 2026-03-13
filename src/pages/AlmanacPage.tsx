@@ -236,7 +236,7 @@ export default function AlmanacPage() {
     return streaks.sort((a, b) => b.streak - a.streak).slice(0, 10);
   }, [allRikishi]);
 
-  const activeYokozunaCount = allRikishi.filter((r) => r.rank === "yokozuna").length;
+  const activeYokozunaCount = allRikishi.reduce((acc, r) => r.rank === "yokozuna" ? acc + 1 : acc, 0);
 
   return (
     <>
