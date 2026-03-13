@@ -574,6 +574,6 @@ export default function RikishiPage() {
           </Card>
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 }
