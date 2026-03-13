@@ -194,10 +194,18 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
   const navigate = useNavigate();
 
   const resolvedMatches = useMemo(() => {
-    return matches.map((match) => {
+    return matches.reduce<Array<MatchLike & {
+      east: Rikishi;
+      west: Rikishi;
+      h2h: { wins: number; losses: number };
+      rivalry: any;
+      heatBand: RivalryHeatBand | null;
+      isPlayerBout: boolean;
+      h2hCommentary: string;
+    }>>((acc, match) => {
       const east = world.rikishi.get(match.eastRikishiId);
       const west = world.rikishi.get(match.westRikishiId);
-      if (!east || !west) return null;
+      if (!east || !west) return acc;
 
       const h2h = getH2HRecord(east, west);
       const rivalriesState = (world as any).rivalriesState as RivalriesState | undefined;
@@ -206,8 +214,9 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
       const h2hCommentary = generateH2HCommentary(east, west);
 
-      return { ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary };
-    }).filter(Boolean);
+      acc.push({ ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary });
+      return acc;
+    }, []);
   }, [matches, world, playerRikishiIds]);
 
   const sortedMatches = useMemo(() => {
