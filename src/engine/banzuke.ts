@@ -635,6 +635,48 @@ function buildNumberedDivisionTemplate(
 
 // === MOVEMENT MODEL ===
 
+function calculateAbsencePenalty(absences: number, totalBouts: number): number {
+  if (absences === 0) return 0;
+  const heavyKyujo = absences >= Math.floor(totalBouts * 0.5);
+  const absenceWeight = heavyKyujo ? 1.75 : 1.25;
+  return Math.round(absences * absenceWeight);
+}
+
+function calculatePerformanceBonuses(perf: BashoPerformance): number {
+  let bonus = 0;
+
+  if (typeof perf.opponentAvgTier === "number" && Number.isFinite(perf.opponentAvgTier)) {
+    bonus += clampInt(Math.round((5 - perf.opponentAvgTier) * 0.5), -1, 1);
+  }
+
+  if (perf.yusho) bonus += 5;
+  if (perf.junYusho) bonus += 2;
+  if (typeof perf.specialPrizes === "number" && Number.isFinite(perf.specialPrizes)) {
+    bonus += clampInt(perf.specialPrizes, 0, 3);
+  }
+  if (typeof perf.kinboshi === "number" && Number.isFinite(perf.kinboshi)) {
+    bonus += clampInt(perf.kinboshi, 0, 3);
+  }
+
+  return bonus;
+}
+
+function clampMovementByRank(move: number, rank: string, isDemotedOzeki: boolean): number {
+  if (rank === "yokozuna") return clampInt(move, -2, 2);
+
+  if (rank === "ozeki") {
+    const damped = Math.round(move * 0.65);
+    if (isDemotedOzeki) return Math.min(-6, damped - 4);
+    return clampInt(damped, -4, 4);
+  }
+
+  if (rank === "sekiwake" || rank === "komusubi") {
+    return clampInt(Math.round(move * 0.8), -6, 6);
+  }
+
+  return clampInt(move, -10, 10);
+}
+
 function computeMovementUnits(
   entry: BanzukeEntry,
   perf: BashoPerformance | undefined,
@@ -648,43 +690,16 @@ function computeMovementUnits(
   const required = kachiKoshiThreshold(rank);
 
   const wins = perf.wins ?? 0;
-  const losses = perf.losses ?? 0;
   const abs = perf.absences ?? 0;
 
   const marginVsKK = wins - required;
+  const absencePenalty = calculateAbsencePenalty(abs, bouts);
+  const bonuses = calculatePerformanceBonuses(perf);
 
-  const heavyKyujo = abs >= Math.floor(bouts * 0.5);
-  const absenceWeight = heavyKyujo ? 1.75 : 1.25;
-  const absencePenalty = Math.round(abs * absenceWeight);
+  const baseMove = marginVsKK - absencePenalty + bonuses;
+  const isDemotedOzeki = demotedOzeki.has(entry.rikishiId);
 
-  let move = marginVsKK - absencePenalty;
-
-  if (typeof perf.opponentAvgTier === "number" && Number.isFinite(perf.opponentAvgTier)) {
-    move += clampInt(Math.round((5 - perf.opponentAvgTier) * 0.5), -1, 1);
-  }
-
-  if (perf.yusho) move += 5;
-  if (perf.junYusho) move += 2;
-  if (typeof perf.specialPrizes === "number" && Number.isFinite(perf.specialPrizes)) {
-    move += clampInt(perf.specialPrizes, 0, 3);
-  }
-  if (typeof perf.kinboshi === "number" && Number.isFinite(perf.kinboshi)) {
-    move += clampInt(perf.kinboshi, 0, 3);
-  }
-
-  if (rank === "yokozuna") return clampInt(move, -2, 2);
-
-  if (rank === "ozeki") {
-    const damped = Math.round(move * 0.65);
-    if (demotedOzeki.has(entry.rikishiId)) return Math.min(-6, damped - 4);
-    return clampInt(damped, -4, 4);
-  }
-
-  if (rank === "sekiwake" || rank === "komusubi") {
-    return clampInt(Math.round(move * 0.8), -6, 6);
-  }
-
-  return clampInt(move, -10, 10);
+  return clampMovementByRank(baseMove, rank, isDemotedOzeki);
 }
 
 function bestTierAllowed(
