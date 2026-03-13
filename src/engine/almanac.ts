@@ -466,16 +466,36 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
   if (!world.currentBasho) return null;
 
   const basho = world.currentBasho;
-  const makuuchiRikishi = Array.from(world.rikishi.values()).filter((r) => r.division === "makuuchi");
+
+  let makuuchiRikishiCount = 0;
+  let totalMakuuchiWins = 0;
+  let makuuchiInjuryCount = 0;
+
+  for (const r of world.rikishi.values()) {
+    if (r.division === "makuuchi") {
+      makuuchiRikishiCount++;
+      totalMakuuchiWins += r.currentBashoWins;
+      if (r.injured) {
+        makuuchiInjuryCount++;
+      }
+    }
+  }
+
+  let totalBouts = 0;
+  for (const m of basho.matches) {
+    if (m.result) {
+      totalBouts++;
+    }
+  }
 
   return {
     year: basho.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     makuuchiSummary: {
-      totalBouts: basho.matches.filter((m) => m.result).length,
-      avgWins: makuuchiRikishi.reduce((sum, r) => sum + r.currentBashoWins, 0) / Math.max(1, makuuchiRikishi.length),
-      injuryCount: makuuchiRikishi.filter((r) => r.injured).length
+      totalBouts,
+      avgWins: totalMakuuchiWins / Math.max(1, makuuchiRikishiCount),
+      injuryCount: makuuchiInjuryCount
     },
     promotions: [],
     demotions: [],
