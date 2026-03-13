@@ -103,7 +103,7 @@ function InfoRow({ label, value, className }: { label: string; value: React.Reac
 
 // ═══════════════ DIRECTORY VIEW (FALLBACK) ═══════════════
 // Displayed when the user hits /rikishi without an ID
-function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, playerHeyaId: string | undefined }) {
+function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldState, playerHeyaId: string | undefined, navigate: ReturnType<typeof useNavigate> }) {
   const navigate = useNavigate();
   
   // Define a safe local rank order array to avoid external import type errors
