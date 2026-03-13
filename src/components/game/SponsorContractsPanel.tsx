@@ -66,7 +66,7 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
   }, [world, playerHeyaId, playerHeya]);
 
   const totalMonthlyIncome = contracts.reduce((sum, c) => sum + c.monthlyIncome, 0);
-  const expiringCount = contracts.filter(c => c.isExpiringSoon).length;
+  const expiringCount = contracts.reduce((count, c) => count + (c.isExpiringSoon ? 1 : 0), 0);
 
   // Koenkai info
   const koenkai = playerHeyaId ? world.sponsorPool?.koenkais?.get(`koenkai_${playerHeyaId}`) : null;
