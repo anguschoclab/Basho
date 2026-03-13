@@ -120,7 +120,10 @@ export function queryEvents(
   if (filters.scope) out = out.filter(e => e.scope === filters.scope);
   if (filters.heyaId) out = out.filter(e => e.heyaId === filters.heyaId);
   if (filters.rikishiId) out = out.filter(e => e.rikishiId === filters.rikishiId);
-  if (filters.types?.length) out = out.filter(e => filters.types!.includes(e.type));
+  if (filters.types?.length) {
+    const typesSet = new Set(filters.types);
+    out = out.filter(e => typesSet.has(e.type));
+  }
   if (minImp >= 0) out = out.filter(e => impScore(e.importance) >= minImp);
 
   // Newest-first: sort by (year, week, day) then insertion order
