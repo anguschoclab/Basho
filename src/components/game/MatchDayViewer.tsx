@@ -237,7 +237,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
     );
   }
 
-  const completedCount = sortedMatches.filter((m) => !!m?.result).length;
+  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
 
   return (
     <Card className="paper overflow-hidden">
