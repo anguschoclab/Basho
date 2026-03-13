@@ -1,14 +1,5 @@
 import { describe, it, expect, mock } from "bun:test";
 
-mock.module("seedrandom", () => {
-  return {
-    default: (seed: string) => {
-      const prng = () => 0.5;
-      return prng;
-    },
-  };
-});
-
 // Mock rng.ts entirely
 mock.module("../rng", () => {
   return {
@@ -36,7 +27,7 @@ mock.module("../media", () => {
   };
 });
 
-import { tickWeek, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
+import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
 import type { WorldState, Heya } from "../types";
 
 function makeHeya(overrides: Partial<Heya> = {}): Heya {
@@ -156,5 +147,80 @@ describe("Governance: tickWeek", () => {
     expect(world.events.log[0].type).toBe("GOVERNANCE_STATUS_CHANGED");
     expect(world.governanceLog!.length).toBeGreaterThan(0);
     expect(heya.governanceHistory!.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Governance: reportScandal", () => {
+  it("should do nothing if heyaId is invalid", () => {
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    reportScandal(world, "invalid-heya-id", "minor", "Test invalid ID");
+
+    expect(heya.scandalScore).toBe(0);
+    expect(heya.funds).toBe(10_000_000);
+  });
+
+  it("should apply minor scandal correctly", () => {
+    const heya = makeHeya({ funds: 10_000_000, scandalScore: 0 });
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "minor", "Minor infraction");
+
+    // Because processHeyaGovernance is called immediately, the score will also decay by SCANDAL_DECAY_RATE (0.5)
+    expect(heya.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 500_000);
+    expect(heya.governanceStatus).toBe("good_standing");
+  });
+
+  it("should apply major scandal correctly", () => {
+    const heya = makeHeya({ funds: 10_000_000, scandalScore: 0 });
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "major", "Major infraction");
+
+    expect(heya.scandalScore).toBe(35 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 2_000_000);
+    expect(heya.governanceStatus).toBe("warning"); // 34.5 >= 20
+  });
+
+  it("should apply critical scandal correctly", () => {
+    const heya = makeHeya({ funds: 10_000_000, scandalScore: 0 });
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "critical", "Critical infraction");
+
+    expect(heya.scandalScore).toBe(60 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 10_000_000);
+    expect(heya.governanceStatus).toBe("probation"); // 59.5 >= 50
+  });
+
+  it("should cap scandal score at 100", () => {
+    const heya = makeHeya({ funds: 10_000_000, scandalScore: 80 });
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "critical", "Critical infraction");
+
+    // 80 + 60 = 140 -> capped at 100
+    // Then processHeyaGovernance decays it by 0.5 -> 99.5
+    expect(heya.scandalScore).toBe(100 - SCANDAL_DECAY_RATE);
+    expect(heya.governanceStatus).toBe("sanctioned"); // 99.5 >= 80
+  });
+
+  it("should log ruling and engine event", () => {
+    const heya = makeHeya({ funds: 10_000_000, scandalScore: 0 });
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "minor", "Minor infraction");
+
+    // Two rulings (1 for scandal, 1 for optional status change if applicable, but minor doesn't change it initially)
+    // Wait, let's just check the last one
+    expect(world.governanceLog!.length).toBeGreaterThan(0);
+    expect(world.governanceLog![0].reason).toContain("Scandal: Minor infraction");
+
+    // Events might have scandal + status change, check that SCANDAL_REPORTED exists
+    const scandalEvent = world.events.log.find(e => e.type === "SCANDAL_REPORTED");
+    expect(scandalEvent).toBeDefined();
+    expect(scandalEvent!.title).toBe("Scandal: Minor infraction");
   });
 });
