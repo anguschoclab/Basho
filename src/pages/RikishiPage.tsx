@@ -4,6 +4,7 @@
 
 import { rngFromSeed } from "../engine/rng";
 import { useNavigate, useParams } from "react-router-dom";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "../contexts/GameContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -102,8 +103,8 @@ function InfoRow({ label, value, className }: { label: string; value: React.Reac
 
 // ═══════════════ DIRECTORY VIEW (FALLBACK) ═══════════════
 // Displayed when the user hits /rikishi without an ID
-function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, playerHeyaId: string | undefined }) {
-  const navigate = useNavigate();
+function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldState, playerHeyaId: string | undefined, navigate: ReturnType<typeof useNavigate> }) {
+  
   
   // Define a safe local rank order array to avoid external import type errors
   const RANK_ORDER = [
@@ -129,8 +130,8 @@ function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, play
     });
 
   return (
-    <>
-      <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+    <AppLayout pageTitle="Wrestler Directory">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Wrestler Directory</h1>
@@ -187,7 +188,7 @@ function RikishiDirectoryView({ world, playerHeyaId }: { world: WorldState, play
           </div>
         )}
       </div>
-    </>
+    </AppLayout>
   );
 }
 
@@ -204,7 +205,7 @@ export default function RikishiPage() {
 
   // If no ID is provided, show the directory fallback
   if (!rikishiId) {
-    return <RikishiDirectoryView world={world} playerHeyaId={playerHeyaId} />;
+    return <RikishiDirectoryView world={world} playerHeyaId={playerHeyaId} navigate={navigate} />;
   }
 
   const rikishi = world.rikishi.get(rikishiId);
@@ -278,8 +279,8 @@ export default function RikishiPage() {
       ];
 
   return (
-    <>
-      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+    <AppLayout pageTitle={ui.shikona}>
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Top bar */}
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-muted-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
@@ -573,6 +574,6 @@ export default function RikishiPage() {
           </Card>
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 }
