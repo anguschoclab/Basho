@@ -368,9 +368,56 @@ export const EventBus = {
     }),
 };
 
-/** Flavor tick */
+/** Flavor tick & cleanup */
 export function tickWeek(world: WorldState): number {
   // Keep ambient generation lightweight; other systems emit their own events.
   // This file is the bus, not a simulation system.
-  return 0;
+
+  const eventsState = ensureEventsState(world);
+  if (!eventsState.log.length) return 0;
+
+  const currentYear = world.calendar?.year ?? world.year ?? 2024;
+  const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
+
+  // Define maximum age in weeks (approx 1 year = 52 weeks)
+  const MAX_AGE_WEEKS = 52;
+
+  const currentTotalWeeks = currentYear * 52 + currentWeek;
+
+  let trimmedCount = 0;
+  const newLog: EngineEvent[] = [];
+
+  for (const ev of eventsState.log) {
+    const evTotalWeeks = ev.year * 52 + ev.week;
+    const ageWeeks = currentTotalWeeks - evTotalWeeks;
+
+    // Preserve events that are relatively recent
+    // or are of high importance/specific categories that we might want to keep
+    const isHeadline = ev.importance === "headline";
+    const isCareerOrBasho = ev.category === "career" || ev.category === "basho";
+    const isRecent = ageWeeks <= MAX_AGE_WEEKS;
+
+    if (isRecent || isHeadline || isCareerOrBasho) {
+      newLog.push(ev);
+    } else {
+      trimmedCount++;
+      // We also need to clean up the dedupe keys if possible.
+      // Since dedupe keys are not explicitly stored on the event itself (except for reconstruction),
+      // we do a best-effort pass over dedupe keys that match this event's basic signature,
+      // or simply periodically clear out the whole dedupe map for old years.
+      // A safe approach is to clear any dedupe key that contains the old year and week.
+      const prefix = `${ev.year}|${ev.week}|`;
+      for (const key of Object.keys(eventsState.dedupe)) {
+        if (key.startsWith(prefix)) {
+          delete eventsState.dedupe[key];
+        }
+      }
+    }
+  }
+
+  if (trimmedCount > 0) {
+    eventsState.log = newLog;
+  }
+
+  return trimmedCount;
 }

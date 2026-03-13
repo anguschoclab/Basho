@@ -1,8 +1,5 @@
 // banzuke.ts
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
-//
-// UPDATES Phase 2:
-// - Added `determineSpecialPrizes` logic (Shukun-sho, Kanto-sho, Gino-sho) based on Canon V1.1
 
 import type { Rank, Division, RankPosition, Rikishi, BoutResult, MatchSchedule } from "./types";
 import { KIMARITE_REGISTRY } from "./kimarite";
@@ -240,7 +237,7 @@ export interface BanzukeUpdateResult {
   };
 }
 
-// === AWARDS LOGIC (Phase 2) ===
+// === AWARDS LOGIC ===
 
 export interface SpecialPrizesResult {
   ginoSho?: string;
@@ -408,7 +405,7 @@ export function updateBanzuke(
   // 5) Compute desired strength ordering using performance + absences + ceilings.
   const scored = roster.map((e) => {
     const p = perfById.get(e.rikishiId);
-    const move = computeMovementUnits(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki);
+    const move = computeMovementUnits(e, p, demotedOzeki);
     const oldKey = positionKey(e);
     const desiredKey = oldKey - move * 1_000; // bigger move => earlier
     const eligibleBestTier = bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki);
@@ -677,15 +674,11 @@ function clampMovementByRank(move: number, rank: string, isDemotedOzeki: boolean
   return clampInt(move, -10, 10);
 }
 
-function computeMovementUnits(
-  entry: BanzukeEntry,
-  perf: BashoPerformance | undefined,
-  _ozekiState: OzekiKadobanState | undefined,
-  demotedOzeki: Set<string>
-): number {
-  if (!perf) return 0;
-
-  const rank = entry.position.rank;
+/**
+ * Calculates the base movement score for a given rank and performance,
+ * factoring in the margin versus kachi-koshi, absences, and bonuses.
+ */
+function calculateBaseMove(rank: Rank, perf: BashoPerformance): number {
   const bouts = RANK_HIERARCHY[rank].fightsPerBasho;
   const required = kachiKoshiThreshold(rank);
 
@@ -696,7 +689,22 @@ function computeMovementUnits(
   const absencePenalty = calculateAbsencePenalty(abs, bouts);
   const bonuses = calculatePerformanceBonuses(perf);
 
-  const baseMove = marginVsKK - absencePenalty + bonuses;
+  return marginVsKK - absencePenalty + bonuses;
+}
+
+/**
+ * Computes the final number of ranks a rikishi should move up or down on the banzuke
+ * based on their performance, applying necessary ranking caps and damping rules.
+ */
+function computeMovementUnits(
+  entry: BanzukeEntry,
+  perf: BashoPerformance | undefined,
+  demotedOzeki: Set<string>
+): number {
+  if (!perf) return 0;
+
+  const rank = entry.position.rank;
+  const baseMove = calculateBaseMove(rank, perf);
   const isDemotedOzeki = demotedOzeki.has(entry.rikishiId);
 
   return clampMovementByRank(baseMove, rank, isDemotedOzeki);
