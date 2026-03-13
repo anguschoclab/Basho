@@ -156,7 +156,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (econItems.length) sections.push({ id: "economy", title: "Economy", items: econItems });
 
   const counts = {
-    trainingEvents: weekEvents.filter(e=>e.category==="training").length,
+    trainingEvents: trainingItems.length,
     injuries: injuryItems.length,
     recoveries: 0,
     economy: econItems.length,
