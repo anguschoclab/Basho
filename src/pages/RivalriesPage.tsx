@@ -1,374 +1,277 @@
-// RivalriesPage.tsx
-// Rivalries Page - Display rivalries between rikishi with narrative descriptions
-// Per Rivalries System v1.0: heat bands, tone descriptions, head-to-head records
-//
-// FIXES / UPDATES:
-// - Avoids crashing if world / rivalries state is missing or partially shaped
-// - Uses safe defaulting for pair fields (wins/meetings/heat/triggers/tone/key)
-// - Ensures triggers sort is stable even when trigger values are undefined
-// - Makes heat meter width safe (0–100)
-// - Keeps “allowed numbers” (H2H + meetings + heat %) but avoids any hidden stats
-// - Keeps “Your Stable” wording consistent with canon (Basho) and avoids “Stable Lords”
-// - Improves empty states and guards for unknown tone/trigger keys
+// RivalriesPage.tsx — Polished with heat indicators, H2H visualizations, and intensity badges
 
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Flame, Swords, Users, Trophy, TrendingUp } from "lucide-react";
+import { Flame, Swords, Users, Trophy, TrendingUp, Search, X, Zap, Shield } from "lucide-react";
 import { toRivalryHeatBand as toRHBand, RIVALRY_HEAT_LABELS } from "@/engine/descriptorBands";
 import {
   type RivalryPairState,
   type RivalryHeatBand,
   type RivalryTone,
   type RivalryTrigger,
-  type RivalryDigestRow,
   createDefaultRivalriesState,
-  buildRivalryDigest
 } from "@/engine/rivalries";
+import { formatRank } from "@/engine/banzuke";
 
-// -----------------------------
-// Display configuration
-// -----------------------------
-
-const HEAT_BAND_CONFIG: Record<
-  RivalryHeatBand,
-  { label: string; color: string; bgColor: string; description: string }
-> = {
-  inferno: {
-    label: "Inferno",
-    color: "text-red-400",
-    bgColor: "bg-red-500/20 border-red-500/30",
-    description: "Blood feud — every bout is a war"
-  },
-  hot: {
-    label: "Hot",
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/20 border-orange-500/30",
-    description: "Active rivalry with real stakes"
-  },
-  warm: {
-    label: "Warm",
-    color: "text-yellow-400",
-    bgColor: "bg-yellow-500/20 border-yellow-500/30",
-    description: "Developing tension and interest"
-  },
-  cold: {
-    label: "Cold",
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary/50 border-border",
-    description: "Dormant or historical rivalry"
-  }
+// Display config
+const HEAT_BAND_CONFIG: Record<RivalryHeatBand, { label: string; color: string; bgColor: string; barColor: string; glowClass: string }> = {
+  inferno: { label: "Inferno", color: "text-destructive", bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent", glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
+  hot:     { label: "Hot",     color: "text-accent",      bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-warning",      glowClass: "" },
+  warm:    { label: "Warm",    color: "text-warning",     bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
+  cold:    { label: "Cold",    color: "text-muted-foreground", bgColor: "bg-muted border-border",             barColor: "bg-muted-foreground",                           glowClass: "" },
 };
 
-const TONE_DESCRIPTIONS: Record<RivalryTone, { label: string; description: string; icon: typeof Swords }> = {
-  respect: {
-    label: "Mutual Respect",
-    description: "A rivalry built on admiration and competitive spirit.",
-    icon: Trophy
-  },
-  grudge: {
-    label: "Grudge",
-    description: "Bad blood simmers beneath the surface.",
-    icon: Flame
-  },
-  bad_blood: {
-    label: "Bad Blood",
-    description: "Open hostility between these two.",
-    icon: Swords
-  },
-  mentor_student: {
-    label: "Mentor vs Student",
-    description: "The student seeks to surpass the master.",
-    icon: Users
-  },
-  unstable: {
-    label: "Unstable",
-    description: "Volatile clashes with unpredictable outcomes.",
-    icon: TrendingUp
-  },
-  public_hype: {
-    label: "Fan Favorite",
-    description: "The crowd loves this matchup.",
-    icon: Users
-  }
+const TONE_CONFIG: Record<RivalryTone, { label: string; description: string; icon: typeof Swords; ja: string }> = {
+  respect:        { label: "Mutual Respect",   description: "A rivalry built on admiration and competitive fire.",    icon: Trophy,     ja: "敬意" },
+  grudge:         { label: "Grudge",           description: "Bad blood simmers beneath the surface.",                icon: Flame,      ja: "恨み" },
+  bad_blood:      { label: "Bad Blood",        description: "Open hostility — every bout is personal.",              icon: Swords,     ja: "因縁" },
+  mentor_student: { label: "Mentor vs Student", description: "The student seeks to surpass the master.",             icon: Shield,     ja: "師弟" },
+  unstable:       { label: "Volatile",         description: "Unpredictable clashes with explosive outcomes.",        icon: Zap,        ja: "不安定" },
+  public_hype:    { label: "Fan Favorite",     description: "The crowd lives for this matchup.",                     icon: Users,      ja: "人気" },
 };
 
 const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
-  repeat_matches: "Frequent meetings",
-  close_finish: "Close finishes",
-  upset: "Upsets",
-  kinboshi: "Gold star victories",
-  title_stakes: "Title implications",
-  injury_incident: "Injury incident",
-  personal_history: "Personal history",
-  heya_feud: "Stable rivalry"
+  repeat_matches: "Frequent bouts", close_finish: "Close finishes", upset: "Upsets",
+  kinboshi: "Kinboshi", title_stakes: "Title stakes", injury_incident: "Injury incident",
+  personal_history: "Personal history", heya_feud: "Stable feud",
 };
 
-// -----------------------------
 // Helpers
-// -----------------------------
-
-function clamp01to100(n: any): number {
-  const v = typeof n === "number" && Number.isFinite(n) ? n : 0;
-  return Math.max(0, Math.min(100, v));
+function clamp(n: any): number { const v = typeof n === "number" && Number.isFinite(n) ? n : 0; return Math.max(0, Math.min(100, v)); }
+function safeInt(n: any, f = 0): number { return typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : f; }
+function getHeatBand(heat: number): RivalryHeatBand { if (heat >= 80) return "inferno"; if (heat >= 55) return "hot"; if (heat >= 30) return "warm"; return "cold"; }
+function safeTone(t: any): RivalryTone { return t && typeof t === "string" && t in TONE_CONFIG ? t as RivalryTone : "respect"; }
+function safeKey(p: any): string { return p?.key ?? `${p?.aId ?? "a"}__${p?.bId ?? "b"}`; }
+function safeTriggers(t: any): Record<string, number> {
+  if (!t || typeof t !== "object") return {};
+  const o: Record<string, number> = {};
+  for (const [k, v] of Object.entries(t)) o[k] = typeof v === "number" ? v : 0;
+  return o;
 }
 
-function safeInt(n: any, fallback = 0): number {
-  return typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : fallback;
+// H2H Bar visualization
+function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; aName: string; bName: string }) {
+  const total = aWins + bWins;
+  if (total === 0) return <div className="text-xs text-muted-foreground text-center py-2">No bouts yet</div>;
+  const aPct = (aWins / total) * 100;
+  const bPct = (bWins / total) * 100;
+  const dominant = aWins > bWins ? "a" : bWins > aWins ? "b" : null;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs">
+        <span className={`font-display font-bold ${dominant === "a" ? "text-primary" : "text-muted-foreground"}`}>
+          {aName}
+        </span>
+        <span className="font-mono text-[10px] text-muted-foreground">{total} bout{total !== 1 ? "s" : ""}</span>
+        <span className={`font-display font-bold ${dominant === "b" ? "text-primary" : "text-muted-foreground"}`}>
+          {bName}
+        </span>
+      </div>
+      <div className="flex h-6 rounded-md overflow-hidden border border-border/50">
+        <div
+          className="bg-primary/80 flex items-center justify-center text-[11px] font-bold text-primary-foreground transition-all"
+          style={{ width: `${Math.max(aPct, 8)}%` }}
+        >
+          {aWins}
+        </div>
+        <div
+          className="bg-muted flex items-center justify-center text-[11px] font-bold text-muted-foreground transition-all"
+          style={{ width: `${Math.max(bPct, 8)}%` }}
+        >
+          {bWins}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function getHeatBand(heat: number): RivalryHeatBand {
-  if (heat >= 80) return "inferno";
-  if (heat >= 55) return "hot";
-  if (heat >= 30) return "warm";
-  return "cold";
+// Heat gauge
+function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
+  const config = HEAT_BAND_CONFIG[band];
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between items-center">
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Rivalry Heat</span>
+        <span className={`text-[10px] font-semibold ${config.color}`}>{Math.round(heat)}%</span>
+      </div>
+      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+        <div className={`h-full rounded-full transition-all duration-500 ${config.barColor}`} style={{ width: `${heat}%` }} />
+      </div>
+    </div>
+  );
 }
 
-function safeTone(tone: any): RivalryTone {
-  if (tone && typeof tone === "string" && tone in TONE_DESCRIPTIONS) return tone as RivalryTone;
-  return "respect";
-}
-
-function safeKey(pair: any): string {
-  if (pair?.key && typeof pair.key === "string") return pair.key;
-  const a = typeof pair?.aId === "string" ? pair.aId : "a";
-  const b = typeof pair?.bId === "string" ? pair.bId : "b";
-  return `${a}__${b}`;
-}
-
-function safeTriggers(triggers: any): Record<string, number> {
-  if (!triggers || typeof triggers !== "object") return {};
-  const out: Record<string, number> = {};
-  for (const [k, v] of Object.entries(triggers)) {
-    out[String(k)] = typeof v === "number" && Number.isFinite(v) ? v : 0;
-  }
-  return out;
-}
-
-function heatBarClass(band: RivalryHeatBand) {
-  if (band === "inferno") return "bg-red-500";
-  if (band === "hot") return "bg-orange-500";
-  if (band === "warm") return "bg-yellow-500";
-  return "bg-muted-foreground";
-}
-
-// -----------------------------
-// Card
-// -----------------------------
-
+// Rivalry Card
 interface RivalryCardProps {
   pair: RivalryPairState;
   world: NonNullable<ReturnType<typeof useGame>["state"]["world"]>;
   isPlayerRivalry?: boolean;
+  index: number;
 }
 
-function RivalryCard({ pair, world, isPlayerRivalry }: RivalryCardProps) {
+function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) {
   const rikishiA = world.rikishi.get(pair.aId);
   const rikishiB = world.rikishi.get(pair.bId);
   if (!rikishiA || !rikishiB) return null;
 
   const heyaA = world.heyas.get(rikishiA.heyaId);
   const heyaB = world.heyas.get(rikishiB.heyaId);
-
-  const heat = clamp01to100((pair as any).heat);
+  const heat = clamp((pair as any).heat);
   const heatBand = getHeatBand(heat);
   const heatConfig = HEAT_BAND_CONFIG[heatBand];
-
   const tone = safeTone((pair as any).tone);
-  const toneInfo = TONE_DESCRIPTIONS[tone];
+  const toneInfo = TONE_CONFIG[tone];
   const ToneIcon = toneInfo.icon;
-
   const triggersObj = safeTriggers((pair as any).triggers);
   const topTriggers = Object.entries(triggersObj)
-    .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
-    .slice(0, 3)
-    .map(([t]) => t)
-    .filter((t): t is RivalryTrigger => t in TRIGGER_LABELS)
-    .map((t) => t as RivalryTrigger);
+    .sort((a, b) => b[1] - a[1]).slice(0, 3)
+    .filter(([t]) => t in TRIGGER_LABELS)
+    .map(([t]) => t as RivalryTrigger);
+  const aWins = safeInt((pair as any).aWins);
+  const bWins = safeInt((pair as any).bWins);
 
-  const meetings = safeInt((pair as any).meetings, safeInt((pair as any).aWins, 0) + safeInt((pair as any).bWins, 0));
-  const aWins = safeInt((pair as any).aWins, 0);
-  const bWins = safeInt((pair as any).bWins, 0);
+  const rankA = formatRank({ rank: rikishiA.rank, side: rikishiA.side ?? "east", rankNumber: rikishiA.rankNumber } as any);
+  const rankB = formatRank({ rank: rikishiB.rank, side: rikishiB.side ?? "east", rankNumber: rikishiB.rankNumber } as any);
 
   return (
-    <Card className={`paper ${isPlayerRivalry ? "ring-1 ring-primary/30" : ""}`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Badge className={`${heatConfig.bgColor} ${heatConfig.color} border`}>
-              <Flame className="h-3 w-3 mr-1" />
+    <Card className={`overflow-hidden bout-enter ${isPlayerRivalry ? "ring-1 ring-primary/30" : ""} ${heatConfig.glowClass}`}
+      style={{ animationDelay: `${index * 60}ms` }}>
+      {/* Heat intensity bar at top */}
+      <div className={`h-1 ${heatConfig.barColor}`} />
+
+      <CardContent className="p-4 space-y-4">
+        {/* Header: Heat badge + tone */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Badge className={`${heatConfig.bgColor} ${heatConfig.color} border text-[10px] gap-1`}>
+              <Flame className={`h-3 w-3 ${heatBand === "inferno" ? "animate-pulse" : ""}`} />
               {heatConfig.label}
             </Badge>
             {isPlayerRivalry && (
-              <Badge variant="default" className="text-xs">
-                Your Stable
-              </Badge>
+              <Badge variant="default" className="text-[10px] h-5">Your Stable</Badge>
             )}
           </div>
-          <div className="text-right text-xs text-muted-foreground">
-            {meetings} bout{meetings !== 1 ? "s" : ""}
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <ToneIcon className={`h-3.5 w-3.5 ${heatConfig.color}`} />
+            <span className="text-[10px] font-medium">{toneInfo.label}</span>
+            <span className="text-[9px] font-display opacity-60">{toneInfo.ja}</span>
           </div>
         </div>
 
-        <CardTitle className="font-display text-lg mt-2">
-          <span className="flex items-center gap-2 flex-wrap">
-            <RikishiName id={rikishiA.id} name={rikishiA.shikona} />
-            <span className="text-muted-foreground">vs</span>
-            <RikishiName id={rikishiB.id} name={rikishiB.shikona} />
-          </span>
-        </CardTitle>
-
-        <CardDescription className="flex items-center gap-4 flex-wrap">
-          {heyaA ? (
-            <span>
-              <StableName id={heyaA.id} name={heyaA.name} className="text-muted-foreground" />
-            </span>
-          ) : (
-            <span className="text-muted-foreground">—</span>
-          )}
-          <span className="text-muted-foreground">vs</span>
-          {heyaB ? (
-            <span>
-              <StableName id={heyaB.id} name={heyaB.name} className="text-muted-foreground" />
-            </span>
-          ) : (
-            <span className="text-muted-foreground">—</span>
-          )}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        {/* Head-to-head record */}
-        <div className="flex items-center justify-center gap-4 p-3 rounded-lg bg-secondary/30">
-          <div className="text-center">
-            <div className="font-display text-2xl font-bold">{aWins}</div>
-            <div className="text-xs text-muted-foreground">{rikishiA.shikona}</div>
+        {/* VS display */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 text-right space-y-0.5">
+            <div className="font-display font-bold text-base">
+              <RikishiName id={rikishiA.id} name={rikishiA.shikona} />
+            </div>
+            <div className="text-[10px] text-muted-foreground">{rankA}</div>
+            {heyaA && <div className="text-[10px]"><StableName id={heyaA.id} name={heyaA.name} className="text-muted-foreground" /></div>}
           </div>
-          <div className="text-muted-foreground font-display">-</div>
-          <div className="text-center">
-            <div className="font-display text-2xl font-bold">{bWins}</div>
-            <div className="text-xs text-muted-foreground">{rikishiB.shikona}</div>
+          <div className="shrink-0 flex flex-col items-center">
+            <div className="h-10 w-10 rounded-full bg-muted/80 border border-border flex items-center justify-center">
+              <span className="font-display text-xs font-bold text-muted-foreground">VS</span>
+            </div>
+          </div>
+          <div className="flex-1 space-y-0.5">
+            <div className="font-display font-bold text-base">
+              <RikishiName id={rikishiB.id} name={rikishiB.shikona} />
+            </div>
+            <div className="text-[10px] text-muted-foreground">{rankB}</div>
+            {heyaB && <div className="text-[10px]"><StableName id={heyaB.id} name={heyaB.name} className="text-muted-foreground" /></div>}
           </div>
         </div>
 
-        {/* Tone */}
-        <div className="flex items-center gap-2">
-          <ToneIcon className={`h-4 w-4 ${heatConfig.color}`} />
-          <span className="font-medium text-sm">{toneInfo.label}</span>
-        </div>
-        <p className="text-sm text-muted-foreground">{toneInfo.description}</p>
+        {/* H2H bar */}
+        <H2HBar aWins={aWins} bWins={bWins} aName={rikishiA.shikona} bName={rikishiB.shikona} />
+
+        {/* Tone description */}
+        <p className="text-xs text-muted-foreground italic">{toneInfo.description}</p>
 
         {/* Triggers */}
         {topTriggers.length > 0 && (
-          <>
-            <Separator />
-            <div className="flex flex-wrap gap-2">
-              {topTriggers.map((trigger) => (
-                <Badge key={trigger} variant="outline" className="text-xs">
-                  {TRIGGER_LABELS[trigger] ?? String(trigger)}
-                </Badge>
-              ))}
-            </div>
-          </>
+          <div className="flex flex-wrap gap-1.5">
+            {topTriggers.map(t => (
+              <Badge key={t} variant="outline" className="text-[10px] font-normal">{TRIGGER_LABELS[t]}</Badge>
+            ))}
+          </div>
         )}
 
-        {/* Heat meter */}
-        <div className="pt-2">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
-            <span>Rivalry Heat</span>
-            <span>{RIVALRY_HEAT_LABELS[toRHBand(heat)]}</span>
-          </div>
-          <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div className={`h-full transition-all ${heatBarClass(heatBand)}`} style={{ width: `${Math.min(heat, 100)}%` }} />
-          </div>
-        </div>
+        {/* Heat gauge */}
+        <HeatGauge heat={heat} band={heatBand} />
       </CardContent>
     </Card>
   );
 }
 
-// -----------------------------
 // Page
-// -----------------------------
-
 export default function RivalriesPage() {
   const { state } = useGame();
   const { world, playerHeyaId } = state;
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Rivalries state from world or default
   const rivalriesState = useMemo(() => {
     if (!world) return createDefaultRivalriesState();
     const rs = (world as any).rivalries;
     return rs && typeof rs === "object" && rs.pairs ? rs : createDefaultRivalriesState();
   }, [world]);
 
-  // Player rikishi IDs
   const playerRikishiIds = useMemo(() => {
     if (!world || !playerHeyaId) return new Set<string>();
     const heya = world.heyas.get(playerHeyaId);
     return new Set(heya?.rikishiIds ?? []);
   }, [world, playerHeyaId]);
 
-  // Partition + sort
-  const { playerRivalries, hotRivalries, allRivalries } = useMemo(() => {
+  const { playerRivalries, hotRivalries, coolRivalries, stats } = useMemo(() => {
     const rawPairs = Object.values((rivalriesState as any).pairs ?? {}) as any[];
-
     const normalized: RivalryPairState[] = rawPairs
-      .filter((p) => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
-      .map((p) => ({
-        ...p,
-        key: safeKey(p),
-        heat: clamp01to100(p.heat),
-        meetings: safeInt(p.meetings, safeInt(p.aWins, 0) + safeInt(p.bWins, 0)),
-        aWins: safeInt(p.aWins, 0),
-        bWins: safeInt(p.bWins, 0),
-        triggers: safeTriggers(p.triggers),
-        tone: safeTone(p.tone)
-      })) as RivalryPairState[];
+      .filter(p => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
+      .map(p => ({ ...p, key: safeKey(p), heat: clamp(p.heat), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
+
+    // Search filter
+    const filtered = searchQuery
+      ? normalized.filter(p => {
+          const a = world?.rikishi.get(p.aId);
+          const b = world?.rikishi.get(p.bId);
+          const q = searchQuery.toLowerCase();
+          return (a?.shikona?.toLowerCase().includes(q)) || (b?.shikona?.toLowerCase().includes(q));
+        })
+      : normalized;
 
     const player: RivalryPairState[] = [];
     const hot: RivalryPairState[] = [];
+    const cool: RivalryPairState[] = [];
 
-    for (const pair of normalized) {
+    for (const pair of filtered) {
       const isPlayer = playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId);
       if (isPlayer) player.push(pair);
-      if ((pair.heat ?? 0) >= 55) hot.push(pair);
+      if ((pair.heat ?? 0) >= 55 && !isPlayer) hot.push(pair);
+      if ((pair.heat ?? 0) < 55 && !isPlayer) cool.push(pair);
     }
 
-    const byHeatDesc = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
+    const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
+    player.sort(byHeat); hot.sort(byHeat); cool.sort(byHeat);
 
-    player.sort(byHeatDesc);
-    hot.sort(byHeatDesc);
-    normalized.sort(byHeatDesc);
+    const infernoCount = normalized.filter(p => (p.heat ?? 0) >= 80).length;
+    const hotCount = normalized.filter(p => (p.heat ?? 0) >= 55 && (p.heat ?? 0) < 80).length;
 
-    const hotNonPlayer = hot.filter((p) => !playerRikishiIds.has(p.aId) && !playerRikishiIds.has(p.bId));
-
-    return {
-      playerRivalries: player,
-      hotRivalries: hotNonPlayer,
-      allRivalries: normalized
-    };
-  }, [rivalriesState, playerRikishiIds]);
+    return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
+  }, [rivalriesState, playerRikishiIds, searchQuery, world]);
 
   if (!world) {
     return (
-      <div className="p-6 max-w-3xl mx-auto">
-        <Card className="paper">
-          <CardHeader>
-            <CardTitle>Rivalries & Feuds</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">No world loaded.</CardContent>
-        </Card>
-      </div>
+      <AppLayout pageTitle="Rivalries & Feuds">
+        <Card><CardContent className="p-12 text-center text-muted-foreground">No world loaded.</CardContent></Card>
+      </AppLayout>
     );
   }
-
-  const hasRivalries = allRivalries.length > 0;
 
   const competitionTabs = [
     { id: "basho", label: "Basho", href: "/basho" },
@@ -376,105 +279,120 @@ export default function RivalriesPage() {
     { id: "rivalries", label: "Rivalries" },
   ];
 
-  return (
-    <AppLayout
-      pageTitle="Rivalries & Feuds"
-      subNavTabs={competitionTabs}
-      activeSubTab="rivalries"
-    >
-      <Helmet>
-        <title>Rivalries & Feuds - Basho</title>
-      </Helmet>
+  const hasRivalries = stats.total > 0;
 
-      <div className="space-y-6">
+  return (
+    <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={competitionTabs} activeSubTab="rivalries">
+      <Helmet><title>Rivalries & Feuds - Basho</title></Helmet>
+
+      <div className="space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-md bg-destructive/20 flex items-center justify-center">
+              <Swords className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                {stats.inferno > 0 && (
+                  <Badge className="bg-destructive/15 text-destructive border-destructive/30 border text-[10px] gap-1">
+                    <Flame className="h-3 w-3 animate-pulse" /> {stats.inferno} Inferno
+                  </Badge>
+                )}
+                {stats.hot > 0 && (
+                  <Badge className="bg-accent/15 text-accent border-accent/30 border text-[10px] gap-1">
+                    <Flame className="h-3 w-3" /> {stats.hot} Hot
+                  </Badge>
+                )}
+                <span className="text-[10px] text-muted-foreground">{stats.total} total rivalries</span>
+              </div>
+            </div>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search rikishi…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="h-8 w-48 pl-8 pr-8 text-xs"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
 
         {!hasRivalries ? (
-          <Card className="paper">
+          <Card>
             <CardContent className="p-12 text-center">
               <Swords className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="font-display text-xl font-semibold mb-2">No Rivalries Yet</h3>
-              <p className="text-muted-foreground">
-                Rivalries develop as rikishi meet repeatedly across basho. Complete tournaments to see tensions form.
-              </p>
+              <p className="text-muted-foreground">Rivalries develop as rikishi meet repeatedly. Complete tournaments to see tensions form.</p>
             </CardContent>
           </Card>
         ) : (
           <>
-            {/* Player Stable Rivalries */}
             {playerRivalries.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="font-display text-xl font-semibold flex items-center gap-2">
-                  <Users className="h-5 w-5" />
+              <section className="space-y-3">
+                <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
                   Your Stable's Rivalries
+                  <span className="text-xs text-muted-foreground font-normal">({playerRivalries.length})</span>
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {playerRivalries.slice(0, 4).map((pair) => (
-                    <RivalryCard key={pair.key} pair={pair} world={world} isPlayerRivalry />
+                  {playerRivalries.slice(0, 6).map((pair, i) => (
+                    <RivalryCard key={pair.key} pair={pair} world={world} isPlayerRivalry index={i} />
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* Hot Rivalries Across Sumo */}
             {hotRivalries.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="font-display text-xl font-semibold flex items-center gap-2">
-                  <Flame className="h-5 w-5 text-orange-400" />
+              <section className="space-y-3">
+                <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                  <Flame className="h-4 w-4 text-accent" />
                   Hot Rivalries Across Sumo
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {hotRivalries.slice(0, 4).map((pair) => (
-                    <RivalryCard key={pair.key} pair={pair} world={world} />
+                  {hotRivalries.slice(0, 6).map((pair, i) => (
+                    <RivalryCard key={pair.key} pair={pair} world={world} index={i} />
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* All Rivalries (cooler) */}
-            {allRivalries.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="font-display text-xl font-semibold flex items-center gap-2">
-                  <Swords className="h-5 w-5" />
-                  All Active Rivalries
+            {coolRivalries.length > 0 && (
+              <section className="space-y-3">
+                <h2 className="font-display text-lg font-semibold flex items-center gap-2 text-muted-foreground">
+                  <Swords className="h-4 w-4" />
+                  Developing Rivalries
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {allRivalries
-                    .filter((p) => (p.heat ?? 0) < 55) // warm/cold
-                    .slice(0, 6)
-                    .map((pair) => (
-                      <RivalryCard
-                        key={pair.key}
-                        pair={pair}
-                        world={world}
-                        isPlayerRivalry={playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)}
-                      />
-                    ))}
+                  {coolRivalries.slice(0, 6).map((pair, i) => (
+                    <RivalryCard key={pair.key} pair={pair} world={world}
+                      isPlayerRivalry={playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)}
+                      index={i} />
+                  ))}
                 </div>
-              </div>
+              </section>
             )}
           </>
         )}
 
-        {/* Legend */}
-        <Card className="paper">
-          <CardContent className="pt-4">
-            <div className="text-sm font-medium mb-3">Heat Levels</div>
-            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-              {(Object.entries(HEAT_BAND_CONFIG) as [RivalryHeatBand, (typeof HEAT_BAND_CONFIG)["inferno"]][])
-                .sort((a, b) => {
-                  const order: Record<RivalryHeatBand, number> = { inferno: 0, hot: 1, warm: 2, cold: 3 };
-                  return order[a[0]] - order[b[0]];
-                })
-                .map(([band, config]) => (
-                  <div key={band} className="flex items-center gap-1.5">
-                    <div className={`w-3 h-3 rounded-full ${config.bgColor} border`} />
-                    <span className={config.color}>{config.label}</span>
-                    <span>— {config.description}</span>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Heat legend */}
+        <div className="flex items-center gap-4 text-[10px] text-muted-foreground border border-border/50 rounded-md px-3 py-2 bg-muted/20 w-fit flex-wrap">
+          {(["inferno", "hot", "warm", "cold"] as RivalryHeatBand[]).map(band => {
+            const c = HEAT_BAND_CONFIG[band];
+            return (
+              <span key={band} className="flex items-center gap-1.5">
+                <div className={`w-2.5 h-2.5 rounded-full ${c.bgColor} border`} />
+                <span className={c.color}>{c.label}</span>
+              </span>
+            );
+          })}
+        </div>
       </div>
     </AppLayout>
   );
