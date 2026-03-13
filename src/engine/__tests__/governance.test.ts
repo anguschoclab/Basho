@@ -1,14 +1,5 @@
 import { describe, it, expect, mock } from "bun:test";
 
-mock.module("seedrandom", () => {
-  return {
-    default: (seed: string) => {
-      const prng = () => 0.5;
-      return prng;
-    },
-  };
-});
-
 // Mock rng.ts entirely
 mock.module("../rng", () => {
   return {
