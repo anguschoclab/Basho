@@ -404,9 +404,6 @@ describe("Banzuke: Full Update - Demotions", () => {
     
     const result = updateBanzuke(banzuke, performance, {});
     
-    // Log actual events for debugging if needed
-    // console.log("Demotion test events:", result.events.filter(e => e.rikishiId === "m18e"));
-    
     const demotionEvent = result.events.find(
       (e) => e.rikishiId === "m18e" && (e.kind === "demotion" || e.kind === "lateral")
     );
