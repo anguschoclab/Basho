@@ -232,6 +232,68 @@ export function ensureTalentPools(world: WorldState): TalentPoolWorldState {
   return tp;
 }
 
+export function countsAsForeignFromRikishi(rikishi: Rikishi): boolean {
+  return (rikishi.nationality || "Japan") !== "Japan";
+}
+
+export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void {
+  const tp = ensureTalentPools(world);
+
+  // Decide which pool to place them in
+  let poolType: TalentPoolType = "high_school";
+  if (countsAsForeignFromRikishi(rikishi)) poolType = "foreign";
+  else if ((rikishi.birthYear ?? 0) < world.year - 20) poolType = "university";
+
+  const candidateId = `cand-${rikishi.id}`;
+
+  const candidate: TalentCandidate = {
+    candidateId,
+    personId: rikishi.id,
+    name: rikishi.realName || rikishi.shikona,
+    birthYear: rikishi.birthYear,
+    originRegion: rikishi.origin || "Unknown",
+    nationality: rikishi.nationality,
+    visibilityBand: "scouted", // Already known since they were a rikishi
+    reputationSeed: rikishi.talentSeed ?? 50,
+    tags: ["former_pro"],
+    availabilityState: "available",
+    competingSuitors: [],
+    archetype: rikishi.archetype || "pusher",
+    style: rikishi.style || "oshi",
+    heightPotentialCm: rikishi.height,
+    weightPotentialKg: rikishi.weight,
+    talentSeed: rikishi.talentSeed ?? 50,
+    temperament: {
+      discipline: 50,
+      volatility: 50
+    }
+  };
+
+  tp.candidates[candidateId] = candidate;
+  tp.pools[poolType].candidatesVisible.push(candidateId);
+}
+
+export function retireStaleCandidates(world: WorldState): void {
+  const tp = ensureTalentPools(world);
+  const currentYear = world.year;
+
+  for (const cid of Object.keys(tp.candidates)) {
+    const c = tp.candidates[cid];
+    if (!c) continue;
+
+    // If they are older than 25 and still in the pool, retire them
+    const age = currentYear - c.birthYear;
+    if (age > 25 && c.availabilityState === "available") {
+      c.availabilityState = "signed"; // Mark signed so they are ignored by recruiters
+      // Remove from visible/hidden arrays
+      for (const pt of POOL_TYPES) {
+        tp.pools[pt].candidatesVisible = tp.pools[pt].candidatesVisible.filter((id) => id !== cid);
+        tp.pools[pt].candidatesHidden = tp.pools[pt].candidatesHidden.filter((id) => id !== cid);
+      }
+    }
+  }
+}
+
 export function refreshYearlyCohort(world: WorldState, year: number): void {
   const tp = ensureWorldPool(world);
   const week = getWeek(world);
@@ -944,4 +1006,5 @@ export function fillVacanciesForNPC(world: WorldState, vacanciesByHeyaId: Record
 export function tickYear(world: WorldState): void {
   ensureTalentPools(world);
   refreshYearlyCohort(world, world.year);
+  retireStaleCandidates(world);
 }
