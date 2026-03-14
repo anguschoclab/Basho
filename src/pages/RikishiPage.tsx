@@ -2,7 +2,7 @@
 // Clean, FM-inspired rikishi profile with clear hierarchy and fog of war
 // Uses projectRikishi() DTO for basic field display; raw Rikishi for scouting/career gen.
 
-import { rngFromSeed } from "../rng";
+import { rngFromSeed } from "../engine/rng";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "../contexts/GameContext";

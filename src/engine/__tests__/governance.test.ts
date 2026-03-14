@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { mock } from "bun:test";
 
 // Mock rng.ts entirely
-mock.module("../rng", () => ({
+mock.module("./rng", () => ({
   rngFromSeed: () => ({
     next: () => 0.5,
     int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
