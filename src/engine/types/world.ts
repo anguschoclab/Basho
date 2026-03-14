@@ -35,7 +35,10 @@ export interface PostBashoMeta {
 }
 
 /** Defines the structure for world state. */
+import type { LineageEdge } from "../lineage";
+
 export interface WorldState {
+  lineage?: LineageEdge[];
   id: string;
   seed: string;
   year: number;
