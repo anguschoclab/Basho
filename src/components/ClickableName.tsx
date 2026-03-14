@@ -1,5 +1,5 @@
 // Reusable clickable name component for rikishi, stable, and oyakata names
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
 /** Type representing name type. */
