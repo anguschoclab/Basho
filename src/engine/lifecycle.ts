@@ -68,7 +68,7 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
   const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
   
-  const isElite = (origin as any).isElite || false;
+  const isElite = origin.isElite || false;
   const age = isElite ? 22 : 15 + rng.int(0, 2); 
 
   const baseStat = isElite ? 40 : 20;
@@ -88,10 +88,10 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
   };
 
   // Apply Origin Modifiers
-  if ((origin as any).strMod) stats.strength *= (origin as any).strMod;
-  if ((origin as any).techMod) stats.technique *= (origin as any).techMod;
-  if ((origin as any).speedMod) stats.speed *= (origin as any).speedMod;
-  if ((origin as any).weightMod) stats.weight *= (origin as any).weightMod;
+  if (origin.strMod) stats.strength *= origin.strMod;
+  if (origin.techMod) stats.technique *= origin.techMod;
+  if (origin.speedMod) stats.speed *= origin.speedMod;
+  if (origin.weightMod) stats.weight *= origin.weightMod;
 
   const shikona = generateRikishiName(`${world.seed}::rookie::${rookieId}`);
 

@@ -262,7 +262,7 @@ export function buildHistoryIndex(args: {
 
 function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistoryEntry): void {
   if (!idx.rikishi[rikishiId]) idx.rikishi[rikishiId] = [];
-  idx.rikishi[rikishiId].push({ rikishiId, ...entry } as any);
+  idx.rikishi[rikishiId].push({ rikishiId, ...entry });
   idx.lastSeenBashoForRikishi[rikishiId] = entry.bashoKey;
 }
 
@@ -377,7 +377,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
   });
 
   // Index all rikishi who participated (via basho state standings if available)
-  const bashoState = (world as any).currentBasho;
+  const bashoState = world.currentBasho;
   const standingsMap = bashoState?.standings;
   if (standingsMap) {
     const entries = standingsMap instanceof Map
@@ -387,8 +387,8 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     for (const [rid, stats] of entries) {
       const existing = idx.rikishi[rid]?.find(e => e.bashoKey === bashoKey);
       if (existing) {
-        existing.wins = (stats as any).wins;
-        existing.losses = (stats as any).losses;
+        existing.wins = stats.wins;
+        existing.losses = stats.losses;
       } else {
         const r = world.rikishi.get(rid);
         pushRikishiEntry(idx, rid, {
@@ -398,8 +398,8 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
           bashoName: bashoResult.bashoName,
           rikishiId: rid,
           division: r?.division,
-          wins: (stats as any).wins,
-          losses: (stats as any).losses
+          wins: stats.wins,
+          losses: stats.losses
         });
       }
     }

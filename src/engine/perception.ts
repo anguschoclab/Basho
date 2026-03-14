@@ -108,7 +108,7 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   const heya = world.heyas.get(heyaId);
   if (!heya) return "dormant";
 
-  const rivalriesState: RivalriesState | undefined = (world as any).rivalriesState;
+  const rivalriesState: RivalriesState | undefined = world.rivalriesState;
   if (!rivalriesState?.pairs) return "dormant";
 
   let maxHeat = 0;
@@ -173,13 +173,13 @@ function bandRikishiMomentum(m: number): "rising" | "steady" | "declining" {
 }
 
 function getStableMediaHeat(world: WorldState, heyaId: Id): number {
-  const mediaState = (world as any).mediaState;
+  const mediaState = world.mediaState;
   if (!mediaState?.heyaPressure) return 0;
   return mediaState.heyaPressure[heyaId] ?? 0;
 }
 
 function getRikishiMediaHeat(world: WorldState, rikishiId: Id): number {
-  const mediaState = (world as any).mediaState;
+  const mediaState = world.mediaState;
   if (!mediaState?.mediaHeat) return 0;
   return mediaState.mediaHeat[rikishiId] ?? 0;
 }

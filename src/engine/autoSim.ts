@@ -499,7 +499,7 @@ function checkStopCondition(
       // Supported shapes (any one is enough):
       // - world.scandals: Array<{ severity: "minor"|"major"; summary: string; year:number; bashoName?:BashoName }>
       // - world.eventLog: Array<{ type: string; severity?: string; summary?: string; ... }>
-      const anyWorld: any = world as any;
+      const anyWorld: any = world;
 
       const scandals: any[] = Array.isArray(anyWorld.scandals) ? anyWorld.scandals : [];
       const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
@@ -527,7 +527,7 @@ function checkStopCondition(
       // Supported shapes:
       // - world.retirements: Array<{ rikishiId: string; year:number; bashoName?:BashoName }>
       // - world.eventLog entries with type "retirement"
-      const anyWorld: any = world as any;
+      const anyWorld: any = world;
       const retirements: any[] = Array.isArray(anyWorld.retirements) ? anyWorld.retirements : [];
       const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
 

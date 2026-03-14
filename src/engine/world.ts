@@ -75,8 +75,8 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
   if (already) return world;
 
   // Use generateDaySchedule from the schedule module
-  if (typeof (schedule as any).generateDaySchedule === "function") {
-    (schedule as any).generateDaySchedule(world, basho, day, world.seed);
+  if (typeof schedule.generateDaySchedule === "function") {
+    schedule.generateDaySchedule(world, basho, day, world.seed);
   } else {
       // Basic fallback scheduling
       const rikishiIds = Array.from(world.rikishi.keys());
@@ -278,7 +278,7 @@ export function endBasho(world: WorldState): WorldState {
 
   const awards = determineSpecialPrizes(
     basho.matches, 
-    world.rikishi as any,
+    world.rikishi,
     yusho
   );
 
@@ -774,7 +774,7 @@ function runRetirements(world: WorldState): Record<string, number> {
   const vacanciesByHeyaId: Record<string, number> = {};
 
   for (const [id, r] of world.rikishi) {
-    const reason = checkRetirement(r as any, world.year, world.seed);
+    const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
       EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;

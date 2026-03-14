@@ -43,14 +43,14 @@ function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRik
  * }
  */
 function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> {
-  const w: any = world as any;
+  const w = world;
   if (!w.playerKnowledge) w.playerKnowledge = {};
   if (!w.playerKnowledge.scouting) w.playerKnowledge.scouting = {};
   return w.playerKnowledge.scouting as Record<string, ScoutedRikishi>;
 }
 
 function getWorldWeek(world: WorldState): number {
-  const w: any = world as any;
+  const w = world;
   // support multiple schemas
   if (typeof w.week === "number") return w.week;
   if (typeof w.currentWeek === "number") return w.currentWeek;
@@ -59,12 +59,12 @@ function getWorldWeek(world: WorldState): number {
 }
 
 function getPlayerHeyaId(world: WorldState): string | null {
-  const w: any = world as any;
+  const w = world;
   return (w.playerHeyaId ?? w.playerHeya ?? w.player?.heyaId ?? null) as string | null;
 }
 
 function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
-  const w: any = world as any;
+  const w = world;
   const map = w.rikishi;
   if (map && typeof map.get === "function") return map.get(rikishiId) || null;
   if (map && typeof map === "object") return map[rikishiId] || null;
@@ -111,7 +111,7 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
     return table[rikishiId];
   }
 
-  const isOwned = (truth as any).heyaId === playerHeyaId;
+  const isOwned = truth.heyaId === playerHeyaId;
   const obs = isOwned ? 100 : Math.max(0, baselineObservation);
 
   const created = createScoutedView(truth, playerHeyaId, obs, "none", currentWeek);

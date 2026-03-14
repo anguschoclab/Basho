@@ -628,7 +628,7 @@ export function generateNarrative(
   // Steps 5–10 from log
   let hasClimax = false;
 
-  const log = Array.isArray((result as any).log) ? ((result as any).log as BoutLogEntry[]) : [];
+  const log = Array.isArray(result.log) ? (result.log as BoutLogEntry[]) : [];
   for (const entry of log) {
     switch (entry.phase) {
       case "tachiai":

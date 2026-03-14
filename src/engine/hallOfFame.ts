@@ -186,7 +186,7 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
 // === HELPERS ===
 
 function getOrCreateHoF(world: WorldState): HallOfFameState {
-  const w = world as any;
+  const w = world;
   if (!w.hallOfFame) {
     w.hallOfFame = createEmptyHallOfFame();
   }
@@ -194,7 +194,7 @@ function getOrCreateHoF(world: WorldState): HallOfFameState {
 }
 
 export function getHallOfFame(world: WorldState): HallOfFameState {
-  return (world as any).hallOfFame || createEmptyHallOfFame();
+  return world.hallOfFame || createEmptyHallOfFame();
 }
 
 export function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {

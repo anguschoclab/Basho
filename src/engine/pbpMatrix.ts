@@ -67,10 +67,10 @@ export function validateDiversityGates(
 ): Array<{ context: string; bucket: string; count: number }> {
   const failures: Array<{ context: string; bucket: string; count: number }> = [];
   const sections: Record<string, Record<string, unknown[]>> = {
-    tachiai: lib.tachiai as any,
-    clinch: lib.clinch as any,
-    momentum: lib.momentum as any,
-    finish: lib.finish as any,
+    tachiai: lib.tachiai,
+    clinch: lib.clinch,
+    momentum: lib.momentum,
+    finish: lib.finish,
   };
   for (const [ctx, buckets] of Object.entries(sections)) {
     for (const [bucket, phrases] of Object.entries(buckets)) {

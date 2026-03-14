@@ -53,8 +53,8 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
     const r = world.rikishi.get(rid);
     if (!r) continue;
 
-    const status = (r as any).injuryStatus ?? (r as any).injury;
-    const injured = Boolean(status?.isInjured) || Boolean((r as any).injured);
+    const status = r.injuryStatus ?? r.injury;
+    const injured = Boolean(status?.isInjured) || Boolean(r.injured);
     if (!injured) continue;
 
     const sev = status?.severity ?? (status?.severityLabel ?? undefined);
@@ -301,8 +301,8 @@ export function tickWeek(world: WorldState): number {
     }
 
     // Risk indicator hook
-    if (!heya.riskIndicators) (heya as any).riskIndicators = { financial: false, governance: false, rivalry: false };
-    (heya.riskIndicators as any).welfare = w.complianceState !== "compliant" || w.welfareRisk >= 55;
+    if (!heya.riskIndicators) heya.riskIndicators = { financial: false, governance: false, rivalry: false };
+    heya.riskIndicators.welfare = w.complianceState !== "compliant" || w.welfareRisk >= 55;
 
     // Emit change event when risk moves materially
     if (Math.abs(riskUp) >= 8) {

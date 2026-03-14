@@ -513,7 +513,7 @@ export function onBoutResolved(
     isTitleStakes: !!result.isTitleStakes
   });
 
-  (world as any).rivalriesState = newState;
+  world.rivalriesState = newState;
 }
 
 /**
@@ -522,14 +522,14 @@ export function onBoutResolved(
 export function tickWeek(world: WorldState): void {
   const rivalriesState = ensureRivalriesState(world);
   const newState = applyRivalryWeeklyDecay(rivalriesState, world.week ?? 0);
-  (world as any).rivalriesState = newState;
+  world.rivalriesState = newState;
 }
 
 /**
  * Ensure rivalries state exists on world.
  */
 function ensureRivalriesState(world: WorldState): RivalriesState {
-  const w = world as any;
+  const w = world;
   if (!w.rivalriesState) {
     w.rivalriesState = createDefaultRivalriesState();
   }

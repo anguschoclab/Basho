@@ -173,7 +173,7 @@ export function onBoutResolved(
  * Each sponsor computes satisfaction; those below threshold churn out.
  */
 export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
-  const pool = (world as any).sponsorPool;
+  const pool = world.sponsorPool;
   if (!pool?.sponsors) return { churned: [], retained: 0 };
 
   const churned: string[] = [];
