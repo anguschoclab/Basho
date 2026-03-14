@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollText, ChevronRight } from "lucide-react";
-import { ClickableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry } from "@/engine/uiModels";
 
 const RANK_ORDER: Record<string, number> = {
@@ -76,7 +76,7 @@ export function BanzukeWidget() {
             <span className={`text-[10px] w-4 ${entry.side === "east" ? "text-east" : "text-west"}`}>
               {entry.side === "east" ? "E" : "W"}
             </span>
-            <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="flex-1 font-medium truncate" />
+            <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
             <span className="text-[10px] text-muted-foreground font-mono tabular-nums">{entry.record}</span>
             {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
           </div>
