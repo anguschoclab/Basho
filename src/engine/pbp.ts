@@ -15,7 +15,9 @@
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import { getVoiceMatrix } from "./pbpMatrix";
-import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
+import type { Side } from "./types/banzuke";
+import type { Stance, Style, TacticalArchetype } from "./types/combat";
+import type { BoutResult } from "./types/basho";
 import type { Advantage, Position } from "./bout";
 
 /** =========================

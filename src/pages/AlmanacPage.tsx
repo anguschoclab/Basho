@@ -23,7 +23,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { toWinRateAssessment, WIN_RATE_LABELS } from "@/engine/descriptorBands";
 import { generateHeyaRecord, type HeyaRecord } from "@/engine/almanac";
-import type { Rikishi, Heya } from "@/engine/types";
+import type { Rikishi } from "../../types/rikishi";
+import type { Heya } from "../../types/heya";
 import {
   Building2,
   ChevronRight,

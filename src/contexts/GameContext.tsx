@@ -2,7 +2,9 @@
 // Types, reducer, and helpers split into sibling modules.
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
-import type { WorldState, Rikishi, Heya } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";

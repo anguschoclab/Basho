@@ -7,7 +7,10 @@
  */
 
 import { rngFromSeed, SeededRNG } from "./rng";
-import { Rikishi, Rank, RikishiStats, TacticalArchetype, WorldState } from "./types";
+import { Rikishi, RikishiStats } from "./types/rikishi";
+import { Rank } from "./types/banzuke";
+import { TacticalArchetype } from "./types/combat";
+import { WorldState } from "./types/world";
 import { generateRikishiName } from "./shikona";
 
 // --- RETIREMENT LOGIC ---

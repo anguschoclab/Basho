@@ -1,7 +1,9 @@
 // banzuke.ts
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
 
-import type { Rank, Division, RankPosition, Rikishi, BoutResult, MatchSchedule } from "./types";
+import type { Rank, Division, RankPosition } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
+import type { BoutResult, MatchSchedule } from "./types/basho";
 import { KIMARITE_REGISTRY } from "./kimarite";
 
 // === RANK HIERARCHY ===

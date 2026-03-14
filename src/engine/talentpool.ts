@@ -7,23 +7,13 @@
 // - Deterministic generation from world seed.
 // - Supports domestic (high school / university) and foreign pools.
 
-import type {
-  WorldState,
-  TalentPoolWorldState,
-  TalentPoolType,
-  TalentPoolState,
-  TalentCandidate,
-  VisibilityBand,
-  SuitorRef,
-  SuitorInterestBand,
-  SuitorOfferType,
-  Rank,
-  Rikishi,
-  TacticalArchetype,
-  Style,
-  OyakataTraits,
-  Id
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { TalentPoolWorldState, TalentPoolType, TalentPoolState, TalentCandidate, VisibilityBand, SuitorRef, SuitorInterestBand, SuitorOfferType } from "./types/talent";
+import type { Rank } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
+import type { TacticalArchetype, Style } from "./types/combat";
+import type { OyakataTraits } from "./types/oyakata";
+import type { Id } from "./types/common";
 
 import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";

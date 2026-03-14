@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "../overflow";
 import { generateWorld } from "../worldgen";
-import type { WorldState, Rikishi } from "../types";
+import type { WorldState } from "../types/world";
+import type { Rikishi } from "../types/rikishi";
 import { ensureTalentPools } from "../talentpool";
 
 describe("Hard-Cap Roster Overflow Resolution (C4.3)", () => {

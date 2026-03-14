@@ -15,7 +15,9 @@ import {
   type FacilityAxis,
 } from "../facilities";
 import { tickWeek as economicsTickWeek } from "../economics";
-import type { WorldState, Heya, Oyakata } from "../types";
+import type { WorldState } from "../types/world";
+import type { Heya } from "../types/heya";
+import type { Oyakata } from "../types/oyakata";
 
 // ============================================================================
 // TEST HELPERS

@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-react";
-import type { WorldState, Heya, ComplianceState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { ComplianceState } from "@/engine/types/economy";
 import { ensureHeyaWelfareState } from "@/engine/welfare";
 import { buildPerceptionSnapshot } from "@/engine/perception";
 import type { WelfareRiskBand, MoraleBand, RosterStrengthBand } from "@/engine/perception";

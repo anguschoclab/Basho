@@ -7,7 +7,7 @@
 //   and Array.from(...) to avoid Map iterator pitfalls in UI code.
 // =======================================================
 
-import type { WorldState } from "./types";
+import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
 

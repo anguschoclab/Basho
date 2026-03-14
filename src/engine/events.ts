@@ -7,16 +7,9 @@
  * - Provides helper factories for common domains (injury, governance, recruitment, etc.).
  */
 
-import type {
-  WorldState,
-  EngineEvent,
-  EventsState,
-  EventCategory,
-  EventPhase,
-  EventImportance,
-  EventScope,
-  Id
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
+import type { Id } from "./types/common";
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
 function stableHash(s: string): string {

@@ -11,7 +11,10 @@ import {
   getSaveSlotInfos,
   quickSave
 } from "../saveload";
-import { WorldState, Rikishi, Heya, Oyakata } from "../types";
+import { WorldState } from "../types/world";
+import { Rikishi } from "../types/rikishi";
+import { Heya } from "../types/heya";
+import { Oyakata } from "../types/oyakata";
 
 // Setup localStorage mock using Vitest API
 const localStorageMock = (() => {

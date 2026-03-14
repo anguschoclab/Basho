@@ -12,7 +12,9 @@
 // Engine position vocabulary:
 // - "front" | "lateral" | "rear"
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { BoutResult, BoutLogEntry, Rikishi, BashoName, Stance } from "./types";
+import type { BoutResult, BoutLogEntry, BashoName } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
+import type { Stance } from "./types/combat";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 

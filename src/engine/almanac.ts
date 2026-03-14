@@ -2,7 +2,12 @@
 // Almanac System - Historical Memory per Constitution §A5 and §4
 // Tracks rikishi career records, heya records, and historical snapshots
 
-import type { WorldState, Rikishi, Heya, BashoResult, BashoName, Division, Rank, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Rikishi } from "./types/rikishi";
+import type { Heya } from "./types/heya";
+import type { BashoResult, BashoName } from "./types/basho";
+import type { Division, Rank } from "./types/banzuke";
+import type { Id } from "./types/common";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 

@@ -9,7 +9,7 @@
 // - Optional: shows a friendly empty-state
 
 import { cn } from "@/lib/utils";
-import type { BoutLogEntry } from "@/engine/types";
+import type { BoutLogEntry } from "@/engine/types/basho";
 
 interface BoutLogProps {
   log?: BoutLogEntry[] | null;

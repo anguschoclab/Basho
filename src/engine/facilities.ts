@@ -16,7 +16,11 @@
  *   - FacilitiesBand is recalculated after every change
  */
 
-import type { WorldState, Heya, Id, FacilitiesBand, OyakataTraits } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { Id } from "./types/common";
+import type { FacilitiesBand } from "./types/narrative";
+import type { OyakataTraits } from "./types/oyakata";
 import { logEngineEvent } from "./events";
 
 // === CONSTANTS ===

@@ -1,5 +1,5 @@
 import type { UIRosterEntry } from "@/engine/uiModels";
-import type { BanzukeSnapshot } from "@/engine/types";
+import type { BanzukeSnapshot } from "@/engine/types/banzuke";
 import { rankScore } from "./RankChangeIndicator";
 
 export interface RankRow {

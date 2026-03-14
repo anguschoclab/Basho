@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
-import type { Rikishi, WorldState } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 
 interface IntaiCeremonyProps {

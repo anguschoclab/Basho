@@ -22,7 +22,7 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types";
+import type { WorldState, CyclePhase } from "./types/world";
 import { EventBus, logEngineEvent } from "./events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
 import { autosave } from "./saveload";

@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../bout";
-import type { Rikishi, BashoState, BoutResult, TacticalArchetype } from "../types";
+import type { Rikishi } from "../types/rikishi";
+import type { BashoState, BoutResult } from "../types/basho";
+import type { TacticalArchetype } from "../types/combat";
 
 function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {

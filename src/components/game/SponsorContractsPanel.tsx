@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, AlertTriangle, Clock, Star, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { StableName } from "@/components/ClickableName";
-import type { WorldState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
 import type { Sponsor, SponsorRelationship, Koenkai, SponsorTier } from "@/engine/sponsors";
 
 const TIER_LABELS: Record<SponsorTier, { label: string; color: string }> = {

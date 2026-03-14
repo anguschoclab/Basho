@@ -2,7 +2,7 @@
 // Includes 5 "bout result" outcomes separately (not kimarite)
 // Source list: Japan Sumo Association kimarite page.  [oai_citation:1‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
 
-import type { Style, Stance, TacticalArchetype } from "./types";
+import type { Style, Stance, TacticalArchetype } from "./types/combat";
 
 export interface Kimarite {
   id: string;

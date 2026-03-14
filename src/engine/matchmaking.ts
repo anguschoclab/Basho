@@ -8,7 +8,9 @@
 // - Produces scored candidate pairs; schedule.ts builds final set.
 // =======================================================
 import { rngFromSeed, SeededRNG } from "./rng";
-import type { BashoState, Division, Rikishi, Side } from "./types";
+import type { BashoState } from "./types/basho";
+import type { Division, Side } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
 
 export interface MatchPairing {
   eastId: string;

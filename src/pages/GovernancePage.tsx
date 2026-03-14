@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning } from "lucide-react";
-import type { GovernanceStatus, GovernanceRuling, Heya } from "@/engine/types";
+import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
+import type { Heya } from "../../types/heya";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
 import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 

@@ -14,7 +14,10 @@
 // - sponsors.ts: high coverage can raise sponsor tier chances
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Id, WorldState, BoutResult, BashoName, Division, BashoState } from "./types";
+import type { Id } from "./types/common";
+import type { WorldState } from "./types/world";
+import type { BoutResult, BashoName, BashoState } from "./types/basho";
+import type { Division } from "./types/banzuke";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
 
 /** =========================

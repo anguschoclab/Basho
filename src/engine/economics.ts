@@ -4,7 +4,11 @@
 // Aligned with Institutional Economy V2.0 Spec.
 
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { WorldState, Heya, BoutResult, MatchSchedule, Rikishi, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { BoutResult, MatchSchedule } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
+import type { Id } from "./types/common";
 import { reportScandal } from "./governance";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";

@@ -14,7 +14,10 @@
 //   - Snapshots stored in world.hallOfFame (persisted across saves)
 // =======================================================
 
-import type { WorldState, BashoResult, Id, Rank } from "./types";
+import type { WorldState } from "./types/world";
+import type { BashoResult } from "./types/basho";
+import type { Id } from "./types/common";
+import type { Rank } from "./types/banzuke";
 
 // === TYPES ===
 

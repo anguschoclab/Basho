@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { makeBashoKey, createEmptyHistoryIndex, indexBashoResult, getBashoSummary, listBashoSummaries, getRikishiHistory } from "../historyIndex";
 import { generateWorld } from "../worldgen";
-import type { BashoResult } from "../types";
+import type { BashoResult } from "../types/basho";
 
 describe("History Indexing", () => {
   it("should create empty index", () => {

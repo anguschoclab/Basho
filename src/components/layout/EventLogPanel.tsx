@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Wrench,
 } from "lucide-react";
-import type { EngineEvent, WorldState } from "@/engine/types";
+import type { EngineEvent } from "@/engine/types/events";
+import type { WorldState } from "@/engine/types/world";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },

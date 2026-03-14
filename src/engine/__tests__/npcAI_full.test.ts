@@ -3,7 +3,11 @@ import { determineNPCStyleBias, getManagerPersona, makeNPCWeeklyDecision } from 
 import { generateOyakata, OYAKATA_ARCHETYPES, getArchetypeDescription } from "../oyakataPersonalities";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "../oyakataStylePreferences";
 import { ensureHeyaWelfareState, tickWeek as welfareTickWeek } from "../welfare";
-import type { WorldState, Rikishi, Heya, Oyakata, RikishiStats, OyakataArchetype, WelfareState } from "../types";
+import type { WorldState } from "../types/world";
+import type { Rikishi, RikishiStats } from "../types/rikishi";
+import type { Heya } from "../types/heya";
+import type { Oyakata, OyakataArchetype } from "../types/oyakata";
+import type { WelfareState } from "../types/economy";
 
 // ── helpers ──
 
