@@ -559,7 +559,7 @@ describe("Talent Pool: Reinjection & Retirement", () => {
     const cid = `cand-pro-1`;
 
     expect(tp.candidates[cid]).toBeDefined();
-    expect(tp.candidates[cid].visibilityBand).toBe("scouted");
+    expect(tp.candidates[cid].visibilityBand).toBe("public");
     expect(tp.candidates[cid].tags).toContain("former_pro");
     expect(tp.pools.university.candidatesVisible).toContain(cid);
 
