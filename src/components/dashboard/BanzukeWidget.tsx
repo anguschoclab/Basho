@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollText, ChevronRight } from "lucide-react";
-import { ClickableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry } from "@/engine/uiModels";
 
 const RANK_ORDER: Record<string, number> = {
@@ -25,7 +25,6 @@ const RANK_BG: Record<string, string> = {
   ozeki: "bg-silver/5",
 };
 
-/** banzuke widget. */
 export function BanzukeWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -57,7 +56,7 @@ export function BanzukeWidget() {
           <ScrollText className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Banzuke</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/banzuke" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/banzuke")} className="h-6 text-xs gap-1 text-muted-foreground">
           Full Rankings <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
@@ -76,7 +75,7 @@ export function BanzukeWidget() {
             <span className={`text-[10px] w-4 ${entry.side === "east" ? "text-east" : "text-west"}`}>
               {entry.side === "east" ? "E" : "W"}
             </span>
-            <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="flex-1 font-medium truncate" />
+            <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
             <span className="text-[10px] text-muted-foreground font-mono tabular-nums">{entry.record}</span>
             {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
           </div>
