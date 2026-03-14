@@ -14,9 +14,10 @@ describe("AutoSim", () => {
 
     const config: AutoSimConfig = {
         duration: { type: "basho", count: 1 },
-        stopConditions: ["none"],
+        stopConditions: ["never"],
         verbosity: "minimal",
-        pauseForScandals: false
+        delegationPolicy: "balanced",
+        observerMode: true,
     };
 
     const result = runAutoSim(world, config);

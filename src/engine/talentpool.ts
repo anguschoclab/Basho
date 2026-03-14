@@ -253,12 +253,12 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
     birthYear: rikishi.birthYear,
     originRegion: rikishi.origin || "Unknown",
     nationality: rikishi.nationality,
-    visibilityBand: "scouted", // Already known since they were a rikishi
+    visibilityBand: "public", // Already known since they were a rikishi
     reputationSeed: rikishi.talentSeed ?? 50,
     tags: ["former_pro"],
     availabilityState: "available",
     competingSuitors: [],
-    archetype: rikishi.archetype || "pusher",
+    archetype: rikishi.archetype || "oshi_specialist",
     style: rikishi.style || "oshi",
     heightPotentialCm: rikishi.height,
     weightPotentialKg: rikishi.weight,

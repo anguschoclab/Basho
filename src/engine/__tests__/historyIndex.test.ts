@@ -16,14 +16,14 @@ describe("History Indexing", () => {
   });
 
   it("should index a basho result and query it", () => {
-    const world = generateWorld("test-history");
+    const world = generateWorld("test-history") as any;
     world.historyIndex = createEmptyHistoryIndex();
     world.year = 2025;
     world.bashoNumber = 1;
     world.currentBashoName = "hatsu";
 
     // Simulate a basho result payload
-    const bashoResult: BashoResult = {
+    const bashoResult = {
       id: "hatsu-2025",
       bashoName: "hatsu",
       year: 2025,
@@ -43,7 +43,7 @@ describe("History Indexing", () => {
         side: "east",
         boutResults: []
       }]
-    };
+    } as any;
 
     indexBashoResult(world, bashoResult);
 
