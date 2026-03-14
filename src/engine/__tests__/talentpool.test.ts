@@ -27,7 +27,10 @@ import {
   recordObservation,
   type ScoutedRikishi,
 } from "../scouting";
-import type { WorldState, Heya, Oyakata, TalentCandidate } from "../types";
+import type { WorldState } from "../types/world";
+import type { Heya } from "../types/heya";
+import type { Oyakata } from "../types/oyakata";
+import type { TalentCandidate } from "../types/talent";
 
 // ============================================================================
 // TEST HELPERS

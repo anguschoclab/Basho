@@ -8,7 +8,10 @@
 // - JSON-safe persistence: store as Records/arrays; no Maps/Sets in saved state
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Id, Side, WorldState, BoutResult } from "./types";
+import type { Id } from "./types/common";
+import type { Side } from "./types/banzuke";
+import type { WorldState } from "./types/world";
+import type { BoutResult } from "./types/basho";
 
 /** =========================
  *  Core Types

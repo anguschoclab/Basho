@@ -27,15 +27,10 @@
 // - BashoResult may have nextBanzuke?: BanzukeSnapshot
 // - If you have richer performance logs elsewhere, you can extend `RikishiHistoryEntry`.
 
-import type {
-  Id,
-  WorldState,
-  Division,
-  RankPosition,
-  BashoName,
-  BanzukeSnapshot,
-  BashoResult
-} from "./types";
+import type { Id } from "./types/common";
+import type { WorldState } from "./types/world";
+import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
+import type { BashoName, BashoResult } from "./types/basho";
 
 /** Canon key for a basho (unique) */
 export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;

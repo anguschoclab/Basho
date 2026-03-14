@@ -3,7 +3,9 @@
 // Keeps fog-of-war meaningful by persisting observations, investment, and decay.
 // Designed to be engine-only (UI reads via accessors).
 
-import type { WorldState, Id, Rikishi } from "./types";
+import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
 import {
   type ScoutedRikishi,
   type ScoutingInvestment,

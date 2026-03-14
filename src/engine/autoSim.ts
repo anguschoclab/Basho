@@ -10,7 +10,8 @@
 // - Promotions/demotions are NOT done via naive static mapping; this module now exposes a deterministic hook
 //   to let your real banzuke system apply rank changes (required for canon compliance)
 import { rngFromSeed, SeededRNG } from "./rng";
-import type { WorldState, BashoName, BoutResult } from "./types";
+import type { WorldState } from "./types/world";
+import type { BashoName, BoutResult } from "./types/basho";
 import { simulateBout } from "./bout";
 import { getNextBasho, BASHO_CALENDAR } from "./calendar";
 import {

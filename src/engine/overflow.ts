@@ -1,4 +1,7 @@
-import { WorldState, Id, Rikishi, Heya } from "./types";
+import { WorldState } from "./types/world";
+import { Id } from "./types/common";
+import { Rikishi } from "./types/rikishi";
+import { Heya } from "./types/heya";
 import { logEngineEvent } from "./events";
 import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./talentpool";
 

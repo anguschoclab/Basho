@@ -8,7 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import type { Rikishi, WorldState } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 
 interface ProgressionTrackerProps {

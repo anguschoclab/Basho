@@ -7,7 +7,7 @@ import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
 import { BASHO_CALENDAR, getSeasonalFlavor } from "@/engine/calendar";
-import type { BashoName } from "@/engine/types";
+import type { BashoName } from "@/engine/types/basho";
 
 const BASHO_NAMES: Record<string, string> = {
   hatsu: "January", haru: "March", natsu: "May",

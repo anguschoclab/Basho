@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Newspaper, Mic, Camera, MessageSquare, TrendingUp, TrendingDown } from "lucide-react";
-import type { WorldState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
 
 interface PressQuestion {
   id: string;

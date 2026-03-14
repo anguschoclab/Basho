@@ -5,7 +5,8 @@ import {
   DEFAULT_MATCHMAKING_RULES,
   type MatchPairing
 } from "../matchmaking";
-import type { BashoState, Rikishi } from "../types";
+import type { BashoState } from "../types/basho";
+import type { Rikishi } from "../types/rikishi";
 
 function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {

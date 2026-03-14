@@ -8,7 +8,9 @@
  */
 
 import { rngFromSeed, SeededRNG } from "./rng";
-import { Rikishi, H2HRecord, BoutResult } from "./types";
+import { Rikishi } from "./types/rikishi";
+import { H2HRecord } from "./types/records";
+import { BoutResult } from "./types/basho";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.

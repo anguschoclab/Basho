@@ -3,7 +3,7 @@
 // Used to generate diverse and believing opponents.
 
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Oyakata, OyakataArchetype, OyakataTraits } from "./types";
+import type { Oyakata, OyakataArchetype, OyakataTraits } from "./types/oyakata";
 
 export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {
   traditionalist: {

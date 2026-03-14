@@ -17,7 +17,7 @@ import {
   type BashoPerformance,
   type OzekiKadobanMap,
 } from "../banzuke";
-import type { RankPosition } from "../types";
+import type { RankPosition } from "../types/banzuke";
 
 describe("Banzuke: Rank Hierarchy", () => {
   it("should have correct tier ordering (lower = higher rank)", () => {

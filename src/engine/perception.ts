@@ -5,11 +5,14 @@
 // No raw weights, injury probabilities, or secret thresholds.
 // =======================================================
 
-import type {
-  WorldState, Id, Heya, Rikishi, Style, Rank,
-  StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType,
-  ComplianceState
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { Heya } from "./types/heya";
+import type { Rikishi } from "./types/rikishi";
+import type { Style } from "./types/combat";
+import type { Rank } from "./types/banzuke";
+import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
+import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
 
 // === Band types for perception ===

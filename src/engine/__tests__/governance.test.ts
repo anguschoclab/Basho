@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
+import { mock } from "bun:test";
 
 // Mock rng.ts entirely
-vi.mock("../rng", () => ({
+mock.module("../rng", () => ({
   rngFromSeed: () => ({
     next: () => 0.5,
     int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
@@ -19,12 +20,13 @@ vi.mock("../rng", () => ({
 }));
 
 // Mock media.ts to avoid its dependencies
-vi.mock("../media", () => ({
+mock.module("../media", () => ({
   generateScandalHeadline: () => null,
 }));
 
 import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
-import type { WorldState, Heya } from "../types";
+import type { WorldState } from "../types/world";
+import type { Heya } from "../types/heya";
 
 function makeHeya(overrides: Partial<Heya> = {}): Heya {
   return {

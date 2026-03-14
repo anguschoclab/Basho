@@ -8,16 +8,10 @@
 // =======================================================
 
 import { rngFromSeed, SeededRNG } from "./rng";
-import type {
-  Rikishi,
-  BoutResult,
-  BoutLogEntry,
-  BashoState,
-  BashoName,
-  Side,
-  Stance,
-  TacticalArchetype
-} from "./types";
+import type { Rikishi } from "./types/rikishi";
+import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "./types/basho";
+import type { Side } from "./types/banzuke";
+import type { Stance, TacticalArchetype } from "./types/combat";
 
 import { RANK_HIERARCHY } from "./banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "./kimarite";

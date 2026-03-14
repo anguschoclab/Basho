@@ -12,7 +12,7 @@ import {
   type TrainingFocus,
   type RecoveryEmphasis,
 } from "@/engine/training";
-import type { TrainingProfile } from "@/engine/types";
+import type { TrainingProfile } from "@/engine/types/training";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
 const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];

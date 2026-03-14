@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
-import type { WorldState, Rikishi } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
   champion: "text-amber-400 border-amber-500/40",

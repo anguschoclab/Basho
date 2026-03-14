@@ -8,7 +8,10 @@
 // - Emits events via events.ts
 // =======================================================
 
-import type { WorldState, Heya, WelfareState, ComplianceState, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { WelfareState, ComplianceState } from "./types/economy";
+import type { Id } from "./types/common";
 import { rngForWorld } from "./rng";
 import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";

@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 
-import type { TalentPoolType, TalentCandidate } from "@/engine/types";
+import type { TalentPoolType, TalentCandidate } from "../../types/talent";
 import * as talentpool from "@/engine/talentpool";
 
 function poolLabel(pool: TalentPoolType): string {

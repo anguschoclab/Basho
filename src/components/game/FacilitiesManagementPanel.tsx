@@ -13,7 +13,9 @@ import {
   Coins,
   ArrowUp,
 } from "lucide-react";
-import type { Heya, WorldState, FacilitiesBand } from "@/engine/types";
+import type { Heya } from "@/engine/types/heya";
+import type { WorldState } from "@/engine/types/world";
+import type { FacilitiesBand } from "@/engine/types/narrative";
 import {
   getUpgradeCostEstimate,
   getMonthlyMaintenanceCost,

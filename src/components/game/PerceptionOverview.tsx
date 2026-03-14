@@ -10,7 +10,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, Swords, User } from "lucide-react";
-import type { WorldState, Rikishi, Rank } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
 import { buildPerceptionSnapshot, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
 
 const STATURE_COLOR: Record<string, string> = {

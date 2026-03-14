@@ -5,7 +5,8 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { advanceOneDay, advanceDays, enterPostBasho, enterInterim } from "../dailyTick";
-import type { WorldState, CyclePhase, Heya } from "../types";
+import type { WorldState, CyclePhase } from "../types/world";
+import type { Heya } from "../types/heya";
 
 // Helper to create a minimal world state for testing
 function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {

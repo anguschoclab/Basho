@@ -8,10 +8,11 @@
 
 import { rngForWorld } from "./rng";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
-import type {
-  WorldState, Style, OyakataArchetype, Oyakata, Id,
-  TrainingIntensity, TrainingFocus, RecoveryEmphasis
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { Style } from "./types/combat";
+import type { OyakataArchetype, Oyakata } from "./types/oyakata";
+import type { Id } from "./types/common";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
 import {

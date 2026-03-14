@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Scale, Users, Star, Scroll } from "lucide-react";
-import type { Rikishi, WorldState } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 
 interface DeliberationProps {
   rikishi: Rikishi;

@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
-import type { Rikishi, WorldState } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 import { toInjuryEvent, clearInjury } from "@/engine/injuries";
 
 interface InjuredRikishiInfo {

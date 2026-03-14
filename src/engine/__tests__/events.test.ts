@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { queryEvents, logEngineEvent, ensureEventsState, tickWeek } from "../events";
-import type { WorldState, EngineEvent, EventCategory, EventScope, EventImportance } from "../types";
+import type { WorldState } from "../types/world";
+import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
 function createMockWorld(): WorldState {
   return {

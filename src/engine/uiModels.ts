@@ -8,10 +8,13 @@
  * Usage: import { projectRikishi } from "@/engine/uiModels" in any page/component.
  */
 
-import type {
-  Id, Rikishi, Heya, WorldState, Rank, Division, Side,
-  Style, TacticalArchetype, BoutResult, BashoResult,
-} from "./types";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
+import type { Heya } from "./types/heya";
+import type { WorldState } from "./types/world";
+import type { Rank, Division, Side } from "./types/banzuke";
+import type { Style, TacticalArchetype } from "./types/combat";
+import type { BoutResult, BashoResult } from "./types/basho";
 import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";

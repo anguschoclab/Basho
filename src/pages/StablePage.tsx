@@ -22,7 +22,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand, Rikishi } from "@/engine/types";
+import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "../../types/narrative";
+import type { Rikishi } from "../../types/rikishi";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 import {
   INTENSITY_EFFECTS,

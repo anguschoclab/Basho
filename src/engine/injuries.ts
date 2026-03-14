@@ -14,7 +14,10 @@
 //   while still providing "compat mode" helpers that update those fields.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Id, Rikishi, WorldState, Heya } from "./types";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
 import type { TrainingProfile } from "./training";
 import { computeTrainingMultipliers, getCareerPhase, PHASE_EFFECTS } from "./training";
 import { logEngineEvent } from "./events";

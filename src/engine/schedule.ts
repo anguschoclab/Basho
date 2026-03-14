@@ -4,7 +4,10 @@
 // Uses matchmaking.ts for candidate generation and scoring.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { BashoState, Division, MatchSchedule, Rikishi, WorldState } from "./types";
+import type { BashoState, MatchSchedule } from "./types/basho";
+import type { Division } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
+import type { WorldState } from "./types/world";
 import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
 export interface DivisionScheduleConfig {

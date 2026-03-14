@@ -1,5 +1,5 @@
 // Game Context Helpers — autosave signal + match-day projection
-import type { WorldState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
 import { autosave as rawAutosave } from "@/engine/saveload";
 import { signalAutosave } from "@/hooks/useAutosaveIndicator";
 import { getAutosaveEnabled } from "@/pages/SettingsPage";

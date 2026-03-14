@@ -11,7 +11,7 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types";
+import type { WorldState, CyclePhase } from "./types/world";
 import { advanceOneDay, type DailyTickReport } from "./dailyTick";
 import { queryEvents } from "./events";
 import type { UIDigest, DigestSection, DigestItem } from "./uiDigest";

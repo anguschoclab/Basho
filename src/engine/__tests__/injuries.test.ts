@@ -14,7 +14,9 @@ import {
   type InjuriesState,
 } from "../injuries";
 import { rngFromSeed } from "../rng";
-import type { Rikishi, WorldState, Heya, RikishiStats } from "../types";
+import type { Rikishi, RikishiStats } from "../types/rikishi";
+import type { WorldState } from "../types/world";
+import type { Heya } from "../types/heya";
 
 // ── helpers ──
 

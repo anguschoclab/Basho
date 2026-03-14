@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Swords, ChevronRight } from "lucide-react";
 import { ClickableName } from "@/components/ClickableName";
-import type { MatchSchedule, WorldState } from "@/engine/types";
+import type { MatchSchedule } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
 
 interface PlayoffBracketProps {
   matches: MatchSchedule[];

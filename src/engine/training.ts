@@ -10,20 +10,11 @@
  * - Attribute Evolution (Buffered -> Consolidated)
  */
 
-import type { 
-  Rikishi, 
-  WorldState, 
-  Id, 
-  TrainingProfile, 
-  BeyaTrainingState, 
-  IndividualFocus, 
-  TrainingIntensity, 
-  TrainingFocus, 
-  RecoveryEmphasis,
-  IndividualFocusType,
-  RikishiStats,
-  Heya
-} from './types';
+import type { Rikishi, RikishiStats } from "./types/rikishi";
+import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { TrainingProfile, BeyaTrainingState, IndividualFocus, TrainingIntensity, TrainingFocus, RecoveryEmphasis, IndividualFocusType } from "./types/training";
+import type { Heya } from "./types/heya";
 import { rngFromSeed } from './rng';
 import { EventBus } from './events';
 

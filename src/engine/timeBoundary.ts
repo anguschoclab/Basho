@@ -12,7 +12,7 @@
 // used by some consumers.
 // =======================================================
 
-import type { WorldState } from "./types";
+import type { WorldState } from "./types/world";
 import * as scouting from "./scoutingStore";
 import * as training from "./training";
 import * as injuries from "./injuries";

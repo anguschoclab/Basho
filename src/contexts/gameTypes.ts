@@ -1,5 +1,6 @@
 // Game State Types & Initial State
-import type { WorldState, BoutResult } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutResult } from "@/engine/types/basho";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
 

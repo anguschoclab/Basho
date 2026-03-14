@@ -3,7 +3,9 @@
 // Manages Scandal Accumulation, Status Degradation, and Institutional Sanctions.
 // Aligned with Governance V1.3 Spec.
 
-import type { WorldState, Heya, GovernanceStatus, GovernanceRuling } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { GovernanceStatus, GovernanceRuling } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateScandalHeadline } from "./media";
 

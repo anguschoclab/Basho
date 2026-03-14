@@ -12,21 +12,14 @@
 // - This module does NOT import from index.ts (barrel). Leaf import only.
 // - This keeps migrations "non-lossy": we never delete unknown keys; we only fill missing required ones.
 
-import type {
-  WorldState,
-  Heya,
-  Rikishi,
-  Oyakata,
-  BashoState,
-  SaveVersion,
-  BashoName,
-  Id,
-  SaveGame,
-  SerializedWorldState,
-  SerializedBashoState,
-  CyclePhase
-} from "./types";
-import { CURRENT_SAVE_VERSION } from "./types";
+import type { WorldState, CyclePhase } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { Rikishi } from "./types/rikishi";
+import type { Oyakata } from "./types/oyakata";
+import type { BashoState, BashoName } from "./types/basho";
+import type { SaveVersion, SaveGame, SerializedWorldState, SerializedBashoState } from "./types/save";
+import type { Id } from "./types/common";
+import { CURRENT_SAVE_VERSION } from "./types/save";
 
 // === SAVE VERSION ===
 export const CURRENT_SAVE_VERSION_LOCAL: SaveVersion = CURRENT_SAVE_VERSION;

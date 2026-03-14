@@ -10,7 +10,7 @@
 // NOTE:
 // If you want to override a specific basho start day, set `startDay` in BASHO_CALENDAR[name].
 
-import type { BashoName, BashoInfo } from "./types";
+import type { BashoName, BashoInfo } from "./types/basho";
 
 // === BASHO CALENDAR ===
 //

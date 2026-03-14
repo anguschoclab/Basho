@@ -9,12 +9,14 @@
  */
 
 import { rngFromSeed } from "./rng";
-import {
-  WorldState, Rikishi, Heya, Oyakata, 
-  Rank, TacticalArchetype, StatureBand, PrestigeBand, 
-  FacilitiesBand, KoenkaiBandType, OyakataArchetype, RunwayBand,
-  BashoName, Division, RikishiStats, Side, BashoState
-} from "./types";
+import { WorldState } from "./types/world";
+import { Rikishi, RikishiStats } from "./types/rikishi";
+import { Heya } from "./types/heya";
+import { Oyakata, OyakataArchetype } from "./types/oyakata";
+import { Rank, Division, Side } from "./types/banzuke";
+import { TacticalArchetype } from "./types/combat";
+import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./types/narrative";
+import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./rng";
 import { ensureTalentPools } from "./talentpool";

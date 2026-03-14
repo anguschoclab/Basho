@@ -8,7 +8,9 @@ import {
   buildRivalryDigest,
   getRivalryBoutModifiers
 } from "../rivalries";
-import { WorldState, Rikishi, BoutResult } from "../types";
+import { WorldState } from "../types/world";
+import { Rikishi } from "../types/rikishi";
+import { BoutResult } from "../types/basho";
 
 function createMockWorld(): WorldState {
   return {

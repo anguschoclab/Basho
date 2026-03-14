@@ -6,7 +6,7 @@ import {
   Newspaper, Trophy, Swords, HeartPulse, GraduationCap, Coins, Star,
   Search, MessageCircle, AlertTriangle, Scale,
 } from "lucide-react";
-import type { EngineEvent } from "@/engine/types";
+import type { EngineEvent } from "@/engine/types/events";
 
 const CAT_ICON: Record<string, any> = {
   match: Swords, basho: Trophy, training: GraduationCap,

@@ -8,7 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
 import { toTraitBand, TRAIT_LABELS, toScandalBand, SCANDAL_LABELS } from "@/engine/descriptorBands";
-import type { Heya, WorldState } from "@/engine/types";
+import type { Heya } from "@/engine/types/heya";
+import type { WorldState } from "@/engine/types/world";
 import { getStatusLabel } from "@/engine/governance";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
 

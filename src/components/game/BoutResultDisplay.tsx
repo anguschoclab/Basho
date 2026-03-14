@@ -2,7 +2,8 @@
 // Supports kimarite/kimariteId/kimariteName fields across engine revisions
 
 import { cn } from "@/lib/utils";
-import type { BoutResult, Rikishi } from "@/engine/types";
+import type { BoutResult } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { Badge } from "@/components/ui/badge";
 import { getKimarite } from "@/engine/kimarite";
 import { RikishiName } from "@/components/ClickableName";
