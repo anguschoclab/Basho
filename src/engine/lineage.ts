@@ -23,7 +23,7 @@ export function ensureLineage(world: WorldState): LineageEdge[] {
 
 export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): string {
   if (menteeId === mentorId) return 'Cannot mentor self.';
-
+  
   const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
   const mentee = rikishiMap.get(menteeId);
   const mentor = rikishiMap.get(mentorId);
@@ -47,11 +47,11 @@ export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): str
     mentor.menteeIds.push(menteeId);
   }
 
-  world.lineage.push({
-    mentorId: mentorId,
-    menteeId: menteeId,
-    sinceYear: world.year,
-    sinceWeek: world.week
+  world.lineage.push({ 
+    mentorId: mentorId, 
+    menteeId: menteeId, 
+    sinceYear: world.year, 
+    sinceWeek: world.week 
   });
 
   // Automatically seed a mentor_student rivalry
