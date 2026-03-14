@@ -78,10 +78,10 @@ function makeWorld(heyaOverrides: Partial<Heya> = {}, opts: { playerOwned?: bool
 
   return {
     seed: 42,
-    year: 2024,
+    year: 2025,
     week: 10,
     dayIndexGlobal: 70,
-    calendar: { year: 2024, month: 3, currentDay: 15, currentWeek: 10 },
+    calendar: { year: 2025, month: 3, currentDay: 15, currentWeek: 10 },
     cyclePhase: "interim",
     currentBashoName: "haru",
     currentBasho: null,

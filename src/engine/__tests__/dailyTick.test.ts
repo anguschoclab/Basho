@@ -30,11 +30,11 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
 
   return {
     seed: 12345,
-    year: 2024,
+    year: 2025,
     week: 1,
     dayIndexGlobal: 0,
     calendar: {
-      year: 2024,
+      year: 2025,
       month: 1,
       currentDay: 1,
       currentWeek: 1
@@ -127,7 +127,7 @@ describe("Daily Tick: Calendar Advancement", () => {
 
   it("should roll over month when days exceed month length", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 1, currentDay: 31, currentWeek: 5 }
+      calendar: { year: 2025, month: 1, currentDay: 31, currentWeek: 5 }
     });
     
     const report = advanceOneDay(world);
@@ -139,20 +139,20 @@ describe("Daily Tick: Calendar Advancement", () => {
 
   it("should roll over year when month exceeds 12", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 12, currentDay: 31, currentWeek: 52 }
+      calendar: { year: 2025, month: 12, currentDay: 31, currentWeek: 52 }
     });
     
     const report = advanceOneDay(world);
     
     expect(world.calendar.currentDay).toBe(1);
     expect(world.calendar.month).toBe(1);
-    expect(world.calendar.year).toBe(2025);
+    expect(world.calendar.year).toBe(2026);
     expect(report.yearBoundary).toBe(true);
   });
 
   it("should handle February correctly (28 days)", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 2, currentDay: 28, currentWeek: 9 }
+      calendar: { year: 2025, month: 2, currentDay: 28, currentWeek: 9 }
     });
     
     const report = advanceOneDay(world);
@@ -345,7 +345,7 @@ describe("Daily Tick: Report Generation", () => {
       currentBasho: {
         id: "test-basho",
         name: "hatsu",
-        year: 2024,
+        year: 2025,
         day: 5,
         matches: [],
         yushoRaceLeaders: [],

@@ -286,7 +286,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
-  const currentYear = 2024;
+  const currentYear = 2025;
 
   // Build rank slots with proper east/west pairing
   interface RankSlot { rank: Rank; division: Division; rankNumber: number; side: Side }

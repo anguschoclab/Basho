@@ -53,9 +53,9 @@ function makeHeya(overrides: Partial<Heya> = {}): Heya {
 function makeWorld(heya: Heya): WorldState {
   return {
     seed: "test-seed",
-    year: 2024,
+    year: 2025,
     week: 1,
-    calendar: { year: 2024, month: 1, currentWeek: 1, currentDay: 1 },
+    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     heyas: new Map([[heya.id, heya]]),
     events: { version: "1.0.0", log: [], dedupe: {} },
     governanceLog: [],
