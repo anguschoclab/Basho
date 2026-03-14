@@ -14,8 +14,10 @@ import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 
+/** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
 
+/** Defines the structure for recruitment window. */
 export interface RecruitmentWindow {
   openedAtWeek: number;
   closesAtWeek: number;
@@ -24,6 +26,7 @@ export interface RecruitmentWindow {
   phase: "post_basho" | "mid_interim";
 }
 
+/** Defines the structure for post basho meta. */
 export interface PostBashoMeta {
   bashoNumber: number;
   metaBias: "oshi" | "yotsu" | "neutral";
@@ -31,6 +34,7 @@ export interface PostBashoMeta {
   recognitionEligibleWeek: number;
 }
 
+/** Defines the structure for world state. */
 export interface WorldState {
   id: string;
   seed: string;

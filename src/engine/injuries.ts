@@ -14,7 +14,10 @@
 //   while still providing "compat mode" helpers that update those fields.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Id, Rikishi, WorldState, Heya } from "./types";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
 import type { TrainingProfile } from "./training";
 import { computeTrainingMultipliers, getCareerPhase, PHASE_EFFECTS } from "./training";
 import { logEngineEvent } from "./events";
@@ -25,6 +28,7 @@ import { logEngineEvent } from "./events";
 
 export type InjurySeverity = "minor" | "moderate" | "serious";
 
+/** Type representing injury body area. */
 export type InjuryBodyArea =
   | "shoulder"
   | "elbow"
@@ -37,6 +41,7 @@ export type InjuryBodyArea =
   | "rib"
   | "other";
 
+/** Type representing injury type. */
 export type InjuryType =
   | "sprain"
   | "strain"
@@ -47,6 +52,7 @@ export type InjuryType =
   | "nerve"
   | "unknown";
 
+/** Defines the structure for injury record. */
 export interface InjuryRecord {
   id: Id;
   rikishiId: Id;
@@ -71,6 +77,7 @@ export interface InjuryRecord {
   notes?: string;
 }
 
+/** Defines the structure for injuries state. */
 export interface InjuriesState {
   version: "1.0.0";
 
@@ -253,6 +260,12 @@ export function applyInjuryRecord(state: InjuriesState, injury: InjuryRecord): I
   return { ...state, activeByRikishi: nextActive, history: nextHist };
 }
 
+/**
+ * Clear injury.
+ *  * @param state - The State.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function clearInjury(state: InjuriesState, rikishiId: Id): InjuriesState {
   if (!state.activeByRikishi[rikishiId]) return state;
   const next = { ...state.activeByRikishi };
@@ -331,8 +344,8 @@ export function syncRikishiInjuryFlags(args: {
 }): void {
   for (const r of args.world.rikishi.values()) {
     const inj = args.state.activeByRikishi[r.id];
-    (r as any).injured = Boolean(inj);
-    (r as any).injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
+    r.injured = Boolean(inj);
+    r.injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
   }
 }
 
@@ -345,8 +358,8 @@ export function hydrateFromRikishiFlags(args: {
 }): InjuriesState {
   let state = args.state;
   for (const r of args.world.rikishi.values()) {
-    const injured = Boolean((r as any).injured);
-    const weeks = typeof (r as any).injuryWeeksRemaining === "number" ? Math.max(0, Math.trunc((r as any).injuryWeeksRemaining)) : 0;
+    const injured = Boolean(r.injured);
+    const weeks = typeof r.injuryWeeksRemaining === "number" ? Math.max(0, Math.trunc(r.injuryWeeksRemaining)) : 0;
     if (!injured || weeks <= 0) continue;
 
     if (state.activeByRikishi[r.id]) continue; // already hydrated
@@ -396,35 +409,58 @@ export function toInjuryEvent(injury: InjuryRecord): InjuryEvent {
  *  ========================= */
 
 function ensureWorldInjuriesState(world: WorldState): InjuriesState {
-  const anyW = world as any;
+  const anyW = world;
   if (anyW.injuriesState && anyW.injuriesState.version === "1.0.0") return anyW.injuriesState as InjuriesState;
   anyW.injuriesState = createDefaultInjuriesState();
   return anyW.injuriesState as InjuriesState;
 }
 
+/**
+ * Get heya by rikishi id.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getHeyaByRikishiId(world: WorldState, rikishiId: Id): Heya | undefined {
   const r = world.rikishi.get(rikishiId);
   if (!r) return undefined;
   return world.heyas.get(r.heyaId);
 }
 
+/**
+ * Get training profile by heya id.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getTrainingProfileByHeyaId(world: WorldState, heyaId: Id): TrainingProfile | undefined {
   // training.ts ensures per-heya training state in world.trainingState
-  const anyW = world as any;
+  const anyW = world;
   const ts = anyW.trainingState?.[heyaId] || world.heyas.get(heyaId)?.trainingState;
   return ts?.activeProfile as TrainingProfile | undefined;
 }
 
+/**
+ * Get individual mode.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getIndividualMode(world: WorldState, rikishiId: Id): "develop" | "push" | "protect" | "rebuild" | null {
   const r = world.rikishi.get(rikishiId);
   if (!r) return null;
-  const anyW = world as any;
+  const anyW = world;
   const ts = anyW.trainingState?.[r.heyaId] || world.heyas.get(r.heyaId)?.trainingState;
-  const slots = ts?.focusSlots as any[] | undefined;
+  const slots = ts?.focusSlots;
   const slot = slots?.find(s => s?.rikishiId === rikishiId);
   return slot?.mode ?? null;
 }
 
+/**
+ * Tick week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function tickWeek(world: WorldState): { recoveredCount: number; newCount: number } {
   let state = ensureWorldInjuriesState(world);
 
@@ -490,16 +526,16 @@ export function tickWeek(world: WorldState): { recoveredCount: number; newCount:
   // 3) Sync into rikishi flags + UI-friendly injuryStatus
   for (const r of world.rikishi.values()) {
     const inj = state.activeByRikishi[r.id];
-    (r as any).injured = Boolean(inj);
-    (r as any).injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
-    (r as any).injuryStatus = inj
+    r.injured = Boolean(inj);
+    r.injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
+    r.injuryStatus = inj
       ? { type: inj.type, isInjured: true, severity: inj.severity, location: inj.area, weeksRemaining: inj.remainingWeeks }
       : { type: "none", isInjured: false, severity: "none", weeksRemaining: 0 };
     // Some UI code looks at r.injury
-    (r as any).injury = (r as any).injuryStatus;
+    r.injury = r.injuryStatus;
   }
 
-  (world as any).injuriesState = state;
+  world.injuriesState = state;
 
   return { recoveredCount: rec.recovered.length, newCount };
 }
@@ -522,6 +558,12 @@ function pickArea(rng: SeededRNG): InjuryBodyArea {
   return "other";
 }
 
+/**
+ * Pick type.
+ *  * @param rng - The Rng.
+ *  * @param severity - The Severity.
+ *  * @returns The result.
+ */
 function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   const roll = rng.next();
   if (severity === "serious") {
@@ -543,6 +585,14 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   return "inflammation";
 }
 
+/**
+ * Get weeks out.
+ *  * @param rng - The Rng.
+ *  * @param severity - The Severity.
+ *  * @param area - The Area.
+ *  * @param type - The Type.
+ *  * @returns The result.
+ */
 function getWeeksOut(rng: SeededRNG, severity: InjurySeverity, area: InjuryBodyArea, type: InjuryType): number {
   // Baselines
   let min = 1, max = 2;
@@ -563,6 +613,11 @@ function getWeeksOut(rng: SeededRNG, severity: InjurySeverity, area: InjuryBodyA
   return clampInt(min + Math.floor(rng.next() * span), 1, 26);
 }
 
+/**
+ * Describe injury.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function describeInjury(args: {
   rng: SeededRNG;
   severity: InjurySeverity;
@@ -614,6 +669,11 @@ function describeInjury(args: {
   return { title, description };
 }
 
+/**
+ * Area to label.
+ *  * @param area - The Area.
+ *  * @returns The result.
+ */
 function areaToLabel(area: InjuryBodyArea): string {
   switch (area) {
     case "shoulder": return "Shoulder";
@@ -629,6 +689,11 @@ function areaToLabel(area: InjuryBodyArea): string {
   }
 }
 
+/**
+ * Type to label.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function typeToLabel(t: InjuryType): string {
   switch (t) {
     case "sprain": return "Sprain";
@@ -694,6 +759,13 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Clamp int.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clampInt(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }
@@ -741,7 +813,7 @@ export function onBoutResolved(
   boutChance *= durabilityMult;
 
   // Age factor
-  const age = (loser as any).age ?? 25;
+  const age = loser.age ?? 25;
   if (age >= 32) boutChance *= 1.3;
   if (age >= 35) boutChance *= 1.2;
 
@@ -772,16 +844,16 @@ export function onBoutResolved(
   };
 
   state = applyInjuryRecord(state, injury);
-  (world as any).injuriesState = state;
+  world.injuriesState = state;
 
   // Sync rikishi flags
-  (loser as any).injured = true;
-  (loser as any).injuryWeeksRemaining = weeksOut;
-  (loser as any).injuryStatus = {
+  loser.injured = true;
+  loser.injuryWeeksRemaining = weeksOut;
+  loser.injuryStatus = {
     type: injury.type, isInjured: true, severity: injury.severity,
     location: injury.area, weeksRemaining: injury.remainingWeeks
   };
-  (loser as any).injury = (loser as any).injuryStatus;
+  loser.injury = loser.injuryStatus;
 
   logEngineEvent(world, {
     type: "INJURY_OCCURRED",
@@ -806,7 +878,7 @@ export function onBoutResolved(
       description,
       opponentId: winnerId,
       day: context.match?.day,
-      bashoName: (world as any).currentBashoName,
+      bashoName: world.currentBashoName,
     });
   } catch (_) { /* media module optional */ }
 }

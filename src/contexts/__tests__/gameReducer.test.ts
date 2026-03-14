@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { gameReducer } from "../gameReducer";
 import { initialGameState, type GameState } from "../gameTypes";
-import type { WorldState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
 
 // Mock heavy engine modules to keep tests fast and isolated
 vi.mock("@/engine/worldgen", () => ({

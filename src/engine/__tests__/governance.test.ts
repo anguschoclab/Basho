@@ -1,5 +1,4 @@
-import { describe, it, expect } from "bun:test";
-import { mock } from "bun:test";
+import { describe, it, expect, mock } from "bun:test";
 
 // Mock rng.ts entirely
 mock.module("../rng", () => ({

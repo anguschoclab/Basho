@@ -2,9 +2,10 @@
 // Space = advance time, E = toggle event log, number keys = quick nav, etc.
 
 import { useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 
+/** Defines the structure for shortcut options. */
 interface ShortcutOptions {
   eventLogOpen: boolean;
   onToggleEventLog: () => void;
@@ -24,6 +25,10 @@ const QUICK_NAV: Record<string, string> = {
   "9": "/rivalries",
 };
 
+/**
+ * Use keyboard shortcuts.
+ *  * @param { eventLogOpen, onToggleEventLog, onOpenSaveLoad } - The { event log open, on toggle event log, on open save load }.
+ */
 export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSaveLoad }: ShortcutOptions) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,7 +86,7 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSav
       // ── Number keys 1-9: Quick navigation ──
       if (!ctrl && !e.shiftKey && !e.altKey && QUICK_NAV[e.key]) {
         e.preventDefault();
-        navigate(QUICK_NAV[e.key]);
+        navigate({ to: QUICK_NAV[e.key] as any });
         return;
       }
 

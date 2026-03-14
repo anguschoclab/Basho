@@ -7,10 +7,16 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning } from "lucide-react";
-import type { GovernanceStatus, GovernanceRuling, Heya } from "@/engine/types";
+import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
+import type { Heya } from "../../types/heya";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
 import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 
+/**
+ * Format fine penalty.
+ *  * @param amount - The Amount.
+ *  * @returns The result.
+ */
 function formatFinePenalty(amount: number): string {
   if (amount >= 10_000_000) return "Severe fine";
   if (amount >= 3_000_000) return "Significant fine";
@@ -18,6 +24,7 @@ function formatFinePenalty(amount: number): string {
   return "Minor fine";
 }
 
+/** governance page. */
 export default function GovernancePage() {
   const { state } = useGame();
   const world = state.world;

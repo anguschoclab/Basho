@@ -4,7 +4,7 @@
 //
 // FIXES / UPDATES:
 // - Removes unused imports (RikishiName/StableName if not used; use Link + names directly)
-// - Avoids navigate() during render (prevents React warnings); shows a safe fallback card instead
+// - Avoids navigate({ to: ) during render (prevents React warnings }); shows a safe fallback card instead
 // - Makes statureBand sorting & color robust to missing/unknown bands
 // - Search is fully case-safe for JP names + EN text (handles undefined fields safely)
 // - Stable directory links to /stable/:id (matches other pages)
@@ -13,7 +13,7 @@
 
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { toWinRateAssessment, WIN_RATE_LABELS } from "@/engine/descriptorBands";
 import { generateHeyaRecord, type HeyaRecord } from "@/engine/almanac";
-import type { Rikishi, Heya } from "@/engine/types";
+import type { Rikishi } from "../../types/rikishi";
+import type { Heya } from "../../types/heya";
 import {
   Building2,
   ChevronRight,
@@ -38,6 +39,10 @@ import {
 } from "lucide-react";
 
 // Compute career stats for almanac display
+/**
+ * Compute career stats.
+ *  * @param rikishi - The Rikishi.
+ */
 function computeCareerStats(rikishi: Rikishi) {
   const wins = rikishi.careerWins || 0;
   const losses = rikishi.careerLosses || 0;
@@ -51,6 +56,11 @@ function computeCareerStats(rikishi: Rikishi) {
 }
 
 // Get stable tier color (robust)
+/**
+ * Get stable tier color.
+ *  * @param statureBand - The Stature band.
+ *  * @returns The result.
+ */
 function getStableTierColor(statureBand: string | undefined): string {
   const colors: Record<string, string> = {
     legendary: "text-amber-400",
@@ -63,10 +73,15 @@ function getStableTierColor(statureBand: string | undefined): string {
   return colors[String(statureBand || "")] || "text-muted-foreground";
 }
 
+/**
+ * Normalize query.
+ *  * @param q - The Q.
+ */
 function normalizeQuery(q: string) {
   return (q || "").trim().toLowerCase();
 }
 
+/** almanac page. */
 export default function AlmanacPage() {
   const navigate = useNavigate();
   const { state } = useGame();
@@ -84,7 +99,7 @@ export default function AlmanacPage() {
             <CardDescription>The world state is not loaded yet.</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <ButtonLikeLink onClick={() => navigate("/")}>Return to Dashboard</ButtonLikeLink>
+            <ButtonLikeLink onClick={() => navigate({ to: "/" })}>Return to Dashboard</ButtonLikeLink>
           </CardContent>
         </Card>
       </div>

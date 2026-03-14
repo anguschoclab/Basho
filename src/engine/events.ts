@@ -7,16 +7,9 @@
  * - Provides helper factories for common domains (injury, governance, recruitment, etc.).
  */
 
-import type {
-  WorldState,
-  EngineEvent,
-  EventsState,
-  EventCategory,
-  EventPhase,
-  EventImportance,
-  EventScope,
-  Id
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
+import type { Id } from "./types/common";
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
 function stableHash(s: string): string {
@@ -28,12 +21,18 @@ function stableHash(s: string): string {
   return (h >>> 0).toString(16);
 }
 
+/**
+ * Ensure events state.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function ensureEventsState(world: WorldState): EventsState {
   if (world.events && world.events.version && Array.isArray(world.events.log)) return world.events;
   world.events = { version: "1.0.0", log: [], dedupe: {} };
   return world.events;
 }
 
+/** Defines the structure for log engine event params. */
 export interface LogEngineEventParams {
   type: string;
   category: EventCategory;
@@ -52,10 +51,16 @@ export interface LogEngineEventParams {
   dedupeKey?: string;
 }
 
+/**
+ * Log engine event.
+ *  * @param world - The World.
+ *  * @param params - The Params.
+ *  * @returns The result.
+ */
 export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
   const events = ensureEventsState(world);
 
-  const year = world.calendar?.year ?? world.year ?? 2024;
+  const year = world.calendar?.year ?? world.year ?? 2025;
   const week = world.calendar?.currentWeek ?? world.week ?? 0;
   const month = world.calendar?.month ?? 1;
   const day = world.calendar?.currentDay ?? 1;
@@ -98,6 +103,12 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   return ev;
 }
 
+/**
+ * Query events.
+ *  * @param world - The World.
+ *  * @param filters - The Filters.
+ *  * @returns The result.
+ */
 export function queryEvents(
   world: WorldState,
   filters: {
@@ -379,7 +390,7 @@ export function tickWeek(world: WorldState): number {
   const eventsState = ensureEventsState(world);
   if (!eventsState.log.length) return 0;
 
-  const currentYear = world.calendar?.year ?? world.year ?? 2024;
+  const currentYear = world.calendar?.year ?? world.year ?? 2025;
   const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
 
   // Define maximum age in weeks (approx 1 year = 52 weeks)

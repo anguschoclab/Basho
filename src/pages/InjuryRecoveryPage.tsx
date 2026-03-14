@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 
+/** injury recovery page. */
 export default function InjuryRecoveryPage() {
   const { state } = useGame();
   const world = state.world;

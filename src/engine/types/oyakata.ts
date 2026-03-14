@@ -4,8 +4,7 @@
 
 import type { Id } from "./common";
 
-export type OyakataMood = "ecstatic" | "pleased" | "neutral" | "frustrated" | "furious";
-
+/** Type representing oyakata archetype. */
 export type OyakataArchetype =
   | "traditionalist"
   | "scientist"
@@ -14,6 +13,7 @@ export type OyakataArchetype =
   | "tyrant"
   | "strategist";
 
+/** Defines the structure for oyakata traits. */
 export interface OyakataTraits {
   ambition: number;
   patience: number;
@@ -22,6 +22,7 @@ export interface OyakataTraits {
   compassion: number;
 }
 
+/** Defines the structure for oyakata. */
 export interface Oyakata {
   id: Id;
   heyaId: Id;

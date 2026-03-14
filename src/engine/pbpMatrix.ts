@@ -3,8 +3,14 @@
 import matrixData from "./pbp_voice_matrix.json";
 import type { PbpLibrary, PbpTag } from "./pbp";
 
+/** Type representing raw phrase. */
 type RawPhrase = { id: string; text: string; tags?: string[]; weight?: number };
 
+/**
+ * Cast bucket.
+ *  * @param raw - The Raw.
+ *  * @returns The result.
+ */
 function castBucket(raw: RawPhrase[]): any[] {
   return raw.map((p) => ({
     id: p.id,
@@ -14,6 +20,10 @@ function castBucket(raw: RawPhrase[]): any[] {
   }));
 }
 
+/**
+ * Load voice matrix.
+ *  * @returns The result.
+ */
 function loadVoiceMatrix(): PbpLibrary {
   return {
     tachiai: {
@@ -56,21 +66,31 @@ function loadVoiceMatrix(): PbpLibrary {
 
 let _cachedLibrary: PbpLibrary | null = null;
 
+/**
+ * Get voice matrix.
+ *  * @returns The result.
+ */
 export function getVoiceMatrix(): PbpLibrary {
   if (!_cachedLibrary) _cachedLibrary = loadVoiceMatrix();
   return _cachedLibrary;
 }
 
+/**
+ * Validate diversity gates.
+ *  * @param lib - The Lib.
+ *  * @param minPhrases - The Min phrases.
+ *  * @returns The result.
+ */
 export function validateDiversityGates(
   lib: PbpLibrary,
   minPhrases: number = 50
 ): Array<{ context: string; bucket: string; count: number }> {
   const failures: Array<{ context: string; bucket: string; count: number }> = [];
   const sections: Record<string, Record<string, unknown[]>> = {
-    tachiai: lib.tachiai as any,
-    clinch: lib.clinch as any,
-    momentum: lib.momentum as any,
-    finish: lib.finish as any,
+    tachiai: lib.tachiai,
+    clinch: lib.clinch,
+    momentum: lib.momentum,
+    finish: lib.finish,
   };
   for (const [ctx, buckets] of Object.entries(sections)) {
     for (const [bucket, phrases] of Object.entries(buckets)) {

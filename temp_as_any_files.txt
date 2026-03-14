@@ -1,0 +1,196 @@
+src/engine/pbpMatrix.ts:70:    tachiai: lib.tachiai as any,
+src/engine/pbpMatrix.ts:71:    clinch: lib.clinch as any,
+src/engine/pbpMatrix.ts:72:    momentum: lib.momentum as any,
+src/engine/pbpMatrix.ts:73:    finish: lib.finish as any,
+src/engine/talentpool.ts:70:  return typeof (world as any).week === "number" ? (world as any).week : (world as any).calendar?.currentWeek ?? 0;
+src/engine/talentpool.ts:74:  const w = world as any;
+src/engine/talentpool.ts:364:  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+src/engine/talentpool.ts:398:  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+src/engine/talentpool.ts:530:  } as any;
+src/engine/talentpool.ts:578:  const funds = typeof (h as any).funds === "number" ? (h as any).funds : 0;
+src/engine/talentpool.ts:579:  const prestige = (h as any).reputation ?? 50;
+src/engine/talentpool.ts:756:  world.rikishi.set(r.id, r as any);
+src/engine/talentpool.ts:758:  if (heya) (heya as any).rikishiIds?.push(r.id);
+src/engine/talentpool.ts:831:  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+src/engine/talentpool.ts:850:    const freezeWeeks = (heya as any)?.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
+src/engine/talentpool.ts:922:  const tp = (world as any).talentPool as TalentPoolWorldState;
+src/engine/talentpool.ts:949:  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+src/engine/matchmaking.ts:65:  const an = typeof (a as any).rankNumber === "number" ? (a as any).rankNumber : 0;
+src/engine/matchmaking.ts:66:  const bn = typeof (b as any).rankNumber === "number" ? (b as any).rankNumber : 0;
+src/engine/matchmaking.ts:94:  const aSide = (a as any).side as Side | undefined;
+src/engine/matchmaking.ts:95:  const bSide = (b as any).side as Side | undefined;
+src/engine/matchmaking.ts:201:  ).filter(r => !(r as any).injured);
+src/engine/welfare.ts:56:    const status = (r as any).injuryStatus ?? (r as any).injury;
+src/engine/welfare.ts:57:    const injured = Boolean(status?.isInjured) || Boolean((r as any).injured);
+src/engine/welfare.ts:304:    if (!heya.riskIndicators) (heya as any).riskIndicators = { financial: false, governance: false, rivalry: false };
+src/engine/welfare.ts:305:    (heya.riskIndicators as any).welfare = w.complianceState !== "compliant" || w.welfareRisk >= 55;
+src/engine/hallOfFame.ts:189:  const w = world as any;
+src/engine/hallOfFame.ts:197:  return (world as any).hallOfFame || createEmptyHallOfFame();
+src/engine/media.ts:190:  const winnerInjured = winner && (winner as any).injury?.active;
+src/engine/media.ts:191:  const loserInjured = loser && (loser as any).injury?.active;
+src/engine/media.ts:420:      const econ = (r as any).economics;
+src/engine/media.ts:766:  const basho = (world as any).basho as BashoState | undefined;
+src/engine/media.ts:772:    : (standings as any)[result.winnerRikishiId];
+src/engine/media.ts:905:  const w = world as any;
+src/engine/media.ts:1007:  const w = world as any;
+src/engine/media.ts:1080:  const w = world as any;
+src/engine/media.ts:1192:    : (standings as any)[loserId];
+src/engine/autoSim.ts:502:      const anyWorld: any = world as any;
+src/engine/autoSim.ts:530:      const anyWorld: any = world as any;
+src/engine/narrative.ts:631:  const log = Array.isArray((result as any).log) ? ((result as any).log as BoutLogEntry[]) : [];
+src/engine/perception.ts:111:  const rivalriesState: RivalriesState | undefined = (world as any).rivalriesState;
+src/engine/perception.ts:176:  const mediaState = (world as any).mediaState;
+src/engine/perception.ts:182:  const mediaState = (world as any).mediaState;
+src/engine/economics.ts:176:  const pool = (world as any).sponsorPool;
+src/engine/world.ts:78:  if (typeof (schedule as any).generateDaySchedule === "function") {
+src/engine/world.ts:79:    (schedule as any).generateDaySchedule(world, basho, day, world.seed);
+src/engine/world.ts:281:    world.rikishi as any,
+src/engine/world.ts:777:    const reason = checkRetirement(r as any, world.year, world.seed);
+src/engine/injuries.ts:334:    (r as any).injured = Boolean(inj);
+src/engine/injuries.ts:335:    (r as any).injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
+src/engine/injuries.ts:348:    const injured = Boolean((r as any).injured);
+src/engine/injuries.ts:349:    const weeks = typeof (r as any).injuryWeeksRemaining === "number" ? Math.max(0, Math.trunc((r as any).injuryWeeksRemaining)) : 0;
+src/engine/injuries.ts:399:  const anyW = world as any;
+src/engine/injuries.ts:413:  const anyW = world as any;
+src/engine/injuries.ts:421:  const anyW = world as any;
+src/engine/injuries.ts:423:  const slots = ts?.focusSlots as any[] | undefined;
+src/engine/injuries.ts:493:    (r as any).injured = Boolean(inj);
+src/engine/injuries.ts:494:    (r as any).injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
+src/engine/injuries.ts:495:    (r as any).injuryStatus = inj
+src/engine/injuries.ts:499:    (r as any).injury = (r as any).injuryStatus;
+src/engine/injuries.ts:502:  (world as any).injuriesState = state;
+src/engine/injuries.ts:744:  const age = (loser as any).age ?? 25;
+src/engine/injuries.ts:775:  (world as any).injuriesState = state;
+src/engine/injuries.ts:778:  (loser as any).injured = true;
+src/engine/injuries.ts:779:  (loser as any).injuryWeeksRemaining = weeksOut;
+src/engine/injuries.ts:780:  (loser as any).injuryStatus = {
+src/engine/injuries.ts:784:  (loser as any).injury = (loser as any).injuryStatus;
+src/engine/injuries.ts:809:      bashoName: (world as any).currentBashoName,
+src/engine/saveload.ts:125:    talentPool: (world as any).talentPool,
+src/engine/saveload.ts:128:    almanacSnapshots: (world as any).almanacSnapshots,
+src/engine/saveload.ts:131:    sponsorPool: serializeSponsorPool((world as any).sponsorPool),
+src/engine/saveload.ts:133:    ozekiKadoban: (world as any).ozekiKadoban,
+src/engine/saveload.ts:135:    hallOfFame: (world as any).hallOfFame,
+src/engine/saveload.ts:137:    mediaState: (world as any).mediaState,
+src/engine/saveload.ts:138:  } as any;
+src/engine/saveload.ts:146:  const anyR = r as any;
+src/engine/saveload.ts:179:  const anyH = h as any;
+src/engine/saveload.ts:186:  const heyasObj: Record<string, Heya> = (serialized as any).heyas || {};
+src/engine/saveload.ts:187:  const rikishiObj: Record<string, Rikishi> = (serialized as any).rikishi || {};
+src/engine/saveload.ts:188:  const oyakataObj: Record<string, Oyakata> = (serialized as any).oyakata || {};
+src/engine/saveload.ts:193:  const savedCalendar = (serialized as any).calendar;
+src/engine/saveload.ts:200:    dayIndexGlobal: (serialized as any).dayIndexGlobal ?? 0,
+src/engine/saveload.ts:208:    events: (serialized as any).events || { version: "1.0.0", log: [], dedupe: {} },
+src/engine/saveload.ts:212:    talentPool: (serialized as any).talentPool,
+src/engine/saveload.ts:213:    almanacSnapshots: (serialized as any).almanacSnapshots || [],
+src/engine/saveload.ts:214:    sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
+src/engine/saveload.ts:215:    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
+src/engine/saveload.ts:216:    ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
+src/engine/saveload.ts:217:    ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
+src/engine/rivalries.ts:516:  (world as any).rivalriesState = newState;
+src/engine/rivalries.ts:525:  (world as any).rivalriesState = newState;
+src/engine/rivalries.ts:532:  const w = world as any;
+src/engine/bout.ts:435:  } as any);
+src/engine/bout.ts:554:  } as any);
+src/engine/bout.ts:593:    } as any);
+src/engine/bout.ts:616:      } as any);
+src/engine/bout.ts:642:    } as any);
+src/engine/bout.ts:661:    } as any);
+src/engine/bout.ts:704:        } as any);
+src/engine/bout.ts:734:      } as any);
+src/engine/bout.ts:752:  } as any);
+src/engine/bout.ts:769:    const reqStances: Stance[] = Array.isArray((k as any).requiredStances) ? (k as any).requiredStances : [];
+src/engine/bout.ts:772:    const vector = (k as any).vector as "front" | "lateral" | "rear" | undefined;
+src/engine/bout.ts:788:    const base = Number.isFinite((k as any).baseWeight) ? (k as any).baseWeight : 1;
+src/engine/bout.ts:789:    const rarity = (k as any).rarity as "common" | "uncommon" | "rare" | "legendary" | undefined;
+src/engine/bout.ts:792:    const affinity = (k as any).styleAffinity?.[attacker.style ?? "hybrid"] ?? 0;
+src/engine/bout.ts:871:     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } } as any);
+src/engine/bout.ts:892:  } as any);
+src/engine/bout.ts:903:  const bashoId = (basho as any).id ?? "basho";
+src/engine/bout.ts:904:  const year = (basho as any).year ?? 0;
+src/engine/bout.ts:905:  const bashoName = ((basho as any).bashoName ?? (basho as any).name) as BashoName | undefined;
+src/engine/bout.ts:940:    } as any);
+src/engine/bout.ts:954:    } as any);
+src/engine/bout.ts:1005:  } as any;
+src/engine/bout.ts:1012:    east: { id: east.id, shikona: east.shikona, style: (east as any).style, archetype: (east as any).archetype },
+src/engine/bout.ts:1013:    west: { id: west.id, shikona: west.shikona, style: (west as any).style, archetype: (west as any).archetype },
+src/engine/bout.ts:1022:  (result as any).pbpLines = pbpLines;
+src/engine/bout.ts:1023:  (result as any).pbp = pbpLines.map((l) => l.text);
+src/engine/bout.ts:1024:  (result as any).narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
+src/engine/bout.ts:1032:  const bashoName: BashoName = "hatsu" as any;
+src/engine/bout.ts:1040:  } as any;
+src/engine/holiday.ts:198:        return r && (r as any).nationality !== "japanese";
+src/engine/holiday.ts:245:      const interimRemaining = (world as any)._interimDaysRemaining ?? 0;
+src/engine/holiday.ts:246:      const preBashoDays = phase === "pre_basho" ? ((world as any)._interimDaysRemaining ?? 7) : 0;
+src/engine/holiday.ts:249:      if (phase === "post_basho") return ((world as any)._postBashoDays ?? 7) + 42 + 7;
+src/engine/scoutingStore.ts:46:  const w: any = world as any;
+src/engine/scoutingStore.ts:53:  const w: any = world as any;
+src/engine/scoutingStore.ts:62:  const w: any = world as any;
+src/engine/scoutingStore.ts:67:  const w: any = world as any;
+src/engine/scoutingStore.ts:114:  const isOwned = (truth as any).heyaId === playerHeyaId;
+src/engine/lifecycle.ts:71:  const isElite = (origin as any).isElite || false;
+src/engine/lifecycle.ts:91:  if ((origin as any).strMod) stats.strength *= (origin as any).strMod;
+src/engine/lifecycle.ts:92:  if ((origin as any).techMod) stats.technique *= (origin as any).techMod;
+src/engine/lifecycle.ts:93:  if ((origin as any).speedMod) stats.speed *= (origin as any).speedMod;
+src/engine/lifecycle.ts:94:  if ((origin as any).weightMod) stats.weight *= (origin as any).weightMod;
+src/engine/uiDigest.ts:71:    const injury = (r as any).injury;
+src/engine/uiDigest.ts:92:    const day = basho.day ?? (basho as any).currentDay ?? 1;
+src/engine/uiDigest.ts:96:      const eastId = (match as any).eastRikishiId ?? (match as any).rikishiEastId ?? (match as any).eastId;
+src/engine/uiDigest.ts:97:      const westId = (match as any).westRikishiId ?? (match as any).rikishiWestId ?? (match as any).westId;
+src/engine/uiDigest.ts:168:      ? `Basho Day ${basho.day ?? (basho as any).currentDay ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
+src/engine/pbp.ts:737:  if (Array.isArray((result as any).log)) {
+src/engine/pbp.ts:738:    for (const entry of (result as any).log) {
+src/engine/__tests__/bout.test.ts:120:      if ((result as any).isKinboshi) {
+src/engine/__tests__/bout.test.ts:156:    expect((result as any).pbpLines).toBeDefined();
+src/engine/__tests__/bout.test.ts:157:    expect((result as any).pbpLines.length).toBeGreaterThan(0);
+src/engine/__tests__/bout.test.ts:158:    expect((result as any).pbp).toBeDefined();
+src/engine/__tests__/bout.test.ts:159:    expect((result as any).pbp.length).toBeGreaterThan(0);
+src/engine/__tests__/matchmaking.test.ts:67:      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as any);
+src/engine/__tests__/matchmaking.test.ts:78:      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as any);
+src/engine/__tests__/matchmaking.test.ts:181:        mockRikishi("r2", { injured: true } as any),
+src/engine/__tests__/talentpool.test.ts:127:    const candidates = Object.values((world as any).talentPool.candidates);
+src/engine/__tests__/talentpool.test.ts:138:    const c1 = Object.keys((world1 as any).talentPool.candidates).sort();
+src/engine/__tests__/talentpool.test.ts:139:    const c2 = Object.keys((world2 as any).talentPool.candidates).sort();
+src/engine/__tests__/talentpool.test.ts:151:    const c1 = Object.keys((world1 as any).talentPool.candidates);
+src/engine/__tests__/talentpool.test.ts:152:    const c2 = Object.keys((world2 as any).talentPool.candidates);
+src/engine/__tests__/talentpool.test.ts:168:    const candidates = Object.values((world as any).talentPool.candidates) as TalentCandidate[];
+src/engine/__tests__/talentpool.test.ts:183:    const candidates = Object.values((world as any).talentPool.candidates) as TalentCandidate[];
+src/engine/__tests__/talentpool.test.ts:196:    const candidates = Object.values((world as any).talentPool.candidates) as TalentCandidate[];
+src/engine/__tests__/talentpool.test.ts:207:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:235:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:289:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:385:    } as any;
+src/engine/__tests__/talentpool.test.ts:408:    } as any;
+src/engine/__tests__/talentpool.test.ts:446:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:458:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:470:    (r1 as any).nationality = "Mongolia";
+src/engine/__tests__/talentpool.test.ts:474:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:491:    (r1 as any).nationality = "Mongolia";
+src/engine/__tests__/talentpool.test.ts:510:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:558:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:589:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:624:    const tp = (world as any).talentPool;
+src/engine/__tests__/talentpool.test.ts:628:    (world as any).year = 2025;
+src/engine/__tests__/talentpool.test.ts:639:    (world as any).year = 2025;
+src/engine/__tests__/talentpool.test.ts:642:    const tp = (world as any).talentPool;
+src/engine/__tests__/historyIndex.test.ts:19:    const world = generateWorld("test-history") as any;
+src/engine/__tests__/historyIndex.test.ts:46:    } as any;
+src/engine/__tests__/dailyTick.test.ts:98:    ]) as any,
+src/engine/__tests__/dailyTick.test.ts:99:    heyas: new Map([["test-heya", heya]]) as any,
+src/engine/__tests__/dailyTick.test.ts:352:      } as any
+src/engine/__tests__/metaShift.test.ts:69:      } as any);
+src/engine/__tests__/uiModels.test.ts:17:    expect((uiRikishi as any).power).toBeUndefined();
+src/engine/__tests__/npcAI_full.test.ts:250:        ["r1", makeRikishi("r1", { injured: true, injuryWeeksRemaining: 4, condition: 30 } as any)],
+src/engine/__tests__/npcAI_full.test.ts:255:    const heya = world.heyas.get("h1")! as any;
+src/engine/__tests__/npcAI_full.test.ts:258:    (world as any).trainingState = {
+src/engine/__tests__/npcAI_full.test.ts:267:    const r1 = world.rikishi.get("r1")! as any;
+src/engine/__tests__/injuries.test.ts:55:    } as any]]),
+src/engine/__tests__/injuries.test.ts:222:      (heya.facilities as any).recovery = 100;
+src/engine/__tests__/injuries.test.ts:249:      const r = world.rikishi.get("r1")! as any;
+src/engine/__tests__/injuries.test.ts:258:      const r = world.rikishi.get("r1")! as any;
+src/engine/historyIndex.ts:265:  idx.rikishi[rikishiId].push({ rikishiId, ...entry } as any);
+src/engine/historyIndex.ts:380:  const bashoState = (world as any).currentBasho;
+src/engine/historyIndex.ts:390:        existing.wins = (stats as any).wins;
+src/engine/historyIndex.ts:391:        existing.losses = (stats as any).losses;
+src/engine/historyIndex.ts:401:          wins: (stats as any).wins,
+src/engine/historyIndex.ts:402:          losses: (stats as any).losses

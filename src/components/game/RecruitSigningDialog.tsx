@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, GraduationCap, Globe, School } from "lucide-react";
 
+/** Defines the structure for recruit signing dialog props. */
 interface RecruitSigningDialogProps {
   open: boolean;
   onConfirm: () => void;
@@ -38,6 +39,24 @@ const POOL_ICONS: Record<string, React.ReactNode> = {
   foreign: <Globe className="h-4 w-4" />,
 };
 
+/**
+ * recruit signing dialog.
+ *  * @param {
+ *   open,
+ *   onConfirm,
+ *   onCancel,
+ *   candidate,
+ *   playerHeyaName,
+ *   rosterSize,
+ * } - The {
+ *   open,
+ *   on confirm,
+ *   on cancel,
+ *   candidate,
+ *   player heya name,
+ *   roster size,
+ * }.
+ */
 export function RecruitSigningDialog({
   open,
   onConfirm,

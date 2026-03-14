@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
-import type { WorldState, Rikishi } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
   champion: "text-amber-400 border-amber-500/40",
@@ -27,6 +28,16 @@ const CATEGORY_ICON: Record<HoFCategory, React.ElementType> = {
   technician: Target,
 };
 
+/**
+ * timeline portrait.
+ *  * @param {
+ *   inductee,
+ *   rikishi,
+ * } - The {
+ *   inductee,
+ *   rikishi,
+ * }.
+ */
 function TimelinePortrait({
   inductee,
   rikishi,
@@ -59,11 +70,16 @@ function TimelinePortrait({
   );
 }
 
+/** Defines the structure for ho f timeline props. */
 interface HoFTimelineProps {
   inductees: HoFInductee[];
   world: WorldState;
 }
 
+/**
+ * ho f timeline.
+ *  * @param { inductees, world } - The { inductees, world }.
+ */
 export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 

@@ -12,13 +12,18 @@
 // Engine position vocabulary:
 // - "front" | "lateral" | "rear"
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { BoutResult, BoutLogEntry, Rikishi, BashoName, Stance } from "./types";
+import type { BoutResult, BoutLogEntry, BashoName } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
+import type { Stance } from "./types/combat";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 
+/** Type representing voice style. */
 type VoiceStyle = "formal" | "dramatic" | "understated";
+/** Type representing crowd style. */
 type CrowdStyle = "restrained" | "responsive" | "intimate";
 
+/** Defines the structure for narrative context. */
 interface NarrativeContext {
   rng: SeededRNG;
   east: Rikishi;
@@ -70,17 +75,37 @@ const KENSHO_SPONSORS = [
   "Yamazaki Baking"
 ];
 
+/**
+ * Get voice style.
+ *  * @param day - The Day.
+ *  * @param isHighStakes - The Is high stakes.
+ *  * @returns The result.
+ */
 function getVoiceStyle(day: number, isHighStakes: boolean): VoiceStyle {
   if (day >= 13 || isHighStakes) return "dramatic";
   if (day <= 5) return "understated";
   return "formal";
 }
 
+/**
+ * Pick.
+ *  * @param rng - The Rng.
+ *  * @param arr - The Arr.
+ *  * @returns The result.
+ */
 function pick<T>(rng: SeededRNG, arr: T[]): T {
   return arr[Math.floor(rng.next() * arr.length)];
 }
 
 // Deterministic estimate only (caller can override)
+/**
+ * Estimate kensho.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param day - The Day.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function estimateKensho(
   east: Rikishi,
   west: Rikishi,
@@ -123,6 +148,11 @@ function estimateKensho(
 }
 
 // === STEP 1: VENUE & DAY FRAMING ===
+/**
+ * Generate venue framing.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateVenueFraming(ctx: NarrativeContext): string[] {
   const { day, venueShortName, voiceStyle } = ctx;
 
@@ -137,6 +167,11 @@ function generateVenueFraming(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 2: RANK / STAKE CONTEXT ===
+/**
+ * Generate rank context.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRankContext(ctx: NarrativeContext): string[] {
   const { east, west, isHighStakes, voiceStyle } = ctx;
   const lines: string[] = [];
@@ -153,6 +188,11 @@ function generateRankContext(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 3: RING ENTRANCE RITUALS ===
+/**
+ * Generate ring entrance.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRingEntrance(ctx: NarrativeContext): string[] {
   const { east, west, crowdStyle, isHighStakes } = ctx;
   const lines: string[] = [];
@@ -189,6 +229,11 @@ function generateRingEntrance(ctx: NarrativeContext): string[] {
 }
 
 // === RITUAL ELEMENTS ===
+/**
+ * Generate ritual elements.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRitualElements(ctx: NarrativeContext): string[] {
   const { east, west, voiceStyle, isHighStakes, rng } = ctx;
   const lines: string[] = [];
@@ -239,6 +284,11 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
 }
 
 // === KENSHO BANNER PRE-BOUT ===
+/**
+ * Generate kensho banners.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateKenshoBanners(ctx: NarrativeContext): string[] {
   const { hasKensho, kenshoCount, sponsorName, voiceStyle } = ctx;
   const lines: string[] = [];
@@ -257,6 +307,11 @@ function generateKenshoBanners(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 4: SHIKIRI TENSION ===
+/**
+ * Generate shikiri tension.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateShikiriTension(ctx: NarrativeContext): string[] {
   const { voiceStyle, rng } = ctx;
 
@@ -277,6 +332,12 @@ function generateShikiriTension(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 5: TACHIAI IMPACT ===
+/**
+ * Generate tachiai.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, rng, crowdStyle } = ctx;
   const lines: string[] = [];
@@ -328,6 +389,12 @@ function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 6: CONTROL ESTABLISHMENT (Clinch) ===
+/**
+ * Generate clinch.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, rng } = ctx;
   const lines: string[] = [];
@@ -381,6 +448,12 @@ function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 7: MOMENTUM SHIFT(S) ===
+/**
+ * Generate momentum.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, result, rng, crowdStyle } = ctx;
   const lines: string[] = [];
@@ -445,6 +518,11 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
 }
 
 // === STEP 8: DECISIVE ACTION (Turning Point) ===
+/**
+ * Generate turning point.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateTurningPoint(ctx: NarrativeContext): string[] {
   const { voiceStyle, east, west, result, rng } = ctx;
   const lines: string[] = [];
@@ -470,6 +548,12 @@ function generateTurningPoint(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 9-10: GYOJI RULING & KIMARITE EMPHASIS ===
+/**
+ * Generate finish.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, crowdStyle, rng, result } = ctx;
   const lines: string[] = [];
@@ -503,6 +587,11 @@ function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 11: KENSHO CEREMONY ===
+/**
+ * Generate kensho ceremony.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateKenshoCeremony(ctx: NarrativeContext): string[] {
   const { hasKensho, kenshoCount, voiceStyle, result, east, west } = ctx;
   const lines: string[] = [];
@@ -522,6 +611,11 @@ function generateKenshoCeremony(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 12: IMMEDIATE AFTERMATH FRAMING (Closing) ===
+/**
+ * Generate closing.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateClosing(ctx: NarrativeContext): string[] {
   const { voiceStyle, east, west, result, venueShortName, day, rng } = ctx;
   const lines: string[] = [];
@@ -551,6 +645,16 @@ function generateClosing(ctx: NarrativeContext): string[] {
 }
 
 // === MAIN NARRATIVE GENERATOR ===
+/**
+ * Generate narrative.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param result - The Result.
+ *  * @param bashoName - The Basho name.
+ *  * @param day - The Day.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function generateNarrative(
   east: Rikishi,
   west: Rikishi,
@@ -628,7 +732,7 @@ export function generateNarrative(
   // Steps 5–10 from log
   let hasClimax = false;
 
-  const log = Array.isArray((result as any).log) ? ((result as any).log as BoutLogEntry[]) : [];
+  const log = Array.isArray(result.log) ? (result.log as BoutLogEntry[]) : [];
   for (const entry of log) {
     switch (entry.phase) {
       case "tachiai":

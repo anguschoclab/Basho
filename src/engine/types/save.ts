@@ -14,6 +14,7 @@ import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase } from "./world";
 import type { BashoResult } from "./basho";
 
+/** Defines the structure for serialized basho state. */
 export interface SerializedBashoState {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -23,6 +24,7 @@ export interface SerializedBashoState {
   standings: StandingsTable;
 }
 
+/** Defines the structure for serialized world state. */
 export interface SerializedWorldState {
   seed: string;
   year: number;
@@ -48,9 +50,12 @@ export interface SerializedWorldState {
   talentPool?: TalentPoolWorldState;
 }
 
+/** Type representing save version. */
 export type SaveVersion = "1.0.0";
+/** c u r r e n t_ s a v e_ v e r s i o n. */
 export const CURRENT_SAVE_VERSION: SaveVersion = "1.0.0";
 
+/** Defines the structure for save game. */
 export interface SaveGame {
   version: SaveVersion;
   createdAtISO: string;

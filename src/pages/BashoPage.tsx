@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,11 @@ import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
-import type { Rikishi, BoutResult, Division } from "@/engine/types";
+import type { Rikishi } from "../../types/rikishi";
+import type { BoutResult } from "../../types/basho";
+import type { Division } from "../../types/banzuke";
 
+/** Type representing match like. */
 type MatchLike = {
   day?: number;
   boutId?: string;
@@ -37,6 +40,7 @@ type MatchLike = {
   result?: BoutResult;
 };
 
+/** Defines the structure for selected bout. */
 interface SelectedBout {
   east: Rikishi;
   west: Rikishi;
@@ -44,14 +48,24 @@ interface SelectedBout {
   isPlayerBout: boolean;
 }
 
+/**
+ * Make pair key.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ */
 function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
 
+/** Defines the structure for schedule overview props. */
 interface ScheduleOverviewProps {
   currentDay: number;
 }
 
+/**
+ * schedule overview.
+ *  * @param { currentDay } - The { current day }.
+ */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
   
@@ -105,6 +119,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
   );
 }
 
+/** basho page. */
 export default function BashoPage() {
   const navigate = useNavigate();
   const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();
@@ -156,9 +171,9 @@ export default function BashoPage() {
   }, [(state as any).lastBoutResult, basho?.day]);
 
   useEffect(() => {
-    if (state.phase === "basho_recap") { navigate("/recap"); return; }
-    if (state.phase === "basho_results") { navigate("/recap"); return; }
-    if (!world?.currentBasho) navigate("/");
+    if (state.phase === "basho_recap") { navigate({ to: "/recap" }); return; }
+    if (state.phase === "basho_results") { navigate({ to: "/recap" }); return; }
+    if (!world?.currentBasho) navigate({ to: "/" });
   }, [world, navigate, state.phase]);
 
   useEffect(() => {
@@ -189,7 +204,7 @@ export default function BashoPage() {
     if (basho.day >= 15) setShowEndBashoConfirm(true);
     else advanceDay();
   };
-  const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate("/"); };
+  const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate({ to: "/" }); };
 
   if (!world || !basho) return null;
 

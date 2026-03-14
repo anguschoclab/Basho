@@ -7,10 +7,11 @@
 //   and Array.from(...) to avoid Map iterator pitfalls in UI code.
 // =======================================================
 
-import type { WorldState } from "./types";
+import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
 
+/** Type representing digest kind. */
 export type DigestKind =
   | "training"
   | "injury"
@@ -22,6 +23,7 @@ export type DigestKind =
   | "scouting"
   | "generic";
 
+/** Defines the structure for digest item. */
 export interface DigestItem {
   id: string;
   kind: DigestKind;
@@ -31,12 +33,14 @@ export interface DigestItem {
   heyaId?: string;
 }
 
+/** Defines the structure for digest section. */
 export interface DigestSection {
   id: string;
   title: string;
   items: DigestItem[];
 }
 
+/** Defines the structure for u i digest. */
 export interface UIDigest {
   time: { label: string };
   headline: string;
@@ -50,13 +54,23 @@ export interface UIDigest {
   sections: DigestSection[];
 }
 
+/**
+ * Label for world.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function labelForWorld(world: WorldState): string {
-  const year = world.year ?? 2024;
+  const year = world.year ?? 2025;
   const week = world.week ?? 0;
   const phase = world.cyclePhase ?? "interim";
   return `${year} — Week ${week} (${phase})`;
 }
 
+/**
+ * Build weekly digest.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 
@@ -68,7 +82,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Injuries ---
   const injuryItems: DigestItem[] = [];
   for (const r of rikishiList) {
-    const injury = (r as any).injury;
+    const injury = r.injury;
     if (injury?.isInjured) {
       injuryItems.push({
         id: `injury::${r.id}`,
@@ -89,12 +103,12 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // In this codebase, the authoritative indicator of basho activity is world.cyclePhase.
   // The schedule is a flat array of MatchSchedule items with a day field.
   if (basho && world.cyclePhase === "active_basho") {
-    const day = basho.day ?? (basho as any).currentDay ?? 1;
+    const day = basho.day ?? basho.currentDay ?? 1;
     const todays = (basho.matches ?? []).filter((m: any) => m?.day === day);
 
     for (const match of todays.slice(0, 3)) {
-      const eastId = (match as any).eastRikishiId ?? (match as any).rikishiEastId ?? (match as any).eastId;
-      const westId = (match as any).westRikishiId ?? (match as any).rikishiWestId ?? (match as any).westId;
+      const eastId = match.eastRikishiId ?? match.rikishiEastId ?? match.eastId;
+      const westId = match.westRikishiId ?? match.rikishiWestId ?? match.westId;
       if (!eastId || !westId) continue;
 
       const east = world.rikishi.get(eastId);
@@ -165,7 +179,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const headline =
     basho && world.cyclePhase === "active_basho"
-      ? `Basho Day ${basho.day ?? (basho as any).currentDay ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
+      ? `Basho Day ${basho.day ?? basho.currentDay ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
       : injuryItems.length
         ? `${injuryItems.length} injury update${injuryItems.length === 1 ? "" : "s"} this week.`
         : "No major events recorded this week.";

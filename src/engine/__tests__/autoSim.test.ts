@@ -4,7 +4,7 @@ import { generateWorld } from "../worldgen";
 import type { AutoSimConfig } from "../autoSim";
 
 describe("AutoSim", () => {
-  it("should simulate an entire basho deterministically", { timeout: 10000 }, () => {
+  it("should simulate an entire basho deterministically", () => {
     const world = generateWorld("test-autosim-seed");
 
     // We mock current basho initialization manually to mirror startBasho behavior,

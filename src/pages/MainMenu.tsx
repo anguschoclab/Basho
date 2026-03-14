@@ -21,7 +21,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,9 @@ import {
   Upload,
   Clock
 } from "lucide-react";
-import type { Heya, StatureBand, BashoName, StableSelectionMode } from "@/engine/types";
+import type { Heya } from "../../types/heya";
+import type { StatureBand, StableSelectionMode } from "../../types/narrative";
+import type { BashoName } from "../../types/basho";
 import { BASHO_CALENDAR } from "@/engine/calendar";
 import { deleteSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
@@ -117,6 +119,7 @@ const STATURE_CONFIG: Record<
 
 const HEYA_NAMES_COUNT = 45;
 
+/** Defines the structure for stable card props. */
 interface StableCardProps {
   heya: Heya;
   isSelected: boolean;
@@ -126,6 +129,10 @@ interface StableCardProps {
   sekitoriCount: number;
 }
 
+/**
+ * stable card.
+ *  * @param { heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount } - The { heya, is selected, on select, on preview, is recommended, sekitori count }.
+ */
 function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount }: StableCardProps) {
   const config = STATURE_CONFIG[heya.statureBand];
   const Icon = config.icon;
@@ -220,22 +227,38 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
   );
 }
 
+/**
+ * Safe short seed.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 function safeShortSeed(seed: string | undefined | null): string {
   if (!seed) return "unknown";
   return seed.length <= 14 ? seed : `${seed.slice(0, 14)}…`;
 }
 
+/**
+ * Make deterministic seed.
+ *  * @param prefix - The Prefix.
+ *  * @returns The result.
+ */
 function makeDeterministicSeed(prefix = "world"): string {
   // No Math.random() — deterministic-friendly, stable, adequate uniqueness for local worlds
   return `${prefix}-${Date.now()}`;
 }
 
+/**
+ * Safe rank sort key.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function safeRankSortKey(rank: any): number {
   // Prefer tier from your rank hierarchy (lower tier => higher rank)
   const tier = (RANK_HIERARCHY as any)?.[rank]?.tier;
   return Number.isFinite(tier) ? tier : 999;
 }
 
+/** main menu. */
 export default function MainMenu() {
   const navigate = useNavigate();
 
@@ -371,7 +394,7 @@ export default function MainMenu() {
   const handleContinue = () => {
     if (typeof hasAutosave === "function" && hasAutosave()) {
       if (typeof loadFromAutosave === "function") loadFromAutosave();
-      navigate("/");
+      navigate({ to: "/" });
       return;
     }
     if (saveSlots.length > 0) setShowLoadDialog(true);
@@ -380,7 +403,7 @@ export default function MainMenu() {
   const handleLoadSlot = (slotName: string) => {
     if (typeof loadFromSlot === "function" && loadFromSlot(slotName)) {
       setShowLoadDialog(false);
-      navigate("/");
+      navigate({ to: "/" });
     }
   };
 
@@ -427,7 +450,7 @@ export default function MainMenu() {
       if (importedWorld) {
         applyImportedWorld(importedWorld);
         setSeed(importedWorld.seed || "");
-        navigate("/");
+        navigate({ to: "/" });
       }
     } finally {
       setIsImporting(false);
@@ -469,7 +492,7 @@ export default function MainMenu() {
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
     if (typeof createWorld === "function") createWorld(state.world.seed, heyaId);
-    navigate("/");
+    navigate({ to: "/" });
   };
 
   const handleConfirmStable = () => {

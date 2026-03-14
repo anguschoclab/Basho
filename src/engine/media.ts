@@ -14,7 +14,10 @@
 // - sponsors.ts: high coverage can raise sponsor tier chances
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Id, WorldState, BoutResult, BashoName, Division, BashoState } from "./types";
+import type { Id } from "./types/common";
+import type { WorldState } from "./types/world";
+import type { BoutResult, BashoName, BashoState } from "./types/basho";
+import type { Division } from "./types/banzuke";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
 
 /** =========================
@@ -29,6 +32,7 @@ export type MediaTone =
   | "hype"
   | "disrespect";
 
+/** Type representing media beat. */
 export type MediaBeat =
   | "daily_bout"
   | "streak"
@@ -42,8 +46,10 @@ export type MediaBeat =
   | "retirement_watch"
   | "discipline";
 
+/** Type representing headline tier. */
 export type HeadlineTier = "local" | "national" | "main_event";
 
+/** Defines the structure for media headline. */
 export interface MediaHeadline {
   id: Id;
   week: number;
@@ -78,6 +84,7 @@ export interface MediaHeadline {
   };
 }
 
+/** Defines the structure for media state. */
 export interface MediaState {
   version: "1.0.0";
 
@@ -187,8 +194,8 @@ export function updateMediaFromBout(args: {
   impact += winnerRankImpact + loserRankImpact;
 
   // Injury context
-  const winnerInjured = winner && (winner as any).injury?.active;
-  const loserInjured = loser && (loser as any).injury?.active;
+  const winnerInjured = winner && winner.injury?.active;
+  const loserInjured = loser && loser.injury?.active;
 
   impact = clampInt(impact, 0, 100);
 
@@ -417,7 +424,7 @@ function applyHeadlineEffects(state: MediaState, world: WorldState, headline: Me
     for (const id of headline.rikishiIds) {
       const r = world.rikishi.get(id);
       if (!r) continue;
-      const econ = (r as any).economics;
+      const econ = r.economics;
       if (!econ) continue;
       if (typeof econ.popularity !== "number") continue;
       econ.popularity = clampInt(econ.popularity + popDelta, 0, 100);
@@ -432,6 +439,11 @@ function applyHeadlineEffects(state: MediaState, world: WorldState, headline: Me
   };
 }
 
+/**
+ * Decay media state.
+ *  * @param state - The State.
+ *  * @returns The result.
+ */
 function decayMediaState(state: MediaState): MediaState {
   const nextHeat: Record<Id, number> = {};
   for (const [id, v] of Object.entries(state.mediaHeat)) {
@@ -547,6 +559,11 @@ function createWeeklyFeatureHeadline(args: {
   return null;
 }
 
+/**
+ * Build bout headline title.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function buildBoutHeadlineTitle(args: {
   rng: SeededRNG;
   world: WorldState;
@@ -581,6 +598,11 @@ function buildBoutHeadlineTitle(args: {
   return opts[Math.floor(rng.next() * opts.length)];
 }
 
+/**
+ * Build bout headline subtitle.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function buildBoutHeadlineSubtitle(args: {
   rng: SeededRNG;
   world: WorldState;
@@ -621,6 +643,13 @@ function buildBoutHeadlineSubtitle(args: {
   return undefined;
 }
 
+/**
+ * Build tags for bout.
+ *  * @param result - The Result.
+ *  * @param tier - The Tier.
+ *  * @param beat - The Beat.
+ *  * @returns The result.
+ */
 function buildTagsForBout(result: BoutResult, tier: HeadlineTier, beat: MediaBeat): string[] {
   const tags = ["basho", "bout", beat];
   if (tier === "main_event") tags.push("main_event");
@@ -645,14 +674,32 @@ function rankImpact(rank?: string): number {
   }
 }
 
+/**
+ * Seeded pick.
+ *  * @param arr - The Arr.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function seededPick<T>(arr: T[], rng: SeededRNG): T {
   return arr[Math.floor(rng.next() * arr.length)];
 }
 
+/**
+ * Clamp int.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clampInt(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }
 
+/**
+ * Make id.
+ *  * @param s - The S.
+ *  * @returns The result.
+ */
 function makeId(s: string): Id {
   // Keep it deterministic and short-ish; you can swap for uuid later if needed.
   return s;
@@ -664,6 +711,11 @@ function makeId(s: string): Id {
 
 const STREAK_MILESTONES = [5, 8, 10, 12, 15];
 
+/**
+ * Update streak and generate headline.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function updateStreakAndGenerateHeadline(args: {
   state: MediaState;
   world: WorldState;
@@ -763,13 +815,13 @@ function checkPromotionWatch(args: {
   }
 
   // Get standings
-  const basho = (world as any).basho as BashoState | undefined;
+  const basho = world.basho as BashoState | undefined;
   const standings = basho?.standings;
   if (!standings) return { state: args.state, headline: null };
 
   const record = standings instanceof Map
     ? standings.get(result.winnerRikishiId)
-    : (standings as any)[result.winnerRikishiId];
+    : standings[result.winnerRikishiId];
   if (!record) return { state: args.state, headline: null };
 
   const { wins, losses } = record;
@@ -902,7 +954,7 @@ export function generateInjuryWithdrawalHeadline(args: {
   bashoName?: BashoName;
 }): MediaHeadline | null {
   const { world, rikishiId, severity, area, description, opponentId, day, bashoName } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
   const mediaState: MediaState = w.mediaState;
 
@@ -982,6 +1034,11 @@ export function generateInjuryWithdrawalHeadline(args: {
   return headline;
 }
 
+/**
+ * Capitalize.
+ *  * @param s - The S.
+ *  * @returns The result.
+ */
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -1004,7 +1061,7 @@ export function generateScandalHeadline(args: {
   fineAmount?: number;
 }): MediaHeadline | null {
   const { world, heyaId, type, severity, reason, description } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
 
   const heya = world.heyas.get(heyaId);
@@ -1077,7 +1134,7 @@ export function generateGovernanceHeadline(args: {
   description: string;
 }): MediaHeadline | null {
   const { world, heyaId, type, severity, description } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
 
   const heya = world.heyas.get(heyaId);
@@ -1155,6 +1212,11 @@ export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string):
 
 const VETERAN_AGE_THRESHOLD = 33;
 
+/**
+ * Check retirement watch.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function checkRetirementWatch(args: {
   state: MediaState;
   world: WorldState;
@@ -1189,7 +1251,7 @@ function checkRetirementWatch(args: {
 
   const record = standings instanceof Map
     ? standings.get(loserId)
-    : (standings as any)[loserId];
+    : standings[loserId];
   if (!record) return { state: args.state, headline: null };
 
   const { wins, losses } = record;

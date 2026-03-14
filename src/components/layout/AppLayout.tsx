@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/** Defines the structure for app layout props. */
 interface AppLayoutProps {
   children: ReactNode;
   subNavTabs?: SubNavTab[];
@@ -22,6 +23,10 @@ interface AppLayoutProps {
   pageTitle?: string;
 }
 
+/**
+ * app layout.
+ *  * @param { children, subNavTabs, activeSubTab, onSubTabChange, pageTitle } - The { children, sub nav tabs, active sub tab, on sub tab change, page title }.
+ */
 export function AppLayout({ children, subNavTabs, activeSubTab, onSubTabChange, pageTitle }: AppLayoutProps) {
   const { state } = useGame();
   const [eventLogOpen, setEventLogOpen] = useState(true);

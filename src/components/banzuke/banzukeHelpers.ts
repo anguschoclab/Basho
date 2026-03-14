@@ -1,7 +1,8 @@
 import type { UIRosterEntry } from "@/engine/uiModels";
-import type { BanzukeSnapshot } from "@/engine/types";
+import type { BanzukeSnapshot } from "@/engine/types/banzuke";
 import { rankScore } from "./RankChangeIndicator";
 
+/** Defines the structure for rank row. */
 export interface RankRow {
   rankLabel: string;
   rankKey: string;
@@ -16,6 +17,13 @@ const RANK_TIER: Record<string, number> = {
   sandanme: 8, jonidan: 9, jonokuchi: 10,
 };
 
+/**
+ * Build rank rows.
+ *  * @param entries - The Entries.
+ *  * @param division - The Division.
+ *  * @param searchQuery - The Search query.
+ *  * @returns The result.
+ */
 export function buildRankRows(entries: UIRosterEntry[], division: string, searchQuery: string): RankRow[] {
   const divEntries = entries.filter(e => e.division === division);
   const groups = new Map<string, { east: UIRosterEntry | null; west: UIRosterEntry | null }>();
@@ -48,6 +56,11 @@ export function buildRankRows(entries: UIRosterEntry[], division: string, search
     .sort((a, b) => a._tier - b._tier || a._num - b._num);
 }
 
+/**
+ * Build prev rank map.
+ *  * @param history - The History.
+ *  * @returns The result.
+ */
 export function buildPrevRankMap(history: { nextBanzuke?: BanzukeSnapshot }[]): Map<string, { rank: string; rankNumber?: number; side?: string; score: number }> {
   const map = new Map<string, { rank: string; rankNumber?: number; side?: string; score: number }>();
   for (let i = history.length - 1; i >= 0; i--) {
