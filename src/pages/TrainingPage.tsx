@@ -2,7 +2,7 @@
 // FM-style layout for beya-wide training controls and individual rikishi focus slots
 
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import type { Rikishi, IndividualFocusType } from "@/engine/types";
+import type { Rikishi } from "../../types/rikishi";
+import type { IndividualFocusType } from "../../types/training";
 import {
   INTENSITY_EFFECTS,
   FOCUS_EFFECTS,
@@ -55,6 +56,7 @@ const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; descripti
   { value: "rebuild", label: "Rebuild", description: "Recovery-focused after injury", icon: <Heart className="h-4 w-4" /> },
 ];
 
+/** training page. */
 export default function TrainingPage() {
   const navigate = useNavigate();
   const { state, updateWorld } = useGame();
@@ -318,7 +320,7 @@ export default function TrainingPage() {
                     {/* Rikishi Info */}
                     <div 
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate(`/rikishi/${rikishi.id}`)}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id } })}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>

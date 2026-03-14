@@ -7,11 +7,21 @@
  */
 
 import { rngFromSeed, SeededRNG } from "./rng";
-import { Rikishi, Rank, RikishiStats, TacticalArchetype, WorldState } from "./types";
+import { Rikishi, RikishiStats } from "./types/rikishi";
+import { Rank } from "./types/banzuke";
+import { TacticalArchetype } from "./types/combat";
+import { WorldState } from "./types/world";
 import { generateRikishiName } from "./shikona";
 
 // --- RETIREMENT LOGIC ---
 
+/**
+ * Check retirement.
+ *  * @param rikishi - The Rikishi.
+ *  * @param currentYear - The Current year.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: string): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
@@ -61,6 +71,13 @@ const ARCHETYPES: TacticalArchetype[] = [
   "trickster", "all_rounder", "hybrid_oshi_yotsu", "counter_specialist"
 ];
 
+/**
+ * Generate rookie.
+ *  * @param world - The World.
+ *  * @param currentYear - The Current year.
+ *  * @param targetRank - The Target rank.
+ *  * @returns The result.
+ */
 export function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
   const rookieId = crypto.randomUUID();
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
@@ -68,7 +85,7 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
   const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
   
-  const isElite = (origin as any).isElite || false;
+  const isElite = origin.isElite || false;
   const age = isElite ? 22 : 15 + rng.int(0, 2); 
 
   const baseStat = isElite ? 40 : 20;
@@ -88,10 +105,10 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
   };
 
   // Apply Origin Modifiers
-  if ((origin as any).strMod) stats.strength *= (origin as any).strMod;
-  if ((origin as any).techMod) stats.technique *= (origin as any).techMod;
-  if ((origin as any).speedMod) stats.speed *= (origin as any).speedMod;
-  if ((origin as any).weightMod) stats.weight *= (origin as any).weightMod;
+  if (origin.strMod) stats.strength *= origin.strMod;
+  if (origin.techMod) stats.technique *= origin.techMod;
+  if (origin.speedMod) stats.speed *= origin.speedMod;
+  if (origin.weightMod) stats.weight *= origin.weightMod;
 
   const shikona = generateRikishiName(`${world.seed}::rookie::${rookieId}`);
 

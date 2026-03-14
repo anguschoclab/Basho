@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Coins, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -11,6 +11,7 @@ const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: any; b
   desperate:   { label: "Desperate",   color: "text-destructive",    icon: TrendingDown,  bgAccent: "bg-destructive/15" },
 };
 
+/** finances widget. */
 export function FinancesWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export function FinancesWidget() {
           <Coins className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Finances</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/economy")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/economy" })} className="h-6 text-xs gap-1 text-muted-foreground">
           Details <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

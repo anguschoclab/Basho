@@ -37,7 +37,7 @@ import {
   AlertTriangle,
   Info
 } from "lucide-react";
-import type { RunwayBand, KoenkaiBandType } from "@/engine/types";
+import type { RunwayBand, KoenkaiBandType } from "../../types/narrative";
 
 // Runway narrative descriptions
 const RUNWAY_CONFIG: Record<
@@ -148,6 +148,11 @@ const INCOME_SOURCES = [
 ];
 
 // Kensho tiering (narrative). This function uses counts internally but never shows them.
+/**
+ * Kensho tier label.
+ *  * @param total - The Total.
+ *  * @returns The result.
+ */
 function kenshoTierLabel(total: number): { label: string; detail: string } {
   if (total >= 200) return { label: "Legendary", detail: "A magnet for banners and sponsors." };
   if (total >= 80) return { label: "Star Earner", detail: "Frequently featured in sponsor bouts." };
@@ -157,18 +162,29 @@ function kenshoTierLabel(total: number): { label: string; detail: string } {
 }
 
 // Safe access helpers for older saves
+/**
+ * Safe runway band.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function safeRunwayBand(v: unknown): RunwayBand {
   const s = typeof v === "string" ? v : "";
   if (s === "secure" || s === "comfortable" || s === "tight" || s === "critical" || s === "desperate") return s;
   return "tight";
 }
 
+/**
+ * Safe koenkai band.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function safeKoenkaiBand(v: unknown): KoenkaiBandType {
   const s = typeof v === "string" ? v : "";
   if (s === "powerful" || s === "strong" || s === "moderate" || s === "weak" || s === "none") return s;
   return "none";
 }
 
+/** economy page. */
 export default function EconomyPage() {
   const { state } = useGame();
 
@@ -190,15 +206,19 @@ export default function EconomyPage() {
   // Sekitori count (broad indicator; count is acceptable here)
   const sekitoriCount = useMemo(() => {
     if (!playerRikishi) return 0;
-    return playerRikishi.reduce(
-      (count, r: any) => (r?.division === "makuuchi" || r?.division === "juryo" ? count + 1 : count),
-      0
-    );
+    let count = 0;
+    for (let i = 0; i < playerRikishi.length; i++) {
+      const r: any = playerRikishi[i];
+      if (r?.division === "makuuchi" || r?.division === "juryo") {
+        count++;
+      }
+    }
+    return count;
   }, [playerRikishi]);
 
   // Top “sponsor draw” wrestlers (computed, displayed narratively)
   const topEarners = useMemo(() => {
-    return [...playerRikishi]
+    return playerRikishi
       .filter((r: any) => r && typeof r === "object")
       .sort((a: any, b: any) => {
         const av = Number((a as any)?.economics?.careerKenshoWon ?? 0) || 0;

@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
 
+/** sponsor management page. */
 export default function SponsorManagementPage() {
   const { state } = useGame();
   const world = state.world;

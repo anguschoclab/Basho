@@ -28,18 +28,24 @@ const ROLE_LABELS: Record<string, string> = {
   creditor: "Creditor",
 };
 
+/**
+ * Tier icon.
+ *  * @param tier - The Tier.
+ */
 function tierIcon(tier: SponsorTier) {
   if (tier === "T5") return <Crown className="h-3.5 w-3.5" />;
   if (tier === "T4" || tier === "T3") return <Star className="h-3.5 w-3.5" />;
   return <Building2 className="h-3.5 w-3.5" />;
 }
 
+/** Defines the structure for sponsor view. */
 interface SponsorView {
   sponsor: Sponsor;
   role: string;
   strength: number;
 }
 
+/** sponsors panel. */
 export function SponsorsPanel() {
   const { state } = useGame();
   const world = state.world;
@@ -56,22 +62,25 @@ export function SponsorsPanel() {
     const tiers: Record<SponsorTier, number> = { T0: 0, T1: 0, T2: 0, T3: 0, T4: 0, T5: 0 };
 
     for (const sponsor of pool.sponsors.values()) {
-      const heyaRels = sponsor.relationships.filter(
-        (r: SponsorRelationship) => r.targetId === playerHeyaId && r.targetType === "beya"
-      );
+      let activeBest: SponsorRelationship | null = null;
+      let hasEnded = false;
 
-      if (heyaRels.length === 0) continue;
-
-      const activeRels = heyaRels.filter((r: SponsorRelationship) => !r.endsAtTick);
-      const endedRels = heyaRels.filter((r: SponsorRelationship) => !!r.endsAtTick);
-
-      if (activeRels.length > 0) {
-        const best = activeRels.sort((a, b) => b.strength - a.strength)[0];
-        active.push({ sponsor, role: best.role, strength: best.strength });
-        tiers[sponsor.tier] = (tiers[sponsor.tier] || 0) + 1;
+      for (const r of sponsor.relationships) {
+        if (r.targetId === playerHeyaId && r.targetType === "beya") {
+          if (!r.endsAtTick) {
+            if (!activeBest || r.strength > activeBest.strength) {
+              activeBest = r;
+            }
+          } else {
+            hasEnded = true;
+          }
+        }
       }
 
-      if (endedRels.length > 0 && activeRels.length === 0) {
+      if (activeBest) {
+        active.push({ sponsor, role: activeBest.role, strength: activeBest.strength });
+        tiers[sponsor.tier] = (tiers[sponsor.tier] || 0) + 1;
+      } else if (hasEnded) {
         lost.push(sponsor);
       }
     }

@@ -3,7 +3,9 @@
 // Keeps fog-of-war meaningful by persisting observations, investment, and decay.
 // Designed to be engine-only (UI reads via accessors).
 
-import type { WorldState, Id, Rikishi } from "./types";
+import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
 import {
   type ScoutedRikishi,
   type ScoutingInvestment,
@@ -12,6 +14,12 @@ import {
 } from "./scouting";
 
 // Local implementations for missing scouting functions
+/**
+ * Apply scouting decay.
+ *  * @param entry - The Entry.
+ *  * @param currentWeek - The Current week.
+ *  * @returns The result.
+ */
 function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): ScoutedRikishi {
   const weeksSince = currentWeek - entry.lastObservedWeek;
   if (weeksSince <= 0 || entry.isOwned) return entry;
@@ -20,6 +28,12 @@ function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): Scouted
   return { ...entry, scoutingLevel: Math.max(0, entry.scoutingLevel - decay) };
 }
 
+/**
+ * Refresh truth snapshot.
+ *  * @param entry - The Entry.
+ *  * @param truth - The Truth.
+ *  * @returns The result.
+ */
 function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRikishi {
   return {
     ...entry,
@@ -43,14 +57,19 @@ function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRik
  * }
  */
 function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> {
-  const w: any = world as any;
+  const w = world;
   if (!w.playerKnowledge) w.playerKnowledge = {};
   if (!w.playerKnowledge.scouting) w.playerKnowledge.scouting = {};
   return w.playerKnowledge.scouting as Record<string, ScoutedRikishi>;
 }
 
+/**
+ * Get world week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getWorldWeek(world: WorldState): number {
-  const w: any = world as any;
+  const w = world;
   // support multiple schemas
   if (typeof w.week === "number") return w.week;
   if (typeof w.currentWeek === "number") return w.currentWeek;
@@ -58,13 +77,24 @@ function getWorldWeek(world: WorldState): number {
   return 0;
 }
 
+/**
+ * Get player heya id.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getPlayerHeyaId(world: WorldState): string | null {
-  const w: any = world as any;
+  const w = world;
   return (w.playerHeyaId ?? w.playerHeya ?? w.player?.heyaId ?? null) as string | null;
 }
 
+/**
+ * Get rikishi.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
-  const w: any = world as any;
+  const w = world;
   const map = w.rikishi;
   if (map && typeof map.get === "function") return map.get(rikishiId) || null;
   if (map && typeof map === "object") return map[rikishiId] || null;
@@ -111,7 +141,7 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
     return table[rikishiId];
   }
 
-  const isOwned = (truth as any).heyaId === playerHeyaId;
+  const isOwned = truth.heyaId === playerHeyaId;
   const obs = isOwned ? 100 : Math.max(0, baselineObservation);
 
   const created = createScoutedView(truth, playerHeyaId, obs, "none", currentWeek);

@@ -12,7 +12,7 @@
 // used by some consumers.
 // =======================================================
 
-import type { WorldState } from "./types";
+import type { WorldState } from "./types/world";
 import * as scouting from "./scoutingStore";
 import * as training from "./training";
 import * as injuries from "./injuries";
@@ -22,6 +22,7 @@ import * as governance from "./governance";
 import * as events from "./events";
 import * as rivalries from "./rivalries";
 
+/** Defines the structure for boundary tick report. */
 export interface BoundaryTickReport {
   weekIndex: number;
   scoutingEvents: number;
@@ -34,6 +35,7 @@ export interface BoundaryTickReport {
   rivalryEvents: number;
 }
 
+/** Defines the structure for time state. */
 export interface TimeState {
   year: number;
   month: number;

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,7 @@ import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
 import { BASHO_CALENDAR, getSeasonalFlavor } from "@/engine/calendar";
-import type { BashoName } from "@/engine/types";
+import type { BashoName } from "@/engine/types/basho";
 
 const BASHO_NAMES: Record<string, string> = {
   hatsu: "January", haru: "March", natsu: "May",
@@ -22,6 +22,7 @@ const PHASE_LABELS: Record<string, { label: string; dotClass: string }> = {
   basho_recap:  { label: "Recap",       dotClass: "bg-muted-foreground/40" },
 };
 
+/** calendar widget. */
 export function CalendarWidget() {
   const { state, advanceInterim, advanceOneDay, simulateAllBouts, endDay, advanceDay, simFullBasho } = useGame();
   const { toast } = useToast();
@@ -37,7 +38,7 @@ export function CalendarWidget() {
   const handleAdvanceDay = () => { advanceOneDay(); toast({ title: "Day advanced" }); };
   const handleAdvanceWeek = () => { advanceInterim(1); toast({ title: "Week advanced" }); };
   const handleSimDay = () => { simulateAllBouts(); endDay(); advanceDay(); toast({ title: "Day simulated" }); };
-  const handleSimFullBasho = () => { simFullBasho(); toast({ title: "Basho complete!", description: "All 15 days simulated." }); navigate("/basho"); };
+  const handleSimFullBasho = () => { simFullBasho(); toast({ title: "Basho complete!", description: "All 15 days simulated." }); navigate({ to: "/basho" }); };
 
   // Basho day progress (1-15)
   const bashoDay = inBasho && world.currentBasho ? world.currentBasho.day : 0;
@@ -125,10 +126,10 @@ export function CalendarWidget() {
             <Button size="sm" variant="secondary" onClick={handleSimFullBasho} className="gap-1.5 h-7 text-xs">
               <SkipForward className="h-3 w-3" /> Sim All
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => navigate("/schedule")} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/schedule" })} className="gap-1.5 h-7 text-xs">
               <Calendar className="h-3 w-3" /> Schedule
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => navigate("/basho")} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/basho" })} className="gap-1.5 h-7 text-xs">
               <ChevronRight className="h-3 w-3" /> Basho
             </Button>
           </>

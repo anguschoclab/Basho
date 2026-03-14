@@ -13,7 +13,9 @@ import {
   Coins,
   ArrowUp,
 } from "lucide-react";
-import type { Heya, WorldState, FacilitiesBand } from "@/engine/types";
+import type { Heya } from "@/engine/types/heya";
+import type { WorldState } from "@/engine/types/world";
+import type { FacilitiesBand } from "@/engine/types/narrative";
 import {
   getUpgradeCostEstimate,
   getMonthlyMaintenanceCost,
@@ -58,6 +60,11 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   minimal: "Minimal",
 };
 
+/**
+ * Get level band.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
 function getLevelBand(level: number): string {
   if (level >= 85) return "World-Class";
   if (level >= 65) return "Excellent";
@@ -66,6 +73,11 @@ function getLevelBand(level: number): string {
   return "Minimal";
 }
 
+/**
+ * Get level color.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
 function getLevelColor(level: number): string {
   if (level >= 85) return "text-amber-400";
   if (level >= 65) return "text-purple-400";
@@ -74,6 +86,12 @@ function getLevelColor(level: number): string {
   return "text-red-400";
 }
 
+/**
+ * Get effect percent.
+ *  * @param axis - The Axis.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
 function getEffectPercent(axis: FacilityAxis, level: number): string {
   if (axis === "training") {
     const mult = 0.85 + (level / 100) * 0.35;
@@ -88,6 +106,7 @@ function getEffectPercent(axis: FacilityAxis, level: number): string {
   return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
 }
 
+/** Defines the structure for facilities management panel props. */
 interface FacilitiesManagementPanelProps {
   heya: Heya;
   world: WorldState;
@@ -95,6 +114,10 @@ interface FacilitiesManagementPanelProps {
   onUpgrade: (axis: FacilityAxis, points: number) => UpgradeResult | undefined;
 }
 
+/**
+ * facilities management panel.
+ *  * @param { heya, world, isOwner, onUpgrade } - The { heya, world, is owner, on upgrade }.
+ */
 export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: FacilitiesManagementPanelProps) {
   const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
 

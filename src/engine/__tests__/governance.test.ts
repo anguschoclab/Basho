@@ -1,42 +1,29 @@
 import { describe, it, expect, mock } from "bun:test";
 
-mock.module("seedrandom", () => {
-  return {
-    default: (seed: string) => {
-      const prng = () => 0.5;
-      return prng;
-    },
-  };
-});
-
 // Mock rng.ts entirely
-mock.module("../rng", () => {
-  return {
-    rngFromSeed: () => ({
-      next: () => 0.5,
-      int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
-      bool: (p: number = 0.5) => 0.5 < p,
-      pick: <T>(arr: T[]) => arr[0],
-      shuffle: <T>(arr: T[]) => arr,
-    }),
-    rngForWorld: () => ({
-      next: () => 0.5,
-      int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
-      bool: (p: number = 0.5) => 0.5 < p,
-      pick: <T>(arr: T[]) => arr[0],
-      shuffle: <T>(arr: T[]) => arr,
-    }),
-  };
-});
+mock.module("../rng", () => ({
+  rngFromSeed: () => ({
+    next: () => 0.5,
+    int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
+    bool: (p: number = 0.5) => 0.5 < p,
+    pick: <T>(arr: T[]) => arr[0],
+    shuffle: <T>(arr: T[]) => arr,
+  }),
+  rngForWorld: () => ({
+    next: () => 0.5,
+    int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
+    bool: (p: number = 0.5) => 0.5 < p,
+    pick: <T>(arr: T[]) => arr[0],
+    shuffle: <T>(arr: T[]) => arr,
+  }),
+}));
 
 // Mock media.ts to avoid its dependencies
-mock.module("../media", () => {
-  return {
-    generateScandalHeadline: () => null,
-  };
-});
+mock.module("../media", () => ({
+  generateScandalHeadline: () => null,
+}));
 
-import { tickWeek, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
+import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
 import type { WorldState, Heya } from "../types";
 
 function makeHeya(overrides: Partial<Heya> = {}): Heya {
@@ -70,7 +57,6 @@ function makeWorld(heya: Heya): WorldState {
     heyas: new Map([[heya.id, heya]]),
     events: { version: "1.0.0", log: [], dedupe: {} },
     governanceLog: [],
-    calendar: { year: 2024, month: 1, currentWeek: 1, currentDay: 1 },
     rikishi: new Map(),
     oyakata: new Map(),
   } as unknown as WorldState;
@@ -156,5 +142,59 @@ describe("Governance: tickWeek", () => {
     expect(world.events.log[0].type).toBe("GOVERNANCE_STATUS_CHANGED");
     expect(world.governanceLog!.length).toBeGreaterThan(0);
     expect(heya.governanceHistory!.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Governance: reportScandal", () => {
+  it("should return early and do nothing if heya is not found", () => {
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    // Use an ID that doesn't exist in the world's heya map
+    reportScandal(world, "non-existent-heya-id", "minor", "Test reason");
+
+    // The heya should be untouched
+    expect(heya.scandalScore).toBe(0);
+    expect(heya.funds).toBe(10_000_000);
+    expect(world.events.log.length).toBe(0);
+    expect(world.governanceLog!.length).toBe(0);
+  });
+
+  it("should apply effects and log for a minor scandal", () => {
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "minor", "Test minor reason");
+
+    // heya.scandalScore is reduced by SCANDAL_DECAY_RATE because reportScandal
+    // immediately calls processHeyaGovernance
+    expect(heya.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 500_000);
+    expect(world.events.log.length).toBeGreaterThan(0);
+    expect(world.events.log[0].type).toBe("SCANDAL_REPORTED");
+    expect(world.governanceLog!.length).toBeGreaterThan(0);
+    expect(heya.governanceHistory!.length).toBeGreaterThan(0);
+  });
+
+  it("should apply effects and log for a major scandal", () => {
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "major", "Test major reason");
+
+    expect(heya.scandalScore).toBe(35 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 2_000_000);
+    expect(world.events.log.length).toBeGreaterThan(0);
+  });
+
+  it("should apply effects and log for a critical scandal", () => {
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    reportScandal(world, heya.id, "critical", "Test critical reason");
+
+    expect(heya.scandalScore).toBe(60 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 10_000_000);
+    expect(world.events.log.length).toBeGreaterThan(0);
   });
 });

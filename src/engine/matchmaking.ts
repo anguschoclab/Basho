@@ -8,8 +8,11 @@
 // - Produces scored candidate pairs; schedule.ts builds final set.
 // =======================================================
 import { rngFromSeed, SeededRNG } from "./rng";
-import type { BashoState, Division, Rikishi, Side } from "./types";
+import type { BashoState } from "./types/basho";
+import type { Division, Side } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
 
+/** Defines the structure for match pairing. */
 export interface MatchPairing {
   eastId: string;
   westId: string;
@@ -17,6 +20,7 @@ export interface MatchPairing {
   reasons: string[];
 }
 
+/** Defines the structure for matchmaking rules. */
 export interface MatchmakingRules {
   avoidSameHeya: boolean;
   avoidRepeatOpponents: boolean;
@@ -29,6 +33,7 @@ export interface MatchmakingRules {
   allowRepeatsWhenForced: boolean;
 }
 
+/** d e f a u l t_ m a t c h m a k i n g_ r u l e s. */
 export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   avoidSameHeya: true,
   avoidRepeatOpponents: true,
@@ -39,37 +44,74 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   allowRepeatsWhenForced: true
 };
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Stable sort.
+ *  * @param arr - The Arr.
+ *  * @param keyFn - The Key fn.
+ *  * @returns The result.
+ */
 function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
   return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
 }
 
+/**
+ * Get record.
+ *  * @param basho - The Basho.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRecord(basho: BashoState, rikishiId: string): { wins: number; losses: number } {
   const row = basho.standings.get(rikishiId);
   return row ? { wins: row.wins, losses: row.losses } : { wins: 0, losses: 0 };
 }
 
+/**
+ * Record similarity.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function recordSimilarity(a: { wins: number; losses: number }, b: { wins: number; losses: number }): number {
   // Similar record => higher; 0 diff => 1.0
   const diff = Math.abs(a.wins - b.wins) + Math.abs(a.losses - b.losses);
   return 1 / (1 + diff * 0.5);
 }
 
+/**
+ * Rank similarity.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function rankSimilarity(a: Rikishi, b: Rikishi): number {
   // If ranks differ (e.g., upper vs lower), penalize. If equal, compare rankNumber distance.
   if (a.rank !== b.rank) return 0.25;
 
-  const an = typeof (a as any).rankNumber === "number" ? (a as any).rankNumber : 0;
-  const bn = typeof (b as any).rankNumber === "number" ? (b as any).rankNumber : 0;
+  const an = typeof a.rankNumber === "number" ? a.rankNumber : 0;
+  const bn = typeof b.rankNumber === "number" ? b.rankNumber : 0;
 
   if (an <= 0 || bn <= 0) return 0.75;
   const diff = Math.abs(an - bn);
   return 1 / (1 + diff * 0.35);
 }
 
+/**
+ * Weight mismatch score.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function weightMismatchScore(a: Rikishi, b: Rikishi): number {
   const wa = typeof a.weight === "number" ? a.weight : 0;
   const wb = typeof b.weight === "number" ? b.weight : 0;
@@ -80,6 +122,13 @@ function weightMismatchScore(a: Rikishi, b: Rikishi): number {
   return 1 / (1 + diff / 40);
 }
 
+/**
+ * Have faced this basho.
+ *  * @param basho - The Basho.
+ *  * @param aId - The A id.
+ *  * @param bId - The B id.
+ *  * @returns The result.
+ */
 function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolean {
   for (const m of basho.matches) {
     const e = m.eastRikishiId;
@@ -89,10 +138,17 @@ function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolea
   return false;
 }
 
+/**
+ * Assign sides.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @param honorExistingSide - The Honor existing side.
+ *  * @returns The result.
+ */
 function assignSides(a: Rikishi, b: Rikishi, honorExistingSide: boolean): { eastId: string; westId: string; bonus: number; reasons: string[] } {
   const reasons: string[] = [];
-  const aSide = (a as any).side as Side | undefined;
-  const bSide = (b as any).side as Side | undefined;
+  const aSide = a.side as Side | undefined;
+  const bSide = b.side as Side | undefined;
 
   if (honorExistingSide && aSide && bSide && aSide !== bSide) {
     reasons.push("honor_existing_side");
@@ -134,20 +190,59 @@ export function scorePairing(args: {
   const reasons: string[] = [];
   let score = 1.0;
 
+
   // Soft: similar records
   if (rules.preferSimilarRecords) {
     const ra = getRecord(basho, a.id);
     const rb = getRecord(basho, b.id);
     const s = recordSimilarity(ra, rb);
-    score *= (0.6 + 0.4 * s);
-    if (s > 0.75) reasons.push("similar_records");
+
+    // In the second half of the tournament (day > 7), strictly prioritize similar records (Swiss-system style)
+    const day = (basho as any).day || 1;
+    if (day > 7) {
+      score *= (0.2 + 0.8 * s); // Much higher weight to record similarity
+      if (s > 0.9) reasons.push("strict_record_match");
+
+      // Final Day (Senshuraku) Championship Contender Logic
+      if (day === 15 && ra.wins >= 11 && rb.wins >= 11 && Math.abs(ra.wins - rb.wins) <= 1) {
+         score *= 2.0;
+         reasons.push("yusho_contenders");
+      }
+    } else {
+      score *= (0.6 + 0.4 * s);
+      if (s > 0.75) reasons.push("similar_records");
+    }
   }
 
   // Soft: similar rank slot
   if (rules.preferSimilarRank) {
     const s = rankSimilarity(a, b);
+    const day = (basho as any).day || 1;
+
+    // Joi-jin Scheduling (Top Ranks)
+    // Sanyaku vs Sanyaku usually happens more frequently in the second half.
+    // In the first half, Sanyaku fight top Maegashira.
+    const isSanyaku = (r: Rikishi) => ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
+    const aSanyaku = isSanyaku(a);
+    const bSanyaku = isSanyaku(b);
+
+    if (aSanyaku && bSanyaku) {
+      if (day > 7) {
+         score *= 1.5; // Encourage Sanyaku matchups late
+         reasons.push("sanyaku_matchup");
+      } else {
+         score *= 0.5; // Discourage Sanyaku matchups early
+         reasons.push("sanyaku_avoided_early");
+      }
+    } else if ((aSanyaku && !bSanyaku) || (!aSanyaku && bSanyaku)) {
+      if (day <= 7 && s > 0.5) {
+         score *= 1.2; // Sanyaku vs high Maegashira early
+         reasons.push("joi_jin_scheduling");
+      }
+    }
+
     score *= (0.6 + 0.4 * s);
-    if (s > 0.75) reasons.push("similar_rank");
+    if (s > 0.75 && !reasons.includes("similar_rank")) reasons.push("similar_rank");
   }
 
   // Soft: avoid huge weight mismatch
@@ -176,6 +271,7 @@ export function scorePairing(args: {
   };
 }
 
+/** Defines the structure for candidate build options. */
 export interface CandidateBuildOptions {
   seed: string;
   rules?: Partial<MatchmakingRules>;
@@ -198,7 +294,7 @@ export function buildCandidatePairs(
   const pool = stableSort(
     options.division ? rikishi.filter(r => r.division === options.division) : [...rikishi],
     r => r.id
-  ).filter(r => !(r as any).injured);
+  ).filter(r => !r.injured);
 
   const out: MatchPairing[] = [];
 

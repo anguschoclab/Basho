@@ -2,12 +2,18 @@
 // Almanac System - Historical Memory per Constitution §A5 and §4
 // Tracks rikishi career records, heya records, and historical snapshots
 
-import type { WorldState, Rikishi, Heya, BashoResult, BashoName, Division, Rank, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Rikishi } from "./types/rikishi";
+import type { Heya } from "./types/heya";
+import type { BashoResult, BashoName } from "./types/basho";
+import type { Division, Rank } from "./types/banzuke";
+import type { Id } from "./types/common";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 
 // === CAREER RECORD TYPES ===
 
+/** Defines the structure for basho performance. */
 export interface BashoPerformance {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -26,6 +32,7 @@ export interface BashoPerformance {
   kinboshiCount: number;
 }
 
+/** Defines the structure for rikishi career record. */
 export interface RikishiCareerRecord {
   rikishiId: Id;
   shikona: string;
@@ -62,6 +69,7 @@ export interface RikishiCareerRecord {
   retiredBasho?: BashoName;
 }
 
+/** Defines the structure for heya record. */
 export interface HeyaRecord {
   heyaId: Id;
   name: string;
@@ -87,6 +95,7 @@ export interface HeyaRecord {
   founderName?: string;
 }
 
+/** Defines the structure for oyakata record. */
 export interface OyakataRecord {
   oyakataId: Id;
   name: string;
@@ -108,6 +117,13 @@ export interface OyakataRecord {
 
 // === RECORD GENERATION ===
 
+/**
+ * Generate career record.
+ *  * @param rikishi - The Rikishi.
+ *  * @param world - The World.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
@@ -252,6 +268,15 @@ export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: (
   };
 }
 
+/**
+ * Simulate basho performance.
+ *  * @param currentRank - The Current rank.
+ *  * @param currentDivision - The Current division.
+ *  * @param targetRank - The Target rank.
+ *  * @param _rankNumber - The _rank number.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function simulateBashoPerformance(
   currentRank: Rank,
   currentDivision: Division,
@@ -313,6 +338,16 @@ function simulateBashoPerformance(
   return { wins, losses, yusho, junYusho, ginoSho, kantosho, shukunsho, kinboshi };
 }
 
+/**
+ * Simulate rank progression.
+ *  * @param currentRank - The Current rank.
+ *  * @param currentDivision - The Current division.
+ *  * @param wins - The Wins.
+ *  * @param losses - The Losses.
+ *  * @param rankNumber - The Rank number.
+ *  * @param _rng - The _rng.
+ *  * @returns The result.
+ */
 function simulateRankProgression(
   currentRank: Rank,
   currentDivision: Division,
@@ -372,6 +407,11 @@ function simulateRankProgression(
   return { newRank, newDivision: divisionMap[newRank], newRankNumber: numbered ? newRankNumber : undefined };
 }
 
+/**
+ * Get rank career multiplier.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankCareerMultiplier(rank: Rank): number {
   const multipliers: Record<Rank, number> = {
     yokozuna: 5,
@@ -388,6 +428,11 @@ function getRankCareerMultiplier(rank: Rank): number {
   return multipliers[rank] || 1;
 }
 
+/**
+ * Get rank value.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankValue(rank: Rank): number {
   const values: Record<Rank, number> = {
     jonokuchi: 1,
@@ -406,6 +451,13 @@ function getRankValue(rank: Rank): number {
 
 // === HEYA RECORD GENERATION ===
 
+/**
+ * Generate heya record.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = Array.from(world.rikishi.values()).filter((r) => r.heyaId === heya.id);
 
@@ -439,6 +491,7 @@ export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => num
 
 // === ALMANAC SNAPSHOT ===
 
+/** Defines the structure for almanac snapshot. */
 export interface AlmanacSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -462,20 +515,45 @@ export interface AlmanacSnapshot {
   retirements: Array<{ rikishiId: Id; shikona: string; reason?: string }>;
 }
 
+/**
+ * Build almanac snapshot.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null {
   if (!world.currentBasho) return null;
 
   const basho = world.currentBasho;
-  const makuuchiRikishi = Array.from(world.rikishi.values()).filter((r) => r.division === "makuuchi");
+
+  let makuuchiRikishiCount = 0;
+  let totalMakuuchiWins = 0;
+  let makuuchiInjuryCount = 0;
+
+  for (const r of world.rikishi.values()) {
+    if (r.division === "makuuchi") {
+      makuuchiRikishiCount++;
+      totalMakuuchiWins += r.currentBashoWins;
+      if (r.injured) {
+        makuuchiInjuryCount++;
+      }
+    }
+  }
+
+  let totalBouts = 0;
+  for (const m of basho.matches) {
+    if (m.result) {
+      totalBouts++;
+    }
+  }
 
   return {
     year: basho.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     makuuchiSummary: {
-      totalBouts: basho.matches.filter((m) => m.result).length,
-      avgWins: makuuchiRikishi.reduce((sum, r) => sum + r.currentBashoWins, 0) / Math.max(1, makuuchiRikishi.length),
-      injuryCount: makuuchiRikishi.filter((r) => r.injured).length
+      totalBouts,
+      avgWins: totalMakuuchiWins / Math.max(1, makuuchiRikishiCount),
+      injuryCount: makuuchiInjuryCount
     },
     promotions: [],
     demotions: [],
@@ -485,6 +563,11 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
 
 // === RECORD LOOKUP ===
 
+/**
+ * Get rikishi career summary.
+ *  * @param record - The Record.
+ *  * @returns The result.
+ */
 export function getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];
 

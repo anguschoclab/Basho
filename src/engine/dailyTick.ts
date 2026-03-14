@@ -22,7 +22,7 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types";
+import type { WorldState, CyclePhase } from "./types/world";
 import { EventBus, logEngineEvent } from "./events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
 import { autosave } from "./saveload";
@@ -49,6 +49,7 @@ import { RANK_HIERARCHY } from "./banzuke";
 // TYPES
 // ============================================================================
 
+/** Defines the structure for daily tick report. */
 export interface DailyTickReport {
   dayIndexGlobal: number;
   phase: CyclePhase;
@@ -66,6 +67,12 @@ export interface DailyTickReport {
 /** Days per month (non-leap for simplicity; deterministic) */
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+/**
+ * Days in month.
+ *  * @param month - The Month.
+ *  * @param _year - The _year.
+ *  * @returns The result.
+ */
 function daysInMonth(month: number, _year: number): number {
   return DAYS_IN_MONTH[(month - 1) % 12] || 30;
 }
@@ -101,10 +108,19 @@ function advanceCalendarDay(world: WorldState): { monthBoundary: boolean; yearBo
 // PHASE TRANSITION LOGIC
 // ============================================================================
 
+/**
+ * Get interim days total.
+ *  * @returns The result.
+ */
 function getInterimDaysTotal(): number {
   return getInterimWeeks("hatsu", "haru") * 7; // Always 42 per canon
 }
 
+/**
+ * Check phase transition.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CyclePhase } | undefined {
   const prev = world.cyclePhase;
 
@@ -200,6 +216,11 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 // SUBSYSTEM TICKS
 // ============================================================================
 
+/**
+ * Safe call.
+ *  * @param fn - The Fn.
+ *  * @returns The result.
+ */
 function safeCall(fn: () => void): boolean {
   try {
     fn();
@@ -617,6 +638,12 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
 // CONVENIENCE: Advance multiple days
 // ============================================================================
 
+/**
+ * Advance days.
+ *  * @param world - The World.
+ *  * @param days - The Days.
+ *  * @returns The result.
+ */
 export function advanceDays(world: WorldState, days: number): DailyTickReport[] {
   const reports: DailyTickReport[] = [];
   const n = Math.max(1, Math.min(days, 365));
@@ -626,6 +653,11 @@ export function advanceDays(world: WorldState, days: number): DailyTickReport[] 
   return reports;
 }
 
+/**
+ * Advance full interim.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function advanceFullInterim(world: WorldState): DailyTickReport[] {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return [];
   const totalDays = getInterimDaysTotal();
@@ -636,11 +668,19 @@ export function advanceFullInterim(world: WorldState): DailyTickReport[] {
 // PHASE INITIALIZERS (called by world.ts on phase entry)
 // ============================================================================
 
+/**
+ * Enter post basho.
+ *  * @param world - The World.
+ */
 export function enterPostBasho(world: WorldState): void {
   world.cyclePhase = "post_basho";
   world._postBashoDays = 7;
 }
 
+/**
+ * Enter interim.
+ *  * @param world - The World.
+ */
 export function enterInterim(world: WorldState): void {
   world.cyclePhase = "interim";
   world._interimDaysRemaining = getInterimDaysTotal();

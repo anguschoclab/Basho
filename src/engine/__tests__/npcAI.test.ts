@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { determineNPCStyleBias, getManagerPersona, makeNPCWeeklyDecision } from "../npcAI";
-import { WorldState, Rikishi, Heya, Oyakata, RikishiStats } from "../types";
+import { WorldState } from "../types/world";
+import { Rikishi, RikishiStats } from "../types/rikishi";
+import { Heya } from "../types/heya";
+import { Oyakata } from "../types/oyakata";
 
 function createMockWorld(): WorldState {
   return {

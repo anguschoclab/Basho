@@ -8,10 +8,13 @@
  * Usage: import { projectRikishi } from "@/engine/uiModels" in any page/component.
  */
 
-import type {
-  Id, Rikishi, Heya, WorldState, Rank, Division, Side,
-  Style, TacticalArchetype, BoutResult, BashoResult,
-} from "./types";
+import type { Id } from "./types/common";
+import type { Rikishi } from "./types/rikishi";
+import type { Heya } from "./types/heya";
+import type { WorldState } from "./types/world";
+import type { Rank, Division, Side } from "./types/banzuke";
+import type { Style, TacticalArchetype } from "./types/combat";
+import type { BoutResult, BashoResult } from "./types/basho";
 import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
@@ -23,6 +26,7 @@ type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
 //  UIRikishi — Full profile projection
 // ─────────────────────────────────────────
 
+/** Defines the structure for u i rikishi. */
 export interface UIRikishi {
   id: Id;
   shikona: string;
@@ -84,6 +88,7 @@ export interface UIRikishi {
   favoredKimarite: string[];
 }
 
+/** Defines the structure for u i rival entry. */
 export interface UIRivalEntry {
   opponentId: Id;
   opponentShikona: string;
@@ -93,6 +98,12 @@ export interface UIRivalEntry {
   totalBouts: number;
 }
 
+/**
+ * Project rikishi.
+ *  * @param r - The R.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const heya = world.heyas.get(r.heyaId);
   const age = world.year - r.birthYear;
@@ -180,6 +191,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
 //  UIRosterEntry — Lightweight list item
 // ─────────────────────────────────────────
 
+/** Defines the structure for u i roster entry. */
 export interface UIRosterEntry {
   id: Id;
   shikona: string;
@@ -202,6 +214,11 @@ export interface UIRosterEntry {
   potentialBand: PotentialBand;
 }
 
+/**
+ * Project roster entry.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
 export function projectRosterEntry(r: Rikishi): UIRosterEntry {
   const rankInfo = RANK_NAMES[r.rank];
   return {
@@ -231,6 +248,7 @@ export function projectRosterEntry(r: Rikishi): UIRosterEntry {
 //  UIHeya — Stable profile projection
 // ─────────────────────────────────────────
 
+/** Defines the structure for u i heya. */
 export interface UIHeya {
   id: Id;
   name: string;
@@ -270,14 +288,20 @@ export interface UIHeya {
   governanceStatus: string;
 }
 
+/**
+ * Project heya.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function projectHeya(heya: Heya, world: WorldState): UIHeya {
-  const oyakata = world.oyakata.get(heya.oyakataId);
+  const oyakata = world.oyakata instanceof Map ? world.oyakata.get(heya.oyakataId) : world.oyakata[heya.oyakataId];
   const roster = heya.rikishiIds
     .map(id => world.rikishi.get(id))
     .filter(Boolean) as Rikishi[];
 
   const sekitoriDivisions = new Set(["makuuchi", "juryo"]);
-  const sekitoriCount = roster.filter(r => sekitoriDivisions.has(r.division)).length;
+  const sekitoriCount = roster.reduce((count, r) => sekitoriDivisions.has(r.division) ? count + 1 : count, 0);
 
   return {
     id: heya.id,
@@ -309,6 +333,7 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
 //  UIBoutRow — Matchday bout display
 // ─────────────────────────────────────────
 
+/** Defines the structure for u i bout row. */
 export interface UIBoutRow {
   eastId: Id;
   eastShikona: string;
@@ -323,6 +348,12 @@ export interface UIBoutRow {
   isUpset: boolean;
 }
 
+/**
+ * Project bout row.
+ *  * @param bout - The Bout.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
   const east = world.rikishi.get(bout.winnerRikishiId);
   const west = world.rikishi.get(bout.loserRikishiId);
@@ -349,6 +380,7 @@ export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
 //  UIBashoSummary — Post-basho recap
 // ─────────────────────────────────────────
 
+/** Defines the structure for u i basho summary. */
 export interface UIBashoSummary {
   year: number;
   bashoNumber: number;
@@ -361,6 +393,12 @@ export interface UIBashoSummary {
   shukunshoShikona?: string;
 }
 
+/**
+ * Project basho summary.
+ *  * @param result - The Result.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function projectBashoSummary(result: BashoResult, world: WorldState): UIBashoSummary {
   const lookup = (id?: Id) => {
     if (!id) return undefined;

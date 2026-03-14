@@ -1,8 +1,12 @@
-import { WorldState, Id, Rikishi, Heya } from "./types";
+import { WorldState } from "./types/world";
+import { Id } from "./types/common";
+import { Rikishi } from "./types/rikishi";
+import { Heya } from "./types/heya";
 import { logEngineEvent } from "./events";
 import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./talentpool";
 
 // Hard cap constants
+/** h a r d_ c a p_ r o s t e r_ s i z e. */
 export const HARD_CAP_ROSTER_SIZE = 30;
 
 /**
@@ -17,7 +21,8 @@ export const HARD_CAP_ROSTER_SIZE = 30;
 export function enforceHardCapRosterOverflow(world: WorldState): number {
   let totalReleased = 0;
 
-  for (const heya of world.heyas.values()) {
+  const heyasIter = world.heyas instanceof Map ? world.heyas.values() : Object.values(world.heyas);
+  for (const heya of heyasIter) {
     if (heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;

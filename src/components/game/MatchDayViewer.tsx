@@ -2,11 +2,14 @@
 // east/west color coding, and immersive bout cards
 
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Rikishi, WorldState, BoutResult, RankPosition } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutResult } from "@/engine/types/basho";
+import type { RankPosition } from "@/engine/types/banzuke";
 import { getRivalry, type RivalryHeatBand, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
 import { compareRanks } from "@/engine/banzuke";
@@ -25,6 +28,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────
 
+/** Defines the structure for match like. */
 interface MatchLike {
   day?: number;
   boutId?: string;
@@ -33,6 +37,7 @@ interface MatchLike {
   result?: BoutResult;
 }
 
+/** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
   matches: MatchLike[];
   world: WorldState;
@@ -42,6 +47,11 @@ interface MatchDayViewerProps {
 
 // ── Helpers ────────────────────────────────────────────
 
+/**
+ * Get heat band.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 75) return "inferno";
   if (heat >= 50) return "hot";
@@ -72,6 +82,11 @@ const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: strin
   },
 };
 
+/**
+ * Get h2 h record.
+ *  * @param r1 - The R1.
+ *  * @param r2 - The R2.
+ */
 function getH2HRecord(r1: Rikishi, r2: Rikishi) {
   const record = r1.h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
@@ -79,6 +94,20 @@ function getH2HRecord(r1: Rikishi, r2: Rikishi) {
 
 // ── Sub-components ─────────────────────────────────────
 
+/**
+ * rikishi side.
+ *  * @param {
+ *   rikishi,
+ *   side,
+ *   isWinner,
+ *   onClick,
+ * } - The {
+ *   rikishi,
+ *   side,
+ *   is winner,
+ *   on click,
+ * }.
+ */
 function RikishiSide({
   rikishi,
   side,
@@ -118,6 +147,10 @@ function RikishiSide({
   );
 }
 
+/**
+ * h2 h center.
+ *  * @param { wins, losses } - The { wins, losses }.
+ */
 function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   return (
     <div className="vs-divider shrink-0 w-16 text-center px-1">
@@ -131,6 +164,14 @@ function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   );
 }
 
+/**
+ * bout tags.
+ *  * @param {
+ *   match,
+ * } - The {
+ *   match,
+ * }.
+ */
 function BoutTags({
   match,
 }: {
@@ -184,12 +225,17 @@ function BoutTags({
 }
 
 // Just a type helper for the resolved match shape
+/** Use resolved match. */
 function useResolvedMatch() {
   return null as any;
 }
 
 // ── Main Component ─────────────────────────────────────
 
+/**
+ * match day viewer.
+ *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
+ */
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
@@ -237,7 +283,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
     );
   }
 
-  const completedCount = sortedMatches.filter((m) => !!m?.result).length;
+  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
 
   return (
     <Card className="paper overflow-hidden">
@@ -288,7 +334,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.east}
                     side="east"
                     isWinner={match.result?.winner === "east"}
-                    onClick={() => navigate(`/rikishi/${match.east.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })}
                   />
 
                   {/* H2H center */}
@@ -299,7 +345,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.west}
                     side="west"
                     isWinner={match.result?.winner === "west"}
-                    onClick={() => navigate(`/rikishi/${match.west.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })}
                   />
 
                   {/* Result badge */}

@@ -7,11 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
-import type { Oyakata, OyakataArchetype } from "@/engine/types";
+import type { Oyakata, OyakataArchetype } from "../../types/oyakata";
 import { type OyakataRecord } from "@/engine/almanac";
 import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
 import { toTraitBand, TRAIT_LABELS } from "@/engine/descriptorBands";
 
+/** oyakata page. */
 export default function OyakataPage() {
   const { state } = useGame();
   const world = state.world;

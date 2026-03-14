@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Wrench,
 } from "lucide-react";
-import type { EngineEvent, WorldState } from "@/engine/types";
+import type { EngineEvent } from "@/engine/types/events";
+import type { WorldState } from "@/engine/types/world";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -39,10 +40,19 @@ const CATEGORY_META: Record<string, { icon: any; color: string; label: string }>
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 
+/**
+ * Get category meta.
+ *  * @param cat - The Cat.
+ */
 function getCategoryMeta(cat: string) {
   return CATEGORY_META[cat] || CATEGORY_META.misc;
 }
 
+/**
+ * Format event time.
+ *  * @param e - The E.
+ *  * @returns The result.
+ */
 function formatEventTime(e: EngineEvent): string {
   if (e.day !== undefined && e.bashoNumber !== undefined) {
     return `B${e.bashoNumber} D${e.day}`;
@@ -113,10 +123,15 @@ function getEventRoute(e: EngineEvent): string | null {
   return null;
 }
 
+/** Defines the structure for event log panel props. */
 interface EventLogPanelProps {
   className?: string;
 }
 
+/**
+ * event log panel.
+ *  * @param { className = "" } - The { class name = "" }.
+ */
 export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -208,7 +223,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const handleEventClick = useCallback((e: EngineEvent) => {
     const route = getEventRoute(e);
     if (route) {
-      navigate(route);
+      navigate({ to: route as any });
     }
   }, [navigate]);
 

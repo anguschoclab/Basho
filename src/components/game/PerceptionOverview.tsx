@@ -2,7 +2,7 @@
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, Swords, User } from "lucide-react";
-import type { WorldState, Rikishi, Rank } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
 import { buildPerceptionSnapshot, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
 
 const STATURE_COLOR: Record<string, string> = {
@@ -59,11 +61,16 @@ const MOMENTUM_COLOR: Record<string, string> = {
   declining: "text-destructive",
 };
 
+/** Defines the structure for perception overview props. */
 interface PerceptionOverviewProps {
   world: WorldState;
   playerHeyaId: string | null;
 }
 
+/**
+ * perception overview.
+ *  * @param { world, playerHeyaId } - The { world, player heya id }.
+ */
 export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewProps) {
   const navigate = useNavigate();
   const [compareIds, setCompareIds] = useState<[string | null, string | null]>([null, null]);
@@ -149,7 +156,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
                     e.preventDefault();
                     handleToggleCompare(snap.heyaId);
                   } else {
-                    navigate(`/stable/${snap.heyaId}`);
+                    navigate({ to: "/stable/$id", params: { id: snap.heyaId } });
                   }
                 }}
               >
@@ -205,6 +212,22 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
 
 // === Full Comparison with Tabs ===
 
+/**
+ * stable comparison full.
+ *  * @param {
+ *   snapA,
+ *   snapB,
+ *   world,
+ *   compareMode,
+ *   setCompareMode,
+ * } - The {
+ *   snap a,
+ *   snap b,
+ *   world,
+ *   compare mode,
+ *   set compare mode,
+ * }.
+ */
 function StableComparisonFull({
   snapA,
   snapB,
@@ -277,6 +300,10 @@ const COMPARE_ROWS: Array<{
   { label: "Compliance", icon: Shield, get: s => s.complianceState },
 ];
 
+/**
+ * stable metric grid.
+ *  * @param { snapA, snapB } - The { snap a, snap b }.
+ */
 function StableMetricGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: PerceptionSnapshot }) {
   return (
     <>
@@ -310,6 +337,10 @@ function StableMetricGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: 
 
 // === Rikishi Side-by-Side Comparison ===
 
+/**
+ * rikishi comparison grid.
+ *  * @param { snapA, snapB } - The { snap a, snap b }.
+ */
 function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: PerceptionSnapshot }) {
   const [selectedA, setSelectedA] = useState<string | null>(snapA.rikishiPerceptions[0]?.rikishiId ?? null);
   const [selectedB, setSelectedB] = useState<string | null>(snapB.rikishiPerceptions[0]?.rikishiId ?? null);
@@ -382,6 +413,14 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
   );
 }
 
+/**
+ * rikishi row.
+ *  * @param {
+ *   label, valA, valB, colorMapA, colorMapB,
+ * } - The {
+ *   label, val a, val b, color map a, color map b,
+ * }.
+ */
 function RikishiRow({
   label, valA, valB, colorMapA, colorMapB,
 }: {
@@ -404,6 +443,22 @@ function RikishiRow({
 
 // === H2H Bout History Panel ===
 
+/**
+ * h2 h panel.
+ *  * @param {
+ *   heyaAId,
+ *   heyaBId,
+ *   heyaAName,
+ *   heyaBName,
+ *   world,
+ * } - The {
+ *   heya a id,
+ *   heya b id,
+ *   heya a name,
+ *   heya b name,
+ *   world,
+ * }.
+ */
 function H2HPanel({
   heyaAId,
   heyaBId,
@@ -544,6 +599,22 @@ function H2HPanel({
 
 // === Shared Components ===
 
+/**
+ * perception chip.
+ *  * @param {
+ *   icon: Icon,
+ *   label,
+ *   value,
+ *   count,
+ *   color,
+ * } - The {
+ *   icon:  icon,
+ *   label,
+ *   value,
+ *   count,
+ *   color,
+ * }.
+ */
 function PerceptionChip({
   icon: Icon,
   label,

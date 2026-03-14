@@ -1,8 +1,9 @@
 // SubNavTabs — FM-style page-level sub-navigation tabs
 // Sits between the top nav bar and the main content area
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 
+/** Defines the structure for sub nav tab. */
 export interface SubNavTab {
   id: string;
   label: string;
@@ -10,6 +11,7 @@ export interface SubNavTab {
   href?: string;
 }
 
+/** Defines the structure for sub nav tabs props. */
 interface SubNavTabsProps {
   tabs: SubNavTab[];
   activeTab: string;
@@ -18,6 +20,10 @@ interface SubNavTabsProps {
   pageTitle?: string;
 }
 
+/**
+ * sub nav tabs.
+ *  * @param { tabs, activeTab, onTabChange, pageTitle } - The { tabs, active tab, on tab change, page title }.
+ */
 export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle }: SubNavTabsProps) {
   const navigate = useNavigate();
 
@@ -40,7 +46,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle }: SubNavTa
                 key={tab.id}
                 onClick={() => {
                   if (tab.href) {
-                    navigate(tab.href);
+                    navigate({ to: tab.href as any });
                   } else {
                     onTabChange?.(tab.id);
                   }

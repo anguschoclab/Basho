@@ -4,7 +4,11 @@
 // Aligned with Institutional Economy V2.0 Spec.
 
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { WorldState, Heya, BoutResult, MatchSchedule, Rikishi, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { BoutResult, MatchSchedule } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
+import type { Id } from "./types/common";
 import { reportScandal } from "./governance";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
@@ -34,6 +38,11 @@ export function tickWeek(world: WorldState): void {
   }
 }
 
+/**
+ * Process heya finances.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function processHeyaFinances(heya: Heya, world: WorldState): void {
   // 1. Calculate Expenses (Weekly Burn)
   
@@ -90,6 +99,11 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   heya.riskIndicators.financial = heya.funds < 0 || runwayWeeks < 8;
 }
 
+/**
+ * Handle insolvency.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function handleInsolvency(heya: Heya, world: WorldState): void {
   // If funds are negative, we are in trouble.
   // The JSA (Governance) steps in if it gets too deep.
@@ -173,7 +187,7 @@ export function onBoutResolved(
  * Each sponsor computes satisfaction; those below threshold churn out.
  */
 export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
-  const pool = (world as any).sponsorPool;
+  const pool = world.sponsorPool;
   if (!pool?.sponsors) return { churned: [], retained: 0 };
 
   const churned: string[] = [];
@@ -232,6 +246,12 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
   return { churned, retained };
 }
 
+/**
+ * Compute star power.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function computeStarPower(heya: Heya, world: WorldState): number {
   let starPower = 0;
   for (const rId of heya.rikishiIds) {

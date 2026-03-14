@@ -4,6 +4,7 @@ import { RankChangeIndicator } from "./RankChangeIndicator";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 import type { UIRosterEntry } from "@/engine/uiModels";
 
+/** Defines the structure for props. */
 interface Props {
   entry: UIRosterEntry | null;
   kadobanMap: OzekiKadobanMap;
@@ -15,6 +16,10 @@ interface Props {
   side: "east" | "west";
 }
 
+/**
+ * rikishi cell.
+ *  * @param { entry, kadobanMap, heyaName, showChanges, prevRankMap, searchQuery, isPlayerStable, side } - The { entry, kadoban map, heya name, show changes, prev rank map, search query, is player stable, side }.
+ */
 export function RikishiCell({ entry, kadobanMap, heyaName, showChanges, prevRankMap, searchQuery, isPlayerStable, side }: Props) {
   if (!entry) return <td className="p-3 text-muted-foreground/40 text-center">—</td>;
 
