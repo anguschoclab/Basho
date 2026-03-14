@@ -11,7 +11,7 @@ function toReadable(name: string): string {
 }
 
 function processSourceFile(sourceFile: any) {
-    if (sourceFile.getFilePath().includes('vite-env.d.ts') || sourceFile.getFilePath().includes('components/ui/') || sourceFile.getFilePath().includes('__tests__')) {
+    if (sourceFile.getFilePath().includes('vite-env.d.ts') || sourceFile.getFilePath().includes('components/ui/') || sourceFile.getFilePath().includes('__tests__') || sourceFile.getFilePath().includes('rng.ts') || sourceFile.getFilePath().includes('ClickableName.tsx')) {
         return;
     }
 

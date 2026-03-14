@@ -55,25 +55,11 @@ export class SeededRNG {
   }
 }
 
-/**
- * Rng from seed.
- *  * @param seed - The Seed.
- *  * @param subsystem - The Subsystem.
- *  * @param label - The Label.
- *  * @returns The result.
- */
 export function rngFromSeed(seed: string, subsystem: string, label: string): SeededRNG {
   const combinedSeed = `${seed}::${subsystem}::${label}`;
   return new SeededRNG(combinedSeed);
 }
 
-/**
- * Rng for world.
- *  * @param world - The World.
- *  * @param subsystem - The Subsystem.
- *  * @param label - The Label.
- *  * @returns The result.
- */
 export function rngForWorld(world: WorldState, subsystem: string, label: string): SeededRNG {
   return rngFromSeed(world.seed, subsystem, label);
 }
