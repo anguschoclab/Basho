@@ -760,6 +760,13 @@ export function buildPbpFromBoutResult(
           strikeEvent: normalizeStrikeEvent(entry.data?.strikeEvent),
           leader: advantage
         });
+      } else if (entry.phase === "tactical") {
+        facts.push({
+          phase: "tactical",
+          beat: ++momentumBeat, // share beat with momentum
+          trailingSide: entry.data?.trailingSide as Side,
+          reason: "tactical_adaptation"
+        } as TacticalAdaptFact);
       } else if (entry.phase === "momentum") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
         facts.push({

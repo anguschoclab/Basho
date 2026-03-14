@@ -4,6 +4,8 @@
 
 import type { Id } from "./common";
 
+export type OyakataMood = "ecstatic" | "pleased" | "neutral" | "frustrated" | "furious";
+
 export type OyakataArchetype =
   | "traditionalist"
   | "scientist"
@@ -34,6 +36,7 @@ export interface Oyakata {
   stats?: { scouting: number; training: number; politics: number };
   personality?: string;
 
+  mood?: OyakataMood;
   quirks?: string[];
   managerFlags?: {
     welfareHawk?: boolean;

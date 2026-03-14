@@ -9,7 +9,7 @@
 import { rngForWorld } from "./rng";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
 import type {
-  WorldState, Style, OyakataArchetype, Oyakata, Id,
+  WorldState, Style, OyakataArchetype, Oyakata, OyakataMood, Id,
   TrainingIntensity, TrainingFocus, RecoveryEmphasis
 } from "./types";
 import { ensureHeyaTrainingState } from "./training";
@@ -98,6 +98,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
   welfareDiscipline: number;
   riskAppetite: number;
   perception: PerceptionSnapshot;
+  mood: OyakataMood;
 } {
   const heya = world.heyas.get(heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
@@ -390,7 +391,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
   // 1. Training intensity (now philosophy-aware)
   const intensityDecision = decideTrainingIntensity(
-    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap, philosophy
+    perception, persona.riskAppetite, persona.welfareDiscipline, persona.mood, complianceCap, philosophy
   );
   reasoning.push(`[Training] ${intensityDecision.reason}`);
 
@@ -465,7 +466,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     individualProtects: protectDecision.protectIds,
     individualDevelops,
     individualPushes,
-    reasoning
+    reasoning,
+    mood: persona.mood
   };
 }
 
@@ -535,7 +537,31 @@ export function tickWeek(world: WorldState): number {
     applyNPCDecision(world, decision);
     decisionsApplied++;
 
+
+    const oldMood = heya.oyakataId ? world.oyakata.get(heya.oyakataId)?.mood : "neutral";
+    const newMood = decision.mood;
+
+    // Set the mood back on the Oyakata
+    if (heya.oyakataId) {
+      const oyakata = world.oyakata.get(heya.oyakataId);
+      if (oyakata) oyakata.mood = newMood;
+    }
+
+    if (oldMood !== newMood) {
+      logEngineEvent(world, {
+        type: "OYAKATA_MOOD_SHIFT",
+        category: "narrative",
+        importance: "major",
+        scope: "heya",
+        heyaId: heya.id,
+        title: `${heya.name} Oyakata is ${newMood}`,
+        summary: `The master of ${heya.name} is now feeling ${newMood}.`,
+        data: { oldMood, newMood }
+      });
+    }
+
     // Publish scouting priority for talentpool consumption
+
     scoutingMap[heya.id] = decision.scoutingPriority;
 
     // Audit log (A7.3): manager decision log

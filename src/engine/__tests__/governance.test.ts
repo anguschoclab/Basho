@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "bun:test";
+import { mock } from "bun:test";
 
 // Mock rng.ts entirely
-vi.mock("../rng", () => ({
+mock.module("../rng", () => ({
   rngFromSeed: () => ({
     next: () => 0.5,
     int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
@@ -19,7 +20,7 @@ vi.mock("../rng", () => ({
 }));
 
 // Mock media.ts to avoid its dependencies
-vi.mock("../media", () => ({
+mock.module("../media", () => ({
   generateScandalHeadline: () => null,
 }));
 
