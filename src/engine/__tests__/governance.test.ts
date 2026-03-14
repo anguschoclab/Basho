@@ -1,31 +1,27 @@
 import { describe, it, expect, vi } from "vitest";
 
 // Mock rng.ts entirely
-mock.module("../rng", () => {
-  return {
-    rngFromSeed: () => ({
-      next: () => 0.5,
-      int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
-      bool: (p: number = 0.5) => 0.5 < p,
-      pick: <T>(arr: T[]) => arr[0],
-      shuffle: <T>(arr: T[]) => arr,
-    }),
-    rngForWorld: () => ({
-      next: () => 0.5,
-      int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
-      bool: (p: number = 0.5) => 0.5 < p,
-      pick: <T>(arr: T[]) => arr[0],
-      shuffle: <T>(arr: T[]) => arr,
-    }),
-  };
-});
+vi.mock("../rng", () => ({
+  rngFromSeed: () => ({
+    next: () => 0.5,
+    int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
+    bool: (p: number = 0.5) => 0.5 < p,
+    pick: <T>(arr: T[]) => arr[0],
+    shuffle: <T>(arr: T[]) => arr,
+  }),
+  rngForWorld: () => ({
+    next: () => 0.5,
+    int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
+    bool: (p: number = 0.5) => 0.5 < p,
+    pick: <T>(arr: T[]) => arr[0],
+    shuffle: <T>(arr: T[]) => arr,
+  }),
+}));
 
 // Mock media.ts to avoid its dependencies
-mock.module("../media", () => {
-  return {
-    generateScandalHeadline: () => null,
-  };
-});
+vi.mock("../media", () => ({
+  generateScandalHeadline: () => null,
+}));
 
 import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
 import type { WorldState, Heya } from "../types";
