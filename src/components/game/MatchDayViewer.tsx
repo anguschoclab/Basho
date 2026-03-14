@@ -2,7 +2,7 @@
 // east/west color coding, and immersive bout cards
 
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -291,7 +291,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.east}
                     side="east"
                     isWinner={match.result?.winner === "east"}
-                    onClick={() => navigate(`/rikishi/${match.east.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })}
                   />
 
                   {/* H2H center */}
@@ -302,7 +302,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.west}
                     side="west"
                     isWinner={match.result?.winner === "west"}
-                    onClick={() => navigate(`/rikishi/${match.west.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })}
                   />
 
                   {/* Result badge */}

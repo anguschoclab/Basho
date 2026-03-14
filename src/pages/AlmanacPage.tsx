@@ -4,7 +4,7 @@
 //
 // FIXES / UPDATES:
 // - Removes unused imports (RikishiName/StableName if not used; use Link + names directly)
-// - Avoids navigate() during render (prevents React warnings); shows a safe fallback card instead
+// - Avoids navigate({ to: ) during render (prevents React warnings }); shows a safe fallback card instead
 // - Makes statureBand sorting & color robust to missing/unknown bands
 // - Search is fully case-safe for JP names + EN text (handles undefined fields safely)
 // - Stable directory links to /stable/:id (matches other pages)
@@ -13,7 +13,7 @@
 
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -85,7 +85,7 @@ export default function AlmanacPage() {
             <CardDescription>The world state is not loaded yet.</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <ButtonLikeLink onClick={() => navigate("/")}>Return to Dashboard</ButtonLikeLink>
+            <ButtonLikeLink onClick={() => navigate({ to: "/" })}>Return to Dashboard</ButtonLikeLink>
           </CardContent>
         </Card>
       </div>

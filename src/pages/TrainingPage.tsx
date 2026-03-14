@@ -2,7 +2,7 @@
 // FM-style layout for beya-wide training controls and individual rikishi focus slots
 
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -319,7 +319,7 @@ export default function TrainingPage() {
                     {/* Rikishi Info */}
                     <div 
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate(`/rikishi/${rikishi.id}`)}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id } })}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>

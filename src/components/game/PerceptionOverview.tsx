@@ -2,7 +2,7 @@
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -151,7 +151,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
                     e.preventDefault();
                     handleToggleCompare(snap.heyaId);
                   } else {
-                    navigate(`/stable/${snap.heyaId}`);
+                    navigate({ to: "/stable/$id", params: { id: snap.heyaId } });
                   }
                 }}
               >

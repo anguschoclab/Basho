@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
@@ -109,7 +109,7 @@ function NavDropdown({ group }: { group: NavGroup }) {
           return (
             <DropdownMenuItem
               key={item.url}
-              onClick={() => navigate(item.url)}
+              onClick={() => navigate({ to: item.url as any })}
               className={active ? "bg-primary/10 text-primary" : ""}
             >
               <item.icon className="h-4 w-4 mr-2" />
@@ -132,7 +132,7 @@ function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; 
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => navigate(url)}
+      onClick={() => navigate({ to: url as any })}
       className={`text-xs ${active ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
     >
       <Icon className="h-3.5 w-3.5 mr-1" />
@@ -196,7 +196,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
 
         {/* Brand */}
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate({ to: "/dashboard" })}
           className="flex items-center gap-2 px-2 shrink-0"
         >
           <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
@@ -210,7 +210,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/stable")}
+            onClick={() => navigate({ to: "/stable" })}
             className="text-xs text-muted-foreground hover:text-foreground hidden md:flex"
           >
             {playerHeya.name}
@@ -239,7 +239,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
                     {g.label}
                   </div>
                   {g.items.map((item) => (
-                    <DropdownMenuItem key={item.url} onClick={() => navigate(item.url)}>
+                    <DropdownMenuItem key={item.url} onClick={() => navigate({ to: item.url as any })}>
                       <item.icon className="h-4 w-4 mr-2" />
                       {item.title}
                     </DropdownMenuItem>

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
@@ -209,7 +209,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const handleEventClick = useCallback((e: EngineEvent) => {
     const route = getEventRoute(e);
     if (route) {
-      navigate(route);
+      navigate({ to: route as any });
     }
   }, [navigate]);
 

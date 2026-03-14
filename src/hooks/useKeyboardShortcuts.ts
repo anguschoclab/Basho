@@ -2,7 +2,7 @@
 // Space = advance time, E = toggle event log, number keys = quick nav, etc.
 
 import { useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 
 interface ShortcutOptions {
@@ -81,7 +81,7 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSav
       // ── Number keys 1-9: Quick navigation ──
       if (!ctrl && !e.shiftKey && !e.altKey && QUICK_NAV[e.key]) {
         e.preventDefault();
-        navigate(QUICK_NAV[e.key]);
+        navigate({ to: QUICK_NAV[e.key] as any });
         return;
       }
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -91,7 +91,7 @@ export function TrainingWidget() {
           <Dumbbell className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/training")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/training" })} className="h-6 text-xs gap-1 text-muted-foreground">
           Full Plan <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

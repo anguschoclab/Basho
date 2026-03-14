@@ -2,8 +2,8 @@
 // Clean, FM-inspired rikishi profile with clear hierarchy and fog of war
 // Uses projectRikishi() DTO for basic field display; raw Rikishi for scouting/career gen.
 
-import { rngFromSeed } from "../engine/rng";
-import { useNavigate, useParams } from "react-router-dom";
+import { rngFromSeed } from "../rng";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "../contexts/GameContext";
 import { Button } from "../components/ui/button";
@@ -144,7 +144,7 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
           <Card className="paper border-dashed">
             <CardContent className="py-12 text-center space-y-3">
               <p className="text-muted-foreground">You currently have no wrestlers in your stable.</p>
-              <Button variant="outline" onClick={() => navigate("/banzuke")}>
+              <Button variant="outline" onClick={() => navigate({ to: "/banzuke" })}>
                 <Search className="h-4 w-4 mr-2" /> Scout Banzuke
               </Button>
             </CardContent>
@@ -155,7 +155,7 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
               <Card 
                 key={r.id} 
                 className="hover:border-primary/50 transition-colors cursor-pointer group"
-                onClick={() => navigate(`/rikishi/${r.id}`)}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -196,7 +196,7 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
 // ═══════════════ MAIN COMPONENT ═══════════════
 export default function RikishiPage() {
   const navigate = useNavigate();
-  const { rikishiId } = useParams<{ rikishiId: string }>();
+  const { rikishiId } = useParams({ strict: false });
   const { state } = useGame();
   const { world, playerHeyaId } = state;
 
@@ -217,7 +217,7 @@ export default function RikishiPage() {
             <Search className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
             <h2 className="text-xl font-bold">Rikishi Not Found</h2>
             <p className="text-muted-foreground">The wrestler you are looking for has retired or doesn't exist.</p>
-            <Button variant="outline" onClick={() => navigate("/rikishi")} className="mt-4">
+            <Button variant="outline" onClick={() => navigate({ to: "/rikishi" })} className="mt-4">
               Return to Directory
             </Button>
           </CardContent>
@@ -282,7 +282,7 @@ export default function RikishiPage() {
     <AppLayout pageTitle={ui.shikona}>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Top bar */}
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: '..' })} className="gap-1.5 text-muted-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> Back
         </Button>
 

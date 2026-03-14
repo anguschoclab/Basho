@@ -31,7 +31,7 @@ import {
   Heart,
   HandshakeIcon,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import {Link} from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 
 // Menu items.
@@ -184,7 +184,7 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <NavLink 
+                    <Link
                       to={item.url}
                       className={({ isActive }) => 
                         isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""
@@ -192,7 +192,7 @@ export function AppSidebar() {
                     >
                       <item.icon />
                       <span>{item.title}</span>
-                    </NavLink>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

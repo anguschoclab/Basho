@@ -2,33 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { RouterProvider } from "@tanstack/react-router";
 import { GameProvider } from "./contexts/GameContext";
 import { ThemeProvider } from "./components/ThemeProvider";
-
-import Dashboard from "./pages/Dashboard";
-import StablePage from "./pages/StablePage";
-import RikishiPage from "./pages/RikishiPage";
-import BashoPage from "./pages/BashoPage";
-import BanzukePage from "./pages/BanzukePage";
-import RivalriesPage from "./pages/RivalriesPage";
-import EconomyPage from "./pages/EconomyPage";
-import GovernancePage from "./pages/GovernancePage";
-import HistoryPage from "./pages/HistoryPage";
-import AlmanacPage from "./pages/AlmanacPage";
-import TalentPoolPage from "./pages/TalentPoolPage";
-import ScoutingPage from "./pages/ScoutingPage";
-import RecapPage from "./pages/RecapPage";
-import TrainingPage from "./pages/TrainingPage";
-import MainMenu from "./pages/MainMenu";
-import SettingsPage from "./pages/SettingsPage";
-import OyakataPage from "./pages/OyakataPage";
-import MediaPage from "./pages/MediaPage";
-import HallOfFamePage from "./pages/HallOfFamePage";
-import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
-import SponsorManagementPage from "./pages/SponsorManagementPage";
-import NotFound from "./pages/NotFound";
-import SchedulePage from "./pages/SchedulePage";
+import { router } from "./routes";
 
 const queryClient = new QueryClient();
 
@@ -39,35 +16,7 @@ const App = () => (
         <GameProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/main-menu" element={<MainMenu />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/stable" element={<StablePage />} />
-              <Route path="/stable/:id" element={<StablePage />} />
-              <Route path="/training" element={<TrainingPage />} />
-              <Route path="/oyakata" element={<OyakataPage />} />
-              <Route path="/rikishi/:rikishiId?" element={<RikishiPage />} />
-              <Route path="/basho" element={<BashoPage />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/banzuke" element={<BanzukePage />} />
-              <Route path="/rivalries" element={<RivalriesPage />} />
-              <Route path="/economy" element={<EconomyPage />} />
-              <Route path="/talent" element={<TalentPoolPage />} />
-              <Route path="/scouting" element={<ScoutingPage />} />
-              <Route path="/governance" element={<GovernancePage />} />
-              <Route path="/recap" element={<RecapPage />} />
-              <Route path="/history" element={<HistoryPage />} />
-              <Route path="/almanac" element={<AlmanacPage />} />
-              <Route path="/media" element={<MediaPage />} />
-              <Route path="/hall-of-fame" element={<HallOfFamePage />} />
-              <Route path="/injuries" element={<InjuryRecoveryPage />} />
-              <Route path="/sponsors" element={<SponsorManagementPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <RouterProvider router={router} />
         </GameProvider>
       </TooltipProvider>
     </ThemeProvider>
