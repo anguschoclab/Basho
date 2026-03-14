@@ -818,12 +818,11 @@ function computeMovementUnits(
   demotedOzeki: Set<string>
 ): number {
   if (!perf) return 0;
-
-  const rank = entry.position.rank;
-  const baseMove = calculateBaseMove(rank, perf);
-  const isDemotedOzeki = demotedOzeki.has(entry.rikishiId);
-
-  return clampMovementByRank(baseMove, rank, isDemotedOzeki);
+  return clampMovementByRank(
+    calculateBaseMove(entry.position.rank, perf),
+    entry.position.rank,
+    demotedOzeki.has(entry.rikishiId)
+  );
 }
 
 /**
