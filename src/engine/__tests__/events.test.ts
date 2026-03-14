@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { queryEvents, logEngineEvent, ensureEventsState, tickWeek } from "../events";
+import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus } from "../events";
 import type { WorldState } from "../types/world";
 import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
@@ -35,6 +35,224 @@ describe("Events Engine", () => {
       expect(state).toBe(existingState);
     });
   });
+
+
+  describe("EventBus", () => {
+    let world: WorldState;
+
+    beforeEach(() => {
+      world = createMockWorld();
+      world.calendar = {
+        year: 2025,
+        month: 1,
+        currentWeek: 2,
+        currentDay: 1,
+      };
+    });
+
+    it("injury should log an INJURY_OCCURRED event", () => {
+      EventBus.injury(world, "r1", "Title", "Summary", { severity: "serious" });
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("INJURY_OCCURRED");
+      expect(ev.category).toBe("injury");
+      expect(ev.importance).toBe("headline");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.tags).toContain("injury");
+    });
+
+    it("recovery should log an INJURY_RECOVERED event", () => {
+      EventBus.recovery(world, "r1", "h1", "Summary");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("INJURY_RECOVERED");
+      expect(ev.category).toBe("injury");
+      expect(ev.importance).toBe("notable");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("recovery");
+    });
+
+    it("governance should log a GOVERNANCE_RULING event", () => {
+      EventBus.governance(world, "h1", "Title", "Summary", { ruling: "ok" });
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("GOVERNANCE_RULING");
+      expect(ev.category).toBe("discipline");
+      expect(ev.importance).toBe("major"); // Default
+      expect(ev.scope).toBe("heya");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("governance");
+    });
+
+    it("trainingMilestone should log a TRAINING_MILESTONE event", () => {
+      EventBus.trainingMilestone(world, "r1", "h1", "Title", "Summary", { param: 1 });
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("TRAINING_MILESTONE");
+      expect(ev.category).toBe("training");
+      expect(ev.importance).toBe("notable");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("training");
+    });
+
+    it("trainingProfileChanged should log a TRAINING_PROFILE_CHANGED event", () => {
+      EventBus.trainingProfileChanged(world, "h1", "Summary");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("TRAINING_PROFILE_CHANGED");
+      expect(ev.category).toBe("training");
+      expect(ev.importance).toBe("minor");
+      expect(ev.scope).toBe("heya");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("training");
+    });
+
+    it("financialAlert should log a FINANCIAL_ALERT event", () => {
+      EventBus.financialAlert(world, "h1", "Title", "Summary", { insolvency: true });
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("FINANCIAL_ALERT");
+      expect(ev.category).toBe("economy");
+      expect(ev.importance).toBe("headline");
+      expect(ev.scope).toBe("heya");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("economy");
+    });
+
+    it("kenshoAwarded should log a KENSHO_AWARDED event", () => {
+      EventBus.kenshoAwarded(world, "r1", "h1", 1000, 6);
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("KENSHO_AWARDED");
+      expect(ev.category).toBe("economy");
+      expect(ev.phase).toBe("basho_day");
+      expect(ev.importance).toBe("notable");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.data).toEqual({ amount: 1000, envelopes: 6 });
+      expect(ev.tags).toContain("kensho");
+    });
+
+    it("rivalryEscalated should log a RIVALRY_ESCALATED event", () => {
+      EventBus.rivalryEscalated(world, "r1", "r2", "inferno", "bitter", "Summary");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("RIVALRY_ESCALATED");
+      expect(ev.category).toBe("rivalry");
+      expect(ev.importance).toBe("headline");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ aId: "r1", bId: "r2", heatBand: "inferno", tone: "bitter" });
+      expect(ev.tags).toContain("rivalry");
+    });
+
+    it("rivalryFormed should log a RIVALRY_FORMED event", () => {
+      EventBus.rivalryFormed(world, "r1", "r2", "friendly", "Summary");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("RIVALRY_FORMED");
+      expect(ev.category).toBe("rivalry");
+      expect(ev.importance).toBe("notable");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ aId: "r1", bId: "r2", tone: "friendly" });
+      expect(ev.tags).toContain("rivalry");
+    });
+
+    it("retirement should log a RETIREMENT event", () => {
+      EventBus.retirement(world, "r1", "h1", "Name", "Reason");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("RETIREMENT");
+      expect(ev.category).toBe("career");
+      expect(ev.importance).toBe("major");
+      expect(ev.phase).toBe("basho_wrap");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.data).toEqual({ reason: "Reason" });
+      expect(ev.tags).toContain("retirement");
+    });
+
+    it("rookieDebut should log a ROOKIE_DEBUT event", () => {
+      EventBus.rookieDebut(world, "r1", "h1", "Name");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("ROOKIE_DEBUT");
+      expect(ev.category).toBe("career");
+      expect(ev.importance).toBe("notable");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.tags).toContain("debut");
+    });
+
+    it("scoutingInvestmentChanged should log a SCOUTING_INVESTMENT_CHANGED event", () => {
+      EventBus.scoutingInvestmentChanged(world, "r1", "high");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("SCOUTING_INVESTMENT_CHANGED");
+      expect(ev.category).toBe("scouting");
+      expect(ev.importance).toBe("minor");
+      expect(ev.scope).toBe("rikishi");
+      expect(ev.rikishiId).toBe("r1");
+      expect(ev.data).toEqual({ level: "high" });
+      expect(ev.tags).toContain("scouting");
+    });
+
+    it("bashoStarted should log a BASHO_STARTED event", () => {
+      EventBus.bashoStarted(world, "Hatsu");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("BASHO_STARTED");
+      expect(ev.category).toBe("basho");
+      expect(ev.importance).toBe("headline");
+      expect(ev.phase).toBe("basho_day");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ bashoName: "Hatsu" });
+      expect(ev.tags).toContain("basho");
+    });
+
+    it("bashoEnded should log a BASHO_ENDED event", () => {
+      EventBus.bashoEnded(world, "Hatsu", "r1", "YushoName");
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("BASHO_ENDED");
+      expect(ev.category).toBe("basho");
+      expect(ev.importance).toBe("headline");
+      expect(ev.phase).toBe("basho_wrap");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ bashoName: "Hatsu", yushoId: "r1", yushoName: "YushoName" });
+      expect(ev.tags).toContain("yusho");
+    });
+
+    it("bashoDay should log a BASHO_DAY_ADVANCED event", () => {
+      EventBus.bashoDay(world, 15);
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("BASHO_DAY_ADVANCED");
+      expect(ev.category).toBe("basho");
+      expect(ev.importance).toBe("major");
+      expect(ev.phase).toBe("basho_day");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ day: 15 });
+      expect(ev.tags).toContain("basho");
+    });
+
+    it("welfareAlert should log a WELFARE_ALERT event", () => {
+      EventBus.welfareAlert(world, "h1", "Title", "Summary", { complianceState: "sanctioned" });
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("WELFARE_ALERT");
+      expect(ev.category).toBe("welfare");
+      expect(ev.importance).toBe("headline");
+      expect(ev.scope).toBe("heya");
+      expect(ev.heyaId).toBe("h1");
+      expect(ev.data).toEqual({ complianceState: "sanctioned" });
+      expect(ev.tags).toContain("welfare");
+    });
+
+    it("boutResult should log a BOUT_RESULT event", () => {
+      EventBus.boutResult(world, "r1", "r2", "yorikiri", 5);
+      const ev = world.events.log[0];
+      expect(ev.type).toBe("BOUT_RESULT");
+      expect(ev.category).toBe("basho");
+      expect(ev.importance).toBe("minor");
+      expect(ev.phase).toBe("basho_day");
+      expect(ev.scope).toBe("world");
+      expect(ev.data).toEqual({ winnerId: "r1", loserId: "r2", kimarite: "yorikiri", day: 5 });
+      expect(ev.tags).toContain("bout");
+    });
+  });
+
 
   describe("logEngineEvent", () => {
     let world: WorldState;
