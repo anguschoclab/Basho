@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { ArrowUp, ArrowDown, Minus, ChevronsUp, ChevronsDown, ArrowUpRight } from "lucide-react";
 
+/** Defines the structure for props. */
 interface Props {
   rikishiId: string;
   currentRank: string;
@@ -15,6 +16,13 @@ const RANK_TIER: Record<string, number> = {
   sandanme: 8, jonidan: 9, jonokuchi: 10,
 };
 
+/**
+ * Rank score.
+ *  * @param rank - The Rank.
+ *  * @param rankNumber - The Rank number.
+ *  * @param side - The Side.
+ *  * @returns The result.
+ */
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
   const tier = RANK_TIER[rank] ?? 99;
   const num = rankNumber ?? 0;
@@ -22,6 +30,10 @@ export function rankScore(rank: string, rankNumber?: number, side?: string): num
   return tier * 1000 + num * 2 + sideVal;
 }
 
+/**
+ * rank change indicator.
+ *  * @param { rikishiId, currentRank, currentRankNumber, currentSide, prevRankMap } - The { rikishi id, current rank, current rank number, current side, prev rank map }.
+ */
 export function RankChangeIndicator({ rikishiId, currentRank, currentRankNumber, currentSide, prevRankMap }: Props) {
   const prev = prevRankMap.get(rikishiId);
   if (!prev) {

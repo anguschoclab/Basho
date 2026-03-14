@@ -26,6 +26,7 @@ export type { TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingSt
 // ============================================================================
 
 // 1. INTENSITY EFFECTS
+/** i n t e n s i t y_ m u l t i p l i e r s. */
 export const INTENSITY_MULTIPLIERS: Record<TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }> = {
   conservative: { growth: 0.85, fatigue: 0.75, injuryRisk: 0.80 },
   balanced:     { growth: 1.00, fatigue: 1.00, injuryRisk: 1.00 },
@@ -34,18 +35,22 @@ export const INTENSITY_MULTIPLIERS: Record<TrainingIntensity, { growth: number; 
 };
 
 // Aliases for UI
+/** i n t e n s i t y_ e f f e c t s. */
 export const INTENSITY_EFFECTS = INTENSITY_MULTIPLIERS;
 
 // 2. RECOVERY EMPHASIS EFFECTS
+/** r e c o v e r y_ m u l t i p l i e r s. */
 export const RECOVERY_MULTIPLIERS: Record<RecoveryEmphasis, { fatigueDecay: number; injuryRecovery: number }> = {
   low:    { fatigueDecay: 0.80, injuryRecovery: 0.85 },
   normal: { fatigueDecay: 1.00, injuryRecovery: 1.00 },
   high:   { fatigueDecay: 1.25, injuryRecovery: 1.20 },
 };
 
+/** r e c o v e r y_ e f f e c t s. */
 export const RECOVERY_EFFECTS = RECOVERY_MULTIPLIERS;
 
 // 3. FOCUS BIAS MATRIX (From Canon Table 4.3)
+/** f o c u s_ b i a s_ m a t r i x. */
 export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats, number>> = {
   power:     { strength: 1.30, speed: 0.85, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   speed:     { strength: 0.85, speed: 1.30, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
@@ -54,6 +59,7 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats,
   neutral:   { strength: 1.00, speed: 1.00, technique: 1.00, balance: 1.00, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
 };
 
+/** f o c u s_ e f f e c t s. */
 export const FOCUS_EFFECTS = FOCUS_BIAS_MATRIX;
 
 // 4. INDIVIDUAL FOCUS MODES (From Canon Table 5.2)
@@ -64,6 +70,7 @@ const INDIVIDUAL_FOCUS_MODES: Record<IndividualFocusType, { growth: number; fati
   rebuild: { growth: 1.10, fatigue: 0.90, injuryRisk: 0.85 },
 };
 
+/** p h a s e_ e f f e c t s. */
 export const PHASE_EFFECTS = {
   rookie: { injurySensitivity: 0.8, growthMult: 1.25 },
   prime: { injurySensitivity: 1.0, growthMult: 1.0 },
@@ -84,6 +91,12 @@ const STAT_CEILING_KEYS: (keyof RikishiStats)[] = [
   'strength', 'speed', 'technique', 'balance', 'stamina', 'mental', 'adaptability'
 ];
 
+/**
+ * Get stat ceiling.
+ *  * @param talentSeed - The Talent seed.
+ *  * @param statKey - The Stat key.
+ *  * @returns The result.
+ */
 export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
   // Base ceiling: linear map from talentSeed
   // talentSeed 0 → ceiling 45, talentSeed 100 → ceiling 99
@@ -106,6 +119,11 @@ export function diminishingReturnsMult(currentStat: number, ceiling: number): nu
   return Math.max(0, 1 - ratio * ratio * ratio);
 }
 
+/**
+ * Get career phase.
+ *  * @param experience - The Experience.
+ *  * @returns The result.
+ */
 export function getCareerPhase(experience: number): keyof typeof PHASE_EFFECTS {
   if (experience < 30) return "rookie";
   if (experience < 70) return "prime";
@@ -117,6 +135,12 @@ export function getCareerPhase(experience: number): keyof typeof PHASE_EFFECTS {
 // HELPERS
 // ============================================================================
 
+/**
+ * Ensure heya training state.
+ *  * @param world - The World.
+ *  * @param beyaId - The Beya id.
+ *  * @returns The result.
+ */
 export function ensureHeyaTrainingState(world: WorldState, beyaId: Id): BeyaTrainingState {
   if (!world.trainingState) {
     world.trainingState = {};
@@ -137,6 +161,12 @@ export function ensureHeyaTrainingState(world: WorldState, beyaId: Id): BeyaTrai
   return world.trainingState[beyaId];
 }
 
+/**
+ * Get individual focus.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @param beyaState - The Beya state.
+ *  * @returns The result.
+ */
 export function getIndividualFocus(rikishiId: Id, beyaState: BeyaTrainingState): IndividualFocus | undefined {
   return beyaState.focusSlots.find(slot => slot.rikishiId === rikishiId);
 }
@@ -167,6 +197,13 @@ export function computeTrainingMultipliers(args: {
   };
 }
 
+/**
+ * Calculate fatigue delta.
+ *  * @param profile - The Profile.
+ *  * @param focus - The Focus.
+ *  * @param currentFatigue - The Current fatigue.
+ *  * @returns The result.
+ */
 function calculateFatigueDelta(
   profile: TrainingProfile, 
   focus: IndividualFocus | undefined,
@@ -185,6 +222,14 @@ function calculateFatigueDelta(
   return Math.floor(gain - decay);
 }
 
+/**
+ * Calculate growth vector.
+ *  * @param profile - The Profile.
+ *  * @param focus - The Focus.
+ *  * @param rikishi - The Rikishi.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 function calculateGrowthVector(
   profile: TrainingProfile,
   focus: IndividualFocus | undefined,
@@ -239,6 +284,11 @@ function calculateGrowthVector(
 // MAIN EXPORT
 // ============================================================================
 
+/**
+ * Apply weekly training.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function applyWeeklyTraining(world: WorldState): WorldState {
   const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
 
@@ -296,6 +346,11 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
 }
 
 // UI Helper functions
+/**
+ * Get intensity label.
+ *  * @param intensity - The Intensity.
+ *  * @returns The result.
+ */
 export function getIntensityLabel(intensity: TrainingIntensity): string {
   const labels: Record<TrainingIntensity, string> = {
     conservative: "Conservative",
@@ -306,6 +361,11 @@ export function getIntensityLabel(intensity: TrainingIntensity): string {
   return labels[intensity] || intensity;
 }
 
+/**
+ * Get focus label.
+ *  * @param focus - The Focus.
+ *  * @returns The result.
+ */
 export function getFocusLabel(focus: TrainingFocus): string {
   const labels: Record<TrainingFocus, string> = {
     power: "Power",
@@ -317,6 +377,11 @@ export function getFocusLabel(focus: TrainingFocus): string {
   return labels[focus] || focus;
 }
 
+/**
+ * Get recovery label.
+ *  * @param recovery - The Recovery.
+ *  * @returns The result.
+ */
 export function getRecoveryLabel(recovery: RecoveryEmphasis): string {
   const labels: Record<RecoveryEmphasis, string> = {
     low: "Low",
@@ -326,6 +391,11 @@ export function getRecoveryLabel(recovery: RecoveryEmphasis): string {
   return labels[recovery] || recovery;
 }
 
+/**
+ * Get focus mode label.
+ *  * @param mode - The Mode.
+ *  * @returns The result.
+ */
 export function getFocusModeLabel(mode: string): string {
   const labels: Record<string, string> = {
     develop: "Develop",
@@ -336,6 +406,11 @@ export function getFocusModeLabel(mode: string): string {
   return labels[mode] || mode;
 }
 
+/**
+ * Create default training state.
+ *  * @param beyaId - The Beya id.
+ *  * @returns The result.
+ */
 export function createDefaultTrainingState(beyaId: Id): BeyaTrainingState {
   return {
     beyaId,
@@ -350,6 +425,10 @@ export function createDefaultTrainingState(beyaId: Id): BeyaTrainingState {
 }
 
 // Wrapper for world.ts
+/**
+ * Tick week.
+ *  * @param world - The World.
+ */
 export function tickWeek(world: WorldState) {
   applyWeeklyTraining(world);
 }

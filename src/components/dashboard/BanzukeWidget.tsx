@@ -25,6 +25,7 @@ const RANK_BG: Record<string, string> = {
   ozeki: "bg-silver/5",
 };
 
+/** banzuke widget. */
 export function BanzukeWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

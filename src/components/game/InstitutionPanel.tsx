@@ -13,10 +13,20 @@ import type { WorldState } from "@/engine/types/world";
 import { getStatusLabel } from "@/engine/governance";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ */
 function clamp(n: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Compliance badge.
+ *  * @param state - The State.
+ */
 function complianceBadge(state: string) {
   switch (state) {
     case "compliant":
@@ -32,6 +42,11 @@ function complianceBadge(state: string) {
   }
 }
 
+/**
+ * Risk tone.
+ *  * @param risk - The Risk.
+ *  * @returns The result.
+ */
 function riskTone(risk: number): { label: string; icon: any } {
   if (risk >= 80) return { label: "Severe", icon: AlertTriangle };
   if (risk >= 60) return { label: "High", icon: AlertTriangle };
@@ -39,6 +54,10 @@ function riskTone(risk: number): { label: string; icon: any } {
   return { label: "Managed", icon: HeartPulse };
 }
 
+/**
+ * institution panel.
+ *  * @param { world, heya } - The { world, heya }.
+ */
 export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Heya }) {
   const welfare = (heya as any).welfareState as any | undefined;
   const risk = clamp(Number(welfare?.welfareRisk ?? 10), 0, 100);

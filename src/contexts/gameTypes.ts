@@ -4,6 +4,7 @@ import type { BoutResult } from "@/engine/types/basho";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
 
+/** Type representing game phase. */
 export type GamePhase =
   | "menu"
   | "worldgen"
@@ -21,6 +22,7 @@ export type GamePhase =
   | "governance"
   | "history";
 
+/** Defines the structure for game state. */
 export interface GameState {
   phase: GamePhase;
   world: WorldState | null;
@@ -32,6 +34,7 @@ export interface GameState {
   isAutoPlaying: boolean;
 }
 
+/** Type representing game action. */
 export type GameAction =
   | { type: "CREATE_WORLD"; seed: string; playerHeyaId?: string }
   | { type: "SET_PLAYER_HEYA"; heyaId: string }
@@ -53,6 +56,7 @@ export type GameAction =
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState };
 
+/** Initial game state. */
 export const initialGameState: GameState = {
   phase: "menu",
   world: null,

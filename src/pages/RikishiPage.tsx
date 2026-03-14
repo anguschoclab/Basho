@@ -65,6 +65,10 @@ import {
 } from "lucide-react";
 import { StableName } from "../components/ClickableName";
 
+/**
+ * Find kimarite by id.
+ *  * @param id - The Id.
+ */
 function findKimariteById(id: string) {
   const anyReg = KIMARITE_REGISTRY as any;
   if (Array.isArray(anyReg)) return anyReg.find((k: any) => k?.id === id) || null;
@@ -72,6 +76,10 @@ function findKimariteById(id: string) {
   return null;
 }
 
+/**
+ * stat bar.
+ *  * @param { label, value, max = 100, icon: Icon, color } - The { label, value, max = 100, icon:  icon, color }.
+ */
 function StatBar({ label, value, max = 100, icon: Icon, color }: {
   label: string; value: number; max?: number; icon: any; color: string;
 }) {
@@ -92,6 +100,10 @@ function StatBar({ label, value, max = 100, icon: Icon, color }: {
   );
 }
 
+/**
+ * info row.
+ *  * @param { label, value, className } - The { label, value, class name }.
+ */
 function InfoRow({ label, value, className }: { label: string; value: React.ReactNode; className?: string }) {
   return (
     <div className={`flex items-center justify-between py-1.5 ${className || ""}`}>
@@ -103,6 +115,10 @@ function InfoRow({ label, value, className }: { label: string; value: React.Reac
 
 // ═══════════════ DIRECTORY VIEW (FALLBACK) ═══════════════
 // Displayed when the user hits /rikishi without an ID
+/**
+ * rikishi directory view.
+ *  * @param { world, playerHeyaId, navigate } - The { world, player heya id, navigate }.
+ */
 function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldState, playerHeyaId: string | undefined, navigate: ReturnType<typeof useNavigate> }) {
   
   
@@ -194,6 +210,7 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
 
 
 // ═══════════════ MAIN COMPONENT ═══════════════
+/** rikishi page. */
 export default function RikishiPage() {
   const navigate = useNavigate();
   const { rikishiId } = useParams({ strict: false });

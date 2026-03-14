@@ -15,6 +15,7 @@ export interface H2HRecord {
   streak: number;
 }
 
+/** Defines the structure for match result log. */
 export interface MatchResultLog {
   opponentId: string;
   win: boolean;

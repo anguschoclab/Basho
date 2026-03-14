@@ -11,9 +11,13 @@ import { generateScandalHeadline } from "./media";
 
 // === CONSTANTS ===
 
+/** s c a n d a l_ d e c a y_ r a t e. */
 export const SCANDAL_DECAY_RATE = 0.5; // Points per week
+/** s c a n d a l_ w a r n i n g_ t h r e s h o l d. */
 export const SCANDAL_WARNING_THRESHOLD = 20;
+/** s c a n d a l_ p r o b a t i o n_ t h r e s h o l d. */
 export const SCANDAL_PROBATION_THRESHOLD = 50;
+/** s c a n d a l_ s a n c t i o n_ t h r e s h o l d. */
 export const SCANDAL_SANCTION_THRESHOLD = 80;
 
 // === CORE LOGIC ===
@@ -30,6 +34,11 @@ export function tickWeek(world: WorldState): void {
   }
 }
 
+/**
+ * Process heya governance.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function processHeyaGovernance(heya: Heya, world: WorldState): void {
   // 1. Decay Scandal Score
   // Scandal is sticky, but time heals (slowly)
@@ -175,6 +184,12 @@ export function reportScandal(
   processHeyaGovernance(heya, world);
 }
 
+/**
+ * Log ruling.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @param ruling - The Ruling.
+ */
 function logRuling(heya: Heya, world: WorldState, ruling: GovernanceRuling): void {
   if (!heya.governanceHistory) heya.governanceHistory = [];
   heya.governanceHistory.unshift(ruling);
@@ -185,6 +200,11 @@ function logRuling(heya: Heya, world: WorldState, ruling: GovernanceRuling): voi
 
 // === PUBLIC HELPERS ===
 
+/**
+ * Get status label.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 export function getStatusLabel(status: GovernanceStatus): string {
   switch (status) {
     case "good_standing": return "Good Standing";
@@ -194,6 +214,11 @@ export function getStatusLabel(status: GovernanceStatus): string {
   }
 }
 
+/**
+ * Get status color.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 export function getStatusColor(status: GovernanceStatus): string {
   switch (status) {
     case "good_standing": return "text-green-600";

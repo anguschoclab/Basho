@@ -22,6 +22,7 @@ const CAT_COLOR: Record<string, string> = {
   rivalry: "text-accent", milestone: "text-gold", welfare: "text-warning",
 };
 
+/** news widget. */
 export function NewsWidget() {
   const { state } = useGame();
   const world = state.world;

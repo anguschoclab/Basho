@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Newspaper, Mic, Camera, MessageSquare, TrendingUp, TrendingDown } from "lucide-react";
 import type { WorldState } from "@/engine/types/world";
 
+/** Defines the structure for press question. */
 interface PressQuestion {
   id: string;
   reporter: string;
@@ -21,6 +22,11 @@ interface PressQuestion {
   }>;
 }
 
+/**
+ * Generate press questions.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function generatePressQuestions(world: WorldState): PressQuestion[] {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   if (!playerHeya) return [];
@@ -107,12 +113,17 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
   return questions;
 }
 
+/** Defines the structure for press conference props. */
 interface PressConferenceProps {
   world: WorldState;
   open: boolean;
   onClose: (effects: { reputation: number; morale: number; mediaHeat: number }) => void;
 }
 
+/**
+ * press conference.
+ *  * @param { world, open, onClose } - The { world, open, on close }.
+ */
 export function PressConference({ world, open, onClose }: PressConferenceProps) {
   const questions = useMemo(() => generatePressQuestions(world), [world]);
   const [currentQ, setCurrentQ] = useState(0);

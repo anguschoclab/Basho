@@ -6,6 +6,7 @@ import { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/
 
 // Global open signal for keyboard shortcut integration
 const openListeners = new Set<() => void>();
+/** Open save load dialog. */
 export function openSaveLoadDialog() {
   openListeners.forEach((fn) => fn());
 }
@@ -41,6 +42,11 @@ import {
   HardDrive,
 } from "lucide-react";
 
+/**
+ * Format save date.
+ *  * @param iso - The Iso.
+ *  * @returns The result.
+ */
 function formatSaveDate(iso: string): string {
   try {
     const d = new Date(iso);
@@ -55,10 +61,15 @@ function formatSaveDate(iso: string): string {
   }
 }
 
+/** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {
   trigger?: React.ReactNode;
 }
 
+/**
+ * save load dialog.
+ *  * @param { trigger } - The { trigger }.
+ */
 export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const { state, saveToSlot, loadFromSlot, getSaveSlots, updateWorld } = useGame();
   const { toast } = useToast();

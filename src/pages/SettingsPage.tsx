@@ -13,6 +13,10 @@ import { useEffect, useState } from "react";
 
 const AUTOSAVE_ENABLED_KEY = "basho_autosave_enabled";
 
+/**
+ * Get autosave enabled.
+ *  * @returns The result.
+ */
 export function getAutosaveEnabled(): boolean {
   try {
     const val = localStorage.getItem(AUTOSAVE_ENABLED_KEY);
@@ -22,12 +26,17 @@ export function getAutosaveEnabled(): boolean {
   }
 }
 
+/**
+ * Set autosave enabled.
+ *  * @param enabled - The Enabled.
+ */
 export function setAutosaveEnabled(enabled: boolean) {
   try {
     localStorage.setItem(AUTOSAVE_ENABLED_KEY, String(enabled));
   } catch { /* silent */ }
 }
 
+/** settings page. */
 export default function SettingsPage() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [autosaveOn, setAutosaveOn] = useState(getAutosaveEnabled);

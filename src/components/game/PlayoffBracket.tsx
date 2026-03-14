@@ -5,11 +5,16 @@ import { ClickableName } from "@/components/ClickableName";
 import type { MatchSchedule } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 
+/** Defines the structure for playoff bracket props. */
 interface PlayoffBracketProps {
   matches: MatchSchedule[];
   world: WorldState;
 }
 
+/**
+ * playoff bracket.
+ *  * @param { matches, world } - The { matches, world }.
+ */
 export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   if (!matches || matches.length === 0) return null;
 

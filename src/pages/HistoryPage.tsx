@@ -25,6 +25,7 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { Trophy, Medal, Award, Star, ArrowLeft, Calendar } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
 
+/** Type representing history record. */
 type HistoryRecord = {
   year: number;
   bashoNumber: number;
@@ -41,15 +42,25 @@ type HistoryRecord = {
   } | null;
 };
 
+/**
+ * Safe millions.
+ *  * @param yen - The Yen.
+ */
 function safeMillions(yen?: number) {
   if (!Number.isFinite(yen)) return null;
   return (yen as number) / 1_000_000;
 }
 
+/**
+ * Safe rank ja.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function safeRankJa(rank: any): string {
   return (RANK_HIERARCHY as any)?.[rank]?.nameJa ?? String(rank ?? "—");
 }
 
+/** history page. */
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { state, getRikishi } = useGame();

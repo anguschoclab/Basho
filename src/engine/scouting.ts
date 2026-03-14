@@ -98,10 +98,14 @@ export const ARCHETYPE_NAMES: Record<
 // PART 1: FOG OF WAR & PLAYER KNOWLEDGE
 // ============================================
 
+/** Type representing confidence level. */
 export type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
+/** Type representing scouting investment. */
 export type ScoutingInvestment = "none" | "light" | "standard" | "deep";
+/** Type representing attribute type. */
 export type AttributeType = "physical" | "combat" | "style" | "hidden";
 
+/** Defines the structure for public rikishi info. */
 export interface PublicRikishiInfo {
   id: string;
   shikona: string;
@@ -117,6 +121,7 @@ export interface PublicRikishiInfo {
   archetype?: string;
 }
 
+/** Defines the structure for scouted attribute truth snapshot. */
 export interface ScoutedAttributeTruthSnapshot {
   power: number;
   speed: number;
@@ -126,6 +131,7 @@ export interface ScoutedAttributeTruthSnapshot {
   experience: number;
 }
 
+/** Defines the structure for scouted rikishi. */
 export interface ScoutedRikishi {
   rikishiId: string;
   publicInfo: PublicRikishiInfo;
@@ -138,6 +144,11 @@ export interface ScoutedRikishi {
 }
 
 // --- Helper: Deterministic value from seed string ---
+/**
+ * Seeded random.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 function seededRandom(seed: string): number {
   // Use the canonical RNG for a single draw
   const rng = rngFromSeed(seed, "scouting", "random");
@@ -146,6 +157,13 @@ function seededRandom(seed: string): number {
 
 // --- Logic: Scouting Level ---
 
+/**
+ * Calculate scouting level.
+ *  * @param isOwned - The Is owned.
+ *  * @param observations - The Observations.
+ *  * @param investment - The Investment.
+ *  * @returns The result.
+ */
 export function calculateScoutingLevel(
   isOwned: boolean,
   observations: number,
@@ -165,6 +183,11 @@ export function calculateScoutingLevel(
   return clampInt(passiveBase + investmentBonus[investment], 0, 100);
 }
 
+/**
+ * Get confidence from level.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
 export function getConfidenceFromLevel(level: number): ConfidenceLevel {
   if (level >= 95) return "certain";
   if (level >= 70) return "high";
@@ -173,6 +196,12 @@ export function getConfidenceFromLevel(level: number): ConfidenceLevel {
   return "unknown";
 }
 
+/**
+ * Get confidence level.
+ *  * @param scouted - The Scouted.
+ *  * @param attributeType - The Attribute type.
+ *  * @returns The result.
+ */
 export function getConfidenceLevel(scouted: ScoutedRikishi, attributeType: AttributeType): ConfidenceLevel {
   if (scouted.isOwned) return "certain";
   if (attributeType === "physical") return "certain";
@@ -189,6 +218,14 @@ export function getConfidenceLevel(scouted: ScoutedRikishi, attributeType: Attri
 
 // --- Logic: Deterministic Uncertainty ---
 
+/**
+ * Get estimated value.
+ *  * @param trueValue - The True value.
+ *  * @param confidence - The Confidence.
+ *  * @param seed - The Seed.
+ *  * @param range - The Range.
+ *  * @returns The result.
+ */
 export function getEstimatedValue(
   trueValue: number,
   confidence: ConfidenceLevel,
@@ -217,6 +254,13 @@ export function getEstimatedValue(
   return clamp(trueValue + error, min, max);
 }
 
+/**
+ * Get attribute narrative.
+ *  * @param _attribute - The _attribute.
+ *  * @param estimatedValue - The Estimated value.
+ *  * @param confidence - The Confidence.
+ *  * @returns The result.
+ */
 export function getAttributeNarrative(
   _attribute: string,
   estimatedValue: number,
@@ -242,6 +286,11 @@ export function getAttributeNarrative(
   return { description, qualifier: getConfidenceText(confidence) };
 }
 
+/**
+ * Get confidence text.
+ *  * @param confidence - The Confidence.
+ *  * @returns The result.
+ */
 export function getConfidenceText(confidence: ConfidenceLevel): string {
   switch (confidence) {
     case "certain": return "Full knowledge";
@@ -254,6 +303,11 @@ export function getConfidenceText(confidence: ConfidenceLevel): string {
 
 // --- Logic: View Creation ---
 
+/**
+ * Create public info.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
 export function createPublicInfo(r: Rikishi): PublicRikishiInfo {
   return {
     id: r.id,
@@ -272,6 +326,11 @@ export function createPublicInfo(r: Rikishi): PublicRikishiInfo {
   };
 }
 
+/**
+ * Build truth snapshot.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
 export function buildTruthSnapshot(r: Rikishi): ScoutedAttributeTruthSnapshot {
   // Uses flattened properties from new Rikishi types
   return {
@@ -284,6 +343,15 @@ export function buildTruthSnapshot(r: Rikishi): ScoutedAttributeTruthSnapshot {
   };
 }
 
+/**
+ * Create scouted view.
+ *  * @param rikishi - The Rikishi.
+ *  * @param playerHeyaId - The Player heya id.
+ *  * @param observationCount - The Observation count.
+ *  * @param investment - The Investment.
+ *  * @param currentWeek - The Current week.
+ *  * @returns The result.
+ */
 export function createScoutedView(
   rikishi: Rikishi,
   playerHeyaId: string | null,
@@ -306,6 +374,12 @@ export function createScoutedView(
   };
 }
 
+/**
+ * Record observation.
+ *  * @param scouted - The Scouted.
+ *  * @param currentWeek - The Current week.
+ *  * @returns The result.
+ */
 export function recordObservation(scouted: ScoutedRikishi, currentWeek: number): ScoutedRikishi {
   const timesObserved = scouted.timesObserved + 1;
   const scoutingLevel = calculateScoutingLevel(scouted.isOwned, timesObserved, scouted.scoutingInvestment);
@@ -320,6 +394,7 @@ export function recordObservation(scouted: ScoutedRikishi, currentWeek: number):
 
 // --- Display Helpers ---
 
+/** Defines the structure for scouted attributes. */
 export interface ScoutedAttributes {
   power: ScoutedAttribute;
   speed: ScoutedAttribute;
@@ -329,12 +404,20 @@ export interface ScoutedAttributes {
   experience: ScoutedAttribute;
 }
 
+/** Defines the structure for scouted attribute. */
 export interface ScoutedAttribute {
   value: string;
   confidence: ConfidenceLevel;
   narrative: string;
 }
 
+/**
+ * Get scouted attributes.
+ *  * @param scouted - The Scouted.
+ *  * @param truth - The Truth.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function getScoutedAttributes(scouted: ScoutedRikishi, truth?: Rikishi, seed?: string): ScoutedAttributes {
   const isOwned = scouted.isOwned;
   const snapshot: ScoutedAttributeTruthSnapshot | null = truth ? buildTruthSnapshot(truth) : scouted?.attributes ?? null;
@@ -412,6 +495,11 @@ export function getScoutedAttributes(scouted: ScoutedRikishi, truth?: Rikishi, s
   };
 }
 
+/**
+ * Describe scouting level.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
 export function describeScoutingLevel(level: number): { label: string; description: string; color: string } {
   if (level >= 95) return { label: "Complete", description: "Full knowledge of this wrestler", color: "text-primary" };
   if (level >= 70) return { label: "Well Scouted", description: "Reliable assessment with minor uncertainty", color: "text-success" };
@@ -424,6 +512,7 @@ export function describeScoutingLevel(level: number): { label: string; descripti
 // PART 2: RECRUITMENT SYSTEM (Integrated)
 // ============================================
 
+/** Defines the structure for scout candidate. */
 export interface ScoutCandidate {
   id: string;
   name: string;
@@ -437,6 +526,13 @@ export interface ScoutCandidate {
 
 // Legacy helper: generate a small list of candidates for UI prototypes.
 // Prefer the persistent Talent Pool system (engine/talentpool.ts) for actual gameplay.
+/**
+ * Generate scout candidates.
+ *  * @param world - The World.
+ *  * @param count - The Count.
+ *  * @param currentYear - The Current year.
+ *  * @returns The result.
+ */
 export function generateScoutCandidates(world: WorldState, count: number, currentYear: number): ScoutCandidate[] {
   const candidates: ScoutCandidate[] = [];
 
@@ -462,6 +558,13 @@ export function generateScoutCandidates(world: WorldState, count: number, curren
   return candidates;
 }
 
+/**
+ * Recruit candidate.
+ *  * @param state - The State.
+ *  * @param candidateId - The Candidate id.
+ *  * @param targetHeyaId - The Target heya id.
+ *  * @returns The result.
+ */
 export function recruitCandidate(state: WorldState, candidateId: string, targetHeyaId: string): WorldState {
   console.log(`Recruiting candidate ${candidateId} to heya ${targetHeyaId}`);
   return state;
@@ -471,14 +574,34 @@ export function recruitCandidate(state: WorldState, candidateId: string, targetH
 // PART 3: UTILS
 // ============================================
 
+/**
+ * Clamp.
+ *  * @param value - The Value.
+ *  * @param min - The Min.
+ *  * @param max - The Max.
+ *  * @returns The result.
+ */
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * Clamp int.
+ *  * @param value - The Value.
+ *  * @param min - The Min.
+ *  * @param max - The Max.
+ *  * @returns The result.
+ */
 function clampInt(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, Math.trunc(value)));
 }
 
+/**
+ * Safe num.
+ *  * @param v - The V.
+ *  * @param fallback - The Fallback.
+ *  * @returns The result.
+ */
 function safeNum(v: any, fallback: number): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }

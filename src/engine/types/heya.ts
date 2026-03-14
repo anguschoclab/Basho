@@ -7,6 +7,7 @@ import type { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, Runway
 import type { GovernanceStatus, GovernanceRuling, WelfareState } from "./economy";
 import type { BeyaTrainingState } from "./training";
 
+/** Defines the structure for heya. */
 export interface Heya {
   id: Id;
   name: string;

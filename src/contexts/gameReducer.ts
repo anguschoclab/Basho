@@ -5,6 +5,12 @@ import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
 import { autosaveWithSignal } from "./gameHelpers";
 
+/**
+ * Game reducer.
+ *  * @param state - The State.
+ *  * @param action - The Action.
+ *  * @returns The result.
+ */
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "CREATE_WORLD": {

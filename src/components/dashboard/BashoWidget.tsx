@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ClickableName } from "@/components/ClickableName";
 import { Trophy, ChevronRight, Crown, Star, Swords, HeartPulse } from "lucide-react";
 
+/** basho widget. */
 export function BashoWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

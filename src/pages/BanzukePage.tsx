@@ -16,6 +16,7 @@ import { projectRosterEntry } from "@/engine/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { buildRankRows, buildPrevRankMap, rankRowClass } from "@/components/banzuke/banzukeHelpers";
 
+/** banzuke page. */
 export default function BanzukePage() {
   const { state } = useGame();
   const world = state.world;

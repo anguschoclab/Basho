@@ -119,6 +119,7 @@ const STATURE_CONFIG: Record<
 
 const HEYA_NAMES_COUNT = 45;
 
+/** Defines the structure for stable card props. */
 interface StableCardProps {
   heya: Heya;
   isSelected: boolean;
@@ -128,6 +129,10 @@ interface StableCardProps {
   sekitoriCount: number;
 }
 
+/**
+ * stable card.
+ *  * @param { heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount } - The { heya, is selected, on select, on preview, is recommended, sekitori count }.
+ */
 function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount }: StableCardProps) {
   const config = STATURE_CONFIG[heya.statureBand];
   const Icon = config.icon;
@@ -222,22 +227,38 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
   );
 }
 
+/**
+ * Safe short seed.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 function safeShortSeed(seed: string | undefined | null): string {
   if (!seed) return "unknown";
   return seed.length <= 14 ? seed : `${seed.slice(0, 14)}…`;
 }
 
+/**
+ * Make deterministic seed.
+ *  * @param prefix - The Prefix.
+ *  * @returns The result.
+ */
 function makeDeterministicSeed(prefix = "world"): string {
   // No Math.random() — deterministic-friendly, stable, adequate uniqueness for local worlds
   return `${prefix}-${Date.now()}`;
 }
 
+/**
+ * Safe rank sort key.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function safeRankSortKey(rank: any): number {
   // Prefer tier from your rank hierarchy (lower tier => higher rank)
   const tier = (RANK_HIERARCHY as any)?.[rank]?.tier;
   return Number.isFinite(tier) ? tier : 999;
 }
 
+/** main menu. */
 export default function MainMenu() {
   const navigate = useNavigate();
 

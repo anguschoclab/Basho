@@ -11,6 +11,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import { toInjuryEvent, clearInjury } from "@/engine/injuries";
 
+/** Defines the structure for injured rikishi info. */
 interface InjuredRikishiInfo {
   rikishi: Rikishi;
   severity: string;
@@ -21,6 +22,11 @@ interface InjuredRikishiInfo {
   facilityBonus: number;
 }
 
+/**
+ * Get severity color.
+ *  * @param severity - The Severity.
+ *  * @returns The result.
+ */
 function getSeverityColor(severity: string): string {
   switch (severity) {
     case "serious": return "text-destructive";
@@ -30,6 +36,10 @@ function getSeverityColor(severity: string): string {
   }
 }
 
+/**
+ * Get severity badge.
+ *  * @param severity - The Severity.
+ */
 function getSeverityBadge(severity: string) {
   switch (severity) {
     case "serious": return <Badge variant="destructive">Serious</Badge>;
@@ -39,6 +49,10 @@ function getSeverityBadge(severity: string) {
   }
 }
 
+/**
+ * injury recovery panel.
+ *  * @param { world } - The { world }.
+ */
 export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;

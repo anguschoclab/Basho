@@ -132,6 +132,12 @@ function compareBashoKey(a: BashoKey, b: BashoKey): number {
   return an - bn;
 }
 
+/**
+ * Sort key for.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 function sortKeyFor(year: number, bashoNumber: number): string {
   const bn = String(bashoNumber).padStart(2, "0");
   return `${year}${bn}`;
@@ -255,6 +261,12 @@ export function buildHistoryIndex(args: {
   return idx;
 }
 
+/**
+ * Push rikishi entry.
+ *  * @param idx - The Idx.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @param entry - The Entry.
+ */
 function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistoryEntry): void {
   if (!idx.rikishi[rikishiId]) idx.rikishi[rikishiId] = [];
   idx.rikishi[rikishiId].push({ rikishiId, ...entry });
@@ -269,20 +281,46 @@ export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   return index.bashoKeys.map(k => index.basho[k]).filter(Boolean);
 }
 
+/**
+ * Get basho summary.
+ *  * @param index - The Index.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 export function getBashoSummary(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoHistorySummary | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.basho[k] || null;
 }
 
+/**
+ * Get banzuke snapshot for.
+ *  * @param index - The Index.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 export function getBanzukeSnapshotFor(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BanzukeSnapshot | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.banzukeByBasho[k] || null;
 }
 
+/**
+ * Get rikishi history.
+ *  * @param index - The Index.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHistoryEntry[] {
   return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]] : [];
 }
 
+/**
+ * Get last seen basho.
+ *  * @param index - The Index.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey | undefined {
   return index.lastSeenBashoForRikishi[rikishiId];
 }

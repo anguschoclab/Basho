@@ -28,6 +28,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────
 
+/** Defines the structure for match like. */
 interface MatchLike {
   day?: number;
   boutId?: string;
@@ -36,6 +37,7 @@ interface MatchLike {
   result?: BoutResult;
 }
 
+/** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
   matches: MatchLike[];
   world: WorldState;
@@ -45,6 +47,11 @@ interface MatchDayViewerProps {
 
 // ── Helpers ────────────────────────────────────────────
 
+/**
+ * Get heat band.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 75) return "inferno";
   if (heat >= 50) return "hot";
@@ -75,6 +82,11 @@ const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: strin
   },
 };
 
+/**
+ * Get h2 h record.
+ *  * @param r1 - The R1.
+ *  * @param r2 - The R2.
+ */
 function getH2HRecord(r1: Rikishi, r2: Rikishi) {
   const record = r1.h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
@@ -82,6 +94,20 @@ function getH2HRecord(r1: Rikishi, r2: Rikishi) {
 
 // ── Sub-components ─────────────────────────────────────
 
+/**
+ * rikishi side.
+ *  * @param {
+ *   rikishi,
+ *   side,
+ *   isWinner,
+ *   onClick,
+ * } - The {
+ *   rikishi,
+ *   side,
+ *   is winner,
+ *   on click,
+ * }.
+ */
 function RikishiSide({
   rikishi,
   side,
@@ -121,6 +147,10 @@ function RikishiSide({
   );
 }
 
+/**
+ * h2 h center.
+ *  * @param { wins, losses } - The { wins, losses }.
+ */
 function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   return (
     <div className="vs-divider shrink-0 w-16 text-center px-1">
@@ -134,6 +164,14 @@ function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   );
 }
 
+/**
+ * bout tags.
+ *  * @param {
+ *   match,
+ * } - The {
+ *   match,
+ * }.
+ */
 function BoutTags({
   match,
 }: {
@@ -187,12 +225,17 @@ function BoutTags({
 }
 
 // Just a type helper for the resolved match shape
+/** Use resolved match. */
 function useResolvedMatch() {
   return null as any;
 }
 
 // ── Main Component ─────────────────────────────────────
 
+/**
+ * match day viewer.
+ *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
+ */
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
   const navigate = useNavigate();
 

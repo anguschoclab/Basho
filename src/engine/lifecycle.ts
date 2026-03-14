@@ -15,6 +15,13 @@ import { generateRikishiName } from "./shikona";
 
 // --- RETIREMENT LOGIC ---
 
+/**
+ * Check retirement.
+ *  * @param rikishi - The Rikishi.
+ *  * @param currentYear - The Current year.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: string): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
@@ -64,6 +71,13 @@ const ARCHETYPES: TacticalArchetype[] = [
   "trickster", "all_rounder", "hybrid_oshi_yotsu", "counter_specialist"
 ];
 
+/**
+ * Generate rookie.
+ *  * @param world - The World.
+ *  * @param currentYear - The Current year.
+ *  * @param targetRank - The Target rank.
+ *  * @returns The result.
+ */
 export function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
   const rookieId = crypto.randomUUID();
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);

@@ -23,6 +23,7 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
   foreign: Globe,
 };
 
+/** scouting widget. */
 export function ScoutingWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

@@ -21,12 +21,18 @@ function stableHash(s: string): string {
   return (h >>> 0).toString(16);
 }
 
+/**
+ * Ensure events state.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function ensureEventsState(world: WorldState): EventsState {
   if (world.events && world.events.version && Array.isArray(world.events.log)) return world.events;
   world.events = { version: "1.0.0", log: [], dedupe: {} };
   return world.events;
 }
 
+/** Defines the structure for log engine event params. */
 export interface LogEngineEventParams {
   type: string;
   category: EventCategory;
@@ -45,6 +51,12 @@ export interface LogEngineEventParams {
   dedupeKey?: string;
 }
 
+/**
+ * Log engine event.
+ *  * @param world - The World.
+ *  * @param params - The Params.
+ *  * @returns The result.
+ */
 export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
   const events = ensureEventsState(world);
 
@@ -91,6 +103,12 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   return ev;
 }
 
+/**
+ * Query events.
+ *  * @param world - The World.
+ *  * @param filters - The Filters.
+ *  * @returns The result.
+ */
 export function queryEvents(
   world: WorldState,
   filters: {

@@ -22,6 +22,7 @@ const PHASE_LABELS: Record<string, { label: string; dotClass: string }> = {
   basho_recap:  { label: "Recap",       dotClass: "bg-muted-foreground/40" },
 };
 
+/** calendar widget. */
 export function CalendarWidget() {
   const { state, advanceInterim, advanceOneDay, simulateAllBouts, endDay, advanceDay, simFullBasho } = useGame();
   const { toast } = useToast();

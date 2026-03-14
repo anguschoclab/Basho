@@ -21,6 +21,7 @@ import {
   Sparkles
 } from "lucide-react";
 
+/** Defines the structure for weekly digest props. */
 interface WeeklyDigestProps {
   digest?: UIDigest | null;
   className?: string;
@@ -50,6 +51,10 @@ const KIND_COLORS: Record<string, string> = {
   generic: "text-muted-foreground",
 };
 
+/**
+ * digest item display.
+ *  * @param { item } - The { item }.
+ */
 function DigestItemDisplay({ item }: { item: DigestItem }) {
   const Icon = KIND_ICONS[item.kind] || FileText;
   const colorClass = KIND_COLORS[item.kind] || "text-muted-foreground";
@@ -80,6 +85,10 @@ function DigestItemDisplay({ item }: { item: DigestItem }) {
   );
 }
 
+/**
+ * digest section display.
+ *  * @param { section } - The { section }.
+ */
 function DigestSectionDisplay({ section }: { section: DigestSection }) {
   if (!section.items.length) return null;
 
@@ -102,6 +111,10 @@ function DigestSectionDisplay({ section }: { section: DigestSection }) {
   );
 }
 
+/**
+ * weekly digest.
+ *  * @param { digest: digestProp, className } - The { digest: digest prop, class name }.
+ */
 export function WeeklyDigest({ digest: digestProp, className }: WeeklyDigestProps) {
   const { state } = useGame();
   const digest = useMemo(() => digestProp ?? buildWeeklyDigest(state.world), [digestProp, state.world]);

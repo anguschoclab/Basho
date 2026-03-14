@@ -58,6 +58,10 @@ export function updateH2H(
   };
 }
 
+/**
+ * Create empty h2 h.
+ *  * @returns The result.
+ */
 function createEmptyH2H(): H2HRecord {
   return {
     wins: 0,
@@ -67,6 +71,12 @@ function createEmptyH2H(): H2HRecord {
   };
 }
 
+/**
+ * Get random from array.
+ *  * @param rng - The Rng.
+ *  * @param arr - The Arr.
+ *  * @returns The result.
+ */
 function getRandomFromArray(rng: SeededRNG, arr: string[]): string {
   return arr[rng.int(0, arr.length - 1)];
 }

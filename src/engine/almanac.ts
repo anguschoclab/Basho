@@ -13,6 +13,7 @@ import { RANK_HIERARCHY } from "./banzuke";
 
 // === CAREER RECORD TYPES ===
 
+/** Defines the structure for basho performance. */
 export interface BashoPerformance {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -31,6 +32,7 @@ export interface BashoPerformance {
   kinboshiCount: number;
 }
 
+/** Defines the structure for rikishi career record. */
 export interface RikishiCareerRecord {
   rikishiId: Id;
   shikona: string;
@@ -67,6 +69,7 @@ export interface RikishiCareerRecord {
   retiredBasho?: BashoName;
 }
 
+/** Defines the structure for heya record. */
 export interface HeyaRecord {
   heyaId: Id;
   name: string;
@@ -92,6 +95,7 @@ export interface HeyaRecord {
   founderName?: string;
 }
 
+/** Defines the structure for oyakata record. */
 export interface OyakataRecord {
   oyakataId: Id;
   name: string;
@@ -113,6 +117,13 @@ export interface OyakataRecord {
 
 // === RECORD GENERATION ===
 
+/**
+ * Generate career record.
+ *  * @param rikishi - The Rikishi.
+ *  * @param world - The World.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
@@ -257,6 +268,15 @@ export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: (
   };
 }
 
+/**
+ * Simulate basho performance.
+ *  * @param currentRank - The Current rank.
+ *  * @param currentDivision - The Current division.
+ *  * @param targetRank - The Target rank.
+ *  * @param _rankNumber - The _rank number.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function simulateBashoPerformance(
   currentRank: Rank,
   currentDivision: Division,
@@ -318,6 +338,16 @@ function simulateBashoPerformance(
   return { wins, losses, yusho, junYusho, ginoSho, kantosho, shukunsho, kinboshi };
 }
 
+/**
+ * Simulate rank progression.
+ *  * @param currentRank - The Current rank.
+ *  * @param currentDivision - The Current division.
+ *  * @param wins - The Wins.
+ *  * @param losses - The Losses.
+ *  * @param rankNumber - The Rank number.
+ *  * @param _rng - The _rng.
+ *  * @returns The result.
+ */
 function simulateRankProgression(
   currentRank: Rank,
   currentDivision: Division,
@@ -377,6 +407,11 @@ function simulateRankProgression(
   return { newRank, newDivision: divisionMap[newRank], newRankNumber: numbered ? newRankNumber : undefined };
 }
 
+/**
+ * Get rank career multiplier.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankCareerMultiplier(rank: Rank): number {
   const multipliers: Record<Rank, number> = {
     yokozuna: 5,
@@ -393,6 +428,11 @@ function getRankCareerMultiplier(rank: Rank): number {
   return multipliers[rank] || 1;
 }
 
+/**
+ * Get rank value.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankValue(rank: Rank): number {
   const values: Record<Rank, number> = {
     jonokuchi: 1,
@@ -411,6 +451,13 @@ function getRankValue(rank: Rank): number {
 
 // === HEYA RECORD GENERATION ===
 
+/**
+ * Generate heya record.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = Array.from(world.rikishi.values()).filter((r) => r.heyaId === heya.id);
 
@@ -444,6 +491,7 @@ export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => num
 
 // === ALMANAC SNAPSHOT ===
 
+/** Defines the structure for almanac snapshot. */
 export interface AlmanacSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -467,6 +515,11 @@ export interface AlmanacSnapshot {
   retirements: Array<{ rikishiId: Id; shikona: string; reason?: string }>;
 }
 
+/**
+ * Build almanac snapshot.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null {
   if (!world.currentBasho) return null;
 
@@ -510,6 +563,11 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
 
 // === RECORD LOOKUP ===
 
+/**
+ * Get rikishi career summary.
+ *  * @param record - The Record.
+ *  * @returns The result.
+ */
 export function getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];
 

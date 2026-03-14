@@ -30,6 +30,10 @@ const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
   low: "Low", normal: "Normal", high: "High",
 };
 
+/**
+ * profile row.
+ *  * @param { label, icon, value, options, onChange } - The { label, icon, value, options, on change }.
+ */
 function ProfileRow({ label, icon, value, options, onChange }: {
   label: string; icon: React.ReactNode; value: string;
   options: { value: string; label: string }[];
@@ -60,6 +64,7 @@ function ProfileRow({ label, icon, value, options, onChange }: {
   );
 }
 
+/** training widget. */
 export function TrainingWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();

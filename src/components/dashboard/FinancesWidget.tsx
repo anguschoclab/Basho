@@ -11,6 +11,7 @@ const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: any; b
   desperate:   { label: "Desperate",   color: "text-destructive",    icon: TrendingDown,  bgAccent: "bg-destructive/15" },
 };
 
+/** finances widget. */
 export function FinancesWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

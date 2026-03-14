@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
+/** Defines the structure for nav group. */
 interface NavGroup {
   label: string;
   items: { title: string; url: string; icon: any }[];
@@ -84,6 +85,10 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+/**
+ * nav dropdown.
+ *  * @param { group } - The { group }.
+ */
 function NavDropdown({ group }: { group: NavGroup }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,6 +128,10 @@ function NavDropdown({ group }: { group: NavGroup }) {
 }
 
 // Quick nav links visible directly (not in dropdown) for common pages
+/**
+ * quick nav link.
+ *  * @param { url, label, icon: Icon } - The { url, label, icon:  icon }.
+ */
 function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; icon: any }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -141,11 +150,16 @@ function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; 
   );
 }
 
+/** Defines the structure for top nav bar props. */
 interface TopNavBarProps {
   eventLogOpen: boolean;
   onToggleEventLog: () => void;
 }
 
+/**
+ * top nav bar.
+ *  * @param { eventLogOpen, onToggleEventLog } - The { event log open, on toggle event log }.
+ */
 export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
   const { state, advanceInterim, advanceOneDay, startBasho } = useGame();
   const { theme, setTheme, resolvedTheme } = useTheme();

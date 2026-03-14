@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+/** Type representing theme. */
 type Theme = "dark" | "light" | "system";
 
+/** Defines the structure for theme provider state. */
 interface ThemeProviderState {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -14,6 +16,10 @@ const ThemeContext = createContext<ThemeProviderState>({
   resolvedTheme: "dark",
 });
 
+/**
+ * theme provider.
+ *  * @param { children, defaultTheme = "dark" } - The { children, default theme = "dark" }.
+ */
 export function ThemeProvider({ children, defaultTheme = "dark" }: { children: ReactNode; defaultTheme?: Theme }) {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem("basho-theme") as Theme | null;
@@ -38,4 +44,5 @@ export function ThemeProvider({ children, defaultTheme = "dark" }: { children: R
   );
 }
 
+/** Use theme. */
 export const useTheme = () => useContext(ThemeContext);

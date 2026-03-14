@@ -13,6 +13,11 @@ import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 import type { TalentPoolType, TalentCandidate } from "../../types/talent";
 import * as talentpool from "@/engine/talentpool";
 
+/**
+ * Pool label.
+ *  * @param pool - The Pool.
+ *  * @returns The result.
+ */
 function poolLabel(pool: TalentPoolType): string {
   switch (pool) {
     case "high_school":
@@ -24,6 +29,10 @@ function poolLabel(pool: TalentPoolType): string {
   }
 }
 
+/**
+ * Pool icon.
+ *  * @param pool - The Pool.
+ */
 function poolIcon(pool: TalentPoolType) {
   switch (pool) {
     case "high_school":
@@ -35,6 +44,11 @@ function poolIcon(pool: TalentPoolType) {
   }
 }
 
+/**
+ * Visibility label.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function visibilityLabel(v: TalentCandidate["visibilityBand"]): string {
   switch (v) {
     case "public":
@@ -48,6 +62,7 @@ function visibilityLabel(v: TalentCandidate["visibilityBand"]): string {
   }
 }
 
+/** talent pool page. */
 export default function TalentPoolPage() {
   const { state, updateWorld } = useGame();
   const world = state.world;

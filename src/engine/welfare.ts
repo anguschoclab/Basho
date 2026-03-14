@@ -17,10 +17,21 @@ import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ */
 function clamp(n: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Ensure heya welfare state.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   const existing = heya.welfareState;
   if (existing && typeof existing.welfareRisk === "number" && existing.complianceState) {
@@ -36,12 +47,23 @@ export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   return state;
 }
 
+/**
+ * Severity weight.
+ *  * @param sev - The Sev.
+ *  * @returns The result.
+ */
 function severityWeight(sev: string | number | undefined): number {
   if (sev === "serious" || sev === "high" || sev === 3) return 8;
   if (sev === "moderate" || sev === "medium" || sev === 2) return 4;
   return 2;
 }
 
+/**
+ * Compute heya injury pressure.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number; negligenceCount: number } {
   let pressure = 0;
   let seriousCount = 0;
@@ -78,6 +100,12 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
   return { pressure, seriousCount, negligenceCount };
 }
 
+/**
+ * Compute weekly welfare delta.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: number; reasons: string[] } {
   const reasons: string[] = [];
   const state = ensureHeyaWelfareState(heya);
@@ -151,6 +179,11 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   return { delta, reasons };
 }
 
+/**
+ * Set compliance state.
+ *  * @param state - The State.
+ *  * @param next - The Next.
+ */
 function setComplianceState(state: WelfareState, next: ComplianceState) {
   if (state.complianceState !== next) {
     state.complianceState = next;
@@ -158,6 +191,11 @@ function setComplianceState(state: WelfareState, next: ComplianceState) {
   }
 }
 
+/**
+ * Tick week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function tickWeek(world: WorldState): number {
   let events = 0;
 

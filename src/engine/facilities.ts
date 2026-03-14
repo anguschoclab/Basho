@@ -49,6 +49,11 @@ const MIN_FACILITY = 5;
 
 // === FACILITY BAND CALCULATION ===
 
+/**
+ * Compute facilities band.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 export function computeFacilitiesBand(heya: Heya): FacilitiesBand {
   const avg = (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
   if (avg >= 85) return "world_class";
@@ -58,14 +63,20 @@ export function computeFacilitiesBand(heya: Heya): FacilitiesBand {
   return "minimal";
 }
 
+/**
+ * Update facilities band.
+ *  * @param heya - The Heya.
+ */
 export function updateFacilitiesBand(heya: Heya): void {
   heya.facilitiesBand = computeFacilitiesBand(heya);
 }
 
 // === PLAYER ACTIONS ===
 
+/** Type representing facility axis. */
 export type FacilityAxis = "training" | "recovery" | "nutrition";
 
+/** Defines the structure for upgrade result. */
 export interface UpgradeResult {
   success: boolean;
   axis: FacilityAxis;
@@ -141,6 +152,11 @@ export function tickMonthly(world: WorldState): void {
   }
 }
 
+/**
+ * Apply monthly decay or maintenance.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ */
 function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): void {
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
   const totalMaintenance = axes.reduce((sum, a) => sum + maintenanceCost(heya.facilities[a]), 0);
@@ -242,6 +258,13 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): void {
 
 // === QUERY HELPERS (for UI) ===
 
+/**
+ * Get upgrade cost estimate.
+ *  * @param heya - The Heya.
+ *  * @param axis - The Axis.
+ *  * @param points - The Points.
+ *  * @returns The result.
+ */
 export function getUpgradeCostEstimate(heya: Heya, axis: FacilityAxis, points: number = 5): number {
   const current = heya.facilities[axis];
   let total = 0;
@@ -250,6 +273,11 @@ export function getUpgradeCostEstimate(heya: Heya, axis: FacilityAxis, points: n
   return total;
 }
 
+/**
+ * Get monthly maintenance cost.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 export function getMonthlyMaintenanceCost(heya: Heya): number {
   return maintenanceCost(heya.facilities.training)
     + maintenanceCost(heya.facilities.recovery)

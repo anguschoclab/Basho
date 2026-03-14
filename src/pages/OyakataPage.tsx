@@ -12,6 +12,7 @@ import { type OyakataRecord } from "@/engine/almanac";
 import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
 import { toTraitBand, TRAIT_LABELS } from "@/engine/descriptorBands";
 
+/** oyakata page. */
 export default function OyakataPage() {
   const { state } = useGame();
   const world = state.world;

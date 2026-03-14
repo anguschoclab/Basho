@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from "react";
 
 const STORAGE_KEY = "dashboard-widget-order";
 
+/** Defines the structure for widget def. */
 export interface WidgetDef {
   id: string;
   /** Default column (0-based) */
@@ -12,12 +13,17 @@ export interface WidgetDef {
   label: string;
 }
 
+/** Defines the structure for widget placement. */
 export interface WidgetPlacement {
   id: string;
   column: number;
   order: number;
 }
 
+/**
+ * Load saved order.
+ *  * @returns The result.
+ */
 function loadSavedOrder(): WidgetPlacement[] | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -30,10 +36,19 @@ function loadSavedOrder(): WidgetPlacement[] | null {
   return null;
 }
 
+/**
+ * Save order.
+ *  * @param placements - The Placements.
+ */
 function saveOrder(placements: WidgetPlacement[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(placements));
 }
 
+/**
+ * Use dashboard layout.
+ *  * @param defaults - The Defaults.
+ *  * @param columnCount - The Column count.
+ */
 export function useDashboardLayout(defaults: WidgetDef[], columnCount: number) {
   const [placements, setPlacements] = useState<WidgetPlacement[]>(() => {
     const saved = loadSavedOrder();

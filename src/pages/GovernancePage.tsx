@@ -12,6 +12,11 @@ import type { Heya } from "../../types/heya";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
 import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 
+/**
+ * Format fine penalty.
+ *  * @param amount - The Amount.
+ *  * @returns The result.
+ */
 function formatFinePenalty(amount: number): string {
   if (amount >= 10_000_000) return "Severe fine";
   if (amount >= 3_000_000) return "Significant fine";
@@ -19,6 +24,7 @@ function formatFinePenalty(amount: number): string {
   return "Minor fine";
 }
 
+/** governance page. */
 export default function GovernancePage() {
   const { state } = useGame();
   const world = state.world;

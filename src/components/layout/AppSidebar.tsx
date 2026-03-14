@@ -138,6 +138,11 @@ const items = [
   },
 ];
 
+/**
+ * Describe runway brief.
+ *  * @param funds - The Funds.
+ *  * @returns The result.
+ */
 function describeRunwayBrief(funds: number): { label: string; color: string } {
   if (funds >= 50_000_000) return { label: "Secure", color: "text-emerald-500" };
   if (funds >= 20_000_000) return { label: "Comfortable", color: "text-green-500" };
@@ -146,6 +151,7 @@ function describeRunwayBrief(funds: number): { label: string; color: string } {
   return { label: "Desperate", color: "text-red-500" };
 }
 
+/** app sidebar. */
 export function AppSidebar() {
   const { state } = useGame();
   

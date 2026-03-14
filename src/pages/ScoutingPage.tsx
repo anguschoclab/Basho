@@ -66,6 +66,16 @@ import {
 // OPPONENT SCOUTING TAB
 // ==============================
 
+/**
+ * opponent scouting tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function OpponentScoutingTab({
   world,
   playerHeyaId,
@@ -220,6 +230,16 @@ function OpponentScoutingTab({
   );
 }
 
+/**
+ * attr chip.
+ *  * @param {
+ *   label,
+ *   attr,
+ * } - The {
+ *   label,
+ *   attr,
+ * }.
+ */
 function AttrChip({
   label,
   attr,
@@ -250,6 +270,16 @@ function AttrChip({
 // OWN STABLE INTEL TAB
 // ==============================
 
+/**
+ * stable intel tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function StableIntelTab({
   world,
   playerHeyaId,
@@ -326,6 +356,16 @@ function StableIntelTab({
 // TALENT POOL / RECRUITING TAB
 // ==============================
 
+/**
+ * recruiting tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function RecruitingTab({
   world,
   playerHeyaId,
@@ -570,6 +610,7 @@ function RecruitingTab({
 // MAIN PAGE
 // ==============================
 
+/** scouting page. */
 export default function ScoutingPage() {
   const { state } = useGame();
   const world = state.world;
