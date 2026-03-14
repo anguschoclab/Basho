@@ -59,7 +59,8 @@ type MomentumShiftReason =
   | "fatigue_turn"
   | "mistake"
   | "physics_wall"  // NEW
-  | "mizu_iri";     // NEW
+  | "mizu_iri"     // NEW
+  | "tactical_adaptation"; // NEW
 
 /** Defines the structure for bout context. */
 interface BoutContext {

@@ -37,6 +37,7 @@ export interface Oyakata {
   stats?: { scouting: number; training: number; politics: number };
   personality?: string;
 
+  mood?: OyakataMood;
   quirks?: string[];
   managerFlags?: {
     welfareHawk?: boolean;
