@@ -6,7 +6,7 @@ describe("World Generation", () => {
     const world = generateWorld("test-seed-1");
     expect(world).toBeDefined();
     expect(world.seed).toBe("test-seed-1");
-    expect(world.year).toBe(2024);
+    expect(world.year).toBe(2025);
     expect(world.heyas.size).toBeGreaterThan(0);
     expect(world.rikishi.size).toBeGreaterThan(0);
   });

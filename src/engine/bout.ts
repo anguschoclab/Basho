@@ -1027,7 +1027,7 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
 
   const fakeBasho: BashoState = {
     id: "sim",
-    year: 2024,
+    year: 2025,
     day: 1,
     bashoName,
     bashoNumber: 1

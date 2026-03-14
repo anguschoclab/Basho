@@ -90,10 +90,10 @@ function makeWorld(overrides: Partial<any> = {}): WorldState {
 
   return {
     seed: 42,
-    year: 2024,
+    year: 2025,
     week: 10,
     dayIndexGlobal: 70,
-    calendar: { year: 2024, month: 3, currentDay: 15, currentWeek: 10 },
+    calendar: { year: 2025, month: 3, currentDay: 15, currentWeek: 10 },
     cyclePhase: "interim",
     currentBashoName: "haru",
     currentBasho: null,
@@ -628,8 +628,8 @@ describe("Talent Pool: Yearly Refresh", () => {
     const initialCount = Object.keys(tp.candidates).length;
 
     // Simulate year advance
-    (world as any).year = 2025;
-    refreshYearlyCohort(world, 2025);
+    (world as any).year = 2026;
+    refreshYearlyCohort(world, 2026);
 
     const newCount = Object.keys(tp.candidates).length;
     expect(newCount).toBeGreaterThan(initialCount);
@@ -639,10 +639,10 @@ describe("Talent Pool: Yearly Refresh", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    (world as any).year = 2025;
-    refreshYearlyCohort(world, 2025);
+    (world as any).year = 2026;
+    refreshYearlyCohort(world, 2026);
 
     const tp = (world as any).talentPool;
-    expect(tp.lastYearlyRefreshYear).toBe(2025);
+    expect(tp.lastYearlyRefreshYear).toBe(2026);
   });
 });

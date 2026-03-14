@@ -7,7 +7,7 @@ function createMockWorld(): WorldState {
   return {
     seed: "test-seed",
     calendar: {
-      year: 2024,
+      year: 2025,
       month: 1,
       currentWeek: 1,
       currentDay: 1,
@@ -89,7 +89,7 @@ describe("Events Engine", () => {
         const ev: EngineEvent = {
           id: `evt-${world.events.log.length}`,
           type: "TEST",
-          year: 2024,
+          year: 2025,
           week: 1,
           day: 1,
           phase: "weekly",
@@ -109,7 +109,7 @@ describe("Events Engine", () => {
       };
 
       // Add a recent event (1 week old)
-      addEvent({ year: 2024, week: 52 }); // 1 week old
+      addEvent({ year: 2025, week: 52 }); // 1 week old
 
       // Add an old event (> 52 weeks) that should be trimmed
       addEvent({ year: 2023, week: 50 }); // > 52 weeks old
@@ -143,7 +143,7 @@ describe("Events Engine", () => {
       expect(world.events.log.find(e => e.year === 2023 && e.week === 50)).toBeUndefined();
 
       // Ensure the preserved events are still there
-      expect(world.events.log.find(e => e.year === 2024 && e.week === 52)).toBeDefined(); // Recent
+      expect(world.events.log.find(e => e.year === 2025 && e.week === 52)).toBeDefined(); // Recent
       expect(world.events.log.find(e => e.importance === "headline")).toBeDefined(); // Headline
       expect(world.events.log.find(e => e.category === "career")).toBeDefined(); // Career
       expect(world.events.log.find(e => e.category === "basho")).toBeDefined(); // Basho
@@ -157,7 +157,7 @@ describe("Events Engine", () => {
       expect(world.events.dedupe["2023|50|TEST_DEDUPE"]).toBeUndefined();
 
       // Dedupe keys for other events should remain
-      expect(world.events.dedupe["2024|52|TEST_DEDUPE"]).toBe(true);
+      expect(world.events.dedupe["2025|52|TEST_DEDUPE"]).toBe(true);
       expect(world.events.dedupe["2023|1|TEST_DEDUPE"]).toBe(true);
       expect(world.events.dedupe["2023|2|TEST_DEDUPE"]).toBe(true);
       expect(world.events.dedupe["2023|3|TEST_DEDUPE"]).toBe(true);
@@ -175,7 +175,7 @@ describe("Events Engine", () => {
         const ev: EngineEvent = {
           id: `evt-${world.events.log.length}`,
           type: "DEFAULT",
-          year: 2024,
+          year: 2025,
           week: 1,
           day: 1,
           phase: "weekly",
@@ -192,11 +192,11 @@ describe("Events Engine", () => {
       };
 
       // Populate events with various properties
-      addEvent({ id: "1", category: "training", scope: "rikishi", heyaId: "h1", rikishiId: "r1", type: "TRAIN_1", importance: "minor", year: 2024, week: 1, day: 1 });
-      addEvent({ id: "2", category: "injury", scope: "heya", heyaId: "h1", type: "INJURY_1", importance: "notable", year: 2024, week: 1, day: 2 });
-      addEvent({ id: "3", category: "economy", scope: "world", type: "ECON_1", importance: "major", year: 2024, week: 2, day: 1 });
-      addEvent({ id: "4", category: "training", scope: "heya", heyaId: "h2", type: "TRAIN_2", importance: "headline", year: 2024, week: 2, day: 2 });
-      addEvent({ id: "5", category: "basho", scope: "rikishi", heyaId: "h2", rikishiId: "r2", type: "BASHO_1", importance: "minor", year: 2025, week: 1, day: 1 });
+      addEvent({ id: "1", category: "training", scope: "rikishi", heyaId: "h1", rikishiId: "r1", type: "TRAIN_1", importance: "minor", year: 2025, week: 1, day: 1 });
+      addEvent({ id: "2", category: "injury", scope: "heya", heyaId: "h1", type: "INJURY_1", importance: "notable", year: 2025, week: 1, day: 2 });
+      addEvent({ id: "3", category: "economy", scope: "world", type: "ECON_1", importance: "major", year: 2025, week: 2, day: 1 });
+      addEvent({ id: "4", category: "training", scope: "heya", heyaId: "h2", type: "TRAIN_2", importance: "headline", year: 2025, week: 2, day: 2 });
+      addEvent({ id: "5", category: "basho", scope: "rikishi", heyaId: "h2", rikishiId: "r2", type: "BASHO_1", importance: "minor", year: 2026, week: 1, day: 1 });
     });
 
     it("should return all events if no filters are provided (up to limit)", () => {
@@ -260,11 +260,11 @@ describe("Events Engine", () => {
 
     it("should sort results newest-first by year, week, day, then reverse id insertion", () => {
       const results = queryEvents(world, {});
-      // Newest should be id: "5" (year 2025)
-      // Next: id: "4" (year 2024, week 2, day 2)
-      // Next: id: "3" (year 2024, week 2, day 1)
-      // Next: id: "2" (year 2024, week 1, day 2)
-      // Next: id: "1" (year 2024, week 1, day 1)
+      // Newest should be id: "5" (year 2026)
+      // Next: id: "4" (year 2025, week 2, day 2)
+      // Next: id: "3" (year 2025, week 2, day 1)
+      // Next: id: "2" (year 2025, week 1, day 2)
+      // Next: id: "1" (year 2025, week 1, day 1)
       const ids = results.map(e => e.id);
       expect(ids).toEqual(["5", "4", "3", "2", "1"]);
     });
@@ -275,7 +275,7 @@ describe("Events Engine", () => {
         world.events.log.push({
           id,
           type: "SAME_DATE",
-          year: 2024,
+          year: 2025,
           week: 1,
           day: 1,
           phase: "weekly",

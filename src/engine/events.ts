@@ -48,7 +48,7 @@ export interface LogEngineEventParams {
 export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
   const events = ensureEventsState(world);
 
-  const year = world.calendar?.year ?? world.year ?? 2024;
+  const year = world.calendar?.year ?? world.year ?? 2025;
   const week = world.calendar?.currentWeek ?? world.week ?? 0;
   const month = world.calendar?.month ?? 1;
   const day = world.calendar?.currentDay ?? 1;
@@ -372,7 +372,7 @@ export function tickWeek(world: WorldState): number {
   const eventsState = ensureEventsState(world);
   if (!eventsState.log.length) return 0;
 
-  const currentYear = world.calendar?.year ?? world.year ?? 2024;
+  const currentYear = world.calendar?.year ?? world.year ?? 2025;
   const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
 
   // Define maximum age in weeks (approx 1 year = 52 weeks)

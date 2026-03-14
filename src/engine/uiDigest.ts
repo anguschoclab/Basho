@@ -51,7 +51,7 @@ export interface UIDigest {
 }
 
 function labelForWorld(world: WorldState): string {
-  const year = world.year ?? 2024;
+  const year = world.year ?? 2025;
   const week = world.week ?? 0;
   const phase = world.cyclePhase ?? "interim";
   return `${year} — Week ${week} (${phase})`;
