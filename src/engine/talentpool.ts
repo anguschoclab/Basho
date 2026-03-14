@@ -258,7 +258,7 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
     tags: ["former_pro"],
     availabilityState: "available",
     competingSuitors: [],
-    archetype: rikishi.archetype || "pusher",
+    archetype: rikishi.archetype || "oshi_specialist",
     style: rikishi.style || "oshi",
     heightPotentialCm: rikishi.height,
     weightPotentialKg: rikishi.weight,

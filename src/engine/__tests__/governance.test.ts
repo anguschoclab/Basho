@@ -57,7 +57,6 @@ function makeWorld(heya: Heya): WorldState {
     heyas: new Map([[heya.id, heya]]),
     events: { version: "1.0.0", log: [], dedupe: {} },
     governanceLog: [],
-    calendar: { year: 2024, month: 1, currentWeek: 1, currentDay: 1 },
     rikishi: new Map(),
     oyakata: new Map(),
   } as unknown as WorldState;

@@ -36,7 +36,7 @@ describe("Hard-Cap Roster Overflow Resolution (C4.3)", () => {
       injured: false,
       injuryWeeksRemaining: 0,
       style: "oshi",
-      archetype: "pusher",
+      archetype: "oshi_specialist",
       division: "jonokuchi",
       rank: "jonokuchi",
       side: "east",
