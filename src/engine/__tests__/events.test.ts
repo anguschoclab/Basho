@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { queryEvents, logEngineEvent, ensureEventsState, tickWeek } from "../events";
+import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus } from "../events";
 import type { WorldState } from "../types/world";
 import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
@@ -22,6 +22,24 @@ describe("Events Engine", () => {
       const world = {} as WorldState;
       const state = ensureEventsState(world);
       expect(state).toBeDefined();
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+    it("should initialize events state if world.events lacks a version", () => {
+      const world = { events: { log: [], dedupe: {} } } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+    it("should initialize events state if world.events.log is not an array", () => {
+      const world = { events: { version: "1.0.0", log: "not an array", dedupe: {} } } as unknown as WorldState;
+      const state = ensureEventsState(world);
       expect(state.version).toBe("1.0.0");
       expect(state.log).toEqual([]);
       expect(state.dedupe).toEqual({});
@@ -74,6 +92,112 @@ describe("Events Engine", () => {
 
       expect(world.events.log).toHaveLength(1);
       expect(event1).toBe(event2); // returns the same event handle
+    });
+  });
+
+  describe("EventBus factories", () => {
+    let world: WorldState;
+
+    beforeEach(() => {
+      world = createMockWorld();
+    });
+
+    it("should log injury events", () => {
+      const ev1 = EventBus.injury(world, "r1", "Sprained Ankle", "Injured during practice", { severity: "moderate" });
+      expect(ev1.type).toBe("INJURY_OCCURRED");
+      expect(ev1.category).toBe("injury");
+      expect(ev1.importance).toBe("major");
+
+      const ev2 = EventBus.recovery(world, "r1", "h1", "Fully recovered");
+      expect(ev2.type).toBe("INJURY_RECOVERED");
+      expect(ev2.category).toBe("injury");
+      expect(ev2.importance).toBe("notable");
+    });
+
+    it("should log governance events", () => {
+      const ev = EventBus.governance(world, "h1", "Kyokai Warning", "Heya warned", { reason: "rules" });
+      expect(ev.type).toBe("GOVERNANCE_RULING");
+      expect(ev.category).toBe("discipline");
+      expect(ev.scope).toBe("heya");
+    });
+
+    it("should log training events", () => {
+      const ev1 = EventBus.trainingMilestone(world, "r1", "h1", "Stat Increased", "Strength up");
+      expect(ev1.type).toBe("TRAINING_MILESTONE");
+      expect(ev1.category).toBe("training");
+
+      const ev2 = EventBus.trainingProfileChanged(world, "h1", "Switched to technical");
+      expect(ev2.type).toBe("TRAINING_PROFILE_CHANGED");
+      expect(ev2.category).toBe("training");
+      expect(ev2.scope).toBe("heya");
+    });
+
+    it("should log economy events", () => {
+      const ev1 = EventBus.financialAlert(world, "h1", "Insolvency", "Bankrupt", { insolvency: true });
+      expect(ev1.type).toBe("FINANCIAL_ALERT");
+      expect(ev1.category).toBe("economy");
+      expect(ev1.importance).toBe("headline");
+
+      const ev2 = EventBus.kenshoAwarded(world, "r1", "h1", 500000, 5);
+      expect(ev2.type).toBe("KENSHO_AWARDED");
+      expect(ev2.category).toBe("economy");
+      expect(ev2.importance).toBe("notable");
+    });
+
+    it("should log rivalry events", () => {
+      const ev1 = EventBus.rivalryEscalated(world, "r1", "r2", "inferno", "hostile", "Heated rivalry");
+      expect(ev1.type).toBe("RIVALRY_ESCALATED");
+      expect(ev1.category).toBe("rivalry");
+      expect(ev1.importance).toBe("headline");
+
+      const ev2 = EventBus.rivalryFormed(world, "r1", "r2", "respectful", "New rivalry");
+      expect(ev2.type).toBe("RIVALRY_FORMED");
+      expect(ev2.category).toBe("rivalry");
+    });
+
+    it("should log career/lifecycle events", () => {
+      const ev1 = EventBus.retirement(world, "r1", "h1", "Taro", "Injury");
+      expect(ev1.type).toBe("RETIREMENT");
+      expect(ev1.category).toBe("career");
+
+      const ev2 = EventBus.rookieDebut(world, "r2", "h1", "Jiro");
+      expect(ev2.type).toBe("ROOKIE_DEBUT");
+      expect(ev2.category).toBe("career");
+    });
+
+    it("should log scouting events", () => {
+      const ev = EventBus.scoutingInvestmentChanged(world, "r1", "high");
+      expect(ev.type).toBe("SCOUTING_INVESTMENT_CHANGED");
+      expect(ev.category).toBe("scouting");
+      expect(ev.data).toEqual({ level: "high" });
+    });
+
+    it("should log basho events", () => {
+      const ev1 = EventBus.bashoStarted(world, "Hatsu");
+      expect(ev1.type).toBe("BASHO_STARTED");
+      expect(ev1.category).toBe("basho");
+      expect(ev1.importance).toBe("headline");
+
+      const ev2 = EventBus.bashoEnded(world, "Hatsu", "r1", "Taro");
+      expect(ev2.type).toBe("BASHO_ENDED");
+      expect(ev2.category).toBe("basho");
+      expect(ev2.importance).toBe("headline");
+
+      const ev3 = EventBus.bashoDay(world, 15);
+      expect(ev3.type).toBe("BASHO_DAY_ADVANCED");
+      expect(ev3.category).toBe("basho");
+      expect(ev3.importance).toBe("major");
+
+      const ev4 = EventBus.boutResult(world, "r1", "r2", "yorikiri", 1);
+      expect(ev4.type).toBe("BOUT_RESULT");
+      expect(ev4.category).toBe("basho");
+    });
+
+    it("should log welfare events", () => {
+      const ev = EventBus.welfareAlert(world, "h1", "Scandal", "Scandal summary", { complianceState: "sanctioned" });
+      expect(ev.type).toBe("WELFARE_ALERT");
+      expect(ev.category).toBe("welfare");
+      expect(ev.importance).toBe("headline");
     });
   });
 
