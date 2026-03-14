@@ -34,6 +34,27 @@ describe("Events Engine", () => {
       const state = ensureEventsState(world);
       expect(state).toBe(existingState);
     });
+    it("should initialize events state if events exists but version is missing", () => {
+      const existingState = { log: [], dedupe: {} } as any;
+      const world = { events: existingState } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state).toBeDefined();
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+    it("should initialize events state if events exists but log is not an array", () => {
+      const existingState = { version: "1.0.0", log: null, dedupe: {} } as any;
+      const world = { events: existingState } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state).toBeDefined();
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
   });
 
   describe("logEngineEvent", () => {
