@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,7 @@ export function BashoWidget() {
             {world.currentBasho.bashoName?.toUpperCase()} — Day {stats.day}
           </span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/basho")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/basho" })} className="h-6 text-xs gap-1 text-muted-foreground">
           View <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

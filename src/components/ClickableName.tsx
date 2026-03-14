@@ -1,5 +1,5 @@
 // Reusable clickable name component for rikishi, stable, and oyakata names
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
 type NameType = "rikishi" | "stable" | "oyakata";
@@ -7,16 +7,10 @@ type NameType = "rikishi" | "stable" | "oyakata";
 interface ClickableNameProps {
   type: NameType;
   id: string;
-  name: string;
+  name?: string;
   className?: string;
   children?: React.ReactNode;
 }
-
-const routeMap: Record<NameType, string> = {
-  rikishi: "/rikishi",
-  stable: "/stable",
-  oyakata: "/oyakata", // Oyakata links to their profile page
-};
 
 export function ClickableName({ 
   type, 
@@ -25,12 +19,43 @@ export function ClickableName({
   className,
   children 
 }: ClickableNameProps) {
-  const basePath = routeMap[type];
-  const to = `${basePath}/${id}`;
   
+  if (type === "rikishi") {
+    return (
+      <Link
+        to="/rikishi/$rikishiId"
+        params={{ rikishiId: id }}
+        className={cn(
+          "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors",
+          className
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children || name}
+      </Link>
+    );
+  }
+
+  if (type === "stable") {
+    return (
+      <Link
+        to="/stable/$id"
+        params={{ id }}
+        className={cn(
+          "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors",
+          className
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children || name}
+      </Link>
+    );
+  }
+
   return (
     <Link 
-      to={to} 
+      to="/oyakata"
+      search={{ id }}
       className={cn(
         "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors",
         className

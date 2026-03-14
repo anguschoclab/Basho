@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -141,7 +141,7 @@ function OpponentScoutingTab({
               <Card
                 key={r.id}
                 className="paper cursor-pointer hover:border-primary/50 transition-all"
-                onClick={() => navigate(`/rikishi/${r.id}`)}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -291,7 +291,7 @@ function StableIntelTab({
               <div
                 key={r.id}
                 className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                onClick={() => navigate(`/rikishi/${r.id}`)}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <div className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`} />
                 <div className="flex-1 min-w-0">

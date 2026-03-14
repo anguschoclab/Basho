@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
@@ -63,14 +63,14 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    if (state.phase === "basho_recap" || state.phase === "basho_results") navigate("/recap");
+    if (state.phase === "basho_recap" || state.phase === "basho_results") navigate({ to: "/recap" });
   }, [state.phase, navigate]);
 
   useEffect(() => {
     if (!isLoaded && hasAutosave()) {
       loadFromAutosave();
     } else if (!isLoaded && !hasAutosave()) {
-      navigate("/main-menu", { replace: true });
+      navigate({ to: "/main-menu", replace: true });
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
@@ -170,7 +170,7 @@ export default function Dashboard() {
             {alerts.map((alert, i) => (
               <button
                 key={i}
-                onClick={() => navigate(alert.link)}
+                onClick={() => navigate({ to: alert.link as any })}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-sm"
               >
                 <AlertTriangle className={`h-3.5 w-3.5 shrink-0 ${alert.color}`} />

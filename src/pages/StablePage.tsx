@@ -15,7 +15,7 @@
 
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -138,7 +138,7 @@ type StableAchievements = {
 
 export default function StablePage() {
   const navigate = useNavigate();
-  const { id: routeId } = useParams<{ id?: string }>();
+  const { id: routeId } = useParams({ strict: false });
   const { state, updateWorld } = useGame();
   const { world, playerHeyaId } = state;
 
@@ -247,7 +247,7 @@ export default function StablePage() {
             <CardDescription>The requested heya could not be loaded.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" onClick={() => navigate("/")}>
+            <Button variant="outline" onClick={() => navigate({ to: "/" })}>
               Return to Dashboard
             </Button>
           </CardContent>
@@ -436,7 +436,7 @@ export default function StablePage() {
                     <div
                       key={entry.id}
                       className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                      onClick={() => navigate(`/rikishi/${entry.id}`)}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: entry.id } })}
                     >
                       <div className={`w-1 h-10 rounded-full ${entry.side === "east" ? "bg-east" : "bg-west"}`} />
                       <div className="flex-1 min-w-0">
@@ -652,7 +652,7 @@ export default function StablePage() {
                       <div
                         key={rikishi.id}
                         className="p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/rikishi/${rikishi.id}`)}
+                        onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id } })}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
@@ -838,7 +838,7 @@ export default function StablePage() {
                     <div
                       key={r.id}
                       className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/30 cursor-pointer transition-colors"
-                      onClick={() => navigate(`/rikishi/${r.id}`)}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
                     >
                       <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold">
                         {idx + 1}
@@ -875,7 +875,7 @@ export default function StablePage() {
 
         {/* Optional: a small return button for flow */}
         <div className="pt-2 flex items-center justify-between">
-          <Button variant="outline" onClick={() => navigate("/")}>
+          <Button variant="outline" onClick={() => navigate({ to: "/" })}>
             Return to Dashboard
           </Button>
 

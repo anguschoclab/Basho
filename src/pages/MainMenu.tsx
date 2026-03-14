@@ -21,7 +21,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -373,7 +373,7 @@ export default function MainMenu() {
   const handleContinue = () => {
     if (typeof hasAutosave === "function" && hasAutosave()) {
       if (typeof loadFromAutosave === "function") loadFromAutosave();
-      navigate("/");
+      navigate({ to: "/" });
       return;
     }
     if (saveSlots.length > 0) setShowLoadDialog(true);
@@ -382,7 +382,7 @@ export default function MainMenu() {
   const handleLoadSlot = (slotName: string) => {
     if (typeof loadFromSlot === "function" && loadFromSlot(slotName)) {
       setShowLoadDialog(false);
-      navigate("/");
+      navigate({ to: "/" });
     }
   };
 
@@ -429,7 +429,7 @@ export default function MainMenu() {
       if (importedWorld) {
         applyImportedWorld(importedWorld);
         setSeed(importedWorld.seed || "");
-        navigate("/");
+        navigate({ to: "/" });
       }
     } finally {
       setIsImporting(false);
@@ -471,7 +471,7 @@ export default function MainMenu() {
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
     if (typeof createWorld === "function") createWorld(state.world.seed, heyaId);
-    navigate("/");
+    navigate({ to: "/" });
   };
 
   const handleConfirmStable = () => {

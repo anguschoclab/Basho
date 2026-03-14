@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -71,7 +71,7 @@ export function FacilitiesWidget() {
             </span>
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/stable")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="h-6 text-xs gap-1 text-muted-foreground">
           Manage <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

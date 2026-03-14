@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { NavLink, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "@tanstack/react-router";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { 
   Trophy, 
@@ -133,7 +133,7 @@ export default function RecapPage() {
 
   const handleContinue = () => {
     setPhase("interim");
-    navigate("/dashboard");
+    navigate({ to: "/dashboard" });
   };
 
   const handlePressConferenceClose = (effects: { reputation: number; morale: number; mediaHeat: number }) => {
@@ -788,10 +788,10 @@ export default function RecapPage() {
             Continue to Off-Season
           </Button>
           <Button variant="outline" asChild>
-            <NavLink to="/history">View Full History</NavLink>
+            <Link to="/history">View Full History</Link>
           </Button>
           <Button variant="outline" asChild>
-            <NavLink to="/banzuke">View Banzuke</NavLink>
+            <Link to="/banzuke">View Banzuke</Link>
           </Button>
         </div>
 
