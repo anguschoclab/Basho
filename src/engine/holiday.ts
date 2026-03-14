@@ -195,7 +195,7 @@ function checkGate(
       // Constitution governance: max foreign rikishi per stable
       const foreignCount = (heya.rikishiIds ?? []).filter((rid: string) => {
         const r = world.rikishi.get(rid);
-        return r && (r as any).nationality !== "japanese";
+        return r && r.nationality !== "japanese";
       }).length;
       if (foreignCount > 1) {
         return {
@@ -242,11 +242,11 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
     case "nextBashoDay1": {
       // Advance through interim until active_basho
       if (phase === "active_basho") return 0;
-      const interimRemaining = (world as any)._interimDaysRemaining ?? 0;
-      const preBashoDays = phase === "pre_basho" ? ((world as any)._interimDaysRemaining ?? 7) : 0;
+      const interimRemaining = world._interimDaysRemaining ?? 0;
+      const preBashoDays = phase === "pre_basho" ? (world._interimDaysRemaining ?? 7) : 0;
       if (phase === "interim") return interimRemaining + 7; // interim + pre_basho
       if (phase === "pre_basho") return preBashoDays;
-      if (phase === "post_basho") return ((world as any)._postBashoDays ?? 7) + 42 + 7;
+      if (phase === "post_basho") return (world._postBashoDays ?? 7) + 42 + 7;
       return 42; // fallback
     }
 

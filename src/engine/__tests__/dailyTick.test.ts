@@ -96,8 +96,8 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
         isRetired: true,
         stats: { power: 65, technique: 70, speed: 55, balance: 72, stamina: 60, mentalFocus: 75 }
       }]
-    ]) as any,
-    heyas: new Map([["test-heya", heya]]) as any,
+    ]) as unknown as Map<string, any>,
+    heyas: new Map([["test-heya", heya]]) as unknown as Map<string, any>,
     playerHeyaId: "test-heya",
     eventLog: [],
     rivalriesState: { pairs: [], lastUpdatedWeek: 0, nextRivalryId: 1 },
@@ -350,7 +350,7 @@ describe("Daily Tick: Report Generation", () => {
         matches: [],
         yushoRaceLeaders: [],
         completed: false
-      } as any
+      } as unknown as any
     });
     
     const report = advanceOneDay(world);

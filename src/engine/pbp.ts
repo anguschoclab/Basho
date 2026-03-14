@@ -736,8 +736,8 @@ export function buildPbpFromBoutResult(
 
   let tacticalBeat = 0;
 
-  if (Array.isArray((result as any).log)) {
-    for (const entry of (result as any).log) {
+  if (Array.isArray(result.log)) {
+    for (const entry of result.log) {
       // Tactical strategy entries (emitted before tachiai)
       if (entry.data?.tacticalEntry) {
         const side = entry.data.side as Side;

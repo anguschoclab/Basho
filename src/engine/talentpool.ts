@@ -57,11 +57,11 @@ function clamp(n: number, lo: number, hi: number): number {
 }
 
 function getWeek(world: WorldState): number {
-  return typeof (world as any).week === "number" ? (world as any).week : (world as any).calendar?.currentWeek ?? 0;
+  return typeof world.week === "number" ? world.week : world.calendar?.currentWeek ?? 0;
 }
 
 function ensureWorldPool(world: WorldState): TalentPoolWorldState {
-  const w = world as any;
+  const w = world;
   if (w.talentPool && w.talentPool.version === VERSION) return w.talentPool as TalentPoolWorldState;
 
   const baseWeek = getWeek(world);
@@ -351,7 +351,7 @@ export function scoutPool(world: WorldState, poolType: TalentPoolType, opts?: { 
   const revealCount = clamp(opts?.revealCount ?? 1, 1, 3);
   const cost = Math.max(0, Math.round(opts?.cost ?? (poolType === "foreign" ? 250_000 : poolType === "university" ? 150_000 : 100_000)));
 
-  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+  const playerHeyaId = world.playerHeyaId as string | undefined;
   if (playerHeyaId) {
     const heya = world.heyas.get(playerHeyaId);
     if (heya && typeof heya.funds === "number" && heya.funds < cost) return { revealed: [], spent: 0 };
@@ -385,7 +385,7 @@ export function scoutCandidate(world: WorldState, candidateId: Id, opts?: { effo
   const effort = clamp(Math.round(opts?.effort ?? 1), 1, 3);
   const cost = Math.max(0, Math.round(opts?.cost ?? 75_000 * effort));
 
-  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+  const playerHeyaId = world.playerHeyaId as string | undefined;
   if (playerHeyaId) {
     const heya = world.heyas.get(playerHeyaId);
     if (heya && typeof heya.funds === "number" && heya.funds < cost) return { ok: false, scoutingLevel: getCandidateScoutingLevel(world, candidateId), spent: 0 };
@@ -517,7 +517,7 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     favoredKimarite: [],
     weakAgainstStyles: [],
     talentSeed: candidate.talentSeed, // Persist potential ceiling
-  } as any;
+  };
 }
 
 export function offerCandidate(world: WorldState, candidateId: Id, heyaId: Id, offerType: SuitorOfferType = "standard", interest: SuitorInterestBand = "high"): OfferResult {
@@ -565,8 +565,8 @@ function offerTypeToScore(t: SuitorOfferType): number {
 function heyaUtility(world: WorldState, heyaId: Id): number {
   const h = world.heyas.get(heyaId);
   if (!h) return 0;
-  const funds = typeof (h as any).funds === "number" ? (h as any).funds : 0;
-  const prestige = (h as any).reputation ?? 50;
+  const funds = typeof h.funds === "number" ? h.funds : 0;
+  const prestige = h.reputation ?? 50;
   return clamp(Math.round(prestige * 0.6 + Math.log10(Math.max(1, funds)) * 10), 0, 120);
 }
 
@@ -743,9 +743,9 @@ function resolveCandidateSigning(world: WorldState, candidateId: Id): { signed: 
   r.heyaId = best.heyaId;
 
   // Add to world
-  world.rikishi.set(r.id, r as any);
+  world.rikishi.set(r.id, r);
   const heya = world.heyas.get(best.heyaId);
-  if (heya) (heya as any).rikishiIds?.push(r.id);
+  if (heya) heya.rikishiIds?.push(r.id);
 
   c.availabilityState = "signed";
   c.competingSuitors = [];
@@ -818,7 +818,7 @@ function npcOfferTick(world: WorldState): void {
   const tp = ensureTalentPools(world);
   const now = getWeek(world);
 
-  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+  const playerHeyaId = world.playerHeyaId as string | undefined;
   const priorities = world.npcScoutingPriorities ?? {};
 
   const heyaIds = Array.from(world.heyas.keys()).filter((id) => !playerHeyaId || id !== playerHeyaId);
@@ -837,7 +837,7 @@ function npcOfferTick(world: WorldState): void {
   // Process ALL NPC stables, but gate behavior on their scouting priority
   for (const heyaId of heyaIds) {
     const heya = world.heyas.get(heyaId);
-    const freezeWeeks = (heya as any)?.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
+    const freezeWeeks = heya?.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) continue;
 
     // Read scouting priority from npcAI decision (defaults to passive)
@@ -909,7 +909,7 @@ export function tickWeek(world: WorldState): void {
   ensureTalentPools(world);
 
   // Yearly cohort refresh (in case year advanced outside of weekly ticks)
-  const tp = (world as any).talentPool as TalentPoolWorldState;
+  const tp = world.talentPool as TalentPoolWorldState;
   if (tp && tp.lastYearlyRefreshYear !== world.year) refreshYearlyCohort(world, world.year);
 
   // NPC offers + resolve pending signings.
@@ -936,7 +936,7 @@ export function fillVacanciesForNPC(world: WorldState, vacanciesByHeyaId: Record
   const now = getWeek(world);
 
   const rng = rngForWorld(world, "talentpool", `fill_vacancies::w${now}`);
-  const playerHeyaId = (world as any).playerHeyaId as string | undefined;
+  const playerHeyaId = world.playerHeyaId as string | undefined;
 
   // Base candidate pool includes visible across pools.
   const visible: Id[] = [];

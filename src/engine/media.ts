@@ -190,8 +190,8 @@ export function updateMediaFromBout(args: {
   impact += winnerRankImpact + loserRankImpact;
 
   // Injury context
-  const winnerInjured = winner && (winner as any).injury?.active;
-  const loserInjured = loser && (loser as any).injury?.active;
+  const winnerInjured = winner && winner.injury?.active;
+  const loserInjured = loser && loser.injury?.active;
 
   impact = clampInt(impact, 0, 100);
 
@@ -420,7 +420,7 @@ function applyHeadlineEffects(state: MediaState, world: WorldState, headline: Me
     for (const id of headline.rikishiIds) {
       const r = world.rikishi.get(id);
       if (!r) continue;
-      const econ = (r as any).economics;
+      const econ = r.economics;
       if (!econ) continue;
       if (typeof econ.popularity !== "number") continue;
       econ.popularity = clampInt(econ.popularity + popDelta, 0, 100);
@@ -766,13 +766,13 @@ function checkPromotionWatch(args: {
   }
 
   // Get standings
-  const basho = (world as any).basho as BashoState | undefined;
+  const basho = world.basho as BashoState | undefined;
   const standings = basho?.standings;
   if (!standings) return { state: args.state, headline: null };
 
   const record = standings instanceof Map
     ? standings.get(result.winnerRikishiId)
-    : (standings as any)[result.winnerRikishiId];
+    : standings[result.winnerRikishiId];
   if (!record) return { state: args.state, headline: null };
 
   const { wins, losses } = record;
@@ -905,7 +905,7 @@ export function generateInjuryWithdrawalHeadline(args: {
   bashoName?: BashoName;
 }): MediaHeadline | null {
   const { world, rikishiId, severity, area, description, opponentId, day, bashoName } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
   const mediaState: MediaState = w.mediaState;
 
@@ -1007,7 +1007,7 @@ export function generateScandalHeadline(args: {
   fineAmount?: number;
 }): MediaHeadline | null {
   const { world, heyaId, type, severity, reason, description } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
 
   const heya = world.heyas.get(heyaId);
@@ -1080,7 +1080,7 @@ export function generateGovernanceHeadline(args: {
   description: string;
 }): MediaHeadline | null {
   const { world, heyaId, type, severity, description } = args;
-  const w = world as any;
+  const w = world;
   if (!w.mediaState) w.mediaState = createDefaultMediaState();
 
   const heya = world.heyas.get(heyaId);
@@ -1192,7 +1192,7 @@ function checkRetirementWatch(args: {
 
   const record = standings instanceof Map
     ? standings.get(loserId)
-    : (standings as any)[loserId];
+    : standings[loserId];
   if (!record) return { state: args.state, headline: null };
 
   const { wins, losses } = record;

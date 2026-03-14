@@ -30,11 +30,25 @@ const localStorageMock = (() => {
 })();
 
 beforeAll(() => {
-  vi.stubGlobal('localStorage', localStorageMock);
-  if (typeof window !== 'undefined') {
+  globalThis.localStorage = localStorageMock as any;
+
+// Force window object for tests so hasLocalStorage() returns true
+if (typeof window === 'undefined') {
+  globalThis.window = { localStorage: localStorageMock } as any;
+}
+if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
+  }
+
+
+// Force window object for tests so hasLocalStorage() returns true
+if (typeof window === 'undefined') {
+  globalThis.window = { localStorage: localStorageMock } as any;
+}
+if (typeof window !== 'undefined') {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
   } else {
-    vi.stubGlobal('window', { localStorage: localStorageMock });
+
   }
 });
 

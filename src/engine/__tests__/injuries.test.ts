@@ -54,7 +54,7 @@ function mockWorld(rikishi?: Map<string, Rikishi>): WorldState {
     oyakata: new Map([["oya1", {
       id: "oya1", heyaId: "h1", name: "Coach", archetype: "nurturer",
       traits: { ambition: 50, patience: 80, risk: 20, tradition: 50, compassion: 80 },
-    } as any]]),
+    } as unknown as any]]),
     history: { bashoResults: [], yearEndAwards: [] },
     events: { version: "1.0.0", log: [], dedupe: {} },
     calendar: { year: 2026, month: 1, currentWeek: 5, currentDay: 1 },
@@ -221,7 +221,7 @@ describe("Injury System", () => {
     it("should accelerate recovery with high recovery facilities", () => {
       const world = mockWorld();
       const heya = world.heyas.get("h1")!;
-      (heya.facilities as any).recovery = 100;
+      (heya.facilities as unknown as { recovery: number }).recovery = 100;
 
       let state = createDefaultInjuriesState();
       state = applyInjuryRecord(state, {
@@ -248,7 +248,7 @@ describe("Injury System", () => {
         severity: "minor", area: "wrist", type: "contusion", title: "T", description: "D",
       });
       syncRikishiInjuryFlags({ world, state });
-      const r = world.rikishi.get("r1")! as any;
+      const r = world.rikishi.get("r1")!;
       expect(r.injured).toBe(true);
       expect(r.injuryWeeksRemaining).toBe(3);
     });
@@ -257,7 +257,7 @@ describe("Injury System", () => {
   describe("hydrateFromRikishiFlags", () => {
     it("should create InjuryRecords from legacy rikishi flags", () => {
       const world = mockWorld();
-      const r = world.rikishi.get("r1")! as any;
+      const r = world.rikishi.get("r1")!;
       r.injured = true;
       r.injuryWeeksRemaining = 4;
 

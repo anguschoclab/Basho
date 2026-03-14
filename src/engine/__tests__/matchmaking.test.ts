@@ -65,7 +65,7 @@ describe("Matchmaking System", () => {
 
     it("should block repeat opponents within a basho", () => {
       const basho = mockBasho();
-      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as any);
+      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as unknown as any);
 
       const a = mockRikishi("r1");
       const b = mockRikishi("r2");
@@ -76,7 +76,7 @@ describe("Matchmaking System", () => {
 
     it("should allow repeat opponents when override is set", () => {
       const basho = mockBasho();
-      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as any);
+      basho.matches.push({ eastRikishiId: "r1", westRikishiId: "r2" } as unknown as any);
 
       const a = mockRikishi("r1");
       const b = mockRikishi("r2");
@@ -179,7 +179,7 @@ describe("Matchmaking System", () => {
       const basho = mockBasho();
       const rikishi = [
         mockRikishi("r1"),
-        mockRikishi("r2", { injured: true } as any),
+        mockRikishi("r2", { injured: true } as unknown as any),
         mockRikishi("r3"),
       ];
 

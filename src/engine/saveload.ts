@@ -41,9 +41,24 @@ function hasLocalStorage(): boolean {
 
 // === SERIALIZATION HELPERS ===
 
-function mapToObject<T>(map: Map<string, T>): Record<string, T> {
+function mapToObject<T>(map: Map<string, T> | Record<string, T> | undefined): Record<string, T> {
+  if (!map) return {};
   const obj: Record<string, T> = {};
-  const keys = Array.from(map.keys()).sort();
+
+  if (map instanceof Map) {
+    const keys = Array.from(map.keys()).sort();
+    for (const k of keys) {
+      obj[k] = map.get(k) as T;
+    }
+    return obj;
+  } else {
+    // it's a plain object
+    const keys = Object.keys(map).sort();
+    for (const k of keys) {
+      obj[k] = (map as Record<string, T>)[k];
+    }
+    return obj;
+  }
   for (const key of keys) obj[key] = map.get(key)!;
   return obj;
 }
@@ -115,20 +130,20 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     ftue: world.ftue,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
-    talentPool: (world as any).talentPool,
+    talentPool: world.talentPool,
     // Extended fields
     dayIndexGlobal: world.dayIndexGlobal,
-    almanacSnapshots: (world as any).almanacSnapshots,
+    almanacSnapshots: world.almanacSnapshots,
     calendar: world.calendar,
     // Sponsor pool (Constitution A6.4)
-    sponsorPool: serializeSponsorPool((world as any).sponsorPool),
+    sponsorPool: serializeSponsorPool(world.sponsorPool),
     // Ozeki kadoban tracking
-    ozekiKadoban: (world as any).ozekiKadoban,
+    ozekiKadoban: world.ozekiKadoban,
     // Hall of Fame
-    hallOfFame: (world as any).hallOfFame,
+    hallOfFame: world.hallOfFame,
     // Media state
-    mediaState: (world as any).mediaState,
-  } as any;
+    mediaState: world.mediaState,
+  };
 }
 
 /**
@@ -136,7 +151,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
  * Fills required economics fields if missing.
  */
 function sanitizeRikishi(r: Rikishi): Rikishi {
-  const anyR = r as any;
+  const anyR = r;
 
   if (anyR.economics) {
     if (typeof anyR.economics.cash !== "number") anyR.economics.cash = 0;
@@ -169,28 +184,28 @@ function sanitizeRikishi(r: Rikishi): Rikishi {
 }
 
 function sanitizeHeya(h: Heya): Heya {
-  const anyH = h as any;
+  const anyH = h;
   if (typeof anyH.funds !== "number") anyH.funds = 0;
   return h;
 }
 
 export function deserializeWorld(serialized: SerializedWorldState): WorldState {
   // Sanitize objects as we materialize them into Maps (non-lossy)
-  const heyasObj: Record<string, Heya> = (serialized as any).heyas || {};
-  const rikishiObj: Record<string, Rikishi> = (serialized as any).rikishi || {};
-  const oyakataObj: Record<string, Oyakata> = (serialized as any).oyakata || {};
+  const heyasObj: Record<string, Heya> = serialized.heyas || {};
+  const rikishiObj: Record<string, Rikishi> = serialized.rikishi || {};
+  const oyakataObj: Record<string, Oyakata> = serialized.oyakata || {};
 
   for (const k of Object.keys(heyasObj)) sanitizeHeya(heyasObj[k]);
   for (const k of Object.keys(rikishiObj)) sanitizeRikishi(rikishiObj[k]);
 
-  const savedCalendar = (serialized as any).calendar;
+  const savedCalendar = serialized.calendar;
 
   return {
     id: crypto.randomUUID(),
     seed: serialized.seed,
     year: serialized.year,
     week: serialized.week,
-    dayIndexGlobal: (serialized as any).dayIndexGlobal ?? 0,
+    dayIndexGlobal: serialized.dayIndexGlobal ?? 0,
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),
@@ -198,16 +213,16 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     oyakata: objectToMap(oyakataObj),
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,
     history: serialized.history,
-    events: (serialized as any).events || { version: "1.0.0", log: [], dedupe: {} },
+    events: serialized.events || { version: "1.0.0", log: [], dedupe: {} },
     ftue: serialized.ftue,
     playerHeyaId: serialized.playerHeyaId,
     currentBanzuke: serialized.currentBanzuke,
-    talentPool: (serialized as any).talentPool,
-    almanacSnapshots: (serialized as any).almanacSnapshots || [],
-    sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
-    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
-    ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
-    ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
+    talentPool: serialized.talentPool,
+    almanacSnapshots: serialized.almanacSnapshots || [],
+    sponsorPool: deserializeSponsorPool(serialized.sponsorPool),
+    ozekiKadoban: serialized.ozekiKadoban ?? {},
+    ...serialized.hallOfFame ? { hallOfFame: serialized.hallOfFame } : {},
+    ...serialized.mediaState ? { mediaState: serialized.mediaState } : {},
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,

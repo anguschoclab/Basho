@@ -68,7 +68,7 @@ function buildField(): Rikishi[] {
         side: "east" as Side,
         isRetired: false,
         mental: 50,
-      } as any);
+      } as unknown as any);
       idx++;
     }
   }

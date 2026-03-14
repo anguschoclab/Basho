@@ -426,7 +426,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
       position: st.position,
       advantage: st.advantage
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -545,7 +545,7 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
       gripEvent,
       strikeEvent
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -584,7 +584,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       phase: "momentum",
       description: "Mizu-iri! The Gyoji halts the marathon bout for a water break.",
       data: { tick: st.tick, reason: "mizu_iri", time: st.timeSeconds }
-    } as any);
+    });
     return; // Skip normal event processing this tick
   }
 
@@ -607,7 +607,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
           reason: "physics_wall", 
           advantage: st.advantage 
         }
-      } as any);
+      });
       return;
     }
   }
@@ -633,7 +633,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
         reason,
         advantage: st.advantage
       }
-    } as any);
+    });
     return;
   }
 
@@ -652,7 +652,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
         edgeEvent,
         advantage: adv
       }
-    } as any);
+    });
     return;
   }
 
@@ -695,7 +695,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
             recovery: true,
             advantage: st.advantage
           }
-        } as any);
+        });
         return;
       }
     }
@@ -725,7 +725,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
           reason: "fatigue_turn",
           advantage: st.advantage
         }
-      } as any);
+      });
       return;
     }
   }
@@ -743,7 +743,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       fatigueWest: Math.round(st.fatigueWest * 10) / 10,
       time: st.timeSeconds
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -760,10 +760,10 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
     if (k.category === "forfeit" || k.category === "result") return false;
 
     // Stance guard
-    const reqStances: Stance[] = Array.isArray((k as any).requiredStances) ? (k as any).requiredStances : [];
+    const reqStances: Stance[] = Array.isArray(k.requiredStances) ? k.requiredStances : [];
     if (reqStances.length > 0 && !reqStances.includes(st.stance)) return false;
 
-    const vector = (k as any).vector as "front" | "lateral" | "rear" | undefined;
+    const vector = k.vector as "front" | "lateral" | "rear" | undefined;
     if (vector && vector !== st.position) return false;
 
     // Hard Physics Gate (Impossible moves)
@@ -779,11 +779,11 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
 
   // Weighted pick
   const weighted = usable.map((k) => {
-    const base = Number.isFinite((k as any).baseWeight) ? (k as any).baseWeight : 1;
-    const rarity = (k as any).rarity as "common" | "uncommon" | "rare" | "legendary" | undefined;
+    const base = Number.isFinite(k.baseWeight) ? k.baseWeight : 1;
+    const rarity = k.rarity as "common" | "uncommon" | "rare" | "legendary" | undefined;
     const rarityMult = rarity === "legendary" ? 0.05 : rarity === "rare" ? 0.2 : rarity === "uncommon" ? 0.55 : 1.0;
 
-    const affinity = (k as any).styleAffinity?.[attacker.style ?? "hybrid"] ?? 0;
+    const affinity = k.styleAffinity?.[attacker.style ?? "hybrid"] ?? 0;
     
     let w = base * rarityMult + affinity * 0.4;
 
@@ -862,7 +862,7 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   // Reversal Check
   if (winner !== adv) {
      st.advantage = winner;
-     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } } as any);
+     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } });
   }
 
   const finalWinnerR = winner === "east" ? east : west;
@@ -883,7 +883,7 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
       advantage: st.advantage, // Use updated advantage
       time: st.timeSeconds
     }
-  } as any);
+  });
 
   return { winner, kimarite };
 }
@@ -894,9 +894,9 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
 export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, basho: BashoState): BoutResult {
   // Deterministic seed
-  const bashoId = (basho as any).id ?? "basho";
-  const year = (basho as any).year ?? 0;
-  const bashoName = ((basho as any).bashoName ?? (basho as any).name) as BashoName | undefined;
+  const bashoId = basho.id ?? "basho";
+  const year = basho.year ?? 0;
+  const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
 
   const seed = `${bashoId}-${year}-${bout.day}-${east.id}-${west.id}`;
   const rng = rngFromSeed(seed, "bout", "root");
@@ -931,7 +931,7 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
         clinchPreference: eastTactics.clinchPreference,
         strategy: eastTactics.description,
       }
-    } as any);
+    });
   }
   if (westTactics.description !== "Standard approach") {
     st.log.push({
@@ -945,7 +945,7 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
         clinchPreference: westTactics.clinchPreference,
         strategy: westTactics.description,
       }
-    } as any);
+    });
   }
 
   // Phases — pass tactical modifiers
@@ -996,15 +996,15 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     upset,
     isKinboshi,
     log: st.log
-  } as any;
+  };
 
   // PBP Integration
   const pbpCtx: PbpContext = {
     seed: `${seed}-pbp`,
     day: bout.day,
     bashoName,
-    east: { id: east.id, shikona: east.shikona, style: (east as any).style, archetype: (east as any).archetype },
-    west: { id: west.id, shikona: west.shikona, style: (west as any).style, archetype: (west as any).archetype },
+    east: { id: east.id, shikona: east.shikona, style: east.style, archetype: east.archetype },
+    west: { id: west.id, shikona: west.shikona, style: west.style, archetype: west.archetype },
     kenshoCount: undefined,
     isKinboshiBout: upset && (eastTier === 1 || westTier === 1), // Kinboshi check
     isYushoRaceKeyBout: false
@@ -1013,9 +1013,9 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   const pbpLines: PbpLine[] = buildPbpFromBoutResult(result, pbpCtx);
 
   // Extras for UI
-  (result as any).pbpLines = pbpLines;
-  (result as any).pbp = pbpLines.map((l) => l.text);
-  (result as any).narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
+  result.pbpLines = pbpLines;
+  result.pbp = pbpLines.map((l) => l.text);
+  result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
 
   return result;
 }
@@ -1023,7 +1023,7 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
 /** Convenience helper for tests/sim screens */
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {
   const rng = rngFromSeed(seed, "bout", "root");
-  const bashoName: BashoName = "hatsu" as any;
+  const bashoName: BashoName = "hatsu" ;
 
   const fakeBasho: BashoState = {
     id: "sim",
@@ -1031,7 +1031,7 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
     day: 1,
     bashoName,
     bashoNumber: 1
-  } as any;
+  };
 
   const bout: BoutContext = { id: `sim-${seed}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };
 

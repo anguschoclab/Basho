@@ -16,7 +16,7 @@ describe("History Indexing", () => {
   });
 
   it("should index a basho result and query it", () => {
-    const world = generateWorld("test-history") as any;
+    const world = generateWorld("test-history");
     world.historyIndex = createEmptyHistoryIndex();
     world.year = 2025;
     world.bashoNumber = 1;
@@ -43,7 +43,7 @@ describe("History Indexing", () => {
         side: "east",
         boutResults: []
       }]
-    } as any;
+    } as unknown as any;
 
     indexBashoResult(world, bashoResult);
 

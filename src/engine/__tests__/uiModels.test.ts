@@ -14,7 +14,7 @@ describe("UI Models Projections", () => {
     const uiRikishi = projectRikishi(rikishi, world);
 
     // Verify raw power is NOT in the UI projection
-    expect((uiRikishi as any).power).toBeUndefined();
+    expect((uiRikishi as { power?: number }).power).toBeUndefined();
 
     // Verify it translates to a band correctly mapped in the struct
     expect(uiRikishi.descriptor).toBeDefined();

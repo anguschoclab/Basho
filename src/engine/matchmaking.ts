@@ -64,8 +64,8 @@ function rankSimilarity(a: Rikishi, b: Rikishi): number {
   // If ranks differ (e.g., upper vs lower), penalize. If equal, compare rankNumber distance.
   if (a.rank !== b.rank) return 0.25;
 
-  const an = typeof (a as any).rankNumber === "number" ? (a as any).rankNumber : 0;
-  const bn = typeof (b as any).rankNumber === "number" ? (b as any).rankNumber : 0;
+  const an = typeof a.rankNumber === "number" ? a.rankNumber : 0;
+  const bn = typeof b.rankNumber === "number" ? b.rankNumber : 0;
 
   if (an <= 0 || bn <= 0) return 0.75;
   const diff = Math.abs(an - bn);
@@ -93,8 +93,8 @@ function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolea
 
 function assignSides(a: Rikishi, b: Rikishi, honorExistingSide: boolean): { eastId: string; westId: string; bonus: number; reasons: string[] } {
   const reasons: string[] = [];
-  const aSide = (a as any).side as Side | undefined;
-  const bSide = (b as any).side as Side | undefined;
+  const aSide = a.side as Side | undefined;
+  const bSide = b.side as Side | undefined;
 
   if (honorExistingSide && aSide && bSide && aSide !== bSide) {
     reasons.push("honor_existing_side");
@@ -200,7 +200,7 @@ export function buildCandidatePairs(
   const pool = stableSort(
     options.division ? rikishi.filter(r => r.division === options.division) : [...rikishi],
     r => r.id
-  ).filter(r => !(r as any).injured);
+  ).filter(r => !r.injured);
 
   const out: MatchPairing[] = [];
 
