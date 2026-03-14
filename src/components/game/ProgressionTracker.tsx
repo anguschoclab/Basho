@@ -11,10 +11,12 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { Rikishi, WorldState } from "@/engine/types";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 
+/** Defines the structure for progression tracker props. */
 interface ProgressionTrackerProps {
   world: WorldState;
 }
 
+/** Defines the structure for ozeki run candidate. */
 interface OzekiRunCandidate {
   rikishi: Rikishi;
   recentWins: number; // wins over last 3 basho
@@ -23,6 +25,7 @@ interface OzekiRunCandidate {
   narrative: string;
 }
 
+/** Defines the structure for yokozuna candidate. */
 interface YokozunaCandidate {
   rikishi: Rikishi;
   consecutiveYusho: number;
@@ -31,6 +34,11 @@ interface YokozunaCandidate {
   isStrong: boolean;
 }
 
+/**
+ * Get ozeki run candidates.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   const candidates: OzekiRunCandidate[] = [];
   const playerHeyaId = world.playerHeyaId;
@@ -71,6 +79,11 @@ function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   return candidates.sort((a, b) => b.progress - a.progress);
 }
 
+/**
+ * Get yokozuna candidates.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
 
@@ -104,6 +117,11 @@ function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   return candidates;
 }
 
+/**
+ * Get kadoban drama.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> {
   const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
   const entries: Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> = [];
@@ -127,6 +145,10 @@ function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; narrative
   return entries;
 }
 
+/**
+ * progression tracker.
+ *  * @param { world } - The { world }.
+ */
 export function ProgressionTracker({ world }: ProgressionTrackerProps) {
   const ozekiRuns = useMemo(() => getOzekiRunCandidates(world), [world]);
   const yokozunaCandidates = useMemo(() => getYokozunaCandidates(world), [world]);

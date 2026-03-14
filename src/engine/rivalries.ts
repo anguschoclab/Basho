@@ -22,6 +22,7 @@ export type RivalryTone =
   | "unstable" // volatile/oscillating
   | "public_hype";
 
+/** Type representing rivalry trigger. */
 export type RivalryTrigger =
   | "repeat_matches"
   | "close_finish"
@@ -32,11 +33,13 @@ export type RivalryTrigger =
   | "personal_history"
   | "heya_feud";
 
+/** Type representing rivalry heat band. */
 export type RivalryHeatBand = "cold" | "warm" | "hot" | "inferno";
 
 /** Pair key must be canonical: smallerId|largerId */
 export type RivalryKey = string;
 
+/** Defines the structure for rivalry pair state. */
 export interface RivalryPairState {
   key: RivalryKey;
 
@@ -106,14 +109,33 @@ export function createDefaultRivalriesState(): RivalriesState {
   return { version: "1.0.0", pairs: {} };
 }
 
+/**
+ * Make rivalry key.
+ *  * @param aId - The A id.
+ *  * @param bId - The B id.
+ *  * @returns The result.
+ */
 export function makeRivalryKey(aId: Id, bId: Id): RivalryKey {
   return aId < bId ? `${aId}|${bId}` : `${bId}|${aId}`;
 }
 
+/**
+ * Get rivalry.
+ *  * @param state - The State.
+ *  * @param aId - The A id.
+ *  * @param bId - The B id.
+ *  * @returns The result.
+ */
 export function getRivalry(state: RivalriesState, aId: Id, bId: Id): RivalryPairState | null {
   return state.pairs[makeRivalryKey(aId, bId)] ?? null;
 }
 
+/**
+ * Upsert rivalry.
+ *  * @param state - The State.
+ *  * @param pair - The Pair.
+ *  * @returns The result.
+ */
 export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): RivalriesState {
   return {
     ...state,
@@ -121,6 +143,13 @@ export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): Ri
   };
 }
 
+/**
+ * Remove rivalry.
+ *  * @param state - The State.
+ *  * @param aId - The A id.
+ *  * @param bId - The B id.
+ *  * @returns The result.
+ */
 export function removeRivalry(state: RivalriesState, aId: Id, bId: Id): RivalriesState {
   const key = makeRivalryKey(aId, bId);
   if (!state.pairs[key]) return state;
@@ -323,6 +352,12 @@ function createFreshPairState(aId: Id, bId: Id, key: RivalryKey, week: number, s
   };
 }
 
+/**
+ * Apply bout to pair.
+ *  * @param pair - The Pair.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function applyBoutToPair(
   pair: RivalryPairState,
   args: {
@@ -406,10 +441,21 @@ function applyBoutToPair(
   return { ...next, tone, label };
 }
 
+/**
+ * Bump trigger.
+ *  * @param triggers - The Triggers.
+ *  * @param t - The T.
+ *  * @param amt - The Amt.
+ */
 function bumpTrigger(triggers: RivalryPairState["triggers"], t: RivalryTrigger, amt: number): void {
   triggers[t] = (triggers[t] ?? 0) + amt;
 }
 
+/**
+ * Heat band.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function heatBand(heat: number): RivalryHeatBand {
   if (heat >= 80) return "inferno";
   if (heat >= 55) return "hot";
@@ -417,12 +463,23 @@ function heatBand(heat: number): RivalryHeatBand {
   return "cold";
 }
 
+/**
+ * Top triggers.
+ *  * @param pair - The Pair.
+ *  * @param n - The N.
+ *  * @returns The result.
+ */
 function topTriggers(pair: RivalryPairState, n: number): RivalryTrigger[] {
   const entries = Object.entries(pair.triggers) as Array<[RivalryTrigger, number]>;
   entries.sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0));
   return entries.slice(0, n).map(e => e[0]);
 }
 
+/**
+ * Derive tone.
+ *  * @param pair - The Pair.
+ *  * @returns The result.
+ */
 function deriveTone(pair: RivalryPairState): RivalryTone {
   const heat01 = pair.heat / 100;
   const spite01 = pair.spite / 100;
@@ -444,6 +501,12 @@ function deriveTone(pair: RivalryPairState): RivalryTone {
   return "respect";
 }
 
+/**
+ * Derive label.
+ *  * @param pair - The Pair.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function deriveLabel(pair: RivalryPairState, world: WorldState): string | undefined {
   // Optional: you can localize these or move to narrative.ts later.
   const a = world.rikishi.get(pair.aId)?.shikona ?? "A";
@@ -469,6 +532,11 @@ function inferCloseness01(result: BoutResult): number {
   return clamp01(d + upset);
 }
 
+/**
+ * Infer domination01.
+ *  * @param result - The Result.
+ *  * @returns The result.
+ */
 function inferDomination01(result: BoutResult): number {
   // Heuristic: very short bouts often feel dominant
   const dur = typeof result.duration === "number" ? result.duration : 0;
@@ -484,6 +552,11 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Clamp01.
+ *  * @param n - The N.
+ *  * @returns The result.
+ */
 function clamp01(n: number): number {
   return clamp(n, 0, 1);
 }

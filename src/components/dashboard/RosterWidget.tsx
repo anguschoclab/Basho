@@ -7,6 +7,7 @@ import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-rea
 import { ClickableName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
+/** roster widget. */
 export function RosterWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

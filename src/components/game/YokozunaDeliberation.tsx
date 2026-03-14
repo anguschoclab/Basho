@@ -8,6 +8,7 @@ import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Scale, Users, Star, Scroll } from "lucide-react";
 import type { Rikishi, WorldState } from "@/engine/types";
 
+/** Defines the structure for deliberation props. */
 interface DeliberationProps {
   rikishi: Rikishi;
   world: WorldState;
@@ -49,6 +50,10 @@ const DELIBERATION_DIALOGUE = {
   ],
 };
 
+/**
+ * yokozuna deliberation.
+ *  * @param { rikishi, world, open, onClose, verdict, reasoning } - The { rikishi, world, open, on close, verdict, reasoning }.
+ */
 export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, reasoning }: DeliberationProps) {
   const [dialogueStep, setDialogueStep] = useState(0);
   const dialogue = DELIBERATION_DIALOGUE[verdict];

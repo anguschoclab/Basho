@@ -47,6 +47,7 @@ const PHASE_ACCENT: Record<string, string> = {
   interim: "from-muted/30 via-transparent to-transparent",
 };
 
+/** dashboard. */
 export default function Dashboard() {
   const { state, hasAutosave, loadFromAutosave } = useGame();
   const navigate = useNavigate();

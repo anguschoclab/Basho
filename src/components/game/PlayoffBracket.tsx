@@ -4,11 +4,16 @@ import { Trophy, Swords, ChevronRight } from "lucide-react";
 import { ClickableName } from "@/components/ClickableName";
 import type { MatchSchedule, WorldState } from "@/engine/types";
 
+/** Defines the structure for playoff bracket props. */
 interface PlayoffBracketProps {
   matches: MatchSchedule[];
   world: WorldState;
 }
 
+/**
+ * playoff bracket.
+ *  * @param { matches, world } - The { matches, world }.
+ */
 export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   if (!matches || matches.length === 0) return null;
 

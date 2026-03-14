@@ -7,6 +7,7 @@ import { getCachedPerception } from "@/engine/perception";
 import { StableName } from "@/components/ClickableName";
 import { Swords, ChevronRight, Flame } from "lucide-react";
 
+/** rivals widget. */
 export function RivalsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

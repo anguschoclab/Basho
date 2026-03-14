@@ -41,11 +41,16 @@ const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string 
   weak: { label: "Weak", color: "text-muted-foreground" },
 };
 
+/** Defines the structure for welfare panel props. */
 interface WelfarePanelProps {
   world: WorldState;
   heya: Heya;
 }
 
+/**
+ * welfare panel.
+ *  * @param { world, heya } - The { world, heya }.
+ */
 export function WelfarePanel({ world, heya }: WelfarePanelProps) {
   const welfare = useMemo(() => ensureHeyaWelfareState(heya), [heya]);
   const perception = useMemo(() => buildPerceptionSnapshot(world, heya.id), [world, heya.id]);

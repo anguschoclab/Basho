@@ -39,6 +39,12 @@ const OYAKATA_ARCHETYPES: OyakataArchetype[] = [
   "traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"
 ];
 
+/**
+ * Get random.
+ *  * @param rng - The Rng.
+ *  * @param arr - The Arr.
+ *  * @returns The result.
+ */
 function getRandom<T>(rng: SeededRNG, arr: T[]): T {
   return arr[rng.int(0, arr.length - 1)];
 }
@@ -119,6 +125,13 @@ function generateSyntheticCareer(
   };
 }
 
+/**
+ * Generate rikishi stats.
+ *  * @param rng - The Rng.
+ *  * @param rank - The Rank.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArchetype): RikishiStats {
   const base = rank === "yokozuna" ? 85 :
                rank === "ozeki" ? 75 :
@@ -154,6 +167,11 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
   };
 }
 
+/**
+ * Generate world.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function generateWorld(seed: string | { seed: string } = "initial-seed"): WorldState {
   // Handle both string and object seed formats
   const actualSeed = typeof seed === "string" ? seed : seed.seed;
@@ -472,6 +490,12 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   return world;
 }
 
+/**
+ * Initialize basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @returns The result.
+ */
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {
     const bName = bashoName.toLowerCase() as BashoName;
     const bashoNumber = (BASHO_ORDER.indexOf(bName) + 1) as 1 | 2 | 3 | 4 | 5 | 6;

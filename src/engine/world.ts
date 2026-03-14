@@ -40,10 +40,21 @@ import { determineSpecialPrizes, updateBanzuke } from "./banzuke";
 import { checkRetirement } from "./lifecycle";
 
 // Type guard or helper to access current basho
+/**
+ * Get current basho.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
 
+/**
+ * Start basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @returns The result.
+ */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   if (world.cyclePhase === "active_basho") return world;
 
@@ -67,6 +78,12 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   return world;
 }
 
+/**
+ * Ensure day schedule.
+ *  * @param world - The World.
+ *  * @param day - The Day.
+ *  * @returns The result.
+ */
 function ensureDaySchedule(world: WorldState, day: number): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -93,6 +110,11 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
   return world;
 }
 
+/**
+ * Advance basho day.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function advanceBashoDay(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -108,6 +130,12 @@ export function advanceBashoDay(world: WorldState): WorldState {
   return world;
 }
 
+/**
+ * Simulate bout for today.
+ *  * @param world - The World.
+ *  * @param unplayedIndex - The Unplayed index.
+ *  * @returns The result.
+ */
 export function simulateBoutForToday(
   world: WorldState,
   unplayedIndex: number
@@ -137,6 +165,14 @@ export function simulateBoutForToday(
   return { world, result };
 }
 
+/**
+ * Apply bout result.
+ *  * @param world - The World.
+ *  * @param match - The Match.
+ *  * @param result - The Result.
+ *  * @param _opts - The _opts.
+ *  * @returns The result.
+ */
 function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
@@ -204,6 +240,11 @@ function applyBoutResult(
   return world;
 }
 
+/**
+ * End basho.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function endBasho(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -921,6 +962,11 @@ function runCareerJournalUpdates(world: WorldState): void {
   }
 }
 
+/**
+ * Publish banzuke update.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function publishBanzukeUpdate(world: WorldState): WorldState {
   if (world.cyclePhase !== "post_basho") return world;
 
@@ -987,6 +1033,12 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   return world;
 }
 
+/**
+ * Advance interim.
+ *  * @param world - The World.
+ *  * @param weeks - The Weeks.
+ *  * @returns The result.
+ */
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho" && world.cyclePhase !== "post_basho") return world;
 
@@ -1011,6 +1063,10 @@ export function advanceDay(world: WorldState): DailyTickReport | null {
   return advanceOneDay(world);
 }
 
+/**
+ * Safe call.
+ *  * @param fn - The Fn.
+ */
 function safeCall(fn: () => void) {
   try {
     fn();

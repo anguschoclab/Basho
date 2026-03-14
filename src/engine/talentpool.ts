@@ -34,6 +34,7 @@ const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
 // Sumo typically enforces a one-foreign-born-per-heya rule.
 // Centralize the rule here so both UI gating and NPC AI stay consistent.
+/** f o r e i g n_ r i k i s h i_ l i m i t_ p e r_ h e y a. */
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
 
 const POOL_TYPES: TalentPoolType[] = ["high_school", "university", "foreign"];
@@ -51,25 +52,48 @@ const ARCHETYPES: TacticalArchetype[] = [
 const DOMESTIC_REGIONS = ["Hokkaido", "Aomori", "Tokyo", "Osaka", "Fukuoka", "Nagano", "Aichi", "Saitama"];
 const FOREIGN_REGIONS = ["Mongolia", "Georgia", "Brazil", "Ukraine", "USA", "Bulgaria"];
 
+/** Type representing offer result. */
 export type OfferResult =
   | { ok: true; signed: true; rikishiId: Id }
   | { ok: true; signed: false; reason: string }
   | { ok: false; reason: string };
 
+/**
+ * Style from archetype.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 function styleFromArchetype(archetype: TacticalArchetype): Style {
   if (archetype.includes("oshi")) return "oshi";
   if (archetype.includes("yotsu")) return "yotsu";
   return "hybrid";
 }
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Get week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getWeek(world: WorldState): number {
   return typeof (world as any).week === "number" ? (world as any).week : (world as any).calendar?.currentWeek ?? 0;
 }
 
+/**
+ * Ensure world pool.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function ensureWorldPool(world: WorldState): TalentPoolWorldState {
   const w = world as any;
   if (w.talentPool && w.talentPool.version === VERSION) return w.talentPool as TalentPoolWorldState;
@@ -127,10 +151,26 @@ function ensureWorldPool(world: WorldState): TalentPoolWorldState {
   return created;
 }
 
+/**
+ * Candidate key.
+ *  * @param world - The World.
+ *  * @param poolType - The Pool type.
+ *  * @param year - The Year.
+ *  * @param idx - The Idx.
+ *  * @returns The result.
+ */
 function candidateKey(world: WorldState, poolType: TalentPoolType, year: number, idx: number): string {
   return `${world.seed}::talentpool::${poolType}::${year}::${idx}`;
 }
 
+/**
+ * Create candidate.
+ *  * @param world - The World.
+ *  * @param poolType - The Pool type.
+ *  * @param year - The Year.
+ *  * @param idx - The Idx.
+ *  * @returns The result.
+ */
 function createCandidate(world: WorldState, poolType: TalentPoolType, year: number, idx: number): TalentCandidate {
   const key = candidateKey(world, poolType, year, idx);
   const rng = rngFromSeed(world.seed, "talentpool", key);
@@ -200,6 +240,12 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
   };
 }
 
+/**
+ * Get foreign count in heya.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
   for (const r of world.rikishi.values()) {
@@ -209,6 +255,12 @@ export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   return count;
 }
 
+/**
+ * Get foreign commitments in talks early.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getForeignCommitmentsInTalksEarly(world: WorldState, heyaId: Id): number {
   const tp = ensureWorldPool(world);
   let n = 0;
@@ -221,10 +273,20 @@ function getForeignCommitmentsInTalksEarly(world: WorldState, heyaId: Id): numbe
   return n;
 }
 
+/**
+ * Counts as foreign early.
+ *  * @param candidate - The Candidate.
+ *  * @returns The result.
+ */
 function countsAsForeignEarly(candidate: TalentCandidate): boolean {
   return (candidate.nationality || "Japan") !== "Japan";
 }
 
+/**
+ * Ensure talent pools.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function ensureTalentPools(world: WorldState): TalentPoolWorldState {
   const tp = ensureWorldPool(world);
   // Ensure we have a cohort for the current year.
@@ -232,10 +294,20 @@ export function ensureTalentPools(world: WorldState): TalentPoolWorldState {
   return tp;
 }
 
+/**
+ * Counts as foreign from rikishi.
+ *  * @param rikishi - The Rikishi.
+ *  * @returns The result.
+ */
 export function countsAsForeignFromRikishi(rikishi: Rikishi): boolean {
   return (rikishi.nationality || "Japan") !== "Japan";
 }
 
+/**
+ * Reinject to talent pool.
+ *  * @param world - The World.
+ *  * @param rikishi - The Rikishi.
+ */
 export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void {
   const tp = ensureTalentPools(world);
 
@@ -273,6 +345,10 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
   tp.pools[poolType].candidatesVisible.push(candidateId);
 }
 
+/**
+ * Retire stale candidates.
+ *  * @param world - The World.
+ */
 export function retireStaleCandidates(world: WorldState): void {
   const tp = ensureTalentPools(world);
   const currentYear = world.year;
@@ -294,6 +370,11 @@ export function retireStaleCandidates(world: WorldState): void {
   }
 }
 
+/**
+ * Refresh yearly cohort.
+ *  * @param world - The World.
+ *  * @param year - The Year.
+ */
 export function refreshYearlyCohort(world: WorldState, year: number): void {
   const tp = ensureWorldPool(world);
   const week = getWeek(world);
@@ -332,10 +413,22 @@ export function refreshYearlyCohort(world: WorldState, year: number): void {
   tp.lastYearlyRefreshYear = year;
 }
 
+/**
+ * Get pool.
+ *  * @param world - The World.
+ *  * @param poolType - The Pool type.
+ *  * @returns The result.
+ */
 export function getPool(world: WorldState, poolType: TalentPoolType): TalentPoolState {
   return ensureWorldPool(world).pools[poolType];
 }
 
+/**
+ * List visible candidates.
+ *  * @param world - The World.
+ *  * @param poolType - The Pool type.
+ *  * @returns The result.
+ */
 export function listVisibleCandidates(world: WorldState, poolType: TalentPoolType): TalentCandidate[] {
   const tp = ensureTalentPools(world);
   const pool = tp.pools[poolType];
@@ -345,16 +438,35 @@ export function listVisibleCandidates(world: WorldState, poolType: TalentPoolTyp
     .filter((c) => c.availabilityState !== "withdrawn");
 }
 
+/**
+ * Get candidate.
+ *  * @param world - The World.
+ *  * @param candidateId - The Candidate id.
+ *  * @returns The result.
+ */
 export function getCandidate(world: WorldState, candidateId: Id): TalentCandidate | null {
   const tp = ensureTalentPools(world);
   return tp.candidates[candidateId] ?? null;
 }
 
+/**
+ * Get candidate scouting level.
+ *  * @param world - The World.
+ *  * @param candidateId - The Candidate id.
+ *  * @returns The result.
+ */
 export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): number {
   const tp = ensureWorldPool(world);
   return tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
 }
 
+/**
+ * Scout pool.
+ *  * @param world - The World.
+ *  * @param poolType - The Pool type.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function scoutPool(world: WorldState, poolType: TalentPoolType, opts?: { revealCount?: number; cost?: number }): { revealed: TalentCandidate[]; spent: number } {
   const tp = ensureTalentPools(world);
   const pool = tp.pools[poolType];
@@ -387,6 +499,13 @@ export function scoutPool(world: WorldState, poolType: TalentPoolType, opts?: { 
   return { revealed, spent: cost };
 }
 
+/**
+ * Scout candidate.
+ *  * @param world - The World.
+ *  * @param candidateId - The Candidate id.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function scoutCandidate(world: WorldState, candidateId: Id, opts?: { effort?: number; cost?: number }): { ok: boolean; scoutingLevel: number; spent: number } {
   const tp = ensureTalentPools(world);
   const c = tp.candidates[candidateId];
@@ -418,10 +537,21 @@ export function scoutCandidate(world: WorldState, candidateId: Id, opts?: { effo
   return { ok: true, scoutingLevel: entry.scoutingLevel, spent: cost };
 }
 
+/**
+ * Counts as foreign.
+ *  * @param candidate - The Candidate.
+ *  * @returns The result.
+ */
 function countsAsForeign(candidate: TalentCandidate): boolean {
   return (candidate.nationality || "Japan") !== "Japan";
 }
 
+/**
+ * Get foreign commitments in talks.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getForeignCommitmentsInTalks(world: WorldState, heyaId: Id): number {
   const tp = ensureWorldPool(world);
   let count = 0;
@@ -434,6 +564,13 @@ function getForeignCommitmentsInTalks(world: WorldState, heyaId: Id): number {
   return count;
 }
 
+/**
+ * Can sign candidate.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @param candidate - The Candidate.
+ *  * @returns The result.
+ */
 export function canSignCandidate(world: WorldState, heyaId: Id, candidate: TalentCandidate): { ok: boolean; reason?: string } {
   if (candidate.availabilityState !== "available" && candidate.availabilityState !== "in_talks") {
     return { ok: false, reason: `Candidate is ${candidate.availabilityState.replace(/_/g, " ")}.` };
@@ -450,6 +587,13 @@ export function canSignCandidate(world: WorldState, heyaId: Id, candidate: Talen
   return { ok: true };
 }
 
+/**
+ * Candidate to rikishi.
+ *  * @param world - The World.
+ *  * @param candidate - The Candidate.
+ *  * @param targetRank - The Target rank.
+ *  * @returns The result.
+ */
 function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targetRank: Rank = "jonokuchi"): Rikishi {
   const rng = rngFromSeed(world.seed, "talentpool", `promote::${candidate.candidateId}`);
   const id = candidate.personId; // stable identity becomes rikishi id
@@ -530,6 +674,15 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
   } as any;
 }
 
+/**
+ * Offer candidate.
+ *  * @param world - The World.
+ *  * @param candidateId - The Candidate id.
+ *  * @param heyaId - The Heya id.
+ *  * @param offerType - The Offer type.
+ *  * @param interest - The Interest.
+ *  * @returns The result.
+ */
 export function offerCandidate(world: WorldState, candidateId: Id, heyaId: Id, offerType: SuitorOfferType = "standard", interest: SuitorInterestBand = "high"): OfferResult {
   const tp = ensureTalentPools(world);
   const c = tp.candidates[candidateId];
@@ -554,6 +707,11 @@ export function offerCandidate(world: WorldState, candidateId: Id, heyaId: Id, o
   return { ok: true, signed: false, reason: "Offer submitted. Candidate will decide soon." };
 }
 
+/**
+ * Interest to score.
+ *  * @param band - The Band.
+ *  * @returns The result.
+ */
 function interestToScore(band: SuitorInterestBand): number {
   switch (band) {
     case "all_in": return 25;
@@ -563,6 +721,11 @@ function interestToScore(band: SuitorInterestBand): number {
   }
 }
 
+/**
+ * Offer type to score.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function offerTypeToScore(t: SuitorOfferType): number {
   switch (t) {
     case "aggressive": return 8;
@@ -572,6 +735,12 @@ function offerTypeToScore(t: SuitorOfferType): number {
   }
 }
 
+/**
+ * Heya utility.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function heyaUtility(world: WorldState, heyaId: Id): number {
   const h = world.heyas.get(heyaId);
   if (!h) return 0;
@@ -580,10 +749,20 @@ function heyaUtility(world: WorldState, heyaId: Id): number {
   return clamp(Math.round(prestige * 0.6 + Math.log10(Math.max(1, funds)) * 10), 0, 120);
 }
 
+/**
+ * Default traits.
+ *  * @returns The result.
+ */
 function defaultTraits(): OyakataTraits {
   return { ambition: 55, patience: 55, risk: 45, tradition: 50, compassion: 50 };
 }
 
+/**
+ * Get traits for heya.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getTraitsForHeya(world: WorldState, heyaId: Id): OyakataTraits {
   const heya = world.heyas.get(heyaId);
   if (!heya) return defaultTraits();
@@ -591,6 +770,12 @@ function getTraitsForHeya(world: WorldState, heyaId: Id): OyakataTraits {
   return oyakata?.traits ?? defaultTraits();
 }
 
+/**
+ * Get archetype for heya.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getArchetypeForHeya(world: WorldState, heyaId: Id): string {
   const heya = world.heyas.get(heyaId);
   if (!heya) return "traditionalist";
@@ -598,6 +783,12 @@ function getArchetypeForHeya(world: WorldState, heyaId: Id): string {
   return oyakata?.archetype ?? "traditionalist";
 }
 
+/**
+ * Pool type of candidate.
+ *  * @param world - The World.
+ *  * @param c - The C.
+ *  * @returns The result.
+ */
 function poolTypeOfCandidate(world: WorldState, c: TalentCandidate): TalentPoolType {
   if (countsAsForeign(c)) return "foreign";
   // Heuristic: university-aged (20+) are treated as university pool outputs.
@@ -605,6 +796,13 @@ function poolTypeOfCandidate(world: WorldState, c: TalentCandidate): TalentPoolT
   return age >= 20 ? "university" : "high_school";
 }
 
+/**
+ * Score candidate for heya.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @param c - The C.
+ *  * @returns The result.
+ */
 function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate): number {
   const traits = getTraitsForHeya(world, heyaId);
   const arch = getArchetypeForHeya(world, heyaId);
@@ -698,6 +896,13 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
   return score;
 }
 
+/**
+ * Choose offer profile.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @param c - The C.
+ *  * @returns The result.
+ */
 function chooseOfferProfile(world: WorldState, heyaId: Id, c: TalentCandidate): { offerType: SuitorOfferType; interest: SuitorInterestBand } {
   const traits = getTraitsForHeya(world, heyaId);
   const arch = getArchetypeForHeya(world, heyaId);
@@ -722,6 +927,12 @@ function chooseOfferProfile(world: WorldState, heyaId: Id, c: TalentCandidate): 
   return { offerType, interest };
 }
 
+/**
+ * Resolve candidate signing.
+ *  * @param world - The World.
+ *  * @param candidateId - The Candidate id.
+ *  * @returns The result.
+ */
 function resolveCandidateSigning(world: WorldState, candidateId: Id): { signed: boolean; signedHeyaId?: Id; rikishiId?: Id } {
   const tp = ensureTalentPools(world);
   const c = tp.candidates[candidateId];
@@ -824,6 +1035,10 @@ function npcScoutingRevealTick(world: WorldState, rng: ReturnType<typeof rngForW
 }
 
 // NPC stables make offers based on their scouting priority (from npcAI decisions).
+/**
+ * Npc offer tick.
+ *  * @param world - The World.
+ */
 function npcOfferTick(world: WorldState): void {
   const tp = ensureTalentPools(world);
   const now = getWeek(world);
@@ -915,6 +1130,10 @@ function npcOfferTick(world: WorldState): void {
   }
 }
 
+/**
+ * Tick week.
+ *  * @param world - The World.
+ */
 export function tickWeek(world: WorldState): void {
   ensureTalentPools(world);
 

@@ -17,6 +17,7 @@ export type { GamePhase, GameState } from "./gameTypes";
 
 // === CONTEXT VALUE ===
 
+/** Defines the structure for game context value. */
 interface GameContextValue {
   state: GameState;
   createWorld: (seed: string, playerHeyaId?: string) => void;
@@ -51,6 +52,10 @@ const GameContext = createContext<GameContextValue | null>(null);
 
 // === PROVIDER ===
 
+/**
+ * game provider.
+ *  * @param { children } - The { children }.
+ */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
@@ -154,6 +159,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
 // === HOOK ===
 
+/** Use game. */
 export function useGame() {
   const context = useContext(GameContext);
   if (!context) throw new Error("useGame must be used within a GameProvider");

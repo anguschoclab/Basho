@@ -29,6 +29,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
 import type { Rikishi, BoutResult, Division } from "@/engine/types";
 
+/** Type representing match like. */
 type MatchLike = {
   day?: number;
   boutId?: string;
@@ -37,6 +38,7 @@ type MatchLike = {
   result?: BoutResult;
 };
 
+/** Defines the structure for selected bout. */
 interface SelectedBout {
   east: Rikishi;
   west: Rikishi;
@@ -44,14 +46,24 @@ interface SelectedBout {
   isPlayerBout: boolean;
 }
 
+/**
+ * Make pair key.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ */
 function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
 
+/** Defines the structure for schedule overview props. */
 interface ScheduleOverviewProps {
   currentDay: number;
 }
 
+/**
+ * schedule overview.
+ *  * @param { currentDay } - The { current day }.
+ */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
   
@@ -105,6 +117,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
   );
 }
 
+/** basho page. */
 export default function BashoPage() {
   const navigate = useNavigate();
   const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();

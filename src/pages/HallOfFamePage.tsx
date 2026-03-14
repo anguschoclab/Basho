@@ -40,6 +40,12 @@ const RANK_JA: Record<string, string> = {
   sandanme: "三段目", jonidan: "序二段", jonokuchi: "序ノ口",
 };
 
+/**
+ * Get greatest fights.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getGreatestFights(world: WorldState, rikishiId: string): Array<{ bashoName: string; kimarite: string; opponentName: string; isWin: boolean }> {
   const r = world.rikishi.get(rikishiId);
   if (!r?.history) return [];
@@ -63,6 +69,12 @@ function getGreatestFights(world: WorldState, rikishiId: string): Array<{ bashoN
   return fights;
 }
 
+/**
+ * Get yusho basho.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getYushoBasho(world: WorldState, rikishiId: string): Array<{ year: number; bashoName: string }> {
   return world.history
     .filter(br => br.yusho === rikishiId)
@@ -71,6 +83,10 @@ function getYushoBasho(world: WorldState, rikishiId: string): Array<{ year: numb
 
 // === Portrait Avatar ===
 
+/**
+ * rikishi portrait.
+ *  * @param { rikishi, category } - The { rikishi, category }.
+ */
 function RikishiPortrait({ rikishi, category }: { rikishi: Rikishi | undefined; category: HoFCategory }) {
   const accent = CATEGORY_ACCENT[category];
   const initials = rikishi?.shikona?.slice(0, 2) ?? "??";
@@ -84,6 +100,10 @@ function RikishiPortrait({ rikishi, category }: { rikishi: Rikishi | undefined; 
 
 // === Inductee Full Card ===
 
+/**
+ * inductee full card.
+ *  * @param { inductee, world } - The { inductee, world }.
+ */
 function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: WorldState }) {
   const Icon = CATEGORY_ICONS[inductee.category];
   const label = HOF_CATEGORY_LABELS[inductee.category];
@@ -185,6 +205,10 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
   );
 }
 
+/**
+ * stat box.
+ *  * @param { icon: Icon, label, value, accent } - The { icon:  icon, label, value, accent }.
+ */
 function StatBox({ icon: Icon, label, value, accent }: { icon: React.ElementType; label: string; value: string | number; accent: string }) {
   return (
     <div className="bg-background/50 rounded-md p-2 text-center">
@@ -197,6 +221,10 @@ function StatBox({ icon: Icon, label, value, accent }: { icon: React.ElementType
 
 // === Category Tab ===
 
+/**
+ * category tab.
+ *  * @param { category, inductees, world } - The { category, inductees, world }.
+ */
 function CategoryTab({ category, inductees, world }: { category: HoFCategory; inductees: HoFInductee[]; world: WorldState }) {
   const label = HOF_CATEGORY_LABELS[category];
 
@@ -245,6 +273,10 @@ function CategoryTab({ category, inductees, world }: { category: HoFCategory; in
 
 // === All-time view ===
 
+/**
+ * all inductees tab.
+ *  * @param { inductees, world } - The { inductees, world }.
+ */
 function AllInducteesTab({ inductees, world }: { inductees: HoFInductee[]; world: WorldState }) {
   const byYear = useMemo(() => {
     const map = new Map<number, HoFInductee[]>();
@@ -290,6 +322,7 @@ function AllInducteesTab({ inductees, world }: { inductees: HoFInductee[]; world
 
 // === Main Page ===
 
+/** hall of fame page. */
 export default function HallOfFamePage() {
   const { state } = useGame();
   const world = state.world;

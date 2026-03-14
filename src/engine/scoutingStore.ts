@@ -12,6 +12,12 @@ import {
 } from "./scouting";
 
 // Local implementations for missing scouting functions
+/**
+ * Apply scouting decay.
+ *  * @param entry - The Entry.
+ *  * @param currentWeek - The Current week.
+ *  * @returns The result.
+ */
 function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): ScoutedRikishi {
   const weeksSince = currentWeek - entry.lastObservedWeek;
   if (weeksSince <= 0 || entry.isOwned) return entry;
@@ -20,6 +26,12 @@ function applyScoutingDecay(entry: ScoutedRikishi, currentWeek: number): Scouted
   return { ...entry, scoutingLevel: Math.max(0, entry.scoutingLevel - decay) };
 }
 
+/**
+ * Refresh truth snapshot.
+ *  * @param entry - The Entry.
+ *  * @param truth - The Truth.
+ *  * @returns The result.
+ */
 function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRikishi {
   return {
     ...entry,
@@ -49,6 +61,11 @@ function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> 
   return w.playerKnowledge.scouting as Record<string, ScoutedRikishi>;
 }
 
+/**
+ * Get world week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getWorldWeek(world: WorldState): number {
   const w: any = world as any;
   // support multiple schemas
@@ -58,11 +75,22 @@ function getWorldWeek(world: WorldState): number {
   return 0;
 }
 
+/**
+ * Get player heya id.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getPlayerHeyaId(world: WorldState): string | null {
   const w: any = world as any;
   return (w.playerHeyaId ?? w.playerHeya ?? w.player?.heyaId ?? null) as string | null;
 }
 
+/**
+ * Get rikishi.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
   const w: any = world as any;
   const map = w.rikishi;

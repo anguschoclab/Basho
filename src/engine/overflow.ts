@@ -3,6 +3,7 @@ import { logEngineEvent } from "./events";
 import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./talentpool";
 
 // Hard cap constants
+/** h a r d_ c a p_ r o s t e r_ s i z e. */
 export const HARD_CAP_ROSTER_SIZE = 30;
 
 /**

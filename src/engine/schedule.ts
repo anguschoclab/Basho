@@ -7,6 +7,7 @@ import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { BashoState, Division, MatchSchedule, Rikishi, WorldState } from "./types";
 import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
+/** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
   division: Division;
   /** number of bouts on a given day (usually roster/2) */
@@ -15,6 +16,7 @@ export interface DivisionScheduleConfig {
   maxActiveRikishi?: number;
 }
 
+/** Defines the structure for schedule rules. */
 export interface ScheduleRules {
   matchmaking?: Partial<MatchmakingRules>;
   allowForcedRepeats?: boolean;
@@ -32,10 +34,22 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
 
 // === HELPERS ===
 
+/**
+ * Stable sort.
+ *  * @param arr - The Arr.
+ *  * @param keyFn - The Key fn.
+ *  * @returns The result.
+ */
 function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
   return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
 }
 
+/**
+ * Active division roster.
+ *  * @param world - The World.
+ *  * @param division - The Division.
+ *  * @returns The result.
+ */
 function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of world.rikishi.values()) {
@@ -46,6 +60,11 @@ function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] 
   return stableSort(pool, r => r.id);
 }
 
+/**
+ * Previous opponents set.
+ *  * @param basho - The Basho.
+ *  * @returns The result.
+ */
 function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
   const map = new Map<string, Set<string>>();
   for (const m of basho.matches) {

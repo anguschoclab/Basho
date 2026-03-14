@@ -47,6 +47,7 @@ import type {
 } from "@/engine/holiday";
 import { DEFAULT_CRITICAL_GATES } from "@/engine/holiday";
 
+/** Defines the structure for holiday controls props. */
 interface HolidayControlsProps {
   onHoliday: (config: HolidayConfig) => HolidayResult | null;
   playerHeyaId?: string;
@@ -77,6 +78,10 @@ const GATE_OPTIONS: { value: SafetyGate; label: string; icon: typeof AlertTriang
   { value: "loanDefault", label: "Financial emergency", icon: Banknote },
 ];
 
+/**
+ * holiday controls.
+ *  * @param { onHoliday, playerHeyaId, currentPhase } - The { on holiday, player heya id, current phase }.
+ */
 export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: HolidayControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [target, setTarget] = useState<HolidayTarget>("nextWeek");

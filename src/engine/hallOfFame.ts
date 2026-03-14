@@ -18,8 +18,10 @@ import type { WorldState, BashoResult, Id, Rank } from "./types";
 
 // === TYPES ===
 
+/** Type representing ho f category. */
 export type HoFCategory = "champion" | "iron_man" | "technician";
 
+/** Defines the structure for ho f inductee. */
 export interface HoFInductee {
   rikishiId: Id;
   shikona: string;
@@ -36,6 +38,7 @@ export interface HoFInductee {
   };
 }
 
+/** Defines the structure for hall of fame state. */
 export interface HallOfFameState {
   version: "1.0.0";
   inductees: HoFInductee[];
@@ -46,6 +49,10 @@ export interface HallOfFameState {
 
 // === INITIALIZATION ===
 
+/**
+ * Create empty hall of fame.
+ *  * @returns The result.
+ */
 export function createEmptyHallOfFame(): HallOfFameState {
   return {
     version: "1.0.0",
@@ -185,6 +192,11 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
 
 // === HELPERS ===
 
+/**
+ * Get or create ho f.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getOrCreateHoF(world: WorldState): HallOfFameState {
   const w = world as any;
   if (!w.hallOfFame) {
@@ -193,15 +205,33 @@ function getOrCreateHoF(world: WorldState): HallOfFameState {
   return w.hallOfFame;
 }
 
+/**
+ * Get hall of fame.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function getHallOfFame(world: WorldState): HallOfFameState {
   return (world as any).hallOfFame || createEmptyHallOfFame();
 }
 
+/**
+ * Get inductees by category.
+ *  * @param world - The World.
+ *  * @param category - The Category.
+ *  * @returns The result.
+ */
 export function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {
   const hof = getHallOfFame(world);
   return hof.inductees.filter((i) => i.category === category);
 }
 
+/**
+ * Is inducted.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @param category - The Category.
+ *  * @returns The result.
+ */
 export function isInducted(world: WorldState, rikishiId: Id, category: HoFCategory): boolean {
   const hof = getHallOfFame(world);
   return !!hof.inducted[`${rikishiId}::${category}`];
@@ -209,6 +239,7 @@ export function isInducted(world: WorldState, rikishiId: Id, category: HoFCatego
 
 // === LABELS ===
 
+/** h o f_ c a t e g o r y_ l a b e l s. */
 export const HOF_CATEGORY_LABELS: Record<HoFCategory, { name: string; nameJa: string; icon: string }> = {
   champion: { name: "Champion", nameJa: "横綱殿堂", icon: "🏆" },
   iron_man: { name: "Iron Man", nameJa: "鉄人", icon: "⚔️" },

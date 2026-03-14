@@ -27,6 +27,16 @@ const CATEGORY_ICON: Record<HoFCategory, React.ElementType> = {
   technician: Target,
 };
 
+/**
+ * timeline portrait.
+ *  * @param {
+ *   inductee,
+ *   rikishi,
+ * } - The {
+ *   inductee,
+ *   rikishi,
+ * }.
+ */
 function TimelinePortrait({
   inductee,
   rikishi,
@@ -59,11 +69,16 @@ function TimelinePortrait({
   );
 }
 
+/** Defines the structure for ho f timeline props. */
 interface HoFTimelineProps {
   inductees: HoFInductee[];
   world: WorldState;
 }
 
+/**
+ * ho f timeline.
+ *  * @param { inductees, world } - The { inductees, world }.
+ */
 export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 

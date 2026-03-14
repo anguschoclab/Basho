@@ -25,6 +25,7 @@ const TIER_INCOME: Record<SponsorTier, number> = {
   T0: 100_000, T1: 300_000, T2: 750_000, T3: 1_500_000, T4: 3_000_000, T5: 8_000_000,
 };
 
+/** Defines the structure for contract info. */
 interface ContractInfo {
   sponsor: Sponsor;
   relationship: SponsorRelationship;
@@ -34,6 +35,10 @@ interface ContractInfo {
   isExpiringSoon: boolean;
 }
 
+/**
+ * sponsor contracts panel.
+ *  * @param { world } - The { world }.
+ */
 export function SponsorContractsPanel({ world }: { world: WorldState }) {
   const { updateWorld } = useGame();
   const { toast } = useToast();

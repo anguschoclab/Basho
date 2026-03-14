@@ -39,10 +39,19 @@ const CATEGORY_META: Record<string, { icon: any; color: string; label: string }>
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 
+/**
+ * Get category meta.
+ *  * @param cat - The Cat.
+ */
 function getCategoryMeta(cat: string) {
   return CATEGORY_META[cat] || CATEGORY_META.misc;
 }
 
+/**
+ * Format event time.
+ *  * @param e - The E.
+ *  * @returns The result.
+ */
 function formatEventTime(e: EngineEvent): string {
   if (e.day !== undefined && e.bashoNumber !== undefined) {
     return `B${e.bashoNumber} D${e.day}`;
@@ -113,10 +122,15 @@ function getEventRoute(e: EngineEvent): string | null {
   return null;
 }
 
+/** Defines the structure for event log panel props. */
 interface EventLogPanelProps {
   className?: string;
 }
 
+/**
+ * event log panel.
+ *  * @param { className = "" } - The { class name = "" }.
+ */
 export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const { state } = useGame();
   const navigate = useNavigate();

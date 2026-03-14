@@ -27,6 +27,12 @@ import { logEngineEvent } from "./events";
 
 // ─── Persona ────────────────────────────────────────────
 
+/**
+ * Determine n p c style bias.
+ *  * @param world - The World.
+ *  * @param stableId - The Stable id.
+ *  * @returns The result.
+ */
 export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
   const stable = world.heyas.get(stableId);
   if (!stable) return "neutral";
@@ -60,6 +66,13 @@ const QUIRK_POOL = [
   "Numbers Guy"
 ] as const;
 
+/**
+ * Pick unique.
+ *  * @param rng - The Rng.
+ *  * @param items - The Items.
+ *  * @param count - The Count.
+ *  * @returns The result.
+ */
 function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
   const pool = [...items];
   const out: T[] = [];
@@ -70,6 +83,11 @@ function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: 
   return out;
 }
 
+/**
+ * Ensure persona for oyakata.
+ *  * @param world - The World.
+ *  * @param oyakata - The Oyakata.
+ */
 function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
   if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) return;
 
@@ -89,6 +107,12 @@ function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
   oyakata.managerFlags = flags;
 }
 
+/**
+ * Get manager persona.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 export function getManagerPersona(world: WorldState, heyaId: string): {
   archetype: OyakataArchetype | "unknown";
   traits: { ambition: number; patience: number; risk: number; tradition: number; compassion: number };

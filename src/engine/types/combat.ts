@@ -4,6 +4,7 @@
 
 export type Style = "oshi" | "yotsu" | "hybrid";
 
+/** Type representing stance. */
 export type Stance =
   | "migi-yotsu"
   | "hidari-yotsu"
@@ -11,6 +12,7 @@ export type Stance =
   | "belt-dominant"
   | "push-dominant";
 
+/** Type representing tactical archetype. */
 export type TacticalArchetype =
   | "oshi_specialist"
   | "yotsu_specialist"
@@ -20,10 +22,13 @@ export type TacticalArchetype =
   | "hybrid_oshi_yotsu"
   | "counter_specialist";
 
+/** Type representing kimarite family. */
 export type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERSAL" | "SPECIAL";
 
+/** Type representing kimarite id. */
 export type KimariteId = string;
 
+/** Type representing kimarite class. */
 export type KimariteClass =
   | "force_out"
   | "push"
@@ -39,6 +44,7 @@ export type KimariteClass =
   | "result"
   | "forfeit";
 
+/** a r c h e t y p e_ p r o f i l e s. */
 export const ARCHETYPE_PROFILES: Record<
   TacticalArchetype,
   {

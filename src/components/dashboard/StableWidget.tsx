@@ -29,6 +29,10 @@ const BAND_ICONS: Record<string, string> = {
   inspired: "☀", content: "😊", neutral: "—", disgruntled: "😤", mutinous: "🔥",
 };
 
+/**
+ * row.
+ *  * @param { icon, label, value } - The { icon, label, value }.
+ */
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
   const emoji = BAND_ICONS[value.toLowerCase()];
@@ -45,6 +49,7 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
   );
 }
 
+/** stable widget. */
 export function StableWidget() {
   const { state } = useGame();
   const navigate = useNavigate();

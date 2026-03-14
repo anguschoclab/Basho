@@ -11,6 +11,7 @@ import type { WorldState } from "./types";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
 
+/** Type representing digest kind. */
 export type DigestKind =
   | "training"
   | "injury"
@@ -22,6 +23,7 @@ export type DigestKind =
   | "scouting"
   | "generic";
 
+/** Defines the structure for digest item. */
 export interface DigestItem {
   id: string;
   kind: DigestKind;
@@ -31,12 +33,14 @@ export interface DigestItem {
   heyaId?: string;
 }
 
+/** Defines the structure for digest section. */
 export interface DigestSection {
   id: string;
   title: string;
   items: DigestItem[];
 }
 
+/** Defines the structure for u i digest. */
 export interface UIDigest {
   time: { label: string };
   headline: string;
@@ -50,6 +54,11 @@ export interface UIDigest {
   sections: DigestSection[];
 }
 
+/**
+ * Label for world.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function labelForWorld(world: WorldState): string {
   const year = world.year ?? 2024;
   const week = world.week ?? 0;
@@ -57,6 +66,11 @@ function labelForWorld(world: WorldState): string {
   return `${year} — Week ${week} (${phase})`;
 }
 
+/**
+ * Build weekly digest.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 

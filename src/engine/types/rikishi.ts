@@ -8,6 +8,7 @@ import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
 
+/** Defines the structure for rikishi stats. */
 export interface RikishiStats {
   strength: number;
   technique: number;
@@ -19,6 +20,7 @@ export interface RikishiStats {
   balance: number;
 }
 
+/** Defines the structure for rikishi. */
 export interface Rikishi {
   id: Id;
   shikona: string;

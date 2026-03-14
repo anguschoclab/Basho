@@ -28,18 +28,24 @@ const ROLE_LABELS: Record<string, string> = {
   creditor: "Creditor",
 };
 
+/**
+ * Tier icon.
+ *  * @param tier - The Tier.
+ */
 function tierIcon(tier: SponsorTier) {
   if (tier === "T5") return <Crown className="h-3.5 w-3.5" />;
   if (tier === "T4" || tier === "T3") return <Star className="h-3.5 w-3.5" />;
   return <Building2 className="h-3.5 w-3.5" />;
 }
 
+/** Defines the structure for sponsor view. */
 interface SponsorView {
   sponsor: Sponsor;
   role: string;
   strength: number;
 }
 
+/** sponsors panel. */
 export function SponsorsPanel() {
   const { state } = useGame();
   const world = state.world;

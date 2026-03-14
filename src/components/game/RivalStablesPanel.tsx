@@ -30,12 +30,14 @@ const MORALE_COLOR: Record<string, string> = {
   mutinous: "text-destructive",
 };
 
+/** Defines the structure for rival entry. */
 interface RivalEntry {
   perception: PerceptionSnapshot;
   trainingIntensity: string;
   scoutingPriority: string;
 }
 
+/** rival stables panel. */
 export function RivalStablesPanel() {
   const { state } = useGame();
   const world = state.world;

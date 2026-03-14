@@ -10,6 +10,7 @@
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { BashoState, Division, Rikishi, Side } from "./types";
 
+/** Defines the structure for match pairing. */
 export interface MatchPairing {
   eastId: string;
   westId: string;
@@ -17,6 +18,7 @@ export interface MatchPairing {
   reasons: string[];
 }
 
+/** Defines the structure for matchmaking rules. */
 export interface MatchmakingRules {
   avoidSameHeya: boolean;
   avoidRepeatOpponents: boolean;
@@ -29,6 +31,7 @@ export interface MatchmakingRules {
   allowRepeatsWhenForced: boolean;
 }
 
+/** d e f a u l t_ m a t c h m a k i n g_ r u l e s. */
 export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   avoidSameHeya: true,
   avoidRepeatOpponents: true,
@@ -39,25 +42,56 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   allowRepeatsWhenForced: true
 };
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Stable sort.
+ *  * @param arr - The Arr.
+ *  * @param keyFn - The Key fn.
+ *  * @returns The result.
+ */
 function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
   return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
 }
 
+/**
+ * Get record.
+ *  * @param basho - The Basho.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRecord(basho: BashoState, rikishiId: string): { wins: number; losses: number } {
   const row = basho.standings.get(rikishiId);
   return row ? { wins: row.wins, losses: row.losses } : { wins: 0, losses: 0 };
 }
 
+/**
+ * Record similarity.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function recordSimilarity(a: { wins: number; losses: number }, b: { wins: number; losses: number }): number {
   // Similar record => higher; 0 diff => 1.0
   const diff = Math.abs(a.wins - b.wins) + Math.abs(a.losses - b.losses);
   return 1 / (1 + diff * 0.5);
 }
 
+/**
+ * Rank similarity.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function rankSimilarity(a: Rikishi, b: Rikishi): number {
   // If ranks differ (e.g., upper vs lower), penalize. If equal, compare rankNumber distance.
   if (a.rank !== b.rank) return 0.25;
@@ -70,6 +104,12 @@ function rankSimilarity(a: Rikishi, b: Rikishi): number {
   return 1 / (1 + diff * 0.35);
 }
 
+/**
+ * Weight mismatch score.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function weightMismatchScore(a: Rikishi, b: Rikishi): number {
   const wa = typeof a.weight === "number" ? a.weight : 0;
   const wb = typeof b.weight === "number" ? b.weight : 0;
@@ -80,6 +120,13 @@ function weightMismatchScore(a: Rikishi, b: Rikishi): number {
   return 1 / (1 + diff / 40);
 }
 
+/**
+ * Have faced this basho.
+ *  * @param basho - The Basho.
+ *  * @param aId - The A id.
+ *  * @param bId - The B id.
+ *  * @returns The result.
+ */
 function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolean {
   for (const m of basho.matches) {
     const e = m.eastRikishiId;
@@ -89,6 +136,13 @@ function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolea
   return false;
 }
 
+/**
+ * Assign sides.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @param honorExistingSide - The Honor existing side.
+ *  * @returns The result.
+ */
 function assignSides(a: Rikishi, b: Rikishi, honorExistingSide: boolean): { eastId: string; westId: string; bonus: number; reasons: string[] } {
   const reasons: string[] = [];
   const aSide = (a as any).side as Side | undefined;
@@ -176,6 +230,7 @@ export function scorePairing(args: {
   };
 }
 
+/** Defines the structure for candidate build options. */
 export interface CandidateBuildOptions {
   seed: string;
   rules?: Partial<MatchmakingRules>;

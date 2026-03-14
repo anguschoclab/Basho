@@ -5,6 +5,7 @@ import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
 
+/** Type representing toaster toast. */
 type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
@@ -21,13 +22,16 @@ const actionTypes = {
 
 let count = 0;
 
+/** Gen id. */
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
 }
 
+/** Type representing action type. */
 type ActionType = typeof actionTypes;
 
+/** Type representing action. */
 type Action =
   | {
       type: ActionType["ADD_TOAST"];
@@ -46,6 +50,7 @@ type Action =
       toastId?: ToasterToast["id"];
     };
 
+/** Defines the structure for state. */
 interface State {
   toasts: ToasterToast[];
 }
@@ -68,6 +73,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout);
 };
 
+/** Reducer. */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -125,6 +131,10 @@ const listeners: Array<(state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };
 
+/**
+ * Dispatch.
+ *  * @param action - The Action.
+ */
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action);
   listeners.forEach((listener) => {
@@ -132,8 +142,13 @@ function dispatch(action: Action) {
   });
 }
 
+/** Type representing toast. */
 type Toast = Omit<ToasterToast, "id">;
 
+/**
+ * Toast.
+ *  * @param { ...props } - The { ...props }.
+ */
 function toast({ ...props }: Toast) {
   const id = genId();
 
@@ -163,6 +178,7 @@ function toast({ ...props }: Toast) {
   };
 }
 
+/** Use toast. */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
 

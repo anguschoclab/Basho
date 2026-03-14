@@ -34,6 +34,11 @@ export function tickWeek(world: WorldState): void {
   }
 }
 
+/**
+ * Process heya finances.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function processHeyaFinances(heya: Heya, world: WorldState): void {
   // 1. Calculate Expenses (Weekly Burn)
   
@@ -90,6 +95,11 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   heya.riskIndicators.financial = heya.funds < 0 || runwayWeeks < 8;
 }
 
+/**
+ * Handle insolvency.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function handleInsolvency(heya: Heya, world: WorldState): void {
   // If funds are negative, we are in trouble.
   // The JSA (Governance) steps in if it gets too deep.
@@ -232,6 +242,12 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
   return { churned, retained };
 }
 
+/**
+ * Compute star power.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function computeStarPower(heya: Heya, world: WorldState): number {
   let starPower = 0;
   for (const rId of heya.rikishiIds) {

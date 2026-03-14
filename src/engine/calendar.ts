@@ -17,6 +17,7 @@ import type { BashoName, BashoInfo } from "./types";
 // startDay is computed via getSecondSunday(...) at runtime helpers;
 // we store month/location/venue metadata here.
 
+/** b a s h o_ c a l e n d a r. */
 export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { startDay?: number }> = {
   hatsu: {
     name: "hatsu",
@@ -88,21 +89,37 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
 };
 
 // Basho order for iteration
+/** b a s h o_ o r d e r. */
 export const BASHO_ORDER: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
 
 // Get basho by number (1-6)
+/**
+ * Get basho by number.
+ *  * @param num - The Num.
+ *  * @returns The result.
+ */
 export function getBashoByNumber(num: 1 | 2 | 3 | 4 | 5 | 6): BashoInfo {
   const name = BASHO_ORDER[num - 1];
   return getBashoInfo(name);
 }
 
 // Get next basho in sequence
+/**
+ * Get next basho.
+ *  * @param current - The Current.
+ *  * @returns The result.
+ */
 export function getNextBasho(current: BashoName): BashoName {
   const idx = BASHO_ORDER.indexOf(current);
   return BASHO_ORDER[(idx + 1) % 6];
 }
 
 // Get basho index (0-5)
+/**
+ * Get basho index.
+ *  * @param name - The Name.
+ *  * @returns The result.
+ */
 export function getBashoIndex(name: BashoName): number {
   return BASHO_ORDER.indexOf(name);
 }
@@ -131,6 +148,7 @@ export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
 
 // === Seasonal flavor text ===
 
+/** s e a s o n a l_ f l a v o r. */
 export const SEASONAL_FLAVOR: Record<BashoInfo["season"], string[]> = {
   winter: [
     "Cold winds blow across the kokugikan as the new year begins.",
@@ -168,6 +186,11 @@ export function getSeasonalFlavor(season: BashoInfo["season"], seed?: string): s
 }
 
 // Tournament day names (for display)
+/**
+ * Get day name.
+ *  * @param day - The Day.
+ *  * @returns The result.
+ */
 export function getDayName(day: number): { dayNum: string; dayJa: string } {
   const dayNames: Record<number, string> = {
     1: "初日",
@@ -183,6 +206,11 @@ export function getDayName(day: number): { dayNum: string; dayJa: string } {
 }
 
 // Check if it's a key day (extra narrative weight)
+/**
+ * Is key day.
+ *  * @param day - The Day.
+ *  * @returns The result.
+ */
 export function isKeyDay(day: number): boolean {
   return day === 1 || day === 7 || day === 8 || day === 14 || day === 15;
 }

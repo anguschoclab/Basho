@@ -53,6 +53,10 @@ const BAND_CONFIG = {
   },
 } as const;
 
+/**
+ * band row.
+ *  * @param { icon, label, value, color } - The { icon, label, value, color }.
+ */
 function BandRow({ icon, label, value, color }: {
   icon: React.ReactNode;
   label: string;
@@ -70,6 +74,7 @@ function BandRow({ icon, label, value, color }: {
   );
 }
 
+/** stable overview panel. */
 export function StableOverviewPanel() {
   const { state } = useGame();
   const world = state.world;

@@ -18,6 +18,7 @@ const DIVISION_NAMES: Record<Division, string> = {
   jonokuchi: "Jonokuchi"
 };
 
+/** schedule page. */
 export default function SchedulePage() {
   const { state } = useGame();
   const world = state.world;

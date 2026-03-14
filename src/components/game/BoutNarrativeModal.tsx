@@ -36,6 +36,7 @@ const TAG_ICONS: Record<string, string> = {
   dominant: "💪",
 };
 
+/** Defines the structure for bout narrative modal props. */
 interface BoutNarrativeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,6 +47,26 @@ interface BoutNarrativeModalProps {
   day: number;
 }
 
+/**
+ * bout narrative modal.
+ *  * @param {
+ *   open,
+ *   onOpenChange,
+ *   east,
+ *   west,
+ *   result,
+ *   bashoName,
+ *   day,
+ * } - The {
+ *   open,
+ *   on open change,
+ *   east,
+ *   west,
+ *   result,
+ *   basho name,
+ *   day,
+ * }.
+ */
 export function BoutNarrativeModal({
   open,
   onOpenChange,

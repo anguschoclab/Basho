@@ -26,9 +26,11 @@ import { generateNarrative } from "./narrative";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
 export type Position = "front" | "lateral" | "rear";
+/** Type representing advantage. */
 export type Advantage = "east" | "west" | "none";
 
 // --- PBP HOOKS (Preserved for compatibility) ---
+/** Type representing grip event. */
 type GripEvent =
   | "migi_yotsu_established"
   | "hidari_yotsu_established"
@@ -37,6 +39,7 @@ type GripEvent =
   | "no_grip_scramble"
   | "grip_break";
 
+/** Type representing strike event. */
 type StrikeEvent =
   | "tsuppari_barrage"
   | "nodowa_pressure"
@@ -44,6 +47,7 @@ type StrikeEvent =
   | "throat_attack"
   | "shoulder_blast";
 
+/** Type representing edge event. */
 type EdgeEvent =
   | "bales_at_tawara"
   | "steps_out_then_recovers"
@@ -52,6 +56,7 @@ type EdgeEvent =
   | "turns_the_tables"
   | "slips_but_survives";
 
+/** Type representing momentum shift reason. */
 type MomentumShiftReason =
   | "tachiai_win"
   | "timing_counter"
@@ -62,6 +67,7 @@ type MomentumShiftReason =
   | "physics_wall"  // NEW
   | "mizu_iri";     // NEW
 
+/** Defines the structure for bout context. */
 interface BoutContext {
   id: string;
   day: number;
@@ -69,6 +75,7 @@ interface BoutContext {
   rikishiWestId: string;
 }
 
+/** Defines the structure for engine state. */
 interface EngineState {
   tick: number;
   timeSeconds: number; // NEW: Track real time
@@ -101,10 +108,21 @@ function tierOf(r: Rikishi): number {
   return RANK_HIERARCHY[r.rank]?.tier ?? 99;
 }
 
+/**
+ * Choose side by score.
+ *  * @param eastScore - The East score.
+ *  * @param westScore - The West score.
+ *  * @returns The result.
+ */
 function chooseSideByScore(eastScore: number, westScore: number): Side {
   return eastScore >= westScore ? "east" : "west";
 }
 
+/**
+ * Other side.
+ *  * @param side - The Side.
+ *  * @returns The result.
+ */
 function otherSide(side: Side): Side {
   return side === "east" ? "west" : "east";
 }
@@ -170,6 +188,7 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
 // Returns signed modifiers consumed by each bout phase.
 // =========================================================
 
+/** Defines the structure for tactical modifiers. */
 interface TacticalModifiers {
   tachiaiAggression: number;   // bonus to tachiai force
   clinchPreference: "belt" | "push" | "neutral";  // preferred stance path
@@ -181,6 +200,12 @@ interface TacticalModifiers {
   description: string;         // narrative label for PBP
 }
 
+/**
+ * Compute tactical modifiers.
+ *  * @param self - The Self.
+ *  * @param opponent - The Opponent.
+ *  * @returns The result.
+ */
 function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalModifiers {
   const arch = self.archetype as TacticalArchetype;
   const oppArch = opponent.archetype as TacticalArchetype;
@@ -829,6 +854,16 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
   return weighted[weighted.length - 1]?.k ?? fallback;
 }
 
+/**
+ * Resolve finish.
+ *  * @param rng - The Rng.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param st - The St.
+ *  * @param eastTac - The East tac.
+ *  * @param westTac - The West tac.
+ *  * @returns The result.
+ */
 function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: Side; kimarite: Kimarite } {
   const adv = st.advantage !== "none" ? st.advantage : st.tachiaiWinner;
   const attacker = adv === "east" ? east : west;

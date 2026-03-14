@@ -5,6 +5,7 @@ import { useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useGame } from "@/contexts/GameContext";
 
+/** Defines the structure for shortcut options. */
 interface ShortcutOptions {
   eventLogOpen: boolean;
   onToggleEventLog: () => void;
@@ -24,6 +25,10 @@ const QUICK_NAV: Record<string, string> = {
   "9": "/rivalries",
 };
 
+/**
+ * Use keyboard shortcuts.
+ *  * @param { eventLogOpen, onToggleEventLog, onOpenSaveLoad } - The { event log open, on toggle event log, on open save load }.
+ */
 export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSaveLoad }: ShortcutOptions) {
   const navigate = useNavigate();
   const location = useLocation();

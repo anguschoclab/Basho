@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import type { BoutResult, Rikishi } from "@/engine/types";
 import { Play, Pause, RotateCcw, SkipForward, Volume2, VolumeX } from "lucide-react";
 
+/** Defines the structure for bout replay viewer props. */
 interface BoutReplayViewerProps {
   result: BoutResult;
   eastRikishi: Rikishi;
@@ -19,10 +20,13 @@ interface BoutReplayViewerProps {
   onComplete?: () => void;
 }
 
+/** Type representing replay phase. */
 type ReplayPhase = "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
 
+/** Defines the structure for vec2. */
 interface Vec2 { x: number; y: number; }
 
+/** Defines the structure for rikishi state. */
 interface RikishiState {
   pos: Vec2;
   rotation: number;
@@ -31,6 +35,7 @@ interface RikishiState {
   opacity: number;
 }
 
+/** Defines the structure for particle. */
 interface Particle {
   id: number;
   x: number;
@@ -57,14 +62,32 @@ const PHASE_DURATIONS: Record<ReplayPhase, number> = {
 const PHASES: ReplayPhase[] = ["ritual", "tachiai", "clinch", "momentum", "finish", "ceremony", "complete"];
 
 // Smooth interpolation helper
+/**
+ * Lerp.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
+/**
+ * Ease in out.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function easeInOut(t: number): number {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 
 // Crowd mood derived from phase
+/**
+ * Get crowd mood.
+ *  * @param phase - The Phase.
+ *  * @param progress - The Progress.
+ *  * @returns The result.
+ */
 function getCrowdMood(phase: ReplayPhase, progress: number): { text: string; intensity: number } {
   switch (phase) {
     case "ritual": return { text: "Silence fills the arena…", intensity: 0.1 };
@@ -77,6 +100,24 @@ function getCrowdMood(phase: ReplayPhase, progress: number): { text: string; int
   }
 }
 
+/**
+ * bout replay viewer.
+ *  * @param {
+ *   result,
+ *   eastRikishi,
+ *   westRikishi,
+ *   className,
+ *   autoPlay = false,
+ *   onComplete,
+ * } - The {
+ *   result,
+ *   east rikishi,
+ *   west rikishi,
+ *   class name,
+ *   auto play = false,
+ *   on complete,
+ * }.
+ */
 export function BoutReplayViewer({
   result,
   eastRikishi,
@@ -662,6 +703,17 @@ export function BoutReplayViewer({
 
 // ─── Canvas Drawing Helpers ────────────────────────────────
 
+/**
+ * Draw rikishi.
+ *  * @param ctx - The Ctx.
+ *  * @param state - The State.
+ *  * @param W - The w.
+ *  * @param H - The h.
+ *  * @param side - The Side.
+ *  * @param rikishi - The Rikishi.
+ *  * @param isDark - The Is dark.
+ *  * @param isWinner - The Is winner.
+ */
 function drawRikishi(
   ctx: CanvasRenderingContext2D,
   state: RikishiState,
@@ -792,6 +844,11 @@ function drawRikishi(
 
 // ─── Helpers ──────────────────────────────────
 
+/**
+ * Get phase label.
+ *  * @param phase - The Phase.
+ *  * @returns The result.
+ */
 function getPhaseLabel(phase: ReplayPhase): string {
   const labels: Record<ReplayPhase, string> = {
     ritual: "塩撒き · Pre-Bout Ritual",
@@ -805,6 +862,15 @@ function getPhaseLabel(phase: ReplayPhase): string {
   return labels[phase];
 }
 
+/**
+ * Get phase narration.
+ *  * @param phase - The Phase.
+ *  * @param p01 - The P01.
+ *  * @param result - The Result.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @returns The result.
+ */
 function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, east: Rikishi, west: Rikishi): string {
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
@@ -832,6 +898,12 @@ function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, 
   }
 }
 
+/**
+ * Get overall progress.
+ *  * @param phase - The Phase.
+ *  * @param phaseProgress - The Phase progress.
+ *  * @returns The result.
+ */
 function getOverallProgress(phase: ReplayPhase, phaseProgress: number): number {
   const idx = PHASES.indexOf(phase);
   if (idx < 0) return 0;

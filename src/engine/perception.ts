@@ -14,12 +14,19 @@ import type { RivalriesState } from "./rivalries";
 
 // === Band types for perception ===
 
+/** Type representing health band. */
 export type HealthBand = "peak" | "good" | "fair" | "worn" | "fragile";
+/** Type representing welfare risk band. */
 export type WelfareRiskBand = "safe" | "cautious" | "elevated" | "critical";
+/** Type representing governance pressure band. */
 export type GovernancePressureBand = "none" | "mild" | "moderate" | "severe";
+/** Type representing media heat band. */
 export type MediaHeatBand = "cold" | "warm" | "hot" | "blazing";
+/** Type representing rivalry perception band. */
 export type RivalryPerceptionBand = "dormant" | "simmering" | "heated" | "fierce";
+/** Type representing roster strength band. */
 export type RosterStrengthBand = "dominant" | "strong" | "competitive" | "developing" | "weak";
+/** Type representing morale band. */
 export type MoraleBand = "inspired" | "content" | "neutral" | "disgruntled" | "mutinous";
 
 /** Per-rikishi banded view available to managers */
@@ -74,6 +81,11 @@ export interface PerceptionSnapshot {
 
 // === Band derivation helpers ===
 
+/**
+ * Band health.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
 function bandHealth(r: Rikishi): HealthBand {
   const c = r.condition ?? 100;
   if (c >= 90) return "peak";
@@ -83,6 +95,11 @@ function bandHealth(r: Rikishi): HealthBand {
   return "fragile";
 }
 
+/**
+ * Band welfare risk.
+ *  * @param risk - The Risk.
+ *  * @returns The result.
+ */
 function bandWelfareRisk(risk: number): WelfareRiskBand {
   if (risk <= 20) return "safe";
   if (risk <= 44) return "cautious";
@@ -90,6 +107,12 @@ function bandWelfareRisk(risk: number): WelfareRiskBand {
   return "critical";
 }
 
+/**
+ * Band governance pressure.
+ *  * @param scandalScore - The Scandal score.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 function bandGovernancePressure(scandalScore: number, status: string): GovernancePressureBand {
   if (status === "sanctioned") return "severe";
   if (status === "probation" || scandalScore >= 60) return "moderate";
@@ -97,6 +120,11 @@ function bandGovernancePressure(scandalScore: number, status: string): Governanc
   return "none";
 }
 
+/**
+ * Band media heat.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function bandMediaHeat(heat: number): MediaHeatBand {
   if (heat >= 75) return "blazing";
   if (heat >= 50) return "hot";
@@ -104,6 +132,12 @@ function bandMediaHeat(heat: number): MediaHeatBand {
   return "cold";
 }
 
+/**
+ * Band rivalry.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   const heya = world.heyas.get(heyaId);
   if (!heya) return "dormant";
@@ -126,6 +160,12 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   return "dormant";
 }
 
+/**
+ * Band roster strength.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   const RANK_WEIGHT: Record<string, number> = {
     yokozuna: 100, ozeki: 85, sekiwake: 70, komusubi: 60,
@@ -147,6 +187,12 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   return "weak";
 }
 
+/**
+ * Band morale.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   // Derive from welfare risk + recent momentum
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
@@ -166,18 +212,35 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   return "mutinous";
 }
 
+/**
+ * Band rikishi momentum.
+ *  * @param m - The M.
+ *  * @returns The result.
+ */
 function bandRikishiMomentum(m: number): "rising" | "steady" | "declining" {
   if (m >= 2) return "rising";
   if (m <= -2) return "declining";
   return "steady";
 }
 
+/**
+ * Get stable media heat.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getStableMediaHeat(world: WorldState, heyaId: Id): number {
   const mediaState = (world as any).mediaState;
   if (!mediaState?.heyaPressure) return 0;
   return mediaState.heyaPressure[heyaId] ?? 0;
 }
 
+/**
+ * Get rikishi media heat.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRikishiMediaHeat(world: WorldState, rikishiId: Id): number {
   const mediaState = (world as any).mediaState;
   if (!mediaState?.mediaHeat) return 0;

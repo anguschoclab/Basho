@@ -19,6 +19,7 @@ export interface ShikonaGenerationConfig {
   preferPrestigious?: boolean;
 }
 
+/** Type representing rank tier. */
 type RankTier =
   | "rookie" 
   | "developing" 
@@ -27,6 +28,7 @@ type RankTier =
   | "top" 
   | "legend";
 
+/** Type representing pattern id. */
 type PatternId =
   | "nat+terrain"
   | "power+any"
@@ -36,8 +38,10 @@ type PatternId =
   | "cat+cat"
   | "triple";
 
+/** Type representing pattern weights. */
 type PatternWeights = Record<PatternId, number>;
 
+/** Type representing house style id. */
 type HouseStyleId =
   | "power_mountain"
   | "sea_wind"
@@ -46,8 +50,10 @@ type HouseStyleId =
   | "balanced_classic"
   | "dragon_noble";
 
+/** Type representing connector. */
 type Connector = "no" | "ga" | "shi" | "kuni" | "iwa" | "yori";
 
+/** Defines the structure for house style. */
 interface HouseStyle {
   id: HouseStyleId;
   name: string;
@@ -149,6 +155,7 @@ const HOUSE_STYLES: HouseStyle[] = [
 // Rank Rules
 // ----------------------------
 
+/** Defines the structure for rank rule. */
 interface RankRule {
   tier: RankTier;
   prestigeChance: number;
@@ -170,6 +177,11 @@ const RANK_RULES: RankRule[] = [
 // Helper: Seeded RNG (LCG)
 // ----------------------------
 // Replaces seedrandom to avoid external dependencies
+/**
+ * Seeded random.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 function seededRandom(seed: string): () => number {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
@@ -191,10 +203,22 @@ function seededRandom(seed: string): () => number {
 // Core Helpers
 // ----------------------------
 
+/**
+ * Pick.
+ *  * @param arr - The Arr.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function pick<T>(arr: readonly T[], rng: () => number): T {
   return arr[Math.floor(rng() * arr.length)];
 }
 
+/**
+ * Weighted pick.
+ *  * @param items - The Items.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function weightedPick<T>(items: Array<{ item: T; w: number }>, rng: () => number): T {
   const total = items.reduce((s, x) => s + Math.max(0, x.w), 0);
   if (total <= 0) return items[0].item;
@@ -207,14 +231,34 @@ function weightedPick<T>(items: Array<{ item: T; w: number }>, rng: () => number
   return items[items.length - 1].item;
 }
 
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Clamp int.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clampInt(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }
 
+/**
+ * Simple hash to index.
+ *  * @param s - The S.
+ *  * @param mod - The Mod.
+ *  * @returns The result.
+ */
 function simpleHashToIndex(s: string, mod: number): number {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -224,6 +268,11 @@ function simpleHashToIndex(s: string, mod: number): number {
   return (h >>> 0) % mod;
 }
 
+/**
+ * Resolve rank tier.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function resolveRankTier(rank?: string): RankTier {
   const r = (rank || "").toLowerCase();
   if (r.includes("yokozuna") || r.includes("ozeki")) return "legend";
@@ -234,17 +283,33 @@ function resolveRankTier(rank?: string): RankTier {
   return "rookie";
 }
 
+/**
+ * Get rank rule.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankRule(rank?: string): RankRule {
   const tier = resolveRankTier(rank);
   return RANK_RULES.find((r) => r.tier === tier) || RANK_RULES[1];
 }
 
+/**
+ * Get house style.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getHouseStyle(heyaId?: string): HouseStyle {
   if (!heyaId) return HOUSE_STYLES.find(s => s.id === "balanced_classic")!;
   const idx = simpleHashToIndex(heyaId, HOUSE_STYLES.length);
   return HOUSE_STYLES[idx];
 }
 
+/**
+ * Merge pattern weights.
+ *  * @param base - The Base.
+ *  * @param biases - The Biases.
+ *  * @returns The result.
+ */
 function mergePatternWeights(base: PatternWeights, ...biases: Array<Partial<PatternWeights>>): PatternWeights {
   const out: PatternWeights = { ...base };
   for (const b of biases) {
@@ -258,6 +323,12 @@ function mergePatternWeights(base: PatternWeights, ...biases: Array<Partial<Patt
   return out;
 }
 
+/**
+ * Choose pattern.
+ *  * @param rng - The Rng.
+ *  * @param weights - The Weights.
+ *  * @returns The result.
+ */
 function choosePattern(rng: () => number, weights: PatternWeights): PatternId {
   return weightedPick(
     (Object.keys(weights) as PatternId[]).map((p) => ({ item: p, w: weights[p] })),
@@ -265,11 +336,22 @@ function choosePattern(rng: () => number, weights: PatternWeights): PatternId {
   );
 }
 
+/**
+ * Nationality pool.
+ *  * @param config - The Config.
+ *  * @returns The result.
+ */
 function nationalityPool(config: ShikonaGenerationConfig): string[] {
   if (!config.nationality) return NATIONALITY_PREFIXES.default;
   return NATIONALITY_PREFIXES[config.nationality] || NATIONALITY_PREFIXES.default;
 }
 
+/**
+ * Pick prefix by category bias.
+ *  * @param rng - The Rng.
+ *  * @param bias - The Bias.
+ *  * @returns The result.
+ */
 function pickPrefixByCategoryBias(rng: () => number, bias: HouseStyle["prefixCategoryBias"]): string {
   const categories = Object.keys(SHIKONA_PREFIXES) as Array<keyof typeof SHIKONA_PREFIXES>;
   const items = categories.map((cat) => ({ item: cat, w: clamp(10 + (bias[cat] ?? 0), 1, 50) }));
@@ -277,6 +359,12 @@ function pickPrefixByCategoryBias(rng: () => number, bias: HouseStyle["prefixCat
   return pick(SHIKONA_PREFIXES[chosen], rng);
 }
 
+/**
+ * Pick suffix by category bias.
+ *  * @param rng - The Rng.
+ *  * @param bias - The Bias.
+ *  * @returns The result.
+ */
 function pickSuffixByCategoryBias(rng: () => number, bias: HouseStyle["suffixCategoryBias"]): string {
   const categories = Object.keys(SHIKONA_SUFFIXES) as Array<keyof typeof SHIKONA_SUFFIXES>;
   const items = categories.map((cat) => ({ item: cat, w: clamp(10 + (bias[cat] ?? 0), 1, 50) }));
@@ -284,6 +372,12 @@ function pickSuffixByCategoryBias(rng: () => number, bias: HouseStyle["suffixCat
   return pick(SHIKONA_SUFFIXES[chosen], rng);
 }
 
+/**
+ * Pick connector token.
+ *  * @param rng - The Rng.
+ *  * @param house - The House.
+ *  * @returns The result.
+ */
 function pickConnectorToken(rng: () => number, house: HouseStyle): string {
   const base: Record<Connector, number> = { no: 10, ga: 7, shi: 5, kuni: 3, iwa: 3, yori: 2 };
   const b = house.connectorBias || {};
@@ -306,6 +400,15 @@ const BASE_PATTERN_WEIGHTS: PatternWeights = {
   triple: 6
 };
 
+/**
+ * Generate candidate.
+ *  * @param rng - The Rng.
+ *  * @param config - The Config.
+ *  * @param attempt - The Attempt.
+ *  * @param house - The House.
+ *  * @param rankRule - The Rank rule.
+ *  * @returns The result.
+ */
 function generateCandidate(
   rng: () => number,
   config: ShikonaGenerationConfig,
@@ -395,10 +498,20 @@ export function generateShikona(seed: string = "default", config: ShikonaGenerat
 }
 
 // Legacy compat export
+/**
+ * Generate rikishi name.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function generateRikishiName(seed: string): string {
     return generateShikona(seed, {});
 }
 
+/**
+ * Generate oyakata name.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function generateOyakataName(seed: string): string {
     const names = [
         "Miyagino", "Isegahama", "Kokonoe", "Takasago", "Dewanoumi",

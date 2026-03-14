@@ -112,6 +112,11 @@ const FACILITIES_NARRATIVE: Record<FacilitiesBand, { label: string; description:
   minimal: { label: "Minimal", description: "Bare essentials only. Character builds where equipment cannot." }
 };
 
+/**
+ * Safe facilities copy.
+ *  * @param band - The Band.
+ *  * @param kind - The Kind.
+ */
 function safeFacilitiesCopy(band: FacilitiesBand | undefined, kind: "training" | "recovery" | "nutrition") {
   // Narrative-first, no raw thresholds.
   const base = band ? FACILITIES_NARRATIVE[band]?.description : "Facilities are still being assessed.";
@@ -127,6 +132,7 @@ function safeFacilitiesCopy(band: FacilitiesBand | undefined, kind: "training" |
   }
 }
 
+/** Type representing stable achievements. */
 type StableAchievements = {
   yusho: Array<{ rikishiId: string; bashoName: string; year: number }>;
   junYusho: Array<{ rikishiId: string; bashoName: string; year: number }>;
@@ -135,6 +141,7 @@ type StableAchievements = {
   shukunsho: Array<{ rikishiId: string; bashoName: string; year: number }>;
 };
 
+/** stable page. */
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id?: string }>();

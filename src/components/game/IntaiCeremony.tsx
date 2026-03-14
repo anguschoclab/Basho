@@ -16,6 +16,7 @@ import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
 import type { Rikishi, WorldState } from "@/engine/types";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 
+/** Defines the structure for intai ceremony props. */
 interface IntaiCeremonyProps {
   rikishi: Rikishi;
   reason: string;
@@ -24,6 +25,12 @@ interface IntaiCeremonyProps {
   onClose: () => void;
 }
 
+/**
+ * Get career narrative.
+ *  * @param r - The R.
+ *  * @param reason - The Reason.
+ *  * @returns The result.
+ */
 function getCareerNarrative(r: Rikishi, reason: string): string[] {
   const lines: string[] = [];
   const rankInfo = RANK_HIERARCHY[r.rank];
@@ -59,6 +66,10 @@ function getCareerNarrative(r: Rikishi, reason: string): string[] {
   return lines;
 }
 
+/**
+ * intai ceremony.
+ *  * @param { rikishi, reason, world, open, onClose } - The { rikishi, reason, world, open, on close }.
+ */
 export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCeremonyProps) {
   const heya = world.heyas.get(rikishi.heyaId);
   const isPlayerRikishi = rikishi.heyaId === world.playerHeyaId;

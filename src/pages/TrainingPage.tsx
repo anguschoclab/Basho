@@ -55,6 +55,7 @@ const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; descripti
   { value: "rebuild", label: "Rebuild", description: "Recovery-focused after injury", icon: <Heart className="h-4 w-4" /> },
 ];
 
+/** training page. */
 export default function TrainingPage() {
   const navigate = useNavigate();
   const { state, updateWorld } = useGame();

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** Defines the structure for draggable widget props. */
 interface DraggableWidgetProps {
   widgetId: string;
   column: number;
@@ -13,6 +14,28 @@ interface DraggableWidgetProps {
   children: React.ReactNode;
 }
 
+/**
+ * draggable widget.
+ *  * @param {
+ *   widgetId,
+ *   column,
+ *   label,
+ *   isEditMode,
+ *   onDragStart,
+ *   onDragOver,
+ *   onDragEnd,
+ *   children,
+ * } - The {
+ *   widget id,
+ *   column,
+ *   label,
+ *   is edit mode,
+ *   on drag start,
+ *   on drag over,
+ *   on drag end,
+ *   children,
+ * }.
+ */
 export function DraggableWidget({
   widgetId,
   column,
@@ -73,6 +96,20 @@ export function DraggableWidget({
   );
 }
 
+/**
+ * column drop zone.
+ *  * @param {
+ *   column,
+ *   isEditMode,
+ *   onDragOver,
+ *   onDragEnd,
+ * } - The {
+ *   column,
+ *   is edit mode,
+ *   on drag over,
+ *   on drag end,
+ * }.
+ */
 export function ColumnDropZone({
   column,
   isEditMode,

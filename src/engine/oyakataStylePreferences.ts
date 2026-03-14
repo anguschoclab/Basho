@@ -4,6 +4,7 @@
 import type { WorldState, Oyakata, OyakataArchetype, TacticalArchetype, Style, Id } from "./types";
 import { rngForWorld } from "./rng";
 
+/** Type representing recruitment philosophy. */
 export type RecruitmentPhilosophy = 
   | "style_purist"      // Only recruits wrestlers matching their preferred style
   | "meta_chaser"       // Adapts recruitment to whatever style won last yusho
@@ -13,6 +14,7 @@ export type RecruitmentPhilosophy =
   | "balanced"          // No strong preference
   | "underdog_hunter";  // Seeks hidden gems and overlooked talent
 
+/** Defines the structure for oyakata style profile. */
 export interface OyakataStyleProfile {
   philosophy: RecruitmentPhilosophy;
   preferredArchetypes: TacticalArchetype[];
@@ -37,6 +39,12 @@ const PHILOSOPHY_BY_ARCHETYPE: Record<OyakataArchetype, RecruitmentPhilosophy[]>
   strategist: ["meta_chaser", "balanced", "innovator"],
 };
 
+/**
+ * Get oyakata style profile.
+ *  * @param world - The World.
+ *  * @param oyakata - The Oyakata.
+ *  * @returns The result.
+ */
 export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): OyakataStyleProfile {
   const rng = rngForWorld(world, "oyakataStyle", oyakata.id);
   

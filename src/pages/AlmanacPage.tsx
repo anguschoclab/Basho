@@ -38,6 +38,10 @@ import {
 } from "lucide-react";
 
 // Compute career stats for almanac display
+/**
+ * Compute career stats.
+ *  * @param rikishi - The Rikishi.
+ */
 function computeCareerStats(rikishi: Rikishi) {
   const wins = rikishi.careerWins || 0;
   const losses = rikishi.careerLosses || 0;
@@ -51,6 +55,11 @@ function computeCareerStats(rikishi: Rikishi) {
 }
 
 // Get stable tier color (robust)
+/**
+ * Get stable tier color.
+ *  * @param statureBand - The Stature band.
+ *  * @returns The result.
+ */
 function getStableTierColor(statureBand: string | undefined): string {
   const colors: Record<string, string> = {
     legendary: "text-amber-400",
@@ -63,10 +72,15 @@ function getStableTierColor(statureBand: string | undefined): string {
   return colors[String(statureBand || "")] || "text-muted-foreground";
 }
 
+/**
+ * Normalize query.
+ *  * @param q - The Q.
+ */
 function normalizeQuery(q: string) {
   return (q || "").trim().toLowerCase();
 }
 
+/** almanac page. */
 export default function AlmanacPage() {
   const navigate = useNavigate();
   const { state } = useGame();

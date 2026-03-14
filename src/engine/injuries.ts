@@ -25,6 +25,7 @@ import { logEngineEvent } from "./events";
 
 export type InjurySeverity = "minor" | "moderate" | "serious";
 
+/** Type representing injury body area. */
 export type InjuryBodyArea =
   | "shoulder"
   | "elbow"
@@ -37,6 +38,7 @@ export type InjuryBodyArea =
   | "rib"
   | "other";
 
+/** Type representing injury type. */
 export type InjuryType =
   | "sprain"
   | "strain"
@@ -47,6 +49,7 @@ export type InjuryType =
   | "nerve"
   | "unknown";
 
+/** Defines the structure for injury record. */
 export interface InjuryRecord {
   id: Id;
   rikishiId: Id;
@@ -71,6 +74,7 @@ export interface InjuryRecord {
   notes?: string;
 }
 
+/** Defines the structure for injuries state. */
 export interface InjuriesState {
   version: "1.0.0";
 
@@ -253,6 +257,12 @@ export function applyInjuryRecord(state: InjuriesState, injury: InjuryRecord): I
   return { ...state, activeByRikishi: nextActive, history: nextHist };
 }
 
+/**
+ * Clear injury.
+ *  * @param state - The State.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function clearInjury(state: InjuriesState, rikishiId: Id): InjuriesState {
   if (!state.activeByRikishi[rikishiId]) return state;
   const next = { ...state.activeByRikishi };
@@ -402,12 +412,24 @@ function ensureWorldInjuriesState(world: WorldState): InjuriesState {
   return anyW.injuriesState as InjuriesState;
 }
 
+/**
+ * Get heya by rikishi id.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getHeyaByRikishiId(world: WorldState, rikishiId: Id): Heya | undefined {
   const r = world.rikishi.get(rikishiId);
   if (!r) return undefined;
   return world.heyas.get(r.heyaId);
 }
 
+/**
+ * Get training profile by heya id.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getTrainingProfileByHeyaId(world: WorldState, heyaId: Id): TrainingProfile | undefined {
   // training.ts ensures per-heya training state in world.trainingState
   const anyW = world as any;
@@ -415,6 +437,12 @@ function getTrainingProfileByHeyaId(world: WorldState, heyaId: Id): TrainingProf
   return ts?.activeProfile as TrainingProfile | undefined;
 }
 
+/**
+ * Get individual mode.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getIndividualMode(world: WorldState, rikishiId: Id): "develop" | "push" | "protect" | "rebuild" | null {
   const r = world.rikishi.get(rikishiId);
   if (!r) return null;
@@ -425,6 +453,11 @@ function getIndividualMode(world: WorldState, rikishiId: Id): "develop" | "push"
   return slot?.mode ?? null;
 }
 
+/**
+ * Tick week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function tickWeek(world: WorldState): { recoveredCount: number; newCount: number } {
   let state = ensureWorldInjuriesState(world);
 
@@ -522,6 +555,12 @@ function pickArea(rng: SeededRNG): InjuryBodyArea {
   return "other";
 }
 
+/**
+ * Pick type.
+ *  * @param rng - The Rng.
+ *  * @param severity - The Severity.
+ *  * @returns The result.
+ */
 function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   const roll = rng.next();
   if (severity === "serious") {
@@ -543,6 +582,14 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   return "inflammation";
 }
 
+/**
+ * Get weeks out.
+ *  * @param rng - The Rng.
+ *  * @param severity - The Severity.
+ *  * @param area - The Area.
+ *  * @param type - The Type.
+ *  * @returns The result.
+ */
 function getWeeksOut(rng: SeededRNG, severity: InjurySeverity, area: InjuryBodyArea, type: InjuryType): number {
   // Baselines
   let min = 1, max = 2;
@@ -563,6 +610,11 @@ function getWeeksOut(rng: SeededRNG, severity: InjurySeverity, area: InjuryBodyA
   return clampInt(min + Math.floor(rng.next() * span), 1, 26);
 }
 
+/**
+ * Describe injury.
+ *  * @param args - The Args.
+ *  * @returns The result.
+ */
 function describeInjury(args: {
   rng: SeededRNG;
   severity: InjurySeverity;
@@ -614,6 +666,11 @@ function describeInjury(args: {
   return { title, description };
 }
 
+/**
+ * Area to label.
+ *  * @param area - The Area.
+ *  * @returns The result.
+ */
 function areaToLabel(area: InjuryBodyArea): string {
   switch (area) {
     case "shoulder": return "Shoulder";
@@ -629,6 +686,11 @@ function areaToLabel(area: InjuryBodyArea): string {
   }
 }
 
+/**
+ * Type to label.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function typeToLabel(t: InjuryType): string {
   switch (t) {
     case "sprain": return "Sprain";
@@ -694,6 +756,13 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, n));
 }
 
+/**
+ * Clamp int.
+ *  * @param n - The N.
+ *  * @param lo - The Lo.
+ *  * @param hi - The Hi.
+ *  * @returns The result.
+ */
 function clampInt(n: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }

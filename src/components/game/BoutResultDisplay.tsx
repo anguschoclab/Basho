@@ -8,6 +8,7 @@ import { getKimarite } from "@/engine/kimarite";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Zap, Timer, Shield } from "lucide-react";
 
+/** Defines the structure for bout result display props. */
 interface BoutResultDisplayProps {
   result: BoutResult;
   eastRikishi: Rikishi;
@@ -15,20 +16,51 @@ interface BoutResultDisplayProps {
   className?: string;
 }
 
+/**
+ * Safe string.
+ *  * @param v - The V.
+ *  * @param fallback - The Fallback.
+ *  * @returns The result.
+ */
 function safeString(v: unknown, fallback = ""): string {
   return typeof v === "string" ? v : fallback;
 }
 
+/**
+ * Safe number.
+ *  * @param v - The V.
+ *  * @param fallback - The Fallback.
+ *  * @returns The result.
+ */
 function safeNumber(v: unknown, fallback = 0): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
+/**
+ * Format stance.
+ *  * @param raw - The Raw.
+ *  * @returns The result.
+ */
 function formatStance(raw: unknown): string {
   const s = safeString(raw, "");
   if (!s) return "—";
   return s.charAt(0).toUpperCase() + s.split("-").join(" ").slice(1);
 }
 
+/**
+ * bout result display.
+ *  * @param {
+ *   result,
+ *   eastRikishi,
+ *   westRikishi,
+ *   className,
+ * } - The {
+ *   result,
+ *   east rikishi,
+ *   west rikishi,
+ *   class name,
+ * }.
+ */
 export function BoutResultDisplay({
   result,
   eastRikishi,

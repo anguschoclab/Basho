@@ -4,8 +4,11 @@
 
 import type { Id } from "./common";
 
+/** Type representing event scope. */
 export type EventScope = "world" | "heya" | "rikishi";
+/** Type representing event phase. */
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
+/** Type representing event category. */
 export type EventCategory =
   | "training"
   | "scouting"
@@ -24,8 +27,10 @@ export type EventCategory =
   | "welfare"
   | "misc";
 
+/** Type representing event importance. */
 export type EventImportance = "minor" | "notable" | "major" | "headline";
 
+/** Defines the structure for engine event. */
 export interface EngineEvent {
   id: Id;
   type: string;
@@ -58,6 +63,7 @@ export interface EngineEvent {
   tags?: string[];
 }
 
+/** Defines the structure for events state. */
 export interface EventsState {
   version: "1.0.0";
   log: EngineEvent[];
