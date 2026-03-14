@@ -1,8 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { mock } from "bun:test";
+import { describe, it, expect, mock } from "bun:test";
 
 // Mock rng.ts entirely
-mock.module("./rng", () => ({
+mock.module("../rng", () => ({
   rngFromSeed: () => ({
     next: () => 0.5,
     int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
@@ -25,8 +24,7 @@ mock.module("../media", () => ({
 }));
 
 import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
+import type { WorldState, Heya } from "../types";
 
 function makeHeya(overrides: Partial<Heya> = {}): Heya {
   return {
@@ -53,9 +51,9 @@ function makeHeya(overrides: Partial<Heya> = {}): Heya {
 function makeWorld(heya: Heya): WorldState {
   return {
     seed: "test-seed",
-    year: 2025,
+    year: 2024,
     week: 1,
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+    calendar: { year: 2024, month: 1, currentWeek: 1, currentDay: 1 },
     heyas: new Map([[heya.id, heya]]),
     events: { version: "1.0.0", log: [], dedupe: {} },
     governanceLog: [],
