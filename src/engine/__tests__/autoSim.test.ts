@@ -16,7 +16,8 @@ describe("AutoSim", () => {
         duration: { type: "basho", count: 1 },
         stopConditions: ["never"],
         verbosity: "minimal",
-        pauseForScandals: false
+        delegationPolicy: "balanced",
+        observerMode: true,
     };
 
     const result = runAutoSim(world, config);
