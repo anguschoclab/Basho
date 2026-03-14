@@ -58,7 +58,8 @@ function hasLocalStorage(): boolean {
  *  * @param map - The Map.
  *  * @returns The result.
  */
-function mapToObject<T>(map: Map<string, T>): Record<string, T> {
+function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string, T> {
+  if (!(map instanceof Map)) return map;
   const obj: Record<string, T> = {};
   const keys = Array.from(map.keys()).sort();
   for (const key of keys) obj[key] = map.get(key)!;

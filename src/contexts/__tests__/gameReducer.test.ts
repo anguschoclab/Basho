@@ -1,12 +1,12 @@
 // gameReducer.test.ts — Unit tests for each GameAction type
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, mock } from "bun:test";
 import { gameReducer } from "../gameReducer";
 import { initialGameState, type GameState } from "../gameTypes";
 import type { WorldState } from "@/engine/types/world";
 
 // Mock heavy engine modules to keep tests fast and isolated
-vi.mock("@/engine/worldgen", () => ({
-  generateWorld: vi.fn(({ seed }: { seed: string }) => {
+mock.module("@/engine/worldgen", () => ({
+  generateWorld: mock(({ seed }: { seed: string }) => {
     const heyas = new Map();
     heyas.set("heya-1", { id: "heya-1", name: "Test Heya", isPlayerOwned: false });
     heyas.set("heya-2", { id: "heya-2", name: "Rival Heya", isPlayerOwned: false });
@@ -23,18 +23,18 @@ vi.mock("@/engine/worldgen", () => ({
   }),
 }));
 
-vi.mock("@/engine/world", () => ({
-  startBasho: vi.fn(),
-  advanceBashoDay: vi.fn(),
-  simulateBoutForToday: vi.fn(() => ({ result: { winnerId: "r-1", loserId: "r-2" } })),
-  endBasho: vi.fn(),
-  publishBanzukeUpdate: vi.fn(),
-  advanceInterim: vi.fn(),
-  advanceDay: vi.fn(),
+mock.module("@/engine/world", () => ({
+  startBasho: mock(),
+  advanceBashoDay: mock(),
+  simulateBoutForToday: mock(() => ({ result: { winnerId: "r-1", loserId: "r-2" } })),
+  endBasho: mock(),
+  publishBanzukeUpdate: mock(),
+  advanceInterim: mock(),
+  advanceDay: mock(),
 }));
 
-vi.mock("../gameHelpers", () => ({
-  autosaveWithSignal: vi.fn(() => true),
+mock.module("../gameHelpers", () => ({
+  autosaveWithSignal: mock(() => true),
 }));
 
 // Helper to build a state with a mock world already loaded
@@ -70,7 +70,7 @@ function stateInBasho(): GameState {
 
 describe("gameReducer", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mock.restore();
   });
 
   // === Pure navigation / selection actions ===
