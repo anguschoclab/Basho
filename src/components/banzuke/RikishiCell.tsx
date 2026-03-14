@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { ClickableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { RankChangeIndicator } from "./RankChangeIndicator";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 import type { UIRosterEntry } from "@/engine/uiModels";
@@ -27,10 +27,10 @@ export function RikishiCell({ entry, kadobanMap, heyaName, showChanges, prevRank
         {isPlayerStable && (
           <span className="shrink-0 h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" title="Your stable" />
         )}
-        <ClickableName
+        <RikishiName
           id={entry.id}
           name={entry.shikona}
-          type="rikishi"
+
           className={`font-bold text-sm ${isPlayerStable ? "text-primary" : ""}`}
         />
         <span className="text-[10px] font-mono text-muted-foreground">{entry.record}</span>
