@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronRight, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { toPotentialBand, POTENTIAL_LABELS, type PotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/talentpool";
-import type { TalentCandidate, TalentPoolType } from "@/engine/types";
+import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",
@@ -23,6 +23,7 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
   foreign: Globe,
 };
 
+/** scouting widget. */
 export function ScoutingWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -41,11 +42,12 @@ export function ScoutingWidget() {
 
   if (!world) return null;
 
-  const poolCounts = {
-    high_school: prospects.filter(p => p.pool === "high_school").length,
-    university: prospects.filter(p => p.pool === "university").length,
-    foreign: prospects.filter(p => p.pool === "foreign").length,
-  };
+  const poolCounts = { high_school: 0, university: 0, foreign: 0 };
+  for (const p of prospects) {
+    if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
+      poolCounts[p.pool]++;
+    }
+  }
 
   const topProspects = prospects.slice(0, 6);
 
@@ -56,7 +58,7 @@ export function ScoutingWidget() {
           <Search className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scouting</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/talent-pool")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/talent-pool" })} className="h-6 text-xs gap-1 text-muted-foreground">
           Full Board <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
@@ -114,7 +116,7 @@ export function ScoutingWidget() {
         )}
         {prospects.length > 6 && (
           <button
-            onClick={() => navigate("/talent-pool")}
+            onClick={() => navigate({ to: "/talent-pool" })}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"
           >
             +{prospects.length - 6} more prospects →

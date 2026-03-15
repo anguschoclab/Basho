@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ensureHeyaWelfareState } from "../welfare";
-import type { Heya, WelfareState } from "../types";
+import type { Heya } from "../types/heya";
+import type { WelfareState } from "../types/economy";
 
 function mockHeya(welfareState?: Partial<WelfareState> | any): Heya {
   return {

@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
+/** Defines the structure for nav group. */
 interface NavGroup {
   label: string;
   items: { title: string; url: string; icon: any }[];
@@ -84,6 +85,10 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+/**
+ * nav dropdown.
+ *  * @param { group } - The { group }.
+ */
 function NavDropdown({ group }: { group: NavGroup }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -109,7 +114,7 @@ function NavDropdown({ group }: { group: NavGroup }) {
           return (
             <DropdownMenuItem
               key={item.url}
-              onClick={() => navigate(item.url)}
+              onClick={() => navigate({ to: item.url as any })}
               className={active ? "bg-primary/10 text-primary" : ""}
             >
               <item.icon className="h-4 w-4 mr-2" />
@@ -123,6 +128,10 @@ function NavDropdown({ group }: { group: NavGroup }) {
 }
 
 // Quick nav links visible directly (not in dropdown) for common pages
+/**
+ * quick nav link.
+ *  * @param { url, label, icon: Icon } - The { url, label, icon:  icon }.
+ */
 function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; icon: any }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -132,7 +141,7 @@ function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; 
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => navigate(url)}
+      onClick={() => navigate({ to: url as any })}
       className={`text-xs ${active ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
     >
       <Icon className="h-3.5 w-3.5 mr-1" />
@@ -141,11 +150,16 @@ function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; 
   );
 }
 
+/** Defines the structure for top nav bar props. */
 interface TopNavBarProps {
   eventLogOpen: boolean;
   onToggleEventLog: () => void;
 }
 
+/**
+ * top nav bar.
+ *  * @param { eventLogOpen, onToggleEventLog } - The { event log open, on toggle event log }.
+ */
 export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
   const { state, advanceInterim, advanceOneDay, startBasho } = useGame();
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -190,14 +204,16 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           className="h-8 w-8 shrink-0"
           onClick={onToggleEventLog}
           title={eventLogOpen ? "Hide event log" : "Show event log"}
+          aria-label={eventLogOpen ? "Hide event log" : "Show event log"}
         >
           {eventLogOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
         </Button>
 
         {/* Brand */}
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate({ to: "/dashboard" })}
           className="flex items-center gap-2 px-2 shrink-0"
+          aria-label="Dashboard"
         >
           <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-display text-xs font-bold">力</span>
@@ -210,7 +226,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/stable")}
+            onClick={() => navigate({ to: "/stable" })}
             className="text-xs text-muted-foreground hover:text-foreground hidden md:flex"
           >
             {playerHeya.name}
@@ -239,7 +255,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
                     {g.label}
                   </div>
                   {g.items.map((item) => (
-                    <DropdownMenuItem key={item.url} onClick={() => navigate(item.url)}>
+                    <DropdownMenuItem key={item.url} onClick={() => navigate({ to: item.url as any })}>
                       <item.icon className="h-4 w-4 mr-2" />
                       {item.title}
                     </DropdownMenuItem>
@@ -276,7 +292,8 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           size="icon"
           className="h-8 w-8"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title="Toggle theme"
+          title={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          aria-label={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
         >
           {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>

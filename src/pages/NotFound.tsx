@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
@@ -20,7 +20,7 @@ const NotFound = () => {
           The route <code className="bg-muted px-2 py-1 rounded">{location.pathname}</code> does not exist.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button variant="outline" onClick={() => navigate(-1)}>
+          <Button variant="outline" onClick={() => navigate({ to: '..' })}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Go Back
           </Button>

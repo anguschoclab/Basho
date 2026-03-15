@@ -9,10 +9,15 @@
 // - Pure functions only (no RNG)
 // - Defensive against NaN/undefined
 
+/** Type representing attribute key. */
 export type AttributeKey = "power" | "speed" | "balance" | "technique";
+/** Type representing facility type. */
 export type FacilityType = "training" | "recovery" | "nutrition";
+/** Type representing career phase. */
 export type CareerPhase = "youth" | "rising" | "prime" | "declining" | "twilight";
+/** Type representing style key. */
 export type StyleKey = "oshi" | "yotsu" | "hybrid";
+/** Type representing archetype key. */
 export type ArchetypeKey =
   | "oshi_specialist"
   | "yotsu_specialist"
@@ -22,6 +27,7 @@ export type ArchetypeKey =
   | "hybrid_oshi_yotsu"
   | "counter_specialist";
 
+/** Type representing oyakata archetype key. */
 export type OyakataArchetypeKey =
   | "traditionalist"
   | "scientist"
@@ -101,6 +107,11 @@ export function describeAttributeVerbose(attribute: AttributeKey | string, value
 // Aggression (0–100)
 // =======================
 
+/**
+ * Describe aggression.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeAggression(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Relentless";
@@ -111,6 +122,11 @@ export function describeAggression(value: number): string {
   return "Passive";
 }
 
+/**
+ * Describe aggression verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeAggressionVerbose(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Fights with overwhelming forward pressure—never retreats.";
@@ -125,6 +141,11 @@ export function describeAggressionVerbose(value: number): string {
 // Experience (0–100)
 // =======================
 
+/**
+ * Describe experience.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeExperience(value: number): string {
   const v = Math.max(0, Math.floor(safe(value, 0)));
   if (v >= 80) return "Veteran";
@@ -135,6 +156,11 @@ export function describeExperience(value: number): string {
   return "Novice";
 }
 
+/**
+ * Describe experience verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeExperienceVerbose(value: number): string {
   const v = Math.max(0, Math.floor(safe(value, 0)));
   if (v >= 80) return "A seasoned veteran who has seen everything the dohyo offers.";
@@ -149,6 +175,11 @@ export function describeExperienceVerbose(value: number): string {
 // Stamina (0–100)
 // =======================
 
+/**
+ * Describe stamina.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeStamina(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Tireless";
@@ -159,6 +190,11 @@ export function describeStamina(value: number): string {
   return "Brittle";
 }
 
+/**
+ * Describe stamina verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeStaminaVerbose(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Can go the distance no matter how long the bout.";
@@ -189,6 +225,11 @@ export function describeMomentum(value: number): string {
   return "In crisis";
 }
 
+/**
+ * Describe momentum verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeMomentumVerbose(value: number): string {
   const vRaw = safe(value, 0);
   const v = Math.abs(vRaw) > 10 ? (clamp(vRaw, 0, 100) - 50) / 10 : clamp(vRaw, -5, 5);
@@ -204,6 +245,11 @@ export function describeMomentumVerbose(value: number): string {
 // Career Phase
 // =======================
 
+/**
+ * Describe career phase verbose.
+ *  * @param phase - The Phase.
+ *  * @returns The result.
+ */
 export function describeCareerPhaseVerbose(phase: CareerPhase | string): string {
   const descriptions: Record<CareerPhase, string> = {
     youth: "Young and raw, with enormous potential still untapped.",
@@ -225,6 +271,13 @@ export function describeRecord(
   losses: number,
   absences: number
 ): { record: string; assessment: string };
+/**
+ * Describe record.
+ *  * @param wins - The Wins.
+ *  * @param losses - The Losses.
+ *  * @param absences - The Absences.
+ *  * @returns The result.
+ */
 export function describeRecord(wins: number, losses: number, absences = 0): { record: string; assessment: string } {
   const w = Math.max(0, Math.floor(safe(wins, 0)));
   const l = Math.max(0, Math.floor(safe(losses, 0)));
@@ -252,6 +305,11 @@ export function describeRecord(wins: number, losses: number, absences = 0): { re
 // Injury
 // =======================
 
+/**
+ * Describe injury verbose.
+ *  * @param weeksRemaining - The Weeks remaining.
+ *  * @returns The result.
+ */
 export function describeInjuryVerbose(weeksRemaining: number): string {
   const w = Math.max(0, Math.floor(safe(weeksRemaining, 0)));
   if (w >= 8) return "Facing a long road to recovery.";
@@ -264,6 +322,11 @@ export function describeInjuryVerbose(weeksRemaining: number): string {
 // Fatigue (0–100)
 // =======================
 
+/**
+ * Describe fatigue.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeFatigue(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Fresh";
@@ -273,6 +336,11 @@ export function describeFatigue(value: number): string {
   return "Spent";
 }
 
+/**
+ * Describe fatigue verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeFatigueVerbose(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Looks fresh, moving freely without reservation.";
@@ -286,6 +354,11 @@ export function describeFatigueVerbose(value: number): string {
 // Training effect (multiplier)
 // =======================
 
+/**
+ * Describe training effect.
+ *  * @param multiplier - The Multiplier.
+ *  * @returns The result.
+ */
 export function describeTrainingEffect(multiplier: number): string {
   const m = clamp(safe(multiplier, 1), 0, 10);
   if (m >= 1.5) return "Dramatically increases";
@@ -301,6 +374,11 @@ export function describeTrainingEffect(multiplier: number): string {
 // Reputation / Prestige (0–100)
 // =======================
 
+/**
+ * Describe reputation.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeReputation(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "Legendary";
@@ -312,6 +390,11 @@ export function describeReputation(value: number): string {
   return "Unknown";
 }
 
+/**
+ * Describe reputation verbose.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeReputationVerbose(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "One of the great institutions of sumo.";
@@ -327,6 +410,11 @@ export function describeReputationVerbose(value: number): string {
 // Facility quality (0–100)
 // =======================
 
+/**
+ * Describe facility quality.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeFacilityQuality(value: number): string {
   const v = clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "State-of-the-art";
@@ -337,6 +425,12 @@ export function describeFacilityQuality(value: number): string {
   return "Basic";
 }
 
+/**
+ * Describe facility verbose.
+ *  * @param type - The Type.
+ *  * @param value - The Value.
+ *  * @returns The result.
+ */
 export function describeFacilityVerbose(type: FacilityType | string, value: number): string {
   const level = describeFacilityQuality(value);
 
@@ -375,6 +469,11 @@ export function describeFacilityVerbose(type: FacilityType | string, value: numb
 // Archetype / Style prose
 // =======================
 
+/**
+ * Describe archetype verbose.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 export function describeArchetypeVerbose(archetype: ArchetypeKey | string): string {
   const descriptions: Record<ArchetypeKey, string> = {
     oshi_specialist: "A pure pusher-thruster who overwhelms with forward pressure.",
@@ -388,6 +487,11 @@ export function describeArchetypeVerbose(archetype: ArchetypeKey | string): stri
   return descriptions[archetype as ArchetypeKey] ?? "A distinctive fighting style.";
 }
 
+/**
+ * Describe style verbose.
+ *  * @param style - The Style.
+ *  * @returns The result.
+ */
 export function describeStyleVerbose(style: StyleKey | string): string {
   const descriptions: Record<StyleKey, string> = {
     oshi: "Prefers pushing and thrusting, keeping opponents at arm’s length.",
@@ -397,6 +501,11 @@ export function describeStyleVerbose(style: StyleKey | string): string {
   return descriptions[style as StyleKey] ?? "Distinctive approach to sumo.";
 }
 
+/**
+ * Describe oyakata personality.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 export function describeOyakataPersonality(archetype: OyakataArchetypeKey | string): string {
   const descriptions: Record<OyakataArchetypeKey, string> = {
     traditionalist: "Values discipline and kihon above all else. Training is grueling but builds strong character.",

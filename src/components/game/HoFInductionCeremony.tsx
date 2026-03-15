@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Trophy, Award, Shield, Target, Star, Scroll } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
-import type { WorldState } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
 
 const CATEGORY_CEREMONY: Record<HoFCategory, { icon: React.ElementType; color: string; titleJa: string }> = {
   champion: { icon: Trophy, color: "text-amber-400", titleJa: "殿堂入り" },
@@ -39,6 +39,7 @@ const CEREMONY_STEPS: Record<HoFCategory, string[]> = {
   ],
 };
 
+/** Defines the structure for props. */
 interface Props {
   inductee: HoFInductee;
   world: WorldState;
@@ -46,6 +47,10 @@ interface Props {
   onClose: () => void;
 }
 
+/**
+ * ho f induction ceremony.
+ *  * @param { inductee, world, open, onClose } - The { inductee, world, open, on close }.
+ */
 export function HoFInductionCeremony({ inductee, world, open, onClose }: Props) {
   const [step, setStep] = useState(0);
   const ceremony = CATEGORY_CEREMONY[inductee.category];

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import {
   type TrainingFocus,
   type RecoveryEmphasis,
 } from "@/engine/training";
-import type { TrainingProfile } from "@/engine/types";
+import type { TrainingProfile } from "@/engine/types/training";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
 const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];
@@ -30,6 +30,10 @@ const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
   low: "Low", normal: "Normal", high: "High",
 };
 
+/**
+ * profile row.
+ *  * @param { label, icon, value, options, onChange } - The { label, icon, value, options, on change }.
+ */
 function ProfileRow({ label, icon, value, options, onChange }: {
   label: string; icon: React.ReactNode; value: string;
   options: { value: string; label: string }[];
@@ -60,6 +64,7 @@ function ProfileRow({ label, icon, value, options, onChange }: {
   );
 }
 
+/** training widget. */
 export function TrainingWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();
@@ -91,7 +96,7 @@ export function TrainingWidget() {
           <Dumbbell className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/training")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/training" })} className="h-6 text-xs gap-1 text-muted-foreground">
           Full Plan <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

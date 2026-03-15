@@ -11,7 +11,10 @@ import {
   getSaveSlotInfos,
   quickSave
 } from "../saveload";
-import { WorldState, Rikishi, Heya, Oyakata } from "../types";
+import { WorldState } from "../types/world";
+import { Rikishi } from "../types/rikishi";
+import { Heya } from "../types/heya";
+import { Oyakata } from "../types/oyakata";
 
 // Setup localStorage mock using Vitest API
 const localStorageMock = (() => {
@@ -27,11 +30,25 @@ const localStorageMock = (() => {
 })();
 
 beforeAll(() => {
-  vi.stubGlobal('localStorage', localStorageMock);
-  if (typeof window !== 'undefined') {
+  globalThis.localStorage = localStorageMock as any;
+
+// Force window object for tests so hasLocalStorage() returns true
+if (typeof window === 'undefined') {
+  globalThis.window = { localStorage: localStorageMock } as any;
+}
+if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
+  }
+
+
+// Force window object for tests so hasLocalStorage() returns true
+if (typeof window === 'undefined') {
+  globalThis.window = { localStorage: localStorageMock } as any;
+}
+if (typeof window !== 'undefined') {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
   } else {
-    vi.stubGlobal('window', { localStorage: localStorageMock });
+
   }
 });
 

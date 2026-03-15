@@ -8,10 +8,11 @@
 
 import { rngForWorld } from "./rng";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
-import type {
-  WorldState, Style, OyakataArchetype, Oyakata, Id,
-  TrainingIntensity, TrainingFocus, RecoveryEmphasis
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { Style } from "./types/combat";
+import type { OyakataArchetype, Oyakata } from "./types/oyakata";
+import type { Id } from "./types/common";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
 import {
@@ -27,6 +28,12 @@ import { logEngineEvent } from "./events";
 
 // ─── Persona ────────────────────────────────────────────
 
+/**
+ * Determine n p c style bias.
+ *  * @param world - The World.
+ *  * @param stableId - The Stable id.
+ *  * @returns The result.
+ */
 export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
   const stable = world.heyas.get(stableId);
   if (!stable) return "neutral";
@@ -60,6 +67,13 @@ const QUIRK_POOL = [
   "Numbers Guy"
 ] as const;
 
+/**
+ * Pick unique.
+ *  * @param rng - The Rng.
+ *  * @param items - The Items.
+ *  * @param count - The Count.
+ *  * @returns The result.
+ */
 function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
   const pool = [...items];
   const out: T[] = [];
@@ -70,6 +84,11 @@ function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: 
   return out;
 }
 
+/**
+ * Ensure persona for oyakata.
+ *  * @param world - The World.
+ *  * @param oyakata - The Oyakata.
+ */
 function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
   if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) return;
 
@@ -89,6 +108,12 @@ function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
   oyakata.managerFlags = flags;
 }
 
+/**
+ * Get manager persona.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 export function getManagerPersona(world: WorldState, heyaId: string): {
   archetype: OyakataArchetype | "unknown";
   traits: { ambition: number; patience: number; risk: number; tradition: number; compassion: number };
@@ -98,6 +123,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
   welfareDiscipline: number;
   riskAppetite: number;
   perception: PerceptionSnapshot;
+  mood: OyakataMood;
 } {
   const heya = world.heyas.get(heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
@@ -181,9 +207,7 @@ function decideTrainingIntensity(
   const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
   const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
 
-  const fragileCount = perception.rikishiPerceptions.filter(
-    r => r.healthBand === "fragile" || r.healthBand === "worn"
-  ).length;
+  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
   let intensity: TrainingIntensity;
@@ -287,9 +311,7 @@ function decideRecovery(
   perception: PerceptionSnapshot,
   welfareDiscipline: number
 ): { recovery: RecoveryEmphasis; reason: string } {
-  const fragileCount = perception.rikishiPerceptions.filter(
-    r => r.healthBand === "fragile" || r.healthBand === "worn"
-  ).length;
+  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
   if (perception.welfareRiskBand === "critical" || fragileRatio >= 0.5) {
@@ -390,7 +412,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
   // 1. Training intensity (now philosophy-aware)
   const intensityDecision = decideTrainingIntensity(
-    perception, persona.riskAppetite, persona.welfareDiscipline, complianceCap, philosophy
+    perception, persona.riskAppetite, persona.welfareDiscipline, persona.mood, complianceCap, philosophy
   );
   reasoning.push(`[Training] ${intensityDecision.reason}`);
 
@@ -465,7 +487,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     individualProtects: protectDecision.protectIds,
     individualDevelops,
     individualPushes,
-    reasoning
+    reasoning,
+    mood: persona.mood
   };
 }
 
@@ -535,7 +558,31 @@ export function tickWeek(world: WorldState): number {
     applyNPCDecision(world, decision);
     decisionsApplied++;
 
+
+    const oldMood = heya.oyakataId ? world.oyakata.get(heya.oyakataId)?.mood : "neutral";
+    const newMood = decision.mood;
+
+    // Set the mood back on the Oyakata
+    if (heya.oyakataId) {
+      const oyakata = world.oyakata.get(heya.oyakataId);
+      if (oyakata) oyakata.mood = newMood;
+    }
+
+    if (oldMood !== newMood) {
+      logEngineEvent(world, {
+        type: "OYAKATA_MOOD_SHIFT",
+        category: "narrative",
+        importance: "major",
+        scope: "heya",
+        heyaId: heya.id,
+        title: `${heya.name} Oyakata is ${newMood}`,
+        summary: `The master of ${heya.name} is now feeling ${newMood}.`,
+        data: { oldMood, newMood }
+      });
+    }
+
     // Publish scouting priority for talentpool consumption
+
     scoutingMap[heya.id] = decision.scoutingPriority;
 
     // Audit log (A7.3): manager decision log

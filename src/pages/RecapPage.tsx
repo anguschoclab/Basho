@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { NavLink, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "@tanstack/react-router";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { 
   Trophy, 
@@ -37,10 +37,19 @@ import {
   Medal,
   ShieldAlert
 } from "lucide-react";
-import type { EngineEvent, BashoResult, Heya, Rank } from "@/engine/types";
+import type { EngineEvent } from "../../types/events";
+import type { BashoResult } from "../../types/basho";
+import type { Heya } from "../../types/heya";
+import type { Rank } from "../../types/banzuke";
 import { isKachiKoshi, isMakeKoshi, type OzekiKadobanMap, type MovementEvent } from "@/engine/banzuke";
 
 // Narrative band descriptors for prestige changes
+/**
+ * Describe prestige shift.
+ *  * @param oldBand - The Old band.
+ *  * @param newBand - The New band.
+ *  * @returns The result.
+ */
 function describePrestigeShift(oldBand: string | undefined, newBand: string | undefined): string | null {
   if (!oldBand || !newBand || oldBand === newBand) return null;
   
@@ -56,6 +65,12 @@ function describePrestigeShift(oldBand: string | undefined, newBand: string | un
 }
 
 // Extract recent basho-relevant events
+/**
+ * Get basho wrap events.
+ *  * @param events - The Events.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
   return events.filter(e => 
     (e.phase === "basho_wrap" || e.category === "basho" || e.category === "career" || e.category === "promotion") &&
@@ -64,6 +79,10 @@ function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): Engine
 }
 
 // Group events by category for narrative display
+/**
+ * Group events by narrative.
+ *  * @param events - The Events.
+ */
 function groupEventsByNarrative(events: EngineEvent[]) {
   const groups: Record<string, EngineEvent[]> = {
     yusho: [],
@@ -97,6 +116,11 @@ function groupEventsByNarrative(events: EngineEvent[]) {
 }
 
 // Get prestige changes from recent history
+/**
+ * Get prestige changes.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
   const changes: Array<{ heya: Heya; change: string }> = [];
   
@@ -119,6 +143,7 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
   return changes;
 }
 
+/** recap page. */
 export default function RecapPage() {
   const { state, setPhase, updateWorld } = useGame();
   const navigate = useNavigate();
@@ -130,7 +155,7 @@ export default function RecapPage() {
 
   const handleContinue = () => {
     setPhase("interim");
-    navigate("/dashboard");
+    navigate({ to: "/dashboard" });
   };
 
   const handlePressConferenceClose = (effects: { reputation: number; morale: number; mediaHeat: number }) => {
@@ -785,10 +810,10 @@ export default function RecapPage() {
             Continue to Off-Season
           </Button>
           <Button variant="outline" asChild>
-            <NavLink to="/history">View Full History</NavLink>
+            <Link to="/history">View Full History</Link>
           </Button>
           <Button variant="outline" asChild>
-            <NavLink to="/banzuke">View Banzuke</NavLink>
+            <Link to="/banzuke">View Banzuke</Link>
           </Button>
         </div>
 
@@ -820,6 +845,10 @@ export default function RecapPage() {
 }
 
 // Helper: auto-shows intai ceremony for a retired rikishi
+/**
+ * intai ceremony trigger.
+ *  * @param { rikishi, reason, world } - The { rikishi, reason, world }.
+ */
 function IntaiCeremonyTrigger({ rikishi, reason, world }: { rikishi: any; reason: string; world: any }) {
   const [open, setOpen] = useState(true);
   return (

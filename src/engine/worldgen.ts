@@ -9,12 +9,14 @@
  */
 
 import { rngFromSeed } from "./rng";
-import {
-  WorldState, Rikishi, Heya, Oyakata, 
-  Rank, TacticalArchetype, StatureBand, PrestigeBand, 
-  FacilitiesBand, KoenkaiBandType, OyakataArchetype, RunwayBand,
-  BashoName, Division, RikishiStats, Side, BashoState
-} from "./types";
+import { WorldState } from "./types/world";
+import { Rikishi, RikishiStats } from "./types/rikishi";
+import { Heya } from "./types/heya";
+import { Oyakata, OyakataArchetype } from "./types/oyakata";
+import { Rank, Division, Side } from "./types/banzuke";
+import { TacticalArchetype } from "./types/combat";
+import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./types/narrative";
+import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./rng";
 import { ensureTalentPools } from "./talentpool";
@@ -39,6 +41,12 @@ const OYAKATA_ARCHETYPES: OyakataArchetype[] = [
   "traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"
 ];
 
+/**
+ * Get random.
+ *  * @param rng - The Rng.
+ *  * @param arr - The Arr.
+ *  * @returns The result.
+ */
 function getRandom<T>(rng: SeededRNG, arr: T[]): T {
   return arr[rng.int(0, arr.length - 1)];
 }
@@ -119,6 +127,13 @@ function generateSyntheticCareer(
   };
 }
 
+/**
+ * Generate rikishi stats.
+ *  * @param rng - The Rng.
+ *  * @param rank - The Rank.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArchetype): RikishiStats {
   const base = rank === "yokozuna" ? 85 :
                rank === "ozeki" ? 75 :
@@ -154,6 +169,11 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
   };
 }
 
+/**
+ * Generate world.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
 export function generateWorld(seed: string | { seed: string } = "initial-seed"): WorldState {
   // Handle both string and object seed formats
   const actualSeed = typeof seed === "string" ? seed : seed.seed;
@@ -284,7 +304,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
-  const currentYear = 2024;
+  const currentYear = 2025;
 
   // Build rank slots with proper east/west pairing
   interface RankSlot { rank: Rank; division: Division; rankNumber: number; side: Side }
@@ -472,6 +492,12 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   return world;
 }
 
+/**
+ * Initialize basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @returns The result.
+ */
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {
     const bName = bashoName.toLowerCase() as BashoName;
     const bashoNumber = (BASHO_ORDER.indexOf(bName) + 1) as 1 | 2 | 3 | 4 | 5 | 6;

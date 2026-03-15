@@ -3,7 +3,11 @@ import { determineNPCStyleBias, getManagerPersona, makeNPCWeeklyDecision } from 
 import { generateOyakata, OYAKATA_ARCHETYPES, getArchetypeDescription } from "../oyakataPersonalities";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "../oyakataStylePreferences";
 import { ensureHeyaWelfareState, tickWeek as welfareTickWeek } from "../welfare";
-import type { WorldState, Rikishi, Heya, Oyakata, RikishiStats, OyakataArchetype, WelfareState } from "../types";
+import type { WorldState } from "../types/world";
+import type { Rikishi, RikishiStats } from "../types/rikishi";
+import type { Heya } from "../types/heya";
+import type { Oyakata, OyakataArchetype } from "../types/oyakata";
+import type { WelfareState } from "../types/economy";
 
 // ── helpers ──
 
@@ -247,15 +251,15 @@ describe("Welfare Compliance", () => {
   it("should escalate risk when injured rikishi train unprotected at high intensity", () => {
     const world = makeWorld({
       rikishi: new Map([
-        ["r1", makeRikishi("r1", { injured: true, injuryWeeksRemaining: 4, condition: 30 } as any)],
+        ["r1", makeRikishi("r1", { injured: true, injuryWeeksRemaining: 4, condition: 30 } as unknown as any)],
         ["r2", makeRikishi("r2")],
       ]),
     });
     // Set punishing intensity
-    const heya = world.heyas.get("h1")! as any;
+    const heya = world.heyas.get("h1")!;
     if (!heya.trainingState) heya.trainingState = {};
     // Ensure world-level training state for welfare to read
-    (world as any).trainingState = {
+    world.trainingState = {
       h1: {
         beyaId: "h1",
         activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "low" },
@@ -264,7 +268,7 @@ describe("Welfare Compliance", () => {
     };
 
     // Also set injuryStatus on r1 for welfare to detect
-    const r1 = world.rikishi.get("r1")! as any;
+    const r1 = world.rikishi.get("r1")!;
     r1.injuryStatus = { isInjured: true, severity: "moderate", type: "strain", location: "knee", weeksRemaining: 4 };
 
     // Tick multiple weeks to build up risk

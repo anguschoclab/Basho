@@ -21,6 +21,7 @@ const KIND_COLOR: Record<string, string> = {
   scouting: "text-primary/60", generic: "text-muted-foreground",
 };
 
+/** digest widget. */
 export function DigestWidget() {
   const { state } = useGame();
   const digest = useMemo(() => buildWeeklyDigest(state.world), [state.world]);

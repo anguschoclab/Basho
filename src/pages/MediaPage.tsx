@@ -58,6 +58,10 @@ const ALL_BEATS = Object.keys(BEAT_LABELS) as MediaBeat[];
 
 /* ── Sub-components ── */
 
+/**
+ * headline card.
+ *  * @param { headline, world } - The { headline, world }.
+ */
 function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any }) {
   const tier = TIER_STYLE[headline.tier] ?? TIER_STYLE.local;
   const tone = TONE_STYLE[headline.tone] ?? TONE_STYLE.neutral;
@@ -91,6 +95,10 @@ function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any
   );
 }
 
+/**
+ * beat filter.
+ *  * @param { selected, onChange } - The { selected, on change }.
+ */
 function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange: (s: Set<MediaBeat>) => void }) {
   const allSelected = selected.size === 0;
 
@@ -132,6 +140,10 @@ function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange
   );
 }
 
+/**
+ * heat sparkline.
+ *  * @param { data } - The { data }.
+ */
 function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> }) {
   if (data.length < 2) return <span className="text-[10px] text-muted-foreground">—</span>;
   return (
@@ -159,6 +171,7 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
 
 /* ── Page ── */
 
+/** media page. */
 export default function MediaPage() {
   const { state } = useGame();
   const world = state.world;

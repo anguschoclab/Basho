@@ -44,11 +44,42 @@ const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
 };
 
 // Helpers
+/**
+ * Clamp.
+ *  * @param n - The N.
+ *  * @returns The result.
+ */
 function clamp(n: any): number { const v = typeof n === "number" && Number.isFinite(n) ? n : 0; return Math.max(0, Math.min(100, v)); }
+/**
+ * Safe int.
+ *  * @param n - The N.
+ *  * @param f - The F.
+ *  * @returns The result.
+ */
 function safeInt(n: any, f = 0): number { return typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : f; }
+/**
+ * Get heat band.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function getHeatBand(heat: number): RivalryHeatBand { if (heat >= 80) return "inferno"; if (heat >= 55) return "hot"; if (heat >= 30) return "warm"; return "cold"; }
+/**
+ * Safe tone.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function safeTone(t: any): RivalryTone { return t && typeof t === "string" && t in TONE_CONFIG ? t as RivalryTone : "respect"; }
+/**
+ * Safe key.
+ *  * @param p - The P.
+ *  * @returns The result.
+ */
 function safeKey(p: any): string { return p?.key ?? `${p?.aId ?? "a"}__${p?.bId ?? "b"}`; }
+/**
+ * Safe triggers.
+ *  * @param t - The T.
+ *  * @returns The result.
+ */
 function safeTriggers(t: any): Record<string, number> {
   if (!t || typeof t !== "object") return {};
   const o: Record<string, number> = {};
@@ -57,6 +88,10 @@ function safeTriggers(t: any): Record<string, number> {
 }
 
 // H2H Bar visualization
+/**
+ * h2 h bar.
+ *  * @param { aWins, bWins, aName, bName } - The { a wins, b wins, a name, b name }.
+ */
 function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; aName: string; bName: string }) {
   const total = aWins + bWins;
   if (total === 0) return <div className="text-xs text-muted-foreground text-center py-2">No bouts yet</div>;
@@ -94,6 +129,10 @@ function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; 
 }
 
 // Heat gauge
+/**
+ * heat gauge.
+ *  * @param { heat, band } - The { heat, band }.
+ */
 function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
   const config = HEAT_BAND_CONFIG[band];
   return (
@@ -110,6 +149,7 @@ function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
 }
 
 // Rivalry Card
+/** Defines the structure for rivalry card props. */
 interface RivalryCardProps {
   pair: RivalryPairState;
   world: NonNullable<ReturnType<typeof useGame>["state"]["world"]>;
@@ -117,6 +157,10 @@ interface RivalryCardProps {
   index: number;
 }
 
+/**
+ * rivalry card.
+ *  * @param { pair, world, isPlayerRivalry, index } - The { pair, world, is player rivalry, index }.
+ */
 function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) {
   const rikishiA = world.rikishi.get(pair.aId);
   const rikishiB = world.rikishi.get(pair.bId);
@@ -212,6 +256,7 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 }
 
 // Page
+/** rivalries page. */
 export default function RivalriesPage() {
   const { state } = useGame();
   const { world, playerHeyaId } = state;
@@ -259,8 +304,12 @@ export default function RivalriesPage() {
     const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
     player.sort(byHeat); hot.sort(byHeat); cool.sort(byHeat);
 
-    const infernoCount = normalized.filter(p => (p.heat ?? 0) >= 80).length;
-    const hotCount = normalized.filter(p => (p.heat ?? 0) >= 55 && (p.heat ?? 0) < 80).length;
+    const { infernoCount, hotCount } = normalized.reduce((acc, p) => {
+      const heat = p.heat ?? 0;
+      if (heat >= 80) acc.infernoCount++;
+      else if (heat >= 55) acc.hotCount++;
+      return acc;
+    }, { infernoCount: 0, hotCount: 0 });
 
     return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);

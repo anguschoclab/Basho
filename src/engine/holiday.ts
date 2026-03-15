@@ -11,7 +11,7 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types";
+import type { WorldState, CyclePhase } from "./types/world";
 import { advanceOneDay, type DailyTickReport } from "./dailyTick";
 import { queryEvents } from "./events";
 import type { UIDigest, DigestSection, DigestItem } from "./uiDigest";
@@ -20,6 +20,7 @@ import type { UIDigest, DigestSection, DigestItem } from "./uiDigest";
 // TYPES
 // ============================================================================
 
+/** Type representing holiday target. */
 export type HolidayTarget =
   | "nextDay"
   | "nextWeek"
@@ -28,6 +29,7 @@ export type HolidayTarget =
   | "postBasho"
   | "nextMonth";
 
+/** Type representing safety gate. */
 export type SafetyGate =
   | "topRikishiInjury"
   | "insolvencyWarning"
@@ -37,8 +39,10 @@ export type SafetyGate =
   | "loanDefault"
   | "rosterOverForeignLimit";
 
+/** Type representing delegation policy. */
 export type DelegationPolicy = "conservative" | "balanced" | "aggressive" | "roleplay";
 
+/** Defines the structure for holiday config. */
 export interface HolidayConfig {
   target: HolidayTarget;
   gates: SafetyGate[];
@@ -46,12 +50,14 @@ export interface HolidayConfig {
   playerHeyaId?: string;
 }
 
+/** Defines the structure for holiday gate triggered. */
 export interface HolidayGateTriggered {
   gate: SafetyGate;
   message: string;        // Qualitative, no thresholds (A7.1)
   dayIndex: number;
 }
 
+/** Defines the structure for holiday result. */
 export interface HolidayResult {
   daysAdvanced: number;
   gateTriggered: HolidayGateTriggered | null;
@@ -60,11 +66,13 @@ export interface HolidayResult {
   reports: DailyTickReport[];
 }
 
+/** Defines the structure for holiday digest. */
 export interface HolidayDigest {
   headline: string;
   categories: HolidayDigestCategory[];
 }
 
+/** Defines the structure for holiday digest category. */
 export interface HolidayDigestCategory {
   id: string;
   title: string;
@@ -75,6 +83,14 @@ export interface HolidayDigestCategory {
 // SAFETY GATE EVALUATION
 // ============================================================================
 
+/**
+ * Evaluate gates.
+ *  * @param world - The World.
+ *  * @param gates - The Gates.
+ *  * @param playerHeyaId - The Player heya id.
+ *  * @param startDay - The Start day.
+ *  * @returns The result.
+ */
 function evaluateGates(
   world: WorldState,
   gates: SafetyGate[],
@@ -92,6 +108,15 @@ function evaluateGates(
   return null;
 }
 
+/**
+ * Check gate.
+ *  * @param gate - The Gate.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ *  * @param playerHeyaId - The Player heya id.
+ *  * @param startDay - The Start day.
+ *  * @returns The result.
+ */
 function checkGate(
   gate: SafetyGate,
   world: WorldState,
@@ -195,7 +220,7 @@ function checkGate(
       // Constitution governance: max foreign rikishi per stable
       const foreignCount = (heya.rikishiIds ?? []).filter((rid: string) => {
         const r = world.rikishi.get(rid);
-        return r && (r as any).nationality !== "japanese";
+        return r && r.nationality !== "japanese";
       }).length;
       if (foreignCount > 1) {
         return {
@@ -211,6 +236,11 @@ function checkGate(
   return null;
 }
 
+/**
+ * Get rank tier.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function getRankTier(rank?: string): number {
   if (!rank) return 999;
   const r = rank.toLowerCase();
@@ -226,6 +256,12 @@ function getRankTier(rank?: string): number {
 // TARGET RESOLUTION — how many days to advance
 // ============================================================================
 
+/**
+ * Compute target days.
+ *  * @param world - The World.
+ *  * @param target - The Target.
+ *  * @returns The result.
+ */
 function computeTargetDays(world: WorldState, target: HolidayTarget): number {
   const phase = world.cyclePhase;
 
@@ -242,11 +278,11 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
     case "nextBashoDay1": {
       // Advance through interim until active_basho
       if (phase === "active_basho") return 0;
-      const interimRemaining = (world as any)._interimDaysRemaining ?? 0;
-      const preBashoDays = phase === "pre_basho" ? ((world as any)._interimDaysRemaining ?? 7) : 0;
+      const interimRemaining = world._interimDaysRemaining ?? 0;
+      const preBashoDays = phase === "pre_basho" ? (world._interimDaysRemaining ?? 7) : 0;
       if (phase === "interim") return interimRemaining + 7; // interim + pre_basho
       if (phase === "pre_basho") return preBashoDays;
-      if (phase === "post_basho") return ((world as any)._postBashoDays ?? 7) + 42 + 7;
+      if (phase === "post_basho") return (world._postBashoDays ?? 7) + 42 + 7;
       return 42; // fallback
     }
 
@@ -269,6 +305,14 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
 // HOLIDAY DIGEST BUILDER
 // ============================================================================
 
+/**
+ * Build holiday digest.
+ *  * @param world - The World.
+ *  * @param startDay - The Start day.
+ *  * @param daysAdvanced - The Days advanced.
+ *  * @param gateTriggered - The Gate triggered.
+ *  * @returns The result.
+ */
 function buildHolidayDigest(
   world: WorldState,
   startDay: number,
@@ -408,6 +452,14 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
   };
 }
 
+/**
+ * Is target reached.
+ *  * @param world - The World.
+ *  * @param target - The Target.
+ *  * @param startDay - The Start day.
+ *  * @param daysAdvanced - The Days advanced.
+ *  * @returns The result.
+ */
 function isTargetReached(
   world: WorldState,
   target: HolidayTarget,
@@ -434,6 +486,7 @@ function isTargetReached(
 // DEFAULT GATES
 // ============================================================================
 
+/** d e f a u l t_ c r i t i c a l_ g a t e s. */
 export const DEFAULT_CRITICAL_GATES: SafetyGate[] = [
   "topRikishiInjury",
   "insolvencyWarning",

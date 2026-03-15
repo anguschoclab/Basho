@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../bout";
-import type { Rikishi, BashoState, BoutResult, TacticalArchetype } from "../types";
+import type { Rikishi } from "../types/rikishi";
+import type { BashoState, BoutResult } from "../types/basho";
+import type { TacticalArchetype } from "../types/combat";
 
 function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {
@@ -117,7 +119,7 @@ describe("Bout Simulation Engine", () => {
       const strongMaegashira = { ...maegashira, power: 100, technique: 100, speed: 100 };
       const weakYokozuna = { ...yokozuna, power: 10, technique: 10, speed: 10 };
       const result = resolveBout(bout, weakYokozuna as Rikishi, strongMaegashira as Rikishi, basho);
-      if ((result as any).isKinboshi) {
+      if (result.isKinboshi) {
         foundKinboshi = true;
         break;
       }
@@ -153,10 +155,10 @@ describe("Bout Simulation Engine", () => {
       east, west, basho
     );
 
-    expect((result as any).pbpLines).toBeDefined();
-    expect((result as any).pbpLines.length).toBeGreaterThan(0);
-    expect((result as any).pbp).toBeDefined();
-    expect((result as any).pbp.length).toBeGreaterThan(0);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines.length).toBeGreaterThan(0);
+    expect(result.pbp).toBeDefined();
+    expect(result.pbp.length).toBeGreaterThan(0);
   });
 
   it("should work via simulateBout convenience helper", () => {

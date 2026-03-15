@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { BoutReplayViewer } from "./BoutReplayViewer";
 import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
-import type { Rikishi, BoutResult, BashoName } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoName } from "@/engine/types/basho";
 import { generateNarrative } from "@/engine/narrative";
 import { buildPbpFromBoutResult, type PbpLine, type PbpContext } from "@/engine/pbp";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
@@ -36,6 +37,7 @@ const TAG_ICONS: Record<string, string> = {
   dominant: "💪",
 };
 
+/** Defines the structure for bout narrative modal props. */
 interface BoutNarrativeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,6 +48,26 @@ interface BoutNarrativeModalProps {
   day: number;
 }
 
+/**
+ * bout narrative modal.
+ *  * @param {
+ *   open,
+ *   onOpenChange,
+ *   east,
+ *   west,
+ *   result,
+ *   bashoName,
+ *   day,
+ * } - The {
+ *   open,
+ *   on open change,
+ *   east,
+ *   west,
+ *   result,
+ *   basho name,
+ *   day,
+ * }.
+ */
 export function BoutNarrativeModal({
   open,
   onOpenChange,

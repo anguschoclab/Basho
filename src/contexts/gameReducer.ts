@@ -1,10 +1,16 @@
 // Game Reducer — pure state transitions
 import type { GameState, GameAction, GamePhase } from "./gameTypes";
-import type { BoutResult } from "@/engine/types";
+import type { BoutResult } from "@/engine/types/basho";
 import { generateWorld } from "@/engine/worldgen";
 import * as worldEngine from "@/engine/world";
 import { autosaveWithSignal } from "./gameHelpers";
 
+/**
+ * Game reducer.
+ *  * @param state - The State.
+ *  * @param action - The Action.
+ *  * @returns The result.
+ */
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "CREATE_WORLD": {

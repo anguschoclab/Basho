@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { updateH2H, generateH2HCommentary } from "../h2h";
-import { Rikishi, BoutResult } from "../types";
+import { Rikishi } from "../types/rikishi";
+import { BoutResult } from "../types/basho";
 
 // Mock minimal Rikishi builder
 function createMockRikishi(id: string, name: string): Rikishi {
