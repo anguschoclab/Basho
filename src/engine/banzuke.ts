@@ -1,4 +1,9 @@
-import { clampInt } from './utils';
+import { clamp } from './utils';
+
+function clampInt(val: number, min: number, max: number): number {
+  return clampInt(Math.round(val), min, max);
+}
+
 // banzuke.ts
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
 

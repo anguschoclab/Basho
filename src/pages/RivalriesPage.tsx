@@ -129,7 +129,10 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 
   const heyaA = world.heyas.get(rikishiA.heyaId);
   const heyaB = world.heyas.get(rikishiB.heyaId);
-  const heat = clamp(, 0, 100)
+  const heat = clamp(Number((pair as any).heat) || 0, 0, 100);
+  const heatConfig = getHeatConfig(heat);
+  const toneConfig = TONE_COLORS[pair.tone || "respectful"];
+  const dominantTriggers = Object.entries(pair.triggers || {})
     .sort((a, b) => b[1] - a[1]).slice(0, 3)
     .filter(([t]) => t in TRIGGER_LABELS)
     .map(([t]) => t as RivalryTrigger);
@@ -232,7 +235,7 @@ export default function RivalriesPage() {
     const rawPairs = Object.values((rivalriesState as any).pairs ?? {}) as any[];
     const normalized: RivalryPairState[] = rawPairs
       .filter(p => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
-      .map(p => ({ ...p, key: safeKey(p), heat: clamp(, 0, 100), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
+      .map(p => ({ ...p, key: safeKey(p), heat: clamp(Number(p.heat) || 0, 0, 100), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
 
     // Search filter
     const filtered = searchQuery
