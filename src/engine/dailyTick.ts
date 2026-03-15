@@ -33,6 +33,7 @@ import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
 import * as events from "./events";
+import { tickMyosekiMarket } from "./myosekiMarket";
 import * as rivalries from "./rivalries";
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
