@@ -307,8 +307,7 @@ export default function MainMenu() {
     }
     // Sync local seed display to active world seed (once available)
     if (state.world?.seed && seed !== state.world.seed) setSeed(state.world.seed);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.world]);
+      }, [state?.world]);
 
   const stables = useMemo((): Heya[] => {
     if (!state?.world) return [];

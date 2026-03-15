@@ -503,8 +503,7 @@ export function BoutReplayViewer({
     if (autoPlay) {
       setTimeout(() => setIsPlaying(true), 100);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result.winner, (result as any).kimarite]);
+      }, [result.winner, (result as any).kimarite]);
 
   const handlePlayPause = () => {
     setIsPlaying(p => !p);
