@@ -4,7 +4,7 @@
 
 import type { Id } from "./common";
 import type { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./narrative";
-import type { GovernanceStatus, GovernanceRuling, WelfareState } from "./economy";
+import type { GovernanceStatus, GovernanceRuling, WelfareState, Loan } from "./economy";
 import type { BeyaTrainingState } from "./training";
 
 /** Defines the structure for heya. */
@@ -23,6 +23,7 @@ export interface Heya {
 
   reputation: number;
   funds: number;
+  activeLoans?: Loan[];
 
   scandalScore: number;
   governanceStatus: GovernanceStatus;
