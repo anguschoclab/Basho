@@ -46,6 +46,15 @@ describe("Events Engine", () => {
       expect(world.events).toBe(state);
     });
 
+
+    it("should initialize dedupe if it is missing from an otherwise valid events state", () => {
+      const existingState = { version: "1.0.0", log: [] } as any;
+      const world = { events: existingState } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state.dedupe).toEqual({});
+      expect(state).toBe(existingState);
+    });
+
     it("should return existing events state if valid", () => {
       const existingState = { version: "1.0.0", log: [], dedupe: {} };
       const world = { events: existingState } as unknown as WorldState;
