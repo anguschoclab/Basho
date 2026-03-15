@@ -85,6 +85,7 @@ interface EngineState {
   mizuiriDeclared: boolean; // NEW
   tacticalResult?: import("./types/combat").TacticalResult;
   playerSide?: import("./types/banzuke").Side;
+  cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -968,14 +969,14 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   // Auto-sim fallback and CPU tactic determination
   if (bout.playerSide === "east") {
     eastPlayerTactic = eastPlayerTactic || determineCPUTactic(east, rng);
-    westPlayerTactic = determineCPUTactic(west, rng);
+    westPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(west, rng);
     st.tacticalResult = resolveTacticalClash(eastPlayerTactic, westPlayerTactic);
   } else if (bout.playerSide === "west") {
     westPlayerTactic = westPlayerTactic || determineCPUTactic(west, rng);
-    eastPlayerTactic = determineCPUTactic(east, rng);
+    eastPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(east, rng);
     st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
   }
-
+  
   const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
   const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
 
