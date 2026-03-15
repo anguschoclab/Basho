@@ -258,7 +258,10 @@ export function endBasho(world: WorldState): WorldState {
   if (table.length === 0) return world;
 
   const bestWins = table[0].wins;
-  const topCandidates = table.filter(t => t.wins === bestWins).map(t => t.id);
+  const topCandidates = table.reduce<Id[]>((acc, t) => {
+    if (t.wins === bestWins) acc.push(t.id);
+    return acc;
+  }, []);
   
   let yusho = topCandidates[0];
   const playoffMatches: MatchSchedule[] = [];

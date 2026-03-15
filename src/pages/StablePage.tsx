@@ -182,7 +182,10 @@ export default function StablePage() {
 
   // Project roster entries via DTO
   const rosterEntries = useMemo<UIRosterEntry[]>(
-    () => rikishiList.filter((r): r is Rikishi => !!r).map(r => projectRosterEntry(r)),
+    () => rikishiList.reduce<UIRosterEntry[]>((acc, r) => {
+      if (r) acc.push(projectRosterEntry(r));
+      return acc;
+    }, []),
     [rikishiList]
   );
 

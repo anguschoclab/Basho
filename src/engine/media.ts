@@ -1395,7 +1395,11 @@ function checkTitleRace(args: {
   const tier: HeadlineTier = "main_event";
 
   const allIds = leaders.slice(0, 4).map(e => e.id);
-  const heyaIds = allIds.map(id => world.rikishi.get(id)?.heyaId).filter(Boolean) as Id[];
+  const heyaIds = allIds.reduce<Id[]>((acc, id) => {
+    const heyaId = world.rikishi.get(id)?.heyaId;
+    if (heyaId) acc.push(heyaId);
+    return acc;
+  }, []);
 
   const headline: MediaHeadline = {
     id: makeId(`mh-title-${week}-${day}-${topWins}`),
