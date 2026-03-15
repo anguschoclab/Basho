@@ -475,7 +475,7 @@ export default function MainMenu() {
   };
 
   const handleRerollWorld = () => {
-    const newSeed = seed?.trim() ? seed.trim() : makeDeterministicSeed("world");
+    const newSeed = makeDeterministicSeed("world");
     setSeed(newSeed);
     setSelectedHeyaId(null);
     if (typeof createWorld === "function") createWorld(newSeed);
