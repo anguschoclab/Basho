@@ -1,3 +1,4 @@
+import { clampInt } from './utils';
 // banzuke.ts
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
 
@@ -1025,15 +1026,3 @@ function normalizeRosterToTemplate(current: BanzukeEntry[], needed: number): Ban
 
 // === UTILS ===
 
-/**
- * Clamp int.
- *  * @param x - The X.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clampInt(x: number, lo: number, hi: number): number {
-  if (x < lo) return lo;
-  if (x > hi) return hi;
-  return x;
-}

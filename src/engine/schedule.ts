@@ -1,3 +1,4 @@
+import { stableSort } from './utils';
 // schedule.ts
 // =======================================================
 // Schedule Builder v1.1 — Deterministic torikumi pairing for ALL divisions
@@ -37,15 +38,7 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
 
 // === HELPERS ===
 
-/**
- * Stable sort.
- *  * @param arr - The Arr.
- *  * @param keyFn - The Key fn.
- *  * @returns The result.
- */
-function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
-  return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
-}
+
 
 /**
  * Active division roster.

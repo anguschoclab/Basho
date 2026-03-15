@@ -1,3 +1,5 @@
+import { clamp } from "../engine/utils";
+import { clamp } from '../engine/utils';
 // RivalriesPage.tsx — Polished with heat indicators, H2H visualizations, and intensity badges
 
 import { Helmet } from "react-helmet";
@@ -44,48 +46,7 @@ const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
 };
 
 // Helpers
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @returns The result.
- */
-function clamp(n: any): number { const v = typeof n === "number" && Number.isFinite(n) ? n : 0; return Math.max(0, Math.min(100, v)); }
-/**
- * Safe int.
- *  * @param n - The N.
- *  * @param f - The F.
- *  * @returns The result.
- */
-function safeInt(n: any, f = 0): number { return typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : f; }
-/**
- * Get heat band.
- *  * @param heat - The Heat.
- *  * @returns The result.
- */
-function getHeatBand(heat: number): RivalryHeatBand { if (heat >= 80) return "inferno"; if (heat >= 55) return "hot"; if (heat >= 30) return "warm"; return "cold"; }
-/**
- * Safe tone.
- *  * @param t - The T.
- *  * @returns The result.
- */
-function safeTone(t: any): RivalryTone { return t && typeof t === "string" && t in TONE_CONFIG ? t as RivalryTone : "respect"; }
-/**
- * Safe key.
- *  * @param p - The P.
- *  * @returns The result.
- */
-function safeKey(p: any): string { return p?.key ?? `${p?.aId ?? "a"}__${p?.bId ?? "b"}`; }
-/**
- * Safe triggers.
- *  * @param t - The T.
- *  * @returns The result.
- */
-function safeTriggers(t: any): Record<string, number> {
-  if (!t || typeof t !== "object") return {};
-  const o: Record<string, number> = {};
-  for (const [k, v] of Object.entries(t)) o[k] = typeof v === "number" ? v : 0;
-  return o;
-}
+
 
 // H2H Bar visualization
 /**
@@ -168,14 +129,7 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 
   const heyaA = world.heyas.get(rikishiA.heyaId);
   const heyaB = world.heyas.get(rikishiB.heyaId);
-  const heat = clamp((pair as any).heat);
-  const heatBand = getHeatBand(heat);
-  const heatConfig = HEAT_BAND_CONFIG[heatBand];
-  const tone = safeTone((pair as any).tone);
-  const toneInfo = TONE_CONFIG[tone];
-  const ToneIcon = toneInfo.icon;
-  const triggersObj = safeTriggers((pair as any).triggers);
-  const topTriggers = Object.entries(triggersObj)
+  const heat = clamp(, 0, 100)
     .sort((a, b) => b[1] - a[1]).slice(0, 3)
     .filter(([t]) => t in TRIGGER_LABELS)
     .map(([t]) => t as RivalryTrigger);
@@ -278,7 +232,7 @@ export default function RivalriesPage() {
     const rawPairs = Object.values((rivalriesState as any).pairs ?? {}) as any[];
     const normalized: RivalryPairState[] = rawPairs
       .filter(p => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
-      .map(p => ({ ...p, key: safeKey(p), heat: clamp(p.heat), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
+      .map(p => ({ ...p, key: safeKey(p), heat: clamp(, 0, 100), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
 
     // Search filter
     const filtered = searchQuery

@@ -1,3 +1,4 @@
+import { clamp } from '../../engine/utils';
 // InstitutionPanel.tsx
 // Displays Welfare Risk, Compliance State, Governance, and Oyakata Persona for a Heya.
 // Canon: Beya as an institution.
@@ -13,15 +14,7 @@ import type { WorldState } from "@/engine/types/world";
 import { getStatusLabel } from "@/engine/governance";
 import { getArchetypeDescription } from "@/engine/oyakataPersonalities";
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- */
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 /**
  * Compliance badge.
