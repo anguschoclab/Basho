@@ -1,6 +1,7 @@
 import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router'
 import App from './App'
 import MainMenu from './pages/MainMenu'
+import NewGameWizard from './pages/NewGameWizard'
 import Dashboard from './pages/Dashboard'
 import StablePage from './pages/StablePage'
 import TrainingPage from './pages/TrainingPage'
@@ -181,12 +182,12 @@ const settingsRoute = createRoute({
 })
 
 // Add catch-all route correctly in Tanstack Router v1
-const myosekiRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/myoseki',
-  component: MyosekiMarketPage,
-})
 
+const newGameRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/new-game',
+  component: NewGameWizard,
+})
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '$',
@@ -196,6 +197,7 @@ const notFoundRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   mainMenuRoute,
+  newGameRoute,
   dashboardRoute,
   stableRoute,
   stableIdRoute,

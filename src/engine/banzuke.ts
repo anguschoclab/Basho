@@ -1,7 +1,7 @@
 import { clamp } from './utils';
 
-function clampInt(val: number, min: number, max: number): number {
-  return clampInt(Math.round(val), min, max);
+function localClampInt(val: number, min: number, max: number): number {
+  return localClampInt(Math.round(val), min, max);
 }
 
 // banzuke.ts
@@ -569,7 +569,7 @@ function calculateYokozunaCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
     return e.position.rank === "ozeki" && !!p?.promoteToYokozuna;
   }).length;
   const yokozunaCount = yokozunaIds.length + yPromotions;
-  return clampInt(yokozunaCount, 0, 6);
+  return localClampInt(yokozunaCount, 0, 6);
 }
 
 function calculateOzekiCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>, demotedOzeki: Set<string>): number {
@@ -594,7 +594,7 @@ function calculateSekiwakeCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
   });
 
   const sekiwakeCount = 2 + demotedCount + sekiwakePromoteCandidates.length;
-  return clampInt(sekiwakeCount, 2, 6);
+  return localClampInt(sekiwakeCount, 2, 6);
 }
 
 function calculateKomusubiCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>): number {
@@ -609,7 +609,7 @@ function calculateKomusubiCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
   });
 
   const komusubiCount = 2 + komusubiPromoteCandidates.length;
-  return clampInt(komusubiCount, 2, 6);
+  return localClampInt(komusubiCount, 2, 6);
 }
 
 /**
@@ -771,16 +771,16 @@ function calculatePerformanceBonuses(perf: BashoPerformance): number {
   let bonus = 0;
 
   if (typeof perf.opponentAvgTier === "number" && Number.isFinite(perf.opponentAvgTier)) {
-    bonus += clampInt(Math.round((5 - perf.opponentAvgTier) * 0.5), -1, 1);
+    bonus += localClampInt(Math.round((5 - perf.opponentAvgTier) * 0.5), -1, 1);
   }
 
   if (perf.yusho) bonus += 5;
   if (perf.junYusho) bonus += 2;
   if (typeof perf.specialPrizes === "number" && Number.isFinite(perf.specialPrizes)) {
-    bonus += clampInt(perf.specialPrizes, 0, 3);
+    bonus += localClampInt(perf.specialPrizes, 0, 3);
   }
   if (typeof perf.kinboshi === "number" && Number.isFinite(perf.kinboshi)) {
-    bonus += clampInt(perf.kinboshi, 0, 3);
+    bonus += localClampInt(perf.kinboshi, 0, 3);
   }
 
   return bonus;
@@ -794,19 +794,19 @@ function calculatePerformanceBonuses(perf: BashoPerformance): number {
  *  * @returns The result.
  */
 function clampMovementByRank(move: number, rank: string, isDemotedOzeki: boolean): number {
-  if (rank === "yokozuna") return clampInt(move, -2, 2);
+  if (rank === "yokozuna") return localClampInt(move, -2, 2);
 
   if (rank === "ozeki") {
     const damped = Math.round(move * 0.65);
     if (isDemotedOzeki) return Math.min(-6, damped - 4);
-    return clampInt(damped, -4, 4);
+    return localClampInt(damped, -4, 4);
   }
 
   if (rank === "sekiwake" || rank === "komusubi") {
-    return clampInt(Math.round(move * 0.8), -6, 6);
+    return localClampInt(Math.round(move * 0.8), -6, 6);
   }
 
-  return clampInt(move, -10, 10);
+  return localClampInt(move, -10, 10);
 }
 
 /**
