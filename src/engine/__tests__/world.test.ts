@@ -2,6 +2,95 @@ import { describe, it, expect } from "vitest";
 import { startBasho, endBasho, advanceBashoDay } from "../world";
 import { generateWorld } from "../worldgen";
 
+
+
+describe("startBasho", () => {
+  it("should return world unmodified if cyclePhase is already active_basho", () => {
+    const world = generateWorld("start-test-1");
+    world.cyclePhase = "active_basho";
+    const originalCurrentBasho = world.currentBasho;
+
+    const updated = startBasho(world, "natsu");
+
+    expect(updated).toBe(world);
+    expect(updated.currentBasho).toBe(originalCurrentBasho);
+  });
+
+  it("should use provided bashoName over currentBashoName", () => {
+    const world = generateWorld("start-test-2");
+    world.cyclePhase = "pre_basho";
+    world.currentBashoName = "haru";
+    world.year = 2025;
+
+    const updated = startBasho(world, "natsu");
+
+    expect(updated.currentBasho!.bashoName).toBe("natsu");
+  });
+
+  it("should fallback to currentBashoName if bashoName is not provided", () => {
+    const world = generateWorld("start-test-3");
+    world.cyclePhase = "pre_basho";
+    world.currentBashoName = "kyushu";
+    world.year = 2025;
+
+    const updated = startBasho(world);
+
+    expect(updated.currentBasho!.bashoName).toBe("kyushu");
+  });
+
+  it("should default to hatsu if neither bashoName nor currentBashoName are present", () => {
+    const world = generateWorld("start-test-4");
+    world.cyclePhase = "pre_basho";
+    world.currentBashoName = undefined as any;
+    world.year = 2025;
+
+    const updated = startBasho(world);
+
+    expect(updated.currentBasho!.bashoName).toBe("hatsu");
+  });
+
+  it("should call ensureDaySchedule to generate matches for day 1", () => {
+    const world = generateWorld("start-test-5");
+    world.cyclePhase = "pre_basho";
+    world.year = 2025;
+
+    const updated = startBasho(world, "hatsu");
+
+    expect(updated.currentBasho!.matches.length).toBeGreaterThan(0);
+    expect(updated.currentBasho!.matches.some(m => m.day === 1)).toBe(true);
+  });
+
+  it("should trigger EventBus.bashoStarted", () => {
+    const world = generateWorld("start-test-6");
+    world.cyclePhase = "pre_basho";
+    world.year = 2025;
+
+    const updated = startBasho(world, "natsu");
+
+    const bashoStartedEvent = updated.events.log.find(e => e.type === "BASHO_STARTED");
+    expect(bashoStartedEvent).toBeDefined();
+    expect((bashoStartedEvent as any).data.bashoName).toBe("natsu");
+  });
+
+  it("should reset media tracking if mediaState exists", () => {
+    const world = generateWorld("start-test-7");
+    world.cyclePhase = "pre_basho";
+    world.year = 2025;
+
+    // Simulate some dirty media state
+    if (world.mediaState) {
+      world.mediaState.bashoStreaks = { "r1": 5 };
+      world.mediaState.streakHeadlinesFired = { "r1": [5] };
+    }
+
+    const updated = startBasho(world, "natsu");
+
+    expect(updated.mediaState).toBeDefined();
+    expect(Object.keys(updated.mediaState!.bashoStreaks).length).toBe(0);
+    expect(Object.keys(updated.mediaState!.streakHeadlinesFired).length).toBe(0);
+  });
+});
+
 describe("World Engine Transitions", () => {
   it("should successfully start a basho from pre_basho state", () => {
     const world = generateWorld("world-test");
