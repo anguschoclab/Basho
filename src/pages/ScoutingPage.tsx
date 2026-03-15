@@ -625,6 +625,7 @@ export default function ScoutingPage() {
     { id: "scouting", label: "Scouting" },
     { id: "talent", label: "Talent Pools", href: "/talent" },
     { id: "governance", label: "Governance", href: "/governance" },
+    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
   ];
 
   return (

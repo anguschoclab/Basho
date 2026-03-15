@@ -13,6 +13,7 @@ import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
+import type { MyosekiMarket } from "./myoseki";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
@@ -96,6 +97,8 @@ export interface WorldState {
     currentWeek: number;
     currentDay: number;
   };
+
+  myosekiMarket?: MyosekiMarket;
 
   activeBasho?: {
     id: string;
