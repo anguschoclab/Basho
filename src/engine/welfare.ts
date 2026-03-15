@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // welfare.ts
 // =======================================================
 // Welfare & Compliance State Machine (Canon A7)
@@ -17,15 +18,7 @@ import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- */
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 /**
  * Ensure heya welfare state.

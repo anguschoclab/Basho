@@ -1,3 +1,4 @@
+import { clampInt } from './utils';
 // media.ts
 // =======================================================
 // Media & Press System v1.0 — Deterministic narrative pressure + public perception
@@ -684,16 +685,7 @@ function seededPick<T>(arr: T[], rng: SeededRNG): T {
   return arr[Math.floor(rng.next() * arr.length)];
 }
 
-/**
- * Clamp int.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clampInt(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, Math.trunc(n)));
-}
+
 
 /**
  * Make id.

@@ -1,3 +1,4 @@
+import { clamp, stableSort } from './utils';
 // matchmaking.ts
 // =======================================================
 // Matchmaking System v1.1 — Deterministic torikumi pairing for ALL divisions
@@ -44,26 +45,9 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   allowRepeatsWhenForced: true
 };
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
 
-/**
- * Stable sort.
- *  * @param arr - The Arr.
- *  * @param keyFn - The Key fn.
- *  * @returns The result.
- */
-function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
-  return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
-}
+
+
 
 /**
  * Get record.

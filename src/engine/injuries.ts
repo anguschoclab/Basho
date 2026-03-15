@@ -1,3 +1,4 @@
+import { clamp, clampInt } from './utils';
 // injuries.ts
 // =======================================================
 // Injury System v1.0 — Deterministic injury model + recovery + durability
@@ -751,24 +752,9 @@ function dummyRikishiForRecovery(): Rikishi {
   };
 }
 
-/** =========================
- *  Utils
- *  ========================= */
 
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
 
-/**
- * Clamp int.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clampInt(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, Math.trunc(n)));
-}
+
 
 /** =========================
  *  World-level bout hook — called from world.ts after each bout
