@@ -253,7 +253,31 @@ function calculateGrowthVector(
   const nutritionMult = 0.92 + (Math.min(100, Math.max(0, nutritionFacility)) / 100) * 0.16;
 
   const BASE_GROWTH = 0.5; 
-  const totalMult = intensityMult * focusModeMult * phaseMult * facilityGrowthMult * BASE_GROWTH;
+
+  // Ichimon / Degeiko Political Bonus
+  let degeikoMult = 1.0;
+  if (heya && heya.ichimon && globalThis._worldForDegeiko) {
+    const factions = globalThis._worldForDegeiko.factions;
+    if (factions && factions[heya.ichimon]) {
+      // Find the chairman
+      let maxInfluence = -1;
+      let chairmanFactionId = "";
+      for (const fac of Object.values(factions)) {
+        if ((fac as any).influence > maxInfluence) {
+          maxInfluence = (fac as any).influence;
+          chairmanFactionId = (fac as any).id;
+        }
+      }
+      if (heya.ichimon === chairmanFactionId) {
+        degeikoMult = 1.25; // Huge 25% boost for training with the dominant Ichimon
+      } else if ((factions[heya.ichimon] as any).influence >= 80) {
+        degeikoMult = 1.10; // 10% boost for powerful Ichimon
+      }
+    }
+  }
+
+  const totalMult = intensityMult * focusModeMult * phaseMult * facilityGrowthMult * degeikoMult * BASE_GROWTH;
+
 
   const talentSeed = rikishi.talentSeed ?? 50;
 
@@ -290,6 +314,8 @@ function calculateGrowthVector(
  *  * @returns The result.
  */
 export function applyWeeklyTraining(world: WorldState): WorldState {
+  (globalThis as any)._worldForDegeiko = world;
+
   const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
 
   world.rikishi.forEach(rikishi => {
@@ -343,6 +369,7 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
     }
   });
 
+  delete (globalThis as any)._worldForDegeiko;
   return world;
 }
 

@@ -4,7 +4,7 @@
 
 import type { Id } from "./common";
 import type { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./narrative";
-import type { GovernanceStatus, GovernanceRuling, WelfareState, Loan } from "./economy";
+import type { GovernanceStatus, GovernanceRuling, WelfareState, Loan, IchimonName } from "./economy";
 import type { BeyaTrainingState } from "./training";
 
 /** Defines the structure for heya. */
@@ -49,5 +49,7 @@ export interface Heya {
 
   descriptor?: string;
   isPlayerOwned?: boolean;
+  ichimon?: IchimonName;
+  politicalCapital?: number;
   location?: string;
 }

@@ -89,3 +89,16 @@ export interface Loan {
   issuedAtMonth: number;
   stringsAttached?: string[];
 }
+
+
+// Faction & Politics Types
+/** Type representing the 5 historical Ichimons. */
+export type IchimonName = "Dewanoumi" | "Nishonoseki" | "Takasago" | "Tokitsukaze" | "Isegahama";
+
+/** Defines the structure for a faction (Ichimon). */
+export interface Faction {
+  id: IchimonName;
+  name: string;
+  influence: number;
+  oyakataLeaderId: string | null;
+}
