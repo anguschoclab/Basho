@@ -17,6 +17,7 @@ import { RANK_HIERARCHY } from "./banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "./kimarite";
 import { buildPbpFromBoutResult, type PbpContext, type PbpLine } from "./pbp";
 import { generateNarrative } from "./narrative";
+import { resolveTacticalClash, determineCPUTactic } from "./h2h";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
 export type Position = "front" | "lateral" | "rear";
@@ -82,6 +83,9 @@ interface EngineState {
   fatigueWest: number;
   log: BoutLogEntry[];
   mizuiriDeclared: boolean; // NEW
+  tacticalResult?: import("./types/combat").TacticalResult;
+  playerSide?: import("./types/banzuke").Side;
+  cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -876,6 +880,13 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
   let eastWinP = clamp01(eastWinBase);
 
+  // Apply tactical win probability shift
+  if (st.tacticalResult && st.playerSide) {
+    if (st.playerSide === "east") eastWinP += st.tacticalResult.winProbabilityShift;
+    else eastWinP -= st.tacticalResult.winProbabilityShift;
+    eastWinP = clamp01(eastWinP);
+  }
+
   // Tactical AI: finish bonus from opponent-aware heuristics
   eastWinP += (eastTac?.finishBonus ?? 0);
   eastWinP -= (westTac?.finishBonus ?? 0);
@@ -947,42 +958,73 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     fatigueEast: 0,
     fatigueWest: 0,
     log: [],
-    mizuiriDeclared: false
+    mizuiriDeclared: false,
+    playerSide: bout.playerSide
   };
 
-  // Compute opponent-aware tactical modifiers per side
-  const eastTactics = computeTacticalModifiers(east, west);
-  const westTactics = computeTacticalModifiers(west, east);
+  // Execute Tactical Clash if one side is a player
+  let eastPlayerTactic = bout.playerSide === "east" ? bout.playerTactic : undefined;
+  let westPlayerTactic = bout.playerSide === "west" ? bout.playerTactic : undefined;
 
-  // Emit tactical strategy entries into the log for PBP consumption
-  if (eastTactics.description !== "Standard approach") {
+  // Auto-sim fallback and CPU tactic determination
+  if (bout.playerSide === "east") {
+    eastPlayerTactic = eastPlayerTactic || determineCPUTactic(east, rng);
+    westPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(west, rng);
+    st.tacticalResult = resolveTacticalClash(eastPlayerTactic, westPlayerTactic);
+  } else if (bout.playerSide === "west") {
+    westPlayerTactic = westPlayerTactic || determineCPUTactic(west, rng);
+    eastPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(east, rng);
+    st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
+  }
+
+  const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
+  const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
+
+    // Emit tactical strategy entries into the log for PBP consumption
+  if (st.tacticalResult) {
     st.log.push({
-      phase: "tachiai",
-      description: `${east.shikona}'s strategy: ${eastTactics.description}`,
+      phase: "tactical",
+      description: "Tactical clash resolved",
       data: {
         tacticalEntry: true,
-        side: "east",
-        archetype: east.archetype,
-        opponentArchetype: west.archetype,
-        clinchPreference: eastTactics.clinchPreference,
-        strategy: eastTactics.description,
+        tacticalResult: st.tacticalResult,
+        side: bout.playerSide,
+        eastArchetype: east.archetype,
+        westArchetype: west.archetype
       }
     });
+  } else {
+    // Legacy generic logging
+    if (eastTactics.description !== "Standard approach") {
+      st.log.push({
+        phase: "tactical",
+        description: `${east.shikona}'s strategy: ${eastTactics.description}`,
+        data: {
+          tacticalEntry: true,
+          side: "east",
+          archetype: east.archetype,
+          opponentArchetype: west.archetype,
+          clinchPreference: eastTactics.clinchPreference,
+          strategy: eastTactics.description,
+        }
+      });
+    }
+    if (westTactics.description !== "Standard approach") {
+      st.log.push({
+        phase: "tactical",
+        description: `${west.shikona}'s strategy: ${westTactics.description}`,
+        data: {
+          tacticalEntry: true,
+          side: "west",
+          archetype: west.archetype,
+          opponentArchetype: east.archetype,
+          clinchPreference: westTactics.clinchPreference,
+          strategy: westTactics.description,
+        }
+      });
+    }
   }
-  if (westTactics.description !== "Standard approach") {
-    st.log.push({
-      phase: "tachiai",
-      description: `${west.shikona}'s strategy: ${westTactics.description}`,
-      data: {
-        tacticalEntry: true,
-        side: "west",
-        archetype: west.archetype,
-        opponentArchetype: east.archetype,
-        clinchPreference: westTactics.clinchPreference,
-        strategy: westTactics.description,
-      }
-    });
-  }
+
 
   // Phases — pass tactical modifiers
   resolveTachiai(rng, east, west, st, eastTactics, westTactics);
