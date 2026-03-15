@@ -126,7 +126,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
   mood: OyakataMood;
 } {
   const heya = world.heyas.get(heyaId);
-  const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  const oyakata = heya ? world.oyakata?.get(heya.oyakataId) : undefined;
   const perception = getCachedPerception(world, heyaId);
 
   if (!heya || !oyakata) {
@@ -403,7 +403,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
   // Fetch oyakata style profile for philosophy-driven decisions
   const heya = world.heyas.get(heyaId);
-  const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
+  const oyakata = heya ? world.oyakata?.get(heya.oyakataId) : undefined;
   const styleProfile = oyakata ? getOyakataStyleProfile(world, oyakata) : undefined;
   const philosophy = styleProfile?.philosophy;
 

@@ -67,7 +67,7 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
   const intensity = trainingState.activeProfile.intensity;
   const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
-  for (const rid of heya.rikishiIds) {
+  for (const rid of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rid);
     if (!r) continue;
 

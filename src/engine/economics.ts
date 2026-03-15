@@ -48,7 +48,7 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   
   // A. Rikishi Salaries (Monthly -> Weekly approx)
   let rikishiSalaries = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const rikishi = world.rikishi.get(rId);
     if (rikishi) {
       const info = RANK_HIERARCHY[rikishi.rank];
@@ -63,7 +63,7 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
 
   // B. Staff & Facilities
   // Facility maintenance scales with quality
-  const facilityUpkeep = 
+  const facilityUpkeep = !heya.facilities ? 0 :
     (heya.facilities.training * 1000) + 
     (heya.facilities.recovery * 1000) + 
     (heya.facilities.nutrition * 2000); // Food is expensive!
@@ -254,7 +254,7 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
  */
 function computeStarPower(heya: Heya, world: WorldState): number {
   let starPower = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (!r) continue;
     if (r.rank === "yokozuna") starPower += 30;

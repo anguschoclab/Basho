@@ -8,6 +8,7 @@ describe("World Engine Transitions", () => {
     world.cyclePhase = "pre_basho";
     world.currentBashoName = "hatsu";
     world.year = 2025;
+    if (!world.calendar) world.calendar = { year: 2025, month: 1, currentWeek: 1, currentDay: 1 };
 
     // Attempt to start
     const updated = startBasho(world, "hatsu");
@@ -26,6 +27,7 @@ if (!updated) throw new Error("updated is undefined");
     world.cyclePhase = "pre_basho";
     world.currentBashoName = "haru";
     world.year = 2025;
+    if (!world.calendar) world.calendar = { year: 2025, month: 1, currentWeek: 1, currentDay: 1 };
     world = startBasho(world, "haru");
 
     expect(world.currentBasho!.day).toBe(1);
@@ -42,6 +44,7 @@ if (!updated) throw new Error("updated is undefined");
     world.cyclePhase = "pre_basho";
     world.currentBashoName = "natsu";
     world.year = 2025;
+    if (!world.calendar) world.calendar = { year: 2025, month: 1, currentWeek: 1, currentDay: 1 };
     world = startBasho(world, "natsu");
     world.currentBasho!.day = 15;
 

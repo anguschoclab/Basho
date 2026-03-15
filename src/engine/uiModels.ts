@@ -295,8 +295,8 @@ export interface UIHeya {
  *  * @returns The result.
  */
 export function projectHeya(heya: Heya, world: WorldState): UIHeya {
-  const oyakata = world.oyakata instanceof Map ? world.oyakata.get(heya.oyakataId) : (world.oyakata as any)?.[heya.oyakataId];
-  const roster = (heya?.rikishiIds || [])
+  const oyakata = world.oyakata?.get(heya.oyakataId);
+  const roster = (heya.rikishiIds || [])
     .map(id => world.rikishi.get(id))
     .filter(Boolean) as Rikishi[];
 

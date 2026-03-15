@@ -269,13 +269,13 @@ function calculateGrowthVector(
     return totalMult * rawMult * drMult;
   };
 
-  growth.strength = applyCapped('strength', bias.strength, rikishi.stats.strength) * nutritionMult;
-  growth.speed = applyCapped('speed', bias.speed, rikishi.stats.speed);
-  growth.technique = applyCapped('technique', bias.technique, rikishi.stats.technique);
-  growth.balance = applyCapped('balance', bias.balance, rikishi.stats.balance);
-  growth.stamina = applyCapped('stamina', 0.5, rikishi.stats.stamina) * nutritionMult;
-  growth.mental = applyCapped('mental', 0.2, rikishi.stats.mental);
-  growth.adaptability = applyCapped('adaptability', 0.2, rikishi.stats.adaptability);
+  growth.strength = applyCapped('strength', bias.strength, rikishi.stats?.strength || 50) * nutritionMult;
+  growth.speed = applyCapped('speed', bias.speed, rikishi.stats?.speed || 50);
+  growth.technique = applyCapped('technique', bias.technique, rikishi.stats?.technique || 50);
+  growth.balance = applyCapped('balance', bias.balance, rikishi.stats?.balance || 50);
+  growth.stamina = applyCapped('stamina', 0.5, rikishi.stats?.stamina || 50) * nutritionMult;
+  growth.mental = applyCapped('mental', 0.2, rikishi.stats?.mental || 50);
+  growth.adaptability = applyCapped('adaptability', 0.2, rikishi.stats?.adaptability || 50);
 
   return growth;
 }
@@ -322,6 +322,7 @@ export function applyWeeklyTraining(world: WorldState): WorldState {
       rikishi.experience = Math.min(100, rikishi.experience + (growth.mental * 0.5));
 
       // Sync UI
+      if (!rikishi.stats) rikishi.stats = {} as any;
       rikishi.stats.strength = Math.floor(rikishi.power);
       rikishi.stats.speed = Math.floor(rikishi.speed);
       rikishi.stats.technique = Math.floor(rikishi.technique);

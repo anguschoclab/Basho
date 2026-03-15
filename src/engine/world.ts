@@ -79,8 +79,8 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   if (world.mediaState) {
     world.mediaState = resetBashoMediaTracking(world.mediaState);
   }
-
   return world;
+
 }
 
 /**

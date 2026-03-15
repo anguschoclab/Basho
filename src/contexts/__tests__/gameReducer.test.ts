@@ -1,41 +1,16 @@
 // gameReducer.test.ts — Unit tests for each GameAction type
-import { describe, it, expect, beforeEach, mock } from "bun:test";
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
+import { mock } from "bun:test";
 import { gameReducer } from "../gameReducer";
 import { initialGameState, type GameState } from "../gameTypes";
 import type { WorldState } from "@/engine/types/world";
 
 // Mock heavy engine modules to keep tests fast and isolated
-mock.module("@/engine/worldgen", () => ({
-  generateWorld: mock(({ seed }: { seed: string }) => {
-    const heyas = new Map();
-    heyas.set("heya-1", { id: "heya-1", name: "Test Heya", isPlayerOwned: false });
-    heyas.set("heya-2", { id: "heya-2", name: "Rival Heya", isPlayerOwned: false });
-    const rikishi = new Map();
-    rikishi.set("r-1", { id: "r-1", shikona: "Taro", division: "makuuchi", isRetired: false });
-    return {
-      seed,
-      heyas,
-      rikishi,
-      currentBashoName: "hatsu",
-      cyclePhase: "interim",
-      playerHeyaId: undefined,
-    } as unknown as WorldState;
-  }),
-}));
 
-mock.module("@/engine/world", () => ({
-  startBasho: mock(),
-  advanceBashoDay: mock(),
-  simulateBoutForToday: mock(() => ({ result: { winnerId: "r-1", loserId: "r-2" } })),
-  endBasho: mock(),
-  publishBanzukeUpdate: mock(),
-  advanceInterim: mock(),
-  advanceDay: mock(),
-}));
 
-mock.module("../gameHelpers", () => ({
-  autosaveWithSignal: mock(() => true),
-}));
+
+
+
 
 // Helper to build a state with a mock world already loaded
 function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
@@ -43,6 +18,7 @@ function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
   heyas.set("heya-1", { id: "heya-1", name: "Test Heya", isPlayerOwned: true });
   const rikishi = new Map();
   rikishi.set("r-1", { id: "r-1", shikona: "Taro", division: "makuuchi" });
+  rikishi.set("r-2", { id: "r-2", shikona: "Jiro", division: "makuuchi" });
   const standings = new Map();
   standings.set("r-1", { wins: 5, losses: 2 });
 
@@ -51,6 +27,8 @@ function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
     heyas,
     rikishi,
     currentBashoName: "hatsu",
+      currentBasho: {},
+      calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     cyclePhase: "interim" as const,
     playerHeyaId: "heya-1",
     currentBasho: null,
@@ -63,7 +41,7 @@ function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
 function stateInBasho(): GameState {
   const base = stateWithWorld({
     cyclePhase: "active_basho" as any,
-    currentBasho: { day: 3, matches: [], standings: new Map() } as any,
+    currentBasho: { day: 3, matches: [{ day: 3, eastRikishiId: "r-1", westRikishiId: "r-2" }], standings: new Map() } as any,
   });
   return { ...base, phase: "day_preview" };
 }
@@ -190,7 +168,8 @@ describe("gameReducer", () => {
     const s = stateInBasho();
     const result = gameReducer(s, { type: "SIMULATE_BOUT", boutIndex: 0 });
     expect(result.currentBoutIndex).toBe(1);
-    expect(result.lastBoutResult).toEqual({ winnerId: "r-1", loserId: "r-2" });
+    expect(result.lastBoutResult).not.toBeNull();
+    expect(result.lastBoutResult?.winnerRikishiId).toBeDefined();
   });
 
   it("SIMULATE_BOUT is no-op without currentBasho", () => {

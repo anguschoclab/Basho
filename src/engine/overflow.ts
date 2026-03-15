@@ -21,9 +21,8 @@ export const HARD_CAP_ROSTER_SIZE = 30;
 export function enforceHardCapRosterOverflow(world: WorldState): number {
   let totalReleased = 0;
 
-  const heyasIter = world.heyas instanceof Map ? world.heyas.values() : Object.values(world.heyas);
-  for (const heya of heyasIter) {
-    if (heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
+  for (const heya of world.heyas.values()) {
+    if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
     const candidatesForRelease = heya.rikishiIds

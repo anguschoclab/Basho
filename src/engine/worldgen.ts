@@ -174,9 +174,9 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
  *  * @param seed - The Seed.
  *  * @returns The result.
  */
-export function generateWorld(seed: string | { seed: string } = "initial-seed"): WorldState {
+export function generateWorld(seed: any = "initial-seed"): WorldState {
   // Handle both string and object seed formats
-  const actualSeed = typeof seed === "string" ? seed : seed.seed;
+  const actualSeed = typeof seed === "string" ? seed : seed?.seed || "initial-seed";
   
   const rng = rngFromSeed(actualSeed, "worldgen", "world");
   const heyaMap = new Map<string, Heya>();
@@ -428,6 +428,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     };
 
     rikishiMap.set(rid, newRikishi);
+    if (!heya.rikishiIds) heya.rikishiIds = [];
     heya.rikishiIds.push(rid);
   });
 
