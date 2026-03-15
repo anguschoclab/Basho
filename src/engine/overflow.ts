@@ -22,7 +22,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): number {
   let totalReleased = 0;
 
   for (const heya of world.heyas.values()) {
-    if (heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
+    if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
     const candidatesForRelease = heya.rikishiIds

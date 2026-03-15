@@ -424,6 +424,7 @@ export function runAutoSim(
     }
 
     // Store history (deterministic)
+    if (!world.history) world.history = [];
     world.history.push({
       year: bashoResult.year,
       bashoNumber: getBashoNumber(bashoName),

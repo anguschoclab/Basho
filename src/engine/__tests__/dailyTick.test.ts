@@ -98,6 +98,7 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
       }]
     ]) as unknown as Map<string, any>,
     heyas: new Map([["test-heya", heya]]) as unknown as Map<string, any>,
+    oyakata: new Map() as unknown as Map<string, any>,
     playerHeyaId: "test-heya",
     eventLog: [],
     rivalriesState: { pairs: [], lastUpdatedWeek: 0, nextRivalryId: 1 },

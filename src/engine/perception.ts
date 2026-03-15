@@ -149,7 +149,7 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   if (!rivalriesState?.pairs) return "dormant";
 
   let maxHeat = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     for (const pair of Object.values(rivalriesState.pairs)) {
       if (pair.aId === rId || pair.bId === rId) {
         if (pair.heat > maxHeat) maxHeat = pair.heat;
@@ -177,12 +177,12 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   };
 
   let total = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r) total += RANK_WEIGHT[r.rank] ?? 5;
   }
 
-  const avg = heya.rikishiIds.length > 0 ? total / heya.rikishiIds.length : 0;
+  const avg = (heya.rikishiIds || []).length > 0 ? total / (heya.rikishiIds || []).length : 0;
   if (avg >= 60) return "dominant";
   if (avg >= 40) return "strong";
   if (avg >= 25) return "competitive";
@@ -201,7 +201,7 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
   let momentumSum = 0;
   let count = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r) { momentumSum += r.momentum ?? 0; count++; }
   }
@@ -286,7 +286,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
 
   // Build per-rikishi perceptions
-  const rikishiPerceptions: RikishiPerception[] = heya.rikishiIds
+  const rikishiPerceptions: RikishiPerception[] = (heya.rikishiIds || [])
     .map(rId => {
       const r = world.rikishi.get(rId);
       if (!r) return null;
@@ -304,7 +304,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
 
   // Determine style bias
   let oshi = 0, yotsu = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r?.style === "oshi") oshi++;
     if (r?.style === "yotsu") yotsu++;
@@ -326,7 +326,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     stableMediaHeatBand: bandMediaHeat(getStableMediaHeat(world, heyaId)),
     rivalryPressureBand: bandRivalry(world, heyaId),
     rosterStrengthBand: bandRosterStrength(heya, world),
-    rosterSize: heya.rikishiIds.length,
+    rosterSize: (heya.rikishiIds || []).length,
     moraleBand: bandMorale(heya, world),
     rikishiPerceptions,
     styleBias

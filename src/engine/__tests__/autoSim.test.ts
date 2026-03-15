@@ -11,6 +11,7 @@ describe("AutoSim", () => {
     // or just rely on runAutoSim to do it.
     world.year = 2025;
     world.currentBashoName = "hatsu";
+    if (!world.calendar) world.calendar = { year: 2025, month: 1, currentWeek: 1, currentDay: 1 };
 
     const config: AutoSimConfig = {
         duration: { type: "basho", count: 1 },

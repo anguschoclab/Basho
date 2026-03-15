@@ -11,6 +11,7 @@ describe("UI Digest", () => {
 
     // Create a new world
     const world = generateWorld("test-uidigest-seed");
+    if (!world.calendar) world.calendar = { year: 2025, month: 1, currentWeek: 1, currentDay: 1 };
 
     // Simulate a week to populate perceptions and events
     advanceDays(world, 7);
