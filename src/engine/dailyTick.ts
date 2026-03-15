@@ -33,6 +33,7 @@ import * as economics from "./economics";
 import * as governance from "./governance";
 import * as welfare from "./welfare";
 import * as events from "./events";
+import { tickMyosekiMarket } from "./myosekiMarket";
 import * as rivalries from "./rivalries";
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
@@ -271,6 +272,11 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { events.tickWeek(world); }) && subs.push("events");
   safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
   safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
+  // Bi-annual JSA Board Elections (End of year, even years)
+  if (world.week === 52 && world.year % 2 === 0) {
+    safeCall(() => { governance.runElections(world); }) && subs.push("elections");
+  }
+
 
   // Media weekly boundary — decay heat/pressure, generate features
   safeCall(() => {
