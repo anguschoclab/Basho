@@ -295,8 +295,8 @@ export interface UIHeya {
  *  * @returns The result.
  */
 export function projectHeya(heya: Heya, world: WorldState): UIHeya {
-  const oyakata = world.oyakata instanceof Map ? world.oyakata.get(heya.oyakataId) : world.oyakata[heya.oyakataId];
-  const roster = heya.rikishiIds
+  const oyakata = world.oyakata instanceof Map ? world.oyakata.get(heya.oyakataId) : (world.oyakata as any)?.[heya.oyakataId];
+  const roster = (heya?.rikishiIds || [])
     .map(id => world.rikishi.get(id))
     .filter(Boolean) as Rikishi[];
 
@@ -304,28 +304,28 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
   const sekitoriCount = roster.reduce((count, r) => sekitoriDivisions.has(r.division) ? count + 1 : count, 0);
 
   return {
-    id: heya.id,
-    name: heya.name,
-    nameJa: heya.nameJa ?? "",
-    isPlayerOwned: heya.isPlayerOwned ?? false,
-    oyakataId: heya.oyakataId,
+    id: heya?.id || "",
+    name: heya?.name,
+    nameJa: heya?.nameJa ?? "",
+    isPlayerOwned: heya?.isPlayerOwned ?? false,
+    oyakataId: heya?.oyakataId || "",
     oyakataName: oyakata?.name ?? "Unknown",
-    statureBand: heya.statureBand,
-    prestigeBand: heya.prestigeBand,
-    facilitiesBand: heya.facilitiesBand,
-    koenkaiBand: heya.koenkaiBand,
-    runwayBand: heya.runwayBand,
-    facilities: { ...heya.facilities },
+    statureBand: heya?.statureBand || "average",
+    prestigeBand: heya?.prestigeBand || "obscure",
+    facilitiesBand: heya?.facilitiesBand || "poor",
+    koenkaiBand: heya?.koenkaiBand || "none",
+    runwayBand: heya?.runwayBand || "tight",
+    facilities: heya?.facilities ? { ...heya.facilities } : { housing: 0, training: 0, recovery: 0 },
     rosterSize: roster.length,
     sekitoriCount,
-    funds: heya.funds,
-    reputation: heya.reputation,
-    riskFinancial: heya.riskIndicators?.financial ?? false,
-    riskGovernance: heya.riskIndicators?.governance ?? false,
-    riskRivalry: heya.riskIndicators?.rivalry ?? false,
-    riskWelfare: heya.riskIndicators?.welfare ?? false,
-    scandalScore: heya.scandalScore,
-    governanceStatus: heya.governanceStatus,
+    funds: heya?.funds || 0,
+    reputation: heya?.reputation || 0,
+    riskFinancial: heya?.riskIndicators?.financial ?? false,
+    riskGovernance: heya?.riskIndicators?.governance ?? false,
+    riskRivalry: heya?.riskIndicators?.rivalry ?? false,
+    riskWelfare: heya?.riskIndicators?.welfare ?? false,
+    scandalScore: heya?.scandalScore || 0,
+    governanceStatus: heya?.governanceStatus || "compliant",
   };
 }
 
