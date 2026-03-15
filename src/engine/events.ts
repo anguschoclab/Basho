@@ -12,7 +12,7 @@ import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportan
 import type { Id } from "./types/common";
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
-function stableHash(s: string): string {
+export function stableHash(s: string): string {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);
