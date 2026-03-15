@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:determinism": "node scripts/check-determinism.mjs",
-    "check:engine-rng": "node scripts/check-determinism.mjs"
+    "check:engine-rng": "node scripts/check-determinism.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
