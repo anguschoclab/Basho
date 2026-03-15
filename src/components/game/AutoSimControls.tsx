@@ -85,7 +85,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
   // Keep observerMode synced if playerHeyaId becomes undefined later.
   useMemo(() => {
     if (forcedObserver) setObserverMode(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [forcedObserver]);
 
   const handleStartSim = async () => {

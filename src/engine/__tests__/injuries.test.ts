@@ -78,7 +78,7 @@ describe("Injury System", () => {
 
   describe("getOrInitDurability", () => {
     it("should deterministically generate durability 20-95", () => {
-      let state = createDefaultInjuriesState();
+      const state = createDefaultInjuriesState();
       const { durability, state: s2 } = getOrInitDurability({ state, worldSeed: "seed1", rikishiId: "r1" });
       expect(durability).toBeGreaterThanOrEqual(20);
       expect(durability).toBeLessThanOrEqual(95);

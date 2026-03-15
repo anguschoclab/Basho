@@ -430,7 +430,7 @@ export default function MainMenu() {
       }
 
       if (typeof createWorld === "function") {
-        // eslint-disable-next-line no-console
+
         console.warn(
           "[MainMenu] No loadWorldDirect/loadImportedWorld/setWorld API found. Falling back to createWorld(seed, playerHeyaId). Imported data may not be preserved."
         );
