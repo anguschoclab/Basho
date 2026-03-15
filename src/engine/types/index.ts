@@ -18,3 +18,4 @@ export * from "./heya";
 export * from "./talent";
 export * from "./world";
 export * from "./save";
+export * from './myoseki';

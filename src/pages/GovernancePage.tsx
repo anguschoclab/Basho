@@ -52,7 +52,9 @@ export default function GovernancePage() {
     { id: "economy", label: "Economy", href: "/economy" },
     { id: "scouting", label: "Scouting", href: "/scouting" },
     { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "governance", label: "Governance" },
+    { id: "governance", label: "Governance", href: "/governance" },
+    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
+    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
   ];
 
   return (

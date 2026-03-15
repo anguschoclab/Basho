@@ -23,6 +23,7 @@ import { generateStaff } from "./staff";
 import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
+import { generateMyosekiMarket } from "./myosekiMarket";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
@@ -448,6 +449,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     heyas: heyaMap,
     rikishi: rikishiMap,
     oyakata: oyakataMap,
+    myosekiMarket: generateMyosekiMarket(actualSeed, oyakataMap),
 
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
