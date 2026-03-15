@@ -68,10 +68,11 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
     (heya.facilities.recovery * 1000) + 
     (heya.facilities.nutrition * 2000); // Food is expensive!
 
-  // C. Oyakata Salary
-  const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
+  const staffCount = heya.staffIds?.length || 0;
+  const staffUpkeep = staffCount * 6000;
 
-  const totalBurn = rikishiSalaries + facilityUpkeep + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
+  const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
+  const totalBurn = rikishiSalaries + facilityUpkeep + staffUpkeep + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
   // 2. Calculate Income (Koenkai / Supporters)
   const supporterIncome = (heya.reputation || 10) * SUPPORTER_INCOME_FACTOR;
