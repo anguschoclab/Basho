@@ -27,7 +27,10 @@ function stableHash(s: string): string {
  *  * @returns The result.
  */
 export function ensureEventsState(world: WorldState): EventsState {
-  if (world.events && world.events.version && Array.isArray(world.events.log)) return world.events;
+  if (world.events && world.events.version && Array.isArray(world.events.log)) {
+    if (!world.events.dedupe) world.events.dedupe = {};
+    return world.events as EventsState;
+  }
   world.events = { version: "1.0.0", log: [], dedupe: {} };
   return world.events;
 }

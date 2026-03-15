@@ -304,8 +304,12 @@ export default function RivalriesPage() {
     const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
     player.sort(byHeat); hot.sort(byHeat); cool.sort(byHeat);
 
-    const infernoCount = normalized.filter(p => (p.heat ?? 0) >= 80).length;
-    const hotCount = normalized.filter(p => (p.heat ?? 0) >= 55 && (p.heat ?? 0) < 80).length;
+    const { infernoCount, hotCount } = normalized.reduce((acc, p) => {
+      const heat = p.heat ?? 0;
+      if (heat >= 80) acc.infernoCount++;
+      else if (heat >= 55) acc.hotCount++;
+      return acc;
+    }, { infernoCount: 0, hotCount: 0 });
 
     return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);

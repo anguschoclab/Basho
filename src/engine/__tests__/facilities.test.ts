@@ -288,6 +288,18 @@ describe("Facilities: Monthly Tick", () => {
 
 
   describe("getUpgradeCostEstimate", () => {
+    it("should handle 0 points correctly", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 0);
+      expect(cost).toBe(0);
+    });
+
+    it("should handle negative points correctly", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", -5);
+      expect(cost).toBe(0);
+    });
+
     it("should calculate cost for 1 point", () => {
       const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
       const cost = getUpgradeCostEstimate(heya, "training", 1);
@@ -325,6 +337,22 @@ describe("Facilities: Monthly Tick", () => {
   });
 
   describe("getMonthlyMaintenanceCost", () => {
+    it("should round correctly for fractional facility levels", () => {
+      // 5.4 * 3000 = 16200
+      // 10.6 * 3000 = 31800
+      // 50.5 * 3000 = 151500
+      // Total = 16200 + 31800 + 151500 = 199500
+      const heya = makeHeya({ facilities: { training: 5.4, recovery: 10.6, nutrition: 50.5 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      expect(cost).toBe(199_500);
+    });
+
+    it("should handle zero levels safely even if below minimum", () => {
+      const heya = makeHeya({ facilities: { training: 0, recovery: 0, nutrition: 0 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      expect(cost).toBe(0);
+    });
+
     it("should calculate monthly maintenance cost correctly for symmetric levels", () => {
       const heya = makeHeya({ facilities: { training: 50, recovery: 50, nutrition: 50 } });
       const cost = getMonthlyMaintenanceCost(heya);

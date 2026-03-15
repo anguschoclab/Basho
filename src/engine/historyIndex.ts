@@ -278,7 +278,11 @@ function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistor
  *  ======================================================= */
 
 export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
-  return index.bashoKeys.map(k => index.basho[k]).filter(Boolean);
+  return index.bashoKeys.reduce<BashoHistorySummary[]>((acc, k) => {
+    const b = index.basho[k];
+    if (b) acc.push(b);
+    return acc;
+  }, []);
 }
 
 /**
