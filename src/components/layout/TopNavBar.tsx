@@ -204,6 +204,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           className="h-8 w-8 shrink-0"
           onClick={onToggleEventLog}
           title={eventLogOpen ? "Hide event log" : "Show event log"}
+          aria-label={eventLogOpen ? "Hide event log" : "Show event log"}
         >
           {eventLogOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
         </Button>
@@ -212,6 +213,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
         <button
           onClick={() => navigate({ to: "/dashboard" })}
           className="flex items-center gap-2 px-2 shrink-0"
+          aria-label="Dashboard"
         >
           <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-display text-xs font-bold">力</span>
@@ -290,7 +292,8 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
           size="icon"
           className="h-8 w-8"
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title="Toggle theme"
+          title={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          aria-label={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
         >
           {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
