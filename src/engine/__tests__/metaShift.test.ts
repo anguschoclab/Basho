@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { simulateBout } from "../bout";
-import type { Rikishi, TacticalArchetype, Style, Division, Rank, Side } from "../types";
+import type { Rikishi } from "../types/rikishi";
+import type { TacticalArchetype, Style } from "../types/combat";
+import type { Division, Rank, Side } from "../types/banzuke";
 
 // ─── Helpers ───
 
@@ -66,7 +68,7 @@ function buildField(): Rikishi[] {
         side: "east" as Side,
         isRetired: false,
         mental: 50,
-      } as any);
+      } as unknown as any);
       idx++;
     }
   }

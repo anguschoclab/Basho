@@ -2,11 +2,14 @@
 // east/west color coding, and immersive bout cards
 
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Rikishi, WorldState, BoutResult, RankPosition } from "@/engine/types";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { BoutResult } from "@/engine/types/basho";
+import type { RankPosition } from "@/engine/types/banzuke";
 import { getRivalry, type RivalryHeatBand, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
 import { compareRanks } from "@/engine/banzuke";
@@ -25,6 +28,7 @@ import {
 
 // ── Types ──────────────────────────────────────────────
 
+/** Defines the structure for match like. */
 interface MatchLike {
   day?: number;
   boutId?: string;
@@ -33,6 +37,7 @@ interface MatchLike {
   result?: BoutResult;
 }
 
+/** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
   matches: MatchLike[];
   world: WorldState;
@@ -42,6 +47,11 @@ interface MatchDayViewerProps {
 
 // ── Helpers ────────────────────────────────────────────
 
+/**
+ * Get heat band.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 75) return "inferno";
   if (heat >= 50) return "hot";
@@ -72,6 +82,11 @@ const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: strin
   },
 };
 
+/**
+ * Get h2 h record.
+ *  * @param r1 - The R1.
+ *  * @param r2 - The R2.
+ */
 function getH2HRecord(r1: Rikishi, r2: Rikishi) {
   const record = r1.h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
@@ -79,6 +94,20 @@ function getH2HRecord(r1: Rikishi, r2: Rikishi) {
 
 // ── Sub-components ─────────────────────────────────────
 
+/**
+ * rikishi side.
+ *  * @param {
+ *   rikishi,
+ *   side,
+ *   isWinner,
+ *   onClick,
+ * } - The {
+ *   rikishi,
+ *   side,
+ *   is winner,
+ *   on click,
+ * }.
+ */
 function RikishiSide({
   rikishi,
   side,
@@ -118,6 +147,10 @@ function RikishiSide({
   );
 }
 
+/**
+ * h2 h center.
+ *  * @param { wins, losses } - The { wins, losses }.
+ */
 function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   return (
     <div className="vs-divider shrink-0 w-16 text-center px-1">
@@ -131,6 +164,14 @@ function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   );
 }
 
+/**
+ * bout tags.
+ *  * @param {
+ *   match,
+ * } - The {
+ *   match,
+ * }.
+ */
 function BoutTags({
   match,
 }: {
@@ -184,20 +225,33 @@ function BoutTags({
 }
 
 // Just a type helper for the resolved match shape
+/** Use resolved match. */
 function useResolvedMatch() {
   return null as any;
 }
 
 // ── Main Component ─────────────────────────────────────
 
+/**
+ * match day viewer.
+ *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
+ */
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
   const resolvedMatches = useMemo(() => {
-    return matches.map((match) => {
+    return matches.reduce<Array<MatchLike & {
+      east: Rikishi;
+      west: Rikishi;
+      h2h: { wins: number; losses: number };
+      rivalry: any;
+      heatBand: RivalryHeatBand | null;
+      isPlayerBout: boolean;
+      h2hCommentary: string;
+    }>>((acc, match) => {
       const east = world.rikishi.get(match.eastRikishiId);
       const west = world.rikishi.get(match.westRikishiId);
-      if (!east || !west) return null;
+      if (!east || !west) return acc;
 
       const h2h = getH2HRecord(east, west);
       const rivalriesState = (world as any).rivalriesState as RivalriesState | undefined;
@@ -206,8 +260,9 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
       const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
       const h2hCommentary = generateH2HCommentary(east, west);
 
-      return { ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary };
-    }).filter(Boolean);
+      acc.push({ ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary });
+      return acc;
+    }, []);
   }, [matches, world, playerRikishiIds]);
 
   const sortedMatches = useMemo(() => {
@@ -237,7 +292,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
     );
   }
 
-  const completedCount = sortedMatches.filter((m) => !!m?.result).length;
+  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
 
   return (
     <Card className="paper overflow-hidden">
@@ -288,7 +343,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.east}
                     side="east"
                     isWinner={match.result?.winner === "east"}
-                    onClick={() => navigate(`/rikishi/${match.east.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })}
                   />
 
                   {/* H2H center */}
@@ -299,7 +354,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.west}
                     side="west"
                     isWinner={match.result?.winner === "west"}
-                    onClick={() => navigate(`/rikishi/${match.west.id}`)}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })}
                   />
 
                   {/* Result badge */}
@@ -326,6 +381,50 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     )}
                   </div>
                 </div>
+
+
+                {/* Shikiri Prep Panel for Player Bouts */}
+                {match.isPlayerBout && !hasResult && onTacticChange && (
+                  <div className="mt-3 p-3 bg-card border rounded-md shadow-sm" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b">
+                      <Swords className="h-4 w-4 text-primary" />
+                      <h4 className="font-semibold text-sm">Shikiri Prep: Set Tactic</h4>
+                    </div>
+
+                    {/* Scouting Brief */}
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3 p-2 bg-muted/30 rounded">
+                      <div className="text-muted-foreground">Opponent Style:</div>
+                      <div className="font-medium capitalize">{world.rikishi.get(match.eastRikishiId)?.isPlayer ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
+                    </div>
+
+                    {/* Tactic Buttons */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: "STANDARD", label: "Standard", desc: "Balanced" },
+                        { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
+                        { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
+                        { id: "HENKA", label: "Henka", desc: "Counters Belt" }
+                      ].map(t => {
+                        const isSelected = (playerTactics[idx] || "STANDARD") === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => onTacticChange(idx, t.id as any)}
+                            className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
+                          >
+                            <div className="font-semibold text-xs">{t.label}</div>
+                            <div className="text-[10px] text-muted-foreground">{t.desc}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 pt-2 text-right">
+                      <Badge variant="outline" className="text-xs bg-muted hover:bg-muted/80 cursor-pointer" onClick={() => onBoutClick?.(match)}>
+                        Confirm & Sim Bout &rarr;
+                      </Badge>
+                    </div>
+                  </div>
+                )}
 
                 {/* Tags row */}
                 <BoutTags match={match as any} />

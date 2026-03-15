@@ -2,8 +2,9 @@
 // Includes 5 "bout result" outcomes separately (not kimarite)
 // Source list: Japan Sumo Association kimarite page.  [oai_citation:1‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
 
-import type { Style, Stance, TacticalArchetype } from "./types";
+import type { Style, Stance, TacticalArchetype } from "./types/combat";
 
+/** Defines the structure for kimarite. */
 export interface Kimarite {
   id: string;
   name: string;     // romaji / display
@@ -28,6 +29,7 @@ export interface Kimarite {
   rarity: "common" | "uncommon" | "rare" | "legendary";
 }
 
+/** Type representing kimarite category. */
 export type KimariteCategory =
   | "push"      // oshi family (incl basic push-outs)
   | "thrust"    // tsuki family
@@ -41,6 +43,7 @@ export type KimariteCategory =
   | "result"    // non-technique outcomes (isamiashi etc)
   | "forfeit";  // fusensho / hansoku etc
 
+/** Type representing kimarite class. */
 export type KimariteClass =
   | "force_out"
   | "push"
@@ -58,6 +61,7 @@ export type KimariteClass =
 
 // --- small helpers to keep the big list readable ---
 // Base makes most kimarite fields optional since K() fills them from defaults
+/** Type representing base. */
 type Base = {
   id: string;
   name: string;
@@ -81,6 +85,11 @@ const DEFAULT_ARCH_BONUS = (): Kimarite["archetypeBonus"] => ({
   all_rounder: 1,
 });
 
+/**
+ * Defaults for category.
+ *  * @param category - The Category.
+ *  * @returns The result.
+ */
 function defaultsForCategory(category: KimariteCategory): Pick<Kimarite, "styleAffinity" | "baseWeight" | "rarity" | "gripNeed" | "vector" | "requiredStances"> {
   switch (category) {
     case "push":
@@ -108,6 +117,11 @@ function defaultsForCategory(category: KimariteCategory): Pick<Kimarite, "styleA
   }
 }
 
+/**
+ * k.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function K(entry: Base): Kimarite {
   const d = defaultsForCategory(entry.category);
   return {
@@ -124,6 +138,7 @@ function K(entry: Base): Kimarite {
 
 // ---- COMPLETE OFFICIAL 82 KIMARITE (IDs use common romaji) ----
 // Names/kanji are from the JSA list.  [oai_citation:2‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
+/** k i m a r i t e_ r e g i s t r y. */
 export const KIMARITE_REGISTRY: Kimarite[] = [
   // === Basic techniques (基本技) ===
   K({ id: "tsukidashi", name: "Tsukidashi", nameJa: "突き出し", category: "thrust", kimariteClass: "thrust", description: "Thrust out" }),
@@ -191,6 +206,7 @@ export const KIMARITE_REGISTRY: Kimarite[] = [
 // Continue the remaining official entries (to keep this response readable, they are appended below).
 // NOTE: This registry MUST include all 82 kimarite; the appended block completes it.
 
+/** k i m a r i t e_ r e g i s t r y_ a p p e n d. */
 export const KIMARITE_REGISTRY_APPEND: Kimarite[] = [
   // (JSA list continues)  [oai_citation:3‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
   K({ id: "shitatehineri", name: "Shitatehineri", nameJa: "下手捻り", category: "twist", kimariteClass: "twist", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] }),
@@ -238,27 +254,53 @@ export const KIMARITE_REGISTRY_APPEND: Kimarite[] = [
 ];
 
 // Final exported registry: 82 kimarite + 5 results + forfeits
+/** k i m a r i t e_ a l l. */
 export const KIMARITE_ALL: Kimarite[] = [...KIMARITE_REGISTRY, ...KIMARITE_REGISTRY_APPEND];
 
 // --- Lookup helpers (use KIMARITE_ALL) ---
+/**
+ * Get kimarite.
+ *  * @param id - The Id.
+ *  * @returns The result.
+ */
 export function getKimarite(id: string): Kimarite | undefined {
   return KIMARITE_ALL.find(k => k.id === id);
 }
 
+/**
+ * Get kimarite by category.
+ *  * @param category - The Category.
+ *  * @returns The result.
+ */
 export function getKimariteByCategory(category: KimariteCategory): Kimarite[] {
   return KIMARITE_ALL.filter(k => k.category === category);
 }
 
+/**
+ * Get kimarite by class.
+ *  * @param kimariteClass - The Kimarite class.
+ *  * @returns The result.
+ */
 export function getKimariteByClass(kimariteClass: KimariteClass): Kimarite[] {
   return KIMARITE_ALL.filter(k => k.kimariteClass === kimariteClass);
 }
 
+/**
+ * Get kimarite for stance.
+ *  * @param stance - The Stance.
+ *  * @returns The result.
+ */
 export function getKimariteForStance(stance: Stance): Kimarite[] {
   return KIMARITE_ALL.filter(k =>
     k.requiredStances.length === 0 || k.requiredStances.includes(stance)
   );
 }
 
+/**
+ * Get kimarite for style.
+ *  * @param style - The Style.
+ *  * @returns The result.
+ */
 export function getKimariteForStyle(style: Style): Kimarite[] {
   return KIMARITE_ALL
     .filter(k => k.category !== "forfeit" && k.category !== "result")
@@ -266,6 +308,11 @@ export function getKimariteForStyle(style: Style): Kimarite[] {
     .sort((a, b) => b.styleAffinity[style] - a.styleAffinity[style]);
 }
 
+/**
+ * Get kimarite for archetype.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 export function getKimariteForArchetype(archetype: TacticalArchetype): Kimarite[] {
   return KIMARITE_ALL
     .filter(k => k.category !== "forfeit" && k.category !== "result")
@@ -274,7 +321,16 @@ export function getKimariteForArchetype(archetype: TacticalArchetype): Kimarite[
 }
 
 // Stats
+let _cachedCount: number | null = null;
+
+/**
+ * Get kimarite count.
+ *  * @returns The result.
+ */
 export function getKimariteCount(): number {
   // Official 82 only
-  return KIMARITE_ALL.filter(k => k.category !== "forfeit" && k.category !== "result").length;
+  if (_cachedCount === null) {
+    _cachedCount = KIMARITE_ALL.reduce((acc, k) => acc + (k.category !== "forfeit" && k.category !== "result" ? 1 : 0), 0);
+  }
+  return _cachedCount;
 }

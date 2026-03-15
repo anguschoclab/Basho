@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ClickableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { Trophy, ChevronRight, Crown, Star, Swords, HeartPulse } from "lucide-react";
 
 export function BashoWidget() {
@@ -105,7 +105,7 @@ export function BashoWidget() {
                 {i + 1}
               </span>
               {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
-              <ClickableName id={r.id} name={r.shikona} type="rikishi" className="flex-1 font-medium truncate" />
+              <RikishiName id={r.id} name={r.shikona}  className="flex-1 font-medium truncate" />
               <span className="font-mono text-muted-foreground tabular-nums">{s.wins}-{s.losses}</span>
               {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
             </div>

@@ -1,3 +1,4 @@
+import { clampInt } from '../../engine/utils';
 // AutoSimControls.tsx
 // Auto-Sim Controls - UI for auto-simulation and observer modes
 // Per Constitution §7: Auto-Sim "Watch the World" Mode
@@ -26,6 +27,7 @@ import { Play, Eye, Clock, Trophy, AlertTriangle, Star, TrendingUp } from "lucid
 
 import type { SimDuration, StopCondition, VerbosityLevel, AutoSimConfig, AutoSimResult } from "@/engine/autoSim";
 
+/** Defines the structure for auto sim controls props. */
 interface AutoSimControlsProps {
   onStartSim: (config: AutoSimConfig) => Promise<AutoSimResult>;
   isSimulating: boolean;
@@ -33,17 +35,24 @@ interface AutoSimControlsProps {
 }
 
 const DURATION_TYPES = ["days", "weeks", "basho", "years"] as const;
+/** Type representing duration type. */
 type DurationType = (typeof DURATION_TYPES)[number];
 
-function clampInt(n: number, lo: number, hi: number) {
-  const x = Number.isFinite(n) ? Math.trunc(n) : lo;
-  return Math.max(lo, Math.min(hi, x));
-}
 
+
+/**
+ * Safe number.
+ *  * @param n - The N.
+ *  * @param fallback - The Fallback.
+ */
 function safeNumber(n: any, fallback: number) {
   return typeof n === "number" && Number.isFinite(n) ? n : fallback;
 }
 
+/**
+ * auto sim controls.
+ *  * @param { onStartSim, isSimulating, playerHeyaId } - The { on start sim, is simulating, player heya id }.
+ */
 export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: AutoSimControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -68,7 +77,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
   // Keep observerMode synced if playerHeyaId becomes undefined later.
   useMemo(() => {
     if (forcedObserver) setObserverMode(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [forcedObserver]);
 
   const handleStartSim = async () => {

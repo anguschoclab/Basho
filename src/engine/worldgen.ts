@@ -9,21 +9,28 @@
  */
 
 import { rngFromSeed } from "./rng";
-import {
-  WorldState, Rikishi, Heya, Oyakata, 
-  Rank, TacticalArchetype, StatureBand, PrestigeBand, 
-  FacilitiesBand, KoenkaiBandType, OyakataArchetype, RunwayBand,
-  BashoName, Division, RikishiStats, Side, BashoState
-} from "./types";
+import { WorldState } from "./types/world";
+import { Rikishi, RikishiStats } from "./types/rikishi";
+import { Heya } from "./types/heya";
+import { Oyakata, OyakataArchetype } from "./types/oyakata";
+import { Rank, Division, Side } from "./types/banzuke";
+import { TacticalArchetype } from "./types/combat";
+import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./types/narrative";
+import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./rng";
+import { generateStaff } from "./staff";
+import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
+import { type IchimonName, type Faction } from "./types/economy";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
 
 
+
+const ICHIMONS: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
 // Constants
 const ORIGINS = [
   "Hokkaido", "Aomori", "Tokyo", "Osaka", "Fukuoka", 
@@ -39,6 +46,12 @@ const OYAKATA_ARCHETYPES: OyakataArchetype[] = [
   "traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"
 ];
 
+/**
+ * Get random.
+ *  * @param rng - The Rng.
+ *  * @param arr - The Arr.
+ *  * @returns The result.
+ */
 function getRandom<T>(rng: SeededRNG, arr: T[]): T {
   return arr[rng.int(0, arr.length - 1)];
 }
@@ -119,6 +132,13 @@ function generateSyntheticCareer(
   };
 }
 
+/**
+ * Generate rikishi stats.
+ *  * @param rng - The Rng.
+ *  * @param rank - The Rank.
+ *  * @param archetype - The Archetype.
+ *  * @returns The result.
+ */
 function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArchetype): RikishiStats {
   const base = rank === "yokozuna" ? 85 :
                rank === "ozeki" ? 75 :
@@ -154,9 +174,14 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
   };
 }
 
-export function generateWorld(seed: string | { seed: string } = "initial-seed"): WorldState {
+/**
+ * Generate world.
+ *  * @param seed - The Seed.
+ *  * @returns The result.
+ */
+export function generateWorld(seed: any = "initial-seed"): WorldState {
   // Handle both string and object seed formats
-  const actualSeed = typeof seed === "string" ? seed : seed.seed;
+  const actualSeed = typeof seed === "string" ? seed : seed?.seed || "initial-seed";
   
   const rng = rngFromSeed(actualSeed, "worldgen", "world");
   const heyaMap = new Map<string, Heya>();
@@ -276,6 +301,8 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
         governance: false,
         rivalry: false
       },
+      ichimon: getRandom(hRng, ICHIMONS),
+      politicalCapital: hRng.int(50, 200),
       
       location: getRandom(hRng, ["Tokyo", "Tokyo", "Tokyo", "Osaka", "Nagoya", "Fukuoka"])
     };
@@ -284,7 +311,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
 
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
-  const currentYear = 2024;
+  const currentYear = 2025;
 
   // Build rank slots with proper east/west pairing
   interface RankSlot { rank: Rank; division: Division; rankNumber: number; side: Side }
@@ -408,10 +435,27 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     };
 
     rikishiMap.set(rid, newRikishi);
+    if (!heya.rikishiIds) heya.rikishiIds = [];
     heya.rikishiIds.push(rid);
   });
 
   const initialBashoName: BashoName = "hatsu";
+
+
+  const initialFactions: Record<IchimonName, Faction> = {
+    Dewanoumi: { id: "Dewanoumi", name: "Dewanoumi Ichimon", influence: 100, oyakataLeaderId: null },
+    Nishonoseki: { id: "Nishonoseki", name: "Nishonoseki Ichimon", influence: 80, oyakataLeaderId: null },
+    Takasago: { id: "Takasago", name: "Takasago Ichimon", influence: 70, oyakataLeaderId: null },
+    Tokitsukaze: { id: "Tokitsukaze", name: "Tokitsukaze Ichimon", influence: 60, oyakataLeaderId: null },
+    Isegahama: { id: "Isegahama", name: "Isegahama Ichimon", influence: 90, oyakataLeaderId: null }
+  };
+
+  // Assign leaders to initial factions
+  for (const heya of heyaList) {
+    if (heya.ichimon && !initialFactions[heya.ichimon].oyakataLeaderId) {
+       initialFactions[heya.ichimon].oyakataLeaderId = heya.oyakataId;
+    }
+  }
 
   const world: WorldState = {
     id: crypto.randomUUID(),
@@ -425,6 +469,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     heyas: heyaMap,
     rikishi: rikishiMap,
     oyakata: oyakataMap,
+    myosekiMarket: generateMyosekiMarket(actualSeed, oyakataMap),
 
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
@@ -435,6 +480,7 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
     // Almanac snapshots (Constitution A5.2)
     almanacSnapshots: [],
     
+    factions: initialFactions,
     calendar: {
       year: currentYear,
       month: 1,
@@ -472,6 +518,12 @@ export function generateWorld(seed: string | { seed: string } = "initial-seed"):
   return world;
 }
 
+/**
+ * Initialize basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @returns The result.
+ */
 export function initializeBasho(world: WorldState, bashoName: string): BashoState {
     const bName = bashoName.toLowerCase() as BashoName;
     const bashoNumber = (BASHO_ORDER.indexOf(bName) + 1) as 1 | 2 | 3 | 4 | 5 | 6;

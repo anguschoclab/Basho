@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarDays, Swords } from "lucide-react";
-import { Division } from "@/engine/types";
+import { Division } from "../../types/banzuke";
 import { needsScheduleForDay, getTotalBashodays } from "@/engine/schedule";
 
 const DIVISIONS: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
@@ -18,6 +18,7 @@ const DIVISION_NAMES: Record<Division, string> = {
   jonokuchi: "Jonokuchi"
 };
 
+/** schedule page. */
 export default function SchedulePage() {
   const { state } = useGame();
   const world = state.world;

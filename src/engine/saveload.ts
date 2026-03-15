@@ -29,6 +29,7 @@ import type {
 import { CURRENT_SAVE_VERSION } from "./types";
 
 // === SAVE VERSION ===
+/** c u r r e n t_ s a v e_ v e r s i o n_ l o c a l. */
 export const CURRENT_SAVE_VERSION_LOCAL: SaveVersion = CURRENT_SAVE_VERSION;
 
 // Canon: project is Basho
@@ -38,6 +39,10 @@ const AUTOSAVE_KEY = `${SAVE_KEY_PREFIX}${AUTOSAVE_SLOT_NAME}`;
 const SAVE_SLOT_COUNT = 10;
 
 // === STORAGE GUARDS ===
+/**
+ * Has local storage.
+ *  * @returns The result.
+ */
 function hasLocalStorage(): boolean {
   try {
     return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -48,13 +53,24 @@ function hasLocalStorage(): boolean {
 
 // === SERIALIZATION HELPERS ===
 
-function mapToObject<T>(map: Map<string, T>): Record<string, T> {
+/**
+ * Map to object.
+ *  * @param map - The Map.
+ *  * @returns The result.
+ */
+function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string, T> {
+  if (!(map instanceof Map)) return map;
   const obj: Record<string, T> = {};
   const keys = Array.from(map.keys()).sort();
   for (const key of keys) obj[key] = map.get(key)!;
   return obj;
 }
 
+/**
+ * Object to map.
+ *  * @param obj - The Obj.
+ *  * @returns The result.
+ */
 function objectToMap<T>(obj: Record<string, T>): Map<string, T> {
   const map = new Map<string, T>();
   // stable: keys in JS objects are not guaranteed sorted, so we sort
@@ -63,6 +79,11 @@ function objectToMap<T>(obj: Record<string, T>): Map<string, T> {
 }
 
 // === BashoState serialization ===
+/**
+ * Serialize basho state.
+ *  * @param basho - The Basho.
+ *  * @returns The result.
+ */
 function serializeBashoState(basho: BashoState): SerializedBashoState {
   return {
     year: basho.year,
@@ -74,6 +95,11 @@ function serializeBashoState(basho: BashoState): SerializedBashoState {
   };
 }
 
+/**
+ * Deserialize basho state.
+ *  * @param basho - The Basho.
+ *  * @returns The result.
+ */
 function deserializeBashoState(basho: SerializedBashoState): BashoState {
   return {
     year: basho.year,
@@ -88,6 +114,11 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
 
 // === SPONSOR POOL SERIALIZATION ===
 
+/**
+ * Serialize sponsor pool.
+ *  * @param pool - The Pool.
+ *  * @returns The result.
+ */
 function serializeSponsorPool(pool: any): any {
   if (!pool) return undefined;
   return {
@@ -96,6 +127,11 @@ function serializeSponsorPool(pool: any): any {
   };
 }
 
+/**
+ * Deserialize sponsor pool.
+ *  * @param data - The Data.
+ *  * @returns The result.
+ */
 function deserializeSponsorPool(data: any): any {
   if (!data) return undefined;
   return {
@@ -106,6 +142,11 @@ function deserializeSponsorPool(data: any): any {
 
 // === WORLD SERIALIZATION ===
 
+/**
+ * Serialize world.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function serializeWorld(world: WorldState): SerializedWorldState {
   return {
     seed: world.seed,
@@ -114,6 +155,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     cyclePhase: world.cyclePhase,
     currentBashoName: world.currentBashoName,
     heyas: mapToObject(world.heyas),
+    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : undefined,
     rikishi: mapToObject(world.rikishi),
     oyakata: mapToObject(world.oyakata),
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
@@ -175,12 +217,22 @@ function sanitizeRikishi(r: Rikishi): Rikishi {
   return r;
 }
 
+/**
+ * Sanitize heya.
+ *  * @param h - The H.
+ *  * @returns The result.
+ */
 function sanitizeHeya(h: Heya): Heya {
   const anyH = h as any;
   if (typeof anyH.funds !== "number") anyH.funds = 0;
   return h;
 }
 
+/**
+ * Deserialize world.
+ *  * @param serialized - The Serialized.
+ *  * @returns The result.
+ */
 export function deserializeWorld(serialized: SerializedWorldState): WorldState {
   // Sanitize objects as we materialize them into Maps (non-lossy)
   const heyasObj: Record<string, Heya> = (serialized as any).heyas || {};
@@ -201,6 +253,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),
+    closedHeyas: (serialized as any).closedHeyas ? objectToMap((serialized as any).closedHeyas) : new Map(),
     rikishi: objectToMap(rikishiObj),
     oyakata: objectToMap(oyakataObj),
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,
@@ -226,6 +279,11 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
 
 // === VALIDATION ===
 
+/**
+ * Is serialized save game.
+ *  * @param x - The X.
+ *  * @returns The result.
+ */
 function isSerializedSaveGame(x: any): x is SaveGame {
   return (
     x &&
@@ -246,6 +304,7 @@ function isSerializedSaveGame(x: any): x is SaveGame {
 }
 
 // === MIGRATIONS (non-lossy scaffold) ===
+/** Type representing migration fn. */
 type MigrationFn = (save: SaveGame) => SaveGame;
 
 const MIGRATIONS: Record<string, MigrationFn> = {
@@ -253,6 +312,11 @@ const MIGRATIONS: Record<string, MigrationFn> = {
   // "0.9.0->1.0.0": (save) => ({ ...save, version: "1.0.0" as SaveVersion })
 };
 
+/**
+ * Migrate to current.
+ *  * @param save - The Save.
+ *  * @returns The result.
+ */
 function migrateToCurrent(save: SaveGame): SaveGame {
   if (save.version === CURRENT_SAVE_VERSION_LOCAL) return save;
 
@@ -266,6 +330,13 @@ function migrateToCurrent(save: SaveGame): SaveGame {
 
 // === SAVE GAME CREATION ===
 
+/**
+ * Create save game.
+ *  * @param world - The World.
+ *  * @param slotName - The Slot name.
+ *  * @param existing - The Existing.
+ *  * @returns The result.
+ */
 export function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame): SaveGame {
   const now = new Date().toISOString();
   return {
@@ -284,10 +355,19 @@ export function createSaveGame(world: WorldState, slotName?: string, existing?: 
 
 // === STORAGE KEYS ===
 
+/**
+ * To slot key.
+ *  * @param slotNameOrKey - The Slot name or key.
+ *  * @returns The result.
+ */
 function toSlotKey(slotNameOrKey: string): string {
   return slotNameOrKey.startsWith(SAVE_KEY_PREFIX) ? slotNameOrKey : `${SAVE_KEY_PREFIX}${slotNameOrKey}`;
 }
 
+/**
+ * Get save slot keys.
+ *  * @returns The result.
+ */
 export function getSaveSlotKeys(): string[] {
   if (!hasLocalStorage()) return [];
   const keys: string[] = [];
@@ -300,6 +380,7 @@ export function getSaveSlotKeys(): string[] {
 
 // === METADATA LISTING ===
 
+/** Defines the structure for save slot info. */
 export interface SaveSlotInfo {
   key: string;
   slotName: string;
@@ -311,6 +392,10 @@ export interface SaveSlotInfo {
   isAutosave: boolean;
 }
 
+/**
+ * Get save slot infos.
+ *  * @returns The result.
+ */
 export function getSaveSlotInfos(): SaveSlotInfo[] {
   if (!hasLocalStorage()) return [];
 
@@ -364,6 +449,12 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
 
 // === SAVE / LOAD ===
 
+/**
+ * Save game.
+ *  * @param world - The World.
+ *  * @param slotName - The Slot name.
+ *  * @returns The result.
+ */
 export function saveGame(world: WorldState, slotName: string): boolean {
   if (!hasLocalStorage()) return false;
 
@@ -383,10 +474,20 @@ export function saveGame(world: WorldState, slotName: string): boolean {
   }
 }
 
+/**
+ * Autosave.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function autosave(world: WorldState): boolean {
   return saveGame(world, AUTOSAVE_SLOT_NAME);
 }
 
+/**
+ * Load game.
+ *  * @param slotNameOrKey - The Slot name or key.
+ *  * @returns The result.
+ */
 export function loadGame(slotNameOrKey: string): WorldState | null {
   if (!hasLocalStorage()) return null;
 
@@ -410,15 +511,28 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
   }
 }
 
+/**
+ * Load autosave.
+ *  * @returns The result.
+ */
 export function loadAutosave(): WorldState | null {
   return loadGame(AUTOSAVE_SLOT_NAME);
 }
 
+/**
+ * Has autosave.
+ *  * @returns The result.
+ */
 export function hasAutosave(): boolean {
   if (!hasLocalStorage()) return false;
   return localStorage.getItem(AUTOSAVE_KEY) !== null;
 }
 
+/**
+ * Delete save.
+ *  * @param slotNameOrKey - The Slot name or key.
+ *  * @returns The result.
+ */
 export function deleteSave(slotNameOrKey: string): boolean {
   if (!hasLocalStorage()) return false;
 
@@ -434,6 +548,11 @@ export function deleteSave(slotNameOrKey: string): boolean {
 
 // === EXPORT / IMPORT ===
 
+/**
+ * Export save.
+ *  * @param world - The World.
+ *  * @param filename - The Filename.
+ */
 export function exportSave(world: WorldState, filename?: string): void {
   const save = createSaveGame(world);
   const json = JSON.stringify(save, null, 2);
@@ -451,6 +570,11 @@ export function exportSave(world: WorldState, filename?: string): void {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Import save.
+ *  * @param file - The File.
+ *  * @returns The result.
+ */
 export async function importSave(file: File): Promise<WorldState | null> {
   try {
     const text = await file.text();
@@ -472,6 +596,10 @@ export async function importSave(file: File): Promise<WorldState | null> {
 
 // === SLOT HELPERS ===
 
+/**
+ * Get available slot names.
+ *  * @returns The result.
+ */
 export function getAvailableSlotNames(): string[] {
   return Array.from({ length: SAVE_SLOT_COUNT }, (_, i) => `slot_${i + 1}`);
 }

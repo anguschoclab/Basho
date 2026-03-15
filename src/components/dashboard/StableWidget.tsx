@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,10 @@ const BAND_ICONS: Record<string, string> = {
   inspired: "☀", content: "😊", neutral: "—", disgruntled: "😤", mutinous: "🔥",
 };
 
+/**
+ * row.
+ *  * @param { icon, label, value } - The { icon, label, value }.
+ */
 function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
   const emoji = BAND_ICONS[value.toLowerCase()];
@@ -45,6 +49,7 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
   );
 }
 
+/** stable widget. */
 export function StableWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -79,7 +84,7 @@ export function StableWidget() {
         <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={p.koenkaiBand === "none" ? "None" : p.koenkaiBand} />
       </div>
 
-      <Button variant="ghost" size="sm" onClick={() => navigate("/stable")} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors">
+      <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors">
         Manage Stable <ChevronRight className="h-3 w-3" />
       </Button>
     </div>

@@ -6,7 +6,7 @@ import {
   Newspaper, Trophy, Swords, HeartPulse, GraduationCap, Coins, Star,
   Search, MessageCircle, AlertTriangle, Scale,
 } from "lucide-react";
-import type { EngineEvent } from "@/engine/types";
+import type { EngineEvent } from "@/engine/types/events";
 
 const CAT_ICON: Record<string, any> = {
   match: Swords, basho: Trophy, training: GraduationCap,
@@ -22,6 +22,7 @@ const CAT_COLOR: Record<string, string> = {
   rivalry: "text-accent", milestone: "text-gold", welfare: "text-warning",
 };
 
+/** news widget. */
 export function NewsWidget() {
   const { state } = useGame();
   const world = state.world;

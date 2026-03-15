@@ -1,12 +1,17 @@
+import { stableSort } from './utils';
 // schedule.ts
 // =======================================================
 // Schedule Builder v1.1 — Deterministic torikumi pairing for ALL divisions
 // Uses matchmaking.ts for candidate generation and scoring.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { BashoState, Division, MatchSchedule, Rikishi, WorldState } from "./types";
+import type { BashoState, MatchSchedule } from "./types/basho";
+import type { Division } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
+import type { WorldState } from "./types/world";
 import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
+/** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
   division: Division;
   /** number of bouts on a given day (usually roster/2) */
@@ -15,6 +20,7 @@ export interface DivisionScheduleConfig {
   maxActiveRikishi?: number;
 }
 
+/** Defines the structure for schedule rules. */
 export interface ScheduleRules {
   matchmaking?: Partial<MatchmakingRules>;
   allowForcedRepeats?: boolean;
@@ -32,10 +38,14 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
 
 // === HELPERS ===
 
-function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
-  return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
-}
 
+
+/**
+ * Active division roster.
+ *  * @param world - The World.
+ *  * @param division - The Division.
+ *  * @returns The result.
+ */
 function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of world.rikishi.values()) {
@@ -46,6 +56,11 @@ function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] 
   return stableSort(pool, r => r.id);
 }
 
+/**
+ * Previous opponents set.
+ *  * @param basho - The Basho.
+ *  * @returns The result.
+ */
 function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
   const map = new Map<string, Set<string>>();
   for (const m of basho.matches) {

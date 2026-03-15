@@ -15,7 +15,7 @@
 // - Safer prize display (shows yusho prize only when available)
 
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +25,7 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { Trophy, Medal, Award, Star, ArrowLeft, Calendar } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
 
+/** Type representing history record. */
 type HistoryRecord = {
   year: number;
   bashoNumber: number;
@@ -41,22 +42,32 @@ type HistoryRecord = {
   } | null;
 };
 
+/**
+ * Safe millions.
+ *  * @param yen - The Yen.
+ */
 function safeMillions(yen?: number) {
   if (!Number.isFinite(yen)) return null;
   return (yen as number) / 1_000_000;
 }
 
+/**
+ * Safe rank ja.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function safeRankJa(rank: any): string {
   return (RANK_HIERARCHY as any)?.[rank]?.nameJa ?? String(rank ?? "—");
 }
 
+/** history page. */
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { state, getRikishi } = useGame();
   const { world } = state;
 
   if (!world) {
-    navigate("/");
+    navigate({ to: "/" });
     return null;
   }
 
@@ -70,7 +81,7 @@ export default function HistoryPage() {
 
       <div className="p-6 max-w-5xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate("/")}>
+          <Button variant="ghost" onClick={() => navigate({ to: "/" })}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <div>
@@ -85,7 +96,7 @@ export default function HistoryPage() {
               <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="font-display text-xl font-semibold mb-2">No History Yet</h3>
               <p className="text-muted-foreground mb-4">Complete your first basho to see results here.</p>
-              <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
+              <Button onClick={() => navigate({ to: "/" })}>Return to Dashboard</Button>
             </CardContent>
           </Card>
         ) : (

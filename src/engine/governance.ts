@@ -3,15 +3,21 @@
 // Manages Scandal Accumulation, Status Degradation, and Institutional Sanctions.
 // Aligned with Governance V1.3 Spec.
 
-import type { WorldState, Heya, GovernanceStatus, GovernanceRuling } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { GovernanceStatus, GovernanceRuling } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateScandalHeadline } from "./media";
 
 // === CONSTANTS ===
 
+/** s c a n d a l_ d e c a y_ r a t e. */
 export const SCANDAL_DECAY_RATE = 0.5; // Points per week
+/** s c a n d a l_ w a r n i n g_ t h r e s h o l d. */
 export const SCANDAL_WARNING_THRESHOLD = 20;
+/** s c a n d a l_ p r o b a t i o n_ t h r e s h o l d. */
 export const SCANDAL_PROBATION_THRESHOLD = 50;
+/** s c a n d a l_ s a n c t i o n_ t h r e s h o l d. */
 export const SCANDAL_SANCTION_THRESHOLD = 80;
 
 // === CORE LOGIC ===
@@ -28,6 +34,11 @@ export function tickWeek(world: WorldState): void {
   }
 }
 
+/**
+ * Process heya governance.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ */
 function processHeyaGovernance(heya: Heya, world: WorldState): void {
   // 1. Decay Scandal Score
   // Scandal is sticky, but time heals (slowly)
@@ -173,6 +184,12 @@ export function reportScandal(
   processHeyaGovernance(heya, world);
 }
 
+/**
+ * Log ruling.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @param ruling - The Ruling.
+ */
 function logRuling(heya: Heya, world: WorldState, ruling: GovernanceRuling): void {
   if (!heya.governanceHistory) heya.governanceHistory = [];
   heya.governanceHistory.unshift(ruling);
@@ -183,6 +200,11 @@ function logRuling(heya: Heya, world: WorldState, ruling: GovernanceRuling): voi
 
 // === PUBLIC HELPERS ===
 
+/**
+ * Get status label.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 export function getStatusLabel(status: GovernanceStatus): string {
   switch (status) {
     case "good_standing": return "Good Standing";
@@ -192,6 +214,11 @@ export function getStatusLabel(status: GovernanceStatus): string {
   }
 }
 
+/**
+ * Get status color.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 export function getStatusColor(status: GovernanceStatus): string {
   switch (status) {
     case "good_standing": return "text-green-600";
@@ -199,4 +226,103 @@ export function getStatusColor(status: GovernanceStatus): string {
     case "probation": return "text-orange-600";
     case "sanctioned": return "text-red-600";
   }
+}
+
+
+/**
+ * runElections
+ * Evaluates the 2-year JSA board election.
+ * Updates influence and faction leaders based on heya political capital + prestige.
+ * Determines the overall Chairman faction.
+ * @param world - The WorldState.
+ */
+export function runElections(world: WorldState): void {
+  if (!world.factions) return;
+
+  // 1. Reset influence baseline
+  const factionInfluence: Record<string, number> = {};
+  const factionLeaders: Record<string, { oyakataId: string; score: number }> = {};
+
+  for (const fac of Object.values(world.factions)) {
+    factionInfluence[fac.id] = 50; // Base
+    factionLeaders[fac.id] = { oyakataId: fac.oyakataLeaderId || "", score: -1 };
+  }
+
+  // 2. Tally scores from all heyas
+  for (const heya of world.heyas.values()) {
+    if (!heya.ichimon || !world.factions[heya.ichimon]) continue;
+
+    // Prestige band logic (world_class/elite etc add to base)
+    const baseScore = heya.prestigeBand === "world_class" ? 30 :
+                      heya.prestigeBand === "elite" ? 20 :
+                      heya.prestigeBand === "respected" ? 10 : 5;
+
+    const politicalCapital = heya.politicalCapital || 0;
+    const score = baseScore + politicalCapital / 10;
+
+    factionInfluence[heya.ichimon] += score;
+
+    // Check if this heya's oyakata is the new leader of their Ichimon
+    if (score > factionLeaders[heya.ichimon].score) {
+      factionLeaders[heya.ichimon] = { oyakataId: heya.oyakataId, score };
+    }
+
+    // Decay political capital after the election (cost of doing politics)
+    heya.politicalCapital = Math.max(0, Math.floor(politicalCapital * 0.5));
+  }
+
+  // 3. Update world factions
+  let maxInfluence = -1;
+  let chairmanFaction = "";
+
+  for (const fac of Object.values(world.factions)) {
+    fac.influence = Math.round(factionInfluence[fac.id]);
+    fac.oyakataLeaderId = factionLeaders[fac.id].oyakataId;
+
+    if (fac.influence > maxInfluence) {
+      maxInfluence = fac.influence;
+      chairmanFaction = fac.name;
+    }
+  }
+
+  logEngineEvent(world, {
+    type: "GOVERNANCE_RULING",
+    category: "discipline",
+    importance: "headline",
+    scope: "world",
+    title: "JSA Board Elections Concluded",
+    summary: `The ${chairmanFaction} has secured the Chairman seat for the next term.`,
+    data: { chairmanFaction, maxInfluence }
+  });
+}
+
+/**
+ * spendPoliticalCapital
+ * @param world - The WorldState.
+ * @param heyaId - The Heya Id.
+ * @param amount - amount of capital to spend.
+ * @returns boolean - true if successful.
+ */
+export function spendPoliticalCapital(world: WorldState, heyaId: string, amount: number): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya || (heya.politicalCapital || 0) < amount || !heya.ichimon) return false;
+
+  const faction = world.factions?.[heya.ichimon];
+  if (!faction) return false;
+
+  heya.politicalCapital = (heya.politicalCapital || 0) - amount;
+  faction.influence += amount / 5; // Direct influence boost
+
+  logEngineEvent(world, {
+    type: "GOVERNANCE_RULING",
+    category: "discipline",
+    importance: "minor",
+    scope: "heya",
+    heyaId,
+    title: "Political Maneuvering",
+    summary: `${heya.name} spent ${amount} political capital to boost ${faction.name} influence.`,
+    data: { amountSpent: amount, newInfluence: faction.influence }
+  });
+
+  return true;
 }

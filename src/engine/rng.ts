@@ -13,7 +13,7 @@
 // =======================================================
 
 import seedrandom from "seedrandom";
-import type { WorldState } from "./types";
+import type { WorldState } from "./types/world";
 
 /**
  * A lightweight seeded RNG wrapper with a common interface.

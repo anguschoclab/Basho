@@ -2,7 +2,9 @@
 // Types, reducer, and helpers split into sibling modules.
 
 import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
-import type { WorldState, Rikishi, Heya } from "@/engine/types";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
@@ -17,6 +19,7 @@ export type { GamePhase, GameState } from "./gameTypes";
 
 // === CONTEXT VALUE ===
 
+/** Defines the structure for game context value. */
 interface GameContextValue {
   state: GameState;
   createWorld: (seed: string, playerHeyaId?: string) => void;
@@ -51,6 +54,10 @@ const GameContext = createContext<GameContextValue | null>(null);
 
 // === PROVIDER ===
 
+/**
+ * game provider.
+ *  * @param { children } - The { children }.
+ */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
@@ -154,6 +161,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
 // === HOOK ===
 
+/** Use game. */
 export function useGame() {
   const context = useContext(GameContext);
   if (!context) throw new Error("useGame must be used within a GameProvider");

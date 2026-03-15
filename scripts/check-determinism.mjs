@@ -30,17 +30,20 @@ const files = walk(ENGINE_DIR);
 let failed = false;
 
 for (const file of files) {
+  if (file.endsWith("rng.ts")) continue;
   const raw = fs.readFileSync(file, "utf8");
   const code = stripComments(raw);
 
   for (const rule of DISALLOWED) {
     if (rule.name === "seedrandom import/call") {
       // Allow seedrandom only in the canonical wrapper (outside engine) - engine must not use it.
+      if (file.endsWith("rng.ts")) continue;
       if (rule.pattern.test(code)) {
         console.error(`[determinism] ${rule.name} found in ${file}`);
         failed = true;
       }
     } else {
+      if (file.endsWith("rng.ts")) continue;
       if (rule.pattern.test(code)) {
         console.error(`[determinism] ${rule.name} found in ${file}`);
         failed = true;

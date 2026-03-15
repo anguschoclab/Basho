@@ -8,27 +8,24 @@
 // =======================================================
 
 import { rngFromSeed, SeededRNG } from "./rng";
-import type {
-  Rikishi,
-  BoutResult,
-  BoutLogEntry,
-  BashoState,
-  BashoName,
-  Side,
-  Stance,
-  TacticalArchetype
-} from "./types";
+import type { Rikishi } from "./types/rikishi";
+import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "./types/basho";
+import type { Side } from "./types/banzuke";
+import type { Stance, TacticalArchetype } from "./types/combat";
 
 import { RANK_HIERARCHY } from "./banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "./kimarite";
 import { buildPbpFromBoutResult, type PbpContext, type PbpLine } from "./pbp";
 import { generateNarrative } from "./narrative";
+import { resolveTacticalClash, determineCPUTactic } from "./h2h";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
 export type Position = "front" | "lateral" | "rear";
+/** Type representing advantage. */
 export type Advantage = "east" | "west" | "none";
 
 // --- PBP HOOKS (Preserved for compatibility) ---
+/** Type representing grip event. */
 type GripEvent =
   | "migi_yotsu_established"
   | "hidari_yotsu_established"
@@ -37,6 +34,7 @@ type GripEvent =
   | "no_grip_scramble"
   | "grip_break";
 
+/** Type representing strike event. */
 type StrikeEvent =
   | "tsuppari_barrage"
   | "nodowa_pressure"
@@ -44,6 +42,7 @@ type StrikeEvent =
   | "throat_attack"
   | "shoulder_blast";
 
+/** Type representing edge event. */
 type EdgeEvent =
   | "bales_at_tawara"
   | "steps_out_then_recovers"
@@ -52,6 +51,7 @@ type EdgeEvent =
   | "turns_the_tables"
   | "slips_but_survives";
 
+/** Type representing momentum shift reason. */
 type MomentumShiftReason =
   | "tachiai_win"
   | "timing_counter"
@@ -60,8 +60,10 @@ type MomentumShiftReason =
   | "fatigue_turn"
   | "mistake"
   | "physics_wall"  // NEW
-  | "mizu_iri";     // NEW
+  | "mizu_iri"     // NEW
+  | "tactical_adaptation"; // NEW
 
+/** Defines the structure for bout context. */
 interface BoutContext {
   id: string;
   day: number;
@@ -69,6 +71,7 @@ interface BoutContext {
   rikishiWestId: string;
 }
 
+/** Defines the structure for engine state. */
 interface EngineState {
   tick: number;
   timeSeconds: number; // NEW: Track real time
@@ -80,6 +83,9 @@ interface EngineState {
   fatigueWest: number;
   log: BoutLogEntry[];
   mizuiriDeclared: boolean; // NEW
+  tacticalResult?: import("./types/combat").TacticalResult;
+  playerSide?: import("./types/banzuke").Side;
+  cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -101,10 +107,21 @@ function tierOf(r: Rikishi): number {
   return RANK_HIERARCHY[r.rank]?.tier ?? 99;
 }
 
+/**
+ * Choose side by score.
+ *  * @param eastScore - The East score.
+ *  * @param westScore - The West score.
+ *  * @returns The result.
+ */
 function chooseSideByScore(eastScore: number, westScore: number): Side {
   return eastScore >= westScore ? "east" : "west";
 }
 
+/**
+ * Other side.
+ *  * @param side - The Side.
+ *  * @returns The result.
+ */
 function otherSide(side: Side): Side {
   return side === "east" ? "west" : "east";
 }
@@ -170,6 +187,7 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
 // Returns signed modifiers consumed by each bout phase.
 // =========================================================
 
+/** Defines the structure for tactical modifiers. */
 interface TacticalModifiers {
   tachiaiAggression: number;   // bonus to tachiai force
   clinchPreference: "belt" | "push" | "neutral";  // preferred stance path
@@ -181,6 +199,12 @@ interface TacticalModifiers {
   description: string;         // narrative label for PBP
 }
 
+/**
+ * Compute tactical modifiers.
+ *  * @param self - The Self.
+ *  * @param opponent - The Opponent.
+ *  * @returns The result.
+ */
 function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalModifiers {
   const arch = self.archetype as TacticalArchetype;
   const oppArch = opponent.archetype as TacticalArchetype;
@@ -432,7 +456,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
       position: st.position,
       advantage: st.advantage
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -551,7 +575,7 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
       gripEvent,
       strikeEvent
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -590,7 +614,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       phase: "momentum",
       description: "Mizu-iri! The Gyoji halts the marathon bout for a water break.",
       data: { tick: st.tick, reason: "mizu_iri", time: st.timeSeconds }
-    } as any);
+    });
     return; // Skip normal event processing this tick
   }
 
@@ -613,7 +637,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
           reason: "physics_wall", 
           advantage: st.advantage 
         }
-      } as any);
+      });
       return;
     }
   }
@@ -639,7 +663,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
         reason,
         advantage: st.advantage
       }
-    } as any);
+    });
     return;
   }
 
@@ -658,7 +682,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
         edgeEvent,
         advantage: adv
       }
-    } as any);
+    });
     return;
   }
 
@@ -701,7 +725,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
             recovery: true,
             advantage: st.advantage
           }
-        } as any);
+        });
         return;
       }
     }
@@ -731,7 +755,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
           reason: "fatigue_turn",
           advantage: st.advantage
         }
-      } as any);
+      });
       return;
     }
   }
@@ -749,7 +773,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       fatigueWest: Math.round(st.fatigueWest * 10) / 10,
       time: st.timeSeconds
     }
-  } as any);
+  });
 }
 
 /** =========================
@@ -766,10 +790,10 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
     if (k.category === "forfeit" || k.category === "result") return false;
 
     // Stance guard
-    const reqStances: Stance[] = Array.isArray((k as any).requiredStances) ? (k as any).requiredStances : [];
+    const reqStances: Stance[] = Array.isArray(k.requiredStances) ? k.requiredStances : [];
     if (reqStances.length > 0 && !reqStances.includes(st.stance)) return false;
 
-    const vector = (k as any).vector as "front" | "lateral" | "rear" | undefined;
+    const vector = k.vector as "front" | "lateral" | "rear" | undefined;
     if (vector && vector !== st.position) return false;
 
     // Hard Physics Gate (Impossible moves)
@@ -785,11 +809,11 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
 
   // Weighted pick
   const weighted = usable.map((k) => {
-    const base = Number.isFinite((k as any).baseWeight) ? (k as any).baseWeight : 1;
-    const rarity = (k as any).rarity as "common" | "uncommon" | "rare" | "legendary" | undefined;
+    const base = Number.isFinite(k.baseWeight) ? k.baseWeight : 1;
+    const rarity = k.rarity as "common" | "uncommon" | "rare" | "legendary" | undefined;
     const rarityMult = rarity === "legendary" ? 0.05 : rarity === "rare" ? 0.2 : rarity === "uncommon" ? 0.55 : 1.0;
 
-    const affinity = (k as any).styleAffinity?.[attacker.style ?? "hybrid"] ?? 0;
+    const affinity = k.styleAffinity?.[attacker.style ?? "hybrid"] ?? 0;
     
     let w = base * rarityMult + affinity * 0.4;
 
@@ -829,6 +853,16 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
   return weighted[weighted.length - 1]?.k ?? fallback;
 }
 
+/**
+ * Resolve finish.
+ *  * @param rng - The Rng.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param st - The St.
+ *  * @param eastTac - The East tac.
+ *  * @param westTac - The West tac.
+ *  * @returns The result.
+ */
 function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: Side; kimarite: Kimarite } {
   const adv = st.advantage !== "none" ? st.advantage : st.tachiaiWinner;
   const attacker = adv === "east" ? east : west;
@@ -845,6 +879,13 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
     jitter(rng, 0.06);
 
   let eastWinP = clamp01(eastWinBase);
+
+  // Apply tactical win probability shift
+  if (st.tacticalResult && st.playerSide) {
+    if (st.playerSide === "east") eastWinP += st.tacticalResult.winProbabilityShift;
+    else eastWinP -= st.tacticalResult.winProbabilityShift;
+    eastWinP = clamp01(eastWinP);
+  }
 
   // Tactical AI: finish bonus from opponent-aware heuristics
   eastWinP += (eastTac?.finishBonus ?? 0);
@@ -868,7 +909,7 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   // Reversal Check
   if (winner !== adv) {
      st.advantage = winner;
-     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } } as any);
+     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } });
   }
 
   const finalWinnerR = winner === "east" ? east : west;
@@ -889,7 +930,7 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
       advantage: st.advantage, // Use updated advantage
       time: st.timeSeconds
     }
-  } as any);
+  });
 
   return { winner, kimarite };
 }
@@ -900,9 +941,9 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
 export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, basho: BashoState): BoutResult {
   // Deterministic seed
-  const bashoId = (basho as any).id ?? "basho";
-  const year = (basho as any).year ?? 0;
-  const bashoName = ((basho as any).bashoName ?? (basho as any).name) as BashoName | undefined;
+  const bashoId = basho.id ?? "basho";
+  const year = basho.year ?? 0;
+  const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
 
   const seed = `${bashoId}-${year}-${bout.day}-${east.id}-${west.id}`;
   const rng = rngFromSeed(seed, "bout", "root");
@@ -917,42 +958,73 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     fatigueEast: 0,
     fatigueWest: 0,
     log: [],
-    mizuiriDeclared: false
+    mizuiriDeclared: false,
+    playerSide: bout.playerSide
   };
 
-  // Compute opponent-aware tactical modifiers per side
-  const eastTactics = computeTacticalModifiers(east, west);
-  const westTactics = computeTacticalModifiers(west, east);
+  // Execute Tactical Clash if one side is a player
+  let eastPlayerTactic = bout.playerSide === "east" ? bout.playerTactic : undefined;
+  let westPlayerTactic = bout.playerSide === "west" ? bout.playerTactic : undefined;
 
-  // Emit tactical strategy entries into the log for PBP consumption
-  if (eastTactics.description !== "Standard approach") {
+  // Auto-sim fallback and CPU tactic determination
+  if (bout.playerSide === "east") {
+    eastPlayerTactic = eastPlayerTactic || determineCPUTactic(east, rng);
+    westPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(west, rng);
+    st.tacticalResult = resolveTacticalClash(eastPlayerTactic, westPlayerTactic);
+  } else if (bout.playerSide === "west") {
+    westPlayerTactic = westPlayerTactic || determineCPUTactic(west, rng);
+    eastPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(east, rng);
+    st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
+  }
+
+  const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
+  const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
+
+    // Emit tactical strategy entries into the log for PBP consumption
+  if (st.tacticalResult) {
     st.log.push({
-      phase: "tachiai",
-      description: `${east.shikona}'s strategy: ${eastTactics.description}`,
+      phase: "tactical",
+      description: "Tactical clash resolved",
       data: {
         tacticalEntry: true,
-        side: "east",
-        archetype: east.archetype,
-        opponentArchetype: west.archetype,
-        clinchPreference: eastTactics.clinchPreference,
-        strategy: eastTactics.description,
+        tacticalResult: st.tacticalResult,
+        side: bout.playerSide,
+        eastArchetype: east.archetype,
+        westArchetype: west.archetype
       }
-    } as any);
+    });
+  } else {
+    // Legacy generic logging
+    if (eastTactics.description !== "Standard approach") {
+      st.log.push({
+        phase: "tactical",
+        description: `${east.shikona}'s strategy: ${eastTactics.description}`,
+        data: {
+          tacticalEntry: true,
+          side: "east",
+          archetype: east.archetype,
+          opponentArchetype: west.archetype,
+          clinchPreference: eastTactics.clinchPreference,
+          strategy: eastTactics.description,
+        }
+      });
+    }
+    if (westTactics.description !== "Standard approach") {
+      st.log.push({
+        phase: "tactical",
+        description: `${west.shikona}'s strategy: ${westTactics.description}`,
+        data: {
+          tacticalEntry: true,
+          side: "west",
+          archetype: west.archetype,
+          opponentArchetype: east.archetype,
+          clinchPreference: westTactics.clinchPreference,
+          strategy: westTactics.description,
+        }
+      });
+    }
   }
-  if (westTactics.description !== "Standard approach") {
-    st.log.push({
-      phase: "tachiai",
-      description: `${west.shikona}'s strategy: ${westTactics.description}`,
-      data: {
-        tacticalEntry: true,
-        side: "west",
-        archetype: west.archetype,
-        opponentArchetype: east.archetype,
-        clinchPreference: westTactics.clinchPreference,
-        strategy: westTactics.description,
-      }
-    } as any);
-  }
+
 
   // Phases — pass tactical modifiers
   resolveTachiai(rng, east, west, st, eastTactics, westTactics);
@@ -1002,15 +1074,15 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     upset,
     isKinboshi,
     log: st.log
-  } as any;
+  };
 
   // PBP Integration
   const pbpCtx: PbpContext = {
     seed: `${seed}-pbp`,
     day: bout.day,
     bashoName,
-    east: { id: east.id, shikona: east.shikona, style: (east as any).style, archetype: (east as any).archetype },
-    west: { id: west.id, shikona: west.shikona, style: (west as any).style, archetype: (west as any).archetype },
+    east: { id: east.id, shikona: east.shikona, style: east.style, archetype: east.archetype },
+    west: { id: west.id, shikona: west.shikona, style: west.style, archetype: west.archetype },
     kenshoCount: undefined,
     isKinboshiBout: upset && (eastTier === 1 || westTier === 1), // Kinboshi check
     isYushoRaceKeyBout: false
@@ -1019,9 +1091,9 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   const pbpLines: PbpLine[] = buildPbpFromBoutResult(result, pbpCtx);
 
   // Extras for UI
-  (result as any).pbpLines = pbpLines;
-  (result as any).pbp = pbpLines.map((l) => l.text);
-  (result as any).narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
+  result.pbpLines = pbpLines;
+  result.pbp = pbpLines.map((l) => l.text);
+  result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
 
   return result;
 }
@@ -1029,15 +1101,15 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
 /** Convenience helper for tests/sim screens */
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {
   const rng = rngFromSeed(seed, "bout", "root");
-  const bashoName: BashoName = "hatsu" as any;
+  const bashoName: BashoName = "hatsu" ;
 
   const fakeBasho: BashoState = {
     id: "sim",
-    year: 2024,
+    year: 2025,
     day: 1,
     bashoName,
     bashoNumber: 1
-  } as any;
+  };
 
   const bout: BoutContext = { id: `sim-${seed}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };
 

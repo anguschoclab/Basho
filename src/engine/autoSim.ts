@@ -10,7 +10,8 @@
 // - Promotions/demotions are NOT done via naive static mapping; this module now exposes a deterministic hook
 //   to let your real banzuke system apply rank changes (required for canon compliance)
 import { rngFromSeed, SeededRNG } from "./rng";
-import type { WorldState, BashoName, BoutResult } from "./types";
+import type { WorldState } from "./types/world";
+import type { BashoName, BoutResult } from "./types/basho";
 import { simulateBout } from "./bout";
 import { getNextBasho, BASHO_CALENDAR } from "./calendar";
 import {
@@ -25,6 +26,7 @@ import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, typ
 
 // === AUTO-SIM CONFIGURATION ===
 
+/** Type representing sim duration. */
 export type SimDuration =
   | { type: "days"; count: number }
   | { type: "weeks"; count: number }
@@ -33,6 +35,7 @@ export type SimDuration =
   | { type: "years"; count: number }
   | { type: "untilEvent"; eventType: StopCondition };
 
+/** Type representing stop condition. */
 export type StopCondition =
   | "yokozunaPromotion"
   | "ozekiPromotion"
@@ -43,8 +46,10 @@ export type StopCondition =
   | "retirementOfStar"
   | "never";
 
+/** Type representing verbosity level. */
 export type VerbosityLevel = "minimal" | "standard" | "detailed";
 
+/** Defines the structure for auto sim config. */
 export interface AutoSimConfig {
   duration: SimDuration;
   stopConditions: StopCondition[];
@@ -63,6 +68,7 @@ export interface BanzukeUpdateHookResult {
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
 }
+/** Type representing banzuke update hook. */
 export type BanzukeUpdateHook = (args: {
   world: WorldState;
   bashoName: BashoName;
@@ -71,6 +77,7 @@ export type BanzukeUpdateHook = (args: {
   seed: string;
 }) => BanzukeUpdateHookResult;
 
+/** Defines the structure for auto sim result. */
 export interface AutoSimResult {
   startYear: number;
   endYear: number;
@@ -81,6 +88,7 @@ export interface AutoSimResult {
   finalWorld: WorldState;
 }
 
+/** Defines the structure for chronicle report. */
 export interface ChronicleReport {
   topChampions: ChampionEntry[];
   biggestScandals: string[];
@@ -90,6 +98,7 @@ export interface ChronicleReport {
   highlights: string[];
 }
 
+/** Defines the structure for champion entry. */
 export interface ChampionEntry {
   rikishiId: string;
   shikona: string;
@@ -97,6 +106,7 @@ export interface ChampionEntry {
   bestRank: string;
 }
 
+/** Defines the structure for rivalry entry. */
 export interface RivalryEntry {
   eastId: string;
   westId: string;
@@ -106,6 +116,7 @@ export interface RivalryEntry {
   description: string;
 }
 
+/** Defines the structure for record entry. */
 export interface RecordEntry {
   type: string;
   holder: string;
@@ -115,6 +126,7 @@ export interface RecordEntry {
 
 // === BASHO SIMULATION ===
 
+/** Defines the structure for basho sim result. */
 export interface BashoSimResult {
   bashoName: BashoName;
   year: number;
@@ -127,6 +139,7 @@ export interface BashoSimResult {
   demotions: DemotionEvent[];
 }
 
+/** Defines the structure for promotion event. */
 export interface PromotionEvent {
   rikishiId: string;
   from: string;
@@ -134,6 +147,7 @@ export interface PromotionEvent {
   description: string;
 }
 
+/** Defines the structure for demotion event. */
 export interface DemotionEvent {
   rikishiId: string;
   from: string;
@@ -141,6 +155,14 @@ export interface DemotionEvent {
   description: string;
 }
 
+/**
+ * Simulate entire basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @param seed - The Seed.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function simulateEntireBasho(
   world: WorldState,
   bashoName: BashoName,
@@ -306,6 +328,13 @@ export function simulateEntireBasho(
 
 // === FULL AUTO-SIM ===
 
+/**
+ * Run auto sim.
+ *  * @param world - The World.
+ *  * @param config - The Config.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function runAutoSim(
   world: WorldState,
   config: AutoSimConfig,
@@ -395,6 +424,7 @@ export function runAutoSim(
     }
 
     // Store history (deterministic)
+    if (!world.history) world.history = [];
     world.history.push({
       year: bashoResult.year,
       bashoNumber: getBashoNumber(bashoName),
@@ -453,6 +483,15 @@ export function runAutoSim(
 
 // === STOP CONDITIONS ===
 
+/**
+ * Check stop condition.
+ *  * @param condition - The Condition.
+ *  * @param bashoResult - The Basho result.
+ *  * @param world - The World.
+ *  * @param config - The Config.
+ *  * @param chronicle - The Chronicle.
+ *  * @returns The result.
+ */
 function checkStopCondition(
   condition: StopCondition,
   bashoResult: BashoSimResult,
@@ -499,7 +538,7 @@ function checkStopCondition(
       // Supported shapes (any one is enough):
       // - world.scandals: Array<{ severity: "minor"|"major"; summary: string; year:number; bashoName?:BashoName }>
       // - world.eventLog: Array<{ type: string; severity?: string; summary?: string; ... }>
-      const anyWorld: any = world as any;
+      const anyWorld: any = world;
 
       const scandals: any[] = Array.isArray(anyWorld.scandals) ? anyWorld.scandals : [];
       const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
@@ -527,7 +566,7 @@ function checkStopCondition(
       // Supported shapes:
       // - world.retirements: Array<{ rikishiId: string; year:number; bashoName?:BashoName }>
       // - world.eventLog entries with type "retirement"
-      const anyWorld: any = world as any;
+      const anyWorld: any = world;
       const retirements: any[] = Array.isArray(anyWorld.retirements) ? anyWorld.retirements : [];
       const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
 
@@ -561,6 +600,13 @@ function checkStopCondition(
 
 // === DETERMINISTIC TIME ADVANCEMENT HELPERS ===
 
+/**
+ * Advance inter basho deterministic.
+ *  * @param world - The World.
+ *  * @param weeks - The Weeks.
+ *  * @param timeState - The Time state.
+ *  * @param seed - The Seed.
+ */
 function advanceInterBashoDeterministic(
   world: WorldState,
   weeks: number,
@@ -587,6 +633,11 @@ function advanceInterBashoDeterministic(
 
 // === DURATION / UTILITIES ===
 
+/**
+ * Compute target basho.
+ *  * @param duration - The Duration.
+ *  * @returns The result.
+ */
 function computeTargetBasho(duration: SimDuration): number {
   switch (duration.type) {
     case "days":
@@ -606,10 +657,20 @@ function computeTargetBasho(duration: SimDuration): number {
   }
 }
 
+/**
+ * Title case.
+ *  * @param name - The Name.
+ *  * @returns The result.
+ */
 function titleCase(name: string): string {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
+/**
+ * Get basho number.
+ *  * @param name - The Name.
+ *  * @returns The result.
+ */
 function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
   const numbers: Record<BashoName, 1 | 2 | 3 | 4 | 5 | 6> = {
     hatsu: 1,

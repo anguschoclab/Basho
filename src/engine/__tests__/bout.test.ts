@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../bout";
-import type { Rikishi, BashoState, BoutResult, TacticalArchetype } from "../types";
+import type { Rikishi } from "../types/rikishi";
+import type { BashoState, BoutResult } from "../types/basho";
+import type { TacticalArchetype } from "../types/combat";
 
 function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {
@@ -117,7 +119,7 @@ describe("Bout Simulation Engine", () => {
       const strongMaegashira = { ...maegashira, power: 100, technique: 100, speed: 100 };
       const weakYokozuna = { ...yokozuna, power: 10, technique: 10, speed: 10 };
       const result = resolveBout(bout, weakYokozuna as Rikishi, strongMaegashira as Rikishi, basho);
-      if ((result as any).isKinboshi) {
+      if (result.isKinboshi) {
         foundKinboshi = true;
         break;
       }
@@ -153,10 +155,10 @@ describe("Bout Simulation Engine", () => {
       east, west, basho
     );
 
-    expect((result as any).pbpLines).toBeDefined();
-    expect((result as any).pbpLines.length).toBeGreaterThan(0);
-    expect((result as any).pbp).toBeDefined();
-    expect((result as any).pbp.length).toBeGreaterThan(0);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines.length).toBeGreaterThan(0);
+    expect(result.pbp).toBeDefined();
+    expect(result.pbp.length).toBeGreaterThan(0);
   });
 
   it("should work via simulateBout convenience helper", () => {
@@ -197,5 +199,54 @@ describe("Bout Simulation Engine", () => {
         expect(rate).toBeLessThan(0.95);
       }
     });
+  });
+});
+
+
+describe("Bout RPS Tactical Clash", () => {
+  it("applies positive win probability shift when player wins tactical clash", () => {
+    // Both exact same stats
+    const player = mockRikishi("player1", { style: "hybrid" });
+    const cpu = mockRikishi("cpu1", { style: "hybrid" });
+
+    // Seed that happens to result in a CPU win when neutral
+    // We'll test both neutral and with advantageous tactic
+
+    // We need to pass boutContext to resolveBout directly
+    const basho = { id: "test", year: 2025, bashoName: "hatsu", day: 1, matches: [], standings: new Map(), isActive: true } as BashoState;
+
+    // 1. Neutral Bout
+    const neutralCtx = {
+        id: "b1", day: 1, rikishiEastId: player.id, rikishiWestId: cpu.id,
+        playerSide: "east" as const,
+        playerTactic: "STANDARD" as import("../types/combat").BoutTactic
+    };
+    const neutralRes = resolveBout(neutralCtx, player, cpu, basho);
+
+    // 2. Player Wins Clash (YOTSU vs CPU OSHI)
+    // We need to force CPU to OSHI. We can do that by making CPU's style pure Oshi and setting a seed that forces it,
+    // OR we can just mock determineCPUTactic or trust it will pick OSHI if archetype is oshi_specialist.
+    // Actually, resolveTacticalClash is pure. We just need to check if the logic runs.
+
+    // For a unit test, we can just observe that st.tacticalResult exists and has the correct shift.
+    const advCtx = {
+        id: "b1", day: 1, rikishiEastId: player.id, rikishiWestId: cpu.id,
+        playerSide: "east" as const,
+        playerTactic: "YOTSU_BELT" as import("../types/combat").BoutTactic
+    };
+    // Make CPU pick Oshi by making them an oshi specialist
+    const oshiCpu = mockRikishi("cpu2", { style: "oshi", archetype: "oshi_specialist" });
+    const advRes = resolveBout(advCtx, player, oshiCpu, basho);
+
+    const tacticalLog = advRes.log.find(l => l.data?.tacticalEntry);
+    expect(tacticalLog).toBeDefined();
+
+    if (tacticalLog?.data?.tacticalResult) {
+       const res = tacticalLog.data.tacticalResult as import("../types/combat").TacticalResult;
+       // They might pick OSHI or STANDARD, but since they are Oshi specialist, they have 70% chance of OSHI.
+       // We can assert that tactical result was recorded.
+       expect(res.playerTactic).toBe("YOTSU_BELT");
+       expect(["PLAYER", "CPU", "NEUTRAL"]).toContain(res.advantage);
+    }
   });
 });

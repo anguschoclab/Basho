@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // descriptorBands.ts
 // =======================================================
 // No-Leak Observability Layer (Constitution A7.1)
@@ -21,6 +22,7 @@
 
 export const HYSTERESIS_DELTA = 5;
 
+/** Defines the structure for band def. */
 export interface BandDef<T extends string> {
   band: T;
   min: number; // inclusive
@@ -61,14 +63,14 @@ export function toBand<T extends string>(
   return resolved.band;
 }
 
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 // === Stat Descriptor Bands (0–100 attributes) ===
 
+/** Type representing stat band. */
 export type StatBand = "exceptional" | "outstanding" | "strong" | "capable" | "developing" | "limited" | "struggling";
 
+/** s t a t_ b a n d s. */
 export const STAT_BANDS: BandDef<StatBand>[] = [
   { band: "struggling", min: 0, max: 15 },
   { band: "limited", min: 15, max: 30 },
@@ -79,10 +81,17 @@ export const STAT_BANDS: BandDef<StatBand>[] = [
   { band: "exceptional", min: 90, max: Infinity },
 ];
 
+/**
+ * To stat band.
+ *  * @param value - The Value.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toStatBand(value: number, prev?: StatBand): StatBand {
   return toBand(value, STAT_BANDS, prev);
 }
 
+/** s t a t_ b a n d_ l a b e l s. */
 export const STAT_BAND_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
   outstanding: "Outstanding",
@@ -95,8 +104,10 @@ export const STAT_BAND_LABELS: Record<StatBand, string> = {
 
 // === Condition / Health Bands ===
 
+/** Type representing condition band. */
 export type ConditionBand = "peak" | "good" | "fair" | "worn" | "fragile";
 
+/** c o n d i t i o n_ b a n d s. */
 export const CONDITION_BANDS: BandDef<ConditionBand>[] = [
   { band: "fragile", min: 0, max: 30 },
   { band: "worn", min: 30, max: 50 },
@@ -105,10 +116,17 @@ export const CONDITION_BANDS: BandDef<ConditionBand>[] = [
   { band: "peak", min: 90, max: Infinity },
 ];
 
+/**
+ * To condition band.
+ *  * @param value - The Value.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toConditionBand(value: number, prev?: ConditionBand): ConditionBand {
   return toBand(value, CONDITION_BANDS, prev);
 }
 
+/** c o n d i t i o n_ l a b e l s. */
 export const CONDITION_LABELS: Record<ConditionBand, { label: string; description: string }> = {
   peak: { label: "Peak", description: "In supreme physical condition." },
   good: { label: "Good", description: "Moving well, no visible concerns." },
@@ -119,8 +137,10 @@ export const CONDITION_LABELS: Record<ConditionBand, { label: string; descriptio
 
 // === Fatigue Bands ===
 
+/** Type representing fatigue band. */
 export type FatigueBand = "fresh" | "light" | "tired" | "exhausted" | "spent";
 
+/** f a t i g u e_ b a n d s. */
 export const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
   { band: "fresh", min: 0, max: 15 },
   { band: "light", min: 15, max: 35 },
@@ -129,10 +149,17 @@ export const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
   { band: "spent", min: 75, max: Infinity },
 ];
 
+/**
+ * To fatigue band.
+ *  * @param value - The Value.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toFatigueBand(value: number, prev?: FatigueBand): FatigueBand {
   return toBand(value, FATIGUE_BANDS, prev);
 }
 
+/** f a t i g u e_ l a b e l s. */
 export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   fresh: "Fresh",
   light: "Lightly Worn",
@@ -143,8 +170,14 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
 
 // === Momentum Bands ===
 
+/** Type representing momentum band. */
 export type MomentumBand = "on_fire" | "rising" | "steady" | "struggling" | "in_crisis";
 
+/**
+ * To momentum band.
+ *  * @param momentum - The Momentum.
+ *  * @returns The result.
+ */
 export function toMomentumBand(momentum: number): MomentumBand {
   // Momentum typically stored as -5..+5 or 0..100
   const v = Math.abs(momentum) > 10
@@ -157,6 +190,7 @@ export function toMomentumBand(momentum: number): MomentumBand {
   return "steady";
 }
 
+/** m o m e n t u m_ l a b e l s. */
 export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
   on_fire: "On Fire",
   rising: "Rising",
@@ -167,8 +201,15 @@ export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
 
 // === Financial Bands (derived from runway weeks, NOT raw yen) ===
 
+/** Type representing financial band. */
 export type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 
+/**
+ * To financial band.
+ *  * @param funds - The Funds.
+ *  * @param weeklyBurn - The Weekly burn.
+ *  * @returns The result.
+ */
 export function toFinancialBand(funds: number, weeklyBurn: number): FinancialBand {
   if (weeklyBurn <= 0) return "secure";
   const runwayWeeks = funds / weeklyBurn;
@@ -181,8 +222,10 @@ export function toFinancialBand(funds: number, weeklyBurn: number): FinancialBan
 
 // === Rivalry Heat Bands ===
 
+/** Type representing rivalry heat band. */
 export type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary";
 
+/** r i v a l r y_ h e a t_ b a n d s. */
 export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
   { band: "dormant", min: 0, max: 20 },
   { band: "simmering", min: 20, max: 40 },
@@ -191,10 +234,17 @@ export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
   { band: "legendary", min: 85, max: Infinity },
 ];
 
+/**
+ * To rivalry heat band.
+ *  * @param heat - The Heat.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toRivalryHeatBand(heat: number, prev?: RivalryHeatBand): RivalryHeatBand {
   return toBand(heat, RIVALRY_HEAT_BANDS, prev);
 }
 
+/** r i v a l r y_ h e a t_ l a b e l s. */
 export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
   dormant: "Dormant",
   simmering: "Simmering",
@@ -205,8 +255,10 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
 
 // === Oyakata Trait Bands ===
 
+/** Type representing trait band. */
 export type TraitBand = "extreme" | "high" | "moderate" | "low" | "minimal";
 
+/** t r a i t_ b a n d s. */
 export const TRAIT_BANDS: BandDef<TraitBand>[] = [
   { band: "minimal", min: 0, max: 20 },
   { band: "low", min: 20, max: 40 },
@@ -215,10 +267,17 @@ export const TRAIT_BANDS: BandDef<TraitBand>[] = [
   { band: "extreme", min: 80, max: Infinity },
 ];
 
+/**
+ * To trait band.
+ *  * @param value - The Value.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toTraitBand(value: number, prev?: TraitBand): TraitBand {
   return toBand(value, TRAIT_BANDS, prev);
 }
 
+/** t r a i t_ l a b e l s. */
 export const TRAIT_LABELS: Record<TraitBand, string> = {
   extreme: "Extreme",
   high: "High",
@@ -229,8 +288,15 @@ export const TRAIT_LABELS: Record<TraitBand, string> = {
 
 // === Win Rate Assessment (public-facing record context) ===
 
+/** Type representing win rate assessment. */
 export type WinRateAssessment = "dominant" | "strong" | "competitive" | "struggling" | "in_trouble";
 
+/**
+ * To win rate assessment.
+ *  * @param wins - The Wins.
+ *  * @param losses - The Losses.
+ *  * @returns The result.
+ */
 export function toWinRateAssessment(wins: number, losses: number): WinRateAssessment {
   const total = wins + losses;
   if (total === 0) return "competitive";
@@ -242,6 +308,7 @@ export function toWinRateAssessment(wins: number, losses: number): WinRateAssess
   return "in_trouble";
 }
 
+/** w i n_ r a t e_ l a b e l s. */
 export const WIN_RATE_LABELS: Record<WinRateAssessment, string> = {
   dominant: "Dominant",
   strong: "Strong",
@@ -252,8 +319,14 @@ export const WIN_RATE_LABELS: Record<WinRateAssessment, string> = {
 
 // === Prize / Currency Bands (never show raw ¥) ===
 
+/** Type representing prize band. */
 export type PrizeBand = "grand" | "substantial" | "modest" | "small" | "token";
 
+/**
+ * To prize band.
+ *  * @param amountYen - The Amount yen.
+ *  * @returns The result.
+ */
 export function toPrizeBand(amountYen: number): PrizeBand {
   if (amountYen >= 30_000_000) return "grand";
   if (amountYen >= 10_000_000) return "substantial";
@@ -262,6 +335,7 @@ export function toPrizeBand(amountYen: number): PrizeBand {
   return "token";
 }
 
+/** p r i z e_ l a b e l s. */
 export const PRIZE_LABELS: Record<PrizeBand, string> = {
   grand: "Grand Prize",
   substantial: "Substantial",
@@ -272,8 +346,10 @@ export const PRIZE_LABELS: Record<PrizeBand, string> = {
 
 // === Scandal Score Bands ===
 
+/** Type representing scandal band. */
 export type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
 
+/** s c a n d a l_ b a n d s. */
 export const SCANDAL_BANDS: BandDef<ScandalBand>[] = [
   { band: "clean", min: 0, max: 10 },
   { band: "whispers", min: 10, max: 30 },
@@ -282,10 +358,17 @@ export const SCANDAL_BANDS: BandDef<ScandalBand>[] = [
   { band: "crisis", min: 80, max: Infinity },
 ];
 
+/**
+ * To scandal band.
+ *  * @param score - The Score.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toScandalBand(score: number, prev?: ScandalBand): ScandalBand {
   return toBand(score, SCANDAL_BANDS, prev);
 }
 
+/** s c a n d a l_ l a b e l s. */
 export const SCANDAL_LABELS: Record<ScandalBand, string> = {
   clean: "Clean",
   whispers: "Whispers",
@@ -296,8 +379,10 @@ export const SCANDAL_LABELS: Record<ScandalBand, string> = {
 
 // === Potential / Growth Trajectory Band ===
 
+/** Type representing potential band. */
 export type PotentialBand = "generational" | "star" | "solid" | "average" | "limited" | "unknown";
 
+/** p o t e n t i a l_ b a n d s. */
 export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
   { band: "generational", min: 88, max: 100 },
   { band: "star",         min: 72, max: 87 },
@@ -306,11 +391,18 @@ export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
   { band: "limited",      min: 0,  max: 34 },
 ];
 
+/**
+ * To potential band.
+ *  * @param talentSeed - The Talent seed.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toPotentialBand(talentSeed: number | undefined, prev?: PotentialBand): PotentialBand {
   if (talentSeed == null) return "unknown";
   return toBand(talentSeed, POTENTIAL_BANDS, prev) ?? "unknown";
 }
 
+/** p o t e n t i a l_ l a b e l s. */
 export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; description: string }> = {
   generational: { label: "Generational Talent", description: "A once-in-a-decade prospect with limitless ceiling." },
   star:         { label: "Star Potential",       description: "Could reach the very top with proper development." },
@@ -322,6 +414,7 @@ export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; descriptio
 
 // === Aggregated Rikishi Descriptor (for UI cards) ===
 
+/** Defines the structure for rikishi descriptor. */
 export interface RikishiDescriptor {
   powerBand: StatBand;
   speedBand: StatBand;
@@ -333,6 +426,12 @@ export interface RikishiDescriptor {
   potentialBand?: PotentialBand;
 }
 
+/**
+ * To rikishi descriptor.
+ *  * @param r - The R.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
 export function toRikishiDescriptor(r: {
   power: number;
   speed: number;

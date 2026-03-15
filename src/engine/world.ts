@@ -11,7 +11,9 @@
  */
 
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { WorldState, BashoName, BoutResult, Id, MatchSchedule, BashoState } from "./types";
+import type { WorldState } from "./types/world";
+import type { BashoName, BoutResult, MatchSchedule, BashoState } from "./types/basho";
+import type { Id } from "./types/common";
 import { toRankPosition } from "./types";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
@@ -30,6 +32,9 @@ import * as rivalries from "./rivalries";
 import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho, generateGovernanceHeadline } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
+import { executeMerger, findMergerTarget } from "./mergers";
+import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "./loans";
+import { checkNaturalizations } from "./naturalization";
 import * as welfare from "./welfare";
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
@@ -40,10 +45,21 @@ import { determineSpecialPrizes, updateBanzuke } from "./banzuke";
 import { checkRetirement } from "./lifecycle";
 
 // Type guard or helper to access current basho
+/**
+ * Get current basho.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
 
+/**
+ * Start basho.
+ *  * @param world - The World.
+ *  * @param bashoName - The Basho name.
+ *  * @returns The result.
+ */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   if (world.cyclePhase === "active_basho") return world;
 
@@ -63,10 +79,16 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   if (world.mediaState) {
     world.mediaState = resetBashoMediaTracking(world.mediaState);
   }
-
   return world;
+
 }
 
+/**
+ * Ensure day schedule.
+ *  * @param world - The World.
+ *  * @param day - The Day.
+ *  * @returns The result.
+ */
 function ensureDaySchedule(world: WorldState, day: number): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -75,8 +97,8 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
   if (already) return world;
 
   // Use generateDaySchedule from the schedule module
-  if (typeof (schedule as any).generateDaySchedule === "function") {
-    (schedule as any).generateDaySchedule(world, basho, day, world.seed);
+  if (typeof schedule.generateDaySchedule === "function") {
+    schedule.generateDaySchedule(world, basho, day, world.seed);
   } else {
       // Basic fallback scheduling
       const rikishiIds = Array.from(world.rikishi.keys());
@@ -93,6 +115,11 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
   return world;
 }
 
+/**
+ * Advance basho day.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function advanceBashoDay(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -108,6 +135,12 @@ export function advanceBashoDay(world: WorldState): WorldState {
   return world;
 }
 
+/**
+ * Simulate bout for today.
+ *  * @param world - The World.
+ *  * @param unplayedIndex - The Unplayed index.
+ *  * @returns The result.
+ */
 export function simulateBoutForToday(
   world: WorldState,
   unplayedIndex: number
@@ -137,6 +170,14 @@ export function simulateBoutForToday(
   return { world, result };
 }
 
+/**
+ * Apply bout result.
+ *  * @param world - The World.
+ *  * @param match - The Match.
+ *  * @param result - The Result.
+ *  * @param _opts - The _opts.
+ *  * @returns The result.
+ */
 function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
@@ -204,6 +245,11 @@ function applyBoutResult(
   return world;
 }
 
+/**
+ * End basho.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function endBasho(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
@@ -215,7 +261,10 @@ export function endBasho(world: WorldState): WorldState {
   if (table.length === 0) return world;
 
   const bestWins = table[0].wins;
-  const topCandidates = table.filter(t => t.wins === bestWins).map(t => t.id);
+  const topCandidates = table.reduce<Id[]>((acc, t) => {
+    if (t.wins === bestWins) acc.push(t.id);
+    return acc;
+  }, []);
   
   let yusho = topCandidates[0];
   const playoffMatches: MatchSchedule[] = [];
@@ -278,7 +327,7 @@ export function endBasho(world: WorldState): WorldState {
 
   const awards = determineSpecialPrizes(
     basho.matches, 
-    world.rikishi as any,
+    world.rikishi,
     yusho
   );
 
@@ -376,6 +425,9 @@ function runPostBashoResolution(world: WorldState): void {
 
   // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
   runCareerJournalUpdates(world);
+
+  // === 8. FUTURE NATURALIZATION ===
+  checkNaturalizations(world);
 }
 
 // ─── 1. PRESTIGE DECAY (Constitution A3.4) ─────────────────────
@@ -543,33 +595,8 @@ function runGovernanceReview(world: WorldState): void {
       });
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
-      // If a stable is insolvent, the Association may provide an emergency loan
-      // or a benefactor may step in — but at a cost to autonomy.
       if (heya.funds < -5_000_000) {
-        const emergencyLoan = Math.abs(heya.funds) * 0.5; // Cover half the deficit
-        heya.funds += emergencyLoan;
-
-        logEngineEvent(world, {
-          type: "EMERGENCY_LOAN_ISSUED",
-          category: "economy",
-          importance: "major",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `Emergency loan for ${heya.name}`,
-          summary: `The Association issues an emergency loan to prevent ${heya.name}'s collapse. Increased scrutiny follows.`,
-          data: { loanAmount: emergencyLoan, remainingDebt: heya.funds }
-        });
-
-        generateGovernanceHeadline({
-          world,
-          heyaId: heya.id,
-          type: "emergency_loan",
-          severity: "critical",
-          description: `The Association steps in with a ¥${emergencyLoan.toLocaleString()} loan to prevent ${heya.name}'s collapse.`
-        });
-
-        // Loans bring governance scrutiny
-        heya.scandalScore = Math.min(100, (heya.scandalScore ?? 0) + 5);
+        issueBailoutLoanIfNeeded(world, heya.id);
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Clear financial risk indicator when no longer desperate
@@ -680,6 +707,12 @@ function runGovernanceReview(world: WorldState): void {
             severity: "critical",
             description: `Due to critically low recruitment (${heya.rikishiIds.length} active wrestlers), ${heya.name} faces a forced merger.`
           });
+
+          // Execute actual merger
+          const targetId = findMergerTarget(world, heya.id);
+          if (targetId) {
+             executeMerger(world, heya.id, targetId, "Critically low recruitment / Roster size");
+          }
         }
       } else {
         // Player stable — warn but don't force closure
@@ -774,7 +807,7 @@ function runRetirements(world: WorldState): Record<string, number> {
   const vacanciesByHeyaId: Record<string, number> = {};
 
   for (const [id, r] of world.rikishi) {
-    const reason = checkRetirement(r as any, world.year, world.seed);
+    const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
       EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
@@ -921,6 +954,11 @@ function runCareerJournalUpdates(world: WorldState): void {
   }
 }
 
+/**
+ * Publish banzuke update.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function publishBanzukeUpdate(world: WorldState): WorldState {
   if (world.cyclePhase !== "post_basho") return world;
 
@@ -987,6 +1025,12 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   return world;
 }
 
+/**
+ * Advance interim.
+ *  * @param world - The World.
+ *  * @param weeks - The Weeks.
+ *  * @returns The result.
+ */
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho" && world.cyclePhase !== "post_basho") return world;
 
@@ -1011,6 +1055,10 @@ export function advanceDay(world: WorldState): DailyTickReport | null {
   return advanceOneDay(world);
 }
 
+/**
+ * Safe call.
+ *  * @param fn - The Fn.
+ */
 function safeCall(fn: () => void) {
   try {
     fn();

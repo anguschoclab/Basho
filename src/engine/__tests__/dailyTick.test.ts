@@ -5,7 +5,8 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { advanceOneDay, advanceDays, enterPostBasho, enterInterim } from "../dailyTick";
-import type { WorldState, CyclePhase, Heya } from "../types";
+import type { WorldState, CyclePhase } from "../types/world";
+import type { Heya } from "../types/heya";
 
 // Helper to create a minimal world state for testing
 function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
@@ -29,11 +30,11 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
 
   return {
     seed: 12345,
-    year: 2024,
+    year: 2025,
     week: 1,
     dayIndexGlobal: 0,
     calendar: {
-      year: 2024,
+      year: 2025,
       month: 1,
       currentDay: 1,
       currentWeek: 1
@@ -95,8 +96,9 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
         isRetired: true,
         stats: { power: 65, technique: 70, speed: 55, balance: 72, stamina: 60, mentalFocus: 75 }
       }]
-    ]) as any,
-    heyas: new Map([["test-heya", heya]]) as any,
+    ]) as unknown as Map<string, any>,
+    heyas: new Map([["test-heya", heya]]) as unknown as Map<string, any>,
+    oyakata: new Map() as unknown as Map<string, any>,
     playerHeyaId: "test-heya",
     eventLog: [],
     rivalriesState: { pairs: [], lastUpdatedWeek: 0, nextRivalryId: 1 },
@@ -126,7 +128,7 @@ describe("Daily Tick: Calendar Advancement", () => {
 
   it("should roll over month when days exceed month length", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 1, currentDay: 31, currentWeek: 5 }
+      calendar: { year: 2025, month: 1, currentDay: 31, currentWeek: 5 }
     });
     
     const report = advanceOneDay(world);
@@ -138,20 +140,20 @@ describe("Daily Tick: Calendar Advancement", () => {
 
   it("should roll over year when month exceeds 12", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 12, currentDay: 31, currentWeek: 52 }
+      calendar: { year: 2025, month: 12, currentDay: 31, currentWeek: 52 }
     });
     
     const report = advanceOneDay(world);
     
     expect(world.calendar.currentDay).toBe(1);
     expect(world.calendar.month).toBe(1);
-    expect(world.calendar.year).toBe(2025);
+    expect(world.calendar.year).toBe(2026);
     expect(report.yearBoundary).toBe(true);
   });
 
   it("should handle February correctly (28 days)", () => {
     const world = createTestWorld({
-      calendar: { year: 2024, month: 2, currentDay: 28, currentWeek: 9 }
+      calendar: { year: 2025, month: 2, currentDay: 28, currentWeek: 9 }
     });
     
     const report = advanceOneDay(world);
@@ -344,12 +346,12 @@ describe("Daily Tick: Report Generation", () => {
       currentBasho: {
         id: "test-basho",
         name: "hatsu",
-        year: 2024,
+        year: 2025,
         day: 5,
         matches: [],
         yushoRaceLeaders: [],
         completed: false
-      } as any
+      } as unknown as any
     });
     
     const report = advanceOneDay(world);

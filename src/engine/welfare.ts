@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // welfare.ts
 // =======================================================
 // Welfare & Compliance State Machine (Canon A7)
@@ -8,16 +9,22 @@
 // - Emits events via events.ts
 // =======================================================
 
-import type { WorldState, Heya, WelfareState, ComplianceState, Id } from "./types";
+import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
+import type { WelfareState, ComplianceState } from "./types/economy";
+import type { Id } from "./types/common";
 import { rngForWorld } from "./rng";
 import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
 
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
 
+
+/**
+ * Ensure heya welfare state.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   const existing = heya.welfareState;
   if (existing && typeof existing.welfareRisk === "number" && existing.complianceState) {
@@ -33,12 +40,23 @@ export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   return state;
 }
 
+/**
+ * Severity weight.
+ *  * @param sev - The Sev.
+ *  * @returns The result.
+ */
 function severityWeight(sev: string | number | undefined): number {
   if (sev === "serious" || sev === "high" || sev === 3) return 8;
   if (sev === "moderate" || sev === "medium" || sev === 2) return 4;
   return 2;
 }
 
+/**
+ * Compute heya injury pressure.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number; negligenceCount: number } {
   let pressure = 0;
   let seriousCount = 0;
@@ -49,12 +67,12 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
   const intensity = trainingState.activeProfile.intensity;
   const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
-  for (const rid of heya.rikishiIds) {
+  for (const rid of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rid);
     if (!r) continue;
 
-    const status = (r as any).injuryStatus ?? (r as any).injury;
-    const injured = Boolean(status?.isInjured) || Boolean((r as any).injured);
+    const status = r.injuryStatus ?? r.injury;
+    const injured = Boolean(status?.isInjured) || Boolean(r.injured);
     if (!injured) continue;
 
     const sev = status?.severity ?? (status?.severityLabel ?? undefined);
@@ -75,6 +93,12 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
   return { pressure, seriousCount, negligenceCount };
 }
 
+/**
+ * Compute weekly welfare delta.
+ *  * @param world - The World.
+ *  * @param heya - The Heya.
+ *  * @returns The result.
+ */
 function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: number; reasons: string[] } {
   const reasons: string[] = [];
   const state = ensureHeyaWelfareState(heya);
@@ -148,6 +172,11 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   return { delta, reasons };
 }
 
+/**
+ * Set compliance state.
+ *  * @param state - The State.
+ *  * @param next - The Next.
+ */
 function setComplianceState(state: WelfareState, next: ComplianceState) {
   if (state.complianceState !== next) {
     state.complianceState = next;
@@ -155,6 +184,11 @@ function setComplianceState(state: WelfareState, next: ComplianceState) {
   }
 }
 
+/**
+ * Tick week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 export function tickWeek(world: WorldState): number {
   let events = 0;
 
@@ -301,8 +335,8 @@ export function tickWeek(world: WorldState): number {
     }
 
     // Risk indicator hook
-    if (!heya.riskIndicators) (heya as any).riskIndicators = { financial: false, governance: false, rivalry: false };
-    (heya.riskIndicators as any).welfare = w.complianceState !== "compliant" || w.welfareRisk >= 55;
+    if (!heya.riskIndicators) heya.riskIndicators = { financial: false, governance: false, rivalry: false };
+    heya.riskIndicators.welfare = w.complianceState !== "compliant" || w.welfareRisk >= 55;
 
     // Emit change event when risk moves materially
     if (Math.abs(riskUp) >= 8) {

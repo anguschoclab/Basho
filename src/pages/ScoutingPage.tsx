@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,9 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
-import type { Rikishi, Rank, TacticalArchetype } from "@/engine/types";
+import type { Rikishi } from "../../types/rikishi";
+import type { Rank } from "../../types/banzuke";
+import type { TacticalArchetype } from "../../types/combat";
 import {
   describeAttribute,
   describeAggression,
@@ -64,6 +66,16 @@ import {
 // OPPONENT SCOUTING TAB
 // ==============================
 
+/**
+ * opponent scouting tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function OpponentScoutingTab({
   world,
   playerHeyaId,
@@ -139,7 +151,7 @@ function OpponentScoutingTab({
               <Card
                 key={r.id}
                 className="paper cursor-pointer hover:border-primary/50 transition-all"
-                onClick={() => navigate(`/rikishi/${r.id}`)}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -218,6 +230,16 @@ function OpponentScoutingTab({
   );
 }
 
+/**
+ * attr chip.
+ *  * @param {
+ *   label,
+ *   attr,
+ * } - The {
+ *   label,
+ *   attr,
+ * }.
+ */
 function AttrChip({
   label,
   attr,
@@ -248,6 +270,16 @@ function AttrChip({
 // OWN STABLE INTEL TAB
 // ==============================
 
+/**
+ * stable intel tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function StableIntelTab({
   world,
   playerHeyaId,
@@ -289,7 +321,7 @@ function StableIntelTab({
               <div
                 key={r.id}
                 className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                onClick={() => navigate(`/rikishi/${r.id}`)}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <div className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`} />
                 <div className="flex-1 min-w-0">
@@ -324,6 +356,16 @@ function StableIntelTab({
 // TALENT POOL / RECRUITING TAB
 // ==============================
 
+/**
+ * recruiting tab.
+ *  * @param {
+ *   world,
+ *   playerHeyaId,
+ * } - The {
+ *   world,
+ *   player heya id,
+ * }.
+ */
 function RecruitingTab({
   world,
   playerHeyaId,
@@ -568,6 +610,7 @@ function RecruitingTab({
 // MAIN PAGE
 // ==============================
 
+/** scouting page. */
 export default function ScoutingPage() {
   const { state } = useGame();
   const world = state.world;
@@ -582,6 +625,7 @@ export default function ScoutingPage() {
     { id: "scouting", label: "Scouting" },
     { id: "talent", label: "Talent Pools", href: "/talent" },
     { id: "governance", label: "Governance", href: "/governance" },
+    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
   ];
 
   return (

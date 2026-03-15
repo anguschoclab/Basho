@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // sponsors.ts
 // Procedural Sponsors, Kenshō & Supporters System
 // Per Constitution: Economy/Sponsor spec
@@ -17,8 +18,10 @@
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 // === SPONSOR TIER SYSTEM ===
 
+/** Type representing sponsor tier. */
 export type SponsorTier = "T0" | "T1" | "T2" | "T3" | "T4" | "T5";
 
+/** Type representing sponsor category. */
 export type SponsorCategory =
   | "local_business"
   | "regional_corporation"
@@ -28,12 +31,15 @@ export type SponsorCategory =
   | "private_benefactor"
   | "anonymous_patron";
 
+/** Type representing sponsor tone. */
 export type SponsorTone = "traditional" | "modern" | "luxury" | "local" | "industrial" | "civic";
 
+/** Type representing sponsor role. */
 export type SponsorRole = "kensho" | "koenkai_member" | "koenkai_pillar" | "benefactor" | "creditor";
 
 // === SPONSOR ENTITY ===
 
+/** Defines the structure for sponsor relationship. */
 export interface SponsorRelationship {
   relId: string;
   sponsorId: string;
@@ -46,6 +52,7 @@ export interface SponsorRelationship {
   notesTag?: string;
 }
 
+/** Defines the structure for sponsor. */
 export interface Sponsor {
   sponsorId: string;
   displayName: string;
@@ -72,8 +79,10 @@ export interface Sponsor {
 
 // === KOENKAI (SUPPORTERS ASSOCIATION) ===
 
+/** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 
+/** Defines the structure for koenkai. */
 export interface Koenkai {
   koenkaiId: string;
   beyaId: string;
@@ -85,6 +94,7 @@ export interface Koenkai {
 
 // === KENSHO BANNER SLOT ===
 
+/** Defines the structure for kensho banner slot. */
 export interface KenshoBannerSlot {
   bannerId: string;
   boutId: string;
@@ -211,19 +221,34 @@ const INDUSTRY_TAGS = ["logistics", "foods", "manufacturing", "construction", "r
 
 // === Utility ===
 
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
 
+
+/**
+ * Normalize rank.
+ *  * @param rank - The Rank.
+ *  * @returns The result.
+ */
 function normalizeRank(rank: string): string {
   // normalize diacritics and case (e.g., Ōzeki -> ozeki)
   return rank.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
+/**
+ * Stable tie break.
+ *  * @param a - The A.
+ *  * @param b - The B.
+ *  * @returns The result.
+ */
 function stableTieBreak(a: Sponsor, b: Sponsor): number {
   return a.sponsorId.localeCompare(b.sponsorId);
 }
 
+/**
+ * Roll tier.
+ *  * @param rng - The Rng.
+ *  * @param dist - The Dist.
+ *  * @returns The result.
+ */
 function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {
   // dist is expected to sum to ~1; we still clamp defensively
   const r = rng.next();
@@ -238,6 +263,13 @@ function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTie
   return "T0";
 }
 
+/**
+ * Weighted sample without replacement.
+ *  * @param rng - The Rng.
+ *  * @param items - The Items.
+ *  * @param k - The K.
+ *  * @returns The result.
+ */
 function weightedSampleWithoutReplacement<T>(
   rng: SeededRNG,
   items: Array<{ item: T; w: number }>,
@@ -271,6 +303,12 @@ function weightedSampleWithoutReplacement<T>(
 
 // === SPONSOR GENERATION ===
 
+/**
+ * Generate sponsor name.
+ *  * @param rng - The Rng.
+ *  * @param tier - The Tier.
+ *  * @returns The result.
+ */
 export function generateSponsorName(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
   const prefix = SPONSOR_NAME_PREFIXES[Math.floor(rng.next() * SPONSOR_NAME_PREFIXES.length)];
   const core = SPONSOR_NAME_CORES[Math.floor(rng.next() * SPONSOR_NAME_CORES.length)];
@@ -304,6 +342,14 @@ export function generateSponsorName(rng: SeededRNG, tier: SponsorTier): { displa
   return { displayName: `${prefix} ${core} ${suffix}`, shortName: prefix };
 }
 
+/**
+ * Generate sponsor.
+ *  * @param rng - The Rng.
+ *  * @param tier - The Tier.
+ *  * @param createdAtTick - The Created at tick.
+ *  * @param existingIds - The Existing ids.
+ *  * @returns The result.
+ */
 export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
   const { displayName, shortName } = generateSponsorName(rng, tier);
 
@@ -356,6 +402,11 @@ export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick
   };
 }
 
+/**
+ * Get tier trait ranges.
+ *  * @param tier - The Tier.
+ *  * @returns The result.
+ */
 function getTierTraitRanges(tier: SponsorTier): { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number } {
   switch (tier) {
     case "T0":
@@ -375,11 +426,18 @@ function getTierTraitRanges(tier: SponsorTier): { prestigeMin: number; prestigeM
 
 // === SPONSOR POOL GENERATION ===
 
+/** Defines the structure for sponsor pool. */
 export interface SponsorPool {
   sponsors: Map<string, Sponsor>;
   koenkais: Map<string, Koenkai>;
 }
 
+/**
+ * Generate sponsor pool.
+ *  * @param worldSeed - The World seed.
+ *  * @param worldSizeScalar - The World size scalar.
+ *  * @returns The result.
+ */
 export function generateSponsorPool(worldSeed: string, worldSizeScalar: number = 1): SponsorPool {
   const rng = rngFromSeed(worldSeed, "sponsors", "root");
   const existingIds = new Set<string>();
@@ -408,6 +466,7 @@ export function generateSponsorPool(worldSeed: string, worldSizeScalar: number =
 
 // === KENSHO BANNER ASSIGNMENT ===
 
+/** Type representing bout importance bucket. */
 export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
 
 const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number }> = {
@@ -417,6 +476,15 @@ const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number
   peak: { maxT4Plus: 4, maxT3: 6 }
 };
 
+/**
+ * Determine bout importance.
+ *  * @param eastRank - The East rank.
+ *  * @param westRank - The West rank.
+ *  * @param day - The Day.
+ *  * @param isYushoContention - The Is yusho contention.
+ *  * @param isPlayoff - The Is playoff.
+ *  * @returns The result.
+ */
 export function determineBoutImportance(
   eastRank: string,
   westRank: string,
@@ -441,6 +509,15 @@ export function determineBoutImportance(
   return "low";
 }
 
+/**
+ * Assign kensho banners.
+ *  * @param boutId - The Bout id.
+ *  * @param bannerCount - The Banner count.
+ *  * @param importance - The Importance.
+ *  * @param sponsorPool - The Sponsor pool.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function assignKenshoBanners(
   boutId: string,
   bannerCount: number,
@@ -525,6 +602,15 @@ export function assignKenshoBanners(
 
 // === KOENKAI MANAGEMENT ===
 
+/**
+ * Create koenkai.
+ *  * @param beyaId - The Beya id.
+ *  * @param sponsorPool - The Sponsor pool.
+ *  * @param prestigeBand - The Prestige band.
+ *  * @param rng - The Rng.
+ *  * @param currentTick - The Current tick.
+ *  * @returns The result.
+ */
 export function createKoenkai(
   beyaId: string,
   sponsorPool: SponsorPool,
@@ -587,12 +673,25 @@ const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   powerful: 7_000_000
 };
 
+/**
+ * Calculate koenkai income.
+ *  * @param strengthBand - The Strength band.
+ *  * @returns The result.
+ */
 export function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
   return KOENKAI_MONTHLY_INCOME[strengthBand];
 }
 
 // === BENEFACTOR ESCALATION ===
 
+/**
+ * Select benefactor.
+ *  * @param beyaId - The Beya id.
+ *  * @param sponsorPool - The Sponsor pool.
+ *  * @param koenkai - The Koenkai.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 export function selectBenefactor(
   beyaId: string,
   sponsorPool: SponsorPool,

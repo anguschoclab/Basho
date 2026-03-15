@@ -15,7 +15,9 @@
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import { getVoiceMatrix } from "./pbpMatrix";
-import type { Side, Stance, Style, TacticalArchetype, BoutResult } from "./types";
+import type { Side } from "./types/banzuke";
+import type { Stance, Style, TacticalArchetype } from "./types/combat";
+import type { BoutResult } from "./types/basho";
 import type { Advantage, Position } from "./bout";
 
 /** =========================
@@ -24,6 +26,7 @@ import type { Advantage, Position } from "./bout";
 
 export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish" | "tactical";
 
+/** Type representing pbp tag. */
 export type PbpTag =
   | "crowd_roar"
   | "gasps"
@@ -45,6 +48,7 @@ export type { Advantage, Position } from "./bout";
 /** Legacy tolerance (older logs used "frontal") */
 type LegacyPosition = "frontal" | "front" | "lateral" | "rear";
 
+/** Type representing edge event. */
 export type EdgeEvent =
   | "bales_at_tawara"
   | "steps_out_then_recovers"
@@ -53,6 +57,7 @@ export type EdgeEvent =
   | "turns_the_tables"
   | "slips_but_survives";
 
+/** Type representing grip event. */
 export type GripEvent =
   | "migi_yotsu_established"
   | "hidari_yotsu_established"
@@ -61,6 +66,7 @@ export type GripEvent =
   | "no_grip_scramble"
   | "grip_break";
 
+/** Type representing strike event. */
 export type StrikeEvent =
   | "tsuppari_barrage"
   | "nodowa_pressure"
@@ -68,6 +74,7 @@ export type StrikeEvent =
   | "throat_attack"
   | "shoulder_blast";
 
+/** Type representing momentum shift reason. */
 export type MomentumShiftReason =
   | "tachiai_win"
   | "timing_counter"
@@ -76,6 +83,7 @@ export type MomentumShiftReason =
   | "fatigue_turn"
   | "mistake";
 
+/** Defines the structure for pbp fact base. */
 export interface PbpFactBase {
   phase: BoutPhase;
   /** Deterministic ordering within a phase (0..N) */
@@ -88,6 +96,7 @@ export interface PbpFactBase {
   leader: Advantage;
 }
 
+/** Defines the structure for tachiai fact. */
 export interface TachiaiFact extends PbpFactBase {
   phase: "tachiai";
   tachiaiWinner: Side;
@@ -97,6 +106,7 @@ export interface TachiaiFact extends PbpFactBase {
   stance?: Stance;
 }
 
+/** Defines the structure for clinch fact. */
 export interface ClinchFact extends PbpFactBase {
   phase: "clinch";
   position: Position;
@@ -105,6 +115,7 @@ export interface ClinchFact extends PbpFactBase {
   strikeEvent?: StrikeEvent;
 }
 
+/** Defines the structure for momentum fact. */
 export interface MomentumFact extends PbpFactBase {
   phase: "momentum";
   advantage: Advantage;
@@ -113,6 +124,7 @@ export interface MomentumFact extends PbpFactBase {
   position?: Position;
 }
 
+/** Defines the structure for finish fact. */
 export interface FinishFact extends PbpFactBase {
   phase: "finish";
   winner: Side;
@@ -124,6 +136,7 @@ export interface FinishFact extends PbpFactBase {
   closeCall?: boolean;
 }
 
+/** Defines the structure for tactical fact. */
 export interface TacticalFact extends PbpFactBase {
   phase: "tactical";
   side: Side;
@@ -131,10 +144,13 @@ export interface TacticalFact extends PbpFactBase {
   opponentArchetype?: TacticalArchetype;
   clinchPreference?: "belt" | "push" | "neutral";
   strategy: string;
+  tacticalResult?: import("./types/combat").TacticalResult;
 }
 
+/** Type representing pbp fact. */
 export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact;
 
+/** Defines the structure for pbp context. */
 export interface PbpContext {
   seed: string;
   day?: number;
@@ -188,8 +204,10 @@ type Phrase = {
   text: string;
 };
 
+/** Type representing phrase bucket. */
 type PhraseBucket = Phrase[];
 
+/** Defines the structure for pbp library. */
 export interface PbpLibrary {
   tachiai: {
     decisive: PhraseBucket;
@@ -711,6 +729,13 @@ export function buildPbp(
   return lines;
 }
 
+/**
+ * Build pbp from bout result.
+ *  * @param result - The Result.
+ *  * @param ctx - The Ctx.
+ *  * @param lib - The Lib.
+ *  * @returns The result.
+ */
 export function buildPbpFromBoutResult(
   result: BoutResult,
   ctx: Omit<PbpContext, "seed"> & { seed: string },
@@ -734,8 +759,8 @@ export function buildPbpFromBoutResult(
 
   let tacticalBeat = 0;
 
-  if (Array.isArray((result as any).log)) {
-    for (const entry of (result as any).log) {
+  if (Array.isArray(result.log)) {
+    for (const entry of result.log) {
       // Tactical strategy entries (emitted before tachiai)
       if (entry.data?.tacticalEntry) {
         const side = entry.data.side as Side;
@@ -748,6 +773,7 @@ export function buildPbpFromBoutResult(
           clinchPreference: entry.data.clinchPreference,
           strategy: entry.data.strategy ?? "Standard approach",
           leader: side,
+          tacticalResult: entry.data.tacticalResult as import("./types/combat").TacticalResult
         } as TacticalFact);
       } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
@@ -760,6 +786,13 @@ export function buildPbpFromBoutResult(
           strikeEvent: normalizeStrikeEvent(entry.data?.strikeEvent),
           leader: advantage
         });
+      } else if (entry.phase === "tactical") {
+        facts.push({
+          phase: "tactical",
+          beat: ++momentumBeat, // share beat with momentum
+          trailingSide: entry.data?.trailingSide as Side,
+          reason: "tactical_adaptation"
+        } as TacticalAdaptFact);
       } else if (entry.phase === "momentum") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
         facts.push({
@@ -858,7 +891,29 @@ function selectPhraseForFact(
     }
 
     case "tactical": {
-      const arch = (fact as TacticalFact).archetype;
+      const tacFact = fact as TacticalFact;
+      if (tacFact.tacticalResult) {
+        const { playerTactic, cpuTactic, advantage } = tacFact.tacticalResult;
+        let pbpText = "Both rikishi size each other up.";
+        if (advantage === "PLAYER") {
+          if (playerTactic === "HENKA") pbpText = "At the tachiai, {leader} executes a flawless Henka! The opponent overcommits for the belt and stumbles forward, completely off-balance!";
+          else if (playerTactic === "YOTSU_BELT") pbpText = "Masterful read! {leader} slips inside the opponent's thrusts and establishes a dominant belt grip immediately!";
+          else if (playerTactic === "OSHI_THRUST") pbpText = "{leader} executes a perfect Oshi-zumo strategy! The opponent tries to sidestep but gets blasted backwards by a wave of powerful thrusts!";
+        } else if (advantage === "CPU") {
+          if (playerTactic === "HENKA") pbpText = "{leader} attempts a risky Henka, but the opponent reads it perfectly and tracks them down with relentless thrusts!";
+          else if (playerTactic === "YOTSU_BELT") pbpText = "{leader} charges hard for a belt grip, but the opponent dances to the side. {leader} hits empty air and scrambles to recover!";
+          else if (playerTactic === "OSHI_THRUST") pbpText = "{leader} fires a barrage of thrusts, but the opponent easily ducks under and locks up a deep belt grip!";
+        } else {
+          if (playerTactic !== "STANDARD") pbpText = "Both fighters stick to their game plans in a neutral exchange at the tachiai.";
+        }
+
+        // Use a dynamic phrase object for custom RPS narrative
+        const chosen = { id: `tac_rps_${playerTactic}_${cpuTactic}`, text: pbpText, tags: ["tactical"] };
+        return { phrase: chosen, tags: ["tactical"] };
+      }
+
+      // Legacy fallback
+      const arch = tacFact.archetype;
       let bucket = lib.tactical.adaptive_strategy;
       if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
       else if (arch === "yotsu_specialist") bucket = lib.tactical.yotsu_strategy;
@@ -892,10 +947,23 @@ function phaseOrder(p: BoutPhase): number {
   }
 }
 
+/**
+ * Side name.
+ *  * @param ctx - The Ctx.
+ *  * @param side - The Side.
+ *  * @returns The result.
+ */
 function sideName(ctx: PbpContext, side: Side): string {
   return side === "east" ? ctx.east.shikona : ctx.west.shikona;
 }
 
+/**
+ * Advantage name.
+ *  * @param ctx - The Ctx.
+ *  * @param adv - The Adv.
+ *  * @param winnerSide - The Winner side.
+ *  * @returns The result.
+ */
 function advantageName(ctx: PbpContext, adv: Advantage, winnerSide?: Side): string {
   if (adv === "east") return ctx.east.shikona;
   if (adv === "west") return ctx.west.shikona;
@@ -904,6 +972,13 @@ function advantageName(ctx: PbpContext, adv: Advantage, winnerSide?: Side): stri
   return "";
 }
 
+/**
+ * Trailer from leader.
+ *  * @param ctx - The Ctx.
+ *  * @param adv - The Adv.
+ *  * @param winnerSide - The Winner side.
+ *  * @returns The result.
+ */
 function trailerFromLeader(ctx: PbpContext, adv: Advantage, winnerSide?: Side): string {
   if (adv === "east") return ctx.west.shikona;
   if (adv === "west") return ctx.east.shikona;
@@ -913,15 +988,31 @@ function trailerFromLeader(ctx: PbpContext, adv: Advantage, winnerSide?: Side): 
   return "";
 }
 
+/**
+ * Get kimarite label.
+ *  * @param f - The F.
+ *  * @returns The result.
+ */
 function getKimariteLabel(f: PbpFact): string {
   if (f.phase !== "finish") return "";
   return f.kimariteName || f.kimariteId || "";
 }
 
+/**
+ * Render template.
+ *  * @param text - The Text.
+ *  * @param vars - The Vars.
+ *  * @returns The result.
+ */
 function renderTemplate(text: string, vars: Record<string, string>): string {
   return text.replace(/\{(\w+)\}/g, (_, key) => (vars[key] ?? `{${key}}`));
 }
 
+/**
+ * Merge tags.
+ *  * @param lists - The Lists.
+ *  * @returns The result.
+ */
 function mergeTags(...lists: Array<PbpTag[] | undefined>): PbpTag[] {
   const out: PbpTag[] = [];
   const seen = new Set<PbpTag>();
@@ -936,6 +1027,12 @@ function mergeTags(...lists: Array<PbpTag[] | undefined>): PbpTag[] {
   return out;
 }
 
+/**
+ * Weighted pick.
+ *  * @param bucket - The Bucket.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function weightedPick(bucket: PhraseBucket, rng: SeededRNG): Phrase {
   if (!bucket.length) return { id: "fallback", text: "…" };
   const total = bucket.reduce((s, p) => s + (p.weight ?? 1), 0);
@@ -956,6 +1053,11 @@ function normalizeAdvantage(v: any): Advantage {
   return "none";
 }
 
+/**
+ * Normalize position.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function normalizePosition(v: any): Position {
   // accept older "frontal"
   if (v === "front" || v === "lateral" || v === "rear") return v;
@@ -963,6 +1065,11 @@ function normalizePosition(v: any): Position {
   return "front";
 }
 
+/**
+ * Normalize momentum reason.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function normalizeMomentumReason(v: any): MomentumShiftReason {
   if (
     v === "tachiai_win" ||
@@ -976,6 +1083,11 @@ function normalizeMomentumReason(v: any): MomentumShiftReason {
   return "mistake";
 }
 
+/**
+ * Normalize edge event.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function normalizeEdgeEvent(v: any): EdgeEvent | undefined {
   if (
     v === "bales_at_tawara" ||
@@ -989,6 +1101,11 @@ function normalizeEdgeEvent(v: any): EdgeEvent | undefined {
   return undefined;
 }
 
+/**
+ * Normalize grip event.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function normalizeGripEvent(v: any): GripEvent | undefined {
   if (
     v === "migi_yotsu_established" ||
@@ -1002,6 +1119,11 @@ function normalizeGripEvent(v: any): GripEvent | undefined {
   return undefined;
 }
 
+/**
+ * Normalize strike event.
+ *  * @param v - The V.
+ *  * @returns The result.
+ */
 function normalizeStrikeEvent(v: any): StrikeEvent | undefined {
   if (
     v === "tsuppari_barrage" ||

@@ -1,3 +1,5 @@
+import { pick } from "./utils";
+import { pick } from './utils';
 // narrative.ts
 // Play-by-Play Narrative Generator
 // Constitution PBP System Section 7 — 12-step canonical order with ritual elements
@@ -12,13 +14,18 @@
 // Engine position vocabulary:
 // - "front" | "lateral" | "rear"
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { BoutResult, BoutLogEntry, Rikishi, BashoName, Stance } from "./types";
+import type { BoutResult, BoutLogEntry, BashoName } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
+import type { Stance } from "./types/combat";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 
+/** Type representing voice style. */
 type VoiceStyle = "formal" | "dramatic" | "understated";
+/** Type representing crowd style. */
 type CrowdStyle = "restrained" | "responsive" | "intimate";
 
+/** Defines the structure for narrative context. */
 interface NarrativeContext {
   rng: SeededRNG;
   east: Rikishi;
@@ -70,17 +77,29 @@ const KENSHO_SPONSORS = [
   "Yamazaki Baking"
 ];
 
+/**
+ * Get voice style.
+ *  * @param day - The Day.
+ *  * @param isHighStakes - The Is high stakes.
+ *  * @returns The result.
+ */
 function getVoiceStyle(day: number, isHighStakes: boolean): VoiceStyle {
   if (day >= 13 || isHighStakes) return "dramatic";
   if (day <= 5) return "understated";
   return "formal";
 }
 
-function pick<T>(rng: SeededRNG, arr: T[]): T {
-  return arr[Math.floor(rng.next() * arr.length)];
-}
+
 
 // Deterministic estimate only (caller can override)
+/**
+ * Estimate kensho.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param day - The Day.
+ *  * @param rng - The Rng.
+ *  * @returns The result.
+ */
 function estimateKensho(
   east: Rikishi,
   west: Rikishi,
@@ -117,12 +136,17 @@ function estimateKensho(
   }
 
   const hasKensho = rng.next() < baseChance;
-  const sponsorName = hasKensho ? pick(rng, KENSHO_SPONSORS) : null;
+  const sponsorName = hasKensho ? pick(KENSHO_SPONSORS, () => rng.next()) : null;
 
   return { hasKensho, count: hasKensho ? baseCount : 0, sponsorName };
 }
 
 // === STEP 1: VENUE & DAY FRAMING ===
+/**
+ * Generate venue framing.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateVenueFraming(ctx: NarrativeContext): string[] {
   const { day, venueShortName, voiceStyle } = ctx;
 
@@ -137,6 +161,11 @@ function generateVenueFraming(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 2: RANK / STAKE CONTEXT ===
+/**
+ * Generate rank context.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRankContext(ctx: NarrativeContext): string[] {
   const { east, west, isHighStakes, voiceStyle } = ctx;
   const lines: string[] = [];
@@ -153,6 +182,11 @@ function generateRankContext(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 3: RING ENTRANCE RITUALS ===
+/**
+ * Generate ring entrance.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRingEntrance(ctx: NarrativeContext): string[] {
   const { east, west, crowdStyle, isHighStakes } = ctx;
   const lines: string[] = [];
@@ -189,6 +223,11 @@ function generateRingEntrance(ctx: NarrativeContext): string[] {
 }
 
 // === RITUAL ELEMENTS ===
+/**
+ * Generate ritual elements.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateRitualElements(ctx: NarrativeContext): string[] {
   const { east, west, voiceStyle, isHighStakes, rng } = ctx;
   const lines: string[] = [];
@@ -202,7 +241,7 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
             `Salt arcs through the air from ${east.shikona}'s hand, catching the light.`
           ]
         : [`${east.shikona} takes his salt.`, `${east.shikona} tosses the salt—a simple gesture.`];
-    lines.push(pick(rng, saltPhrases));
+    lines.push(pick(saltPhrases, () => rng.next()));
 
     const westSaltPhrases =
       voiceStyle === "dramatic"
@@ -212,26 +251,18 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
             `${west.shikona} rises, throws, and settles. The ritual unfolds.`
           ]
         : [`${west.shikona} follows suit.`, `${west.shikona} takes his turn.`];
-    lines.push(pick(rng, westSaltPhrases));
+    lines.push(pick(westSaltPhrases, () => rng.next()));
   }
 
   if (voiceStyle === "dramatic" && isHighStakes && rng.next() < 0.4) {
     lines.push(
-      pick(rng, [
-        "Both men stamp the clay—the sound echoes in the rafters.",
-        "The shiko stamps ring out, driving away evil spirits.",
-        "They stomp in rhythm, the ancient gesture of purification."
-      ])
+      pick([], () => rng.next())
     );
   }
 
   if (voiceStyle === "dramatic" && rng.next() < 0.3) {
     lines.push(
-      pick(rng, [
-        "Deep breaths. Shoulders squared. The moment approaches.",
-        "They settle into themselves. The crowd goes quiet.",
-        "A final exhale. Both men find their center."
-      ])
+      pick([], () => rng.next())
     );
   }
 
@@ -239,6 +270,11 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
 }
 
 // === KENSHO BANNER PRE-BOUT ===
+/**
+ * Generate kensho banners.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateKenshoBanners(ctx: NarrativeContext): string[] {
   const { hasKensho, kenshoCount, sponsorName, voiceStyle } = ctx;
   const lines: string[] = [];
@@ -257,6 +293,11 @@ function generateKenshoBanners(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 4: SHIKIRI TENSION ===
+/**
+ * Generate shikiri tension.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateShikiriTension(ctx: NarrativeContext): string[] {
   const { voiceStyle, rng } = ctx;
 
@@ -267,7 +308,7 @@ function generateShikiriTension(ctx: NarrativeContext): string[] {
       "Down to the line. Eyes locked. Waiting.",
       "At the shikiri-sen now. Fingers to the clay. Silence falls."
     ];
-    const lines = [pick(rng, shikiriPhrases)];
+    const lines = [pick(shikiriPhrases, () => rng.next())];
     if (rng.next() < 0.4) lines.push("Neither blinks.");
     return lines;
   }
@@ -277,6 +318,12 @@ function generateShikiriTension(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 5: TACHIAI IMPACT ===
+/**
+ * Generate tachiai.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, rng, crowdStyle } = ctx;
   const lines: string[] = [];
@@ -290,19 +337,10 @@ function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
     lines.push("The fan drops—*tachiai!*");
     if (margin > 10) {
       lines.push(
-        pick(rng, [
-          `${winnerName} launches forward with a low, powerful charge!`,
-          `An explosive collision! ${winnerName} drives forward with thunderous force!`,
-          `${winnerName} fires from the shikiri-sen like a cannon! The impact echoes through the hall!`,
-          `They crash together—the sound ripples through the rafters! ${winnerName} wins the initial clash!`
-        ])
+        pick([], () => rng.next())
       );
       lines.push(
-        pick(rng, [
-          `${loserName} attempts to sidestep but is caught by the charge!`,
-          `${loserName} staggers back from the impact!`,
-          `The crowd gasps as ${loserName} is driven backward!`
-        ])
+        pick([], () => rng.next())
       );
       if (crowdStyle !== "restrained" && rng.next() < 0.35) lines.push("A sharp intake of breath from the seats!");
     } else if (margin > 5) {
@@ -328,6 +366,12 @@ function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 6: CONTROL ESTABLISHMENT (Clinch) ===
+/**
+ * Generate clinch.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, rng } = ctx;
   const lines: string[] = [];
@@ -340,11 +384,7 @@ function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
     case "belt-dominant":
       if (voiceStyle === "dramatic") {
         lines.push(
-          pick(rng, [
-            `${advantagedName ?? east.shikona} gets both hands to the mawashi—deep and strong!`,
-            `A murmur spreads—someone has secured a deep belt grip!`,
-            `${advantagedName ?? west.shikona} finds the mawashi! That's exactly what he wanted!`
-          ])
+          pick([], () => rng.next())
         );
       } else {
         lines.push(`${advantagedName ?? "Both men"} secure the mawashi. Deep grip established.`);
@@ -381,6 +421,12 @@ function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 7: MOMENTUM SHIFT(S) ===
+/**
+ * Generate momentum.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, result, rng, crowdStyle } = ctx;
   const lines: string[] = [];
@@ -407,11 +453,7 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
     const trailingName = result.winner === "east" ? west.shikona : east.shikona;
     if (voiceStyle === "dramatic") {
       lines.push(
-        pick(rng, [
-          `${trailingName} plants his feet and refuses to go quietly!`,
-          `${trailingName} gives ground but stays balanced—still in this!`,
-          `Remarkable recovery by ${trailingName}! He absorbs the pressure and pushes back!`
-        ])
+        pick([], () => rng.next())
       );
       if (crowdStyle !== "restrained") lines.push("The crowd holds its breath!");
     } else {
@@ -428,11 +470,7 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
   if (rng.next() > 0.55) {
     if (voiceStyle === "dramatic") {
       lines.push(
-        pick(rng, [
-          `${likelyLeader} surges—relentless pressure!`,
-          `The pressure is unrelenting—step by step!`,
-          `${likelyLeader} drives! Legs churning against the clay!`
-        ])
+        pick([], () => rng.next())
       );
     } else if (voiceStyle === "formal") {
       lines.push(`${likelyLeader} maintains forward pressure.`);
@@ -445,6 +483,11 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
 }
 
 // === STEP 8: DECISIVE ACTION (Turning Point) ===
+/**
+ * Generate turning point.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateTurningPoint(ctx: NarrativeContext): string[] {
   const { voiceStyle, east, west, result, rng } = ctx;
   const lines: string[] = [];
@@ -454,13 +497,7 @@ function generateTurningPoint(ctx: NarrativeContext): string[] {
     const loserName = result.winner === "east" ? west.shikona : east.shikona;
 
     lines.push(
-      pick(rng, [
-        `${loserName} hesitates—just a moment! That's all ${winnerName} needs!`,
-        `A grip slips! The balance shifts—this is it!`,
-        `${loserName} tries to reset—too late! The opening appears!`,
-        `The legs give. There's nothing left in the tank.`,
-        `${winnerName} uses the forward momentum against his opponent!`
-      ])
+      pick([], () => rng.next())
     );
   } else if (voiceStyle === "formal") {
     lines.push("The decisive moment arrives.");
@@ -470,6 +507,12 @@ function generateTurningPoint(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 9-10: GYOJI RULING & KIMARITE EMPHASIS ===
+/**
+ * Generate finish.
+ *  * @param ctx - The Ctx.
+ *  * @param entry - The Entry.
+ *  * @returns The result.
+ */
 function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const { voiceStyle, east, west, crowdStyle, rng, result } = ctx;
   const lines: string[] = [];
@@ -503,6 +546,11 @@ function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
 }
 
 // === STEP 11: KENSHO CEREMONY ===
+/**
+ * Generate kensho ceremony.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateKenshoCeremony(ctx: NarrativeContext): string[] {
   const { hasKensho, kenshoCount, voiceStyle, result, east, west } = ctx;
   const lines: string[] = [];
@@ -522,6 +570,11 @@ function generateKenshoCeremony(ctx: NarrativeContext): string[] {
 }
 
 // === STEP 12: IMMEDIATE AFTERMATH FRAMING (Closing) ===
+/**
+ * Generate closing.
+ *  * @param ctx - The Ctx.
+ *  * @returns The result.
+ */
 function generateClosing(ctx: NarrativeContext): string[] {
   const { voiceStyle, east, west, result, venueShortName, day, rng } = ctx;
   const lines: string[] = [];
@@ -531,12 +584,7 @@ function generateClosing(ctx: NarrativeContext): string[] {
 
   if (voiceStyle === "dramatic") {
     lines.push(
-      pick(rng, [
-        `What a moment in ${venueShortName}! Patience, balance, and pressure carry ${winner.shikona} through.`,
-        `${winner.shikona} has done it! The hall will remember this one.`,
-        `Sumo at its finest. ${winner.shikona} prevails.`,
-        `Day ${day} delivers. ${winner.shikona} stands victorious.`
-      ])
+      pick([], () => rng.next())
     );
     return lines;
   }
@@ -551,6 +599,16 @@ function generateClosing(ctx: NarrativeContext): string[] {
 }
 
 // === MAIN NARRATIVE GENERATOR ===
+/**
+ * Generate narrative.
+ *  * @param east - The East.
+ *  * @param west - The West.
+ *  * @param result - The Result.
+ *  * @param bashoName - The Basho name.
+ *  * @param day - The Day.
+ *  * @param opts - The Opts.
+ *  * @returns The result.
+ */
 export function generateNarrative(
   east: Rikishi,
   west: Rikishi,
@@ -628,7 +686,7 @@ export function generateNarrative(
   // Steps 5–10 from log
   let hasClimax = false;
 
-  const log = Array.isArray((result as any).log) ? ((result as any).log as BoutLogEntry[]) : [];
+  const log = Array.isArray(result.log) ? (result.log as BoutLogEntry[]) : [];
   for (const entry of log) {
     switch (entry.phase) {
       case "tachiai":

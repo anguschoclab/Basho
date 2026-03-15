@@ -27,15 +27,10 @@
 // - BashoResult may have nextBanzuke?: BanzukeSnapshot
 // - If you have richer performance logs elsewhere, you can extend `RikishiHistoryEntry`.
 
-import type {
-  Id,
-  WorldState,
-  Division,
-  RankPosition,
-  BashoName,
-  BanzukeSnapshot,
-  BashoResult
-} from "./types";
+import type { Id } from "./types/common";
+import type { WorldState } from "./types/world";
+import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
+import type { BashoName, BashoResult } from "./types/basho";
 
 /** Canon key for a basho (unique) */
 export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
@@ -137,6 +132,12 @@ function compareBashoKey(a: BashoKey, b: BashoKey): number {
   return an - bn;
 }
 
+/**
+ * Sort key for.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 function sortKeyFor(year: number, bashoNumber: number): string {
   const bn = String(bashoNumber).padStart(2, "0");
   return `${year}${bn}`;
@@ -260,9 +261,15 @@ export function buildHistoryIndex(args: {
   return idx;
 }
 
+/**
+ * Push rikishi entry.
+ *  * @param idx - The Idx.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @param entry - The Entry.
+ */
 function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistoryEntry): void {
   if (!idx.rikishi[rikishiId]) idx.rikishi[rikishiId] = [];
-  idx.rikishi[rikishiId].push({ rikishiId, ...entry } as any);
+  idx.rikishi[rikishiId].push({ rikishiId, ...entry });
   idx.lastSeenBashoForRikishi[rikishiId] = entry.bashoKey;
 }
 
@@ -271,23 +278,53 @@ function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistor
  *  ======================================================= */
 
 export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
-  return index.bashoKeys.map(k => index.basho[k]).filter(Boolean);
+  return index.bashoKeys.reduce<BashoHistorySummary[]>((acc, k) => {
+    const b = index.basho[k];
+    if (b) acc.push(b);
+    return acc;
+  }, []);
 }
 
+/**
+ * Get basho summary.
+ *  * @param index - The Index.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 export function getBashoSummary(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoHistorySummary | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.basho[k] || null;
 }
 
+/**
+ * Get banzuke snapshot for.
+ *  * @param index - The Index.
+ *  * @param year - The Year.
+ *  * @param bashoNumber - The Basho number.
+ *  * @returns The result.
+ */
 export function getBanzukeSnapshotFor(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BanzukeSnapshot | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.banzukeByBasho[k] || null;
 }
 
+/**
+ * Get rikishi history.
+ *  * @param index - The Index.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHistoryEntry[] {
   return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]] : [];
 }
 
+/**
+ * Get last seen basho.
+ *  * @param index - The Index.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 export function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey | undefined {
   return index.lastSeenBashoForRikishi[rikishiId];
 }
@@ -377,7 +414,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
   });
 
   // Index all rikishi who participated (via basho state standings if available)
-  const bashoState = (world as any).currentBasho;
+  const bashoState = world.currentBasho;
   const standingsMap = bashoState?.standings;
   if (standingsMap) {
     const entries = standingsMap instanceof Map
@@ -387,8 +424,8 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     for (const [rid, stats] of entries) {
       const existing = idx.rikishi[rid]?.find(e => e.bashoKey === bashoKey);
       if (existing) {
-        existing.wins = (stats as any).wins;
-        existing.losses = (stats as any).losses;
+        existing.wins = stats.wins;
+        existing.losses = stats.losses;
       } else {
         const r = world.rikishi.get(rid);
         pushRikishiEntry(idx, rid, {
@@ -398,8 +435,8 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
           bashoName: bashoResult.bashoName,
           rikishiId: rid,
           division: r?.division,
-          wins: (stats as any).wins,
-          losses: (stats as any).losses
+          wins: stats.wins,
+          losses: stats.losses
         });
       }
     }

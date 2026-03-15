@@ -1,3 +1,5 @@
+import { clamp } from "../engine/utils";
+import { clamp } from '../engine/utils';
 // RivalriesPage.tsx — Polished with heat indicators, H2H visualizations, and intensity badges
 
 import { Helmet } from "react-helmet";
@@ -44,19 +46,13 @@ const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
 };
 
 // Helpers
-function clamp(n: any): number { const v = typeof n === "number" && Number.isFinite(n) ? n : 0; return Math.max(0, Math.min(100, v)); }
-function safeInt(n: any, f = 0): number { return typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : f; }
-function getHeatBand(heat: number): RivalryHeatBand { if (heat >= 80) return "inferno"; if (heat >= 55) return "hot"; if (heat >= 30) return "warm"; return "cold"; }
-function safeTone(t: any): RivalryTone { return t && typeof t === "string" && t in TONE_CONFIG ? t as RivalryTone : "respect"; }
-function safeKey(p: any): string { return p?.key ?? `${p?.aId ?? "a"}__${p?.bId ?? "b"}`; }
-function safeTriggers(t: any): Record<string, number> {
-  if (!t || typeof t !== "object") return {};
-  const o: Record<string, number> = {};
-  for (const [k, v] of Object.entries(t)) o[k] = typeof v === "number" ? v : 0;
-  return o;
-}
+
 
 // H2H Bar visualization
+/**
+ * h2 h bar.
+ *  * @param { aWins, bWins, aName, bName } - The { a wins, b wins, a name, b name }.
+ */
 function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; aName: string; bName: string }) {
   const total = aWins + bWins;
   if (total === 0) return <div className="text-xs text-muted-foreground text-center py-2">No bouts yet</div>;
@@ -94,6 +90,10 @@ function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; 
 }
 
 // Heat gauge
+/**
+ * heat gauge.
+ *  * @param { heat, band } - The { heat, band }.
+ */
 function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
   const config = HEAT_BAND_CONFIG[band];
   return (
@@ -110,6 +110,7 @@ function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
 }
 
 // Rivalry Card
+/** Defines the structure for rivalry card props. */
 interface RivalryCardProps {
   pair: RivalryPairState;
   world: NonNullable<ReturnType<typeof useGame>["state"]["world"]>;
@@ -117,6 +118,10 @@ interface RivalryCardProps {
   index: number;
 }
 
+/**
+ * rivalry card.
+ *  * @param { pair, world, isPlayerRivalry, index } - The { pair, world, is player rivalry, index }.
+ */
 function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) {
   const rikishiA = world.rikishi.get(pair.aId);
   const rikishiB = world.rikishi.get(pair.bId);
@@ -124,14 +129,10 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 
   const heyaA = world.heyas.get(rikishiA.heyaId);
   const heyaB = world.heyas.get(rikishiB.heyaId);
-  const heat = clamp((pair as any).heat);
-  const heatBand = getHeatBand(heat);
-  const heatConfig = HEAT_BAND_CONFIG[heatBand];
-  const tone = safeTone((pair as any).tone);
-  const toneInfo = TONE_CONFIG[tone];
-  const ToneIcon = toneInfo.icon;
-  const triggersObj = safeTriggers((pair as any).triggers);
-  const topTriggers = Object.entries(triggersObj)
+  const heat = clamp(Number((pair as any).heat) || 0, 0, 100);
+  const heatConfig = getHeatConfig(heat);
+  const toneConfig = TONE_COLORS[pair.tone || "respectful"];
+  const dominantTriggers = Object.entries(pair.triggers || {})
     .sort((a, b) => b[1] - a[1]).slice(0, 3)
     .filter(([t]) => t in TRIGGER_LABELS)
     .map(([t]) => t as RivalryTrigger);
@@ -212,6 +213,7 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 }
 
 // Page
+/** rivalries page. */
 export default function RivalriesPage() {
   const { state } = useGame();
   const { world, playerHeyaId } = state;
@@ -233,7 +235,7 @@ export default function RivalriesPage() {
     const rawPairs = Object.values((rivalriesState as any).pairs ?? {}) as any[];
     const normalized: RivalryPairState[] = rawPairs
       .filter(p => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
-      .map(p => ({ ...p, key: safeKey(p), heat: clamp(p.heat), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
+      .map(p => ({ ...p, key: safeKey(p), heat: clamp(Number(p.heat) || 0, 0, 100), aWins: safeInt(p.aWins), bWins: safeInt(p.bWins), triggers: safeTriggers(p.triggers), tone: safeTone(p.tone) })) as RivalryPairState[];
 
     // Search filter
     const filtered = searchQuery
@@ -259,8 +261,12 @@ export default function RivalriesPage() {
     const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
     player.sort(byHeat); hot.sort(byHeat); cool.sort(byHeat);
 
-    const infernoCount = normalized.filter(p => (p.heat ?? 0) >= 80).length;
-    const hotCount = normalized.filter(p => (p.heat ?? 0) >= 55 && (p.heat ?? 0) < 80).length;
+    const { infernoCount, hotCount } = normalized.reduce((acc, p) => {
+      const heat = p.heat ?? 0;
+      if (heat >= 80) acc.infernoCount++;
+      else if (heat >= 55) acc.hotCount++;
+      return acc;
+    }, { infernoCount: 0, hotCount: 0 });
 
     return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);

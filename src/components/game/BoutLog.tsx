@@ -9,8 +9,9 @@
 // - Optional: shows a friendly empty-state
 
 import { cn } from "@/lib/utils";
-import type { BoutLogEntry } from "@/engine/types";
+import type { BoutLogEntry } from "@/engine/types/basho";
 
+/** Defines the structure for bout log props. */
 interface BoutLogProps {
   log?: BoutLogEntry[] | null;
   className?: string;
@@ -30,10 +31,19 @@ const phaseColors: Record<string, string> = {
   finish: "phase-finish"
 };
 
+/**
+ * Safe phase.
+ *  * @param phase - The Phase.
+ *  * @returns The result.
+ */
 function safePhase(phase: unknown): string {
   return typeof phase === "string" && phase.length > 0 ? phase : "other";
 }
 
+/**
+ * bout log.
+ *  * @param { log, className } - The { log, class name }.
+ */
 export function BoutLog({ log, className }: BoutLogProps) {
   const entries = Array.isArray(log) ? log : [];
 

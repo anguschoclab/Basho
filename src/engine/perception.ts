@@ -5,21 +5,31 @@
 // No raw weights, injury probabilities, or secret thresholds.
 // =======================================================
 
-import type {
-  WorldState, Id, Heya, Rikishi, Style, Rank,
-  StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType,
-  ComplianceState
-} from "./types";
+import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { Heya } from "./types/heya";
+import type { Rikishi } from "./types/rikishi";
+import type { Style } from "./types/combat";
+import type { Rank } from "./types/banzuke";
+import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
+import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
 
 // === Band types for perception ===
 
+/** Type representing health band. */
 export type HealthBand = "peak" | "good" | "fair" | "worn" | "fragile";
+/** Type representing welfare risk band. */
 export type WelfareRiskBand = "safe" | "cautious" | "elevated" | "critical";
+/** Type representing governance pressure band. */
 export type GovernancePressureBand = "none" | "mild" | "moderate" | "severe";
+/** Type representing media heat band. */
 export type MediaHeatBand = "cold" | "warm" | "hot" | "blazing";
+/** Type representing rivalry perception band. */
 export type RivalryPerceptionBand = "dormant" | "simmering" | "heated" | "fierce";
+/** Type representing roster strength band. */
 export type RosterStrengthBand = "dominant" | "strong" | "competitive" | "developing" | "weak";
+/** Type representing morale band. */
 export type MoraleBand = "inspired" | "content" | "neutral" | "disgruntled" | "mutinous";
 
 /** Per-rikishi banded view available to managers */
@@ -74,6 +84,11 @@ export interface PerceptionSnapshot {
 
 // === Band derivation helpers ===
 
+/**
+ * Band health.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
 function bandHealth(r: Rikishi): HealthBand {
   const c = r.condition ?? 100;
   if (c >= 90) return "peak";
@@ -83,6 +98,11 @@ function bandHealth(r: Rikishi): HealthBand {
   return "fragile";
 }
 
+/**
+ * Band welfare risk.
+ *  * @param risk - The Risk.
+ *  * @returns The result.
+ */
 function bandWelfareRisk(risk: number): WelfareRiskBand {
   if (risk <= 20) return "safe";
   if (risk <= 44) return "cautious";
@@ -90,6 +110,12 @@ function bandWelfareRisk(risk: number): WelfareRiskBand {
   return "critical";
 }
 
+/**
+ * Band governance pressure.
+ *  * @param scandalScore - The Scandal score.
+ *  * @param status - The Status.
+ *  * @returns The result.
+ */
 function bandGovernancePressure(scandalScore: number, status: string): GovernancePressureBand {
   if (status === "sanctioned") return "severe";
   if (status === "probation" || scandalScore >= 60) return "moderate";
@@ -97,6 +123,11 @@ function bandGovernancePressure(scandalScore: number, status: string): Governanc
   return "none";
 }
 
+/**
+ * Band media heat.
+ *  * @param heat - The Heat.
+ *  * @returns The result.
+ */
 function bandMediaHeat(heat: number): MediaHeatBand {
   if (heat >= 75) return "blazing";
   if (heat >= 50) return "hot";
@@ -104,15 +135,21 @@ function bandMediaHeat(heat: number): MediaHeatBand {
   return "cold";
 }
 
+/**
+ * Band rivalry.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   const heya = world.heyas.get(heyaId);
   if (!heya) return "dormant";
 
-  const rivalriesState: RivalriesState | undefined = (world as any).rivalriesState;
+  const rivalriesState: RivalriesState | undefined = world.rivalriesState;
   if (!rivalriesState?.pairs) return "dormant";
 
   let maxHeat = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     for (const pair of Object.values(rivalriesState.pairs)) {
       if (pair.aId === rId || pair.bId === rId) {
         if (pair.heat > maxHeat) maxHeat = pair.heat;
@@ -126,6 +163,12 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   return "dormant";
 }
 
+/**
+ * Band roster strength.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   const RANK_WEIGHT: Record<string, number> = {
     yokozuna: 100, ozeki: 85, sekiwake: 70, komusubi: 60,
@@ -134,12 +177,12 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   };
 
   let total = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r) total += RANK_WEIGHT[r.rank] ?? 5;
   }
 
-  const avg = heya.rikishiIds.length > 0 ? total / heya.rikishiIds.length : 0;
+  const avg = (heya.rikishiIds || []).length > 0 ? total / (heya.rikishiIds || []).length : 0;
   if (avg >= 60) return "dominant";
   if (avg >= 40) return "strong";
   if (avg >= 25) return "competitive";
@@ -147,12 +190,18 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   return "weak";
 }
 
+/**
+ * Band morale.
+ *  * @param heya - The Heya.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   // Derive from welfare risk + recent momentum
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
   let momentumSum = 0;
   let count = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r) { momentumSum += r.momentum ?? 0; count++; }
   }
@@ -166,20 +215,37 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   return "mutinous";
 }
 
+/**
+ * Band rikishi momentum.
+ *  * @param m - The M.
+ *  * @returns The result.
+ */
 function bandRikishiMomentum(m: number): "rising" | "steady" | "declining" {
   if (m >= 2) return "rising";
   if (m <= -2) return "declining";
   return "steady";
 }
 
+/**
+ * Get stable media heat.
+ *  * @param world - The World.
+ *  * @param heyaId - The Heya id.
+ *  * @returns The result.
+ */
 function getStableMediaHeat(world: WorldState, heyaId: Id): number {
-  const mediaState = (world as any).mediaState;
+  const mediaState = world.mediaState;
   if (!mediaState?.heyaPressure) return 0;
   return mediaState.heyaPressure[heyaId] ?? 0;
 }
 
+/**
+ * Get rikishi media heat.
+ *  * @param world - The World.
+ *  * @param rikishiId - The Rikishi id.
+ *  * @returns The result.
+ */
 function getRikishiMediaHeat(world: WorldState, rikishiId: Id): number {
-  const mediaState = (world as any).mediaState;
+  const mediaState = world.mediaState;
   if (!mediaState?.mediaHeat) return 0;
   return mediaState.mediaHeat[rikishiId] ?? 0;
 }
@@ -220,7 +286,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
 
   // Build per-rikishi perceptions
-  const rikishiPerceptions: RikishiPerception[] = heya.rikishiIds
+  const rikishiPerceptions: RikishiPerception[] = (heya.rikishiIds || [])
     .map(rId => {
       const r = world.rikishi.get(rId);
       if (!r) return null;
@@ -238,7 +304,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
 
   // Determine style bias
   let oshi = 0, yotsu = 0;
-  for (const rId of heya.rikishiIds) {
+  for (const rId of (heya.rikishiIds || [])) {
     const r = world.rikishi.get(rId);
     if (r?.style === "oshi") oshi++;
     if (r?.style === "yotsu") yotsu++;
@@ -260,7 +326,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     stableMediaHeatBand: bandMediaHeat(getStableMediaHeat(world, heyaId)),
     rivalryPressureBand: bandRivalry(world, heyaId),
     rosterStrengthBand: bandRosterStrength(heya, world),
-    rosterSize: heya.rikishiIds.length,
+    rosterSize: (heya.rikishiIds || []).length,
     moraleBand: bandMorale(heya, world),
     rikishiPerceptions,
     styleBias
