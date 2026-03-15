@@ -72,3 +72,20 @@ export interface GovernanceRuling {
     scandalScoreDelta?: number;
   };
 }
+
+/** Type representing loan type. */
+export type LoanType = "emergency" | "supporter" | "benefactor";
+
+/** Defines the structure for loan. */
+export interface Loan {
+  id: string;
+  type: LoanType;
+  principal: number;
+  interestRate: number; // e.g. 0.05 for 5%
+  remainingBalance: number;
+  providerName: string;
+  monthlyPayment: number;
+  issuedAtYear: number;
+  issuedAtMonth: number;
+  stringsAttached?: string[];
+}

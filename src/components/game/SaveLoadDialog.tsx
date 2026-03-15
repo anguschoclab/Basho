@@ -94,7 +94,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   }, [refreshSlots]);
 
   const emptySlots = useMemo(() => {
-    const used = new Set(slots.filter(s => /^slot_\d+$/.test(s.slotName)).map(s => s.slotName));
+    const used = slots.reduce((acc, s) => {
+      if (/^slot_\d+$/.test(s.slotName)) acc.add(s.slotName);
+      return acc;
+    }, new Set<string>());
     const empty: string[] = [];
     for (let i = 1; i <= 10; i++) {
       if (!used.has(`slot_${i}`)) empty.push(`slot_${i}`);

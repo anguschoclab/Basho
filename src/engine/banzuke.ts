@@ -1,3 +1,4 @@
+import { clampInt } from './utils';
 // banzuke.ts
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
 
@@ -365,7 +366,7 @@ export function determineSpecialPrizes(
     
     if (beatYusho || kinboshiCount > 0 || s.wins >= 12) {
       // Simple score: Kinboshi=3, BeatYusho=4, EachWin=0.1
-      let score = (kinboshiCount * 3) + (beatYusho ? 4 : 0) + (s.wins * 0.1);
+      const score = (kinboshiCount * 3) + (beatYusho ? 4 : 0) + (s.wins * 0.1);
       if (score > bestShukun.score) {
         bestShukun = { id: c.id, score };
       }
@@ -382,7 +383,7 @@ export function determineSpecialPrizes(
     const s = stats.get(c.id)!;
     
     if (s.wins >= 10) {
-      let score = s.wins;
+      const score = s.wins;
       if (score > bestKanto.score) {
         bestKanto = { id: c.id, score };
       }
@@ -411,7 +412,7 @@ export function determineSpecialPrizes(
 
     // Score: (Unique * 1) + (TechRatio * 10)
     const techRatio = technicalMoves / s.wins;
-    let score = uniqueMoves + (techRatio * 10);
+    const score = uniqueMoves + (techRatio * 10);
     
     // Minimum threshold for Gino-sho: significant technical usage
     if (techRatio > 0.4 && score > bestGino.score) {
@@ -552,6 +553,60 @@ export function updateBanzuke(
 
 // === VARIABLE SANYAKU COUNTS ===
 
+
+function calculateYokozunaCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>): number {
+  const yokozunaIds = makuuchi.reduce<Id[]>((acc, e) => {
+    if (e.position.rank === "yokozuna") acc.push(e.rikishiId);
+    return acc;
+  }, []);
+  const yPromotions = makuuchi.filter((e) => {
+    const p = perfById.get(e.rikishiId);
+    return e.position.rank === "ozeki" && !!p?.promoteToYokozuna;
+  }).length;
+  const yokozunaCount = yokozunaIds.length + yPromotions;
+  return clampInt(yokozunaCount, 0, 6);
+}
+
+function calculateOzekiCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>, demotedOzeki: Set<string>): number {
+  const ozekiIds = makuuchi
+    .filter((e) => e.position.rank === "ozeki" && !demotedOzeki.has(e.rikishiId))
+    .map((e) => e.rikishiId);
+
+  const ozekiPromoteCandidates = makuuchi.filter((e) => {
+    if (e.position.rank !== "sekiwake") return false;
+    const p = perfById.get(e.rikishiId);
+    return (p?.wins ?? 0) >= 11;
+  });
+
+  return Math.max(2, ozekiIds.length + ozekiPromoteCandidates.length);
+}
+
+function calculateSekiwakeCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>, demotedCount: number): number {
+  const sekiwakePromoteCandidates = makuuchi.filter((e) => {
+    if (e.position.rank !== "komusubi") return false;
+    const p = perfById.get(e.rikishiId);
+    return (p?.wins ?? 0) >= 10;
+  });
+
+  const sekiwakeCount = 2 + demotedCount + sekiwakePromoteCandidates.length;
+  return clampInt(sekiwakeCount, 2, 6);
+}
+
+function calculateKomusubiCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>): number {
+  const komusubiPromoteCandidates = makuuchi.filter((e) => {
+    if (e.position.rank !== "maegashira") return false;
+    const p = perfById.get(e.rikishiId);
+    const wins = p?.wins ?? 0;
+    const yusho = !!p?.yusho;
+    const rn = e.position.rankNumber ?? 99;
+    const nearTop = rn <= 4;
+    return yusho || (nearTop && wins >= 10);
+  });
+
+  const komusubiCount = 2 + komusubiPromoteCandidates.length;
+  return clampInt(komusubiCount, 2, 6);
+}
+
 /**
  * Compute variable sanyaku counts.
  *  * @param current - The Current.
@@ -566,51 +621,10 @@ function computeVariableSanyakuCounts(
 ): BanzukeUpdateResult["sanyakuCounts"] {
   const makuuchi = current.filter((e) => e.division === "makuuchi");
 
-  const yokozunaIds = makuuchi.filter((e) => e.position.rank === "yokozuna").map((e) => e.rikishiId);
-
-  const ozekiIds = makuuchi
-    .filter((e) => e.position.rank === "ozeki" && !demotedOzeki.has(e.rikishiId))
-    .map((e) => e.rikishiId);
-
-  const ozekiPromoteCandidates = makuuchi.filter((e) => {
-    if (e.position.rank !== "sekiwake") return false;
-    const p = perfById.get(e.rikishiId);
-    return (p?.wins ?? 0) >= 11;
-  });
-
-  let ozekiCount = Math.max(2, ozekiIds.length + ozekiPromoteCandidates.length);
-
-  const demotedCount = demotedOzeki.size;
-
-  const sekiwakePromoteCandidates = makuuchi.filter((e) => {
-    if (e.position.rank !== "komusubi") return false;
-    const p = perfById.get(e.rikishiId);
-    return (p?.wins ?? 0) >= 10;
-  });
-
-  let sekiwakeCount = 2 + demotedCount + sekiwakePromoteCandidates.length;
-  sekiwakeCount = clampInt(sekiwakeCount, 2, 6);
-
-  const komusubiPromoteCandidates = makuuchi.filter((e) => {
-    if (e.position.rank !== "maegashira") return false;
-    const p = perfById.get(e.rikishiId);
-    const wins = p?.wins ?? 0;
-    const yusho = !!p?.yusho;
-    const rn = e.position.rankNumber ?? 99;
-    const nearTop = rn <= 4;
-    return yusho || (nearTop && wins >= 10);
-  });
-
-  let komusubiCount = 2 + komusubiPromoteCandidates.length;
-  komusubiCount = clampInt(komusubiCount, 2, 6);
-
-  const yPromotions = makuuchi.filter((e) => {
-    const p = perfById.get(e.rikishiId);
-    return e.position.rank === "ozeki" && !!p?.promoteToYokozuna;
-  }).length;
-
-  let yokozunaCount = yokozunaIds.length + yPromotions;
-  yokozunaCount = clampInt(yokozunaCount, 0, 6);
+  const yokozunaCount = calculateYokozunaCount(makuuchi, perfById);
+  let ozekiCount = calculateOzekiCount(makuuchi, perfById, demotedOzeki);
+  let sekiwakeCount = calculateSekiwakeCount(makuuchi, perfById, demotedOzeki.size);
+  let komusubiCount = calculateKomusubiCount(makuuchi, perfById);
 
   // Guardrail: if sanyaku becomes absurdly large, trim (prefer trimming K then S then O).
   let totalSanyaku = yokozunaCount + ozekiCount + sekiwakeCount + komusubiCount;
@@ -818,12 +832,11 @@ function computeMovementUnits(
   demotedOzeki: Set<string>
 ): number {
   if (!perf) return 0;
-
-  const rank = entry.position.rank;
-  const baseMove = calculateBaseMove(rank, perf);
-  const isDemotedOzeki = demotedOzeki.has(entry.rikishiId);
-
-  return clampMovementByRank(baseMove, rank, isDemotedOzeki);
+  return clampMovementByRank(
+    calculateBaseMove(entry.position.rank, perf),
+    entry.position.rank,
+    demotedOzeki.has(entry.rikishiId)
+  );
 }
 
 /**
@@ -1013,15 +1026,3 @@ function normalizeRosterToTemplate(current: BanzukeEntry[], needed: number): Ban
 
 // === UTILS ===
 
-/**
- * Clamp int.
- *  * @param x - The X.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clampInt(x: number, lo: number, hi: number): number {
-  if (x < lo) return lo;
-  if (x > hi) return hi;
-  return x;
-}

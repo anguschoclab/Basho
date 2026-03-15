@@ -321,11 +321,16 @@ export function getKimariteForArchetype(archetype: TacticalArchetype): Kimarite[
 }
 
 // Stats
+let _cachedCount: number | null = null;
+
 /**
  * Get kimarite count.
  *  * @returns The result.
  */
 export function getKimariteCount(): number {
   // Official 82 only
-  return KIMARITE_ALL.filter(k => k.category !== "forfeit" && k.category !== "result").length;
+  if (_cachedCount === null) {
+    _cachedCount = KIMARITE_ALL.reduce((acc, k) => acc + (k.category !== "forfeit" && k.category !== "result" ? 1 : 0), 0);
+  }
+  return _cachedCount;
 }

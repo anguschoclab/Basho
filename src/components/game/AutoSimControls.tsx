@@ -1,3 +1,4 @@
+import { clampInt } from '../../engine/utils';
 // AutoSimControls.tsx
 // Auto-Sim Controls - UI for auto-simulation and observer modes
 // Per Constitution §7: Auto-Sim "Watch the World" Mode
@@ -37,16 +38,7 @@ const DURATION_TYPES = ["days", "weeks", "basho", "years"] as const;
 /** Type representing duration type. */
 type DurationType = (typeof DURATION_TYPES)[number];
 
-/**
- * Clamp int.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- */
-function clampInt(n: number, lo: number, hi: number) {
-  const x = Number.isFinite(n) ? Math.trunc(n) : lo;
-  return Math.max(lo, Math.min(hi, x));
-}
+
 
 /**
  * Safe number.
@@ -85,7 +77,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
   // Keep observerMode synced if playerHeyaId becomes undefined later.
   useMemo(() => {
     if (forcedObserver) setObserverMode(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [forcedObserver]);
 
   const handleStartSim = async () => {

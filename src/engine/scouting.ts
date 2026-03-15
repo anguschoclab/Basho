@@ -1,3 +1,4 @@
+import { clamp, clampInt } from './utils';
 /**
  * File Name: src/engine/scouting.ts
  * Notes:
@@ -574,27 +575,9 @@ export function recruitCandidate(state: WorldState, candidateId: string, targetH
 // PART 3: UTILS
 // ============================================
 
-/**
- * Clamp.
- *  * @param value - The Value.
- *  * @param min - The Min.
- *  * @param max - The Max.
- *  * @returns The result.
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
-}
 
-/**
- * Clamp int.
- *  * @param value - The Value.
- *  * @param min - The Min.
- *  * @param max - The Max.
- *  * @returns The result.
- */
-function clampInt(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, Math.trunc(value)));
-}
+
+
 
 /**
  * Safe num.

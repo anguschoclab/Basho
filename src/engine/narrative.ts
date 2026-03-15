@@ -1,3 +1,5 @@
+import { pick } from "./utils";
+import { pick } from './utils';
 // narrative.ts
 // Play-by-Play Narrative Generator
 // Constitution PBP System Section 7 — 12-step canonical order with ritual elements
@@ -87,15 +89,7 @@ function getVoiceStyle(day: number, isHighStakes: boolean): VoiceStyle {
   return "formal";
 }
 
-/**
- * Pick.
- *  * @param rng - The Rng.
- *  * @param arr - The Arr.
- *  * @returns The result.
- */
-function pick<T>(rng: SeededRNG, arr: T[]): T {
-  return arr[Math.floor(rng.next() * arr.length)];
-}
+
 
 // Deterministic estimate only (caller can override)
 /**
@@ -142,7 +136,7 @@ function estimateKensho(
   }
 
   const hasKensho = rng.next() < baseChance;
-  const sponsorName = hasKensho ? pick(rng, KENSHO_SPONSORS) : null;
+  const sponsorName = hasKensho ? pick(KENSHO_SPONSORS, () => rng.next()) : null;
 
   return { hasKensho, count: hasKensho ? baseCount : 0, sponsorName };
 }
@@ -247,7 +241,7 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
             `Salt arcs through the air from ${east.shikona}'s hand, catching the light.`
           ]
         : [`${east.shikona} takes his salt.`, `${east.shikona} tosses the salt—a simple gesture.`];
-    lines.push(pick(rng, saltPhrases));
+    lines.push(pick(saltPhrases, () => rng.next()));
 
     const westSaltPhrases =
       voiceStyle === "dramatic"
@@ -257,26 +251,18 @@ function generateRitualElements(ctx: NarrativeContext): string[] {
             `${west.shikona} rises, throws, and settles. The ritual unfolds.`
           ]
         : [`${west.shikona} follows suit.`, `${west.shikona} takes his turn.`];
-    lines.push(pick(rng, westSaltPhrases));
+    lines.push(pick(westSaltPhrases, () => rng.next()));
   }
 
   if (voiceStyle === "dramatic" && isHighStakes && rng.next() < 0.4) {
     lines.push(
-      pick(rng, [
-        "Both men stamp the clay—the sound echoes in the rafters.",
-        "The shiko stamps ring out, driving away evil spirits.",
-        "They stomp in rhythm, the ancient gesture of purification."
-      ])
+      pick([], () => rng.next())
     );
   }
 
   if (voiceStyle === "dramatic" && rng.next() < 0.3) {
     lines.push(
-      pick(rng, [
-        "Deep breaths. Shoulders squared. The moment approaches.",
-        "They settle into themselves. The crowd goes quiet.",
-        "A final exhale. Both men find their center."
-      ])
+      pick([], () => rng.next())
     );
   }
 
@@ -322,7 +308,7 @@ function generateShikiriTension(ctx: NarrativeContext): string[] {
       "Down to the line. Eyes locked. Waiting.",
       "At the shikiri-sen now. Fingers to the clay. Silence falls."
     ];
-    const lines = [pick(rng, shikiriPhrases)];
+    const lines = [pick(shikiriPhrases, () => rng.next())];
     if (rng.next() < 0.4) lines.push("Neither blinks.");
     return lines;
   }
@@ -351,19 +337,10 @@ function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
     lines.push("The fan drops—*tachiai!*");
     if (margin > 10) {
       lines.push(
-        pick(rng, [
-          `${winnerName} launches forward with a low, powerful charge!`,
-          `An explosive collision! ${winnerName} drives forward with thunderous force!`,
-          `${winnerName} fires from the shikiri-sen like a cannon! The impact echoes through the hall!`,
-          `They crash together—the sound ripples through the rafters! ${winnerName} wins the initial clash!`
-        ])
+        pick([], () => rng.next())
       );
       lines.push(
-        pick(rng, [
-          `${loserName} attempts to sidestep but is caught by the charge!`,
-          `${loserName} staggers back from the impact!`,
-          `The crowd gasps as ${loserName} is driven backward!`
-        ])
+        pick([], () => rng.next())
       );
       if (crowdStyle !== "restrained" && rng.next() < 0.35) lines.push("A sharp intake of breath from the seats!");
     } else if (margin > 5) {
@@ -407,11 +384,7 @@ function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
     case "belt-dominant":
       if (voiceStyle === "dramatic") {
         lines.push(
-          pick(rng, [
-            `${advantagedName ?? east.shikona} gets both hands to the mawashi—deep and strong!`,
-            `A murmur spreads—someone has secured a deep belt grip!`,
-            `${advantagedName ?? west.shikona} finds the mawashi! That's exactly what he wanted!`
-          ])
+          pick([], () => rng.next())
         );
       } else {
         lines.push(`${advantagedName ?? "Both men"} secure the mawashi. Deep grip established.`);
@@ -480,11 +453,7 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
     const trailingName = result.winner === "east" ? west.shikona : east.shikona;
     if (voiceStyle === "dramatic") {
       lines.push(
-        pick(rng, [
-          `${trailingName} plants his feet and refuses to go quietly!`,
-          `${trailingName} gives ground but stays balanced—still in this!`,
-          `Remarkable recovery by ${trailingName}! He absorbs the pressure and pushes back!`
-        ])
+        pick([], () => rng.next())
       );
       if (crowdStyle !== "restrained") lines.push("The crowd holds its breath!");
     } else {
@@ -501,11 +470,7 @@ function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] 
   if (rng.next() > 0.55) {
     if (voiceStyle === "dramatic") {
       lines.push(
-        pick(rng, [
-          `${likelyLeader} surges—relentless pressure!`,
-          `The pressure is unrelenting—step by step!`,
-          `${likelyLeader} drives! Legs churning against the clay!`
-        ])
+        pick([], () => rng.next())
       );
     } else if (voiceStyle === "formal") {
       lines.push(`${likelyLeader} maintains forward pressure.`);
@@ -532,13 +497,7 @@ function generateTurningPoint(ctx: NarrativeContext): string[] {
     const loserName = result.winner === "east" ? west.shikona : east.shikona;
 
     lines.push(
-      pick(rng, [
-        `${loserName} hesitates—just a moment! That's all ${winnerName} needs!`,
-        `A grip slips! The balance shifts—this is it!`,
-        `${loserName} tries to reset—too late! The opening appears!`,
-        `The legs give. There's nothing left in the tank.`,
-        `${winnerName} uses the forward momentum against his opponent!`
-      ])
+      pick([], () => rng.next())
     );
   } else if (voiceStyle === "formal") {
     lines.push("The decisive moment arrives.");
@@ -625,12 +584,7 @@ function generateClosing(ctx: NarrativeContext): string[] {
 
   if (voiceStyle === "dramatic") {
     lines.push(
-      pick(rng, [
-        `What a moment in ${venueShortName}! Patience, balance, and pressure carry ${winner.shikona} through.`,
-        `${winner.shikona} has done it! The hall will remember this one.`,
-        `Sumo at its finest. ${winner.shikona} prevails.`,
-        `Day ${day} delivers. ${winner.shikona} stands victorious.`
-      ])
+      pick([], () => rng.next())
     );
     return lines;
   }

@@ -1,72 +1,86 @@
-type TalentPoolType = "high_school" | "university" | "foreign";
-type Prospect = { pool: TalentPoolType };
+import { performance } from "perf_hooks";
 
-// Generate mock data
-const prospects: Prospect[] = [];
-for (let i = 0; i < 10000; i++) {
-  const r = Math.random();
-  if (r < 0.33) prospects.push({ pool: "high_school" });
-  else if (r < 0.66) prospects.push({ pool: "university" });
-  else prospects.push({ pool: "foreign" });
-}
-
-// Baseline
-function baseline(prospects: Prospect[]) {
-  return {
-    high_school: prospects.filter(p => p.pool === "high_school").length,
-    university: prospects.filter(p => p.pool === "university").length,
-    foreign: prospects.filter(p => p.pool === "foreign").length,
-  };
-}
-
-// Reduce
-function usingReduce(prospects: Prospect[]) {
-  return prospects.reduce(
-    (acc, p) => {
-      acc[p.pool]++;
-      return acc;
-    },
-    { high_school: 0, university: 0, foreign: 0 }
-  );
-}
-
-// For Loop
-function usingForLoop(prospects: Prospect[]) {
-  const counts = { high_school: 0, university: 0, foreign: 0 };
-  for (let i = 0; i < prospects.length; i++) {
-    counts[prospects[i].pool]++;
-  }
-  return counts;
-}
-
-// For Of
-function usingForOf(prospects: Prospect[]) {
-  const counts = { high_school: 0, university: 0, foreign: 0 };
-  for (const p of prospects) {
-    counts[p.pool]++;
-  }
-  return counts;
-}
-
+// Mock data
 const ITERATIONS = 10000;
+const MATCH_COUNT = 100;
 
-let start = performance.now();
-for (let i = 0; i < ITERATIONS; i++) baseline(prospects);
-const baselineTime = performance.now() - start;
+const matches = Array.from({ length: MATCH_COUNT }, (_, i) => ({
+  eastRikishiId: `e${i}`,
+  westRikishiId: `w${i}`,
+}));
 
-start = performance.now();
-for (let i = 0; i < ITERATIONS; i++) usingReduce(prospects);
-const reduceTime = performance.now() - start;
+const world = {
+  rikishi: new Map(
+    Array.from({ length: MATCH_COUNT * 2 }, (_, i) => {
+      if (i < MATCH_COUNT) {
+        return [`e${i}`, { id: `e${i}`, shikona: `East ${i}` }];
+      } else {
+        return [`w${i - MATCH_COUNT}`, { id: `w${i - MATCH_COUNT}`, shikona: `West ${i - MATCH_COUNT}` }];
+      }
+    })
+  )
+};
 
-start = performance.now();
-for (let i = 0; i < ITERATIONS; i++) usingForLoop(prospects);
-const forLoopTime = performance.now() - start;
+// Simulate missing rikishi
+world.rikishi.delete('e5');
+world.rikishi.delete('w10');
 
-start = performance.now();
-for (let i = 0; i < ITERATIONS; i++) usingForOf(prospects);
-const forOfTime = performance.now() - start;
+// Mock helpers
+function getH2HRecord(e: any, w: any) { return { wins: 0, losses: 0 }; }
+function getRivalry(s: any, e: any, w: any) { return null; }
+function getHeatBand(h: any) { return null; }
+function generateH2HCommentary(e: any, w: any) { return ""; }
+const playerRikishiIds = new Set(['e1', 'w2']);
+const rivalriesState = {};
 
-console.log(`Baseline (filter.length): ${baselineTime.toFixed(2)}ms`);
-console.log(`Reduce: ${reduceTime.toFixed(2)}ms (${((baselineTime - reduceTime) / baselineTime * 100).toFixed(2)}% improvement)`);
-console.log(`For Loop: ${forLoopTime.toFixed(2)}ms (${((baselineTime - forLoopTime) / baselineTime * 100).toFixed(2)}% improvement)`);
-console.log(`For Of: ${forOfTime.toFixed(2)}ms (${((baselineTime - forOfTime) / baselineTime * 100).toFixed(2)}% improvement)`);
+function runMapFilter() {
+  const start = performance.now();
+  for (let i = 0; i < ITERATIONS; i++) {
+    const resolvedMatches = matches.map((match) => {
+      const east = world.rikishi.get(match.eastRikishiId);
+      const west = world.rikishi.get(match.westRikishiId);
+      if (!east || !west) return null;
+
+      const h2h = getH2HRecord(east, west);
+      const rivalry = getRivalry(rivalriesState, east.id, west.id);
+      const heatBand = rivalry ? getHeatBand((rivalry as any).heat) : null;
+      const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
+      const h2hCommentary = generateH2HCommentary(east, west);
+
+      return { ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary };
+    }).filter(Boolean);
+  }
+  return performance.now() - start;
+}
+
+function runReduce() {
+  const start = performance.now();
+  for (let i = 0; i < ITERATIONS; i++) {
+    const resolvedMatches = matches.reduce<any[]>((acc, match) => {
+      const east = world.rikishi.get(match.eastRikishiId);
+      const west = world.rikishi.get(match.westRikishiId);
+      if (!east || !west) return acc;
+
+      const h2h = getH2HRecord(east, west);
+      const rivalry = getRivalry(rivalriesState, east.id, west.id);
+      const heatBand = rivalry ? getHeatBand((rivalry as any).heat) : null;
+      const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
+      const h2hCommentary = generateH2HCommentary(east, west);
+
+      acc.push({ ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary });
+      return acc;
+    }, []);
+  }
+  return performance.now() - start;
+}
+
+// Warmup
+runMapFilter();
+runReduce();
+
+const mapFilterTime = runMapFilter();
+const reduceTime = runReduce();
+
+console.log(`Map + Filter Time: ${mapFilterTime.toFixed(2)} ms`);
+console.log(`Reduce Time:       ${reduceTime.toFixed(2)} ms`);
+console.log(`Improvement:       ${(((mapFilterTime - reduceTime) / mapFilterTime) * 100).toFixed(2)}%`);

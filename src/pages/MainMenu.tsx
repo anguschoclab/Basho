@@ -430,7 +430,7 @@ export default function MainMenu() {
       }
 
       if (typeof createWorld === "function") {
-        // eslint-disable-next-line no-console
+
         console.warn(
           "[MainMenu] No loadWorldDirect/loadImportedWorld/setWorld API found. Falling back to createWorld(seed, playerHeyaId). Imported data may not be preserved."
         );
@@ -475,7 +475,7 @@ export default function MainMenu() {
   };
 
   const handleRerollWorld = () => {
-    const newSeed = seed?.trim() ? seed.trim() : makeDeterministicSeed("world");
+    const newSeed = makeDeterministicSeed("world");
     setSeed(newSeed);
     setSelectedHeyaId(null);
     if (typeof createWorld === "function") createWorld(newSeed);

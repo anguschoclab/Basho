@@ -257,6 +257,24 @@ describe("Facilities: Monthly Tick", () => {
     expect(heya.facilities.nutrition).toBeLessThan(50);
   });
 
+
+  it("should log FACILITY_DEGRADED event when a facility band drops due to decay", () => {
+    // A heya at adequate band (45 avg)
+    const world = makeWorld({ funds: 0, facilities: { training: 45, recovery: 45, nutrition: 45 }, facilitiesBand: "adequate" }, { playerOwned: false });
+
+    tickMonthly(world);
+
+    const heya = world.heyas.get("test-heya");
+    // New avg is 43, so band drops to 'basic' (>= 25)
+    expect(heya.facilitiesBand).toBe("basic");
+
+    // Check if the event was logged
+    const degradedEvent = world.events.log.find(e => e.type === "FACILITY_DEGRADED");
+    expect(degradedEvent).toBeDefined();
+    expect(degradedEvent.data.oldBand).toBe("adequate");
+    expect(degradedEvent.data.newBand).toBe("basic");
+  });
+
   it("should not decay below MIN_FACILITY (5)", () => {
     const world = makeWorld({ funds: 0, facilities: { training: 5, recovery: 5, nutrition: 5 } }, { playerOwned: false });
 
@@ -268,7 +286,73 @@ describe("Facilities: Monthly Tick", () => {
     expect(heya.facilities.nutrition).toBe(5);
   });
 
+
+  describe("getUpgradeCostEstimate", () => {
+    it("should handle 0 points correctly", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 0);
+      expect(cost).toBe(0);
+    });
+
+    it("should handle negative points correctly", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", -5);
+      expect(cost).toBe(0);
+    });
+
+    it("should calculate cost for 1 point", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 1);
+      expect(cost).toBe(200_000); // Base cost < 40
+    });
+
+    it("should default points to 5 if not provided", () => {
+      const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+      const cost5 = getUpgradeCostEstimate(heya, "training", 5);
+      const costDefault = getUpgradeCostEstimate(heya, "training");
+      expect(costDefault).toBe(cost5);
+    });
+
+    it("should scale up quadratic costs correctly across breakpoints", () => {
+      const heya = makeHeya({ facilities: { training: 39, recovery: 30, nutrition: 30 } });
+      // Upgrading from 39 to 41:
+      // level 39 -> 200k
+      // level 40 -> 300k
+      const cost = getUpgradeCostEstimate(heya, "training", 2);
+      expect(cost).toBe(500_000);
+    });
+
+    it("should cap points at MAX_FACILITY (100)", () => {
+      const heya = makeHeya({ facilities: { training: 98, recovery: 30, nutrition: 30 } });
+      const cost2 = getUpgradeCostEstimate(heya, "training", 2);
+      const cost10 = getUpgradeCostEstimate(heya, "training", 10); // Attempt to go over 100
+      expect(cost10).toBe(cost2); // Effective points is 2
+    });
+
+    it("should return 0 if already at MAX_FACILITY", () => {
+      const heya = makeHeya({ facilities: { training: 100, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 5);
+      expect(cost).toBe(0);
+    });
+  });
+
   describe("getMonthlyMaintenanceCost", () => {
+    it("should round correctly for fractional facility levels", () => {
+      // 5.4 * 3000 = 16200
+      // 10.6 * 3000 = 31800
+      // 50.5 * 3000 = 151500
+      // Total = 16200 + 31800 + 151500 = 199500
+      const heya = makeHeya({ facilities: { training: 5.4, recovery: 10.6, nutrition: 50.5 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      expect(cost).toBe(199_500);
+    });
+
+    it("should handle zero levels safely even if below minimum", () => {
+      const heya = makeHeya({ facilities: { training: 0, recovery: 0, nutrition: 0 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      expect(cost).toBe(0);
+    });
+
     it("should calculate monthly maintenance cost correctly for symmetric levels", () => {
       const heya = makeHeya({ facilities: { training: 50, recovery: 50, nutrition: 50 } });
       const cost = getMonthlyMaintenanceCost(heya);
@@ -306,6 +390,27 @@ describe("Facilities: Monthly Tick", () => {
 // ============================================================================
 
 describe("Facilities: NPC Auto-Investment", () => {
+
+  it("should return early and not invest if the minimum facility level is >= 80", () => {
+    const world = makeWorld(
+      { funds: 50_000_000, facilities: { training: 80, recovery: 80, nutrition: 80 } },
+      {
+        playerOwned: false,
+        oyakataOverrides: { traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 } },
+      }
+    );
+
+    tickMonthly(world);
+
+    const heya = world.heyas.get("test-heya");
+    // Maintenance will be paid (80 * 3000 * 3 = 720k)
+    // No investment should occur, so levels remain 80
+    expect(heya.facilities.training).toBe(80);
+    expect(heya.facilities.recovery).toBe(80);
+    expect(heya.facilities.nutrition).toBe(80);
+    expect(heya.funds).toBe(50_000_000 - 720_000);
+  });
+
   it("should invest for NPC heya with healthy funds", () => {
     const world = makeWorld(
       { funds: 50_000_000, facilities: { training: 30, recovery: 30, nutrition: 30 } },
@@ -321,6 +426,26 @@ describe("Facilities: NPC Auto-Investment", () => {
     // NPC should have invested in training (ambition > 70)
     // Funds should have decreased beyond just maintenance
     expect(heya.facilities.training).toBeGreaterThan(30);
+  });
+
+
+  it("should upgrade the weakest facility if no traits strongly prioritize others", () => {
+    const world = makeWorld(
+      { funds: 50_000_000, facilities: { training: 50, recovery: 40, nutrition: 30 } },
+      {
+        playerOwned: false,
+        oyakataOverrides: { traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 } },
+      }
+    );
+
+    tickMonthly(world);
+
+    const heya = world.heyas.get("test-heya");
+    // Weakest is nutrition (30)
+    expect(heya.facilities.nutrition).toBeGreaterThan(30);
+    // Others shouldn't be upgraded
+    expect(heya.facilities.training).toBe(50);
+    expect(heya.facilities.recovery).toBe(40);
   });
 
   it("should not invest for NPC heya with low funds", () => {

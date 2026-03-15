@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // descriptorBands.ts
 // =======================================================
 // No-Leak Observability Layer (Constitution A7.1)
@@ -62,15 +63,7 @@ export function toBand<T extends string>(
   return resolved.band;
 }
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- */
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 // === Stat Descriptor Bands (0–100 attributes) ===
 

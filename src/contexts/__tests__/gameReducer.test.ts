@@ -48,7 +48,7 @@ function stateInBasho(): GameState {
 
 describe("gameReducer", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mock.restore();
   });
 
   // === Pure navigation / selection actions ===

@@ -1,20 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Swords, ChevronRight } from "lucide-react";
-import { ClickableName } from "@/components/ClickableName";
-import type { MatchSchedule } from "@/engine/types/basho";
-import type { WorldState } from "@/engine/types/world";
+import { RikishiName } from "@/components/ClickableName";
+import type { MatchSchedule, WorldState } from "@/engine/types";
 
-/** Defines the structure for playoff bracket props. */
 interface PlayoffBracketProps {
   matches: MatchSchedule[];
   world: WorldState;
 }
 
-/**
- * playoff bracket.
- *  * @param { matches, world } - The { matches, world }.
- */
 export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   if (!matches || matches.length === 0) return null;
 
@@ -82,10 +76,10 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         }`}
                       >
                         <div className="w-1 h-4 rounded-full bg-east" />
-                        <ClickableName
+                        <RikishiName
                           id={m.eastRikishiId}
                           name={east?.shikona || "???"}
-                          type="rikishi"
+                          
                           className={eastWon ? "font-bold" : ""}
                         />
                         {eastWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
@@ -97,10 +91,10 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         }`}
                       >
                         <div className="w-1 h-4 rounded-full bg-west" />
-                        <ClickableName
+                        <RikishiName
                           id={m.westRikishiId}
                           name={west?.shikona || "???"}
-                          type="rikishi"
+                          
                           className={westWon ? "font-bold" : ""}
                         />
                         {westWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}

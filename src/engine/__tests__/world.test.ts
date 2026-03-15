@@ -12,6 +12,7 @@ describe("World Engine Transitions", () => {
 
     // Attempt to start
     const updated = startBasho(world, "hatsu");
+if (!updated) throw new Error("updated is undefined");
 
     expect(updated.cyclePhase).toBe("active_basho");
     expect(updated.currentBasho).toBeDefined();

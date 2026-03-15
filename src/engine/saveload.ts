@@ -58,7 +58,8 @@ function hasLocalStorage(): boolean {
  *  * @param map - The Map.
  *  * @returns The result.
  */
-function mapToObject<T>(map: Map<string, T>): Record<string, T> {
+function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string, T> {
+  if (!(map instanceof Map)) return map;
   const obj: Record<string, T> = {};
   const keys = Array.from(map.keys()).sort();
   for (const key of keys) obj[key] = map.get(key)!;
@@ -154,6 +155,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     cyclePhase: world.cyclePhase,
     currentBashoName: world.currentBashoName,
     heyas: mapToObject(world.heyas),
+    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : undefined,
     rikishi: mapToObject(world.rikishi),
     oyakata: mapToObject(world.oyakata),
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
@@ -251,6 +253,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),
+    closedHeyas: (serialized as any).closedHeyas ? objectToMap((serialized as any).closedHeyas) : new Map(),
     rikishi: objectToMap(rikishiObj),
     oyakata: objectToMap(oyakataObj),
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,

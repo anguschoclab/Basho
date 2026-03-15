@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // talentpool.ts
 // Persistent Talent Pool system (Constitution A8 / System 4)
 //
@@ -59,16 +60,7 @@ function styleFromArchetype(archetype: TacticalArchetype): Style {
   return "hybrid";
 }
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 /**
  * Get week.

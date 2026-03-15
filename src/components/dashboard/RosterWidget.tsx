@@ -4,10 +4,9 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
-import { ClickableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 
-/** roster widget. */
 export function RosterWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ export function RosterWidget() {
 
   if (!world) return null;
 
-  const injuredCount = roster.filter(r => r.isInjured).length;
+  const injuredCount = roster.reduce((count, r) => count + (r.isInjured ? 1 : 0), 0);
   const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
 
   return (
@@ -37,7 +36,7 @@ export function RosterWidget() {
           <Users className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">My Roster</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/rikishi" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/rikishi")} className="h-6 text-xs gap-1 text-muted-foreground">
           All Rikishi <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
@@ -76,7 +75,7 @@ export function RosterWidget() {
       <div className="space-y-0.5">
         {roster.slice(0, 8).map((entry) => (
           <div key={entry.id} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
-            <ClickableName id={entry.id} name={entry.shikona} type="rikishi" className="flex-1 font-medium truncate" />
+            <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
             <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{entry.rank}</span>
             {entry.isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
             {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
@@ -95,7 +94,7 @@ export function RosterWidget() {
         ))}
         {roster.length > 8 && (
           <button
-            onClick={() => navigate({ to: "/rikishi" })}
+            onClick={() => navigate("/rikishi")}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors"
           >
             +{roster.length - 8} more wrestlers →

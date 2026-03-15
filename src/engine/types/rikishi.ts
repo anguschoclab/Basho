@@ -22,6 +22,8 @@ export interface RikishiStats {
 
 /** Defines the structure for rikishi. */
 export interface Rikishi {
+  mentorId?: Id;
+  menteeIds?: Id[];
   id: Id;
   shikona: string;
   realName?: string;

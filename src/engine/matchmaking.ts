@@ -1,3 +1,4 @@
+import { clamp, stableSort } from './utils';
 // matchmaking.ts
 // =======================================================
 // Matchmaking System v1.1 — Deterministic torikumi pairing for ALL divisions
@@ -44,26 +45,9 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   allowRepeatsWhenForced: true
 };
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
 
-/**
- * Stable sort.
- *  * @param arr - The Arr.
- *  * @param keyFn - The Key fn.
- *  * @returns The result.
- */
-function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
-  return [...arr].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
-}
+
+
 
 /**
  * Get record.
@@ -190,20 +174,59 @@ export function scorePairing(args: {
   const reasons: string[] = [];
   let score = 1.0;
 
+
   // Soft: similar records
   if (rules.preferSimilarRecords) {
     const ra = getRecord(basho, a.id);
     const rb = getRecord(basho, b.id);
     const s = recordSimilarity(ra, rb);
-    score *= (0.6 + 0.4 * s);
-    if (s > 0.75) reasons.push("similar_records");
+
+    // In the second half of the tournament (day > 7), strictly prioritize similar records (Swiss-system style)
+    const day = (basho as any).day || 1;
+    if (day > 7) {
+      score *= (0.2 + 0.8 * s); // Much higher weight to record similarity
+      if (s > 0.9) reasons.push("strict_record_match");
+
+      // Final Day (Senshuraku) Championship Contender Logic
+      if (day === 15 && ra.wins >= 11 && rb.wins >= 11 && Math.abs(ra.wins - rb.wins) <= 1) {
+         score *= 2.0;
+         reasons.push("yusho_contenders");
+      }
+    } else {
+      score *= (0.6 + 0.4 * s);
+      if (s > 0.75) reasons.push("similar_records");
+    }
   }
 
   // Soft: similar rank slot
   if (rules.preferSimilarRank) {
     const s = rankSimilarity(a, b);
+    const day = (basho as any).day || 1;
+
+    // Joi-jin Scheduling (Top Ranks)
+    // Sanyaku vs Sanyaku usually happens more frequently in the second half.
+    // In the first half, Sanyaku fight top Maegashira.
+    const isSanyaku = (r: Rikishi) => ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
+    const aSanyaku = isSanyaku(a);
+    const bSanyaku = isSanyaku(b);
+
+    if (aSanyaku && bSanyaku) {
+      if (day > 7) {
+         score *= 1.5; // Encourage Sanyaku matchups late
+         reasons.push("sanyaku_matchup");
+      } else {
+         score *= 0.5; // Discourage Sanyaku matchups early
+         reasons.push("sanyaku_avoided_early");
+      }
+    } else if ((aSanyaku && !bSanyaku) || (!aSanyaku && bSanyaku)) {
+      if (day <= 7 && s > 0.5) {
+         score *= 1.2; // Sanyaku vs high Maegashira early
+         reasons.push("joi_jin_scheduling");
+      }
+    }
+
     score *= (0.6 + 0.4 * s);
-    if (s > 0.75) reasons.push("similar_rank");
+    if (s > 0.75 && !reasons.includes("similar_rank")) reasons.push("similar_rank");
   }
 
   // Soft: avoid huge weight mismatch

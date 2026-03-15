@@ -1,3 +1,4 @@
+import { clampInt } from './utils';
 // media.ts
 // =======================================================
 // Media & Press System v1.0 — Deterministic narrative pressure + public perception
@@ -684,16 +685,7 @@ function seededPick<T>(arr: T[], rng: SeededRNG): T {
   return arr[Math.floor(rng.next() * arr.length)];
 }
 
-/**
- * Clamp int.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clampInt(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, Math.trunc(n)));
-}
+
 
 /**
  * Make id.
@@ -1151,7 +1143,7 @@ export function generateGovernanceHeadline(args: {
   const tone: MediaTone = severity === "critical" ? "controversy" : severity === "major" ? "concern" : "neutral";
 
   let title: string;
-  let subtitle: string = description;
+  const subtitle: string = description;
 
   if (type === "merger_threat") {
     const titles = [`${heya.name} Faces Closure Threat`, `Association Reviews ${heya.name} Viability`];
@@ -1395,7 +1387,11 @@ function checkTitleRace(args: {
   const tier: HeadlineTier = "main_event";
 
   const allIds = leaders.slice(0, 4).map(e => e.id);
-  const heyaIds = allIds.map(id => world.rikishi.get(id)?.heyaId).filter(Boolean) as Id[];
+  const heyaIds = allIds.reduce<Id[]>((acc, id) => {
+    const heyaId = world.rikishi.get(id)?.heyaId;
+    if (heyaId) acc.push(heyaId);
+    return acc;
+  }, []);
 
   const headline: MediaHeadline = {
     id: makeId(`mh-title-${week}-${day}-${topWins}`),

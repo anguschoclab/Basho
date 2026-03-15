@@ -1,3 +1,4 @@
+import { clamp } from './utils';
 // sponsors.ts
 // Procedural Sponsors, Kenshō & Supporters System
 // Per Constitution: Economy/Sponsor spec
@@ -220,16 +221,7 @@ const INDUSTRY_TAGS = ["logistics", "foods", "manufacturing", "construction", "r
 
 // === Utility ===
 
-/**
- * Clamp.
- *  * @param n - The N.
- *  * @param lo - The Lo.
- *  * @param hi - The Hi.
- *  * @returns The result.
- */
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
+
 
 /**
  * Normalize rank.

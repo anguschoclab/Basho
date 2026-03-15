@@ -1,3 +1,4 @@
+import { clamp, clamp01 } from './utils';
 // rivalries.ts
 // =======================================================
 // Rivalries System v1.0 — Deterministic, story-forward relationships
@@ -547,22 +548,9 @@ function inferDomination01(result: BoutResult): number {
   return clamp01(short);
 }
 
-/** =========================
- *  Math helpers
- *  ========================= */
 
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
 
-/**
- * Clamp01.
- *  * @param n - The N.
- *  * @returns The result.
- */
-function clamp01(n: number): number {
-  return clamp(n, 0, 1);
-}
+
 
 /** =========================
  *  World-level hooks (called via safeCall in world.ts / dailyTick.ts)
