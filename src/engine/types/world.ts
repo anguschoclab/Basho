@@ -6,7 +6,7 @@ import type { Id, IdMapRuntime } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, BashoState, BashoResult } from "./basho";
-import type { GovernanceRuling } from "./economy";
+import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { FTUEState } from "./narrative";
 import type { BeyaTrainingState } from "./training";
 import type { Oyakata } from "./oyakata";
@@ -60,6 +60,7 @@ export interface WorldState {
   events: EventsState;
 
   governanceLog?: GovernanceRuling[];
+  factions?: Record<IchimonName, Faction>;
 
   almanacSnapshots?: import("../almanac").AlmanacSnapshot[];
   ftue: FTUEState;

@@ -272,7 +272,11 @@ function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { events.tickWeek(world); }) && subs.push("events");
   safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
   safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
-  safeCall(() => { tickMyosekiMarket(world); }) && subs.push("myosekiMarket");
+  // Bi-annual JSA Board Elections (End of year, even years)
+  if (world.week === 52 && world.year % 2 === 0) {
+    safeCall(() => { governance.runElections(world); }) && subs.push("elections");
+  }
+
 
   // Media weekly boundary — decay heat/pressure, generate features
   safeCall(() => {

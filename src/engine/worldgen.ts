@@ -23,12 +23,14 @@ import { generateStaff } from "./staff";
 import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
-import { generateMyosekiMarket } from "./myosekiMarket";
+import { type IchimonName, type Faction } from "./types/economy";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
 
 
+
+const ICHIMONS: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
 // Constants
 const ORIGINS = [
   "Hokkaido", "Aomori", "Tokyo", "Osaka", "Fukuoka", 
@@ -299,6 +301,8 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
         governance: false,
         rivalry: false
       },
+      ichimon: getRandom(hRng, ICHIMONS),
+      politicalCapital: hRng.int(50, 200),
       
       location: getRandom(hRng, ["Tokyo", "Tokyo", "Tokyo", "Osaka", "Nagoya", "Fukuoka"])
     };
@@ -437,6 +441,22 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
 
   const initialBashoName: BashoName = "hatsu";
 
+
+  const initialFactions: Record<IchimonName, Faction> = {
+    Dewanoumi: { id: "Dewanoumi", name: "Dewanoumi Ichimon", influence: 100, oyakataLeaderId: null },
+    Nishonoseki: { id: "Nishonoseki", name: "Nishonoseki Ichimon", influence: 80, oyakataLeaderId: null },
+    Takasago: { id: "Takasago", name: "Takasago Ichimon", influence: 70, oyakataLeaderId: null },
+    Tokitsukaze: { id: "Tokitsukaze", name: "Tokitsukaze Ichimon", influence: 60, oyakataLeaderId: null },
+    Isegahama: { id: "Isegahama", name: "Isegahama Ichimon", influence: 90, oyakataLeaderId: null }
+  };
+
+  // Assign leaders to initial factions
+  for (const heya of heyaList) {
+    if (heya.ichimon && !initialFactions[heya.ichimon].oyakataLeaderId) {
+       initialFactions[heya.ichimon].oyakataLeaderId = heya.oyakataId;
+    }
+  }
+
   const world: WorldState = {
     id: crypto.randomUUID(),
     seed: actualSeed,
@@ -460,6 +480,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     // Almanac snapshots (Constitution A5.2)
     almanacSnapshots: [],
     
+    factions: initialFactions,
     calendar: {
       year: currentYear,
       month: 1,

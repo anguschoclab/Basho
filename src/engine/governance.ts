@@ -227,3 +227,102 @@ export function getStatusColor(status: GovernanceStatus): string {
     case "sanctioned": return "text-red-600";
   }
 }
+
+
+/**
+ * runElections
+ * Evaluates the 2-year JSA board election.
+ * Updates influence and faction leaders based on heya political capital + prestige.
+ * Determines the overall Chairman faction.
+ * @param world - The WorldState.
+ */
+export function runElections(world: WorldState): void {
+  if (!world.factions) return;
+
+  // 1. Reset influence baseline
+  const factionInfluence: Record<string, number> = {};
+  const factionLeaders: Record<string, { oyakataId: string; score: number }> = {};
+
+  for (const fac of Object.values(world.factions)) {
+    factionInfluence[fac.id] = 50; // Base
+    factionLeaders[fac.id] = { oyakataId: fac.oyakataLeaderId || "", score: -1 };
+  }
+
+  // 2. Tally scores from all heyas
+  for (const heya of world.heyas.values()) {
+    if (!heya.ichimon || !world.factions[heya.ichimon]) continue;
+
+    // Prestige band logic (world_class/elite etc add to base)
+    const baseScore = heya.prestigeBand === "world_class" ? 30 :
+                      heya.prestigeBand === "elite" ? 20 :
+                      heya.prestigeBand === "respected" ? 10 : 5;
+
+    const politicalCapital = heya.politicalCapital || 0;
+    const score = baseScore + politicalCapital / 10;
+
+    factionInfluence[heya.ichimon] += score;
+
+    // Check if this heya's oyakata is the new leader of their Ichimon
+    if (score > factionLeaders[heya.ichimon].score) {
+      factionLeaders[heya.ichimon] = { oyakataId: heya.oyakataId, score };
+    }
+
+    // Decay political capital after the election (cost of doing politics)
+    heya.politicalCapital = Math.max(0, Math.floor(politicalCapital * 0.5));
+  }
+
+  // 3. Update world factions
+  let maxInfluence = -1;
+  let chairmanFaction = "";
+
+  for (const fac of Object.values(world.factions)) {
+    fac.influence = Math.round(factionInfluence[fac.id]);
+    fac.oyakataLeaderId = factionLeaders[fac.id].oyakataId;
+
+    if (fac.influence > maxInfluence) {
+      maxInfluence = fac.influence;
+      chairmanFaction = fac.name;
+    }
+  }
+
+  logEngineEvent(world, {
+    type: "GOVERNANCE_RULING",
+    category: "discipline",
+    importance: "headline",
+    scope: "world",
+    title: "JSA Board Elections Concluded",
+    summary: `The ${chairmanFaction} has secured the Chairman seat for the next term.`,
+    data: { chairmanFaction, maxInfluence }
+  });
+}
+
+/**
+ * spendPoliticalCapital
+ * @param world - The WorldState.
+ * @param heyaId - The Heya Id.
+ * @param amount - amount of capital to spend.
+ * @returns boolean - true if successful.
+ */
+export function spendPoliticalCapital(world: WorldState, heyaId: string, amount: number): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya || (heya.politicalCapital || 0) < amount || !heya.ichimon) return false;
+
+  const faction = world.factions?.[heya.ichimon];
+  if (!faction) return false;
+
+  heya.politicalCapital = (heya.politicalCapital || 0) - amount;
+  faction.influence += amount / 5; // Direct influence boost
+
+  logEngineEvent(world, {
+    type: "GOVERNANCE_RULING",
+    category: "discipline",
+    importance: "minor",
+    scope: "heya",
+    heyaId,
+    title: "Political Maneuvering",
+    summary: `${heya.name} spent ${amount} political capital to boost ${faction.name} influence.`,
+    data: { amountSpent: amount, newInfluence: faction.influence }
+  });
+
+  return true;
+}
