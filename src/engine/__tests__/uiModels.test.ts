@@ -35,7 +35,7 @@ describe("UI Models Projections", () => {
     expect(uiHeya.id).toBe(heyaId);
     expect(uiHeya.name).toBe(heya.name);
     expect(uiHeya.oyakataName).toBeDefined();
-    expect(uiHeya.rosterSize).toBe((heya.rikishiIds || []).length);
+    expect(uiHeya.rosterSize).toBe(heya?.rikishiIds?.length || 0);
     expect(uiHeya.funds).toBeDefined();
   });
 });
