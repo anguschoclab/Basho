@@ -144,6 +144,7 @@ export interface TacticalFact extends PbpFactBase {
   opponentArchetype?: TacticalArchetype;
   clinchPreference?: "belt" | "push" | "neutral";
   strategy: string;
+  tacticalResult?: import("./types/combat").TacticalResult;
 }
 
 /** Type representing pbp fact. */
@@ -772,6 +773,7 @@ export function buildPbpFromBoutResult(
           clinchPreference: entry.data.clinchPreference,
           strategy: entry.data.strategy ?? "Standard approach",
           leader: side,
+          tacticalResult: entry.data.tacticalResult as import("./types/combat").TacticalResult
         } as TacticalFact);
       } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
@@ -889,7 +891,29 @@ function selectPhraseForFact(
     }
 
     case "tactical": {
-      const arch = (fact as TacticalFact).archetype;
+      const tacFact = fact as TacticalFact;
+      if (tacFact.tacticalResult) {
+        const { playerTactic, cpuTactic, advantage } = tacFact.tacticalResult;
+        let pbpText = "Both rikishi size each other up.";
+        if (advantage === "PLAYER") {
+          if (playerTactic === "HENKA") pbpText = "At the tachiai, {leader} executes a flawless Henka! The opponent overcommits for the belt and stumbles forward, completely off-balance!";
+          else if (playerTactic === "YOTSU_BELT") pbpText = "Masterful read! {leader} slips inside the opponent's thrusts and establishes a dominant belt grip immediately!";
+          else if (playerTactic === "OSHI_THRUST") pbpText = "{leader} executes a perfect Oshi-zumo strategy! The opponent tries to sidestep but gets blasted backwards by a wave of powerful thrusts!";
+        } else if (advantage === "CPU") {
+          if (playerTactic === "HENKA") pbpText = "{leader} attempts a risky Henka, but the opponent reads it perfectly and tracks them down with relentless thrusts!";
+          else if (playerTactic === "YOTSU_BELT") pbpText = "{leader} charges hard for a belt grip, but the opponent dances to the side. {leader} hits empty air and scrambles to recover!";
+          else if (playerTactic === "OSHI_THRUST") pbpText = "{leader} fires a barrage of thrusts, but the opponent easily ducks under and locks up a deep belt grip!";
+        } else {
+          if (playerTactic !== "STANDARD") pbpText = "Both fighters stick to their game plans in a neutral exchange at the tachiai.";
+        }
+
+        // Use a dynamic phrase object for custom RPS narrative
+        const chosen = { id: `tac_rps_${playerTactic}_${cpuTactic}`, text: pbpText, tags: ["tactical"] };
+        return { phrase: chosen, tags: ["tactical"] };
+      }
+
+      // Legacy fallback
+      const arch = tacFact.archetype;
       let bucket = lib.tactical.adaptive_strategy;
       if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
       else if (arch === "yotsu_specialist") bucket = lib.tactical.yotsu_strategy;

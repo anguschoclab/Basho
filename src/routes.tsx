@@ -15,6 +15,7 @@ import EconomyPage from './pages/EconomyPage'
 import TalentPoolPage from './pages/TalentPoolPage'
 import ScoutingPage from './pages/ScoutingPage'
 import GovernancePage from './pages/GovernancePage'
+import MyosekiMarketPage from './pages/MyosekiMarketPage'
 import RecapPage from './pages/RecapPage'
 import HistoryPage from './pages/HistoryPage'
 import AlmanacPage from './pages/AlmanacPage'
@@ -212,6 +213,7 @@ const routeTree = rootRoute.addChildren([
   talentRoute,
   scoutingRoute,
   governanceRoute,
+  myosekiRoute,
   recapRoute,
   historyRoute,
   almanacRoute,

@@ -6,13 +6,14 @@ import type { Id, IdMapRuntime } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, BashoState, BashoResult } from "./basho";
-import type { GovernanceRuling } from "./economy";
+import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { FTUEState } from "./narrative";
 import type { BeyaTrainingState } from "./training";
 import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
+import type { MyosekiMarket } from "./myoseki";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
@@ -59,6 +60,7 @@ export interface WorldState {
   events: EventsState;
 
   governanceLog?: GovernanceRuling[];
+  factions?: Record<IchimonName, Faction>;
 
   almanacSnapshots?: import("../almanac").AlmanacSnapshot[];
   ftue: FTUEState;
@@ -96,6 +98,8 @@ export interface WorldState {
     currentWeek: number;
     currentDay: number;
   };
+
+  myosekiMarket?: MyosekiMarket;
 
   activeBasho?: {
     id: string;

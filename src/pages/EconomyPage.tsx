@@ -246,6 +246,7 @@ export default function EconomyPage() {
     { id: "scouting", label: "Scouting", href: "/scouting" },
     { id: "talent", label: "Talent Pools", href: "/talent" },
     { id: "governance", label: "Governance", href: "/governance" },
+    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
   ];
 
   return (

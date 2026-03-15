@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ensureHeyaWelfareState } from "../welfare";
+import { ensureHeyaWelfareState, setHeyaDiet, tickWeek } from "../welfare";
 import type { Heya } from "../types/heya";
 import type { WelfareState } from "../types/economy";
 
@@ -79,5 +79,28 @@ describe("ensureHeyaWelfareState", () => {
     expect(result.welfareRisk).toBe(42);
     expect(result.complianceState).toBe("watch");
     expect(heya.welfareState).toBe(existingState);
+  });
+});
+
+describe("setHeyaDiet", () => {
+  it("should update heya diet regimen", () => {
+    const world = {
+      heyas: new Map([
+        ["heya1", {
+          id: "heya1",
+          name: "Test Heya",
+          welfareState: {
+            welfareRisk: 0,
+            complianceState: "compliant",
+            weeksInState: 0,
+            activeDiet: "maintenance"
+          }
+        }]
+      ]),
+      events: { log: [], dedupe: {} }
+    } as any;
+
+    setHeyaDiet(world, "heya1", "premium");
+    expect(world.heyas.get("heya1").welfareState.activeDiet).toBe("premium");
   });
 });

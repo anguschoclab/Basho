@@ -382,6 +382,50 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                   </div>
                 </div>
 
+
+                {/* Shikiri Prep Panel for Player Bouts */}
+                {match.isPlayerBout && !hasResult && onTacticChange && (
+                  <div className="mt-3 p-3 bg-card border rounded-md shadow-sm" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b">
+                      <Swords className="h-4 w-4 text-primary" />
+                      <h4 className="font-semibold text-sm">Shikiri Prep: Set Tactic</h4>
+                    </div>
+
+                    {/* Scouting Brief */}
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3 p-2 bg-muted/30 rounded">
+                      <div className="text-muted-foreground">Opponent Style:</div>
+                      <div className="font-medium capitalize">{world.rikishi.get(match.eastRikishiId)?.isPlayer ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
+                    </div>
+
+                    {/* Tactic Buttons */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: "STANDARD", label: "Standard", desc: "Balanced" },
+                        { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
+                        { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
+                        { id: "HENKA", label: "Henka", desc: "Counters Belt" }
+                      ].map(t => {
+                        const isSelected = (playerTactics[idx] || "STANDARD") === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => onTacticChange(idx, t.id as any)}
+                            className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
+                          >
+                            <div className="font-semibold text-xs">{t.label}</div>
+                            <div className="text-[10px] text-muted-foreground">{t.desc}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 pt-2 text-right">
+                      <Badge variant="outline" className="text-xs bg-muted hover:bg-muted/80 cursor-pointer" onClick={() => onBoutClick?.(match)}>
+                        Confirm & Sim Bout &rarr;
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+
                 {/* Tags row */}
                 <BoutTags match={match as any} />
 

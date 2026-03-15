@@ -11,6 +11,7 @@ import { rngFromSeed, SeededRNG } from "./rng";
 import { Rikishi } from "./types/rikishi";
 import { H2HRecord } from "./types/records";
 import { BoutResult } from "./types/basho";
+import type { BoutTactic, TacticalResult } from "./types/combat";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.
@@ -159,4 +160,68 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
 
   // Fallback generic
   return `${p1Name} leads the series ${record.wins} to ${record.losses}.`;
+}
+
+
+/**
+ * Determine the CPU rikishi's bout tactic based on their stats and archetype.
+ */
+export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
+  const isYotsu = cpu.style === "yotsu" || cpu.archetype === "yotsu_specialist";
+  const isOshi = cpu.style === "oshi" || cpu.archetype === "oshi_specialist";
+
+  const roll = rng.next();
+
+  if (isYotsu) {
+    if (roll < 0.65) return "YOTSU_BELT";
+    if (roll < 0.85) return "STANDARD";
+    if (roll < 0.95) return "OSHI_THRUST";
+    return "HENKA";
+  } else if (isOshi) {
+    if (roll < 0.70) return "OSHI_THRUST";
+    if (roll < 0.85) return "STANDARD";
+    if (roll < 0.95) return "YOTSU_BELT";
+    return "HENKA";
+  } else {
+    // Hybrid / Other
+    if (roll < 0.40) return "YOTSU_BELT";
+    if (roll < 0.80) return "OSHI_THRUST";
+    if (roll < 0.95) return "STANDARD";
+    return "HENKA";
+  }
+}
+
+/**
+ * Resolves the rock-paper-scissors tactical clash between two rikishi.
+ * RPS Rules:
+ * YOTSU (Belt) counters OSHI (Thrust)
+ * OSHI (Thrust) counters HENKA
+ * HENKA counters YOTSU (Belt)
+ * STANDARD provides no modifiers.
+ */
+export function resolveTacticalClash(playerTactic: BoutTactic, cpuTactic: BoutTactic): TacticalResult {
+  const result: TacticalResult = {
+    playerTactic,
+    cpuTactic,
+    advantage: 'NEUTRAL',
+    winProbabilityShift: 0
+  };
+
+  if (playerTactic === cpuTactic || playerTactic === "STANDARD" || cpuTactic === "STANDARD") {
+    return result; // Neutral, no shift
+  }
+
+  if (
+    (playerTactic === "YOTSU_BELT" && cpuTactic === "OSHI_THRUST") ||
+    (playerTactic === "OSHI_THRUST" && cpuTactic === "HENKA") ||
+    (playerTactic === "HENKA" && cpuTactic === "YOTSU_BELT")
+  ) {
+    result.advantage = "PLAYER";
+    result.winProbabilityShift = 0.15; // 15% boost
+  } else {
+    result.advantage = "CPU";
+    result.winProbabilityShift = -0.15; // 15% penalty
+  }
+
+  return result;
 }

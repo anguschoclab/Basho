@@ -33,10 +33,14 @@ export type GovernanceStatus = "good_standing" | "warning" | "probation" | "sanc
 /** Type representing compliance state. */
 export type ComplianceState = "compliant" | "watch" | "investigation" | "sanctioned";
 
+/** Type representing diet regimen. */
+export type DietRegimen = "austerity" | "maintenance" | "heavy_bulk" | "premium";
+
 /** Defines the structure for welfare state. */
 export interface WelfareState {
   /** 0..100: Higher is worse */
   welfareRisk: number;
+  activeDiet: DietRegimen;
   complianceState: ComplianceState;
   /** Weeks spent in current complianceState */
   weeksInState: number;
@@ -88,4 +92,17 @@ export interface Loan {
   issuedAtYear: number;
   issuedAtMonth: number;
   stringsAttached?: string[];
+}
+
+
+// Faction & Politics Types
+/** Type representing the 5 historical Ichimons. */
+export type IchimonName = "Dewanoumi" | "Nishonoseki" | "Takasago" | "Tokitsukaze" | "Isegahama";
+
+/** Defines the structure for a faction (Ichimon). */
+export interface Faction {
+  id: IchimonName;
+  name: string;
+  influence: number;
+  oyakataLeaderId: string | null;
 }
