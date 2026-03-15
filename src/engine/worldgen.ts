@@ -19,6 +19,8 @@ import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand 
 import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { SeededRNG } from "./rng";
+import { generateStaff } from "./staff";
+import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { rngForWorld } from "./rng";

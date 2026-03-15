@@ -38,6 +38,7 @@ export interface PostBashoMeta {
 import type { LineageEdge } from "../lineage";
 
 export interface WorldState {
+  staff: IdMapRuntime<import("./staff").Staff>;
   lineage?: LineageEdge[];
   id: string;
   seed: string;
