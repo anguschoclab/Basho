@@ -5,6 +5,9 @@ import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Utensils } from "lucide-react";
+import type { DietRegimen } from "@/engine/types/economy";
 import { Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-react";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
@@ -35,6 +38,14 @@ const MORALE_DISPLAY: Record<MoraleBand, { label: string; color: string }> = {
   mutinous: { label: "Mutinous", color: "text-destructive" },
 };
 
+
+const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: string }> = {
+  austerity: { label: "Austerity", cost: "¥1,000/day", desc: "Minimal portions. High morale penalty, weight loss." },
+  maintenance: { label: "Maintenance", cost: "¥3,000/day", desc: "Standard stew. Balanced weight and morale." },
+  heavy_bulk: { label: "Heavy Bulk", cost: "¥6,000/day", desc: "Force-feeding. Fast weight gain, minor morale drop." },
+  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." }
+};
+
 const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string }> = {
   dominant: { label: "Dominant", color: "text-amber-400" },
   strong: { label: "Strong", color: "text-emerald-400" },
@@ -45,6 +56,8 @@ const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string 
 
 /** Defines the structure for welfare panel props. */
 interface WelfarePanelProps {
+  onSetDiet?: (diet: DietRegimen) => void;
+  isOwner?: boolean;
   world: WorldState;
   heya: Heya;
 }
@@ -53,7 +66,7 @@ interface WelfarePanelProps {
  * welfare panel.
  *  * @param { world, heya } - The { world, heya }.
  */
-export function WelfarePanel({ world, heya }: WelfarePanelProps) {
+export function WelfarePanel({ world, heya, isOwner = false, onSetDiet }: WelfarePanelProps) {
   const welfare = useMemo(() => ensureHeyaWelfareState(heya), [heya]);
   const perception = useMemo(() => buildPerceptionSnapshot(world, heya.id), [world, heya.id]);
 
@@ -131,6 +144,40 @@ export function WelfarePanel({ world, heya }: WelfarePanelProps) {
               <div className="text-xs text-muted-foreground">Rivalry Pressure</div>
               <div className="font-medium text-sm capitalize">{perception.rivalryPressureBand}</div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
+      {/* Diet Management */}
+      <Card className="paper">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Utensils className="h-5 w-5" /> Diet Regimen (Chanko-nabe)
+          </CardTitle>
+          <CardDescription>Manage daily food budget and nutrition</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {(Object.keys(DIET_DISPLAY) as DietRegimen[]).map(diet => {
+              const info = DIET_DISPLAY[diet];
+              const isActive = welfare.activeDiet === diet;
+              return (
+                <Button
+                  key={diet}
+                  variant={isActive ? "default" : "outline"}
+                  className="h-auto flex-col items-start p-3 text-left w-full whitespace-normal"
+                  disabled={!isOwner}
+                  onClick={() => onSetDiet?.(diet)}
+                >
+                  <div className="flex justify-between w-full mb-1">
+                    <span className="font-bold">{info.label}</span>
+                    <span className="text-xs opacity-80">{info.cost}</span>
+                  </div>
+                  <span className="text-xs font-normal opacity-90">{info.desc}</span>
+                </Button>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

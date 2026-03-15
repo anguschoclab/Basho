@@ -38,6 +38,7 @@ import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as talentpool from "./talentpool";
 import * as facilities from "./facilities";
+import { ensureHeyaWelfareState } from "./welfare";
 import { processWeeklyMediaBoundary, createDefaultMediaState, resetBashoMediaTracking } from "./media";
 import { initializeBasho } from "./worldgen";
 import * as schedule from "./schedule";
@@ -236,6 +237,28 @@ function safeCall(fn: () => void): boolean {
 function tickDailyCommon(world: WorldState, subs: string[]): void {
   for (const r of world.rikishi.values()) {
     if (r.isRetired) continue;
+
+    // Diet effects
+    const heya = world.heyas.get(r.heyaId);
+    if (heya) {
+      const welfare = ensureHeyaWelfareState(heya);
+      const diet = welfare.activeDiet || "maintenance";
+
+      if (diet === "austerity") {
+        r.weight = Math.max(70, r.weight - 0.05);
+        if (r.stats) r.stats.mental = Math.max(1, (r.stats.mental || 50) - 0.5);
+      } else if (diet === "heavy_bulk") {
+        r.weight += 0.1;
+        if (r.stats) r.stats.mental = Math.max(1, (r.stats.mental || 50) - 0.2);
+      } else if (diet === "premium") {
+        r.weight += 0.08;
+        if (r.stats) r.stats.mental = Math.min(100, (r.stats.mental || 50) + 0.5);
+        if (!r.injured && r.fatigue > 0) {
+          r.fatigue = Math.max(0, r.fatigue - 1); // bonus recovery
+        }
+      }
+    }
+
     if (!r.injured && r.fatigue > 0) {
       r.fatigue = Math.max(0, r.fatigue - 0.3);
     }
@@ -611,7 +634,10 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
 
   // 5) Daily economy micro-tick (food costs)
   for (const heya of world.heyas.values()) {
-    const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * 3000;
+    const welfare = ensureHeyaWelfareState(heya);
+    const diet = welfare.activeDiet || "maintenance";
+    const costPerRikishi = diet === "austerity" ? 1000 : diet === "maintenance" ? 3000 : diet === "heavy_bulk" ? 6000 : 10000;
+    const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * costPerRikishi;
     heya.funds -= dailyFoodCost;
   }
   subsystemsRun.push("daily_economy");

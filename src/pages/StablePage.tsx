@@ -69,6 +69,7 @@ import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";
+import { setHeyaDiet } from "@/engine/welfare";
 import { investInFacility } from "@/engine/facilities";
 
 // Narrative band displays (no raw numbers)
@@ -874,7 +875,16 @@ export default function StablePage() {
           </TabsContent>
         
         <TabsContent value="welfare" className="mt-6 space-y-4">
-          <WelfarePanel world={world} heya={heya} />
+          <WelfarePanel
+              world={world}
+              heya={heya}
+              isOwner={isViewingOwnStable}
+              onSetDiet={(diet) => {
+                if (!isViewingOwnStable || !world) return;
+                setHeyaDiet(world, heya.id, diet);
+                updateWorld({ ...world });
+              }}
+            />
         </TabsContent>
 
         <TabsContent value="institution" className="mt-6 space-y-4">

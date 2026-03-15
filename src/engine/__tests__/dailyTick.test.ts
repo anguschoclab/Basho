@@ -299,6 +299,61 @@ describe("Daily Tick: Fatigue Recovery", () => {
 });
 
 describe("Daily Tick: Economy", () => {
+  it("applies daily diet effects correctly", () => {
+    const w = createTestWorld();
+    const heya = {
+      id: "heya1",
+      name: "Test Heya",
+      oyakataId: "o1",
+      rikishiIds: ["r1", "r2", "r3"],
+      statureBand: "established",
+      prestigeBand: "honorable",
+      facilitiesBand: "adequate",
+      koenkaiBand: "moderate",
+      runwayBand: "comfortable",
+      reputation: 50,
+      funds: 1000000,
+      scandalScore: 0,
+      governanceStatus: "good_standing",
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
+      riskIndicators: { financial: false, governance: false, rivalry: false },
+      welfareState: {
+        welfareRisk: 0,
+        complianceState: "compliant",
+        weeksInState: 0,
+        activeDiet: "heavy_bulk" as any
+      }
+    };
+    w.heyas.set("heya1", heya as any);
+
+    const r1 = { id: "r1", heyaId: "heya1", weight: 100, fatigue: 0, stats: { mental: 50 } };
+    w.rikishi.set("r1", r1 as any);
+
+    advanceOneDay(w);
+
+    // Heavy bulk: +0.1 weight, -0.2 mental
+    expect(r1.weight).toBeCloseTo(100.1, 1);
+    expect(r1.stats.mental).toBeCloseTo(49.8, 1);
+
+    // Change to austerity
+    heya.welfareState.activeDiet = "austerity";
+    advanceOneDay(w);
+
+    // Austerity: -0.05 weight, -0.5 mental
+    expect(r1.weight).toBeCloseTo(100.05, 2);
+    expect(r1.stats.mental).toBeCloseTo(49.3, 1);
+
+    // Change to premium
+    heya.welfareState.activeDiet = "premium";
+    r1.fatigue = 5;
+    advanceOneDay(w);
+
+    // Premium: +0.08 weight, +0.5 mental, -1.3 fatigue (1.0 bonus + 0.3 normal)
+    expect(r1.weight).toBeCloseTo(100.13, 2);
+    expect(r1.stats.mental).toBeCloseTo(49.8, 1);
+    expect(r1.fatigue).toBeCloseTo(3.7, 1);
+  });
+
   it("should deduct daily food costs from heya funds", () => {
     const world = createTestWorld();
     const heya = world.heyas.get("test-heya")!;
