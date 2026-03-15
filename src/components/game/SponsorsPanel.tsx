@@ -57,33 +57,39 @@ export function SponsorsPanel() {
     }
 
     const pool = world.sponsorPool;
-    const active: SponsorView[] = [];
-    const lost: Sponsor[] = [];
-    const tiers: Record<SponsorTier, number> = { T0: 0, T1: 0, T2: 0, T3: 0, T4: 0, T5: 0 };
 
-    for (const sponsor of pool.sponsors.values()) {
-      let activeBest: SponsorRelationship | null = null;
-      let hasEnded = false;
+    const { active, lost, tiers } = Array.from(pool.sponsors.values()).reduce(
+      (acc, sponsor) => {
+        let activeBest: SponsorRelationship | null = null;
+        let hasEnded = false;
 
-      for (const r of sponsor.relationships) {
-        if (r.targetId === playerHeyaId && r.targetType === "beya") {
-          if (!r.endsAtTick) {
-            if (!activeBest || r.strength > activeBest.strength) {
-              activeBest = r;
+        for (const r of sponsor.relationships) {
+          if (r.targetId === playerHeyaId && r.targetType === "beya") {
+            if (!r.endsAtTick) {
+              if (!activeBest || r.strength > activeBest.strength) {
+                activeBest = r;
+              }
+            } else {
+              hasEnded = true;
             }
-          } else {
-            hasEnded = true;
           }
         }
-      }
 
-      if (activeBest) {
-        active.push({ sponsor, role: activeBest.role, strength: activeBest.strength });
-        tiers[sponsor.tier] = (tiers[sponsor.tier] || 0) + 1;
-      } else if (hasEnded) {
-        lost.push(sponsor);
+        if (activeBest) {
+          acc.active.push({ sponsor, role: activeBest.role, strength: activeBest.strength });
+          acc.tiers[sponsor.tier] = (acc.tiers[sponsor.tier] || 0) + 1;
+        } else if (hasEnded) {
+          acc.lost.push(sponsor);
+        }
+
+        return acc;
+      },
+      {
+        active: [] as SponsorView[],
+        lost: [] as Sponsor[],
+        tiers: { T0: 0, T1: 0, T2: 0, T3: 0, T4: 0, T5: 0 } as Record<SponsorTier, number>,
       }
-    }
+    );
 
     // Sort: highest tier first, then by strength
     active.sort((a, b) => {
