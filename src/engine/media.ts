@@ -1151,7 +1151,7 @@ export function generateGovernanceHeadline(args: {
   const tone: MediaTone = severity === "critical" ? "controversy" : severity === "major" ? "concern" : "neutral";
 
   let title: string;
-  let subtitle: string = description;
+  const subtitle: string = description;
 
   if (type === "merger_threat") {
     const titles = [`${heya.name} Faces Closure Threat`, `Association Reviews ${heya.name} Viability`];

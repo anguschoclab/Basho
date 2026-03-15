@@ -365,7 +365,7 @@ export function determineSpecialPrizes(
     
     if (beatYusho || kinboshiCount > 0 || s.wins >= 12) {
       // Simple score: Kinboshi=3, BeatYusho=4, EachWin=0.1
-      let score = (kinboshiCount * 3) + (beatYusho ? 4 : 0) + (s.wins * 0.1);
+      const score = (kinboshiCount * 3) + (beatYusho ? 4 : 0) + (s.wins * 0.1);
       if (score > bestShukun.score) {
         bestShukun = { id: c.id, score };
       }
@@ -382,7 +382,7 @@ export function determineSpecialPrizes(
     const s = stats.get(c.id)!;
     
     if (s.wins >= 10) {
-      let score = s.wins;
+      const score = s.wins;
       if (score > bestKanto.score) {
         bestKanto = { id: c.id, score };
       }
@@ -411,7 +411,7 @@ export function determineSpecialPrizes(
 
     // Score: (Unique * 1) + (TechRatio * 10)
     const techRatio = technicalMoves / s.wins;
-    let score = uniqueMoves + (techRatio * 10);
+    const score = uniqueMoves + (techRatio * 10);
     
     // Minimum threshold for Gino-sho: significant technical usage
     if (techRatio > 0.4 && score > bestGino.score) {
@@ -562,7 +562,7 @@ function calculateYokozunaCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
     const p = perfById.get(e.rikishiId);
     return e.position.rank === "ozeki" && !!p?.promoteToYokozuna;
   }).length;
-  let yokozunaCount = yokozunaIds.length + yPromotions;
+  const yokozunaCount = yokozunaIds.length + yPromotions;
   return clampInt(yokozunaCount, 0, 6);
 }
 
@@ -587,7 +587,7 @@ function calculateSekiwakeCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
     return (p?.wins ?? 0) >= 10;
   });
 
-  let sekiwakeCount = 2 + demotedCount + sekiwakePromoteCandidates.length;
+  const sekiwakeCount = 2 + demotedCount + sekiwakePromoteCandidates.length;
   return clampInt(sekiwakeCount, 2, 6);
 }
 
@@ -602,7 +602,7 @@ function calculateKomusubiCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
     return yusho || (nearTop && wins >= 10);
   });
 
-  let komusubiCount = 2 + komusubiPromoteCandidates.length;
+  const komusubiCount = 2 + komusubiPromoteCandidates.length;
   return clampInt(komusubiCount, 2, 6);
 }
 
@@ -620,7 +620,7 @@ function computeVariableSanyakuCounts(
 ): BanzukeUpdateResult["sanyakuCounts"] {
   const makuuchi = current.filter((e) => e.division === "makuuchi");
 
-  let yokozunaCount = calculateYokozunaCount(makuuchi, perfById);
+  const yokozunaCount = calculateYokozunaCount(makuuchi, perfById);
   let ozekiCount = calculateOzekiCount(makuuchi, perfById, demotedOzeki);
   let sekiwakeCount = calculateSekiwakeCount(makuuchi, perfById, demotedOzeki.size);
   let komusubiCount = calculateKomusubiCount(makuuchi, perfById);

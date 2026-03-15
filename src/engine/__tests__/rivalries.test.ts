@@ -60,7 +60,7 @@ describe("Rivalries System", () => {
   });
 
   it("should detect same-heya matchups", () => {
-    let state = createDefaultRivalriesState();
+    const state = createDefaultRivalriesState();
     const world = createMockWorld();
     
     const result = {
