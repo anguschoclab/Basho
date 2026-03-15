@@ -87,5 +87,9 @@ export function getMentor(world: WorldState, r: Rikishi): Rikishi | undefined {
 export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
   const ids = r.menteeIds || [];
   const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
-  return ids.map(id => rikishiMap.get(id)).filter(Boolean) as Rikishi[];
+  return ids.reduce<Rikishi[]>((acc, id) => {
+    const r = rikishiMap.get(id);
+    if (r) acc.push(r);
+    return acc;
+  }, []);
 }

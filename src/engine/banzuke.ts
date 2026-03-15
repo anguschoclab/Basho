@@ -554,7 +554,10 @@ export function updateBanzuke(
 
 
 function calculateYokozunaCount(makuuchi: BanzukeEntry[], perfById: Map<string, BashoPerformance>): number {
-  const yokozunaIds = makuuchi.filter((e) => e.position.rank === "yokozuna").map((e) => e.rikishiId);
+  const yokozunaIds = makuuchi.reduce<Id[]>((acc, e) => {
+    if (e.position.rank === "yokozuna") acc.push(e.rikishiId);
+    return acc;
+  }, []);
   const yPromotions = makuuchi.filter((e) => {
     const p = perfById.get(e.rikishiId);
     return e.position.rank === "ozeki" && !!p?.promoteToYokozuna;

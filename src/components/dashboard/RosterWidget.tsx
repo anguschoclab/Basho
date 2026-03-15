@@ -26,7 +26,7 @@ export function RosterWidget() {
 
   if (!world) return null;
 
-  const injuredCount = roster.filter(r => r.isInjured).length;
+  const injuredCount = roster.reduce((count, r) => count + (r.isInjured ? 1 : 0), 0);
   const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
 
   return (
