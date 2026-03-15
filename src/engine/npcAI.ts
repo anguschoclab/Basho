@@ -207,9 +207,7 @@ function decideTrainingIntensity(
   const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
   const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
 
-  const fragileCount = perception.rikishiPerceptions.filter(
-    r => r.healthBand === "fragile" || r.healthBand === "worn"
-  ).length;
+  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
   let intensity: TrainingIntensity;
@@ -313,9 +311,7 @@ function decideRecovery(
   perception: PerceptionSnapshot,
   welfareDiscipline: number
 ): { recovery: RecoveryEmphasis; reason: string } {
-  const fragileCount = perception.rikishiPerceptions.filter(
-    r => r.healthBand === "fragile" || r.healthBand === "worn"
-  ).length;
+  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
   if (perception.welfareRiskBand === "critical" || fragileRatio >= 0.5) {
