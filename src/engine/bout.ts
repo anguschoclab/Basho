@@ -976,7 +976,7 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     eastPlayerTactic = bout.cpuTacticOverride || determineCPUTactic(east, rng);
     st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
   }
-  
+
   const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
   const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
 

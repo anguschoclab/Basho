@@ -24,7 +24,7 @@ for (const t1 of tactics) {
   for (const t2 of tactics) {
     let p1Wins = 0;
     const total = 10000;
-    
+
     for (let i = 0; i < total; i++) {
       basho.day = i; // force new seed
       const ctx = {
@@ -36,11 +36,11 @@ for (const t1 of tactics) {
         playerTactic: t1,
         cpuTacticOverride: t2
       };
-      
+
       const res = resolveBout(ctx, p1, p2, basho);
       if (res.winner === "east") p1Wins++;
     }
-    
+
     const winRate = (p1Wins / total) * 100;
     console.log(`P1: ${t1.padEnd(12)} vs P2: ${t2.padEnd(12)} -> P1 Win Rate: ${winRate.toFixed(2)}%`);
   }

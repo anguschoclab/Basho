@@ -54,7 +54,7 @@ for (const t1 of tactics) {
   for (const t2 of tactics) {
     let p1Wins = 0;
     const total = 10000;
-    
+
     for (let i = 0; i < total; i++) {
       const ctx = {
         id: `bout-${t1}-${t2}-${i}`,
@@ -70,14 +70,14 @@ for (const t1 of tactics) {
         // Wait, resolveBout only takes playerTactic from boutContext. If we want to force both tactics, we can add `cpuTacticOverride` to BoutContext for testing, OR we just modify `p1` and `p2` to be `isPlayer = true` and change the engine to accept both?
         // Let's just mock determineCPUTactic in h2h.ts via bun test mock, or since this is a script, we can just edit h2h.ts temporarily.
       };
-      
+
       // We can temporarily add a global override
       globalThis.TEST_CPU_TACTIC = t2;
-      
+
       const res = resolveBout(ctx, p1, p2, basho);
       if (res.winner === "east") p1Wins++;
     }
-    
+
     const winRate = (p1Wins / total) * 100;
     console.log(`P1: ${t1.padEnd(12)} vs P2: ${t2.padEnd(12)} -> P1 Win Rate: ${winRate.toFixed(2)}%`);
   }
