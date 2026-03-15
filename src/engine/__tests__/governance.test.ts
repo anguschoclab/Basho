@@ -1,13 +1,5 @@
 import { describe, it, expect, mock } from "bun:test";
 
-mock.module("seedrandom", () => {
-  return {
-    default: (seed: string) => {
-      const prng = () => 0.5;
-      return prng;
-    },
-  };
-});
 
 // Mock rng.ts entirely
 mock.module("../rng", () => {
@@ -77,6 +69,18 @@ function makeWorld(heya: Heya): WorldState {
 }
 
 describe("Governance: tickWeek", () => {
+  it("should process governance for all heyas in the world", () => {
+    const heya1 = makeHeya({ id: "heya1", scandalScore: 10 });
+    const heya2 = makeHeya({ id: "heya2", scandalScore: 20 });
+    const world = makeWorld(heya1);
+    world.heyas.set(heya2.id, heya2);
+
+    tickWeek(world);
+
+    expect(heya1.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
+    expect(heya2.scandalScore).toBe(20 - SCANDAL_DECAY_RATE);
+  });
+
   it("should decay scandal score", () => {
     const heya = makeHeya({ scandalScore: 10 });
     const world = makeWorld(heya);
@@ -210,5 +214,27 @@ describe("Governance: reportScandal", () => {
     expect(heya.scandalScore).toBe(60 - SCANDAL_DECAY_RATE);
     expect(heya.funds).toBe(10_000_000 - 10_000_000);
     expect(world.events.log.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Governance: Public Helpers", () => {
+  describe("getStatusLabel", () => {
+    it("should return correct label for each status", () => {
+      const { getStatusLabel } = require("../governance");
+      expect(getStatusLabel("good_standing")).toBe("Good Standing");
+      expect(getStatusLabel("warning")).toBe("Under Review");
+      expect(getStatusLabel("probation")).toBe("Probation");
+      expect(getStatusLabel("sanctioned")).toBe("Sanctioned");
+    });
+  });
+
+  describe("getStatusColor", () => {
+    it("should return correct tailwind color class for each status", () => {
+      const { getStatusColor } = require("../governance");
+      expect(getStatusColor("good_standing")).toBe("text-green-600");
+      expect(getStatusColor("warning")).toBe("text-yellow-600");
+      expect(getStatusColor("probation")).toBe("text-orange-600");
+      expect(getStatusColor("sanctioned")).toBe("text-red-600");
+    });
   });
 });
