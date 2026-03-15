@@ -32,6 +32,9 @@ import * as rivalries from "./rivalries";
 import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho, generateGovernanceHeadline } from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
+import { executeMerger, findMergerTarget } from "./mergers";
+import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "./loans";
+import { checkNaturalizations } from "./naturalization";
 import * as welfare from "./welfare";
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
@@ -422,6 +425,9 @@ function runPostBashoResolution(world: WorldState): void {
 
   // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
   runCareerJournalUpdates(world);
+
+  // === 8. FUTURE NATURALIZATION ===
+  checkNaturalizations(world);
 }
 
 // ─── 1. PRESTIGE DECAY (Constitution A3.4) ─────────────────────
@@ -589,33 +595,8 @@ function runGovernanceReview(world: WorldState): void {
       });
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
-      // If a stable is insolvent, the Association may provide an emergency loan
-      // or a benefactor may step in — but at a cost to autonomy.
       if (heya.funds < -5_000_000) {
-        const emergencyLoan = Math.abs(heya.funds) * 0.5; // Cover half the deficit
-        heya.funds += emergencyLoan;
-
-        logEngineEvent(world, {
-          type: "EMERGENCY_LOAN_ISSUED",
-          category: "economy",
-          importance: "major",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `Emergency loan for ${heya.name}`,
-          summary: `The Association issues an emergency loan to prevent ${heya.name}'s collapse. Increased scrutiny follows.`,
-          data: { loanAmount: emergencyLoan, remainingDebt: heya.funds }
-        });
-
-        generateGovernanceHeadline({
-          world,
-          heyaId: heya.id,
-          type: "emergency_loan",
-          severity: "critical",
-          description: `The Association steps in with a ¥${emergencyLoan.toLocaleString()} loan to prevent ${heya.name}'s collapse.`
-        });
-
-        // Loans bring governance scrutiny
-        heya.scandalScore = Math.min(100, (heya.scandalScore ?? 0) + 5);
+        issueBailoutLoanIfNeeded(world, heya.id);
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Clear financial risk indicator when no longer desperate
@@ -726,6 +707,12 @@ function runGovernanceReview(world: WorldState): void {
             severity: "critical",
             description: `Due to critically low recruitment (${heya.rikishiIds.length} active wrestlers), ${heya.name} faces a forced merger.`
           });
+
+          // Execute actual merger
+          const targetId = findMergerTarget(world, heya.id);
+          if (targetId) {
+             executeMerger(world, heya.id, targetId, "Critically low recruitment / Roster size");
+          }
         }
       } else {
         // Player stable — warn but don't force closure

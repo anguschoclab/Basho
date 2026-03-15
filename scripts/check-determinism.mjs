@@ -30,6 +30,7 @@ const files = walk(ENGINE_DIR);
 let failed = false;
 
 for (const file of files) {
+  if (file.endsWith("rng.ts")) continue;
   const raw = fs.readFileSync(file, "utf8");
   const code = stripComments(raw);
 

@@ -64,6 +64,7 @@ export interface WorldState {
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;
+  closedHeyas?: Map<string, any>;
 
   ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
 
