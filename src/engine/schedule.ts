@@ -80,8 +80,7 @@ function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
  * Greedy selection of non-overlapping pairs.
  * Candidates should be pre-sorted by score (descending).
  */
-function greedySelectPairs(candidates: MatchPairing[], maxPairs: number): MatchPairing[] {
-  const used = new Set<string>();
+function greedySelectPairs(candidates: MatchPairing[], maxPairs: number, used = new Set<string>()): MatchPairing[] {
   const selected: MatchPairing[] = [];
   
   for (const c of candidates) {
@@ -134,7 +133,8 @@ export function scheduleDivisionDay(args: {
   });
 
   // First pass: strict (no repeats)
-  let selected = greedySelectPairs(candidates, boutsPerDay);
+  const used = new Set<string>();
+  let selected = greedySelectPairs(candidates, boutsPerDay, used);
 
   // If we couldn't fill the card, optionally allow forced repeats (same-heya still disallowed)
   if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
@@ -150,20 +150,7 @@ export function scheduleDivisionDay(args: {
     });
 
     // Add additional pairs not overlapping
-    const alreadyUsed = new Set<string>();
-    for (const p of selected) {
-      alreadyUsed.add(p.eastId);
-      alreadyUsed.add(p.westId);
-    }
-
-    const extra: MatchPairing[] = [];
-    for (const c of looserCandidates) {
-      if (selected.length + extra.length >= boutsPerDay) break;
-      if (alreadyUsed.has(c.eastId) || alreadyUsed.has(c.westId)) continue;
-      extra.push(c);
-      alreadyUsed.add(c.eastId);
-      alreadyUsed.add(c.westId);
-    }
+    const extra = greedySelectPairs(looserCandidates, boutsPerDay - selected.length, used);
     selected = [...selected, ...extra];
   }
 
