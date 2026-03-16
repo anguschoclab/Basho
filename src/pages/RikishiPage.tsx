@@ -129,8 +129,13 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
   ];
 
   // Grab all rikishi belonging to the player's stable
-  const myRikishi = Array.from(world.rikishi.values())
-    .filter(r => r.heyaId === playerHeyaId)
+  const arr = [];
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId === playerHeyaId) {
+      arr.push(r);
+    }
+  }
+  const myRikishi = arr
     .map(projectRosterEntry)
     // Sort safely by rank hierarchy, and then by rank number
     .sort((a, b) => {

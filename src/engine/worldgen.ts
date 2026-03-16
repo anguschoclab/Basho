@@ -8,6 +8,7 @@
  * - Returns a WorldState populated with Maps as per new types.
  */
 
+import { generateMyosekiMarket } from "./myosekiMarket";
 import { rngFromSeed } from "./rng";
 import { WorldState } from "./types/world";
 import { Rikishi, RikishiStats } from "./types/rikishi";

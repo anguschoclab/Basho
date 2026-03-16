@@ -74,7 +74,7 @@ function labelForWorld(world: WorldState): string {
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 
-  const rikishiList = Array.from(world.rikishi.values());
+  const rikishiList = [...world.rikishi.values()];
   const heyaList = Array.from(world.heyas.values());
 
   const sections: DigestSection[] = [];
