@@ -60,21 +60,7 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   minimal: "Minimal",
 };
 
-/**
- * Get level band.
- *  * @param level - The Level.
- *  * @returns The result.
- */
 import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/engine/utils/ui-helpers";
-
-}
-
-/**
- * Get level color.
- *  * @param level - The Level.
- *  * @returns The result.
- */
-}
 
 /**
  * Get effect percent.

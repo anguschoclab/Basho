@@ -23,20 +23,6 @@ interface ProgressionTrackerProps {
 /** Defines the structure for yokozuna candidate. */
 
 /**
- * Get ozeki run candidates.
- *  * @param world - The World.
- *  * @returns The result.
- */
-}
-
-/**
- * Get kadoban drama.
- *  * @param world - The World.
- *  * @returns The result.
- */
-}
-
-/**
  * progression tracker.
  *  * @param { world } - The { world }.
  */
