@@ -9,8 +9,10 @@ import { generateMyosekiMarket } from "./myosekiMarket";
  * - Returns a WorldState populated with Maps as per new types.
  */
 
+import { generateMyosekiMarket } from "./myosekiMarket";
 import { rngFromSeed } from "./rng";
 import { WorldState } from "./types/world";
+import { generateMyosekiMarket } from "./myosekiMarket";
 import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Heya } from "./types/heya";
 import { Oyakata, OyakataArchetype } from "./types/oyakata";
@@ -28,6 +30,7 @@ import { type IchimonName, type Faction } from "./types/economy";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
+import { generateMyosekiMarket } from "./myosekiMarket";
 
 
 
@@ -161,17 +164,17 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
     case "counter_specialist": menMod = 1.3; techMod = 1.2; strMod = 0.9; break;
   }
 
-  const clamp = (val: number) => Math.min(100, Math.max(10, Math.round(val)));
+  const _clamp = (val: number) => Math.min(100, Math.max(10, Math.round(val)));
 
   return {
-    strength: clamp((base + variance()) * strMod),
-    technique: clamp((base + variance()) * techMod),
-    speed: clamp((base + variance()) * spdMod),
+    strength: _clamp((base + variance()) * strMod),
+    technique: _clamp((base + variance()) * techMod),
+    speed: _clamp((base + variance()) * spdMod),
     weight: Math.round(Math.min(250, Math.max(90, (140 + variance() * 2) * wgtMod))),
-    stamina: clamp(base + variance()),
-    mental: clamp((base + variance()) * menMod),
-    adaptability: clamp((base + variance()) * (techMod > 1 ? 1.1 : 1.0)),
-    balance: clamp(base + variance()),
+    stamina: _clamp(base + variance()),
+    mental: _clamp((base + variance()) * menMod),
+    adaptability: _clamp((base + variance()) * (techMod > 1 ? 1.1 : 1.0)),
+    balance: _clamp(base + variance()),
   };
 }
 
@@ -183,6 +186,7 @@ function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArc
 export function generateWorld(seed: any = "initial-seed"): WorldState {
   // Handle both string and object seed formats
   const actualSeed = typeof seed === "string" ? seed : seed?.seed || "initial-seed";
+  const playerConfig = typeof seed === "object" ? seed.playerConfig : undefined;
   
   const rng = rngFromSeed(actualSeed, "worldgen", "world");
   const heyaMap = new Map<string, Heya>();
@@ -310,6 +314,46 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     heyaMap.set(heyaId, heya);
   });
 
+
+  // --- PLAYER CONFIG OVERRIDES ---
+  if (playerConfig && playerConfig.heyaId) {
+    const pHeya = heyaMap.get(playerConfig.heyaId);
+    if (pHeya) {
+      pHeya.isPlayerOwned = true;
+      const pOyakata = oyakataMap.get(pHeya.oyakataId);
+      if (pOyakata) {
+        if (playerConfig.name) pOyakata.name = `${playerConfig.name} Oyakata`;
+
+        let fundsBonus = 0;
+        let scoutingBonus = 50;
+        let trainingBonus = 50;
+
+        if (playerConfig.background === "yokozuna") {
+          fundsBonus = 5_000_000;
+          scoutingBonus = 70;
+          trainingBonus = 80;
+          pOyakata.highestRank = "Yokozuna";
+        } else if (playerConfig.background === "ozeki") {
+          fundsBonus = 15_000_000;
+          scoutingBonus = 60;
+          trainingBonus = 70;
+          pOyakata.highestRank = "Ozeki";
+        } else if (playerConfig.background === "maegashira") {
+          fundsBonus = 30_000_000;
+          scoutingBonus = 50;
+          trainingBonus = 50;
+          pOyakata.highestRank = "Maegashira";
+        }
+
+        pHeya.funds = Math.max(pHeya.funds, fundsBonus);
+        if (pOyakata.stats) {
+          pOyakata.stats.scouting = scoutingBonus;
+          pOyakata.stats.training = trainingBonus;
+        }
+      }
+    }
+  }
+  // --------------------------------
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
   const currentYear = 2025;

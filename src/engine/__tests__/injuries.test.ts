@@ -8,8 +8,6 @@ import {
   applyInjuryRecord,
   clearInjury,
   processWeeklyRecovery,
-  syncRikishiInjuryFlags,
-  hydrateFromRikishiFlags,
   onBoutResolved,
   type InjuryRecord,
   type InjuriesState,
@@ -223,32 +221,4 @@ describe("Injury System", () => {
     });
   });
 
-  describe("syncRikishiInjuryFlags", () => {
-    it("should sync injured flag to rikishi", () => {
-      const world = mockWorld();
-      let state = createDefaultInjuriesState();
-      state = applyInjuryRecord(state, {
-        id: "inj-4", rikishiId: "r1", startWeek: 1, expectedWeeksOut: 3, remainingWeeks: 3,
-        severity: "minor", area: "wrist", type: "contusion", title: "T", description: "D",
-      });
-      syncRikishiInjuryFlags({ world, state });
-      const r = world.rikishi.get("r1")!;
-      expect(r.injured).toBe(true);
-      expect(r.injuryWeeksRemaining).toBe(3);
-    });
-  });
-
-  describe("hydrateFromRikishiFlags", () => {
-    it("should create InjuryRecords from legacy rikishi flags", () => {
-      const world = mockWorld();
-      const r = world.rikishi.get("r1")!;
-      r.injured = true;
-      r.injuryWeeksRemaining = 4;
-
-      const state = hydrateFromRikishiFlags({ state: createDefaultInjuriesState(), world });
-      expect(state.activeByRikishi["r1"]).toBeDefined();
-      expect(state.activeByRikishi["r1"].remainingWeeks).toBe(4);
-      expect(state.activeByRikishi["r1"].severity).toBe("moderate"); // 4 weeks → moderate
-    });
-  });
 });

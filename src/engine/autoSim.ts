@@ -13,7 +13,7 @@ import { rngFromSeed, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult } from "./types/basho";
 import { simulateBout } from "./bout";
-import { getNextBasho, BASHO_CALENDAR } from "./calendar";
+import { getNextBasho, BASHO_CALENDAR, getBashoNumber } from "./calendar";
 import {
   advanceWeeks,
   processWeeklyBoundary,
@@ -671,14 +671,3 @@ function titleCase(name: string): string {
  *  * @param name - The Name.
  *  * @returns The result.
  */
-function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
-  const numbers: Record<BashoName, 1 | 2 | 3 | 4 | 5 | 6> = {
-    hatsu: 1,
-    haru: 2,
-    natsu: 3,
-    nagoya: 4,
-    aki: 5,
-    kyushu: 6
-  };
-  return numbers[name];
-}

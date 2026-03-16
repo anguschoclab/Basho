@@ -46,3 +46,36 @@ describe("World Generation", () => {
     }
   });
 });
+
+describe("World Generation (Overrides)", () => {
+  it("applies playerConfig overrides correctly", () => {
+    // Generate a world and capture the first Heya ID
+    const initialWorld = generateWorld("test-player-config-seed");
+    const firstHeyaId = Array.from(initialWorld.heyas.keys())[0];
+
+    // Now generate with config targeting that heya
+    const configWorld = generateWorld({
+      seed: "test-player-config-seed",
+      playerConfig: {
+        heyaId: firstHeyaId,
+        name: "TestToshiyori",
+        background: "yokozuna",
+        ichimon: "dewanoumi"
+      }
+    });
+
+    const playerHeya = configWorld.heyas.get(firstHeyaId);
+    expect(playerHeya).toBeDefined();
+    expect(playerHeya?.isPlayerOwned).toBe(true);
+
+    const pOyakata = configWorld.oyakata.get(playerHeya!.oyakataId);
+    expect(pOyakata).toBeDefined();
+    expect(pOyakata?.name).toBe("TestToshiyori Oyakata");
+    expect(pOyakata?.highestRank).toBe("Yokozuna");
+    expect(pOyakata?.stats?.scouting).toBe(70);
+    expect(pOyakata?.stats?.training).toBe(80);
+
+    // Funds should be at least the bonus
+    expect(playerHeya!.funds).toBeGreaterThanOrEqual(5_000_000);
+  });
+});

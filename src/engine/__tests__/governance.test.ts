@@ -20,8 +20,10 @@ mock.module("../rng", () => ({
 }));
 
 // Mock media.ts to avoid its dependencies
+export const generateScandalHeadlineMock = mock(() => null);
+
 mock.module("../media", () => ({
-  generateScandalHeadline: () => null,
+  generateScandalHeadline: generateScandalHeadlineMock,
 }));
 
 import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
@@ -142,6 +144,28 @@ describe("Governance: tickWeek", () => {
     expect(heya.governanceStatus).toBe("good_standing");
   });
 
+
+  it("should catch errors from media generation and not throw", () => {
+    generateScandalHeadlineMock.mockImplementationOnce(() => {
+      throw new Error("API Limit Reached");
+    });
+
+    const heya = makeHeya({
+      scandalScore: SCANDAL_PROBATION_THRESHOLD + 1,
+      governanceStatus: "warning"
+    });
+    const world = makeWorld(heya);
+
+    expect(() => tickWeek(world)).not.toThrow();
+
+    // Verify it still updated the status
+    expect(heya.governanceStatus).toBe("probation");
+  });
+
+
+
+
+
   it("should log events and rulings on status change", () => {
     const heya = makeHeya({
       scandalScore: SCANDAL_WARNING_THRESHOLD + 1,
@@ -199,6 +223,26 @@ describe("Governance: reportScandal", () => {
     expect(heya.funds).toBe(10_000_000 - 2_000_000);
     expect(world.events.log.length).toBeGreaterThan(0);
   });
+
+
+  it("should catch errors from media generation in reportScandal and not throw", () => {
+    generateScandalHeadlineMock.mockImplementationOnce(() => {
+      throw new Error("API Limit Reached");
+    });
+
+    const heya = makeHeya();
+    const world = makeWorld(heya);
+
+    expect(() => reportScandal(world, heya.id, "minor", "Test minor reason")).not.toThrow();
+
+    // Verify it still applied effects
+    expect(heya.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(10_000_000 - 500_000);
+  });
+
+
+
+
 
   it("should apply effects and log for a critical scandal", () => {
     const heya = makeHeya();

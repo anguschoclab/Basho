@@ -112,7 +112,7 @@ export default function AlmanacPage() {
 
   // Get all rikishi sorted by rank tier then career wins
   const allRikishi = useMemo(() => {
-    return Array.from(world.rikishi.values()).sort((a, b) => {
+    return [...world.rikishi.values()].sort((a, b) => {
       const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 999;
       const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 999;
       if (tierA !== tierB) return tierA - tierB;

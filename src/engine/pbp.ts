@@ -695,7 +695,13 @@ export function buildPbp(
     return a.beat - b.beat;
   });
 
-  const finish = [...ordered].reverse().find((f) => f.phase === "finish") as FinishFact | undefined;
+  let finish: FinishFact | undefined = undefined;
+  for (let i = ordered.length - 1; i >= 0; i--) {
+    if (ordered[i].phase === "finish") {
+      finish = ordered[i] as FinishFact;
+      break;
+    }
+  }
   const winnerSide = finish?.winner;
 
   const winnerName = winnerSide ? sideName(ctx, winnerSide) : "";

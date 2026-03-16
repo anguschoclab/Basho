@@ -17,31 +17,7 @@ const AXIS_LABELS = {
   nutrition: "Nutrition",
 } as const;
 
-/**
- * Get level label.
- *  * @param level - The Level.
- *  * @returns The result.
- */
-function getLevelLabel(level: number): string {
-  if (level >= 85) return "World-Class";
-  if (level >= 65) return "Excellent";
-  if (level >= 45) return "Adequate";
-  if (level >= 25) return "Basic";
-  return "Minimal";
-}
 
-/**
- * Get level color.
- *  * @param level - The Level.
- *  * @returns The result.
- */
-function getLevelColor(level: number): string {
-  if (level >= 85) return "text-gold";
-  if (level >= 65) return "text-primary";
-  if (level >= 45) return "text-primary/70";
-  if (level >= 25) return "text-warning";
-  return "text-destructive";
-}
 
 /** facilities widget. */
 export function FacilitiesWidget() {
@@ -98,8 +74,8 @@ export function FacilitiesWidget() {
                   <Icon className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
                 </div>
-                <span className={`text-[10px] font-medium ${getLevelColor(level)}`}>
-                  {getLevelLabel(level)}
+                <span className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}>
+                  {getFacilityLevelLabel(level)}
                 </span>
               </div>
               <Progress value={level} className="h-1.5" />

@@ -43,6 +43,7 @@ import * as training from "./training";
 import * as talentpool from "./talentpool";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { checkRetirement } from "./lifecycle";
+import { generateOyakata } from "./oyakataPersonalities";
 
 // Type guard or helper to access current basho
 /**
@@ -178,7 +179,7 @@ export function simulateBoutForToday(
  *  * @param _opts - The _opts.
  *  * @returns The result.
  */
-function applyBoutResult(
+export function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
   result: BoutResult,
@@ -811,6 +812,53 @@ function runRetirements(world: WorldState): Record<string, number> {
     if (reason) {
       EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
+
+      // Constitution 2.3 & 61: Oyakata candidate eligibility (peak rank <= Sekiwake, age >= 28)
+      const age = world.year - r.birthYear;
+      // We check if the rikishi is Sanyaku-level (Yokozuna, Ozeki, Sekiwake) or has 200+ career wins as a fallback for accomplished
+      const isAccomplished = r.rank === "yokozuna" || r.rank === "ozeki" || r.rank === "sekiwake" || (r.careerWins >= 200);
+
+      if (age >= 28 && isAccomplished) {
+        // Attempt to find an available Myoseki stock
+        if (world.myosekiMarket) {
+          const availableStock = Object.values(world.myosekiMarket.stocks).find(s => s.status === "available");
+          if (availableStock) {
+            // Become an Oyakata
+            const newOyakataId = `oyakata_${id}`;
+            const newOyakata = generateOyakata(newOyakataId, r.heyaId, r.shikona ?? r.name ?? id, age);
+
+            // Assign the stock directly to this new Oyakata (skipping the buyMyoseki cost check as they use their retirement fund)
+            availableStock.ownerId = newOyakataId;
+            availableStock.holderId = newOyakataId;
+            availableStock.status = "held";
+            delete availableStock.askingPrice;
+
+            const tx = {
+              id: `tx_${Date.now()}_${availableStock.id}`,
+              date: `${world.year}-W${world.week || 1}`,
+              myosekiId: availableStock.id,
+              type: "sale",
+              fromId: "JSA",
+              toId: newOyakataId,
+              amount: r.economics?.retirementFund || 150000000
+            };
+            world.myosekiMarket.history.unshift(tx as any);
+
+            world.oyakata.set(newOyakataId, newOyakata);
+
+            logEngineEvent(world, {
+              type: "NEW_OYAKATA",
+              category: "career",
+              importance: "major",
+              scope: "heya",
+              heyaId: r.heyaId,
+              title: `${r.shikona ?? r.name} acquires Elder Stock`,
+              summary: `Retired accomplished rikishi ${r.shikona ?? r.name} has acquired the ${availableStock.name} elder stock and become an Oyakata.`,
+              data: { rikishiId: id, oyakataId: newOyakataId, myosekiName: availableStock.name }
+            });
+          }
+        }
+      }
 
       world.rikishi.delete(id);
       const heya = world.heyas.get(r.heyaId);

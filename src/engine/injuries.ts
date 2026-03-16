@@ -11,8 +11,7 @@ import { clamp, clampInt } from './utils';
 //
 // Notes on integration with your codebase:
 // - Your Rikishi already has `injured: boolean` and `injuryWeeksRemaining: number`.
-// - This module supports optional richer injury state stored externally (recommended),
-//   while still providing "compat mode" helpers that update those fields.
+// - This module supports richer injury state stored externally (recommended).
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { Id } from "./types/common";
@@ -331,67 +330,6 @@ export function processWeeklyRecovery(args: {
 }
 
 /** =========================
- *  Compatibility helpers (Rikishi fields)
- *  ========================= */
-
-/**
- * Sync active injuries into your existing Rikishi fields:
- * - rikishi.injured
- * - rikishi.injuryWeeksRemaining
- */
-export function syncRikishiInjuryFlags(args: {
-  world: WorldState;
-  state: InjuriesState;
-}): void {
-  for (const r of args.world.rikishi.values()) {
-    const inj = args.state.activeByRikishi[r.id];
-    r.injured = Boolean(inj);
-    r.injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;
-  }
-}
-
-/**
- * If you only have rikishi.injured/weeksRemaining and want to build InjuryRecords lazily.
- */
-export function hydrateFromRikishiFlags(args: {
-  state: InjuriesState;
-  world: WorldState;
-}): InjuriesState {
-  let state = args.state;
-  for (const r of args.world.rikishi.values()) {
-    const injured = Boolean(r.injured);
-    const weeks = typeof r.injuryWeeksRemaining === "number" ? Math.max(0, Math.trunc(r.injuryWeeksRemaining)) : 0;
-    if (!injured || weeks <= 0) continue;
-
-    if (state.activeByRikishi[r.id]) continue; // already hydrated
-
-    // Create a generic record
-    const rng = rngForWorld(args.world, "injuries", `hydrate::week${args.world.week}::${r.id}`);
-    const severity: InjurySeverity = weeks <= 2 ? "minor" : weeks <= 5 ? "moderate" : "serious";
-    const area = pickArea(rng);
-    const type = pickType(rng, severity);
-    const { title, description } = describeInjury({ rng, severity, area, type });
-
-    const rec: InjuryRecord = {
-      id: `inj-hydrated-${args.world.week}-${r.id}`,
-      rikishiId: r.id,
-      startWeek: args.world.week ?? 0,
-      expectedWeeksOut: weeks,
-      remainingWeeks: weeks,
-      severity,
-      area,
-      type,
-      title,
-      description,
-      causedBy: "training"
-    };
-
-    state = applyInjuryRecord(state, rec);
-  }
-  return state;
-}
-
-/** =========================
  *  Bridge to timeBoundary.ts style events
  *  ========================= */
 
@@ -464,9 +402,6 @@ function getIndividualMode(world: WorldState, rikishiId: Id): "develop" | "push"
  */
 export function tickWeek(world: WorldState): { recoveredCount: number; newCount: number } {
   let state = ensureWorldInjuriesState(world);
-
-  // Hydrate from legacy flags if any
-  state = hydrateFromRikishiFlags({ state, world });
 
   // 1) Recovery
   const rec = processWeeklyRecovery({
