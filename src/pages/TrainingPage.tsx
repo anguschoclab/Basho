@@ -307,7 +307,7 @@ export default function TrainingPage() {
           <CardContent>
             <div className="space-y-3">
               {rikishiList.map((rikishi) => {
-                const focus = trainingState.focusSlots.find((f) => f.rikishiId === rikishi.id);
+                const focus = focusMap.get(rikishi.id);
                 const phase = getCareerPhase(rikishi.experience);
                 const phaseEffect = PHASE_EFFECTS[phase];
                 const rankInfo = RANK_HIERARCHY[rikishi.rank];

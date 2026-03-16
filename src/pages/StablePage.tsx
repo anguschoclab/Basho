@@ -655,7 +655,7 @@ export default function StablePage() {
                 <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {sekitori.slice(0, 6).map((rikishi) => {
                     if (!rikishi) return null;
-                    const focus = trainingState.focusSlots.find((f) => f.rikishiId === rikishi.id);
+                    const focus = focusMap.get(rikishi.id);
                     // NOTE: getCareerPhase in engine/training expects experience number in our updated types.
                     const phase = getCareerPhase(rikishi.experience);
 

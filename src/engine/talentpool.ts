@@ -1193,7 +1193,13 @@ export function fillVacanciesForNPC(world: WorldState, vacanciesByHeyaId: Record
 
       const { offerType, interest } = chooseOfferProfile(world, heyaId, chosen);
       offerCandidate(world, chosen.candidateId, heyaId, offerType, interest);
-      const s = chosen.competingSuitors.find((x) => x.heyaId === heyaId);
+      let s;
+      for (let i = 0; i < chosen.competingSuitors.length; i++) {
+        if (chosen.competingSuitors[i].heyaId === heyaId) {
+          s = chosen.competingSuitors[i];
+          break;
+        }
+      }
       if (s) s.deadlineWeek = now; // resolve immediately
       resolveCandidateSigning(world, chosen.candidateId);
     }

@@ -107,6 +107,12 @@ export function tickMyosekiMarket(world: WorldState): void {
   const rng = rngForWorld(world, "myoseki", "tick");
 
   // Only run major logic during specific phases to save CPU? No, run weekly.
+  // Build map of oyakataId to heya for faster lookup
+  const oyakataHeyaMap = new Map();
+  for (const h of world.heyas.values()) {
+    if (h.oyakataId) oyakataHeyaMap.set(h.oyakataId, h);
+  }
+
   for (const stock of Object.values(market.stocks)) {
     // 1. Pay lease fees (if leased)
     if (stock.status === "leased" && stock.leaseFee) {
@@ -115,7 +121,7 @@ export function tickMyosekiMarket(world: WorldState): void {
       // Try to deduct from lessee's heya
       if (stock.holderId.startsWith("oyakata_")) {
         // Find heya owned by this oyakata
-        const lesseeHeya = Array.from(world.heyas.values()).find(h => h.oyakataId === stock.holderId);
+        const lesseeHeya = oyakataHeyaMap.get(stock.holderId);
         if (lesseeHeya) {
           lesseeHeya.funds -= weeklyFee;
           // If the owner is a different heya, they would get paid, but typically it's an NPC/Retired

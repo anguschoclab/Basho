@@ -361,6 +361,11 @@ export function determineSpecialPrizes(
   // Logic: Beat the Yusho winner OR Beat a Yokozuna (Kinboshi), + High wins preferred
   let bestShukun = { id: "", score: -1 };
   
+  const kimariteMap = new Map();
+  for (const kr of KIMARITE_REGISTRY) {
+    kimariteMap.set(kr.id, kr);
+  }
+
   for (const c of candidates) {
     const s = stats.get(c.id)!;
     const beatYusho = s.opponents.includes(yushoId);
@@ -409,7 +414,7 @@ export function determineSpecialPrizes(
     // Count "technical" moves (not oshi/tsuki/yori)
     let technicalMoves = 0;
     for (const kId of s.kimarites) {
-      const k = KIMARITE_REGISTRY.find(kr => kr.id === kId);
+      const k = kimariteMap.get(kId);
       if (k && k.category !== "push" && k.category !== "thrust" && k.category !== "forfeit") {
         technicalMoves++;
       }

@@ -66,6 +66,14 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
 
   // Get training state to detect negligence (forcing injured rikishi to train)
   const trainingState = ensureHeyaTrainingState(world, heya.id);
+
+  // Build a Map of focus slots for O(1) lookups inside the loop
+  const focusMap = new Map();
+  if (trainingState && trainingState.focusSlots) {
+    for (const f of trainingState.focusSlots) {
+      focusMap.set(f.rikishiId, f);
+    }
+  }
   const intensity = trainingState.activeProfile.intensity;
   const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
@@ -85,7 +93,7 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
     // NEGLIGENCE DETECTION (Constitution §A7):
     // If an injured rikishi is in a harsh training regime without "protect" or "rebuild" focus,
     // that counts as negligence (not just misfortune).
-    const individualFocus = trainingState.focusSlots.find(f => f.rikishiId === rid);
+    const individualFocus = focusMap.get(rid);
     const isProtected = individualFocus?.focusType === "protect" || individualFocus?.focusType === "rebuild";
     if (isHarshTraining && !isProtected) {
       negligenceCount += 1;
