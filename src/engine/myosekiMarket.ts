@@ -131,6 +131,25 @@ export function tickMyosekiMarket(world: WorldState): void {
   }
 }
 
+function logMyosekiTransaction(
+  world: WorldState,
+  myosekiId: string,
+  type: "sale" | "lease" | "return",
+  fromId: string,
+  toId: string,
+  amount: number
+) {
+  world.myosekiMarket!.history.unshift({
+    id: `tx_${Date.now()}_${myosekiId}`,
+    date: `${world.year}-W${world.week}`,
+    myosekiId,
+    type,
+    fromId,
+    toId,
+    amount
+  });
+}
+
 /**
  * Buy a Myoseki stock.
  */
@@ -155,17 +174,7 @@ export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myos
   const amount = stock.askingPrice;
   delete stock.askingPrice;
 
-  const tx: MyosekiTransaction = {
-    id: `tx_${Date.now()}_${myosekiId}`,
-    date: `${world.year}-W${world.week}`,
-    myosekiId,
-    type: "sale",
-    fromId: "JSA",
-    toId: buyerId,
-    amount
-  };
-
-  world.myosekiMarket.history.unshift(tx);
+  logMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount);
 
   EventBus.financialAlert(world, heya.id, "Myoseki Acquired", `${heya.name} acquired the ${stock.name} elder stock for ¥${amount.toLocaleString()}.`);
 
@@ -186,17 +195,7 @@ export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): bo
   stock.status = "leased";
   stock.leaseFee = Math.floor(stock.askingPrice * LEASE_RATE_PERCENT);
 
-  const tx: MyosekiTransaction = {
-    id: `tx_${Date.now()}_${myosekiId}`,
-    date: `${world.year}-W${world.week}`,
-    myosekiId,
-    type: "lease",
-    fromId: stock.ownerId,
-    toId: lesseeId,
-    amount: stock.leaseFee
-  };
-
-  world.myosekiMarket.history.unshift(tx);
+  logMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, stock.leaseFee);
 
   return true;
 }

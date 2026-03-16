@@ -12,13 +12,12 @@ import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportan
 import type { Id } from "./types/common";
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
+import { simpleHashToIndex } from "./utils/math";
+
+/** Stable hash for deterministic IDs (FNV-1a-like) */
 function stableHash(s: string): string {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return (h >>> 0).toString(16);
+  // Using large prime to get the raw hash before modulo
+  return simpleHashToIndex(s, 0xFFFFFFFF).toString(16);
 }
 
 /**

@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
+import { mockRikishi } from "./utils";
 import {
   createDefaultInjuriesState,
   getOrInitDurability,
@@ -20,25 +21,8 @@ import type { Heya } from "../types/heya";
 
 // ── helpers ──
 
-function mockRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
-  return {
-    id: "r1", shikona: "Testyama", heyaId: "h1", nationality: "JP",
-    height: 180, weight: 140, power: 50, speed: 50, balance: 50,
-    technique: 50, aggression: 50, experience: 50, momentum: 0,
-    stamina: 100, fatigue: 30, injured: false, injuryWeeksRemaining: 0,
-    style: "oshi", archetype: "all_rounder", division: "makuuchi",
-    rank: "maegashira", rankNumber: 10, side: "east", birthYear: 1995,
-    adaptability: 50, h2h: {}, history: [], personalityTraits: [],
-    condition: 90, motivation: 50,
-    stats: { strength: 50, speed: 50, technique: 50, balance: 50, weight: 140, stamina: 100, mental: 50, adaptability: 50 } as RikishiStats,
-    careerWins: 20, careerLosses: 10, currentBashoWins: 5, currentBashoLosses: 2,
-    favoredKimarite: [], weakAgainstStyles: [],
-    ...overrides,
-  } as unknown as Rikishi;
-}
-
 function mockWorld(rikishi?: Map<string, Rikishi>): WorldState {
-  const rMap = rikishi ?? new Map([["r1", mockRikishi()]]);
+  const rMap = rikishi ?? new Map([["r1", mockRikishi("r1")]]);
   return {
     id: "w1", seed: "injury-test-seed", year: 2026, week: 5,
     cyclePhase: "interim", currentBashoName: "hatsu",
@@ -95,7 +79,7 @@ describe("Injury System", () => {
 
   describe("computeWeeklyInjuryChance", () => {
     const profile = { intensity: "balanced" as const, focus: "neutral" as const, styleBias: "neutral" as const, recovery: "normal" as const };
-    const rikishi = mockRikishi();
+    const rikishi = mockRikishi("r1");
 
     it("should produce a low baseline chance", () => {
       const chance = computeWeeklyInjuryChance({ rikishi, profile, fatigue: 0, durability: 60 });
@@ -147,7 +131,7 @@ describe("Injury System", () => {
       // Override rng to always return 0.99
       rng.next = () => 0.99;
       const result = rollWeeklyInjury({
-        rng, world, rikishi: mockRikishi(), fatigue: 0, durability: 95,
+        rng, world, rikishi: mockRikishi("r1"), fatigue: 0, durability: 95,
         profile: { intensity: "conservative", focus: "neutral", styleBias: "neutral", recovery: "high" },
       });
       expect(result).toBeNull();
@@ -162,7 +146,7 @@ describe("Injury System", () => {
       rng.next = () => { callCount++; return callCount === 1 ? 0.0001 : origNext(); };
 
       const result = rollWeeklyInjury({
-        rng, world, rikishi: mockRikishi(), fatigue: 80, durability: 30,
+        rng, world, rikishi: mockRikishi("r1"), fatigue: 80, durability: 30,
         profile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "low" },
       });
       expect(result).not.toBeNull();

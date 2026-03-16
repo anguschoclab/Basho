@@ -207,13 +207,7 @@ export function buildHistoryIndex(args: {
       }
     }
 
-    // Sort each list
-    for (const rid of Object.keys(idx.rikishi)) {
-      idx.rikishi[rid] = idx.rikishi[rid].sort((a, b) => compareBashoKey(a.bashoKey, b.bashoKey));
-      idx.lastSeenBashoForRikishi[rid] = idx.rikishi[rid].length
-        ? idx.rikishi[rid][idx.rikishi[rid].length - 1].bashoKey
-        : undefined;
-    }
+    sortRikishiLists(idx);
   } else {
     // No detailed logs: infer minimal entries from winners/prizes
     for (const bk of idx.bashoKeys) {
@@ -249,16 +243,19 @@ export function buildHistoryIndex(args: {
       if (br.shukunsho) pushRikishiEntry(idx, br.shukunsho, { bashoKey: bk, year, bashoNumber, bashoName: br.bashoName, shukunsho: true });
     }
 
-    // Sort each list
-    for (const rid of Object.keys(idx.rikishi)) {
-      idx.rikishi[rid] = idx.rikishi[rid].sort((a, b) => compareBashoKey(a.bashoKey, b.bashoKey));
-      idx.lastSeenBashoForRikishi[rid] = idx.rikishi[rid].length
-        ? idx.rikishi[rid][idx.rikishi[rid].length - 1].bashoKey
-        : undefined;
-    }
+    sortRikishiLists(idx);
   }
 
   return idx;
+}
+
+function sortRikishiLists(idx: HistoryIndex) {
+  for (const rid of Object.keys(idx.rikishi)) {
+    idx.rikishi[rid] = idx.rikishi[rid].sort((a, b) => compareBashoKey(a.bashoKey, b.bashoKey));
+    idx.lastSeenBashoForRikishi[rid] = idx.rikishi[rid].length
+      ? idx.rikishi[rid][idx.rikishi[rid].length - 1].bashoKey
+      : undefined;
+  }
 }
 
 /**

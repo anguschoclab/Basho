@@ -1,40 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
+import { mockRikishi } from "./utils";
 import { resolveBout, simulateBout } from "../bout";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BoutResult } from "../types/basho";
 import type { TacticalArchetype } from "../types/combat";
-
-function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
-  return {
-    id,
-    shikona: `Wrestler-${id}`,
-    heyaId: `heya-${id}`,
-    rank: "maegashira",
-    rankNumber: 5,
-    division: "makuuchi",
-    side: "east",
-    weight: 140,
-    height: 180,
-    style: "hybrid",
-    archetype: "all_rounder" as TacticalArchetype,
-    power: 50,
-    speed: 50,
-    balance: 50,
-    technique: 50,
-    aggression: 50,
-    experience: 30,
-    adaptability: 50,
-    stamina: 50,
-    momentum: 50,
-    fatigue: 0,
-    stats: { strength: 50, technique: 50, speed: 50, stamina: 50, mental: 50, adaptability: 50, balance: 50, weight: 140 },
-    favoredKimarite: [],
-    weakAgainstStyles: [],
-    personalityTraits: [],
-    injuryStatus: { isInjured: false, severity: 0, type: "none", location: "", weeksRemaining: 0, weeksToHeal: 0 },
-    ...overrides
-  } as unknown as Rikishi;
-}
 
 function mockBasho(): BashoState {
   return {
