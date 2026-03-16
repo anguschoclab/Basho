@@ -123,6 +123,9 @@ describe("10-Basho Meta Shift Simulation", () => {
 
   for (const arch of ARCHETYPES) archetypeYushos[arch] = 0;
 
+  const fieldMap = new Map();
+  for (const r of field) fieldMap.set(r.id, r);
+
   for (let b = 0; b < NUM_BASHOS; b++) {
     const standings = simulateBasho(field, b);
     // Find yusho winner
@@ -131,7 +134,7 @@ describe("10-Basho Meta Shift Simulation", () => {
     for (const [id, rec] of standings) {
       if (rec.wins > bestWins) { bestWins = rec.wins; bestId = id; }
     }
-    const winner = field.find(r => r.id === bestId)!;
+    const winner = fieldMap.get(bestId)!;
     yushoLog.push({ basho: b + 1, winnerId: bestId, archetype: winner.archetype as TacticalArchetype, wins: bestWins });
     archetypeYushos[winner.archetype]++;
   }

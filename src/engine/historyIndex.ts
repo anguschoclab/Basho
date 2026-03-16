@@ -422,7 +422,16 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
       : new Map(Object.entries(standingsMap));
 
     for (const [rid, stats] of entries) {
-      const existing = idx.rikishi[rid]?.find(e => e.bashoKey === bashoKey);
+      let existing = undefined;
+      const historyArr = idx.rikishi[rid];
+      if (historyArr) {
+        for (let i = historyArr.length - 1; i >= 0; i--) {
+          if (historyArr[i].bashoKey === bashoKey) {
+            existing = historyArr[i];
+            break;
+          }
+        }
+      }
       if (existing) {
         existing.wins = stats.wins;
         existing.losses = stats.losses;
