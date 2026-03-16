@@ -649,7 +649,7 @@ export function BoutReplayViewer({
       {/* Controls */}
       <div className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} title="Reset">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} title="Reset" aria-label="Reset replay">
             <RotateCcw className="h-4 w-4" />
           </Button>
           <Button
@@ -657,10 +657,11 @@ export function BoutReplayViewer({
             size="icon"
             className="h-9 w-9"
             onClick={handlePlayPause}
+            aria-label={isPlaying ? "Pause replay" : "Play replay"}
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSkipToEnd} title="Skip">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSkipToEnd} title="Skip" aria-label="Skip to end of replay">
             <SkipForward className="h-4 w-4" />
           </Button>
         </div>
@@ -679,7 +680,7 @@ export function BoutReplayViewer({
           ))}
         </div>
 
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSoundEnabled(s => !s)}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSoundEnabled(s => !s)} aria-label={soundEnabled ? "Mute sound" : "Enable sound"}>
           {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
         </Button>
       </div>
