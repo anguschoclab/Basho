@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { startBasho, endBasho, advanceBashoDay } from "../world";
+import { startBasho, endBasho, advanceBashoDay, simulateBoutForToday } from "../world";
 import { generateWorld } from "../worldgen";
 
 describe("World Engine Transitions", () => {
@@ -63,5 +63,59 @@ if (!updated) throw new Error("updated is undefined");
 
     // The player with 15 wins should be the yusho winner (simplistic check)
     expect(lastHistory.yusho).toBe(eastId);
+  });
+});
+
+
+describe("simulateBoutForToday", () => {
+  it("should return world if basho does not exist", () => {
+    const world = generateWorld("world-test-simulate-bout-1");
+    world.currentBasho = undefined;
+
+    const result = simulateBoutForToday(world, 0);
+    expect(result.world).toBe(world);
+    expect(result.result).toBeUndefined();
+  });
+
+  it("should return world if unplayedIndex is out of bounds", () => {
+    let world = generateWorld("world-test-simulate-bout-2");
+    world = startBasho(world, "natsu");
+
+    // Get number of matches today
+    const basho = world.currentBasho!;
+    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
+
+    const result = simulateBoutForToday(world, todaysMatches.length); // out of bounds
+    expect(result.world).toBe(world);
+    expect(result.result).toBeUndefined();
+  });
+
+  it("should return world if rikishi is missing", () => {
+    let world = generateWorld("world-test-simulate-bout-3");
+    world = startBasho(world, "natsu");
+
+    const basho = world.currentBasho!;
+    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
+
+    // Delete one of the rikishi participating in the first match
+    const match = todaysMatches[0];
+    world.rikishi.delete(match.eastRikishiId);
+
+    const result = simulateBoutForToday(world, 0);
+    expect(result.world).toBe(world);
+    expect(result.result).toBeUndefined();
+  });
+
+  it("should simulate bout correctly when everything is valid", () => {
+    let world = generateWorld("world-test-simulate-bout-4");
+    world = startBasho(world, "natsu");
+
+    const basho = world.currentBasho!;
+    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
+    expect(todaysMatches.length).toBeGreaterThan(0);
+
+    const result = simulateBoutForToday(world, 0);
+    expect(result.world).toBe(world);
+    expect(result.result).toBeDefined();
   });
 });

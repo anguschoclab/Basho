@@ -1,3 +1,4 @@
+import { generateMyosekiMarket } from "./myosekiMarket";
 /**
  * File Name: src/engine/worldgen.ts
  * Notes:
