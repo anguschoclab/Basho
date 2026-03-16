@@ -175,7 +175,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       <Dialog open={open} onOpenChange={handleOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button variant="ghost" size="icon" className="h-8 w-8" title="Save / Load">
+            <Button variant="ghost" size="icon" className="h-8 w-8" title="Save / Load" aria-label="Open save and load dialog">
               <HardDrive className="h-4 w-4" />
             </Button>
           )}
