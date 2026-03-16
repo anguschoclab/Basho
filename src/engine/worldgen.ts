@@ -27,6 +27,7 @@ import { type IchimonName, type Faction } from "./types/economy";
 import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
+import { generateMyosekiMarket } from "./myosekiMarket";
 
 
 

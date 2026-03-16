@@ -1,7 +1,7 @@
 import { clamp } from './utils';
 
 function localClampInt(val: number, min: number, max: number): number {
-  return localClampInt(Math.round(val), min, max);
+  return Math.max(min, Math.min(max, Math.round(val)));
 }
 
 // banzuke.ts
