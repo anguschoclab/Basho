@@ -45,21 +45,6 @@ import {
 /**
  * Format save date.
  *  * @param iso - The Iso.
- *  * @returns The result.
- */
-function formatSaveDate(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {
