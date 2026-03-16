@@ -75,15 +75,14 @@ function labelForWorld(world: WorldState): string {
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 
-  const rikishiList = [...world.rikishi.values()];
+  const rikishiList = Array.from(world.rikishi.values());
   const heyaList = Array.from(world.heyas.values());
 
   const sections: DigestSection[] = [];
 
   // --- Injuries ---
   const injuryItems: DigestItem[] = [];
-  // ⚡ Bolt: iterate directly over IterableIterator instead of Array.from() to avoid large array allocation
-  for (const r of world.rikishi.values()) {
+  for (const r of rikishiList) {
     const injury = r.injury;
     if (injury?.isInjured) {
       injuryItems.push({
@@ -209,7 +208,6 @@ export interface YokozunaCandidate {
   recentYushos: number;
   recentJunYushos: number;
   consecutiveYushos: number;
-  isStrong: boolean;
   narrative: string;
 }
 
@@ -265,8 +263,6 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
     let yushos = recent.filter(h => h.yusho).length;
     let junYushos = recent.filter(h => h.junYusho).length;
 
-    const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
-
     if (yushos >= 1 || junYushos >= 1 || r.heyaId === world.playerHeyaId) {
       let narrative = "Requires two consecutive yusho for promotion.";
       if (yushos >= 2) narrative = "Unanimous Yokozuna Deliberation Council recommendation expected.";
@@ -278,7 +274,6 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
         recentYushos: yushos,
         recentJunYushos: junYushos,
         consecutiveYushos: yushos,
-        isStrong,
         narrative
       });
     }

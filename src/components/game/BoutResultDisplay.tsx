@@ -42,11 +42,7 @@ function safeNumber(v: unknown, fallback = 0): number {
  *  * @param raw - The Raw.
  *  * @returns The result.
  */
-function formatStance(raw: unknown): string {
-  const s = safeString(raw, "");
-  if (!s) return "—";
-  return s.charAt(0).toUpperCase() + s.split("-").join(" ").slice(1);
-}
+import { formatStance } from "@/engine/utils/formatters";
 
 /**
  * bout result display.

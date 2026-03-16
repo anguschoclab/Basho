@@ -77,19 +77,22 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
   const [comparing, setComparing] = useState(false);
   const [compareMode, setCompareMode] = useState<"stables" | "rikishi">("stables");
 
-  const snapshots = useMemo(() => {
+  const { snapshots, snapMap } = useMemo(() => {
     const results: Array<PerceptionSnapshot & { isPlayer: boolean }> = [];
+    const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
     for (const heya of world.heyas.values()) {
       if (heya.rikishiIds.length === 0) continue;
       const snap = buildPerceptionSnapshot(world, heya.id);
-      results.push({ ...snap, isPlayer: heya.id === playerHeyaId });
+      const entry = { ...snap, isPlayer: heya.id === playerHeyaId };
+      results.push(entry);
+      map.set(heya.id, entry);
     }
     const strengthOrder = ["dominant", "strong", "competitive", "developing", "weak"];
     results.sort((a, b) => {
       if (a.isPlayer !== b.isPlayer) return a.isPlayer ? -1 : 1;
       return strengthOrder.indexOf(a.rosterStrengthBand) - strengthOrder.indexOf(b.rosterStrengthBand);
     });
-    return results;
+    return { snapshots: results, snapMap: map };
   }, [world, playerHeyaId]);
 
   const handleToggleCompare = (heyaId: string) => {
@@ -102,8 +105,8 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
     });
   };
 
-  const snapA = compareIds[0] ? snapshots.find(s => s.heyaId === compareIds[0]) : null;
-  const snapB = compareIds[1] ? snapshots.find(s => s.heyaId === compareIds[1]) : null;
+  const snapA = compareIds[0] ? snapMap.get(compareIds[0]) || null : null;
+  const snapB = compareIds[1] ? snapMap.get(compareIds[1]) || null : null;
 
   return (
     <div className="space-y-4">

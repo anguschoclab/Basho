@@ -45,21 +45,6 @@ import {
 /**
  * Format save date.
  *  * @param iso - The Iso.
- *  * @returns The result.
- */
-function formatSaveDate(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {
@@ -175,7 +160,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       <Dialog open={open} onOpenChange={handleOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button variant="ghost" size="icon" className="h-8 w-8" title="Save / Load">
+            <Button variant="ghost" size="icon" className="h-8 w-8" title="Save / Load" aria-label="Open save and load dialog">
               <HardDrive className="h-4 w-4" />
             </Button>
           )}
