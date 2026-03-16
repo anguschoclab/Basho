@@ -334,6 +334,20 @@ describe("Facilities: Monthly Tick", () => {
       const cost = getUpgradeCostEstimate(heya, "training", 5);
       expect(cost).toBe(0);
     });
+
+    it("should handle negative facility levels correctly", () => {
+      const heya = makeHeya({ facilities: { training: -10, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 5);
+      expect(cost).toBe(200_000 * 5); // Base cost 200k for all 5 points since level is < 40
+    });
+
+    it("should handle excessively large facility levels correctly", () => {
+      const heya = makeHeya({ facilities: { training: 150, recovery: 30, nutrition: 30 } });
+      const cost = getUpgradeCostEstimate(heya, "training", 5);
+      // Math.min(5, MAX_FACILITY (100) - 150) = Math.min(5, -50) = -50
+      // Loop: i < effective (-50), loop does not run.
+      expect(cost).toBe(0);
+    });
   });
 
   describe("getMonthlyMaintenanceCost", () => {
@@ -381,6 +395,20 @@ describe("Facilities: Monthly Tick", () => {
       const cost = getMonthlyMaintenanceCost(heya);
       // (10 * 3000) + (20 * 3000) + (30 * 3000) = 30,000 + 60,000 + 90,000 = 180,000
       expect(cost).toBe(180_000);
+    });
+
+    it("should handle negative facility levels correctly", () => {
+      const heya = makeHeya({ facilities: { training: -10, recovery: -5, nutrition: -20 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // (-10 * 3000) + (-5 * 3000) + (-20 * 3000) = -30,000 - 15,000 - 60,000 = -105,000
+      expect(cost).toBe(-105_000);
+    });
+
+    it("should handle excessively large facility levels correctly", () => {
+      const heya = makeHeya({ facilities: { training: 200, recovery: 150, nutrition: 300 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      // (200 * 3000) + (150 * 3000) + (300 * 3000) = 600,000 + 450,000 + 900,000 = 1,950,000
+      expect(cost).toBe(1_950_000);
     });
   });
 });

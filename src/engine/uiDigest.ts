@@ -74,14 +74,12 @@ function labelForWorld(world: WorldState): string {
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 
-  const rikishiList = Array.from(world.rikishi.values());
-  const heyaList = Array.from(world.heyas.values());
-
   const sections: DigestSection[] = [];
 
   // --- Injuries ---
   const injuryItems: DigestItem[] = [];
-  for (const r of rikishiList) {
+  // ⚡ Bolt: iterate directly over IterableIterator instead of Array.from() to avoid large array allocation
+  for (const r of world.rikishi.values()) {
     const injury = r.injury;
     if (injury?.isInjured) {
       injuryItems.push({

@@ -1,3 +1,4 @@
+import { generateMyosekiMarket } from "./myosekiMarket";
 /**
  * File Name: src/engine/worldgen.ts
  * Notes:
@@ -10,6 +11,7 @@
 
 import { rngFromSeed } from "./rng";
 import { WorldState } from "./types/world";
+import { generateMyosekiMarket } from "./myosekiMarket";
 import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Heya } from "./types/heya";
 import { Oyakata, OyakataArchetype } from "./types/oyakata";
