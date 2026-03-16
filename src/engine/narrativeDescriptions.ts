@@ -37,7 +37,7 @@ export type OyakataArchetypeKey =
   | "strategist";
 
 // ---- small helpers ----
-const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
+const _clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
 const safe = (x: any, fallback: number) => (Number.isFinite(Number(x)) ? Number(x) : fallback);
 
 // =======================
@@ -46,7 +46,7 @@ const safe = (x: any, fallback: number) => (Number.isFinite(Number(x)) ? Number(
 
 /** Attribute band label (0–100). */
 export function describeAttribute(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "Exceptional";
   if (v >= 75) return "Outstanding";
   if (v >= 60) return "Strong";
@@ -113,7 +113,7 @@ export function describeAttributeVerbose(attribute: AttributeKey | string, value
  *  * @returns The result.
  */
 export function describeAggression(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Relentless";
   if (v >= 70) return "Aggressive";
   if (v >= 55) return "Forward-moving";
@@ -128,7 +128,7 @@ export function describeAggression(value: number): string {
  *  * @returns The result.
  */
 export function describeAggressionVerbose(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Fights with overwhelming forward pressure—never retreats.";
   if (v >= 70) return "Prefers to attack, constantly pushing the action.";
   if (v >= 55) return "A forward-moving style that seeks to control the pace.";
@@ -181,7 +181,7 @@ export function describeExperienceVerbose(value: number): string {
  *  * @returns The result.
  */
 export function describeStamina(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Tireless";
   if (v >= 70) return "Enduring";
   if (v >= 55) return "Resilient";
@@ -196,7 +196,7 @@ export function describeStamina(value: number): string {
  *  * @returns The result.
  */
 export function describeStaminaVerbose(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Can go the distance no matter how long the bout.";
   if (v >= 70) return "Rarely tires; maintains intensity throughout.";
   if (v >= 55) return "Good conditioning; handles long bouts well.";
@@ -216,7 +216,7 @@ export function describeStaminaVerbose(value: number): string {
  */
 export function describeMomentum(value: number): string {
   const vRaw = safe(value, 0);
-  const v = Math.abs(vRaw) > 10 ? (clamp(vRaw, 0, 100) - 50) / 10 : clamp(vRaw, -5, 5);
+  const v = Math.abs(vRaw) > 10 ? (_clamp(vRaw, 0, 100) - 50) / 10 : _clamp(vRaw, -5, 5);
 
   if (v >= 3) return "On fire";
   if (v >= 1) return "Rising";
@@ -232,7 +232,7 @@ export function describeMomentum(value: number): string {
  */
 export function describeMomentumVerbose(value: number): string {
   const vRaw = safe(value, 0);
-  const v = Math.abs(vRaw) > 10 ? (clamp(vRaw, 0, 100) - 50) / 10 : clamp(vRaw, -5, 5);
+  const v = Math.abs(vRaw) > 10 ? (_clamp(vRaw, 0, 100) - 50) / 10 : _clamp(vRaw, -5, 5);
 
   if (v >= 3) return "Riding a wave of confidence—everything is clicking.";
   if (v >= 1) return "Form is improving; belief is building.";
@@ -328,7 +328,7 @@ export function describeInjuryVerbose(weeksRemaining: number): string {
  *  * @returns The result.
  */
 export function describeFatigue(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Fresh";
   if (v <= 30) return "Lightly worn";
   if (v <= 50) return "Tired";
@@ -342,7 +342,7 @@ export function describeFatigue(value: number): string {
  *  * @returns The result.
  */
 export function describeFatigueVerbose(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Looks fresh, moving freely without reservation.";
   if (v <= 30) return "Minor signs of wear, but nothing concerning.";
   if (v <= 50) return "The tournament grind is showing; movements less crisp.";
@@ -360,7 +360,7 @@ export function describeFatigueVerbose(value: number): string {
  *  * @returns The result.
  */
 export function describeTrainingEffect(multiplier: number): string {
-  const m = clamp(safe(multiplier, 1), 0, 10);
+  const m = _clamp(safe(multiplier, 1), 0, 10);
   if (m >= 1.5) return "Dramatically increases";
   if (m >= 1.2) return "Significantly improves";
   if (m >= 1.05) return "Slightly enhances";
@@ -380,7 +380,7 @@ export function describeTrainingEffect(multiplier: number): string {
  *  * @returns The result.
  */
 export function describeReputation(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "Legendary";
   if (v >= 75) return "Prestigious";
   if (v >= 60) return "Respected";
@@ -396,7 +396,7 @@ export function describeReputation(value: number): string {
  *  * @returns The result.
  */
 export function describeReputationVerbose(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "One of the great institutions of sumo.";
   if (v >= 75) return "A stable of considerable prestige and history.";
   if (v >= 60) return "Well-respected in sumo circles.";
@@ -416,7 +416,7 @@ export function describeReputationVerbose(value: number): string {
  *  * @returns The result.
  */
 export function describeFacilityQuality(value: number): string {
-  const v = clamp(safe(value, 0), 0, 100);
+  const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "State-of-the-art";
   if (v >= 70) return "Excellent";
   if (v >= 55) return "Good";

@@ -65,12 +65,8 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
  *  * @param level - The Level.
  *  * @returns The result.
  */
-function getLevelBand(level: number): string {
-  if (level >= 85) return "World-Class";
-  if (level >= 65) return "Excellent";
-  if (level >= 45) return "Adequate";
-  if (level >= 25) return "Basic";
-  return "Minimal";
+import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/engine/utils/ui-helpers";
+
 }
 
 /**
@@ -78,12 +74,6 @@ function getLevelBand(level: number): string {
  *  * @param level - The Level.
  *  * @returns The result.
  */
-function getLevelColor(level: number): string {
-  if (level >= 85) return "text-amber-400";
-  if (level >= 65) return "text-purple-400";
-  if (level >= 45) return "text-blue-400";
-  if (level >= 25) return "text-orange-400";
-  return "text-red-400";
 }
 
 /**

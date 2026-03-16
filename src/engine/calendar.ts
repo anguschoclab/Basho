@@ -251,3 +251,20 @@ function getSecondSunday(year: number, month1to12: number): number {
   const secondSundayDate = firstSundayDate + 7;
   return secondSundayDate;
 }
+
+/**
+ * Maps basho name to its chronological index (1-6) within the year.
+ * @param name Basho name.
+ * @returns Basho number (1 through 6).
+ */
+export function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
+  const numbers: Record<BashoName, 1 | 2 | 3 | 4 | 5 | 6> = {
+    hatsu: 1,
+    haru: 2,
+    natsu: 3,
+    nagoya: 4,
+    aki: 5,
+    kyushu: 6
+  };
+  return numbers[name];
+}

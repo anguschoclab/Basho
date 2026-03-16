@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus } from "../events";
+import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus, stableHash } from "../events";
 import type { WorldState } from "../types/world";
 import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
@@ -17,7 +17,44 @@ function createMockWorld(): WorldState {
 }
 
 describe("Events Engine", () => {
+  describe("stableHash", () => {
+    it("should return consistent hashes for the same input", () => {
+      expect(stableHash("hello world")).toBe(stableHash("hello world"));
+      expect(stableHash("test-seed::inj_r1_2025_1_2")).toBe(stableHash("test-seed::inj_r1_2025_1_2"));
+    });
+
+    it("should return different hashes for different inputs", () => {
+      expect(stableHash("hello world")).not.toBe(stableHash("hello_world"));
+      expect(stableHash("a")).not.toBe(stableHash("b"));
+    });
+
+    it("should handle empty strings", () => {
+      expect(typeof stableHash("")).toBe("string");
+      expect(stableHash("")).toBe(stableHash(""));
+    });
+  });
+
+
   describe("ensureEventsState", () => {
+    it("should initialize events state if world.events lacks a version and is undefined", () => {
+      const world = { events: { log: [], dedupe: {} } } as unknown as WorldState;
+      world.events.version = undefined as any;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+    it("should initialize events state if world.events.log is undefined", () => {
+      const world = { events: { version: "1.0.0", log: undefined, dedupe: {} } } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
     it("should initialize events state if it does not exist", () => {
       const world = {} as WorldState;
       const state = ensureEventsState(world);
@@ -341,6 +378,75 @@ describe("Events Engine", () => {
       expect(world.events.log).toHaveLength(1);
       expect(event1).toBe(event2); // returns the same event handle
     });
+
+    it("should handle missing calendar and seed fallbacks", () => {
+      const worldWithoutCalendar = { ...world };
+      delete worldWithoutCalendar.calendar;
+      delete worldWithoutCalendar.seed;
+      worldWithoutCalendar.year = 2026;
+      worldWithoutCalendar.week = 5;
+
+      const event = logEngineEvent(worldWithoutCalendar, {
+        type: "FALLBACK_TEST",
+        category: "misc" as EventCategory,
+        title: "Fallback Title",
+        summary: "Fallback Summary",
+      });
+
+      expect(event.year).toBe(2026);
+      expect(event.week).toBe(5);
+      expect(event.month).toBe(1);
+      expect(event.day).toBe(1);
+      expect(event.id).toMatch(/^evt-[0-9a-f]+$/); // stableHash with "seed"
+    });
+
+    it("should map all optional LogEngineEventParams correctly", () => {
+      const event = logEngineEvent(world, {
+        type: "FULL_TEST",
+        category: "training" as EventCategory,
+        title: "Full Title",
+        summary: "Full Summary",
+        phase: "basho_day",
+        importance: "major",
+        scope: "rikishi",
+        heyaId: "heya_1",
+        rikishiId: "rikishi_1",
+        data: { testData: 123 },
+        truthLevel: "private",
+        tags: ["test", "full"],
+        causalEventId: "cause_1",
+      });
+
+      expect(event.type).toBe("FULL_TEST");
+      expect(event.category).toBe("training");
+      expect(event.title).toBe("Full Title");
+      expect(event.summary).toBe("Full Summary");
+      expect(event.phase).toBe("basho_day");
+      expect(event.importance).toBe("major");
+      expect(event.scope).toBe("rikishi");
+      expect(event.heyaId).toBe("heya_1");
+      expect(event.rikishiId).toBe("rikishi_1");
+      expect(event.data).toEqual({ testData: 123 });
+      expect(event.truthLevel).toBe("private");
+      expect(event.tags).toEqual(["test", "full"]);
+      expect(event.causalEventId).toBe("cause_1");
+    });
+
+    it("should implicitly deduplicate events with the same signature", () => {
+      const params = {
+        type: "IMPLICIT_DEDUPE_EVENT",
+        category: "misc" as EventCategory,
+        title: "Implicit Title",
+        summary: "Implicit Summary",
+      };
+
+      const event1 = logEngineEvent(world, params);
+      const event2 = logEngineEvent(world, params);
+
+      expect(world.events.log).toHaveLength(1);
+      expect(event1).toBe(event2); // implicitly generated dedupeKey matched
+    });
+
   });
 
   describe("EventBus factories", () => {

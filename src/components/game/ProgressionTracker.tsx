@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { getOzekiRunCandidates, getYokozunaCandidates, getKadobanDrama, OzekiRunCandidate, YokozunaCandidate } from "@/engine/uiDigest";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
@@ -18,104 +19,14 @@ interface ProgressionTrackerProps {
 }
 
 /** Defines the structure for ozeki run candidate. */
-interface OzekiRunCandidate {
-  rikishi: Rikishi;
-  recentWins: number; // wins over last 3 basho
-  threshold: number; // typically 33
-  progress: number; // percentage
-  narrative: string;
-}
 
 /** Defines the structure for yokozuna candidate. */
-interface YokozunaCandidate {
-  rikishi: Rikishi;
-  consecutiveYusho: number;
-  recentWins: number;
-  narrative: string;
-  isStrong: boolean;
-}
 
 /**
  * Get ozeki run candidates.
  *  * @param world - The World.
  *  * @returns The result.
  */
-function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
-  const candidates: OzekiRunCandidate[] = [];
-  const playerHeyaId = world.playerHeyaId;
-
-  for (const r of world.rikishi.values()) {
-    // Ozeki run: sekiwake or komusubi with strong recent results
-    if (r.rank !== "sekiwake" && r.rank !== "komusubi") continue;
-    if (r.isRetired) continue;
-
-    // Estimate recent 3-basho wins from career wins and current basho
-    const currentWins = r.currentBashoWins || 0;
-    const careerWins = r.careerWins || 0;
-    const careerLosses = r.careerLosses || 0;
-    const totalBouts = careerWins + careerLosses;
-    
-    // Rough estimate: average wins per basho * 3, plus current basho
-    const avgWinsPerBasho = totalBouts > 0 ? (careerWins / Math.max(1, Math.ceil(totalBouts / 15))) : 0;
-    const recentWins = Math.round(avgWinsPerBasho * 2 + currentWins);
-    
-    const threshold = 33;
-    const progress = Math.min(100, (recentWins / threshold) * 100);
-
-    if (recentWins >= 20) { // Only show if they're actually in contention
-      const isPlayerRikishi = r.heyaId === playerHeyaId;
-      let narrative = "";
-      if (progress >= 90) {
-        narrative = `${r.shikona} is on the brink of ōzeki promotion! The Sumo Association is watching closely.`;
-      } else if (progress >= 70) {
-        narrative = `${r.shikona} is building a strong case for ōzeki. A dominant showing next basho could seal it.`;
-      } else {
-        narrative = `${r.shikona} has been performing well at san'yaku. An ōzeki run is taking shape.`;
-      }
-
-      candidates.push({ rikishi: r, recentWins, threshold, progress, narrative });
-    }
-  }
-
-  return candidates.sort((a, b) => b.progress - a.progress);
-}
-
-/**
- * Get yokozuna candidates.
- *  * @param world - The World.
- *  * @returns The result.
- */
-function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
-  const candidates: YokozunaCandidate[] = [];
-
-  for (const r of world.rikishi.values()) {
-    if (r.rank !== "ozeki") continue;
-    if (r.isRetired) continue;
-
-    const yusho = r.careerRecord?.yusho || 0;
-    const currentWins = r.currentBashoWins || 0;
-    
-    // Strong candidate: ōzeki with yūshō and dominant current results
-    if (yusho >= 1 || currentWins >= 13) {
-      const isStrong = yusho >= 2 || (yusho >= 1 && currentWins >= 13);
-      let narrative = "";
-      if (isStrong) {
-        narrative = `The Yokozuna Deliberation Council has taken notice of ${r.shikona}. Back-to-back dominant results could trigger promotion discussions.`;
-      } else {
-        narrative = `${r.shikona} continues to impress at ōzeki. A yūshō or equivalent result would spark yokozuna deliberation.`;
-      }
-
-      candidates.push({
-        rikishi: r,
-        consecutiveYusho: yusho,
-        recentWins: currentWins,
-        narrative,
-        isStrong,
-      });
-    }
-  }
-
-  return candidates;
 }
 
 /**
@@ -123,27 +34,6 @@ function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
  *  * @param world - The World.
  *  * @returns The result.
  */
-function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> {
-  const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
-  const entries: Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> = [];
-
-  for (const [rid, status] of Object.entries(kadobanMap)) {
-    if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
-    const r = world.rikishi.get(rid);
-    if (!r) continue;
-
-    const isDemoted = status.consecutiveMakeKoshi >= 2;
-    let narrative = "";
-    if (isDemoted) {
-      narrative = `${r.shikona} has been demoted from ōzeki after two consecutive losing records. A painful fall from grace.`;
-    } else if (status.isKadoban) {
-      narrative = `${r.shikona} is kadoban (角番) — they must achieve a winning record next basho or face demotion from ōzeki. The pressure is immense.`;
-    }
-
-    entries.push({ rikishi: r, narrative, isDemoted });
-  }
-
-  return entries;
 }
 
 /**

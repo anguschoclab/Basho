@@ -19,12 +19,8 @@ import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engi
  *  * @param amount - The Amount.
  *  * @returns The result.
  */
-function formatFinePenalty(amount: number): string {
-  if (amount >= 10_000_000) return "Severe fine";
-  if (amount >= 3_000_000) return "Significant fine";
-  if (amount >= 500_000) return "Moderate fine";
-  return "Minor fine";
-}
+import { formatFinePenalty } from "@/engine/utils/formatters";
+
 
 /** governance page. */
 export default function GovernancePage() {

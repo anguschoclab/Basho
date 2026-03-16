@@ -1,5 +1,4 @@
 import { pick } from "./utils";
-import { pick } from './utils';
 // narrative.ts
 // Play-by-Play Narrative Generator
 // Constitution PBP System Section 7 — 12-step canonical order with ritual elements

@@ -30,8 +30,11 @@ export default function BanzukePage() {
 
   const rosterEntries = useMemo(() => {
     if (!world) return [];
-    return Array.from(world.rikishi.values())
-      .filter(r => !r.isRetired)
+    const arr = [];
+    for (const r of world.rikishi.values()) {
+      if (!r.isRetired) arr.push(r);
+    }
+    return arr
       .map(r => projectRosterEntry(r));
   }, [world]);
 

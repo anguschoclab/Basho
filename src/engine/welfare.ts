@@ -28,13 +28,15 @@ import { logEngineEvent } from "./events";
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   const existing = heya.welfareState;
   if (existing && typeof existing.welfareRisk === "number" && existing.complianceState) {
+    if (!existing.activeDiet) existing.activeDiet = "maintenance";
     return existing;
   }
   const state: WelfareState = {
     welfareRisk: 10,
     complianceState: "compliant",
     weeksInState: 0,
-    lastReviewedWeek: 0
+    lastReviewedWeek: 0,
+    activeDiet: "maintenance"
   };
   heya.welfareState = state;
   return state;
@@ -118,6 +120,15 @@ function computeWeeklyWelfareDelta(world: WorldState, heya: Heya): { delta: numb
   if (seriousCount > 0) {
     delta += 2;
     reasons.push(`serious_injuries+2`);
+  }
+
+  const diet = state.activeDiet || "maintenance";
+  if (diet === "austerity") {
+    delta += 2;
+    reasons.push("austerity_diet+2");
+  } else if (diet === "premium") {
+    delta -= 1;
+    reasons.push("premium_diet-1");
   }
 
   // NEGLIGENCE vs MISFORTUNE (Constitution §A7):
@@ -363,4 +374,31 @@ export function tickWeek(world: WorldState): number {
   }
 
   return events;
+}
+
+
+/**
+ * Set active diet for a heya.
+ * @param world - The WorldState.
+ * @param heyaId - The Heya Id.
+ * @param diet - The new DietRegimen.
+ */
+export function setHeyaDiet(world: WorldState, heyaId: Id, diet: import("./types/economy").DietRegimen): void {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return;
+
+  const w = ensureHeyaWelfareState(heya);
+  const oldDiet = w.activeDiet;
+  w.activeDiet = diet;
+
+  logEngineEvent(world, {
+    type: "DIET_CHANGED",
+    category: "facility",
+    importance: "minor",
+    scope: "heya",
+    heyaId,
+    title: `${heya.name} changed diet to ${diet}`,
+    summary: `${heya.name} is now using the ${diet} diet regimen.`,
+    data: { oldDiet, newDiet: diet }
+  });
 }

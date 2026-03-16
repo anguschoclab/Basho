@@ -13,8 +13,12 @@ import { generateGovernanceHeadline } from "./media";
  */
 export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
-  const rikishiList = Array.from(world.rikishi.values());
-  const foreignRikishi = rikishiList.filter(r => r.nationality !== "Japan");
+  const foreignRikishi = [];
+  for (const r of world.rikishi.values()) {
+    if (r.nationality !== "Japan") {
+      foreignRikishi.push(r);
+    }
+  }
 
   for (const r of foreignRikishi) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).

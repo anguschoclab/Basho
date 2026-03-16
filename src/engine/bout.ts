@@ -88,8 +88,8 @@ interface EngineState {
   cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
-const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
-const clamp01 = (n: number) => clamp(n, 0, 1);
+const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
+const clamp01 = (n: number) => _clamp(n, 0, 1);
 
 /** Create deterministic small noise */
 function jitter(rng: SeededRNG, scale = 1): number {
@@ -823,7 +823,7 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
 
     // 2. Favored Move (Dynamic Mastery & Compatibility)
     if (attacker.favoredKimarite?.includes(k.id)) {
-      const expFactor = clamp(stat(attacker, "experience") / 80, 0, 1);
+      const expFactor = _clamp(stat(attacker, "experience") / 80, 0, 1);
       const masteryBonus = 1.0 + (1.5 * expFactor);
       const bodyFit = calculateMoveCompatibility(attacker, k);
       w *= (masteryBonus * bodyFit);

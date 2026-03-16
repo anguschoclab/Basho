@@ -38,22 +38,37 @@ export function buildRankRows(entries: UIRosterEntry[], division: string, search
 
   const q = searchQuery.toLowerCase().trim();
 
-  return Array.from(groups.entries())
-    .map(([key, { east, west }]) => {
-      const sample = east || west;
-      const rank = sample?.rank ?? "unknown";
-      const rankNumber = sample?.rankNumber ?? 1;
-      const isSanyaku = ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(rank);
-      const rankLabel = isSanyaku
-        ? rank.charAt(0).toUpperCase() + rank.slice(1)
-        : `${rank.charAt(0).toUpperCase() + rank.slice(1)} #${rankNumber}`;
-      return { rankLabel, rankKey: key, east, west, rankTier: rank, _tier: RANK_TIER[rank] ?? 99, _num: rankNumber };
-    })
-    .filter(row => {
-      if (!q) return true;
-      return row.east?.shikona?.toLowerCase().includes(q) || row.west?.shikona?.toLowerCase().includes(q);
-    })
-    .sort((a, b) => a._tier - b._tier || a._num - b._num);
+  const result = [];
+
+  for (const [key, { east, west }] of groups) {
+    if (q) {
+      const eastMatch = east?.shikona?.toLowerCase().includes(q);
+      const westMatch = west?.shikona?.toLowerCase().includes(q);
+      if (!eastMatch && !westMatch) {
+        continue;
+      }
+    }
+
+    const sample = east || west;
+    const rank = sample?.rank ?? "unknown";
+    const rankNumber = sample?.rankNumber ?? 1;
+    const isSanyaku = rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
+    const rankLabel = isSanyaku
+      ? rank.charAt(0).toUpperCase() + rank.slice(1)
+      : `${rank.charAt(0).toUpperCase() + rank.slice(1)} #${rankNumber}`;
+
+    result.push({
+      rankLabel,
+      rankKey: key,
+      east,
+      west,
+      rankTier: rank,
+      _tier: RANK_TIER[rank] ?? 99,
+      _num: rankNumber,
+    });
+  }
+
+  return result.sort((a, b) => a._tier - b._tier || a._num - b._num);
 }
 
 /**

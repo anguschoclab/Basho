@@ -397,7 +397,6 @@ describe("Banzuke: Full Update - Demotions", () => {
       losses: 7
     }));
     
-    // Poor maegashira performance for m18e
     const m1Perf = performance.find((p) => p.rikishiId === "m18e")!;
     m1Perf.wins = 2;
     m1Perf.losses = 13;
