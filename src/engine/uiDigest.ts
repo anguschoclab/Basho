@@ -75,6 +75,9 @@ function labelForWorld(world: WorldState): string {
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
 
+  const rikishiList = [...world.rikishi.values()];
+  const heyaList = Array.from(world.heyas.values());
+
   const sections: DigestSection[] = [];
 
   // --- Injuries ---

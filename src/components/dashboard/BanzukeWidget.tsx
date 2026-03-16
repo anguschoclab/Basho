@@ -32,8 +32,11 @@ export function BanzukeWidget() {
 
   const topRanked = useMemo(() => {
     if (!world) return [];
-    return Array.from(world.rikishi.values())
-      .filter(r => !r.isRetired)
+    const arr = [];
+    for (const r of world.rikishi.values()) {
+      if (!r.isRetired) arr.push(r);
+    }
+    return arr
       .sort((a, b) => {
         const ra = RANK_ORDER[a.rank] ?? 99;
         const rb = RANK_ORDER[b.rank] ?? 99;

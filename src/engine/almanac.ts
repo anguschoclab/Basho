@@ -459,7 +459,12 @@ function getRankValue(rank: Rank): number {
  *  * @returns The result.
  */
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
-  const rikishiInHeya = Array.from(world.rikishi.values()).filter((r) => r.heyaId === heya.id);
+  const rikishiInHeya = [];
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId === heya.id) {
+      rikishiInHeya.push(r);
+    }
+  }
 
   const sekitori = rikishiInHeya.filter((r) =>
     ["juryo", "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna"].includes(r.rank)
