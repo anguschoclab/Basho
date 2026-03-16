@@ -53,12 +53,8 @@ function getCategoryMeta(cat: string) {
  *  * @param e - The E.
  *  * @returns The result.
  */
-function formatEventTime(e: EngineEvent): string {
-  if (e.day !== undefined && e.bashoNumber !== undefined) {
-    return `B${e.bashoNumber} D${e.day}`;
-  }
-  return `W${e.week}`;
-}
+import { formatEventTime } from "@/engine/utils/formatters";
+
 
 /**
  * Derive the best navigation route for an event based on its category, type, and entity references.
