@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus } from "../events";
+import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus, stableHash } from "../events";
 import type { WorldState } from "../types/world";
 import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
@@ -17,7 +17,44 @@ function createMockWorld(): WorldState {
 }
 
 describe("Events Engine", () => {
+  describe("stableHash", () => {
+    it("should return consistent hashes for the same input", () => {
+      expect(stableHash("hello world")).toBe(stableHash("hello world"));
+      expect(stableHash("test-seed::inj_r1_2025_1_2")).toBe(stableHash("test-seed::inj_r1_2025_1_2"));
+    });
+
+    it("should return different hashes for different inputs", () => {
+      expect(stableHash("hello world")).not.toBe(stableHash("hello_world"));
+      expect(stableHash("a")).not.toBe(stableHash("b"));
+    });
+
+    it("should handle empty strings", () => {
+      expect(typeof stableHash("")).toBe("string");
+      expect(stableHash("")).toBe(stableHash(""));
+    });
+  });
+
+
   describe("ensureEventsState", () => {
+    it("should initialize events state if world.events lacks a version and is undefined", () => {
+      const world = { events: { log: [], dedupe: {} } } as unknown as WorldState;
+      world.events.version = undefined as any;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+    it("should initialize events state if world.events.log is undefined", () => {
+      const world = { events: { version: "1.0.0", log: undefined, dedupe: {} } } as unknown as WorldState;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
     it("should initialize events state if it does not exist", () => {
       const world = {} as WorldState;
       const state = ensureEventsState(world);
