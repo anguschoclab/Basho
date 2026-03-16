@@ -178,7 +178,7 @@ export function simulateBoutForToday(
  *  * @param _opts - The _opts.
  *  * @returns The result.
  */
-function applyBoutResult(
+export function applyBoutResult(
   world: WorldState,
   match: MatchSchedule,
   result: BoutResult,

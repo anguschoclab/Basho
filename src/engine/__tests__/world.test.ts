@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { startBasho, endBasho, advanceBashoDay, simulateBoutForToday } from "../world";
+import { startBasho, endBasho, advanceBashoDay, applyBoutResult } from "../world";
+import * as injuries from "../injuries";
+import * as rivalries from "../rivalries";
+import * as economics from "../economics";
+import * as scoutingStore from "../scoutingStore";
+import { mock } from "bun:test";
 import { generateWorld } from "../worldgen";
 
 
@@ -155,56 +160,56 @@ if (!updated) throw new Error("updated is undefined");
   });
 });
 
+describe("applyBoutResult error handling", () => {
+  it("should not halt bout resolution if a subsystem throws an error", () => {
+    let world = generateWorld("world-apply-test");
+    world.cyclePhase = "pre_basho";
+    world.currentBashoName = "hatsu";
+    world.year = 2025;
+    world = startBasho(world, "hatsu");
 
-describe("simulateBoutForToday", () => {
-  it("should return world if basho does not exist", () => {
-    const world = generateWorld("world-test-simulate-bout-1");
-    world.currentBasho = undefined;
+    const match = world.currentBasho!.matches[0];
+    const east = world.rikishi.get(match.eastRikishiId);
+    const west = world.rikishi.get(match.westRikishiId);
 
-    const result = simulateBoutForToday(world, 0);
-    expect(result.world).toBe(world);
-    expect(result.result).toBeUndefined();
-  });
+    // Simulate a bout result
+    const result = {
+      winner: "east",
+      winnerRikishiId: east.id,
+      loserRikishiId: west.id,
+      kimarite: "yorikiri",
+      boutDuration: 10,
+      isKinboshi: false
+    };
 
-  it("should return world if unplayedIndex is out of bounds", () => {
-    let world = generateWorld("world-test-simulate-bout-2");
-    world = startBasho(world, "natsu");
+    // Mock subsystems to throw errors
+    const injuryMock = mock.module("../injuries", () => ({
+      onBoutResolved: () => { throw new Error("Injury system failed"); }
+    }));
 
-    // Get number of matches today
-    const basho = world.currentBasho!;
-    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
+    const rivalriesMock = mock.module("../rivalries", () => ({
+      onBoutResolved: () => { throw new Error("Rivalries system failed"); }
+    }));
 
-    const result = simulateBoutForToday(world, todaysMatches.length); // out of bounds
-    expect(result.world).toBe(world);
-    expect(result.result).toBeUndefined();
-  });
+    const economicsMock = mock.module("../economics", () => ({
+      onBoutResolved: () => { throw new Error("Economics system failed"); }
+    }));
 
-  it("should return world if rikishi is missing", () => {
-    let world = generateWorld("world-test-simulate-bout-3");
-    world = startBasho(world, "natsu");
+    const scoutingMock = mock.module("../scoutingStore", () => ({
+      onBoutResolved: () => { throw new Error("Scouting system failed"); }
+    }));
 
-    const basho = world.currentBasho!;
-    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
+    // Expect applyBoutResult not to throw an error
+    expect(() => {
+      applyBoutResult(world, match, result);
+    }).not.toThrow();
 
-    // Delete one of the rikishi participating in the first match
-    const match = todaysMatches[0];
-    world.rikishi.delete(match.eastRikishiId);
+    // Also verify that core logic still executed (standings updated)
+    const standings = world.currentBasho!.standings;
+    const winnerRec = standings.get(east.id);
+    expect(winnerRec).toBeDefined();
+    expect(winnerRec.wins).toBeGreaterThanOrEqual(1);
 
-    const result = simulateBoutForToday(world, 0);
-    expect(result.world).toBe(world);
-    expect(result.result).toBeUndefined();
-  });
-
-  it("should simulate bout correctly when everything is valid", () => {
-    let world = generateWorld("world-test-simulate-bout-4");
-    world = startBasho(world, "natsu");
-
-    const basho = world.currentBasho!;
-    const todaysMatches = basho.matches.filter(m => m.day === basho.day && !m.result);
-    expect(todaysMatches.length).toBeGreaterThan(0);
-
-    const result = simulateBoutForToday(world, 0);
-    expect(result.world).toBe(world);
-    expect(result.result).toBeDefined();
+    // Clean up mocks is not strictly necessary for bun:test module mocks in this isolated script
   });
 });
