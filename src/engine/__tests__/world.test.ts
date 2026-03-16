@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { startBasho, endBasho, advanceBashoDay } from "../world";
+import { startBasho, endBasho, advanceBashoDay, applyBoutResult } from "../world";
+import * as injuries from "../injuries";
+import * as rivalries from "../rivalries";
+import * as economics from "../economics";
+import * as scoutingStore from "../scoutingStore";
+import { mock } from "bun:test";
 import { generateWorld } from "../worldgen";
 
 describe("World Engine Transitions", () => {
@@ -63,5 +68,59 @@ if (!updated) throw new Error("updated is undefined");
 
     // The player with 15 wins should be the yusho winner (simplistic check)
     expect(lastHistory.yusho).toBe(eastId);
+  });
+});
+
+describe("applyBoutResult error handling", () => {
+  it("should not halt bout resolution if a subsystem throws an error", () => {
+    let world = generateWorld("world-apply-test");
+    world.cyclePhase = "pre_basho";
+    world.currentBashoName = "hatsu";
+    world.year = 2025;
+    world = startBasho(world, "hatsu");
+
+    const match = world.currentBasho!.matches[0];
+    const east = world.rikishi.get(match.eastRikishiId);
+    const west = world.rikishi.get(match.westRikishiId);
+
+    // Simulate a bout result
+    const result = {
+      winner: "east",
+      winnerRikishiId: east.id,
+      loserRikishiId: west.id,
+      kimarite: "yorikiri",
+      boutDuration: 10,
+      isKinboshi: false
+    };
+
+    // Mock subsystems to throw errors
+    const injuryMock = mock.module("../injuries", () => ({
+      onBoutResolved: () => { throw new Error("Injury system failed"); }
+    }));
+
+    const rivalriesMock = mock.module("../rivalries", () => ({
+      onBoutResolved: () => { throw new Error("Rivalries system failed"); }
+    }));
+
+    const economicsMock = mock.module("../economics", () => ({
+      onBoutResolved: () => { throw new Error("Economics system failed"); }
+    }));
+
+    const scoutingMock = mock.module("../scoutingStore", () => ({
+      onBoutResolved: () => { throw new Error("Scouting system failed"); }
+    }));
+
+    // Expect applyBoutResult not to throw an error
+    expect(() => {
+      applyBoutResult(world, match, result);
+    }).not.toThrow();
+
+    // Also verify that core logic still executed (standings updated)
+    const standings = world.currentBasho!.standings;
+    const winnerRec = standings.get(east.id);
+    expect(winnerRec).toBeDefined();
+    expect(winnerRec.wins).toBeGreaterThanOrEqual(1);
+
+    // Clean up mocks is not strictly necessary for bun:test module mocks in this isolated script
   });
 });
