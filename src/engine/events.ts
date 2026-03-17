@@ -15,7 +15,7 @@ import type { Id } from "./types/common";
 import { simpleHashToIndex } from "./utils/math";
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
-function stableHash(s: string): string {
+export function stableHash(s: string): string {
   // Using large prime to get the raw hash before modulo
   return simpleHashToIndex(s, 0xFFFFFFFF).toString(16);
 }
