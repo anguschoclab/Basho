@@ -37,18 +37,61 @@ function loadVoiceMatrix(): PbpLibrary {
       oshi_pressure: castBucket(matrixData.clinch.oshi_pressure),
       scramble: castBucket(matrixData.clinch.scramble),
       rear_attack: castBucket(matrixData.clinch.rear_attack),
+      tsuppari_barrage: castBucket((matrixData.clinch as any).tsuppari_barrage || []),
+      nodowa_pressure: castBucket((matrixData.clinch as any).nodowa_pressure || []),
+      harite_slap: castBucket((matrixData.clinch as any).harite_slap || []),
+      throat_attack: castBucket((matrixData.clinch as any).throat_attack || []),
+      shoulder_blast: castBucket((matrixData.clinch as any).shoulder_blast || []),
+      migi_yotsu_established: castBucket((matrixData.clinch as any).migi_yotsu_established || []),
+      hidari_yotsu_established: castBucket((matrixData.clinch as any).hidari_yotsu_established || []),
+      double_inside: castBucket((matrixData.clinch as any).double_inside || []),
+      over_under: castBucket((matrixData.clinch as any).over_under || []),
+      no_grip_scramble: castBucket((matrixData.clinch as any).no_grip_scramble || []),
     },
     momentum: {
       edge_dance: castBucket(matrixData.momentum.edge_dance),
       counter_turn: castBucket(matrixData.momentum.counter_turn),
       fatigue_swing: castBucket(matrixData.momentum.fatigue_swing),
       steady_drive: castBucket(matrixData.momentum.steady_drive),
+      bales_at_tawara: castBucket((matrixData.momentum as any).bales_at_tawara || []),
+      steps_out_then_recovers: castBucket((matrixData.momentum as any).steps_out_then_recovers || []),
+      heel_on_straw: castBucket((matrixData.momentum as any).heel_on_straw || []),
+      dancing_escape: castBucket((matrixData.momentum as any).dancing_escape || []),
+      turns_the_tables: castBucket((matrixData.momentum as any).turns_the_tables || []),
+      slips_but_survives: castBucket((matrixData.momentum as any).slips_but_survives || []),
     },
     finish: {
       normal: castBucket(matrixData.finish.normal),
       upset: castBucket(matrixData.finish.upset),
       close_call: castBucket(matrixData.finish.close_call),
       kinboshi: castBucket(matrixData.finish.kinboshi),
+    },
+    injury: {
+      sprain: castBucket((matrixData as any).injury?.sprain || []),
+      strain: castBucket((matrixData as any).injury?.strain || []),
+      contusion: castBucket((matrixData as any).injury?.contusion || []),
+      inflammation: castBucket((matrixData as any).injury?.inflammation || []),
+      tear: castBucket((matrixData as any).injury?.tear || []),
+      fracture: castBucket((matrixData as any).injury?.fracture || []),
+      nerve: castBucket((matrixData as any).injury?.nerve || []),
+      unknown: castBucket((matrixData as any).injury?.unknown || []),
+    },
+    institutional: {
+      GOVERNANCE_STATUS_CHANGED: {
+        default: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.default || []),
+        strict: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.strict || []),
+        indulgent: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.indulgent || [])
+      },
+      GOVERNANCE_RULING: {
+        default: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.default || []),
+        strict: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.strict || []),
+        indulgent: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.indulgent || [])
+      },
+      WELFARE_ALERT: {
+        default: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.default || []),
+        strict: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.strict || []),
+        indulgent: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.indulgent || [])
+      }
     },
     connective: {
       short: castBucket(matrixData.connective.short),
@@ -98,5 +141,45 @@ export function validateDiversityGates(
       if (count < minPhrases) failures.push({ context: ctx, bucket, count });
     }
   }
+  return failures;
+}
+
+/**
+ * Validates that all string interpolation tokens used in the loaded PBP Library
+ * are valid and matched by the allowed variables.
+ * @param lib The loaded PbpLibrary
+ * @param allowedTokens A list of allowed tokens (e.g. ["east", "west", "winner", "loser", "kimarite", "leader", "trailer", "rikishi_shikona", "action_target"])
+ * @returns Array of errors containing the invalid token and its phrase
+ */
+export function validateInterpolationTokens(
+  lib: PbpLibrary,
+  allowedTokens: string[] = ["east", "west", "winner", "loser", "kimarite", "leader", "trailer", "rikishi_shikona", "action_target"]
+): Array<{ phraseId: string; invalidToken: string }> {
+  const failures: Array<{ phraseId: string; invalidToken: string }> = [];
+  const allowedSet = new Set(allowedTokens);
+
+  const traverse = (obj: any) => {
+    if (Array.isArray(obj)) {
+      for (const phrase of obj) {
+        if (phrase && typeof phrase.text === "string") {
+          const matches = phrase.text.match(/\{(\w+)\}/g);
+          if (matches) {
+            for (const match of matches) {
+              const token = match.replace(/[{}]/g, "");
+              if (!allowedSet.has(token)) {
+                failures.push({ phraseId: phrase.id, invalidToken: token });
+              }
+            }
+          }
+        }
+      }
+    } else if (typeof obj === "object" && obj !== null) {
+      for (const key of Object.keys(obj)) {
+        traverse(obj[key]);
+      }
+    }
+  };
+
+  traverse(lib);
   return failures;
 }
