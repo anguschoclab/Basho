@@ -351,6 +351,18 @@ describe("Facilities: Monthly Tick", () => {
   });
 
   describe("getMonthlyMaintenanceCost", () => {
+
+    it("should handle very small fractional facility levels correctly", () => {
+      // 0.1 * 3000 = 300
+      // 0.2 * 3000 = 600
+      // 0.05 * 3000 = 150
+      // Total = 300 + 600 + 150 = 1050
+      const heya = makeHeya({ facilities: { training: 0.1, recovery: 0.2, nutrition: 0.05 } });
+      const cost = getMonthlyMaintenanceCost(heya);
+      expect(cost).toBe(1050);
+    });
+
+
     it("should round correctly for fractional facility levels", () => {
       // 5.4 * 3000 = 16200
       // 10.6 * 3000 = 31800
