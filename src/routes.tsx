@@ -21,6 +21,7 @@ import HistoryPage from './pages/HistoryPage'
 import AlmanacPage from './pages/AlmanacPage'
 import MediaPage from './pages/MediaPage'
 import HallOfFamePage from './pages/HallOfFamePage'
+import MyosekiMarketPage from './pages/MyosekiMarketPage'
 import InjuryRecoveryPage from './pages/InjuryRecoveryPage'
 import SponsorManagementPage from './pages/SponsorManagementPage'
 import SettingsPage from './pages/SettingsPage'
@@ -161,6 +162,12 @@ const hallOfFameRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/hall-of-fame',
   component: HallOfFamePage,
+})
+
+const myosekiRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/myoseki',
+  component: MyosekiMarketPage,
 })
 
 const injuriesRoute = createRoute({
