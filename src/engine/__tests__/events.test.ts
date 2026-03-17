@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus, stableHash } from "../events";
+import { queryEvents, logEngineEvent, ensureEventsState, tickWeek, EventBus } from "../events";
+// Replicate stableHash locally for tests since it is unexported
+function stableHash(s: string): string {
+  let h = 0; for(let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+  return (h >>> 0).toString(16);
+}
 import type { WorldState } from "../types/world";
 import type { EngineEvent, EventCategory, EventScope, EventImportance } from "../types/events";
 
