@@ -211,6 +211,40 @@ describe("Facilities: Investment", () => {
     expect(heya.facilitiesBand).toBe("world_class");
   });
 
+
+  it("should fail if points <= 0", () => {
+    const world = makeWorld({ funds: 5_000_000, facilities: { training: 30, recovery: 30, nutrition: 30 } });
+
+    const resultZero = investInFacility(world, "test-heya", "training", 0);
+    expect(resultZero.success).toBe(false);
+    expect(resultZero.reason).toContain("Already at maximum"); // Due to effectivePoints <= 0
+
+    const resultNegative = investInFacility(world, "test-heya", "training", -5);
+    expect(resultNegative.success).toBe(false);
+    expect(resultNegative.reason).toContain("Already at maximum");
+  });
+
+  it("should succeed with exactly required funds", () => {
+    const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+    const exactCost = getUpgradeCostEstimate(heya, "training", 5);
+    const world = makeWorld({ funds: exactCost, facilities: { training: 30, recovery: 30, nutrition: 30 } });
+
+    const result = investInFacility(world, "test-heya", "training", 5);
+    expect(result.success).toBe(true);
+    expect(result.newLevel).toBe(35);
+    expect(world.heyas.get("test-heya")!.funds).toBe(0);
+  });
+
+  it("should fail with 1 yen less than required funds", () => {
+    const heya = makeHeya({ facilities: { training: 30, recovery: 30, nutrition: 30 } });
+    const exactCost = getUpgradeCostEstimate(heya, "training", 5);
+    const world = makeWorld({ funds: exactCost - 1, facilities: { training: 30, recovery: 30, nutrition: 30 } });
+
+    const result = investInFacility(world, "test-heya", "training", 5);
+    expect(result.success).toBe(false);
+    expect(result.reason).toContain("Insufficient funds");
+  });
+
   it("should return error for unknown heya", () => {
     const world = makeWorld();
     const result = investInFacility(world, "nonexistent-heya", "training", 5);
