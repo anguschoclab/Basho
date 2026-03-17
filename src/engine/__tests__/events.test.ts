@@ -36,13 +36,20 @@ describe("Events Engine", () => {
 
 
     describe("ensureEventsState", () => {
-    it("tests simple initialization logic by providing an empty world state", () => {
-      const world = {} as WorldState;
-      const state = ensureEventsState(world);
+    it("should correctly initialize an empty world state", () => {
+      // Provide an explicitly empty world state
+      const emptyWorld = {} as WorldState;
+
+      // Run the initialization logic
+      const state = ensureEventsState(emptyWorld);
+
+      // Verify all required properties are initialized
       expect(state.version).toBe("1.0.0");
       expect(state.log).toEqual([]);
       expect(state.dedupe).toEqual({});
-      expect(world.events).toBe(state);
+
+      // Verify the state is mutated on the world object itself
+      expect(emptyWorld.events).toBe(state);
     });
 
 
