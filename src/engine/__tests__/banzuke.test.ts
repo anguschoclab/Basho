@@ -402,7 +402,6 @@ describe("Banzuke: Full Update - Demotions", () => {
     m1Perf.losses = 13;
     
     const result = updateBanzuke(banzuke, performance, {});
-    
     const demotionEvent = result.events.find(
       (e) => e.rikishiId === "m18e" && (e.kind === "demotion" || e.kind === "lateral")
     );
