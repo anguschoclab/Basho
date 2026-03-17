@@ -35,7 +35,17 @@ describe("Events Engine", () => {
   });
 
 
-  describe("ensureEventsState", () => {
+    describe("ensureEventsState", () => {
+    it("tests simple initialization logic by providing an empty world state", () => {
+      const world = {} as WorldState;
+      const state = ensureEventsState(world);
+      expect(state.version).toBe("1.0.0");
+      expect(state.log).toEqual([]);
+      expect(state.dedupe).toEqual({});
+      expect(world.events).toBe(state);
+    });
+
+
     it("should initialize events state if world.events lacks a version and is undefined", () => {
       const world = { events: { log: [], dedupe: {} } } as unknown as WorldState;
       world.events.version = undefined as any;
