@@ -322,7 +322,7 @@ export default function RivalriesPage() {
               className="h-8 w-48 pl-8 pr-8 text-xs"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <button onClick={() => setSearchQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label="Clear search">
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
