@@ -624,6 +624,15 @@ function calculateKomusubiCount(makuuchi: BanzukeEntry[], perfById: Map<string, 
  *  * @param demotedOzeki - The Demoted ozeki.
  *  * @returns The result.
  */
+function trimSanyakuCounts(counts: { y: number; o: number; s: number; k: number }) {
+  while (counts.y + counts.o + counts.s + counts.k > 20) {
+    if (counts.k > 2) counts.k--;
+    else if (counts.s > 2) counts.s--;
+    else if (counts.o > 2) counts.o--;
+    else break;
+  }
+}
+
 function computeVariableSanyakuCounts(
   current: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,
@@ -637,14 +646,11 @@ function computeVariableSanyakuCounts(
   let komusubiCount = calculateKomusubiCount(makuuchi, perfById);
 
   // Guardrail: if sanyaku becomes absurdly large, trim (prefer trimming K then S then O).
-  let totalSanyaku = yokozunaCount + ozekiCount + sekiwakeCount + komusubiCount;
-  while (totalSanyaku > 20) {
-    if (komusubiCount > 2) komusubiCount--;
-    else if (sekiwakeCount > 2) sekiwakeCount--;
-    else if (ozekiCount > 2) ozekiCount--;
-    else break;
-    totalSanyaku = yokozunaCount + ozekiCount + sekiwakeCount + komusubiCount;
-  }
+  const counts = { y: yokozunaCount, o: ozekiCount, s: sekiwakeCount, k: komusubiCount };
+  trimSanyakuCounts(counts);
+  ozekiCount = counts.o;
+  sekiwakeCount = counts.s;
+  komusubiCount = counts.k;
 
   const maegashiraCount = 42 - (yokozunaCount + ozekiCount + sekiwakeCount + komusubiCount);
 
@@ -842,11 +848,12 @@ function computeMovementUnits(
   demotedOzeki: Set<string>
 ): number {
   if (!perf) return 0;
-  return clampMovementByRank(
-    calculateBaseMove(entry.position.rank, perf),
-    entry.position.rank,
-    demotedOzeki.has(entry.rikishiId)
-  );
+
+  const rank = entry.position.rank;
+  const isDemotedOzeki = demotedOzeki.has(entry.rikishiId);
+  const baseMove = calculateBaseMove(rank, perf);
+
+  return clampMovementByRank(baseMove, rank, isDemotedOzeki);
 }
 
 /**
