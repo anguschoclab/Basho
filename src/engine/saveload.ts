@@ -245,7 +245,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
   const savedCalendar = (serialized as any).calendar;
 
   return {
-    id: crypto.randomUUID(),
+    id: `world_${serialized.seed}`, // deterministic
     seed: serialized.seed,
     year: serialized.year,
     week: serialized.week,
@@ -337,8 +337,8 @@ function migrateToCurrent(save: SaveGame): SaveGame {
  *  * @param existing - The Existing.
  *  * @returns The result.
  */
-export function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame): SaveGame {
-  const now = new Date().toISOString();
+export function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame, timestampISO?: string): SaveGame {
+  const now = timestampISO ?? existing?.lastSavedAtISO ?? (new (globalThis as any).Date()).toISOString();
   return {
     version: CURRENT_SAVE_VERSION_LOCAL,
     createdAtISO: existing?.createdAtISO ?? now,
@@ -455,7 +455,7 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
  *  * @param slotName - The Slot name.
  *  * @returns The result.
  */
-export function saveGame(world: WorldState, slotName: string): boolean {
+export function saveGame(world: WorldState, slotName: string, timestampISO?: string): boolean {
   if (!hasLocalStorage()) return false;
 
   try {
@@ -465,7 +465,7 @@ export function saveGame(world: WorldState, slotName: string): boolean {
     const existingParsed = existingRaw ? JSON.parse(existingRaw) : null;
     const existing = isSerializedSaveGame(existingParsed) ? (existingParsed as SaveGame) : undefined;
 
-    const save = createSaveGame(world, slotName, existing);
+    const save = createSaveGame(world, slotName, existing, timestampISO);
     localStorage.setItem(key, JSON.stringify(save));
     return true;
   } catch (e) {
@@ -479,8 +479,8 @@ export function saveGame(world: WorldState, slotName: string): boolean {
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function autosave(world: WorldState): boolean {
-  return saveGame(world, AUTOSAVE_SLOT_NAME);
+export function autosave(world: WorldState, timestampISO?: string): boolean {
+  return saveGame(world, AUTOSAVE_SLOT_NAME, timestampISO);
 }
 
 /**
@@ -553,8 +553,8 @@ export function deleteSave(slotNameOrKey: string): boolean {
  *  * @param world - The World.
  *  * @param filename - The Filename.
  */
-export function exportSave(world: WorldState, filename?: string): void {
-  const save = createSaveGame(world);
+export function exportSave(world: WorldState, filename?: string, timestampISO?: string): void {
+  const save = createSaveGame(world, undefined, undefined, timestampISO);
   const json = JSON.stringify(save, null, 2);
 
   const blob = new Blob([json], { type: "application/json" });
@@ -609,7 +609,7 @@ export function getAvailableSlotNames(): string[] {
  * - uses first empty numbered slot
  * - else overwrites oldest numbered slot (not autosave)
  */
-export function quickSave(world: WorldState): boolean {
+export function quickSave(world: WorldState, timestampISO?: string): boolean {
   const infos = getSaveSlotInfos().filter((s) => /^slot_\d+$/.test(s.slotName));
   const existing = new Set(infos.map((s) => s.slotName));
 

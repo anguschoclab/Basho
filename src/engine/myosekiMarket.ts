@@ -162,7 +162,7 @@ export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myos
   delete stock.askingPrice;
 
   const tx: MyosekiTransaction = {
-    id: `tx_${Date.now()}_${myosekiId}`,
+    id: `tx_${world.year}_${world.week}_${world.dayIndexGlobal}_${myosekiId}`,
     date: `${world.year}-W${world.week}`,
     myosekiId,
     type: "sale",
@@ -193,7 +193,7 @@ export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): bo
   stock.leaseFee = Math.floor(stock.askingPrice * LEASE_RATE_PERCENT);
 
   const tx: MyosekiTransaction = {
-    id: `tx_${Date.now()}_${myosekiId}`,
+    id: `tx_${world.year}_${world.week}_${world.dayIndexGlobal}_${myosekiId}`,
     date: `${world.year}-W${world.week}`,
     myosekiId,
     type: "lease",

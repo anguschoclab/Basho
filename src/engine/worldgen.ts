@@ -503,7 +503,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   }
 
   const world: WorldState = {
-    id: crypto.randomUUID(),
+    id: `world_${actualSeed}`, // deterministic
     seed: actualSeed,
     year: currentYear,
     week: 1,

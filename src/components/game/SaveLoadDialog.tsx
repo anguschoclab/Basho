@@ -134,7 +134,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   const handleExport = () => {
     if (state.world) {
-      exportSave(state.world);
+      exportSave(state.world, undefined, new Date().toISOString());
       toast({ title: "Save Exported", description: "File downloaded." });
     }
   };
