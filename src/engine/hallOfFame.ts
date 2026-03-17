@@ -97,30 +97,64 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
     }
   }
 
-  for (const [rid, count] of yushoCounts) {
-    if (count < CHAMPION_YUSHO_MIN) continue;
-    const key = `${rid}::champion`;
-    if (hof.inducted[key]) continue;
-
-    const r = world.rikishi.get(rid);
-    if (!r) continue;
+  const addInductee = (
+    rid: string,
+    r: any,
+    category: "champion" | "iron_man" | "technician",
+    stats: any
+  ) => {
+    const key = `${rid}::${category}`;
+    if (hof.inducted[key]) return;
 
     const inductee: HoFInductee = {
       rikishiId: rid,
       shikona: r.shikona || r.name || rid,
-      category: "champion",
+      category,
       inductionYear: world.year,
       stats: {
-        yushoCount: count,
         highestRank: r.rank,
         careerWins: r.careerWins || 0,
         careerLosses: r.careerLosses || 0,
+        ...stats,
       },
     };
 
     newInductees.push(inductee);
     hof.inductees.push(inductee);
     hof.inducted[key] = true;
+  };
+
+  for (const [rid, count] of yushoCounts) {
+    if (count < CHAMPION_YUSHO_MIN) continue;
+    const r = world.rikishi.get(rid);
+    if (!r) continue;
+    addInductee(rid, r, "champion", { yushoCount: count });
+  }
+
+  // --- Iron Men ---
+  for (const r of world.rikishi.values()) {
+    if (r.isRetired) continue;
+
+    const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
+    const estimatedBasho = Math.floor(totalBouts / 7);
+
+    if (estimatedBasho < IRON_MAN_BASHO_MIN) continue;
+    addInductee(r.id, r, "iron_man", { consecutiveBasho: estimatedBasho });
+  }
+
+  // --- Technicians ---
+  const ginoCounts = new Map<string, number>();
+  for (const br of history) {
+    if (br.ginoSho) {
+      ginoCounts.set(br.ginoSho, (ginoCounts.get(br.ginoSho) || 0) + 1);
+    }
+  }
+
+  for (const [rid, count] of ginoCounts) {
+    if (count < TECHNICIAN_GINO_MIN) continue;
+    const r = world.rikishi.get(rid);
+    if (!r) continue;
+    addInductee(rid, r, "technician", { ginoShoCount: count });
   }
 
   // --- Iron Men ---

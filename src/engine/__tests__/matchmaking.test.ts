@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
+import { mockRikishi } from "./utils";
 import {
   scorePairing,
   buildCandidatePairs,
@@ -7,23 +8,6 @@ import {
 } from "../matchmaking";
 import type { BashoState } from "../types/basho";
 import type { Rikishi } from "../types/rikishi";
-
-function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
-  return {
-    id,
-    shikona: `Wrestler-${id}`,
-    heyaId: `heya-${id}`,
-    rank: "maegashira",
-    rankNumber: 5,
-    division: "makuuchi",
-    side: "east",
-    weight: 140,
-    style: "hybrid",
-    archetype: "all_rounder",
-    injured: false,
-    ...overrides
-  } as unknown as Rikishi;
-}
 
 function mockBasho(): BashoState {
   return {
@@ -90,7 +74,7 @@ describe("Matchmaking System", () => {
       const basho = mockBasho();
       const r1 = mockRikishi("r1"); // 3-1
       const r2 = mockRikishi("r2"); // 3-1
-      const r3 = mockRikishi("r3"); // 1-3
+      const r3 = mockRikishi("r3", { currentBashoWins: 1, currentBashoLosses: 3 }); // 1-3
 
       const similar = scorePairing({ basho, a: r1, b: r2 });
       const dissimilar = scorePairing({ basho, a: r1, b: r3 });
@@ -130,7 +114,7 @@ describe("Matchmaking System", () => {
         mockRikishi("r1", { division: "makuuchi" }),
         mockRikishi("r2", { division: "makuuchi" }),
         mockRikishi("r3", { division: "makuuchi" }),
-        mockRikishi("r4", { division: "makuuchi" }),
+        mockRikishi("r4", { division: "makuuchi", currentBashoWins: 2, currentBashoLosses: 2 }),
       ];
 
       const candidates = buildCandidatePairs(basho, rikishi, { seed: "test-seed" });

@@ -450,41 +450,33 @@ export function getScoutedAttributes(scouted: ScoutedRikishi, truth?: Rikishi, s
     return { value: description, confidence, narrative: `${qualifier}: ${description}` };
   };
 
-  const getAgg = (value: number): ScoutedAttribute => {
-    const confidence = getConfidenceLevel(scouted, "combat");
+  const createAttributeHelper = (
+    value: number,
+    type: AttributeType,
+    seedSuffix: string,
+    describeFn: (val: number) => string,
+    range?: { min: number, max: number }
+  ): ScoutedAttribute => {
+    const confidence = getConfidenceLevel(scouted, type);
 
     if (isOwned || confidence === "certain") {
-      const label = describeAggression(value);
+      const label = describeFn(value);
       return { value: label, confidence: "certain", narrative: label };
     }
 
     if (confidence === "unknown") return { value: "Unknown", confidence: "unknown", narrative: "Insufficient observation" };
 
-    const estimated = getEstimatedValue(value, confidence, `${baseSeed}-${scouted.rikishiId}-aggression`);
+    const estimated = getEstimatedValue(value, confidence, `${baseSeed}-${scouted.rikishiId}-${seedSuffix}`, range);
     const q = confidence === "medium" ? "appears" : confidence === "low" ? "may be" : "";
-    const label = describeAggression(estimated);
+    const label = describeFn(estimated);
     const desc = q ? `${q} ${label.toLowerCase()}` : label;
 
     return { value: desc, confidence, narrative: `${getConfidenceText(confidence)}: ${desc}` };
   };
 
-  const getExp = (value: number): ScoutedAttribute => {
-    const confidence = getConfidenceLevel(scouted, "combat");
+  const getAgg = (value: number): ScoutedAttribute => createAttributeHelper(value, "combat", "aggression", describeAggression);
+  const getExp = (value: number): ScoutedAttribute => createAttributeHelper(value, "combat", "experience", describeExperience, { min: 0, max: 80 });
 
-    if (isOwned || confidence === "certain") {
-      const label = describeExperience(value);
-      return { value: label, confidence: "certain", narrative: label };
-    }
-
-    if (confidence === "unknown") return { value: "Unknown", confidence: "unknown", narrative: "Insufficient observation" };
-
-    const estimated = getEstimatedValue(value, confidence, `${baseSeed}-${scouted.rikishiId}-experience`, { min: 0, max: 80 });
-    const q = confidence === "medium" ? "appears" : confidence === "low" ? "may be" : "";
-    const label = describeExperience(estimated);
-    const desc = q ? `${q} ${label.toLowerCase()}` : label;
-
-    return { value: desc, confidence, narrative: `${getConfidenceText(confidence)}: ${desc}` };
-  };
 
   return {
     power: getAttr("power", snapshot.power),

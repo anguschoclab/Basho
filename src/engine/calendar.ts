@@ -11,6 +11,7 @@
 // If you want to override a specific basho start day, set `startDay` in BASHO_CALENDAR[name].
 
 import type { BashoName, BashoInfo } from "./types/basho";
+import { simpleHashToIndex } from "./utils/math";
 
 // === BASHO CALENDAR ===
 //
@@ -227,14 +228,7 @@ function deterministicIndex(seed: string | undefined, length: number): number {
   const len = Number.isFinite(length) ? Math.floor(length) : 0;
   if (len <= 0) return 0;
 
-  // FNV-1a-ish tiny hash (deterministic, fast)
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-
-  return (h >>> 0) % len;
+  return simpleHashToIndex(s, len);
 }
 
 /**
