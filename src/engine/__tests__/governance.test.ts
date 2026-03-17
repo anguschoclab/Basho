@@ -238,6 +238,8 @@ describe("Governance: reportScandal", () => {
     // Verify it still applied effects
     expect(heya.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
     expect(heya.funds).toBe(10_000_000 - 500_000);
+    expect(world.events.log.length).toBeGreaterThan(0);
+    expect(heya.governanceHistory!.length).toBeGreaterThan(0);
   });
 
 
@@ -253,6 +255,27 @@ describe("Governance: reportScandal", () => {
     expect(heya.scandalScore).toBe(60 - SCANDAL_DECAY_RATE);
     expect(heya.funds).toBe(10_000_000 - 10_000_000);
     expect(world.events.log.length).toBeGreaterThan(0);
+  });
+
+  it("should not halt scandal reporting when generateScandalHeadline throws an error", () => {
+    // Mock the media generation to throw an error
+    generateScandalHeadlineMock.mockImplementationOnce(() => {
+      throw new Error("Simulated media generation failure");
+    });
+
+    const heya = makeHeya({ scandalScore: 0, funds: 1_000_000 });
+    const world = makeWorld(heya);
+
+    // Call reportScandal and ensure it does not throw
+    expect(() => {
+      reportScandal(world, heya.id, "minor", "Test try/catch");
+    }).not.toThrow();
+
+    // Verify side effects still happen
+    expect(heya.scandalScore).toBe(10 - SCANDAL_DECAY_RATE);
+    expect(heya.funds).toBe(1_000_000 - 500_000);
+    expect(world.events.log.some(e => e.type === "SCANDAL_REPORTED")).toBe(true);
+    expect(heya.governanceHistory!.length).toBeGreaterThan(0);
   });
 });
 
