@@ -146,7 +146,7 @@ function logMyosekiTransaction(
   amount: number
 ) {
   world.myosekiMarket!.history.unshift({
-    id: `tx_${Date.now()}_${myosekiId}`,
+    id: `tx_${world.year}_${world.week}_${myosekiId}_${type}`, // Replaced Date.now() for determinism
     date: `${world.year}-W${world.week}`,
     myosekiId,
     type,

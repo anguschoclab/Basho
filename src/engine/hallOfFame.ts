@@ -143,14 +143,14 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
   }
 
   // --- Technicians ---
-  const ginoCounts = new Map<string, number>();
+  const ginoCountsStats = new Map<string, number>();
   for (const br of history) {
     if (br.ginoSho) {
-      ginoCounts.set(br.ginoSho, (ginoCounts.get(br.ginoSho) || 0) + 1);
+      ginoCountsStats.set(br.ginoSho, (ginoCountsStats.get(br.ginoSho) || 0) + 1);
     }
   }
 
-  for (const [rid, count] of ginoCounts) {
+  for (const [rid, count] of ginoCountsStats) {
     if (count < TECHNICIAN_GINO_MIN) continue;
     const r = world.rikishi.get(rid);
     if (!r) continue;
