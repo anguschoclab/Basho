@@ -286,6 +286,72 @@ describe("Facilities: Monthly Tick", () => {
     expect(heya.facilities.nutrition).toBe(5);
   });
 
+  it("should process multiple heyas in a single tickMonthly call", () => {
+    const world = makeWorld({ funds: 0, facilities: { training: 50, recovery: 50, nutrition: 50 } }, { playerOwned: true });
+
+    // Add 3 more NPC heyas
+    for (let i = 1; i <= 3; i++) {
+        const heya = makeHeya({
+            id: `npc-heya-${i}`,
+            funds: 50_000_000,
+            facilities: { training: 30, recovery: 30, nutrition: 30 },
+            oyakataId: `oyakata-${i}`
+        });
+        const oyakata = makeOyakata({
+            id: `oyakata-${i}`,
+            heyaId: `npc-heya-${i}`,
+            traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 }
+        });
+        world.heyas.set(heya.id, heya);
+        world.oyakata.set(oyakata.id, oyakata);
+    }
+
+    tickMonthly(world);
+
+    // Player heya (funds: 0) should decay
+    const playerHeya = world.heyas.get("test-heya")!;
+    expect(playerHeya.facilities.training).toBeLessThan(50);
+    expect(playerHeya.facilities.recovery).toBeLessThan(50);
+    expect(playerHeya.facilities.nutrition).toBeLessThan(50);
+
+    // All NPC heyas (funds: 50M, ambition: 80) should pay maintenance and auto-invest
+    for (let i = 1; i <= 3; i++) {
+        const npcHeya = world.heyas.get(`npc-heya-${i}`)!;
+        expect(npcHeya.facilities.training).toBeGreaterThan(30); // auto-invest
+        expect(npcHeya.facilities.recovery).toBe(30); // maintained
+        expect(npcHeya.facilities.nutrition).toBe(30); // maintained
+    }
+  });
+
+  it("should skip NPC auto-investment for the player heya, but apply to NPC heyas", () => {
+    // Player heya with high funds, high ambition oyakata
+    const world = makeWorld({ funds: 50_000_000, facilities: { training: 30, recovery: 30, nutrition: 30 } }, { playerOwned: true, oyakataOverrides: { traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 } } });
+
+    // NPC heya with high funds, high ambition oyakata
+    const heya2 = makeHeya({
+        id: "npc-heya",
+        funds: 50_000_000,
+        facilities: { training: 30, recovery: 30, nutrition: 30 },
+        oyakataId: "oyakata2"
+    });
+    const oyakata2 = makeOyakata({
+        id: "oyakata2",
+        heyaId: "npc-heya",
+        traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 }
+    });
+
+    world.heyas.set(heya2.id, heya2);
+    world.oyakata.set(oyakata2.id, oyakata2);
+
+    tickMonthly(world);
+
+    const playerHeya = world.heyas.get("test-heya")!;
+    const npcHeya = world.heyas.get("npc-heya")!;
+
+    expect(playerHeya.facilities.training).toBe(30);
+    expect(npcHeya.facilities.training).toBeGreaterThan(30);
+  });
+
 
   describe("getUpgradeCostEstimate", () => {
     it("should handle 0 points correctly", () => {
