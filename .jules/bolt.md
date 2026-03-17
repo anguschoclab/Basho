@@ -1,0 +1,3 @@
+## 2025-03-16 - [Inefficient chained array iterations]
+**Learning:** Chaining `.map()`, `.filter()`, and `.reduce()` is significantly slower than a single `for` loop because of intermediate array allocations, especially when iterating over frequent game loop or UI state derivations (like `projectHeya`). Furthermore, instantiating new `Set` instances inside these loops (like `new Set(["makuuchi", "juryo"])`) causes redundant allocations and garbage collection overhead.
+**Action:** When calculating statistics or filtering entities from a collection, prefer a single-pass `for...of` loop with direct `if` condition checks instead of chaining array methods, especially in core engine projections.

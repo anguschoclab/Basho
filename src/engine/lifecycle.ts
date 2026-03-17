@@ -79,7 +79,9 @@ const ARCHETYPES: TacticalArchetype[] = [
  *  * @returns The result.
  */
 export function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
-  const rookieId = crypto.randomUUID();
+  const count = Object.keys(world.rikishi).length;
+  const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
+  const rookieId = `rk_${currentYear}_${tmpRng.int(1000000, 9999999)}`;
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
   
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];

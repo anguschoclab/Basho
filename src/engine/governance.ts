@@ -142,7 +142,7 @@ export function reportScandal(
 
   // Log Ruling
   const ruling: GovernanceRuling = {
-    id: `scandal-${world.year}-${world.week}-${heya.id}-${Date.now()}`,
+    id: `scandal-${world.year}-${world.week}-${heya.id}-${world.dayIndexGlobal}`,
     date: `${world.year}-W${world.week}`,
     heyaId: heya.id,
     type: "fine",

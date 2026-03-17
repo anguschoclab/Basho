@@ -834,7 +834,7 @@ function runRetirements(world: WorldState): Record<string, number> {
             delete availableStock.askingPrice;
 
             const tx = {
-              id: `tx_${Date.now()}_${availableStock.id}`,
+              id: `tx_${world.year}_${world.week || 1}_${availableStock.id}`,
               date: `${world.year}-W${world.week || 1}`,
               myosekiId: availableStock.id,
               type: "sale",
