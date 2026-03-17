@@ -3,6 +3,9 @@ import path from "path";
 
 const ENGINE_DIR = path.resolve("src/engine");
 const DISALLOWED = [
+  { name: "Date.now", pattern: /\bDate\.now\s*\(/g },
+  { name: "new Date() without arguments", pattern: /\bnew\s+Date\s*\(\s*\)/g },
+  { name: "crypto.randomUUID", pattern: /\bcrypto\.randomUUID\s*\(/g },
   { name: "Math.random", pattern: /\bMath\.random\s*\(/g },
   { name: "seedrandom import/call", pattern: /\bseedrandom\b/g },
   { name: "new SeededRNG constructor", pattern: /\bnew\s+SeededRNG\s*\(/g },

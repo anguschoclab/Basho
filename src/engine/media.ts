@@ -1401,7 +1401,7 @@ function checkTitleRace(args: {
     beat: "title_race",
     tone: "hype",
     rikishiIds: allIds,
-    heyaIds: [...new Set(heyaIds)],
+    heyaIds: [...new Set(heyaIds)].sort(),
     title,
     subtitle,
     impact,

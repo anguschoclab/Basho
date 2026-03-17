@@ -121,7 +121,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const saveToSlot = useCallback((slotName: string) => {
     if (!state.world) return false;
-    return saveGame(state.world, slotName);
+    return saveGame(state.world, slotName, new Date().toISOString());
   }, [state.world]);
 
   const loadFromSlot = useCallback((slotName: string) => {
