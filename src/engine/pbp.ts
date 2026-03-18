@@ -155,7 +155,7 @@ export interface InjuryFact extends PbpFactBase {
 export interface InstitutionalFact extends PbpFactBase {
   phase: "institutional";
   eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT";
-  oyakataPersonality?: "strict" | "indulgent" | "default";
+  oyakataPersonality?: import("./types/oyakata").OyakataArchetype | "default";
 }
 
 /** Type representing pbp fact. */
@@ -255,6 +255,10 @@ export interface PbpLibrary {
     dancing_escape: PhraseBucket;
     turns_the_tables: PhraseBucket;
     slips_but_survives: PhraseBucket;
+    grip_change: PhraseBucket;
+    footwork_angle: PhraseBucket;
+    mistake: PhraseBucket;
+    tachiai_win: PhraseBucket;
   };
 
   injury: {
@@ -269,9 +273,9 @@ export interface PbpLibrary {
   };
 
   institutional: {
-    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
-    GOVERNANCE_RULING: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
-    WELFARE_ALERT: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
+    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    GOVERNANCE_RULING: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    WELFARE_ALERT: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
   };
 
   finish: {
@@ -1179,6 +1183,10 @@ function selectPhraseForFact(
       }
       else if (fact.reason === "timing_counter") bucket = lib.momentum.counter_turn;
       else if (fact.reason === "fatigue_turn") bucket = lib.momentum.fatigue_swing;
+      else if (fact.reason === "grip_change") bucket = lib.momentum.grip_change;
+      else if (fact.reason === "footwork_angle") bucket = lib.momentum.footwork_angle;
+      else if (fact.reason === "mistake") bucket = lib.momentum.mistake;
+      else if (fact.reason === "tachiai_win") bucket = lib.momentum.tachiai_win;
 
       const chosen = weightedPick(bucket, rng);
       return { phrase: chosen, tags: mergeTags(chosen.tags) };
@@ -1220,10 +1228,8 @@ function selectPhraseForFact(
       const eventBucketGroup = lib.institutional[instFact.eventType];
       let bucket = eventBucketGroup.default;
 
-      if (instFact.oyakataPersonality === "strict") {
-        bucket = eventBucketGroup.strict;
-      } else if (instFact.oyakataPersonality === "indulgent") {
-        bucket = eventBucketGroup.indulgent;
+      if (instFact.oyakataPersonality && instFact.oyakataPersonality !== "default") {
+        bucket = eventBucketGroup[instFact.oyakataPersonality as keyof typeof eventBucketGroup];
       }
 
       const chosen = weightedPick(bucket, rng);
