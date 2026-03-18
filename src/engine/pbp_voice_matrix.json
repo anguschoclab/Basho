@@ -2889,6 +2889,94 @@
         "id": "edg_slp_5",
         "text": "Despite a clear slip, {trailer} holds on and survives!"
       }
+    ],
+    "grip_change": [
+      {
+        "id": "m_grip_1",
+        "text": "A sudden grip change from {leader}!"
+      },
+      {
+        "id": "m_grip_2",
+        "text": "{leader} readjusts the hold — momentum shifts!"
+      },
+      {
+        "id": "m_grip_3",
+        "text": "A crucial grip switch gives {leader} the advantage!"
+      },
+      {
+        "id": "m_grip_4",
+        "text": "{leader} works a better grip and takes control!"
+      },
+      {
+        "id": "m_grip_5",
+        "text": "The new grip allows {leader} to press the attack!"
+      }
+    ],
+    "footwork_angle": [
+      {
+        "id": "m_foot_1",
+        "text": "{leader} finds a new angle with brilliant footwork!"
+      },
+      {
+        "id": "m_foot_2",
+        "text": "A quick pivot! {leader} has the positional edge!"
+      },
+      {
+        "id": "m_foot_3",
+        "text": "Superior footwork from {leader} changes the dynamic!"
+      },
+      {
+        "id": "m_foot_4",
+        "text": "{leader} steps to the side and seizes the momentum!"
+      },
+      {
+        "id": "m_foot_5",
+        "text": "The angle shifts favorably for {leader}!"
+      }
+    ],
+    "mistake": [
+      {
+        "id": "m_mistake_1",
+        "text": "{trailer} stumbles! {leader} capitalizes instantly!"
+      },
+      {
+        "id": "m_mistake_2",
+        "text": "A costly error from {trailer}! {leader} pounces!"
+      },
+      {
+        "id": "m_mistake_3",
+        "text": "{trailer} loses balance! {leader} takes charge!"
+      },
+      {
+        "id": "m_mistake_4",
+        "text": "A misstep by {trailer} hands the momentum to {leader}!"
+      },
+      {
+        "id": "m_mistake_5",
+        "text": "{trailer} overcommits and {leader} takes full advantage!"
+      }
+    ],
+    "tachiai_win": [
+      {
+        "id": "m_twin_1",
+        "text": "The tachiai advantage carries forward for {leader}!"
+      },
+      {
+        "id": "m_twin_2",
+        "text": "{leader} rides the initial blast into a dominant position!"
+      },
+      {
+        "id": "m_twin_3",
+        "text": "That explosive start gives {leader} total control!"
+      },
+      {
+        "id": "m_twin_4",
+        "text": "{leader}'s superior charge sets the tone for the bout!"
+      },
+      {
+        "id": "m_twin_5",
+        "text": "The momentum from the tachiai is all with {leader}!"
+      }
     ]
   },
   "finish": {
@@ -4460,48 +4548,136 @@
           "text": "Following an internal review, the heya's governance status is publicly updated."
         }
       ],
-      "strict": [
+      "traditionalist": [
         {
-          "id": "inst_gsc_1_s",
-          "text": "The JSA issues a formal decree: the stable's governance status has been officially revised."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts sternly!"
         },
         {
-          "id": "inst_gsc_2_s",
-          "text": "An urgent dispatch from the council confirms a strict alteration in governance status."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts with traditional strictness!"
         },
         {
-          "id": "inst_gsc_3_s",
-          "text": "In a stern uncompromising mandate, the compliance committee mandates a new governance status."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts relying on ancient wisdom!"
         },
         {
-          "id": "inst_gsc_4_s",
-          "text": "The Oyakata accepts the board's decision to modify their institutional standing."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts unwavering in discipline!"
         },
         {
-          "id": "inst_gsc_5_s",
-          "text": "Following an internal review, the stable's governance status is publicly updated."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts upholding the old ways!"
         }
       ],
-      "indulgent": [
+      "scientist": [
         {
-          "id": "inst_gsc_1_i",
-          "text": "The JSA issues a formal notice: the heya's governance status has been officially revised."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts analytically!"
         },
         {
-          "id": "inst_gsc_2_i",
-          "text": "An urgent dispatch from the council confirms a lenient alteration in governance status."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts with data-driven logic!"
         },
         {
-          "id": "inst_gsc_3_i",
-          "text": "In a stern ruling, the compliance committee mandates a new governance status."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts methodically!"
         },
         {
-          "id": "inst_gsc_4_i",
-          "text": "The stablemaster accepts the board's decision to modify their institutional standing."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts citing sports science!"
         },
         {
-          "id": "inst_gsc_5_i",
-          "text": "Following an internal review, the heya's governance status is publicly updated."
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts with clinical precision!"
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts boldly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts taking a massive risk!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts betting everything!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts recklessly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts with a high-stakes move!"
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts gently!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts with a heavy heart!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts protectively!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts focusing on wellbeing!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts like a caring parent!"
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts furiously!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts with an iron fist!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts ruthlessly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts demanding perfection!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts terrifying the stable!"
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_1",
+          "text": "The JSA updates the governance status. The Oyakata reacts cunningly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_2",
+          "text": "The JSA updates the governance status. The Oyakata reacts with calculated foresight!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_3",
+          "text": "The JSA updates the governance status. The Oyakata reacts outmaneuvering the board!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_4",
+          "text": "The JSA updates the governance status. The Oyakata reacts tactically!"
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_5",
+          "text": "The JSA updates the governance status. The Oyakata reacts with a sharp plan!"
         }
       ]
     },
@@ -4528,48 +4704,136 @@
           "text": "The disciplinary panel announces a final, binding governance ruling."
         }
       ],
-      "strict": [
+      "traditionalist": [
         {
-          "id": "inst_gov_1_s",
-          "text": "The elders hand down a severe governance uncompromising mandate, demanding immediate compliance."
+          "id": "inst_GOVERNANCE_RULING_traditionalist_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts sternly!"
         },
         {
-          "id": "inst_gov_2_s",
-          "text": "A compassionate but firm governance uncompromising mandate is issued by the committee to guide the stable."
+          "id": "inst_GOVERNANCE_RULING_traditionalist_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with traditional strictness!"
         },
         {
-          "id": "inst_gov_3_s",
-          "text": "The board's governance uncompromising mandate sends a clear message about institutional integrity."
+          "id": "inst_GOVERNANCE_RULING_traditionalist_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts relying on ancient wisdom!"
         },
         {
-          "id": "inst_gov_4_s",
-          "text": "An unprecedented governance uncompromising mandate alters the future trajectory of the stable."
+          "id": "inst_GOVERNANCE_RULING_traditionalist_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts unwavering in discipline!"
         },
         {
-          "id": "inst_gov_5_s",
-          "text": "The disciplinary panel announces a final, binding governance uncompromising mandate."
+          "id": "inst_GOVERNANCE_RULING_traditionalist_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts upholding the old ways!"
         }
       ],
-      "indulgent": [
+      "scientist": [
         {
-          "id": "inst_gov_1_i",
-          "text": "The elders hand down a gentle governance ruling, suggesting improvements."
+          "id": "inst_GOVERNANCE_RULING_scientist_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts analytically!"
         },
         {
-          "id": "inst_gov_2_i",
-          "text": "A compassionate but firm governance ruling is issued by the committee to guide the heya."
+          "id": "inst_GOVERNANCE_RULING_scientist_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with data-driven logic!"
         },
         {
-          "id": "inst_gov_3_i",
-          "text": "The board's governance ruling sends a clear message about institutional integrity."
+          "id": "inst_GOVERNANCE_RULING_scientist_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts methodically!"
         },
         {
-          "id": "inst_gov_4_i",
-          "text": "An unprecedented governance ruling alters the future trajectory of the stable."
+          "id": "inst_GOVERNANCE_RULING_scientist_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts citing sports science!"
         },
         {
-          "id": "inst_gov_5_i",
-          "text": "The disciplinary panel announces a final, binding governance ruling."
+          "id": "inst_GOVERNANCE_RULING_scientist_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with clinical precision!"
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_GOVERNANCE_RULING_gambler_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts boldly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_gambler_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts taking a massive risk!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_gambler_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts betting everything!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_gambler_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts recklessly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_gambler_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with a high-stakes move!"
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_GOVERNANCE_RULING_nurturer_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts gently!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_nurturer_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with a heavy heart!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_nurturer_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts protectively!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_nurturer_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts focusing on wellbeing!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_nurturer_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts like a caring parent!"
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_GOVERNANCE_RULING_tyrant_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts furiously!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_tyrant_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with an iron fist!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_tyrant_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts ruthlessly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_tyrant_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts demanding perfection!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_tyrant_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts terrifying the stable!"
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_GOVERNANCE_RULING_strategist_1",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts cunningly!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strategist_2",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with calculated foresight!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strategist_3",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts outmaneuvering the board!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strategist_4",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts tactically!"
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strategist_5",
+          "text": "A new governance ruling has been handed down. The Oyakata reacts with a sharp plan!"
         }
       ]
     },
@@ -4596,48 +4860,136 @@
           "text": "Welfare monitors issue a stern warning detailing unacceptable conditions."
         }
       ],
-      "strict": [
+      "traditionalist": [
         {
-          "id": "inst_wel_1_s",
-          "text": "A critical welfare violation notice is triggered, prompting an immediate investigation by the JSA."
+          "id": "inst_WELFARE_ALERT_traditionalist_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts sternly!"
         },
         {
-          "id": "inst_wel_2_s",
-          "text": "The welfare committee raises a red flag regarding conditions at the stable."
+          "id": "inst_WELFARE_ALERT_traditionalist_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with traditional strictness!"
         },
         {
-          "id": "inst_wel_3_s",
-          "text": "A formal welfare violation notice underscores deep concerns for the rikishi's wellbeing."
+          "id": "inst_WELFARE_ALERT_traditionalist_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts relying on ancient wisdom!"
         },
         {
-          "id": "inst_wel_4_s",
-          "text": "The Oyakata is summoned following a serious welfare violation notice."
+          "id": "inst_WELFARE_ALERT_traditionalist_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts unwavering in discipline!"
         },
         {
-          "id": "inst_wel_5_s",
-          "text": "Welfare monitors issue a stern warning detailing unacceptable conditions."
+          "id": "inst_WELFARE_ALERT_traditionalist_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts upholding the old ways!"
         }
       ],
-      "indulgent": [
+      "scientist": [
         {
-          "id": "inst_wel_1_i",
-          "text": "A minor welfare alert is triggered, prompting an immediate investigation by the JSA."
+          "id": "inst_WELFARE_ALERT_scientist_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts analytically!"
         },
         {
-          "id": "inst_wel_2_i",
-          "text": "The welfare committee raises a red flag regarding conditions at the heya."
+          "id": "inst_WELFARE_ALERT_scientist_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with data-driven logic!"
         },
         {
-          "id": "inst_wel_3_i",
-          "text": "A formal welfare alert underscores deep concerns for the rikishi's wellbeing."
+          "id": "inst_WELFARE_ALERT_scientist_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts methodically!"
         },
         {
-          "id": "inst_wel_4_i",
-          "text": "The stablemaster is summoned following a routine welfare alert."
+          "id": "inst_WELFARE_ALERT_scientist_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts citing sports science!"
         },
         {
-          "id": "inst_wel_5_i",
-          "text": "Welfare monitors issue a stern warning detailing unacceptable conditions."
+          "id": "inst_WELFARE_ALERT_scientist_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with clinical precision!"
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_WELFARE_ALERT_gambler_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts boldly!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_gambler_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts taking a massive risk!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_gambler_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts betting everything!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_gambler_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts recklessly!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_gambler_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with a high-stakes move!"
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_WELFARE_ALERT_nurturer_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts gently!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_nurturer_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with a heavy heart!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_nurturer_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts protectively!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_nurturer_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts focusing on wellbeing!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_nurturer_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts like a caring parent!"
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_WELFARE_ALERT_tyrant_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts furiously!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_tyrant_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with an iron fist!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_tyrant_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts ruthlessly!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_tyrant_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts demanding perfection!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_tyrant_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts terrifying the stable!"
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_WELFARE_ALERT_strategist_1",
+          "text": "A welfare alert has been triggered. The Oyakata reacts cunningly!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strategist_2",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with calculated foresight!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strategist_3",
+          "text": "A welfare alert has been triggered. The Oyakata reacts outmaneuvering the board!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strategist_4",
+          "text": "A welfare alert has been triggered. The Oyakata reacts tactically!"
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strategist_5",
+          "text": "A welfare alert has been triggered. The Oyakata reacts with a sharp plan!"
         }
       ]
     }
