@@ -239,6 +239,46 @@
       {
         "id": "t_dec_50",
         "text": "{leader}'s tachiai cuts through {trailer}'s defenses instantly!"
+      },
+      {
+        "id": "t_dec_05_c",
+        "text": "Like a cannon shot, {leader} obliterates the space at the tachiai!"
+      },
+      {
+        "id": "t_dec_06_c",
+        "text": "{leader} hits like a runaway freight train right on the shikirisen!"
+      },
+      {
+        "id": "t_dec_07_c",
+        "text": "A frightening display of raw tachiai power from {leader}!"
+      },
+      {
+        "id": "t_dec_08_c",
+        "text": "No hesitation—{leader} launches forward with absolute malice!"
+      },
+      {
+        "id": "t_dec_09_c",
+        "text": "The impact echoes through the Kokugikan! {leader} wins the charge cleanly."
+      },
+      {
+        "id": "t_dec_10_c",
+        "text": "{leader} dictates terms immediately with a bone-jarring tachiai!"
+      },
+      {
+        "id": "t_dec_11_c",
+        "text": "A picture-perfect charge! {leader} leaves no room to breathe."
+      },
+      {
+        "id": "t_dec_12_c",
+        "text": "The sheer violence of {leader}'s tachiai sends shockwaves through the arena!"
+      },
+      {
+        "id": "t_dec_13_c",
+        "text": "{leader} unleashes a devastating burst of speed off the line!"
+      },
+      {
+        "id": "t_dec_14_c",
+        "text": "Total commitment at the tachiai from {leader}—a massive hit!"
       }
     ],
     "even": [
@@ -1704,6 +1744,46 @@
       {
         "id": "str_tsup_5",
         "text": "{leader} rains down tsuppari on {trailer}'s defense!"
+      },
+      {
+        "id": "str_tsup_06_c",
+        "text": "A blistering volley of tsuppari from {leader}!"
+      },
+      {
+        "id": "str_tsup_07_c",
+        "text": "{leader} opens up with the heavy artillery—relentless thrusts!"
+      },
+      {
+        "id": "str_tsup_08_c",
+        "text": "Machine-gun tsuppari from {leader}! The pressure is immense."
+      },
+      {
+        "id": "str_tsup_09_c",
+        "text": "{leader} drives forward behind a wall of punishing open-palm strikes!"
+      },
+      {
+        "id": "str_tsup_10_c",
+        "text": "No escape from the barrage! {leader}'s hands are a blur of motion."
+      },
+      {
+        "id": "str_tsup_11_c",
+        "text": "{leader} swarms with tsuppari, aiming right for the face and chest!"
+      },
+      {
+        "id": "str_tsup_12_c",
+        "text": "A brutal, suffocating storm of thrusts unleashed by {leader}!"
+      },
+      {
+        "id": "str_tsup_13_c",
+        "text": "Piston-like strikes from {leader} keep the opponent entirely off balance."
+      },
+      {
+        "id": "str_tsup_14_c",
+        "text": "{leader} rains down heavy blows, dictating the pace with raw power."
+      },
+      {
+        "id": "str_tsup_15_c",
+        "text": "The sheer volume of {leader}'s tsuppari is overwhelming!"
       }
     ],
     "nodowa_pressure": [
@@ -1726,6 +1806,46 @@
       {
         "id": "str_nod_5",
         "text": "Nodowa applied perfectly! {trailer} is gasping!"
+      },
+      {
+        "id": "str_nod_06_c",
+        "text": "{leader} drives a brutal nodowa right up under the chin!"
+      },
+      {
+        "id": "str_nod_07_c",
+        "text": "A suffocating throat-thrust from {leader} forces the head dangerously high!"
+      },
+      {
+        "id": "str_nod_08_c",
+        "text": "{leader} locks in a punishing nodowa, denying all forward momentum."
+      },
+      {
+        "id": "str_nod_09_c",
+        "text": "The nodowa is vicious! {leader} is trying to snap the neck back."
+      },
+      {
+        "id": "str_nod_10_c",
+        "text": "Relentless pressure on the windpipe—{leader}'s nodowa is locked in!"
+      },
+      {
+        "id": "str_nod_11_c",
+        "text": "{leader} dictates posture completely with a stiff arm to the throat."
+      },
+      {
+        "id": "str_nod_12_c",
+        "text": "A textbook nodowa from {leader}, elevating the center of gravity."
+      },
+      {
+        "id": "str_nod_13_c",
+        "text": "The throat grip is merciless! {leader} pushes straight upward."
+      },
+      {
+        "id": "str_nod_14_c",
+        "text": "{leader} uses the nodowa to create space and enforce total control."
+      },
+      {
+        "id": "str_nod_15_c",
+        "text": "A fearsome nodowa from {leader}—pure, unadulterated power sumo."
       }
     ],
     "harite_slap": [
@@ -4702,6 +4822,46 @@
         {
           "id": "inst_gov_5",
           "text": "The disciplinary panel announces a final, binding governance ruling."
+        },
+        {
+          "id": "inst_gov_06_c",
+          "text": "The JSA Compliance Committee issues a stunning public reprimand."
+        },
+        {
+          "id": "inst_gov_07_c",
+          "text": "Reports from Ryogoku indicate the board of elders has handed down severe disciplinary actions."
+        },
+        {
+          "id": "inst_gov_08_c",
+          "text": "An emergency meeting of the directors concludes with a controversial governance decree."
+        },
+        {
+          "id": "inst_gov_09_c",
+          "text": "Sources inside the Kokugikan confirm a strict new ruling meant to enforce stable discipline."
+        },
+        {
+          "id": "inst_gov_10_c",
+          "text": "The JSA announces an unprecedented mandate targeting conduct detrimental to the sport."
+        },
+        {
+          "id": "inst_gov_11_c",
+          "text": "Rumors of internal JSA politics swirl following today's shock governance ruling."
+        },
+        {
+          "id": "inst_gov_12_c",
+          "text": "Tabloids in Tokyo are having a field day with the JSA's latest disciplinary announcement."
+        },
+        {
+          "id": "inst_gov_13_c",
+          "text": "The Chairman's office releases a terse statement dictating immediate behavioral reform."
+        },
+        {
+          "id": "inst_gov_14_c",
+          "text": "A heavy-handed governance ruling sends ripples of unease through the heya network."
+        },
+        {
+          "id": "inst_gov_15_c",
+          "text": "The JSA flexes its institutional muscle with a sweeping, uncompromising directive."
         }
       ],
       "traditionalist": [
@@ -4858,6 +5018,46 @@
         {
           "id": "inst_wel_5",
           "text": "Welfare monitors issue a stern warning detailing unacceptable conditions."
+        },
+        {
+          "id": "inst_wel_06_c",
+          "text": "Whispers of brutal midnight keiko sessions have finally caught the attention of the JSA welfare committee."
+        },
+        {
+          "id": "inst_wel_07_c",
+          "text": "Nikkan Sports reports anonymous complaints regarding unacceptable living conditions at the heya."
+        },
+        {
+          "id": "inst_wel_08_c",
+          "text": "A troubling welfare alert is triggered after photos of exhaustion and poor nutrition leak to the press."
+        },
+        {
+          "id": "inst_wel_09_c",
+          "text": "The JSA dispatches an independent investigator following serious allegations of hazing."
+        },
+        {
+          "id": "inst_wel_10_c",
+          "text": "Concerns over rikishi welfare mount as the JSA issues a formal warning to stable management."
+        },
+        {
+          "id": "inst_wel_11_c",
+          "text": "A scandalous tabloid piece alleges stablemasters are ignoring severe injuries during practice."
+        },
+        {
+          "id": "inst_wel_12_c",
+          "text": "The JSA's health monitors flag critical, systemic welfare issues requiring immediate intervention."
+        },
+        {
+          "id": "inst_wel_13_c",
+          "text": "Rumors of late-night drinking in Roppongi culminate in a formal welfare and conduct investigation."
+        },
+        {
+          "id": "inst_wel_14_c",
+          "text": "An internal whistleblower triggers a massive JSA welfare audit, threatening severe sanctions."
+        },
+        {
+          "id": "inst_wel_15_c",
+          "text": "Kyodo News runs a front-page exposé on the grueling, unregulated training methods sparking this latest alert."
         }
       ],
       "traditionalist": [
