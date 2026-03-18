@@ -42,7 +42,7 @@ export function RivalsWidget() {
           <Swords className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Rival Stables</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/rivalries" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/rivalries" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View all rivalries">
           All <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
