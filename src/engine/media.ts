@@ -1340,7 +1340,7 @@ function checkTitleRace(args: {
   if (entries.length === 0) return { state: args.state, headline: null };
 
   // Sort by wins desc
-  entries.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+  entries.sort((a, b) => b.wins - a.wins || a.losses - b.losses || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
   const topWins = entries[0].wins;
   // Leaders: all rikishi within 1 win of top
