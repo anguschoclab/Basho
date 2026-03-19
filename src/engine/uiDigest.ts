@@ -223,10 +223,17 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 
     // Get last 3 basho results from history
     const history = world.historyIndex.rikishi[r.id] || [];
-    const recent = history.slice(-3);
-    if (recent.length < 1) continue;
+    const len = history.length;
 
-    let recentWins = recent.reduce((sum, h) => sum + h.wins, 0);
+    // ⚡ Bolt: Use for loop over last 3 items to avoid slice allocation
+    let recentWins = 0;
+    let recentCount = 0;
+    for (let i = Math.max(0, len - 3); i < len; i++) {
+      recentWins += history[i].wins;
+      recentCount++;
+    }
+
+    if (recentCount < 1) continue;
 
     // Add current basho wins if active
     for (const e of world.banzuke.makuuchi) {
