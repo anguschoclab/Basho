@@ -279,6 +279,64 @@
       {
         "id": "t_dec_14_c",
         "text": "Total commitment at the tachiai from {leader}—a massive hit!"
+      },
+      {
+        "id": "t_dec_exp_1",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_2",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_3",
+        "text": "The collision at the tachi-ai is immense! {leader} drives through with pure force.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_4",
+        "text": "{leader} unleashes a ferocious opening charge, catching {trailer} off balance.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_5",
+        "text": "With explosive power, {leader} seizes the initiative from the moment the fan drops.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_6",
+        "text": "{leader} dominates the tachi-ai, immediately putting relentless forward pressure on {trailer}.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_7",
+        "text": "A textbook tachi-ai by {leader}! Low, fast, and devastating.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_8",
+        "text": "{leader} channels raw aggression into a thunderous initial clash.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_9",
+        "text": "The crowd gasps at the sheer impact of {leader}'s tachi-ai!",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_10",
+        "text": "{leader} leaves no room to breathe, asserting absolute dominance off the line.",
+        "tags": [
+          "crowd_roar"
+        ]
       }
     ],
     "even": [
@@ -1303,6 +1361,56 @@
       {
         "id": "c_oshi_50",
         "text": "A devastating display of pushing power from {leader}!"
+      },
+      {
+        "id": "c_oshi_exp_1",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_2",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_3",
+        "text": "With an iron-clad grip, {leader} sets up a devastating uwatenage position.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_4",
+        "text": "{leader} locks in a deep uwatenage, threatening to launch {trailer} to the clay.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_5",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_6",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_7",
+        "text": "{leader} secures a tight yotsu grip, dictating the pace of the clinch.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_8",
+        "text": "The clinch is a grueling battle of attrition, but {leader} is dictating the terms.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_9",
+        "text": "{leader} shifts their weight beautifully, setting up the throw from a dominant grip.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_10",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape.",
+        "tags": []
       }
     ],
     "scramble": [
@@ -1784,6 +1892,41 @@
       {
         "id": "str_tsup_15_c",
         "text": "The sheer volume of {leader}'s tsuppari is overwhelming!"
+      },
+      {
+        "id": "c_tsup_exp_1",
+        "text": "{leader} unleashes a violent barrage of tsuppari, forcing {trailer} toward the straw bales!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_2",
+        "text": "A relentless series of thrusts from {leader} leaves {trailer} reeling.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_3",
+        "text": "{leader} fires off machine-gun tsuppari, overwhelming {trailer}'s defense.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_4",
+        "text": "The slapping of flesh echoes through the Kokugikan as {leader} lands repeated tsuppari.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_5",
+        "text": "{trailer} is pushed to the brink by {leader}'s blistering tsuppari barrage!",
+        "tags": [
+          "crowd_roar"
+        ]
       }
     ],
     "nodowa_pressure": [
@@ -4666,6 +4809,76 @@
         {
           "id": "inst_gsc_5",
           "text": "Following an internal review, the heya's governance status is publicly updated."
+        },
+        {
+          "id": "gov_stat_exp_1",
+          "text": "A scandalous late-night drinking incident in Roppongi has cast a long shadow over the stable.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_2",
+          "text": "The JSA issues a stoic press release confirming rumors of deep-seated internal unrest.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_3",
+          "text": "Sources inside the stablemaster's camp decline to comment on the devastating JSA inquiry.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_4",
+          "text": "Local tabloids are having a field day with the latest disciplinary actions handed down from Ryogoku.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_5",
+          "text": "The air of prestige around the stable evaporates following a stern public reprimand.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_6",
+          "text": "Whispers of secret injuries and illicit gambling have finally reached the ears of the compliance committee.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_7",
+          "text": "A solemn bow and a public apology do little to quell the media frenzy surrounding the stable.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_8",
+          "text": "Kyodo News reports a shocking escalation of sanctions against the embattled stablemaster.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_9",
+          "text": "The ancient traditions of the sport demand accountability, and the JSA has made its ruling clear.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_10",
+          "text": "Rumors swirl that rival stablemasters pushed for the severe penalty behind closed doors.",
+          "tags": [
+            "scandal"
+          ]
         }
       ],
       "traditionalist": [
