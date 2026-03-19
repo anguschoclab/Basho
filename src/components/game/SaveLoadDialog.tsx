@@ -233,6 +233,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                       size="icon"
                       className="h-7 w-7 opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive shrink-0"
                       onClick={() => handleDelete(slot.slotName)}
+                      aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
+                      title={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
