@@ -1072,22 +1072,50 @@ export function generateScandalHeadline(args: {
   let title: string;
   let subtitle: string;
 
-  if (type === "scandal") {
+if (type === "scandal") {
     const titles = severity === "critical"
-      ? [`${heya.name} Rocked by Major Scandal`, `Crisis at ${heya.name} — JSA Steps In`]
+      ? [
+          `${heya.name} Rocked by Major Scandal`,
+          `Crisis at ${heya.name} — JSA Steps In`,
+          `Disgrace: ${heya.name} Faces Expulsion Threats`,
+          `Late-Night Roppongi Incident Haunts ${heya.name}`
+        ]
       : severity === "major"
-      ? [`${heya.name} Under Fire: ${reason}`, `Scandal Clouds Hang Over ${heya.name}`]
-      : [`${heya.name} Receives JSA Warning`, `Minor Infraction at ${heya.name}`];
+      ? [
+          `${heya.name} Under Fire: ${reason}`,
+          `Scandal Clouds Hang Over ${heya.name}`,
+          `Kyodo News: Internal Friction Plagues ${heya.name}`,
+          `Tabloids Feast on ${heya.name}'s Woes`
+        ]
+      : [
+          `${heya.name} Receives JSA Warning`,
+          `Minor Infraction at ${heya.name}`,
+          `Slap on the Wrist for ${heya.name}`,
+          `JSA Reminds ${heya.name} of Strict Traditions`
+        ];
     title = titles[Math.floor(rng.next() * titles.length)];
     subtitle = args.fineAmount
       ? `A ¥${args.fineAmount.toLocaleString()} fine has been levied. ${description}`
       : description;
   } else {
     const titles = severity === "critical"
-      ? [`${heya.name} Sanctioned by JSA`, `${heya.name} Faces Unprecedented Sanctions`]
+      ? [
+          `${heya.name} Sanctioned by JSA`,
+          `${heya.name} Faces Unprecedented Sanctions`,
+          `Dark Days for ${heya.name}: Board Drops the Hammer`,
+          `Stablemaster Summons Precede Harsh JSA Ruling`
+        ]
       : severity === "major"
-      ? [`${heya.name} Placed on Probation`, `JSA Puts ${heya.name} on Notice`]
-      : [`${heya.name} Under Review`, `JSA Issues Warning to ${heya.name}`];
+      ? [
+          `${heya.name} Placed on Probation`,
+          `JSA Puts ${heya.name} on Notice`,
+          `Mounting Pressure Forces JSA to Restrict ${heya.name}`
+        ]
+      : [
+          `${heya.name} Under Review`,
+          `JSA Issues Warning to ${heya.name}`,
+          `Committee Scrutinizes ${heya.name} Operations`
+        ];
     title = titles[Math.floor(rng.next() * titles.length)];
     subtitle = description;
   }
@@ -1145,21 +1173,46 @@ export function generateGovernanceHeadline(args: {
   let title: string;
   const subtitle: string = description;
 
-  if (type === "merger_threat") {
-    const titles = [`${heya.name} Faces Closure Threat`, `Association Reviews ${heya.name} Viability`];
+if (type === "merger_threat") {
+    const titles = [
+      `${heya.name} Faces Closure Threat`,
+      `Association Reviews ${heya.name} Viability`,
+      `End of an Era? ${heya.name} Struggles to Stay Open`,
+      `Financial Ruin Prompts JSA Ultimatum for ${heya.name}`
+    ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "forced_merger") {
-    const titles = [`Forced Merger Imminent for ${heya.name}`, `${heya.name} to Close Doors`];
+    const titles = [
+      `Forced Merger Imminent for ${heya.name}`,
+      `${heya.name} to Close Doors`,
+      `JSA Mandates Absorption of ${heya.name}`,
+      `Tearful Goodbye as ${heya.name} Dissolves`
+    ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "emergency_loan") {
-    const titles = [`${heya.name} Bailed Out by Association`, `Financial Crisis at ${heya.name}`];
+    const titles = [
+      `${heya.name} Bailed Out by Association`,
+      `Financial Crisis at ${heya.name}`,
+      `JSA Injects Emergency Capital into ${heya.name}`,
+      `Debt Forcing ${heya.name} to the Brink`
+    ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "welfare_review") {
-    const titles = [`${heya.name} Fails Welfare Review`, `Sanctions Continue for ${heya.name}`];
+    const titles = [
+      `${heya.name} Fails Welfare Review`,
+      `Sanctions Continue for ${heya.name}`,
+      `Whistleblowers Detail Brutal Regimen at ${heya.name}`,
+      `Dietary and Medical Neglect Investigated at ${heya.name}`
+    ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else {
     // council_review
-    const titles = [`Council Scrutinizes ${heya.name}`, `JSA Board Reviews ${heya.name} Conduct`];
+    const titles = [
+      `Council Scrutinizes ${heya.name}`,
+      `JSA Board Reviews ${heya.name} Conduct`,
+      `Closed-Door Meeting Decides Fate of ${heya.name}`,
+      `Nikkan Sports: ${heya.name} Under the Microscope`
+    ];
     title = titles[Math.floor(rng.next() * titles.length)];
   }
 
