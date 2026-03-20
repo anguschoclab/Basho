@@ -11,9 +11,7 @@ import type { OzekiKadobanMap } from "./banzuke";
 import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
-import { toDescriptorBand, toInjurySeverityBand, type StatBand, type InjurySeverityBand } from "./descriptorBands";
-import type { KoenkaiBandType } from "./types/narrative";
-import type { Heya } from "./types/heya";
+import { toSatisfactionBand, type SatisfactionBand } from "./descriptorBands";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -335,98 +333,82 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; na
   return entries;
 }
 
-// === Digest Observers for UI (Constitution C5) ===
-
-export interface FacilitiesSummary {
-  trainingBand: StatBand;
-  recoveryBand: StatBand;
-  nutritionBand: StatBand;
-  isLow: boolean;
-  isMaxed: {
-    training: boolean;
-    recovery: boolean;
-    nutrition: boolean;
-  };
+/** Defines the UI-safe structure for sponsor contract info. */
+export interface SponsorContractInfoUI {
+  sponsorId: string;
+  relId: string;
+  displayName: string;
+  tier: string;
+  category: string;
+  role: string;
+  strength: number;
+  monthlyIncome: number;
+  satisfactionBand: SatisfactionBand;
+  expiryWeek: number | null;
+  isExpiringSoon: boolean;
 }
 
-export function getHeyaFacilitiesSummary(heya: Heya | undefined | null): FacilitiesSummary | null {
-  if (!heya || !heya.facilities) return null;
-  const overallScore = heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition;
-  return {
-    trainingBand: toDescriptorBand(heya.facilities.training),
-    recoveryBand: toDescriptorBand(heya.facilities.recovery),
-    nutritionBand: toDescriptorBand(heya.facilities.nutrition),
-    isLow: overallScore < 75,
-    isMaxed: {
-      training: heya.facilities.training >= 100,
-      recovery: heya.facilities.recovery >= 100,
-      nutrition: heya.facilities.nutrition >= 100,
-    },
-  };
+/** Defines the UI-safe structure for all stable sponsorships. */
+export interface StableSponsorshipsUI {
+  contracts: SponsorContractInfoUI[];
+  koenkaiStrength: string;
 }
 
-export interface InjuredRikishiSummary {
-  rikishi: {
-    id: string;
-    shikona: string;
-  };
-  severityBand: InjurySeverityBand;
-  location: string;
-  weeksRemaining: number;
-  weeksTotal: number;
-  recoveryProgress: number;
-  facilityBonus: number;
-}
+const TIER_INCOME: Record<string, number> = {
+  T0: 100_000, T1: 300_000, T2: 750_000, T3: 1_500_000, T4: 3_000_000, T5: 8_000_000,
+};
 
-export function getInjuredRosterSummary(world: WorldState, heyaId: string): InjuredRikishiSummary[] {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return [];
+/**
+ * Gets a digested view of sponsor contracts for the UI, enforcing the descriptor band rules.
+ * @param world - The WorldState.
+ * @returns The UI-safe sponsorship payload.
+ */
+export function getSponsorContracts(world: WorldState): StableSponsorshipsUI {
+  const playerHeyaId = world.playerHeyaId;
+  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const contracts: SponsorContractInfoUI[] = [];
 
-  const recoveryFacility = heya.facilities?.recovery ?? 50;
-  const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+  if (world.sponsorPool && playerHeyaId) {
+    for (const sponsor of world.sponsorPool.sponsors.values()) {
+      if (!sponsor.active) continue;
+      for (const rel of sponsor.relationships) {
+        if (rel.targetId !== playerHeyaId) continue;
 
-  const result: InjuredRikishiSummary[] = [];
+        const monthlyIncome = (TIER_INCOME[sponsor.tier] || 100_000) * (rel.strength / 3);
+        // Calculate raw satisfaction using engine stats, but do not expose it
+        const rawSatisfaction = Math.min(100, sponsor.loyalty * 0.6 + (playerHeya?.reputation ?? 50) * 0.4);
 
-  for (const rId of heya.rikishiIds) {
-    const r = world.rikishi.get(rId);
-    if (!r || !r.injured) continue;
+        // Convert to descriptor band
+        const satisfactionBand = toSatisfactionBand(rawSatisfaction);
+        const expiryWeek = rel.endsAtTick ?? null;
+        const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
 
-    const injuryStatus = r.injuryStatus;
-    const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
-    const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
-    const recoveryProgress = weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+        contracts.push({
+          sponsorId: sponsor.sponsorId,
+          relId: rel.relId,
+          displayName: sponsor.displayName,
+          tier: sponsor.tier,
+          category: sponsor.category,
+          role: rel.role,
+          strength: rel.strength,
+          monthlyIncome,
+          satisfactionBand,
+          expiryWeek,
+          isExpiringSoon
+        });
+      }
+    }
 
-    result.push({
-      rikishi: {
-        id: r.id,
-        shikona: r.shikona || r.name || r.id,
-      },
-      severityBand: toInjurySeverityBand(injuryStatus?.severity),
-      location: injuryStatus?.location || "unknown",
-      weeksRemaining,
-      weeksTotal,
-      recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
-      facilityBonus,
+    contracts.sort((a, b) => {
+      const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
+      return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
     });
   }
 
-  result.sort((a, b) => {
-    const sevOrder: Record<string, number> = { serious: 0, moderate: 1, minor: 2, unknown: 3 };
-    return (sevOrder[a.severityBand] ?? 3) - (sevOrder[b.severityBand] ?? 3);
-  });
-
-  return result;
-}
-
-export interface SponsorDetailsSummary {
-  koenkaiStrengthBand: KoenkaiBandType;
-}
-
-export function getSponsorshipDetails(world: WorldState, heyaId: string): SponsorDetailsSummary | null {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return null;
+  const koenkaiStrength = playerHeya?.koenkaiBand ?? "none";
 
   return {
-    koenkaiStrengthBand: heya.koenkaiBand ?? "none",
+    contracts,
+    koenkaiStrength,
   };
 }
