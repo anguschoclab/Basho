@@ -14,6 +14,7 @@ import { clampInt } from '../../engine/utils';
 // - Year elapsed is clamped (avoid NaN if missing)
 
 import { useMemo, useState } from "react";
+import { safeNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
@@ -40,14 +41,6 @@ type DurationType = (typeof DURATION_TYPES)[number];
 
 
 
-/**
- * Safe number.
- *  * @param n - The N.
- *  * @param fallback - The Fallback.
- */
-function safeNumber(n: any, fallback: number) {
-  return typeof n === "number" && Number.isFinite(n) ? n : fallback;
-}
 
 /**
  * auto sim controls.
