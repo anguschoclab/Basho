@@ -75,7 +75,8 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
 
   // Koenkai info
   const koenkai = playerHeyaId ? world.sponsorPool?.koenkais?.get(`koenkai_${playerHeyaId}`) : null;
-  const koenkaiStrength = playerHeya?.koenkaiBand ?? "none";
+  const sponsorshipDetails = playerHeyaId ? getSponsorshipDetails(world, playerHeyaId) : null;
+  const koenkaiStrength = sponsorshipDetails?.koenkaiStrengthBand ?? "none";
 
   const handleRenegotiate = (contract: ContractInfo) => {
     // Simple renegotiation: extend contract by 24 weeks, small loyalty boost

@@ -6,6 +6,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
+import { getSponsorshipDetails } from "@/engine/uiDigest";
 import {
   Shield, Heart, Flame, Swords, Users,
   TrendingUp, Building2, HandCoins, AlertTriangle
@@ -84,6 +85,8 @@ export function StableOverviewPanel() {
     return getCachedPerception(world, world.playerHeyaId);
   }, [world]);
 
+  const sponsorshipDetails = world?.playerHeyaId ? getSponsorshipDetails(world, world.playerHeyaId) : null;
+
   if (!perception) return null;
 
   const morale = BAND_CONFIG.morale[perception.moraleBand];
@@ -156,8 +159,8 @@ export function StableOverviewPanel() {
         <BandRow
           icon={<HandCoins className="h-4 w-4" />}
           label="Supporters"
-          value={perception.koenkaiBand === "none" ? "None" : perception.koenkaiBand}
-          color={perception.koenkaiBand === "powerful" || perception.koenkaiBand === "strong"
+          value={sponsorshipDetails?.koenkaiStrengthBand === "none" ? "None" : sponsorshipDetails?.koenkaiStrengthBand ?? "None"}
+          color={sponsorshipDetails?.koenkaiStrengthBand === "powerful" || sponsorshipDetails?.koenkaiStrengthBand === "strong"
             ? "text-primary" : "text-muted-foreground"}
         />
         <BandRow

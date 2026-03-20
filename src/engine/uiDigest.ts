@@ -11,6 +11,9 @@ import type { OzekiKadobanMap } from "./banzuke";
 import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
+import { toDescriptorBand, toInjurySeverityBand, type StatBand, type InjurySeverityBand } from "./descriptorBands";
+import type { KoenkaiBandType } from "./types/narrative";
+import type { Heya } from "./types/heya";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -323,4 +326,100 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; na
     entries.push({ rikishi: r, narrative, isDemoted });
   }
   return entries;
+}
+
+// === Digest Observers for UI (Constitution C5) ===
+
+export interface FacilitiesSummary {
+  trainingBand: StatBand;
+  recoveryBand: StatBand;
+  nutritionBand: StatBand;
+  isLow: boolean;
+  isMaxed: {
+    training: boolean;
+    recovery: boolean;
+    nutrition: boolean;
+  };
+}
+
+export function getHeyaFacilitiesSummary(heya: Heya | undefined | null): FacilitiesSummary | null {
+  if (!heya || !heya.facilities) return null;
+  const overallScore = heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition;
+  return {
+    trainingBand: toDescriptorBand(heya.facilities.training),
+    recoveryBand: toDescriptorBand(heya.facilities.recovery),
+    nutritionBand: toDescriptorBand(heya.facilities.nutrition),
+    isLow: overallScore < 75,
+    isMaxed: {
+      training: heya.facilities.training >= 100,
+      recovery: heya.facilities.recovery >= 100,
+      nutrition: heya.facilities.nutrition >= 100,
+    },
+  };
+}
+
+export interface InjuredRikishiSummary {
+  rikishi: {
+    id: string;
+    shikona: string;
+  };
+  severityBand: InjurySeverityBand;
+  location: string;
+  weeksRemaining: number;
+  weeksTotal: number;
+  recoveryProgress: number;
+  facilityBonus: number;
+}
+
+export function getInjuredRosterSummary(world: WorldState, heyaId: string): InjuredRikishiSummary[] {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return [];
+
+  const recoveryFacility = heya.facilities?.recovery ?? 50;
+  const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+
+  const result: InjuredRikishiSummary[] = [];
+
+  for (const rId of heya.rikishiIds) {
+    const r = world.rikishi.get(rId);
+    if (!r || !r.injured) continue;
+
+    const injuryStatus = r.injuryStatus;
+    const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
+    const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
+    const recoveryProgress = weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+
+    result.push({
+      rikishi: {
+        id: r.id,
+        shikona: r.shikona || r.name || r.id,
+      },
+      severityBand: toInjurySeverityBand(injuryStatus?.severity),
+      location: injuryStatus?.location || "unknown",
+      weeksRemaining,
+      weeksTotal,
+      recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
+      facilityBonus,
+    });
+  }
+
+  result.sort((a, b) => {
+    const sevOrder: Record<string, number> = { serious: 0, moderate: 1, minor: 2, unknown: 3 };
+    return (sevOrder[a.severityBand] ?? 3) - (sevOrder[b.severityBand] ?? 3);
+  });
+
+  return result;
+}
+
+export interface SponsorDetailsSummary {
+  koenkaiStrengthBand: KoenkaiBandType;
+}
+
+export function getSponsorshipDetails(world: WorldState, heyaId: string): SponsorDetailsSummary | null {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return null;
+
+  return {
+    koenkaiStrengthBand: heya.koenkaiBand ?? "none",
+  };
 }
