@@ -979,15 +979,73 @@ export function generateInjuryWithdrawalHeadline(args: {
     ? [
         `${shikona} Withdraws — Serious ${capitalize(area)} Injury`,
         `Basho Over for ${shikona} After ${capitalize(area)} Injury`,
+        `Devastating ${capitalize(area)} Injury Sidelines ${shikona}`,
+        `${shikona} Carried Out: Heavy ${capitalize(area)} Trauma`,
+        `Nikkan Sports: ${shikona}'s Future Uncertain After Injury`,
+        `Tragic Turn for ${shikona} — Severe ${capitalize(area)} Damage`,
+        `${shikona} Forced to Bow Out with Ruined ${capitalize(area)}`,
+        `Medical Evac for ${shikona} Following Brutal Fall`,
+        `Kyodo News Reports Extensive ${capitalize(area)} Surgery for ${shikona}`,
+        `A Crushing Blow to ${shikona}'s Hopes: Major Injury`,
+        `${shikona} Off the Dohyo indefinitely due to ${capitalize(area)} Tear`,
+        `Stablemaster Confirms ${shikona}'s Worst Fears Realized`,
+        `${shikona} Collapses in Agony — ${capitalize(area)} Destroyed`,
+        `The End of a Run: ${shikona} Succumbs to ${capitalize(area)} Injury`,
+        `${shikona}'s Season in Jeopardy After Serious Mishap`,
+        `JSA Medical Staff Halt ${shikona} from Continuing`,
+        `${shikona} Leaves on Stretcher — ${capitalize(area)} Trauma`,
+        `Heartbreak for ${shikona}: ${capitalize(area)} Gives Out`,
+        `${shikona} Undergoes Emergency ${capitalize(area)} Evaluation`,
+        `A Gruesome ${capitalize(area)} Injury Haults ${shikona}'s Basho`,
+        `${shikona} Scratches the Rest of the Tournament`,
+        `Stable Mourns Loss of ${shikona} to Deep ${capitalize(area)} Injury`
       ]
     : isModerate
     ? [
         `${shikona} Forced Out With ${capitalize(area)} Problem`,
         `Injury Sidelines ${shikona} Mid-Tournament`,
+        `Nagging ${capitalize(area)} Injury Finally Catches ${shikona}`,
+        `${shikona} Concedes to Persistent ${capitalize(area)} Pain`,
+        `Medical Staff Pulls ${shikona} Due to ${capitalize(area)} Aggravation`,
+        `${shikona} Steps Down to Rest Damaged ${capitalize(area)}`,
+        `Kyusho: ${shikona} Withdraws to Prevent Further Damage`,
+        `A Frustrated ${shikona} Exits the Basho Over ${capitalize(area)}`,
+        `Nikkan Sports: ${shikona} Bows Out to Heal ${capitalize(area)}`,
+        `${shikona}'s Body Gives In: ${capitalize(area)} Too Weak`,
+        `No Point Risking It: ${shikona} Withdraws`,
+        `${shikona} Limps Out of the Basho Due to ${capitalize(area)}`,
+        `Stablemaster Decides to Rest ${shikona}'s ${capitalize(area)}`,
+        `${shikona} Scratched After Failing Medical Check`,
+        `A Tough Call: ${shikona} Quits to Preserve ${capitalize(area)}`,
+        `${shikona}'s Basho Curtailed by ${capitalize(area)} Issue`,
+        `The Grind Claims ${shikona} — ${capitalize(area)} Strain`,
+        `Kyodo News: ${shikona} Will Sit Out Remaining Bouts`,
+        `${shikona} Sacrifices Basho for ${capitalize(area)} Recovery`,
+        `A Prudent Withdrawal for ${shikona} Over ${capitalize(area)}`,
+        `${shikona} Out! ${capitalize(area)} Trouble Persists`
       ]
     : [
         `${shikona} Pulls Out After ${capitalize(area)} Concern`,
         `${shikona} Withdraws — Minor Injury Cited`,
+        `A Rest Day? ${shikona} Cites Tweaked ${capitalize(area)}`,
+        `Nikkan Sports: ${shikona} Plays it Safe with ${capitalize(area)}`,
+        `Precautionary Withdrawal for ${shikona}`,
+        `${shikona} Skips Bout Due to Stiff ${capitalize(area)}`,
+        `A Minor ${capitalize(area)} Issue Grounds ${shikona}`,
+        `Stablemaster: No Risks for ${shikona}'s ${capitalize(area)}`,
+        `${shikona} Benches Himself: ${capitalize(area)} Niggle`,
+        `Kyodo News Reports ${shikona} Resting a Banged ${capitalize(area)}`,
+        `${shikona} Withdraws Following Mild ${capitalize(area)} Scare`,
+        `A Tactical Rest? ${shikona} Points to ${capitalize(area)}`,
+        `${shikona} Bows Out to Avoid Worsening ${capitalize(area)}`,
+        `A Light Strain Pushes ${shikona} to the Sidelines`,
+        `${shikona} Scratched Due to ${capitalize(area)} Soreness`,
+        `No ${shikona} Today — Minor ${capitalize(area)} Precaution`,
+        `Stablemaster Hopes ${shikona} Heals Quickly`,
+        `${shikona} Takes a Kyujo for a Small ${capitalize(area)} Bump`,
+        `A Slight ${capitalize(area)} Limp Forces ${shikona} Out`,
+        `${shikona} Decides Against Pushing His ${capitalize(area)}`,
+        `An Overcautious ${shikona} Sidelines His ${capitalize(area)}`
       ];
 
   const subtitles = isSerious
@@ -1078,20 +1136,73 @@ if (type === "scandal") {
           `${heya.name} Rocked by Major Scandal`,
           `Crisis at ${heya.name} — JSA Steps In`,
           `Disgrace: ${heya.name} Faces Expulsion Threats`,
-          `Late-Night Roppongi Incident Haunts ${heya.name}`
+          `Late-Night Roppongi Incident Haunts ${heya.name}`,
+          `Kyodo News Exclusive: Match-Fixing Probe Targets ${heya.name}`,
+          `JSA Summons ${heya.name} Master Over Secret Bribes`,
+          `Nikkan Sports: Yakuza Ties Alleged at ${heya.name}`,
+          `Rikishi Rebellion! Mutiny at ${heya.name} Over Hazing`,
+          `${heya.name} Master Detained in Roppongi Brawl`,
+          `Embezzlement Scandal: Where Did ${heya.name}'s Funds Go?`,
+          `JSA Emergency Meeting: Expulsion Looms for ${heya.name}`,
+          `Sponsors Flee ${heya.name} Amid Abuse Allegations`,
+          `Cover-Up Exposed! ${heya.name} Hid Injuries from JSA`,
+          `${heya.name} Master Accused of Forging Medical Documents`,
+          `Drunken Rampage by Top ${heya.name} Rikishi Caught on Tape`,
+          `${heya.name} Facilities Raided by Police in Gambling Probe`,
+          `Secret Video Surfaces: Brutal Discipline at ${heya.name}`,
+          `${heya.name} Faces Historic Sanctions as Details Leak`,
+          `Nikkan Sports Front Page: The Fall of ${heya.name} Begins`,
+          `Kyodo News: ${heya.name} Under Federal Investigation`,
+          `Disaster at ${heya.name}: JSA Suspends Stable Operations`,
+          `${heya.name} Oyakata Refuses to Resign Amid Outcry`,
+          `Whistleblower Speaks Out on ${heya.name} Corruption`,
+          `${heya.name} Mastermind Revealed in Illegal Betting Ring`
         ]
       : severity === "major"
       ? [
           `${heya.name} Under Fire: ${reason}`,
           `Scandal Clouds Hang Over ${heya.name}`,
           `Kyodo News: Internal Friction Plagues ${heya.name}`,
-          `Tabloids Feast on ${heya.name}'s Woes`
+          `Tabloids Feast on ${heya.name}'s Woes`,
+          `Nikkan Sports Reports Tensions Boiling at ${heya.name}`,
+          `${heya.name} Rikishi Spotted at Hostess Club Before Basho`,
+          `Rumors of Tax Evasion Surround ${heya.name} Leadership`,
+          `${heya.name} Master Fined for Breaking JSA Curfew`,
+          `Stablemaster Rivalry Spills Over: ${heya.name} Implicated`,
+          `Questionable Training Methods at ${heya.name} Spark Outrage`,
+          `${heya.name} Oyakata Apologizes for Embarrassing Conduct`,
+          `JSA Investigates Illegal Moonlighting by ${heya.name} Wrestlers`,
+          `Sponsor Pulls Funding from ${heya.name} Following PR Disaster`,
+          `Kyodo News: Unrest Among Lower Ranks at ${heya.name}`,
+          `${heya.name} Faces Heat Over Mishandled Injury Protocols`,
+          `Gossip Mags Target ${heya.name}'s Late-Night Excursions`,
+          `${heya.name} Stablemaster Warned for Insulting JSA Officials`,
+          `Nikkan Sports: ${heya.name} Master Clashes with Media`,
+          `Scandal Alert: Undisclosed Payments to ${heya.name} Uncovered`,
+          `${heya.name} Under JSA Scrutiny After Public Incident`,
+          `Social Media Backlash Hits ${heya.name} Over Viral Video`
         ]
       : [
           `${heya.name} Receives JSA Warning`,
           `Minor Infraction at ${heya.name}`,
           `Slap on the Wrist for ${heya.name}`,
-          `JSA Reminds ${heya.name} of Strict Traditions`
+          `JSA Reminds ${heya.name} of Strict Traditions`,
+          `${heya.name} Reprimanded for Dress Code Violation`,
+          `Minor Curfew Breach Reported at ${heya.name}`,
+          `${heya.name} Stablemaster Reminded of Media Protocols`,
+          `JSA Issues Formal Notice to ${heya.name} Over Paperwork`,
+          `${heya.name} Rikishi Warned After Heated Argument in Public`,
+          `Kyodo News Brief: ${heya.name} Slapped with Small Fine`,
+          `${heya.name} Must Improve Disciplinary Oversight, Says JSA`,
+          `Nikkan Sports Notes Minor Disturbance at ${heya.name}`,
+          `${heya.name} Apologizes for Scheduling Mishap`,
+          `JSA Urges ${heya.name} to Maintain Decorum`,
+          `${heya.name} Warned About Unauthorized Sponsor Deals`,
+          `Quiet Resolution to Minor Incident at ${heya.name}`,
+          `${heya.name} Master Downplays Warning from Elders`,
+          `JSA Cites ${heya.name} for Procedural Error`,
+          `Small Fine Issued to ${heya.name} Over Conduct`,
+          `${heya.name} Ordered to Review Internal Rules`
         ];
     title = titles[Math.floor(rng.next() * titles.length)];
     subtitle = args.fineAmount
@@ -1103,7 +1214,23 @@ if (type === "scandal") {
           `${heya.name} Sanctioned by JSA`,
           `${heya.name} Faces Unprecedented Sanctions`,
           `Dark Days for ${heya.name}: Board Drops the Hammer`,
-          `Stablemaster Summons Precede Harsh JSA Ruling`
+          `Stablemaster Summons Precede Harsh JSA Ruling`,
+          `${heya.name} Stripped of Privileges by Association`,
+          `JSA Board Confirms Critical Status for ${heya.name}`,
+          `Nikkan Sports: ${heya.name} Barely Survives Board Meeting`,
+          `Expulsion Averted, but ${heya.name} Deeply Sanctioned`,
+          `${heya.name} Master Demoted in Shocking JSA Decision`,
+          `Kyodo News: ${heya.name} Handed Harshest Penalty in Decades`,
+          `Rikishi Flee as ${heya.name} Faces Devastating Sanctions`,
+          `JSA Ultimatum: ${heya.name} Must Clean House Immediately`,
+          `${heya.name} Placed Under Direct Association Control`,
+          `Severe Repercussions Declared for ${heya.name}`,
+          `The Fall of a Dynasty: ${heya.name} Sanctioned Heavy-Handedly`,
+          `${heya.name} Operations Suspended Pending Investigation`,
+          `JSA Makes an Example of ${heya.name}`,
+          `${heya.name} Oyakata Publicly Shamed by Elder Council`,
+          `Nikkan Sports: No Mercy for ${heya.name} from JSA`,
+          `${heya.name}'s Survival in Jeopardy Following JSA Ruling`
         ]
       : severity === "major"
       ? [
@@ -1178,7 +1305,23 @@ if (type === "merger_threat") {
       `${heya.name} Faces Closure Threat`,
       `Association Reviews ${heya.name} Viability`,
       `End of an Era? ${heya.name} Struggles to Stay Open`,
-      `Financial Ruin Prompts JSA Ultimatum for ${heya.name}`
+      `Financial Ruin Prompts JSA Ultimatum for ${heya.name}`,
+      `Kyodo News: ${heya.name} on the Brink of Collapse`,
+      `JSA Threatens to Shutter ${heya.name} Amid Crisis`,
+      `${heya.name} Master Pleads with Board to Keep Doors Open`,
+      `Nikkan Sports: Merger Looming for Struggling ${heya.name}`,
+      `Is This the Final Basho for ${heya.name}?`,
+      `Dwindling Talent and Debt: ${heya.name} Put on Notice`,
+      `JSA Eyes Absorption of ${heya.name} into Rival Stable`,
+      `${heya.name} Given One Last Chance to Survive`,
+      `Desperate Times at ${heya.name}: Merger Threat Looms`,
+      `Elder Council Debates the Fate of ${heya.name}`,
+      `${heya.name} Warned: Restructure or Face Forced Closure`,
+      `Sponsors Abandon Ship as ${heya.name} Nears Demise`,
+      `${heya.name} Master Seeks Lifeline to Avoid JSA Takeover`,
+      `Rumors Swirl About Imminent Closure of ${heya.name}`,
+      `JSA Audit Concludes ${heya.name} May Not Be Viable`,
+      `Nikkan Sports Exclusive: Inside the Collapse of ${heya.name}`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "forced_merger") {
@@ -1186,7 +1329,23 @@ if (type === "merger_threat") {
       `Forced Merger Imminent for ${heya.name}`,
       `${heya.name} to Close Doors`,
       `JSA Mandates Absorption of ${heya.name}`,
-      `Tearful Goodbye as ${heya.name} Dissolves`
+      `Tearful Goodbye as ${heya.name} Dissolves`,
+      `Nikkan Sports: The Tragic Fall of ${heya.name}`,
+      `JSA Wipes ${heya.name} Off the Map`,
+      `Rikishi Relocated: ${heya.name} Officially Absorbed`,
+      `Kyodo News Reports End of ${heya.name}'s Lineage`,
+      `Bankrupt and Broken: ${heya.name} Forcibly Merged`,
+      `Stablemaster Steps Down as ${heya.name} Ceases to Exist`,
+      `A Bleak Day in Sumo: ${heya.name} Absorbed`,
+      `JSA Overrules Protest: ${heya.name} Must Merge`,
+      `Scandal Claims its Ultimate Prize: ${heya.name}`,
+      `${heya.name} Shutters Amid Tears and Shame`,
+      `The Last Keiko at ${heya.name} Before Eviction`,
+      `A Historic Stable No More: ${heya.name} Dissolves`,
+      `Final Bell Rings for ${heya.name} Operations`,
+      `JSA Intervenes: ${heya.name} Wrestlers Dispersed`,
+      `Elder Council Approves Hostile Takeover of ${heya.name}`,
+      `A Quiet Demise for ${heya.name} After Board Decree`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "emergency_loan") {
@@ -1194,7 +1353,23 @@ if (type === "merger_threat") {
       `${heya.name} Bailed Out by Association`,
       `Financial Crisis at ${heya.name}`,
       `JSA Injects Emergency Capital into ${heya.name}`,
-      `Debt Forcing ${heya.name} to the Brink`
+      `Debt Forcing ${heya.name} to the Brink`,
+      `Kyodo News: ${heya.name} Saved by Last-Minute Loan`,
+      `Nikkan Sports Reports Deep Deficits at ${heya.name}`,
+      `JSA Rescues ${heya.name} from Financial Ruin`,
+      `${heya.name} Takes Bailout with Strict Conditions`,
+      `Sponsors Disappear: JSA Forces Funds to ${heya.name}`,
+      `${heya.name} Master Handcuffed by JSA Loan Terms`,
+      `Staggering Debt Forces JSA to Back ${heya.name}`,
+      `Emergency Intervention keeps ${heya.name} Alive`,
+      `${heya.name} Hemorrhaging Money, JSA Steps In`,
+      `A Humiliating Bailout for ${heya.name}`,
+      `JSA Opens the Vault to Prevent ${heya.name} Collapse`,
+      `${heya.name} Audits Reveal Massive Shortfalls`,
+      `The Cost of Survival: ${heya.name} Accepts Association Loan`,
+      `How Long Can ${heya.name} Survive on Borrowed Time?`,
+      `${heya.name} Avoids Bankruptcy Thanks to JSA Lifeline`,
+      `Nikkan Sports: ${heya.name} Finances in Absolute Shambles`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "welfare_review") {
@@ -1202,7 +1377,23 @@ if (type === "merger_threat") {
       `${heya.name} Fails Welfare Review`,
       `Sanctions Continue for ${heya.name}`,
       `Whistleblowers Detail Brutal Regimen at ${heya.name}`,
-      `Dietary and Medical Neglect Investigated at ${heya.name}`
+      `Dietary and Medical Neglect Investigated at ${heya.name}`,
+      `Kyodo News Exposes Inhumane Conditions at ${heya.name}`,
+      `JSA Inspectors Appalled by Findings at ${heya.name}`,
+      `${heya.name} Master Blames "Tough Love" for Failed Audit`,
+      `Rikishi Malnutrition Epidemic Discovered at ${heya.name}`,
+      `Nikkan Sports: Medical Negligence Rampant at ${heya.name}`,
+      `${heya.name} Fined Over Abysmal Living Quarters`,
+      `JSA Mandates Immediate Welfare Reforms at ${heya.name}`,
+      `Former Wrestlers Speak Out Against ${heya.name} Practices`,
+      `${heya.name} Declared "Unfit for Training" by Auditors`,
+      `Basic Needs Denied? JSA Probes ${heya.name} Operations`,
+      `${heya.name} Oyakata Under Fire for Skimping on Chanko`,
+      `Dangerous Training Standards Uncovered at ${heya.name}`,
+      `JSA Medical Committee Condemns ${heya.name} Protocols`,
+      `${heya.name} Ordered to Hire Full-Time Medical Staff`,
+      `Welfare Report Details Culture of Fear at ${heya.name}`,
+      `${heya.name} Faces Closure if Conditions Don't Improve`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else {
@@ -1211,7 +1402,23 @@ if (type === "merger_threat") {
       `Council Scrutinizes ${heya.name}`,
       `JSA Board Reviews ${heya.name} Conduct`,
       `Closed-Door Meeting Decides Fate of ${heya.name}`,
-      `Nikkan Sports: ${heya.name} Under the Microscope`
+      `Nikkan Sports: ${heya.name} Under the Microscope`,
+      `${heya.name} Master Summonsed Before Elder Council`,
+      `Kyodo News Reports JSA Audit of ${heya.name}`,
+      `${heya.name} Leadership Faces Tough Questions`,
+      `Anxious Times at ${heya.name} as Review Begins`,
+      `JSA Disciplinary Committee Targets ${heya.name}`,
+      `What Did ${heya.name} Know? Council Investigates`,
+      `${heya.name} Practices Put to the Test in Review`,
+      `${heya.name} Operations Under Fire During JSA Hearing`,
+      `Nikkan Sports: The Future of ${heya.name} Hangs in the Balance`,
+      `${heya.name} Oyakata Sweats Out JSA Interrogation`,
+      `Elder Council Seeks Answers from ${heya.name}`,
+      `Rumors Suggest Sweeping Changes at ${heya.name}`,
+      `Kyodo News: Internal Friction at ${heya.name} Highlighted`,
+      `JSA Board Unhappy with ${heya.name} Explanations`,
+      `A Grueling Review Exposes ${heya.name} Flaws`,
+      `${heya.name} Promises Action Following Council Rebuke`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   }
