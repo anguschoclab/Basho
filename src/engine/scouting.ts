@@ -576,6 +576,6 @@ export function recruitCandidate(state: WorldState, candidateId: string, targetH
  *  * @param fallback - The Fallback.
  *  * @returns The result.
  */
-function safeNum(v: any, fallback: number): number {
+function safeNum(v: unknown, fallback: number): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
