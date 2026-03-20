@@ -1,4 +1,5 @@
 import { clamp, clampInt } from './utils';
+import { safeNumber } from "@/lib/utils";
 /**
  * File Name: src/engine/scouting.ts
  * Notes:
@@ -335,12 +336,12 @@ export function createPublicInfo(r: Rikishi): PublicRikishiInfo {
 export function buildTruthSnapshot(r: Rikishi): ScoutedAttributeTruthSnapshot {
   // Uses flattened properties from new Rikishi types
   return {
-    power: safeNum(r.power, 0),
-    speed: safeNum(r.speed, 0),
-    balance: safeNum(r.balance, 0), 
-    technique: safeNum(r.technique, 0),
-    aggression: safeNum(r.aggression, 0), 
-    experience: safeNum(r.experience, 0)
+    power: safeNumber(r.power, 0),
+    speed: safeNumber(r.speed, 0),
+    balance: safeNumber(r.balance, 0),
+    technique: safeNumber(r.technique, 0),
+    aggression: safeNumber(r.aggression, 0),
+    experience: safeNumber(r.experience, 0)
   };
 }
 
@@ -570,13 +571,3 @@ export function recruitCandidate(state: WorldState, candidateId: string, targetH
 
 
 
-
-/**
- * Safe num.
- *  * @param v - The V.
- *  * @param fallback - The Fallback.
- *  * @returns The result.
- */
-function safeNum(v: any, fallback: number): number {
-  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
-}
