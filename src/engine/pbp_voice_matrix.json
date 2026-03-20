@@ -279,6 +279,233 @@
       {
         "id": "t_dec_14_c",
         "text": "Total commitment at the tachiai from {leader}—a massive hit!"
+      },
+      {
+        "id": "t_dec_exp_1",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_2",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_3",
+        "text": "The collision at the tachi-ai is immense! {leader} drives through with pure force.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_4",
+        "text": "{leader} unleashes a ferocious opening charge, catching {trailer} off balance.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_5",
+        "text": "With explosive power, {leader} seizes the initiative from the moment the fan drops.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_6",
+        "text": "{leader} dominates the tachi-ai, immediately putting relentless forward pressure on {trailer}.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_7",
+        "text": "A textbook tachi-ai by {leader}! Low, fast, and devastating.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_exp_8",
+        "text": "{leader} channels raw aggression into a thunderous initial clash.",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_9",
+        "text": "The crowd gasps at the sheer impact of {leader}'s tachi-ai!",
+        "tags": []
+      },
+      {
+        "id": "t_dec_exp_10",
+        "text": "{leader} leaves no room to breathe, asserting absolute dominance off the line.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_71",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_72",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_73",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_74",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_75",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_76",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_77",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_78",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_79",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_80",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_81",
+        "text": "A battering-ram of a tachi-ai by {leader}! {trailer} is instantly on the defensive."
+      },
+      {
+        "id": "t_dec_82",
+        "text": "{leader} launches off the shikiri-sen like a missile!"
+      },
+      {
+        "id": "t_dec_83",
+        "text": "{trailer} is caught standing straight up by {leader}'s overwhelming tachi-ai."
+      },
+      {
+        "id": "t_dec_84",
+        "text": "{leader}'s initial charge is simply too much to handle today."
+      },
+      {
+        "id": "t_dec_85",
+        "text": "Incredible burst of speed from {leader} right at the tachi-ai!"
+      },
+      {
+        "id": "t_dec_86",
+        "text": "{leader} gets lower, hits harder, and entirely dominates the collision."
+      },
+      {
+        "id": "t_dec_87",
+        "text": "The sheer velocity of {leader}'s tachi-ai leaves {trailer} scrambling."
+      },
+      {
+        "id": "t_dec_88",
+        "text": "A ferocious, unyielding tachi-ai from {leader} sets the tone immediately."
+      },
+      {
+        "id": "t_dec_89",
+        "text": "{leader} takes total command right from the jump with a bone-jarring impact."
+      },
+      {
+        "id": "t_dec_90",
+        "text": "No hesitation! {leader} fires a perfect, heavy-handed tachi-ai."
+      },
+      {
+        "id": "t_dec_91",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_92",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_93",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_94",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_95",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_96",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_97",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_98",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_99",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_100",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_101",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_102",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_103",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_104",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_105",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_106",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_107",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_108",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_109",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_110",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
       }
     ],
     "even": [
@@ -481,6 +708,126 @@
       {
         "id": "t_even_50",
         "text": "A solid, workmanlike tachiai from both rikishi!"
+      },
+      {
+        "id": "t_even_51",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_52",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_53",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_54",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_55",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_56",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_57",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_58",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_59",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_60",
+        "text": "No clear winner at the initial charge; the real fight begins now."
+      },
+      {
+        "id": "t_even_61",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_62",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_63",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_64",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_65",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_66",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_67",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_68",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_69",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_70",
+        "text": "No clear winner at the initial charge; the real fight begins now."
+      },
+      {
+        "id": "t_even_71",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_72",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_73",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_74",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_75",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_76",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_77",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_78",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_79",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_80",
+        "text": "No clear winner at the initial charge; the real fight begins now."
       }
     ],
     "slow": [
@@ -683,6 +1030,126 @@
       {
         "id": "t_slow_50",
         "text": "Both men let the tachiai develop slowly and deliberately."
+      },
+      {
+        "id": "t_slow_51",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_52",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_53",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_54",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_55",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_56",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_57",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_58",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_59",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_60",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
+      },
+      {
+        "id": "t_slow_61",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_62",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_63",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_64",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_65",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_66",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_67",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_68",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_69",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_70",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
+      },
+      {
+        "id": "t_slow_71",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_72",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_73",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_74",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_75",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_76",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_77",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_78",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_79",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_80",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
       }
     ]
   },
@@ -1303,6 +1770,56 @@
       {
         "id": "c_oshi_50",
         "text": "A devastating display of pushing power from {leader}!"
+      },
+      {
+        "id": "c_oshi_exp_1",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_2",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_3",
+        "text": "With an iron-clad grip, {leader} sets up a devastating uwatenage position.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_4",
+        "text": "{leader} locks in a deep uwatenage, threatening to launch {trailer} to the clay.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_5",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_6",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_7",
+        "text": "{leader} secures a tight yotsu grip, dictating the pace of the clinch.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_8",
+        "text": "The clinch is a grueling battle of attrition, but {leader} is dictating the terms.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_9",
+        "text": "{leader} shifts their weight beautifully, setting up the throw from a dominant grip.",
+        "tags": []
+      },
+      {
+        "id": "c_oshi_exp_10",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape.",
+        "tags": []
       }
     ],
     "scramble": [
@@ -1784,6 +2301,41 @@
       {
         "id": "str_tsup_15_c",
         "text": "The sheer volume of {leader}'s tsuppari is overwhelming!"
+      },
+      {
+        "id": "c_tsup_exp_1",
+        "text": "{leader} unleashes a violent barrage of tsuppari, forcing {trailer} toward the straw bales!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_2",
+        "text": "A relentless series of thrusts from {leader} leaves {trailer} reeling.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_3",
+        "text": "{leader} fires off machine-gun tsuppari, overwhelming {trailer}'s defense.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_4",
+        "text": "The slapping of flesh echoes through the Kokugikan as {leader} lands repeated tsuppari.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "c_tsup_exp_5",
+        "text": "{trailer} is pushed to the brink by {leader}'s blistering tsuppari barrage!",
+        "tags": [
+          "crowd_roar"
+        ]
       }
     ],
     "nodowa_pressure": [
@@ -1846,6 +2398,126 @@
       {
         "id": "str_nod_15_c",
         "text": "A fearsome nodowa from {leader}—pure, unadulterated power sumo."
+      },
+      {
+        "id": "c_nod_16",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_17",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_18",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_19",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_20",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_21",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_22",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_23",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_24",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_25",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_26",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_27",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_28",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_29",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_30",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_31",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_32",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_33",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_34",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_35",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_36",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_37",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_38",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_39",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_40",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_41",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_42",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_43",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_44",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_45",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
       }
     ],
     "harite_slap": [
@@ -1978,6 +2650,126 @@
       {
         "id": "grp_dbl_5",
         "text": "Moro-zashi! {leader} has double inside control!"
+      },
+      {
+        "id": "c_mor_06",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_07",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_08",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_09",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_10",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_11",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_12",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_13",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_14",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_15",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_mor_16",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_17",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_18",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_19",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_20",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_21",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_22",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_23",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_24",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_25",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_mor_26",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_27",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_28",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_29",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_30",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_31",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_32",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_33",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_34",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_35",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
       }
     ],
     "over_under": [
@@ -3309,6 +4101,318 @@
       {
         "id": "f_n_50",
         "text": "{winner} with a clinical {kimarite} to finish!"
+      },
+      {
+        "id": "f_norm_51",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_52",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_53",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_54",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_55",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_56",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_57",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_58",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_59",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_60",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_61",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_62",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_63",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_64",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_65",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_66",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_67",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_68",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_69",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_70",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_90",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_91",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_92",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_93",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_75",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_76",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_77",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_78",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_79",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_80",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_81",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_82",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_83",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_84",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
+      },
+      {
+        "id": "f_norm_85",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_86",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_87",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_88",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_89",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_90",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_91",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_92",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_93",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_94",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
+      },
+      {
+        "id": "f_norm_95",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_96",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_97",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_98",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_99",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_100",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_101",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_102",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_103",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_104",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
       }
     ],
     "upset": [
@@ -4666,138 +5770,184 @@
         {
           "id": "inst_gsc_5",
           "text": "Following an internal review, the heya's governance status is publicly updated."
+        },
+        {
+          "id": "gov_stat_exp_1",
+          "text": "A scandalous late-night drinking incident in Roppongi has cast a long shadow over the stable.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_2",
+          "text": "The JSA issues a stoic press release confirming rumors of deep-seated internal unrest.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_3",
+          "text": "Sources inside the stablemaster's camp decline to comment on the devastating JSA inquiry.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_4",
+          "text": "Local tabloids are having a field day with the latest disciplinary actions handed down from Ryogoku.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_5",
+          "text": "The air of prestige around the stable evaporates following a stern public reprimand.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_6",
+          "text": "Whispers of secret injuries and illicit gambling have finally reached the ears of the compliance committee.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_7",
+          "text": "A solemn bow and a public apology do little to quell the media frenzy surrounding the stable.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_8",
+          "text": "Kyodo News reports a shocking escalation of sanctions against the embattled stablemaster.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_9",
+          "text": "The ancient traditions of the sport demand accountability, and the JSA has made its ruling clear.",
+          "tags": [
+            "scandal"
+          ]
+        },
+        {
+          "id": "gov_stat_exp_10",
+          "text": "Rumors swirl that rival stablemasters pushed for the severe penalty behind closed doors.",
+          "tags": [
+            "scandal"
+          ]
         }
       ],
       "traditionalist": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts sternly!"
+          "id": "inst_gsc_trad_1",
+          "text": "The JSA updates the governance status. The Oyakata sternly demands that ancient virtues be upheld in response!"
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts with traditional strictness!"
+          "id": "inst_gsc_trad_2",
+          "text": "A governance shift from the JSA! The Oyakata insists on strict adherence to traditional discipline to weather the change."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts relying on ancient wisdom!"
+          "id": "inst_gsc_trad_3",
+          "text": "Governance status revised: the Oyakata gathers the rikishi, reminding them that the old ways are the only path forward."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts unwavering in discipline!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_traditionalist_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts upholding the old ways!"
+          "id": "inst_gsc_trad_4",
+          "text": "With the JSA's new governance mandate, the Oyakata doubles down on endless repetition and unwavering spirit."
         }
       ],
       "scientist": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts analytically!"
+          "id": "inst_gsc_sci_1",
+          "text": "The JSA updates the governance status. The Oyakata analytically assesses the data to optimize compliance protocols!"
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts with data-driven logic!"
+          "id": "inst_gsc_sci_2",
+          "text": "A change in governance status prompts the Oyakata to methodically restructure the stable's administrative framework."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts methodically!"
+          "id": "inst_gsc_sci_3",
+          "text": "Governance revised: the Oyakata implements clinical, data-driven adjustments to meet the new JSA metrics."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts citing sports science!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_scientist_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts with clinical precision!"
+          "id": "inst_gsc_sci_4",
+          "text": "The Oyakata cites modern organizational science as they adapt the stable to the new governance status."
         }
       ],
       "gambler": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts boldly!"
+          "id": "inst_gsc_gam_1",
+          "text": "The JSA updates the governance status. The Oyakata boldly wagers that this shake-up will lead to ultimate glory!"
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts taking a massive risk!"
+          "id": "inst_gsc_gam_2",
+          "text": "A risky governance shift! The Oyakata goes all-in, betting the stable's future on a high-stakes adaptation."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts betting everything!"
+          "id": "inst_gsc_gam_3",
+          "text": "Governance status changed: the Oyakata sees an opening and recklessly pushes the rikishi to exploit the new rules."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts recklessly!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_gambler_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts with a high-stakes move!"
+          "id": "inst_gsc_gam_4",
+          "text": "With the new JSA governance, the Oyakata makes a massive gamble, prioritizing high-reward maneuvers over safe compliance."
         }
       ],
       "nurturer": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts gently!"
+          "id": "inst_gsc_nur_1",
+          "text": "The JSA updates the governance status. The Oyakata gently reassures the rikishi that their wellbeing remains the top priority."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts with a heavy heart!"
+          "id": "inst_gsc_nur_2",
+          "text": "A governance shift from the board: the Oyakata protectively gathers the stable, focusing on maintaining a supportive family environment."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts protectively!"
+          "id": "inst_gsc_nur_3",
+          "text": "Governance revised: the Oyakata adapts the rules with a heavy heart, careful not to disrupt the wrestlers' peace of mind."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts focusing on wellbeing!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_nurturer_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts like a caring parent!"
+          "id": "inst_gsc_nur_4",
+          "text": "Like a caring parent, the Oyakata guides the stable through the governance changes with compassion and patience."
         }
       ],
       "tyrant": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts furiously!"
+          "id": "inst_gsc_tyr_1",
+          "text": "The JSA updates the governance status. The Oyakata furiously demands absolute perfection and compliance under threat of expulsion!"
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts with an iron fist!"
+          "id": "inst_gsc_tyr_2",
+          "text": "A new governance mandate! The Oyakata rules with an iron fist, terrifying the stable into immediate submission."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts ruthlessly!"
+          "id": "inst_gsc_tyr_3",
+          "text": "Governance status revised: the Oyakata ruthlessly enforces the new rules, accepting no excuses or failures."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts demanding perfection!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_tyrant_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts terrifying the stable!"
+          "id": "inst_gsc_tyr_4",
+          "text": "The Oyakata uses the governance change to tighten their tyrannical grip, demanding victory at any cost!"
         }
       ],
       "strategist": [
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_1",
-          "text": "The JSA updates the governance status. The Oyakata reacts cunningly!"
+          "id": "inst_gsc_str_1",
+          "text": "The JSA updates the governance status. The Oyakata cunningly adapts their master plan to outmaneuver the new regulations!"
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_2",
-          "text": "The JSA updates the governance status. The Oyakata reacts with calculated foresight!"
+          "id": "inst_gsc_str_2",
+          "text": "A governance shift! The Oyakata recalculates with sharp tactical foresight, turning the JSA's rules to their advantage."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_3",
-          "text": "The JSA updates the governance status. The Oyakata reacts outmaneuvering the board!"
+          "id": "inst_gsc_str_3",
+          "text": "Governance revised: the Oyakata deploys a calculated strategy to navigate the administrative meta."
         },
         {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_4",
-          "text": "The JSA updates the governance status. The Oyakata reacts tactically!"
-        },
-        {
-          "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_5",
-          "text": "The JSA updates the governance status. The Oyakata reacts with a sharp plan!"
+          "id": "inst_gsc_str_4",
+          "text": "With calculated precision, the Oyakata subtly restructures the stable to perfectly exploit the new governance status."
         }
       ]
     },
@@ -4866,134 +6016,110 @@
       ],
       "traditionalist": [
         {
-          "id": "inst_GOVERNANCE_RULING_traditionalist_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts sternly!"
+          "id": "inst_gov_trad_1",
+          "text": "A new governance ruling has been handed down. The Oyakata strictly enforces the ancient customs in response."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_traditionalist_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with traditional strictness!"
+          "id": "inst_gov_trad_2",
+          "text": "The board issues a governance ruling: the Oyakata commands the rikishi to double their keiko and embrace traditional spirit!"
         },
         {
-          "id": "inst_GOVERNANCE_RULING_traditionalist_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts relying on ancient wisdom!"
+          "id": "inst_gov_trad_3",
+          "text": "Governance ruling received: the Oyakata unwavering in discipline, reminds the stable that the old ways must not be forgotten."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_traditionalist_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts unwavering in discipline!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_traditionalist_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts upholding the old ways!"
+          "id": "inst_gov_trad_4",
+          "text": "In light of the governance ruling, the Oyakata sternly demands more yotsu-sumo practice and strict traditional respect."
         }
       ],
       "scientist": [
         {
-          "id": "inst_GOVERNANCE_RULING_scientist_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts analytically!"
+          "id": "inst_gov_sci_1",
+          "text": "A new governance ruling has been handed down. The Oyakata analyzes the directive with clinical precision."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_scientist_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with data-driven logic!"
+          "id": "inst_gov_sci_2",
+          "text": "The board issues a governance ruling: the Oyakata methodically implements data-driven solutions to ensure full compliance."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_scientist_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts methodically!"
+          "id": "inst_gov_sci_3",
+          "text": "Governance ruling received: the Oyakata consults modern sports science to logically adapt the stable's regimen."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_scientist_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts citing sports science!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_scientist_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with clinical precision!"
+          "id": "inst_gov_sci_4",
+          "text": "The Oyakata processes the new governance ruling analytically, optimizing the stable's nutrition and rest schedules accordingly."
         }
       ],
       "gambler": [
         {
-          "id": "inst_GOVERNANCE_RULING_gambler_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts boldly!"
+          "id": "inst_gov_gam_1",
+          "text": "A new governance ruling has been handed down. The Oyakata boldly risks a high-stakes interpretation of the rules!"
         },
         {
-          "id": "inst_GOVERNANCE_RULING_gambler_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts taking a massive risk!"
+          "id": "inst_gov_gam_2",
+          "text": "The board issues a governance ruling: the Oyakata pushes the rikishi to the breaking point, betting everything on a glorious outcome."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_gambler_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts betting everything!"
+          "id": "inst_gov_gam_3",
+          "text": "Governance ruling received: the Oyakata recklessly gambles with the stable's strategy to maximize rewards."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_gambler_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts recklessly!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_gambler_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with a high-stakes move!"
+          "id": "inst_gov_gam_4",
+          "text": "Reacting to the governance ruling, the Oyakata takes a massive risk, throwing caution to the wind for a chance at glory!"
         }
       ],
       "nurturer": [
         {
-          "id": "inst_GOVERNANCE_RULING_nurturer_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts gently!"
+          "id": "inst_gov_nur_1",
+          "text": "A new governance ruling has been handed down. The Oyakata gently shields the rikishi from the administrative stress."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_nurturer_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with a heavy heart!"
+          "id": "inst_gov_nur_2",
+          "text": "The board issues a governance ruling: the Oyakata protectively ensures that the mental and physical wellbeing of the stable comes first."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_nurturer_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts protectively!"
+          "id": "inst_gov_nur_3",
+          "text": "Governance ruling received: the Oyakata addresses the stable with a heavy heart, prioritizing a nurturing family atmosphere above all."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_nurturer_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts focusing on wellbeing!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_nurturer_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts like a caring parent!"
+          "id": "inst_gov_nur_4",
+          "text": "The Oyakata responds to the governance ruling like a caring parent, prioritizing long careers over immediate compliance demands."
         }
       ],
       "tyrant": [
         {
-          "id": "inst_GOVERNANCE_RULING_tyrant_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts furiously!"
+          "id": "inst_gov_tyr_1",
+          "text": "A new governance ruling has been handed down. The Oyakata furiously threatens severe punishment for any misstep!"
         },
         {
-          "id": "inst_GOVERNANCE_RULING_tyrant_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with an iron fist!"
+          "id": "inst_gov_tyr_2",
+          "text": "The board issues a governance ruling: the Oyakata rules with an iron fist, demanding absolute victory regardless of the new rules."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_tyrant_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts ruthlessly!"
+          "id": "inst_gov_tyr_3",
+          "text": "Governance ruling received: the Oyakata terrifying the stable, ruthlessly enforces their own brutal standards alongside the mandate."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_tyrant_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts demanding perfection!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_tyrant_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts terrifying the stable!"
+          "id": "inst_gov_tyr_4",
+          "text": "The Oyakata uses the governance ruling as an excuse to tighten their tyrannical grip on the terrified rikishi."
         }
       ],
       "strategist": [
         {
-          "id": "inst_GOVERNANCE_RULING_strategist_1",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts cunningly!"
+          "id": "inst_gov_str_1",
+          "text": "A new governance ruling has been handed down. The Oyakata cunningly analyzes the loopholes for a tactical advantage!"
         },
         {
-          "id": "inst_GOVERNANCE_RULING_strategist_2",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with calculated foresight!"
+          "id": "inst_gov_str_2",
+          "text": "The board issues a governance ruling: the Oyakata outmaneuvers the board with calculated foresight and a sharp plan."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_strategist_3",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts outmaneuvering the board!"
+          "id": "inst_gov_str_3",
+          "text": "Governance ruling received: the Oyakata strategically adapts their training methods to perfectly align with the current meta."
         },
         {
-          "id": "inst_GOVERNANCE_RULING_strategist_4",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts tactically!"
-        },
-        {
-          "id": "inst_GOVERNANCE_RULING_strategist_5",
-          "text": "A new governance ruling has been handed down. The Oyakata reacts with a sharp plan!"
+          "id": "inst_gov_str_4",
+          "text": "With a sharp tactical mind, the Oyakata integrates the governance ruling seamlessly into their long-term master plan."
         }
       ]
     },
@@ -5062,136 +6188,222 @@
       ],
       "traditionalist": [
         {
-          "id": "inst_WELFARE_ALERT_traditionalist_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts sternly!"
+          "id": "inst_wel_trad_1",
+          "text": "A welfare alert has been triggered. The Oyakata sternly insists that true spirit requires enduring hardship!"
         },
         {
-          "id": "inst_WELFARE_ALERT_traditionalist_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with traditional strictness!"
+          "id": "inst_wel_trad_2",
+          "text": "Welfare monitors raise a flag! The Oyakata unwavering in discipline, argues that modern softness has no place in traditional sumo."
         },
         {
-          "id": "inst_WELFARE_ALERT_traditionalist_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts relying on ancient wisdom!"
+          "id": "inst_wel_trad_3",
+          "text": "A welfare alert sounds: the Oyakata relying on ancient wisdom, commands the rikishi to push through the pain."
         },
         {
-          "id": "inst_WELFARE_ALERT_traditionalist_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts unwavering in discipline!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_traditionalist_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts upholding the old ways!"
+          "id": "inst_wel_trad_4",
+          "text": "The Oyakata meets the welfare alert with traditional strictness, demanding endless repetition despite the complaints."
         }
       ],
       "scientist": [
         {
-          "id": "inst_WELFARE_ALERT_scientist_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts analytically!"
+          "id": "inst_wel_sci_1",
+          "text": "A welfare alert has been triggered. The Oyakata analytically reviews the biometric data to identify the failure point."
         },
         {
-          "id": "inst_WELFARE_ALERT_scientist_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with data-driven logic!"
+          "id": "inst_wel_sci_2",
+          "text": "Welfare monitors raise a flag! The Oyakata methodically adjusts the nutrition and rest algorithms to resolve the issue."
         },
         {
-          "id": "inst_WELFARE_ALERT_scientist_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts methodically!"
+          "id": "inst_wel_sci_3",
+          "text": "A welfare alert sounds: the Oyakata citing sports science, implements a clinical recovery protocol."
         },
         {
-          "id": "inst_WELFARE_ALERT_scientist_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts citing sports science!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_scientist_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with clinical precision!"
+          "id": "inst_wel_sci_4",
+          "text": "The Oyakata responds to the welfare alert with data-driven logic, recalibrating the training intensity metrics."
         }
       ],
       "gambler": [
         {
-          "id": "inst_WELFARE_ALERT_gambler_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts boldly!"
+          "id": "inst_wel_gam_1",
+          "text": "A welfare alert has been triggered. The Oyakata boldly ignores the warning, betting everything on pushing the rikishi harder!"
         },
         {
-          "id": "inst_WELFARE_ALERT_gambler_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts taking a massive risk!"
+          "id": "inst_wel_gam_2",
+          "text": "Welfare monitors raise a flag! The Oyakata recklessly doubles down, risking injury for a shot at ultimate glory."
         },
         {
-          "id": "inst_WELFARE_ALERT_gambler_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts betting everything!"
+          "id": "inst_wel_gam_3",
+          "text": "A welfare alert sounds: the Oyakata takes a massive risk, forcing the exhausted rikishi back onto the dohyo."
         },
         {
-          "id": "inst_WELFARE_ALERT_gambler_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts recklessly!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_gambler_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with a high-stakes move!"
+          "id": "inst_wel_gam_4",
+          "text": "With high stakes on the line, the Oyakata treats the welfare alert as just another gamble to be won."
         }
       ],
       "nurturer": [
         {
-          "id": "inst_WELFARE_ALERT_nurturer_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts gently!"
+          "id": "inst_wel_nur_1",
+          "text": "A welfare alert has been triggered. The Oyakata gently suspends practice, prioritizing the rikishi's immediate wellbeing."
         },
         {
-          "id": "inst_WELFARE_ALERT_nurturer_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with a heavy heart!"
+          "id": "inst_wel_nur_2",
+          "text": "Welfare monitors raise a flag! The Oyakata reacts with a heavy heart, protectively tending to the stable's family."
         },
         {
-          "id": "inst_WELFARE_ALERT_nurturer_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts protectively!"
+          "id": "inst_wel_nur_3",
+          "text": "A welfare alert sounds: the Oyakata like a caring parent, focuses entirely on healing and recovery over competition."
         },
         {
-          "id": "inst_WELFARE_ALERT_nurturer_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts focusing on wellbeing!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_nurturer_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts like a caring parent!"
+          "id": "inst_wel_nur_4",
+          "text": "The Oyakata's protective nature shines through the welfare alert, ensuring that no wrestler is pushed past their safe limits."
         }
       ],
       "tyrant": [
         {
-          "id": "inst_WELFARE_ALERT_tyrant_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts furiously!"
+          "id": "inst_wel_tyr_1",
+          "text": "A welfare alert has been triggered. The Oyakata furiously dismisses the monitors, demanding perfection at any cost!"
         },
         {
-          "id": "inst_WELFARE_ALERT_tyrant_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with an iron fist!"
+          "id": "inst_wel_tyr_2",
+          "text": "Welfare monitors raise a flag! The Oyakata rules with an iron fist, terrifying the injured rikishi into silence."
         },
         {
-          "id": "inst_WELFARE_ALERT_tyrant_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts ruthlessly!"
+          "id": "inst_wel_tyr_3",
+          "text": "A welfare alert sounds: the Oyakata ruthlessly increases the training intensity, punishing the perceived weakness."
         },
         {
-          "id": "inst_WELFARE_ALERT_tyrant_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts demanding perfection!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_tyrant_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts terrifying the stable!"
+          "id": "inst_wel_tyr_4",
+          "text": "The Oyakata meets the welfare alert with terrifying rage, showing zero compassion for the struggling stable."
         }
       ],
       "strategist": [
         {
-          "id": "inst_WELFARE_ALERT_strategist_1",
-          "text": "A welfare alert has been triggered. The Oyakata reacts cunningly!"
+          "id": "inst_wel_str_1",
+          "text": "A welfare alert has been triggered. The Oyakata cunningly redirects the investigation with calculated foresight."
         },
         {
-          "id": "inst_WELFARE_ALERT_strategist_2",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with calculated foresight!"
+          "id": "inst_wel_str_2",
+          "text": "Welfare monitors raise a flag! The Oyakata tactically adjusts the visible training regimen to outmaneuver the JSA."
         },
         {
-          "id": "inst_WELFARE_ALERT_strategist_3",
-          "text": "A welfare alert has been triggered. The Oyakata reacts outmaneuvering the board!"
+          "id": "inst_wel_str_3",
+          "text": "A welfare alert sounds: the Oyakata deploys a sharp plan to minimize the fallout while maintaining competitive edge."
         },
         {
-          "id": "inst_WELFARE_ALERT_strategist_4",
-          "text": "A welfare alert has been triggered. The Oyakata reacts tactically!"
-        },
-        {
-          "id": "inst_WELFARE_ALERT_strategist_5",
-          "text": "A welfare alert has been triggered. The Oyakata reacts with a sharp plan!"
+          "id": "inst_wel_str_4",
+          "text": "With a strategist's calm, the Oyakata handles the welfare alert by adapting the stable's methods to the exact letter of the law."
         }
       ]
     }
+  },
+  "tactical": {
+    "oshi_strategy": [
+      {
+        "id": "tac_oshi_1",
+        "text": "📋 {leader}'s game plan: deny the belt, full forward pressure."
+      },
+      {
+        "id": "tac_oshi_2",
+        "text": "📋 {leader} comes in with a clear oshi strategy — no belt wrestling today."
+      },
+      {
+        "id": "tac_oshi_3",
+        "text": "📋 The commentators note {leader} is set up for relentless pushing."
+      },
+      {
+        "id": "tac_oshi_4",
+        "text": "📋 {leader} wants to keep both hands on {trailer}'s chest — pure oshi."
+      }
+    ],
+    "yotsu_strategy": [
+      {
+        "id": "tac_yotsu_1",
+        "text": "📋 {leader}'s approach: get to the belt at all costs."
+      },
+      {
+        "id": "tac_yotsu_2",
+        "text": "📋 {leader} wants this on the mawashi — a patient belt-hunting plan."
+      },
+      {
+        "id": "tac_yotsu_3",
+        "text": "📋 Classic yotsu preparation from {leader} — absorb and grapple."
+      },
+      {
+        "id": "tac_yotsu_4",
+        "text": "📋 {leader} aims to establish migi-yotsu early — right hand inside."
+      }
+    ],
+    "speedster_strategy": [
+      {
+        "id": "tac_speed_1",
+        "text": "📋 {leader} will use footwork — movement sumo is the plan."
+      },
+      {
+        "id": "tac_speed_2",
+        "text": "📋 Quick feet, sharp angles — {leader} aims to stay mobile."
+      },
+      {
+        "id": "tac_speed_3",
+        "text": "📋 The commentators say {leader} will rely on lateral movement today."
+      },
+      {
+        "id": "tac_speed_4",
+        "text": "📋 {leader}'s game: don't stand still, don't let {trailer} square up."
+      }
+    ],
+    "trickster_strategy": [
+      {
+        "id": "tac_trick_1",
+        "text": "📋 Expect the unexpected — {leader} is reading the opponent's habits."
+      },
+      {
+        "id": "tac_trick_2",
+        "text": "📋 {leader} has that look in his eyes — something tricky is coming."
+      },
+      {
+        "id": "tac_trick_3",
+        "text": "📋 Misdirection and feints — that's {leader}'s plan today."
+      },
+      {
+        "id": "tac_trick_4",
+        "text": "📋 {leader} studies {trailer}'s tendencies — a trap is being set."
+      }
+    ],
+    "counter_strategy": [
+      {
+        "id": "tac_ctr_1",
+        "text": "📋 {leader} is set to absorb and redirect — a counter strategy."
+      },
+      {
+        "id": "tac_ctr_2",
+        "text": "📋 Patient and calculated — {leader} waits for the opponent to overcommit."
+      },
+      {
+        "id": "tac_ctr_3",
+        "text": "📋 The analysis desk notes {leader} is fighting reactively today."
+      },
+      {
+        "id": "tac_ctr_4",
+        "text": "📋 {leader}'s plan: let {trailer} attack, then use their momentum against them."
+      }
+    ],
+    "adaptive_strategy": [
+      {
+        "id": "tac_adapt_1",
+        "text": "📋 {leader} reads the matchup and adjusts — a flexible approach."
+      },
+      {
+        "id": "tac_adapt_2",
+        "text": "📋 No fixed plan — {leader} adapts to whatever comes."
+      },
+      {
+        "id": "tac_adapt_3",
+        "text": "📋 A calculated game plan from {leader} — exploiting the opponent's weakness."
+      },
+      {
+        "id": "tac_adapt_4",
+        "text": "📋 {leader} can go oshi or yotsu — and will choose based on what {trailer} gives."
+      }
+    ]
   }
 }
