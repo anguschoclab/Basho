@@ -155,7 +155,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     cyclePhase: world.cyclePhase,
     currentBashoName: world.currentBashoName,
     heyas: mapToObject(world.heyas),
-    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : {},
+    closedHeyas: world.closedHeyas instanceof Map ? mapToObject(world.closedHeyas) : undefined,
     rikishi: mapToObject(world.rikishi),
     oyakata: mapToObject(world.oyakata),
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
@@ -172,7 +172,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     // Sponsor pool (Constitution A6.4)
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
     // Ozeki kadoban tracking
-    ozekiKadoban: (world as any).ozekiKadoban || {},
+    ozekiKadoban: (world as any).ozekiKadoban ?? {},
     // Hall of Fame
     hallOfFame: (world as any).hallOfFame,
     // Media state

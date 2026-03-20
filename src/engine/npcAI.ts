@@ -25,6 +25,7 @@ import {
   type RikishiPerception
 } from "./perception";
 import { logEngineEvent } from "./events";
+import { stableSort } from "./utils/sort";
 
 // ─── Persona ────────────────────────────────────────────
 
@@ -548,7 +549,7 @@ export function tickWeek(world: WorldState): number {
   if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     // Skip player-owned heya — player makes their own decisions
     if (heya.id === playerHeyaId) continue;
 

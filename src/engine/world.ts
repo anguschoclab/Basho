@@ -44,6 +44,7 @@ import * as talentpool from "./talentpool";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
+import { stableSort } from "./utils/sort";
 
 // Type guard or helper to access current basho
 /**
@@ -451,8 +452,7 @@ function runPrestigeDecay(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  const sortedHeyas = Array.from(world.heyas.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, heya] of sortedHeyas) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     let totalWins = 0;
     let totalLosses = 0;
     let hasYusho = false;
@@ -580,8 +580,7 @@ function updateStatureBand(world: WorldState, heya: import("./types").Heya): voi
  * loans/benefactors escalation, succession checks, merger/closure pressure.
  */
 function runGovernanceReview(world: WorldState): void {
-  const sortedHeyas = Array.from(world.heyas.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, heya] of sortedHeyas) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
@@ -774,8 +773,7 @@ function runAIMetaDrift(world: WorldState): void {
 
   // Compute basho meta: dominant style this basho
   let oshiWins = 0, yotsuWins = 0;
-  const sortedRikishi = Array.from(world.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, r] of sortedRikishi) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if ((r.currentBashoWins ?? 0) > (r.currentBashoLosses ?? 0)) {
       if (r.style === "oshi") oshiWins++;
       else if (r.style === "yotsu") yotsuWins++;
@@ -955,8 +953,7 @@ function runCareerJournalUpdates(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  const sortedRikishi = Array.from(world.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, r] of sortedRikishi) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     // Update career totals from basho records
     r.careerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
     r.careerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
@@ -1024,8 +1021,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   if (!lastBasho) return nextWorld;
 
   const currentBanzukeList: BanzukeEntry[] = [];
-  const sortedRikishi = Array.from(nextWorld.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, r] of sortedRikishi) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
@@ -1034,9 +1030,8 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   }
 
   const performanceList: BashoPerformance[] = [];
-  const sortedStandings = Array.from(lastBasho.standings.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, stats] of sortedStandings) {
-    const history = nextWorld.history[nextWorld.history.length - 1];
+  for (const [id, stats] of stableSort(Array.from(lastBasho.standings.entries()), x => String(x[0]))) {
+    const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
 

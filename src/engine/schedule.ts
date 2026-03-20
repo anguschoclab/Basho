@@ -48,7 +48,7 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
  */
 function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.division === division && !r.injured) {
       pool.push(r);
     }

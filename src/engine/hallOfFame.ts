@@ -18,6 +18,7 @@ import type { WorldState } from "./types/world";
 import type { BashoResult } from "./types/basho";
 import type { Id } from "./types/common";
 import type { Rank } from "./types/banzuke";
+import { stableSort } from "./utils/sort";
 
 // === TYPES ===
 
@@ -132,7 +133,7 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
   }
 
   // --- Iron Men ---
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.isRetired) continue;
 
     const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
@@ -161,7 +162,7 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
   // Track consecutive basho appearances (no kyujo/absence)
   // We approximate from history: a rikishi "appeared" if they won yusho, junYusho, or any sansho.
   // For a more accurate count, we check if rikishi has been active for 30+ basho
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.isRetired) continue;
     const key = `${r.id}::iron_man`;
     if (hof.inducted[key]) continue;

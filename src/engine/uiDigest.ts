@@ -11,7 +11,7 @@ import type { OzekiKadobanMap } from "./banzuke";
 import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
-import { toSatisfactionBand, type SatisfactionBand } from "./descriptorBands";
+import { stableSort } from "./utils/sort";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -82,7 +82,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Injuries ---
   const injuryItems: DigestItem[] = [];
   // ⚡ Bolt: iterate directly over IterableIterator instead of Array.from() to avoid large array allocation
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     const injury = r.injury;
     if (injury?.isInjured) {
       injuryItems.push({
@@ -217,7 +217,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   const candidates: OzekiRunCandidate[] = [];
   const playerHeyaId = world.playerHeyaId;
 
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     // Ozeki run: sekiwake or komusubi with strong recent results
     if (r.rank !== "sekiwake" && r.rank !== "komusubi") continue;
     if (r.isRetired) continue;
@@ -265,7 +265,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
 
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.rank !== "ozeki") continue;
     if (r.isRetired) continue;
 

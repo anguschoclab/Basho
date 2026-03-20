@@ -3,6 +3,7 @@ import { logEngineEvent } from "../events";
 import { autosave } from "../saveload";
 import * as facilities from "../facilities";
 import { RANK_HIERARCHY } from "../banzuke";
+import { stableSort } from "../utils/sort";
 
 /**
  * Safe call.
@@ -49,7 +50,7 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Loans/interest
  */
 export function tickMonthlyEconomics(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     // 1. Sekitori monthly salaries (paid to rikishi, deducted from heya as payroll)
     let totalSalaries = 0;
     for (const rId of heya.rikishiIds) {

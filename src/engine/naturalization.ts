@@ -5,6 +5,7 @@
 import type { WorldState } from "./types/world";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./media";
+import { stableSort } from "./utils/sort";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -13,9 +14,12 @@ import { generateGovernanceHeadline } from "./media";
  */
 export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
-  const foreignRikishi = Array.from(world.rikishi.values()).filter(
-    (r) => r.nationality !== "Japan"
-  );
+  const foreignRikishi = [];
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+    if (r.nationality !== "Japan") {
+      foreignRikishi.push(r);
+    }
+  }
 
   for (const r of foreignRikishi) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).

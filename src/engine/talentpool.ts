@@ -20,6 +20,7 @@ import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
 import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
+import { stableSort } from "./utils/sort";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -230,8 +231,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
-  const sortedRikishi = Array.from(world.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, r] of sortedRikishi) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.heyaId !== heyaId) continue;
     if ((r.nationality || "Japan") !== "Japan") count += 1;
   }
