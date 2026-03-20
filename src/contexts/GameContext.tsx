@@ -27,6 +27,7 @@ interface GameContextValue {
   selectRikishi: (id: string | null) => void;
   selectHeya: (id: string | null) => void;
   startBasho: () => void;
+  advanceTime: () => void;
   advanceDay: () => void;
   simulateBout: (index: number) => void;
   simulateAllBouts: () => void;
@@ -78,6 +79,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startBasho = useCallback(() => dispatch({ type: "START_BASHO" }), []);
+  const advanceTime = useCallback(() => dispatch({ type: "ADVANCE_TIME" }), []);
   const advanceDay = useCallback(() => dispatch({ type: "ADVANCE_DAY" }), []);
   const simulateBoutAction = useCallback((index: number) => dispatch({ type: "SIMULATE_BOUT", boutIndex: index }), []);
   const simulateAllBouts = useCallback(() => dispatch({ type: "SIMULATE_ALL_BOUTS" }), []);
@@ -148,7 +150,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value: GameContextValue = {
     state,
     createWorld, setPhase, selectRikishi, selectHeya,
-    startBasho, advanceDay, simulateBout: simulateBoutAction, simulateAllBouts,
+    startBasho, advanceTime, advanceDay, simulateBout: simulateBoutAction, simulateAllBouts,
     endDay, endBasho, simFullBasho, advanceInterim, advanceOneDay: advanceOneDayAction,
     saveToSlot, loadFromSlot, quickSave: quickSaveAction,
     loadFromAutosave: loadFromAutosaveAction, hasAutosave: hasAutosaveCheck, getSaveSlots,

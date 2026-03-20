@@ -138,6 +138,47 @@ function handleSimFullBasho(state: GameState): GameState {
  *  * @param action - The Action.
  *  * @returns The result.
  */
+
+function handleAdvanceTime(state: GameState): GameState {
+  if (!state.world) return state;
+
+  // Advance one day globally
+  worldEngine.advanceOneDay(state.world);
+
+  let newPhase = state.world.cyclePhase === "active_basho" ? "day_preview" : "interim";
+  let lastResult = state.lastBoutResult;
+  let currentBoutIndex = state.currentBoutIndex;
+
+  // If we just entered or are in an active basho, process the day's bouts
+  if (state.world.cyclePhase === "active_basho" && state.world.currentBasho) {
+    const day = state.world.currentBasho.day;
+    if (day <= 15) {
+      for (let i = 0; i < 64; i++) {
+        const { result } = worldEngine.simulateBoutForToday(state.world, 0);
+        if (!result) break;
+        lastResult = result;
+      }
+      newPhase = "day_results";
+      currentBoutIndex = 0;
+
+      worldEngine.advanceBashoDay(state.world);
+      if (state.world.currentBasho.day > 15) {
+        newPhase = "basho_results";
+      }
+    }
+  }
+
+  try { autosaveWithSignal(state.world); } catch { /* silent */ }
+
+  return {
+    ...state,
+    world: { ...state.world },
+    phase: newPhase as GamePhase,
+    currentBoutIndex,
+    lastBoutResult: lastResult,
+  };
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "CREATE_WORLD":
@@ -151,6 +192,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case "START_BASHO":
       return handleStartBasho(state);
+
+    case "ADVANCE_TIME":
+      return handleAdvanceTime(state);
 
     case "ADVANCE_DAY":
       return handleAdvanceDay(state);
