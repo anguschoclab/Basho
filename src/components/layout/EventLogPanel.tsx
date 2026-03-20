@@ -244,6 +244,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
+              aria-label={`Filter events by ${f.label}`}
+              aria-pressed={filter === f.value}
               className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${
                 filter === f.value
                   ? "bg-primary text-primary-foreground"
@@ -291,6 +293,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : e.id)}
                       className="w-full text-left"
+                      aria-expanded={isExpanded}
+                      aria-controls={`event-details-${e.id}`}
                     >
                       <div className="flex items-start gap-2">
                         <div className={`mt-0.5 shrink-0 ${meta.color}`}>
@@ -316,7 +320,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                     </button>
 
                     {isExpanded && (
-                      <div className="mt-1 ml-6 space-y-1.5">
+                      <div id={`event-details-${e.id}`} className="mt-1 ml-6 space-y-1.5">
                         <p className="text-[11px] text-muted-foreground">
                           {e.summary}
                         </p>
@@ -347,9 +351,10 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                               ev.stopPropagation();
                               handleEventClick(e);
                             }}
+                            aria-label={`${getLinkLabel(e).replace(' →', '')} for ${e.title}`}
                             className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
                           >
-                            <ExternalLink className="h-2.5 w-2.5" />
+                            <ExternalLink className="h-2.5 w-2.5" aria-hidden="true" />
                             {getLinkLabel(e)}
                           </button>
                         )}
