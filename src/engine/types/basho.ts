@@ -22,13 +22,11 @@ export interface BashoInfo {
   venueJa: string;
   startDay: number;
   season: Season;
-  description: string;
 }
 
 /** Defines the structure for bout log entry. */
 export interface BoutLogEntry {
   phase: "tachiai" | "clinch" | "momentum" | "finish";
-  description: string;
   data?: Record<string, number | string | boolean | null | undefined>;
 }
 
@@ -46,7 +44,6 @@ export interface BoutResult {
   upset: boolean;
   isKinboshi?: boolean;
   log: BoutLogEntry[];
-  narrative?: string[];
 }
 
 /** Defines the structure for match schedule. */

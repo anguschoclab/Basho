@@ -15,8 +15,6 @@ import type { Stance, TacticalArchetype } from "./types/combat";
 
 import { RANK_HIERARCHY } from "./banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "./kimarite";
-import { buildPbpFromBoutResult, type PbpContext, type PbpLine } from "./pbp";
-import { generateNarrative } from "./narrative";
 import { resolveTacticalClash, determineCPUTactic } from "./h2h";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
@@ -447,7 +445,6 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
 
   st.log.push({
     phase: "tachiai",
-    description: `${winner === "east" ? east.shikona : west.shikona} wins the tachiai`,
     data: {
       winner,
       margin: Math.round(margin * 10) / 10,
@@ -562,12 +559,6 @@ function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
   st.log.push({
     phase: "clinch",
-    description:
-      stance === "push-dominant"
-        ? "They settle into oshi pressure"
-        : stance === "no-grip"
-        ? "No grip — scramble for position"
-        : "Belt contact established",
     data: {
       stance,
       advantage: st.advantage,
@@ -612,7 +603,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
     st.fatigueWest += 15;
     st.log.push({
       phase: "momentum",
-      description: "Mizu-iri! The Gyoji halts the marathon bout for a water break.",
       data: { tick: st.tick, reason: "mizu_iri", time: st.timeSeconds }
     });
     return; // Skip normal event processing this tick
@@ -630,7 +620,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       st.advantage = otherSide(st.advantage as Side);
       st.log.push({
         phase: "momentum",
-        description: `Stopped cold by ${defender.shikona}'s massive weight!`,
         data: { 
           tick: st.tick, 
           position: st.position,
@@ -656,7 +645,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
 
     st.log.push({
       phase: "momentum",
-      description: st.position === "rear" ? "Rear position danger!" : "Angle and footwork",
       data: {
         tick: st.tick,
         position: st.position,
@@ -674,7 +662,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
 
     st.log.push({
       phase: "momentum",
-      description: "Tawara pressure at the edge!",
       data: {
         tick: st.tick,
         position: st.position,
@@ -716,7 +703,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
         st.advantage = "none";
         st.log.push({
           phase: "momentum",
-          description: "A recovery and counter!",
           data: {
             tick: st.tick,
             position: st.position,
@@ -748,7 +734,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       }
       st.log.push({
         phase: "momentum",
-        description: "Fatigue shows—momentum swings!",
         data: {
           tick: st.tick,
           position: st.position,
@@ -763,7 +748,6 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
   // Default steady pressure tick
   st.log.push({
     phase: "momentum",
-    description: intensity === "low" ? "Heavy leaning..." : "Steady struggle",
     data: {
       tick: st.tick,
       position: st.position,
@@ -909,7 +893,7 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
   // Reversal Check
   if (winner !== adv) {
      st.advantage = winner;
-     st.log.push({ phase: "finish", description: "Incredible reversal at the edge!", data: { reversal: true } });
+     st.log.push({ phase: "finish", data: { reversal: true } });
   }
 
   const finalWinnerR = winner === "east" ? east : west;
@@ -921,7 +905,6 @@ function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineS
 
   st.log.push({
     phase: "finish",
-    description: `${finalWinnerR.shikona} wins by ${kimarite.name}`,
     data: {
       winner,
       kimarite: kimarite.id,
@@ -984,7 +967,6 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
   if (st.tacticalResult) {
     st.log.push({
       phase: "tactical",
-      description: "Tactical clash resolved",
       data: {
         tacticalEntry: true,
         tacticalResult: st.tacticalResult,
@@ -998,7 +980,6 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     if (eastTactics.description !== "Standard approach") {
       st.log.push({
         phase: "tactical",
-        description: `${east.shikona}'s strategy: ${eastTactics.description}`,
         data: {
           tacticalEntry: true,
           side: "east",
@@ -1012,7 +993,6 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     if (westTactics.description !== "Standard approach") {
       st.log.push({
         phase: "tactical",
-        description: `${west.shikona}'s strategy: ${westTactics.description}`,
         data: {
           tacticalEntry: true,
           side: "west",
@@ -1075,25 +1055,6 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     isKinboshi,
     log: st.log
   };
-
-  // PBP Integration
-  const pbpCtx: PbpContext = {
-    seed: `${seed}-pbp`,
-    day: bout.day,
-    bashoName,
-    east: { id: east.id, shikona: east.shikona, style: east.style, archetype: east.archetype },
-    west: { id: west.id, shikona: west.shikona, style: west.style, archetype: west.archetype },
-    kenshoCount: undefined,
-    isKinboshiBout: upset && (eastTier === 1 || westTier === 1), // Kinboshi check
-    isYushoRaceKeyBout: false
-  };
-
-  const pbpLines: PbpLine[] = buildPbpFromBoutResult(result, pbpCtx);
-
-  // Extras for UI
-  result.pbpLines = pbpLines;
-  result.pbp = pbpLines.map((l) => l.text);
-  result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
 
   return result;
 }
