@@ -369,19 +369,35 @@ export function getSponsorContracts(world: WorldState): StableSponsorshipsUI {
   const contracts: SponsorContractInfoUI[] = [];
 
   if (world.sponsorPool && playerHeyaId) {
+    const heyaRep = playerHeya?.reputation ?? 50;
+    const week = world.week ?? 0;
+    const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
+
+    // ⚡ Bolt: Iterate over all sponsors but fast-path exit if no active relationships match
     for (const sponsor of world.sponsorPool.sponsors.values()) {
-      if (!sponsor.active) continue;
-      for (const rel of sponsor.relationships) {
+      if (!sponsor.active || sponsor.relationships.length === 0) continue;
+
+      let hasRel = false;
+      for (let i = 0; i < sponsor.relationships.length; i++) {
+        if (sponsor.relationships[i].targetId === playerHeyaId) {
+          hasRel = true;
+          break;
+        }
+      }
+      if (!hasRel) continue;
+
+      for (let i = 0; i < sponsor.relationships.length; i++) {
+        const rel = sponsor.relationships[i];
         if (rel.targetId !== playerHeyaId) continue;
 
         const monthlyIncome = (TIER_INCOME[sponsor.tier] || 100_000) * (rel.strength / 3);
         // Calculate raw satisfaction using engine stats, but do not expose it
-        const rawSatisfaction = Math.min(100, sponsor.loyalty * 0.6 + (playerHeya?.reputation ?? 50) * 0.4);
+        const rawSatisfaction = Math.min(100, sponsor.loyalty * 0.6 + heyaRep * 0.4);
 
         // Convert to descriptor band
         const satisfactionBand = toSatisfactionBand(rawSatisfaction);
         const expiryWeek = rel.endsAtTick ?? null;
-        const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
+        const isExpiringSoon = expiryWeek !== null && expiryWeek - week < 8;
 
         contracts.push({
           sponsorId: sponsor.sponsorId,
@@ -400,7 +416,6 @@ export function getSponsorContracts(world: WorldState): StableSponsorshipsUI {
     }
 
     contracts.sort((a, b) => {
-      const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
       return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
     });
   }
