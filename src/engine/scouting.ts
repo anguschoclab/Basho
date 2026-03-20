@@ -560,7 +560,6 @@ export function generateScoutCandidates(world: WorldState, count: number, curren
  *  * @returns The result.
  */
 export function recruitCandidate(state: WorldState, candidateId: string, targetHeyaId: string): WorldState {
-  console.log(`Recruiting candidate ${candidateId} to heya ${targetHeyaId}`);
   return state;
 }
 

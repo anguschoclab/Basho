@@ -260,6 +260,39 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
   legendary: "Legendary",
 };
 
+// === Satisfaction Bands ===
+
+/** Type representing satisfaction band. */
+export type SatisfactionBand = "thrilled" | "happy" | "content" | "concerned" | "unhappy";
+
+/** s a t i s f a c t i o n_ b a n d s. */
+export const SATISFACTION_BANDS: BandDef<SatisfactionBand>[] = [
+  { band: "unhappy", min: 0, max: 20 },
+  { band: "concerned", min: 20, max: 40 },
+  { band: "content", min: 40, max: 60 },
+  { band: "happy", min: 60, max: 80 },
+  { band: "thrilled", min: 80, max: Infinity },
+];
+
+/**
+ * To satisfaction band.
+ *  * @param satisfaction - The Satisfaction.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
+export function toSatisfactionBand(satisfaction: number, prev?: SatisfactionBand): SatisfactionBand {
+  return toBand(satisfaction, SATISFACTION_BANDS, prev);
+}
+
+/** s a t i s f a c t i o n_ l a b e l s. */
+export const SATISFACTION_LABELS: Record<SatisfactionBand, string> = {
+  thrilled: "Thrilled",
+  happy: "Happy",
+  content: "Content",
+  concerned: "Concerned",
+  unhappy: "Unhappy",
+};
+
 // === Oyakata Trait Bands ===
 
 /** Type representing trait band. */
