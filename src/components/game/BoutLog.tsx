@@ -44,6 +44,50 @@ function safePhase(phase: unknown): string {
  * bout log.
  *  * @param { log, className } - The { log, class name }.
  */
+
+function getFallbackDescription(entry: any): string {
+  if (entry.description && typeof entry.description === "string" && entry.description.length > 0) {
+    return entry.description;
+  }
+
+  if (!entry.data) return "—";
+
+  switch (entry.phase) {
+    case "tachiai":
+      if (entry.data.winner) {
+        return `${entry.data.winner === "east" ? "East" : "West"} wins the tachiai`;
+      }
+      return "Tachiai collision";
+
+    case "clinch":
+      if (entry.data.stance === "push-dominant") return "They settle into oshi pressure";
+      if (entry.data.stance === "no-grip") return "No grip — scramble for position";
+      return "Belt contact established";
+
+    case "momentum":
+      if (entry.data.reason === "mizu_iri") return "Mizu-iri! The Gyoji halts the marathon bout for a water break.";
+      if (entry.data.reason === "physics_wall") return "Stopped cold by massive weight!";
+      if (entry.data.reason === "footwork_angle") return entry.data.position === "rear" ? "Rear position danger!" : "Angle and footwork";
+      if (entry.data.reason === "tachiai_win" && entry.data.edgeEvent) return "Tawara pressure at the edge!";
+      if (entry.data.recovery) return "A recovery and counter!";
+      if (entry.data.reason === "fatigue_turn") return "Fatigue shows—momentum swings!";
+      return "Steady struggle";
+
+    case "finish":
+      if (entry.data.reversal) return "Incredible reversal at the edge!";
+      if (entry.data.kimariteName) return `${entry.data.winner === "east" ? "East" : "West"} wins by ${entry.data.kimariteName}`;
+      return "Bout finished";
+
+    case "tactical":
+      if (entry.data.tacticalResult) return "Tactical clash resolved";
+      if (entry.data.strategy) return `Strategy: ${entry.data.strategy}`;
+      return "Tactical approach";
+
+    default:
+      return "—";
+  }
+}
+
 export function BoutLog({ log, className }: BoutLogProps) {
   const entries = Array.isArray(log) ? log : [];
 
@@ -88,9 +132,7 @@ export function BoutLog({ log, className }: BoutLogProps) {
                 </span>
 
                 <span className="text-foreground">
-                  {typeof (entry as any)?.description === "string" && (entry as any).description.length > 0
-                    ? (entry as any).description
-                    : "—"}
+                  {getFallbackDescription(entry)}
                 </span>
               </div>
             );

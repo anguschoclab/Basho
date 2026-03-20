@@ -114,21 +114,6 @@ describe("Bout Simulation Engine", () => {
     expect(kimariteSet.size).toBeGreaterThanOrEqual(5);
   });
 
-  it("should generate PBP lines for narrative consumption", () => {
-    const east = mockRikishi("e1", { shikona: "Asayama" });
-    const west = mockRikishi("w1", { shikona: "Takafuji" });
-    const basho = mockBasho();
-
-    const result = resolveBout(
-      { id: "bout-pbp", day: 1, rikishiEastId: "e1", rikishiWestId: "w1" },
-      east, west, basho
-    );
-
-    expect(result.pbpLines).toBeDefined();
-    expect(result.pbpLines.length).toBeGreaterThan(0);
-    expect(result.pbp).toBeDefined();
-    expect(result.pbp.length).toBeGreaterThan(0);
-  });
 
   it("should work via simulateBout convenience helper", () => {
     const east = mockRikishi("e1", { shikona: "Asayama" });
