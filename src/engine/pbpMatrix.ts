@@ -59,6 +59,10 @@ function loadVoiceMatrix(): PbpLibrary {
       dancing_escape: castBucket((matrixData.momentum as any).dancing_escape || []),
       turns_the_tables: castBucket((matrixData.momentum as any).turns_the_tables || []),
       slips_but_survives: castBucket((matrixData.momentum as any).slips_but_survives || []),
+      grip_change: castBucket((matrixData.momentum as any).grip_change || []),
+      footwork_angle: castBucket((matrixData.momentum as any).footwork_angle || []),
+      mistake: castBucket((matrixData.momentum as any).mistake || []),
+      tachiai_win: castBucket((matrixData.momentum as any).tachiai_win || []),
     },
     finish: {
       normal: castBucket(matrixData.finish.normal),
@@ -79,18 +83,30 @@ function loadVoiceMatrix(): PbpLibrary {
     institutional: {
       GOVERNANCE_STATUS_CHANGED: {
         default: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.default || []),
-        strict: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.strict || []),
-        indulgent: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.indulgent || [])
+        traditionalist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.strategist || []),
       },
       GOVERNANCE_RULING: {
         default: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.default || []),
-        strict: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.strict || []),
-        indulgent: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.indulgent || [])
+        traditionalist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.strategist || []),
       },
       WELFARE_ALERT: {
         default: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.default || []),
-        strict: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.strict || []),
-        indulgent: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.indulgent || [])
+        traditionalist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.strategist || []),
       }
     },
     connective: {

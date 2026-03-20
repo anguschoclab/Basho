@@ -224,10 +224,17 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 
     // Get last 3 basho results from history
     const history = world.historyIndex.rikishi[r.id] || [];
-    const recent = history.slice(-3);
-    if (recent.length < 1) continue;
+    const len = history.length;
 
-    let recentWins = recent.reduce((sum, h) => sum + h.wins, 0);
+    // ⚡ Bolt: Use for loop over last 3 items to avoid slice allocation
+    let recentWins = 0;
+    let recentCount = 0;
+    for (let i = Math.max(0, len - 3); i < len; i++) {
+      recentWins += history[i].wins;
+      recentCount++;
+    }
+
+    if (recentCount < 1) continue;
 
     // Add current basho wins if active
     for (const e of world.banzuke.makuuchi) {
@@ -324,4 +331,99 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; na
     entries.push({ rikishi: r, narrative, isDemoted });
   }
   return entries;
+}
+
+/** Defines the UI-safe structure for sponsor contract info. */
+export interface SponsorContractInfoUI {
+  sponsorId: string;
+  relId: string;
+  displayName: string;
+  tier: string;
+  category: string;
+  role: string;
+  strength: number;
+  monthlyIncome: number;
+  satisfactionBand: SatisfactionBand;
+  expiryWeek: number | null;
+  isExpiringSoon: boolean;
+}
+
+/** Defines the UI-safe structure for all stable sponsorships. */
+export interface StableSponsorshipsUI {
+  contracts: SponsorContractInfoUI[];
+  koenkaiStrength: string;
+}
+
+const TIER_INCOME: Record<string, number> = {
+  T0: 100_000, T1: 300_000, T2: 750_000, T3: 1_500_000, T4: 3_000_000, T5: 8_000_000,
+};
+
+/**
+ * Gets a digested view of sponsor contracts for the UI, enforcing the descriptor band rules.
+ * @param world - The WorldState.
+ * @returns The UI-safe sponsorship payload.
+ */
+export function getSponsorContracts(world: WorldState): StableSponsorshipsUI {
+  const playerHeyaId = world.playerHeyaId;
+  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const contracts: SponsorContractInfoUI[] = [];
+
+  if (world.sponsorPool && playerHeyaId) {
+    const heyaRep = playerHeya?.reputation ?? 50;
+    const week = world.week ?? 0;
+    const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
+
+    // ⚡ Bolt: Iterate over all sponsors but fast-path exit if no active relationships match
+    for (const sponsor of world.sponsorPool.sponsors.values()) {
+      if (!sponsor.active || sponsor.relationships.length === 0) continue;
+
+      let hasRel = false;
+      for (let i = 0; i < sponsor.relationships.length; i++) {
+        if (sponsor.relationships[i].targetId === playerHeyaId) {
+          hasRel = true;
+          break;
+        }
+      }
+      if (!hasRel) continue;
+
+      for (let i = 0; i < sponsor.relationships.length; i++) {
+        const rel = sponsor.relationships[i];
+        if (rel.targetId !== playerHeyaId) continue;
+
+        const monthlyIncome = (TIER_INCOME[sponsor.tier] || 100_000) * (rel.strength / 3);
+        // Calculate raw satisfaction using engine stats, but do not expose it
+        const rawSatisfaction = Math.min(100, sponsor.loyalty * 0.6 + heyaRep * 0.4);
+
+        // Convert to descriptor band
+        const satisfactionBand = toSatisfactionBand(rawSatisfaction);
+        const expiryWeek = rel.endsAtTick ?? null;
+        const isExpiringSoon = expiryWeek !== null && expiryWeek - week < 8;
+
+        contracts.push({
+          sponsorId: sponsor.sponsorId,
+          relId: rel.relId,
+          displayName: sponsor.displayName,
+          tier: sponsor.tier,
+          category: sponsor.category,
+          role: rel.role,
+          strength: rel.strength,
+          monthlyIncome,
+          satisfactionBand,
+          expiryWeek,
+          isExpiringSoon
+        });
+      }
+    }
+
+    contracts.sort((a, b) => {
+      return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
+    });
+  }
+
+  const koenkaiStrength = playerHeya?.koenkaiBand ?? "none";
+
+  return {
+    contracts,
+    koenkaiStrength,
+  };
 }

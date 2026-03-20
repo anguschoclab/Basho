@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import {Link} from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { projectHeya } from "@/engine/uiModels";
 
 // Menu items.
 const items = [
@@ -140,14 +141,14 @@ const items = [
 
 /**
  * Describe runway brief.
- *  * @param funds - The Funds.
+ *  * @param runwayBand - The runway band string.
  *  * @returns The result.
  */
-function describeRunwayBrief(funds: number): { label: string; color: string } {
-  if (funds >= 50_000_000) return { label: "Secure", color: "text-emerald-500" };
-  if (funds >= 20_000_000) return { label: "Comfortable", color: "text-green-500" };
-  if (funds >= 5_000_000) return { label: "Tight", color: "text-yellow-500" };
-  if (funds >= 1_000_000) return { label: "Critical", color: "text-orange-500" };
+function describeRunwayBrief(runwayBand: string): { label: string; color: string } {
+  if (runwayBand === "secure") return { label: "Secure", color: "text-emerald-500" };
+  if (runwayBand === "comfortable") return { label: "Comfortable", color: "text-green-500" };
+  if (runwayBand === "tight") return { label: "Tight", color: "text-yellow-500" };
+  if (runwayBand === "critical") return { label: "Critical", color: "text-orange-500" };
   return { label: "Desperate", color: "text-red-500" };
 }
 
@@ -156,9 +157,10 @@ export function AppSidebar() {
   const { state } = useGame();
   
   const isLoaded = !!state.world;
-  const playerHeya = isLoaded && state.world?.playerHeyaId
+  const rawPlayerHeya = isLoaded && state.world?.playerHeyaId
     ? state.world.heyas.get(state.world.playerHeyaId) 
     : null;
+  const playerHeya = (rawPlayerHeya && state.world) ? projectHeya(rawPlayerHeya, state.world) : null;
 
   return (
     <Sidebar>
@@ -172,12 +174,15 @@ export function AppSidebar() {
             <div className="text-sm font-medium text-muted-foreground">My Stable</div>
             <div className="font-bold truncate">{playerHeya.name}</div>
             {(() => {
-              const runway = describeRunwayBrief(playerHeya.funds);
-              return (
-                <div className={`text-xs font-medium mt-1 ${runway.color}`}>
-                  {runway.label}
-                </div>
-              );
+              if (playerHeya?.runwayBand) {
+                const runway = describeRunwayBrief(playerHeya.runwayBand);
+                return (
+                  <div className={`text-xs font-medium mt-1 ${runway.color}`}>
+                    {runway.label}
+                  </div>
+                );
+              }
+              return null;
             })()}
           </div>
         )}

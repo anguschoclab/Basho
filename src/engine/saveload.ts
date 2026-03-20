@@ -253,7 +253,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),
-    closedHeyas: (serialized as any).closedHeyas ? objectToMap((serialized as any).closedHeyas) : new Map(),
+    closedHeyas: objectToMap((serialized as any).closedHeyas || {}),
     rikishi: objectToMap(rikishiObj),
     oyakata: objectToMap(oyakataObj),
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,
@@ -265,7 +265,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     talentPool: (serialized as any).talentPool,
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
-    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
+    ozekiKadoban: (serialized as any).ozekiKadoban || {},
     ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
     ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
     calendar: savedCalendar || {

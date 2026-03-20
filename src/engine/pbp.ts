@@ -155,7 +155,7 @@ export interface InjuryFact extends PbpFactBase {
 export interface InstitutionalFact extends PbpFactBase {
   phase: "institutional";
   eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT";
-  oyakataPersonality?: "strict" | "indulgent" | "default";
+  oyakataPersonality?: import("./types/oyakata").OyakataArchetype | "default";
 }
 
 /** Type representing pbp fact. */
@@ -255,6 +255,10 @@ export interface PbpLibrary {
     dancing_escape: PhraseBucket;
     turns_the_tables: PhraseBucket;
     slips_but_survives: PhraseBucket;
+    grip_change: PhraseBucket;
+    footwork_angle: PhraseBucket;
+    mistake: PhraseBucket;
+    tachiai_win: PhraseBucket;
   };
 
   injury: {
@@ -269,9 +273,9 @@ export interface PbpLibrary {
   };
 
   institutional: {
-    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
-    GOVERNANCE_RULING: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
-    WELFARE_ALERT: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket };
+    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    GOVERNANCE_RULING: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    WELFARE_ALERT: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
   };
 
   finish: {
@@ -561,19 +565,41 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
         { id: "inst_gsc_4", text: "The stablemaster accepts the board's decision to modify their institutional standing." },
         { id: "inst_gsc_5", text: "Following an internal review, the heya's governance status is publicly updated." }
       ],
-      strict: [
-        { id: "inst_gsc_1s", text: "The JSA issues a formal decree: the stable's governance status has been officially revised." },
-        { id: "inst_gsc_2s", text: "An urgent dispatch from the council confirms a strict alteration in governance status." },
-        { id: "inst_gsc_3s", text: "In a stern uncompromising mandate, the compliance committee mandates a new governance status." },
-        { id: "inst_gsc_4s", text: "The Oyakata accepts the board's decision to modify their institutional standing." },
-        { id: "inst_gsc_5s", text: "Following an internal review, the stable's governance status is publicly updated." }
+      traditionalist: [
+        { id: "inst_gsc_trad_1", text: "The stablemaster bows deeply, accepting the governance change with a stoic dedication to ancient sumo tenets." },
+        { id: "inst_gsc_trad_2", text: "Though the board demands a new governance status, the Oyakata insists the old ways of discipline will not waver." },
+        { id: "inst_gsc_trad_3", text: "The JSA updates the stable status, and the Oyakata responds by mandating an extra hour of grueling keiko to instill spirit." },
+        { id: "inst_gsc_trad_4", text: "A formal revision in governance arrives; the stablemaster receives it silently, honoring the hierarchy of the Association." }
       ],
-      indulgent: [
-        { id: "inst_gsc_1i", text: "The JSA issues a formal notice: the heya's governance status has been officially revised." },
-        { id: "inst_gsc_2i", text: "An urgent dispatch from the council confirms a lenient alteration in governance status." },
-        { id: "inst_gsc_3i", text: "In a stern ruling, the compliance committee mandates a new governance status." },
-        { id: "inst_gsc_4i", text: "The stablemaster accepts the board's decision to modify their institutional standing." },
-        { id: "inst_gsc_5i", text: "Following an internal review, the heya's governance status is publicly updated." }
+      scientist: [
+        { id: "inst_gsc_sci_1", text: "Following the governance update, the Oyakata immediately begins restructuring the stable’s daily regimen using the latest metrics." },
+        { id: "inst_gsc_sci_2", text: "The board modifies the stable’s status, prompting the stablemaster to review their data models for compliance." },
+        { id: "inst_gsc_sci_3", text: "A governance shift is announced; the Oyakata takes an analytical approach, calculating the long-term impact on wrestler performance." },
+        { id: "inst_gsc_sci_4", text: "The JSA’s new governance decree is processed methodically by the stablemaster, prioritizing optimized schedules over tradition." }
+      ],
+      gambler: [
+        { id: "inst_gsc_gam_1", text: "The governance change is a setback, but the Oyakata immediately looks for a high-risk loophole to exploit for glory." },
+        { id: "inst_gsc_gam_2", text: "Unfazed by the JSA’s status revision, the stablemaster doubles down on an aggressive, unorthodox training wager." },
+        { id: "inst_gsc_gam_3", text: "The board demands a new governance approach; the Oyakata accepts the stakes, ready to bet the stable’s future on the next basho." },
+        { id: "inst_gsc_gam_4", text: "A sudden governance update rolls in—the stablemaster merely smiles, treating it as another hand in a high-stakes game." }
+      ],
+      nurturer: [
+        { id: "inst_gsc_nur_1", text: "The JSA updates the stable’s governance status; the Oyakata first ensures that the rikishi’s living conditions remain comfortable." },
+        { id: "inst_gsc_nur_2", text: "A governance shift forces the stablemaster to re-evaluate, but their primary concern remains protecting their wrestling family." },
+        { id: "inst_gsc_nur_3", text: "Despite the strict new governance ruling, the Oyakata maintains a warm, supportive environment for all the trainees." },
+        { id: "inst_gsc_nur_4", text: "The board’s decision is finalized. The stablemaster gathers the stable to reassure them that their well-being comes first." }
+      ],
+      tyrant: [
+        { id: "inst_gsc_tyr_1", text: "Furious at the governance downgrade, the Oyakata enforces an immediate, brutal disciplinary regimen on the entire stable." },
+        { id: "inst_gsc_tyr_2", text: "The JSA updates the status; the stablemaster responds with a terrifying tirade, demanding absolute perfection going forward." },
+        { id: "inst_gsc_tyr_3", text: "A new governance mandate arrives. The Oyakata rules with an iron fist, promising severe consequences for any further slip-ups." },
+        { id: "inst_gsc_tyr_4", text: "The board’s ruling sparks a dark mood in the stablemaster, whose ruthless demands for victory only intensify." }
+      ],
+      strategist: [
+        { id: "inst_gsc_str_1", text: "The governance status shifts, but the Oyakata has already mapped out a cunning political maneuver to regain lost prestige." },
+        { id: "inst_gsc_str_2", text: "A calculated response from the stablemaster turns the JSA’s governance update into a surprising tactical advantage." },
+        { id: "inst_gsc_str_3", text: "The board issues a new status. The Oyakata calmly adjusts their grand strategy, always thinking three steps ahead." },
+        { id: "inst_gsc_str_4", text: "With the governance change official, the stablemaster skillfully outmaneuvers rivals in the backrooms of the Kokugikan." }
       ]
     },
     GOVERNANCE_RULING: {
@@ -584,19 +610,41 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
         { id: "inst_gov_4", text: "An unprecedented governance ruling alters the future trajectory of the stable." },
         { id: "inst_gov_5", text: "The disciplinary panel announces a final, binding governance ruling." }
       ],
-      strict: [
-        { id: "inst_gov_1s", text: "The elders hand down a severe governance uncompromising mandate, demanding immediate compliance." },
-        { id: "inst_gov_2s", text: "A compassionate but firm governance uncompromising mandate is issued by the committee to guide the stable." },
-        { id: "inst_gov_3s", text: "The board's governance uncompromising mandate sends a clear message about institutional integrity." },
-        { id: "inst_gov_4s", text: "An unprecedented governance uncompromising mandate alters the future trajectory of the stable." },
-        { id: "inst_gov_5s", text: "The disciplinary panel announces a final, binding governance uncompromising mandate." }
+      traditionalist: [
+        { id: "inst_gov_trad_1", text: "The elders hand down a severe ruling. The Oyakata bows deeply, demanding the stable return to the fundamentals of sumo." },
+        { id: "inst_gov_trad_2", text: "A new governance ruling is announced; the stablemaster orders a marathon session of shiko to cleanse the stable’s spirit." },
+        { id: "inst_gov_trad_3", text: "The compliance committee rules against the heya. The Oyakata insists that strict adherence to the old ways is the only remedy." },
+        { id: "inst_gov_trad_4", text: "Receiving the governance mandate with solemn dignity, the stablemaster commands unwavering respect for the JSA hierarchy." }
       ],
-      indulgent: [
-        { id: "inst_gov_1i", text: "The elders hand down a gentle governance ruling, suggesting improvements." },
-        { id: "inst_gov_2i", text: "A compassionate but firm governance ruling is issued by the committee to guide the heya." },
-        { id: "inst_gov_3i", text: "The board's governance ruling sends a clear message about institutional integrity." },
-        { id: "inst_gov_4i", text: "An unprecedented governance ruling alters the future trajectory of the stable." },
-        { id: "inst_gov_5i", text: "The disciplinary panel announces a final, binding governance ruling." }
+      scientist: [
+        { id: "inst_gov_sci_1", text: "A firm governance ruling is issued. The Oyakata responds by auditing the stable’s entire operational dataset for inefficiencies." },
+        { id: "inst_gov_sci_2", text: "The elders’ decree prompts the stablemaster to implement a rigorous, evidence-based compliance tracking system." },
+        { id: "inst_gov_sci_3", text: "Following the board’s ruling, the Oyakata methodically analyzes the feedback, planning a clinical overhaul of stable protocols." },
+        { id: "inst_gov_sci_4", text: "The disciplinary panel’s decision is met with cool logic as the stablemaster updates their long-term performance models." }
+      ],
+      gambler: [
+        { id: "inst_gov_gam_1", text: "The elders announce a harsh ruling. The Oyakata laughs it off, already plotting a daring wager to restore the stable’s honor." },
+        { id: "inst_gov_gam_2", text: "A severe governance mandate is handed down, but the stablemaster is willing to risk everything on a bold new recruitment strategy." },
+        { id: "inst_gov_gam_3", text: "The compliance committee issues its verdict. The Oyakata sees it not as a setback, but as a high-stakes challenge." },
+        { id: "inst_gov_gam_4", text: "Faced with the board’s ruling, the stablemaster makes a reckless push for immediate promotion, ignoring the potential fallout." }
+      ],
+      nurturer: [
+        { id: "inst_gov_nur_1", text: "A heavy governance ruling falls on the heya. The Oyakata gathers the wrestlers, ensuring the news does not break their spirits." },
+        { id: "inst_gov_nur_2", text: "The board issues a stern warning. The stablemaster takes the blame personally, shielding the rikishi from the political fallout." },
+        { id: "inst_gov_nur_3", text: "Despite the severe compliance mandate, the Oyakata maintains a sanctuary of support and gentle guidance within the stable walls." },
+        { id: "inst_gov_nur_4", text: "The elders demand immediate changes; the stablemaster complies, but refuses to compromise the family-like atmosphere of the heya." }
+      ],
+      tyrant: [
+        { id: "inst_gov_tyr_1", text: "The governance ruling incites the Oyakata’s wrath, resulting in terrifying, punitive drills for every member of the stable." },
+        { id: "inst_gov_tyr_2", text: "A severe mandate from the JSA triggers a ruthless crackdown by the stablemaster, who accepts no excuses for failure." },
+        { id: "inst_gov_tyr_3", text: "The board’s decree is met with an iron fist. The Oyakata threatens immediate expulsion for anyone who steps out of line." },
+        { id: "inst_gov_tyr_4", text: "Faced with the compliance committee’s wrath, the stablemaster redirects their fury, making the training environment a living hell." }
+      ],
+      strategist: [
+        { id: "inst_gov_str_1", text: "The elders issue their ruling. The Oyakata smirks, having already anticipated the move and prepared a brilliant counter-strategy." },
+        { id: "inst_gov_str_2", text: "A severe governance mandate arrives, but the stablemaster uses the opportunity to outmaneuver a rival heya in the press." },
+        { id: "inst_gov_str_3", text: "The compliance committee’s demands are strict, yet the Oyakata weaves them into a master plan to secure future influence." },
+        { id: "inst_gov_str_4", text: "The board’s decision is final, but the stablemaster’s calculated political machinations ensure the heya ultimately benefits." }
       ]
     },
     WELFARE_ALERT: {
@@ -607,19 +655,41 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
         { id: "inst_wel_4", text: "The stablemaster is summoned following a serious welfare alert." },
         { id: "inst_wel_5", text: "Welfare monitors issue a stern warning detailing unacceptable conditions." }
       ],
-      strict: [
-        { id: "inst_wel_1s", text: "A critical welfare violation notice is triggered, prompting an immediate investigation by the JSA." },
-        { id: "inst_wel_2s", text: "The welfare committee raises a red flag regarding conditions at the stable." },
-        { id: "inst_wel_3s", text: "A formal welfare violation notice underscores deep concerns for the rikishi's wellbeing." },
-        { id: "inst_wel_4s", text: "The Oyakata is summoned following a serious welfare violation notice." },
-        { id: "inst_wel_5s", text: "Welfare monitors issue a stern warning detailing unacceptable conditions." }
+      traditionalist: [
+        { id: "inst_wel_trad_1", text: "A welfare alert is triggered. The Oyakata scoffs at modern softness, insisting that true sumo requires pushing through the pain." },
+        { id: "inst_wel_trad_2", text: "The JSA flags a welfare concern, but the stablemaster firmly believes that grueling, endless repetition is the only path to greatness." },
+        { id: "inst_wel_trad_3", text: "Despite the welfare warning, the Oyakata maintains the old ways, commanding injured rikishi to show their fighting spirit." },
+        { id: "inst_wel_trad_4", text: "A formal welfare notice arrives. The stablemaster bows respectfully to the officials but secretly laments the loss of traditional toughness." }
       ],
-      indulgent: [
-        { id: "inst_wel_1i", text: "A minor welfare alert is triggered, prompting an immediate investigation by the JSA." },
-        { id: "inst_wel_2i", text: "The welfare committee raises a red flag regarding conditions at the heya." },
-        { id: "inst_wel_3i", text: "A formal welfare alert underscores deep concerns for the rikishi's wellbeing." },
-        { id: "inst_wel_4i", text: "The stablemaster is summoned following a routine welfare alert." },
-        { id: "inst_wel_5i", text: "Welfare monitors issue a stern warning detailing unacceptable conditions." }
+      scientist: [
+        { id: "inst_wel_sci_1", text: "A welfare alert prompts the Oyakata to immediately consult with sports therapists and overhaul the stable’s recovery protocols." },
+        { id: "inst_wel_sci_2", text: "The JSA issues a health warning; the stablemaster responds by analyzing nutritional data and enforcing mandatory rest periods." },
+        { id: "inst_wel_sci_3", text: "Following the welfare flag, the Oyakata implements a biomechanical review to prevent further overtraining injuries." },
+        { id: "inst_wel_sci_4", text: "The compliance committee raises a concern. The stablemaster adjusts the training load metrics to ensure optimal, injury-free performance." }
+      ],
+      gambler: [
+        { id: "inst_wel_gam_1", text: "A welfare alert is issued, but the Oyakata pushes their star rikishi back into the ring, betting everything on a miraculous performance." },
+        { id: "inst_wel_gam_2", text: "The JSA warns of overtraining. The stablemaster ignores the odds, risking catastrophic injury for a shot at the Yusho." },
+        { id: "inst_wel_gam_3", text: "A formal health concern is raised; the Oyakata takes a massive gamble, prioritizing short-term glory over long-term wellness." },
+        { id: "inst_wel_gam_4", text: "The welfare monitors hover, but the stablemaster recklessly throws caution to the wind, demanding the rikishi fight through the agony." }
+      ],
+      nurturer: [
+        { id: "inst_wel_nur_1", text: "Devastated by the welfare alert, the Oyakata immediately pulls the affected rikishi from practice to ensure a full, peaceful recovery." },
+        { id: "inst_wel_nur_2", text: "The JSA flags a health issue. The stablemaster acts like a protective parent, hovering over the medical staff and demanding the best care." },
+        { id: "inst_wel_nur_3", text: "A welfare warning breaks the Oyakata’s heart; they vow to transform the heya into a sanctuary of healing and support." },
+        { id: "inst_wel_nur_4", text: "Following the alert, the stablemaster reassures the frightened wrestler, promising that their long-term health will always come first." }
+      ],
+      tyrant: [
+        { id: "inst_wel_tyr_1", text: "A welfare alert from the JSA is met with outright hostility; the Oyakata berates the injured rikishi for showing weakness." },
+        { id: "inst_wel_tyr_2", text: "The committee raises a red flag over brutal conditions. The stablemaster responds by demanding even more from those who remain standing." },
+        { id: "inst_wel_tyr_3", text: "A formal health warning is issued. The Oyakata threatens to dismiss anyone who uses the alert as an excuse to avoid practice." },
+        { id: "inst_wel_tyr_4", text: "The welfare monitors issue a stern notice. The stablemaster’s terrifying temper flares, creating an atmosphere of absolute dread." }
+      ],
+      strategist: [
+        { id: "inst_wel_str_1", text: "A welfare alert threatens the stable’s reputation. The Oyakata quickly spins the narrative, announcing a revolutionary rest program." },
+        { id: "inst_wel_str_2", text: "The JSA issues a health warning; the stablemaster cunningly uses the downtime to scout opponents and refine tactical gameplans." },
+        { id: "inst_wel_str_3", text: "Following the welfare flag, the Oyakata carefully manages the PR fallout while quietly adjusting the training meta to avoid further scrutiny." },
+        { id: "inst_wel_str_4", text: "A formal concern is raised. The stablemaster plays the politicians perfectly, securing an extension on the compliance deadline." }
       ]
     }
   },
@@ -1179,6 +1249,10 @@ function selectPhraseForFact(
       }
       else if (fact.reason === "timing_counter") bucket = lib.momentum.counter_turn;
       else if (fact.reason === "fatigue_turn") bucket = lib.momentum.fatigue_swing;
+      else if (fact.reason === "grip_change") bucket = lib.momentum.grip_change;
+      else if (fact.reason === "footwork_angle") bucket = lib.momentum.footwork_angle;
+      else if (fact.reason === "mistake") bucket = lib.momentum.mistake;
+      else if (fact.reason === "tachiai_win") bucket = lib.momentum.tachiai_win;
 
       const chosen = weightedPick(bucket, rng);
       return { phrase: chosen, tags: mergeTags(chosen.tags) };
@@ -1220,10 +1294,8 @@ function selectPhraseForFact(
       const eventBucketGroup = lib.institutional[instFact.eventType];
       let bucket = eventBucketGroup.default;
 
-      if (instFact.oyakataPersonality === "strict") {
-        bucket = eventBucketGroup.strict;
-      } else if (instFact.oyakataPersonality === "indulgent") {
-        bucket = eventBucketGroup.indulgent;
+      if (instFact.oyakataPersonality && instFact.oyakataPersonality !== "default") {
+        bucket = eventBucketGroup[instFact.oyakataPersonality as keyof typeof eventBucketGroup];
       }
 
       const chosen = weightedPick(bucket, rng);

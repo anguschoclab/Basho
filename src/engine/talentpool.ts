@@ -1029,7 +1029,7 @@ function npcOfferTick(world: WorldState): void {
   const playerHeyaId = world.playerHeyaId as string | undefined;
   const priorities = world.npcScoutingPriorities ?? {};
 
-  const heyaIds = Array.from(world.heyas.keys()).filter((id) => !playerHeyaId || id !== playerHeyaId);
+  const heyaIds = Array.from(world.heyas.keys()).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).filter((id) => !playerHeyaId || id !== playerHeyaId);
   if (heyaIds.length === 0) return;
 
   const rng = rngForWorld(world, "talentpool", `npc_offers::w${now}`);

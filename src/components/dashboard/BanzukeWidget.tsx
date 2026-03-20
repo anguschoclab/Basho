@@ -32,22 +32,30 @@ export function BanzukeWidget() {
 
   const topRanked = useMemo(() => {
     if (!world) return [];
-    const arr = [];
+
+    // ⚡ Bolt Performance Optimization: Collect all active rikishi
+    const activeRikishi = [];
     for (const r of world.rikishi.values()) {
-      if (!r.isRetired) arr.push(r);
+      if (!r.isRetired) activeRikishi.push(r);
     }
-    return arr
-      .sort((a, b) => {
-        const ra = RANK_ORDER[a.rank] ?? 99;
-        const rb = RANK_ORDER[b.rank] ?? 99;
-        if (ra !== rb) return ra - rb;
-        return (a.rankNumber || 0) - (b.rankNumber || 0);
-      })
-      .slice(0, 10)
-      .map(r => ({
+
+    // Sort, slice, and project in a minimal pipeline
+    activeRikishi.sort((a, b) => {
+      const ra = RANK_ORDER[a.rank] ?? 99;
+      const rb = RANK_ORDER[b.rank] ?? 99;
+      if (ra !== rb) return ra - rb;
+      return (a.rankNumber || 0) - (b.rankNumber || 0);
+    });
+
+    const top10 = activeRikishi.slice(0, 10);
+    const result = [];
+    for (const r of top10) {
+      result.push({
         entry: projectRosterEntry(r),
         isPlayer: r.heyaId === world.playerHeyaId,
-      }));
+      });
+    }
+    return result;
   }, [world]);
 
   if (!world) return null;
@@ -59,7 +67,7 @@ export function BanzukeWidget() {
           <ScrollText className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Banzuke</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/banzuke")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/banzuke")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full banzuke rankings">
           Full Rankings <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

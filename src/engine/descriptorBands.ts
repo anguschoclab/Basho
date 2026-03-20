@@ -91,6 +91,13 @@ export function toStatBand(value: number, prev?: StatBand): StatBand {
   return toBand(value, STAT_BANDS, prev);
 }
 
+/**
+ * Generic descriptor band (alias for toStatBand) for generic 0-100 attributes.
+ */
+export function toDescriptorBand(value: number, prev?: StatBand): StatBand {
+  return toStatBand(value, prev);
+}
+
 /** s t a t_ b a n d_ l a b e l s. */
 export const STAT_BAND_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
@@ -253,6 +260,39 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
   legendary: "Legendary",
 };
 
+// === Satisfaction Bands ===
+
+/** Type representing satisfaction band. */
+export type SatisfactionBand = "thrilled" | "happy" | "content" | "concerned" | "unhappy";
+
+/** s a t i s f a c t i o n_ b a n d s. */
+export const SATISFACTION_BANDS: BandDef<SatisfactionBand>[] = [
+  { band: "unhappy", min: 0, max: 20 },
+  { band: "concerned", min: 20, max: 40 },
+  { band: "content", min: 40, max: 60 },
+  { band: "happy", min: 60, max: 80 },
+  { band: "thrilled", min: 80, max: Infinity },
+];
+
+/**
+ * To satisfaction band.
+ *  * @param satisfaction - The Satisfaction.
+ *  * @param prev - The Prev.
+ *  * @returns The result.
+ */
+export function toSatisfactionBand(satisfaction: number, prev?: SatisfactionBand): SatisfactionBand {
+  return toBand(satisfaction, SATISFACTION_BANDS, prev);
+}
+
+/** s a t i s f a c t i o n_ l a b e l s. */
+export const SATISFACTION_LABELS: Record<SatisfactionBand, string> = {
+  thrilled: "Thrilled",
+  happy: "Happy",
+  content: "Content",
+  concerned: "Concerned",
+  unhappy: "Unhappy",
+};
+
 // === Oyakata Trait Bands ===
 
 /** Type representing trait band. */
@@ -400,6 +440,26 @@ export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
 export function toPotentialBand(talentSeed: number | undefined, prev?: PotentialBand): PotentialBand {
   if (talentSeed == null) return "unknown";
   return toBand(talentSeed, POTENTIAL_BANDS, prev) ?? "unknown";
+}
+
+// === Injury Severity Bands ===
+
+export type InjurySeverityBand = "minor" | "moderate" | "serious" | "unknown";
+
+export const INJURY_SEVERITY_BANDS: BandDef<InjurySeverityBand>[] = [
+  { band: "minor", min: 0, max: 30 },
+  { band: "moderate", min: 30, max: 70 },
+  { band: "serious", min: 70, max: Infinity },
+];
+
+export function toInjurySeverityBand(severity: number | string | undefined, prev?: InjurySeverityBand): InjurySeverityBand {
+  if (severity == null) return "unknown";
+  if (typeof severity === "string") {
+    const s = severity.toLowerCase();
+    if (s === "minor" || s === "moderate" || s === "serious") return s as InjurySeverityBand;
+    return "unknown";
+  }
+  return toBand(severity, INJURY_SEVERITY_BANDS, prev) ?? "unknown";
 }
 
 /** p o t e n t i a l_ l a b e l s. */
