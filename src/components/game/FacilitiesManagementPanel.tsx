@@ -20,7 +20,8 @@ import {
   type FacilityAxis,
   type UpgradeResult,
 } from "@/engine/facilities";
-import { projectHeya } from "@/engine/uiModels";
+import { getHeyaFacilitiesSummary } from "@/engine/uiDigest";
+import { STAT_BAND_LABELS } from "@/engine/descriptorBands";
 
 const AXIS_META: Record<FacilityAxis, { label: string; icon: typeof Building; description: string; effectLabel: string }> = {
   training: {
@@ -59,28 +60,6 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   minimal: "Minimal",
 };
 
-import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/engine/utils/ui-helpers";
-
-/**
- * Get effect percent.
- *  * @param axis - The Axis.
- *  * @param level - The Level.
- *  * @returns The result.
- */
-function getEffectPercent(axis: FacilityAxis, level: number): string {
-  if (axis === "training") {
-    const mult = 0.85 + (level / 100) * 0.35;
-    return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
-  }
-  if (axis === "recovery") {
-    const mult = 0.9 + level / 166;
-    return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
-  }
-  // nutrition
-  const mult = 0.92 + (level / 100) * 0.16;
-  return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
-}
-
 /** Defines the structure for facilities management panel props. */
 interface FacilitiesManagementPanelProps {
   heya: Heya;
@@ -104,6 +83,9 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
     const result = onUpgrade(axis, points);
     if (result) setLastResult(result);
   };
+
+  const summary = getHeyaFacilitiesSummary(heya);
+  if (!summary) return null;
 
   return (
     <>
@@ -163,31 +145,12 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
         {axes.map((axis) => {
           const meta = AXIS_META[axis];
           const Icon = meta.icon;
-          const level = heya.facilities[axis];
-
-          let canAfford1 = false;
-          let canAfford5 = false;
-          let display1 = "";
-          let display5 = "";
-
-          if (axis === "training") {
-            canAfford1 = uiHeya.canAffordTraining1;
-            canAfford5 = uiHeya.canAffordTraining5;
-            display1 = uiHeya.upgradeCostDisplay.training1;
-            display5 = uiHeya.upgradeCostDisplay.training5;
-          } else if (axis === "recovery") {
-            canAfford1 = uiHeya.canAffordRecovery1;
-            canAfford5 = uiHeya.canAffordRecovery5;
-            display1 = uiHeya.upgradeCostDisplay.recovery1;
-            display5 = uiHeya.upgradeCostDisplay.recovery5;
-          } else if (axis === "nutrition") {
-            canAfford1 = uiHeya.canAffordNutrition1;
-            canAfford5 = uiHeya.canAffordNutrition5;
-            display1 = uiHeya.upgradeCostDisplay.nutrition1;
-            display5 = uiHeya.upgradeCostDisplay.nutrition5;
-          }
-
-          const atMax = level >= 100;
+          const band = summary[`${axis}Band`];
+          const cost5 = getUpgradeCostEstimate(heya, axis, 5);
+          const cost1 = getUpgradeCostEstimate(heya, axis, 1);
+          const canAfford5 = heya.funds >= cost5;
+          const canAfford1 = heya.funds >= cost1;
+          const atMax = summary.isMaxed[axis];
 
           return (
             <Card key={axis} className="paper">
@@ -201,21 +164,10 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 {/* Level bar */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-semibold ${getLevelColor(level)}`}>
-                      {getLevelBand(level)}
+                    <span className={`text-sm font-semibold capitalize`}>
+                      {STAT_BAND_LABELS[band as keyof typeof STAT_BAND_LABELS] ?? band}
                     </span>
-                    <span className="text-xs font-mono text-muted-foreground">{level}/100</span>
                   </div>
-                  <Progress value={level} className="h-2" />
-                </div>
-
-                {/* Effect display */}
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>{meta.effectLabel}: </span>
-                  <span className={`font-medium ${level >= 50 ? "text-emerald-400" : "text-foreground"}`}>
-                    {getEffectPercent(axis, level)}
-                  </span>
                 </div>
 
                 <p className="text-xs text-muted-foreground">{meta.description}</p>

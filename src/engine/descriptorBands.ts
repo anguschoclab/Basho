@@ -91,6 +91,13 @@ export function toStatBand(value: number, prev?: StatBand): StatBand {
   return toBand(value, STAT_BANDS, prev);
 }
 
+/**
+ * Generic descriptor band (alias for toStatBand) for generic 0-100 attributes.
+ */
+export function toDescriptorBand(value: number, prev?: StatBand): StatBand {
+  return toStatBand(value, prev);
+}
+
 /** s t a t_ b a n d_ l a b e l s. */
 export const STAT_BAND_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
@@ -400,6 +407,26 @@ export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
 export function toPotentialBand(talentSeed: number | undefined, prev?: PotentialBand): PotentialBand {
   if (talentSeed == null) return "unknown";
   return toBand(talentSeed, POTENTIAL_BANDS, prev) ?? "unknown";
+}
+
+// === Injury Severity Bands ===
+
+export type InjurySeverityBand = "minor" | "moderate" | "serious" | "unknown";
+
+export const INJURY_SEVERITY_BANDS: BandDef<InjurySeverityBand>[] = [
+  { band: "minor", min: 0, max: 30 },
+  { band: "moderate", min: 30, max: 70 },
+  { band: "serious", min: 70, max: Infinity },
+];
+
+export function toInjurySeverityBand(severity: number | string | undefined, prev?: InjurySeverityBand): InjurySeverityBand {
+  if (severity == null) return "unknown";
+  if (typeof severity === "string") {
+    const s = severity.toLowerCase();
+    if (s === "minor" || s === "moderate" || s === "serious") return s as InjurySeverityBand;
+    return "unknown";
+  }
+  return toBand(severity, INJURY_SEVERITY_BANDS, prev) ?? "unknown";
 }
 
 /** p o t e n t i a l_ l a b e l s. */

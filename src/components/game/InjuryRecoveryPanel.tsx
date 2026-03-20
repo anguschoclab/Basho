@@ -7,21 +7,9 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
-import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
-import { toInjuryEvent, clearInjury } from "@/engine/injuries";
-import { projectRikishi } from "@/engine/uiModels";
-
-/** Defines the structure for injured rikishi info. */
-interface InjuredRikishiInfo {
-  rikishi: Rikishi;
-  severity: string;
-  location: string;
-  weeksRemaining: number;
-  weeksTotal: number;
-  recoveryProgress: number;
-  facilityBonus: number;
-}
+import { getHeyaFacilitiesSummary, getInjuredRosterSummary } from "@/engine/uiDigest";
+import { STAT_BAND_LABELS } from "@/engine/descriptorBands";
 
 /**
  * Get severity color.
@@ -58,45 +46,14 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
 
-  const injuredRikishi = useMemo((): InjuredRikishiInfo[] => {
-    if (!playerHeya) return [];
-    const result: InjuredRikishiInfo[] = [];
+  const injuredRikishi = useMemo(() => {
+    if (!playerHeyaId) return [];
+    return getInjuredRosterSummary(world, playerHeyaId);
+  }, [world, playerHeyaId]);
 
-    for (const rId of playerHeya.rikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r || !r.injured) continue;
-
-      const injuryStatus = r.injuryStatus;
-      const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
-      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
-      const recoveryProgress = weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
-      
-      const recoveryFacility = playerHeya.facilities?.recovery ?? 50;
-      const facilityBonus = Math.round((recoveryFacility - 50) / 10); // -5 to +5 weeks effect
-
-      const uiRikishi = projectRikishi(r, world);
-
-      result.push({
-        rikishi: r,
-        severity: uiRikishi.injurySeverityBand,
-        location: injuryStatus?.location || "unknown",
-        weeksRemaining,
-        weeksTotal,
-        recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
-        facilityBonus,
-      });
-    }
-
-    result.sort((a, b) => {
-      const sevOrder: Record<string, number> = { serious: 0, moderate: 1, minor: 2, unknown: 3 };
-      return (sevOrder[a.severity] ?? 3) - (sevOrder[b.severity] ?? 3);
-    });
-
-    return result;
-  }, [world, playerHeya]);
-
-  const recoveryFacility = playerHeya?.facilities?.recovery ?? 50;
-  const recoveryLabel = recoveryFacility >= 80 ? "Excellent" : recoveryFacility >= 60 ? "Good" : recoveryFacility >= 40 ? "Adequate" : "Basic";
+  const facilitySummary = getHeyaFacilitiesSummary(playerHeya);
+  const recoveryBand = facilitySummary?.recoveryBand ?? "capable";
+  const recoveryLabel = STAT_BAND_LABELS[recoveryBand] ?? "Adequate";
 
   return (
     <div className="space-y-4">
@@ -108,13 +65,12 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
               <Heart className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Recovery Facilities</span>
             </div>
-            <Badge variant="outline">{recoveryLabel} ({recoveryFacility}/100)</Badge>
+            <Badge variant="outline">{recoveryLabel}</Badge>
           </div>
-          <Progress value={recoveryFacility} className="h-2" />
           <p className="text-xs text-muted-foreground mt-2">
-            {recoveryFacility >= 70
+            {recoveryBand === "exceptional" || recoveryBand === "outstanding"
               ? "Your recovery facilities accelerate healing. Injured wrestlers return faster."
-              : recoveryFacility >= 40
+              : recoveryBand === "strong" || recoveryBand === "capable" || recoveryBand === "developing"
                 ? "Standard recovery support. Invest in facilities to speed up rehabilitation."
                 : "Basic recovery only. Upgrading facilities would significantly reduce injury downtime."}
           </p>
@@ -149,7 +105,7 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
                           <h4 className="font-display font-semibold">
                             <RikishiName id={info.rikishi.id} name={info.rikishi.shikona} />
                           </h4>
-                          {getSeverityBadge(info.severity)}
+                          {getSeverityBadge(info.severityBand)}
                         </div>
 
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
@@ -186,10 +142,10 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
                       </div>
 
                       <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${
-                        info.severity === "serious" ? "bg-destructive/10" :
-                        info.severity === "moderate" ? "bg-amber-500/10" : "bg-yellow-500/10"
+                        info.severityBand === "serious" ? "bg-destructive/10" :
+                        info.severityBand === "moderate" ? "bg-amber-500/10" : "bg-yellow-500/10"
                       }`}>
-                        <AlertTriangle className={`h-5 w-5 ${getSeverityColor(info.severity)}`} />
+                        <AlertTriangle className={`h-5 w-5 ${getSeverityColor(info.severityBand)}`} />
                       </div>
                     </div>
                   </CardContent>
