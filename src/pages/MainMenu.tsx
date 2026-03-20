@@ -62,6 +62,7 @@ import type { BashoName } from "../../types/basho";
 import { BASHO_CALENDAR } from "@/engine/calendar";
 import { deleteSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { makeDeterministicSeed } from "@/engine/utils/seed";
 
 const STATURE_CONFIG: Record<
   StatureBand,
@@ -237,15 +238,6 @@ function safeShortSeed(seed: string | undefined | null): string {
   return seed.length <= 14 ? seed : `${seed.slice(0, 14)}…`;
 }
 
-/**
- * Make deterministic seed.
- *  * @param prefix - The Prefix.
- *  * @returns The result.
- */
-function makeDeterministicSeed(prefix = "world"): string {
-  // No Math.random() — deterministic-friendly, stable, adequate uniqueness for local worlds
-  return `${prefix}-${Date.now()}`;
-}
 
 /**
  * Safe rank sort key.
