@@ -14,7 +14,7 @@ import type { Heya } from "./types/heya";
 import type { WorldState } from "./types/world";
 import type { Rank, Division, Side } from "./types/banzuke";
 import type { Style, TacticalArchetype } from "./types/combat";
-import type { BoutResult, BashoResult } from "./types/basho";
+import type { BoutResult } from "./types/basho";
 import { toRikishiDescriptor, toPotentialBand, toPrizeBand, PRIZE_LABELS, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
@@ -474,50 +474,6 @@ export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
   };
 }
 
-// ─────────────────────────────────────────
-//  UIBashoSummary — Post-basho recap
-// ─────────────────────────────────────────
-
-/** Defines the structure for u i basho summary. */
-export interface UIBashoSummary {
-  year: number;
-  bashoNumber: number;
-  bashoName: string;
-  yushoShikona: string;
-  yushoHeyaName: string;
-  junYushoShikona: string[];
-  ginoShoShikona?: string;
-  kantoshoShikona?: string;
-  shukunshoShikona?: string;
-}
-
-/**
- * Project basho summary.
- *  * @param result - The Result.
- *  * @param world - The World.
- *  * @returns The result.
- */
-export function projectBashoSummary(result: BashoResult, world: WorldState): UIBashoSummary {
-  const lookup = (id?: Id) => {
-    if (!id) return undefined;
-    const r = world.rikishi.get(id);
-    return r?.shikona ?? "Unknown";
-  };
-  const yushoR = world.rikishi.get(result.yusho);
-  const yushoHeya = yushoR ? world.heyas.get(yushoR.heyaId) : undefined;
-
-  return {
-    year: result.year,
-    bashoNumber: result.bashoNumber,
-    bashoName: result.bashoName,
-    yushoShikona: lookup(result.yusho) ?? "Unknown",
-    yushoHeyaName: yushoHeya?.name ?? "",
-    junYushoShikona: result.junYusho.map(id => lookup(id) ?? "Unknown"),
-    ginoShoShikona: lookup(result.ginoSho),
-    kantoshoShikona: lookup(result.kantosho),
-    shukunshoShikona: lookup(result.shukunsho),
-  };
-}
 
 // ─────────────────────────────────────────
 //  Legacy compat: RikishiUIModel alias
