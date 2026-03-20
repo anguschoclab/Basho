@@ -15,6 +15,8 @@ import type { Id } from "./types/common";
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
+import { buyMyoseki } from "./myosekiMarket";
+import * as talentpool from "./talentpool";
 import {
   getCachedPerception,
   type PerceptionSnapshot,
@@ -614,4 +616,58 @@ export function tickWeek(world: WorldState): number {
   enforceHardCapRosterOverflow(world);
 
   return decisionsApplied;
+}
+
+
+/**
+ * tickMonthly(world)
+ * NPC Manager AI monthly decision loop:
+ * - Evaluate finances and bid on available Myoseki (Elder stock)
+ */
+export function tickMonthly(world: WorldState): void {
+  if (!world.myosekiMarket) return;
+
+  for (const heya of world.heyas.values()) {
+    if (heya.id === world.playerHeyaId) continue;
+
+    const oyakata = world.oyakata.get(heya.oyakataId);
+    if (!oyakata) continue;
+
+    if (heya.funds > 300_000_000 && oyakata.traits.ambition > 50) {
+      const stocks = Object.values(world.myosekiMarket.stocks);
+      for (const stock of stocks) {
+        if (stock.status === "available" && stock.askingPrice && stock.askingPrice < (heya.funds - 100_000_000)) {
+          buyMyoseki(world, oyakata.id, heya.id, stock.id);
+          break; // Only buy one per month per heya
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * tickYear(world)
+ * NPC Manager AI yearly decision loop.
+ */
+export function tickYear(world: WorldState): void {
+  // Yearly NPC Talent Scouting
+  // Assess roster size and attempt to fill vacancies to maintain a healthy stable size (~8 rikishi)
+  const vacanciesByHeyaId: Record<Id, number> = {};
+  for (const heya of world.heyas.values()) {
+    if (heya.id === world.playerHeyaId) continue;
+
+    // Stable owners with higher ambition might want larger stables, but let's default to a baseline of 8
+    // representing a minimally viable heya size for daily keiko.
+    const targetSize = 8;
+    const currentSize = heya.rikishiIds.length;
+
+    if (currentSize < targetSize) {
+      vacanciesByHeyaId[heya.id] = targetSize - currentSize;
+    }
+  }
+
+  if (Object.keys(vacanciesByHeyaId).length > 0) {
+    talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId);
+  }
 }
