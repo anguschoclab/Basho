@@ -87,7 +87,7 @@ export function StableWidget() {
         <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={sponsorshipDetails?.koenkaiStrengthBand === "none" ? "None" : sponsorshipDetails?.koenkaiStrengthBand ?? "None"} />
       </div>
 
-      <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors">
+      <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors" aria-label="Manage stable">
         Manage Stable <ChevronRight className="h-3 w-3" />
       </Button>
     </div>

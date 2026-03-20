@@ -32,7 +32,7 @@ export function FinancesWidget() {
           <Coins className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Finances</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/economy" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/economy" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View financial details">
           Details <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

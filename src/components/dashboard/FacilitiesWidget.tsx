@@ -28,11 +28,11 @@ export function FacilitiesWidget() {
   const world = state.world;
   if (!world?.playerHeyaId) return null;
 
-  const heya = world.heyas.get(world.playerHeyaId);
-  if (!heya) return null;
+  const rawHeya = world.heyas.get(world.playerHeyaId);
+  if (!rawHeya) return null;
 
-  const maintenance = getMonthlyMaintenanceCost(heya);
-  const canAfford = heya.funds >= maintenance;
+  const uiHeya = projectHeya(rawHeya, world);
+  const canAfford = uiHeya.maintenanceAffordable;
   const axes = ["training", "recovery", "nutrition"] as const;
 
   const summary = getHeyaFacilitiesSummary(heya);
@@ -61,7 +61,7 @@ export function FacilitiesWidget() {
             </span>
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="Manage facilities">
           Manage <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
@@ -89,7 +89,7 @@ export function FacilitiesWidget() {
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
         <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
-          ¥{maintenance.toLocaleString()}
+          {uiHeya.monthlyMaintenanceDisplay}
         </span>
       </div>
 

@@ -58,7 +58,7 @@ export function ScoutingWidget() {
           <Search className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scouting</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/talent-pool" })} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/talent-pool" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full scouting board">
           Full Board <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

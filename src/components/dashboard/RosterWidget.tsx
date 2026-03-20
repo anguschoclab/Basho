@@ -16,12 +16,16 @@ export function RosterWidget() {
     if (!world?.playerHeyaId) return [];
     const heya = world.heyas.get(world.playerHeyaId);
     if (!heya) return [];
-    return heya.rikishiIds
-      .map(id => world.rikishi.get(id))
-      .filter(Boolean)
-      .filter(r => !r!.isRetired)
-      .map(r => projectRosterEntry(r!))
-      .sort((a, b) => b.momentum - a.momentum);
+
+    // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
+    const entries: UIRosterEntry[] = [];
+    for (const id of heya.rikishiIds) {
+      const r = world.rikishi.get(id);
+      if (r && !r.isRetired) {
+        entries.push(projectRosterEntry(r));
+      }
+    }
+    return entries.sort((a, b) => b.momentum - a.momentum);
   }, [world]);
 
   if (!world) return null;
@@ -36,7 +40,7 @@ export function RosterWidget() {
           <Users className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">My Roster</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/rikishi")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/rikishi")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View all rikishi">
           All Rikishi <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

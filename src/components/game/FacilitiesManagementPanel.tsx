@@ -17,8 +17,6 @@ import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import {
-  getUpgradeCostEstimate,
-  getMonthlyMaintenanceCost,
   type FacilityAxis,
   type UpgradeResult,
 } from "@/engine/facilities";
@@ -77,7 +75,7 @@ interface FacilitiesManagementPanelProps {
 export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: FacilitiesManagementPanelProps) {
   const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
 
-  const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya.facilities]);
+  const uiHeya = useMemo(() => projectHeya(heya, world), [heya, world]);
 
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
 
@@ -111,7 +109,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 <Coins className="h-3.5 w-3.5" />
                 Monthly Upkeep
               </div>
-              <span className="font-mono text-foreground">¥{monthlyMaintenance.toLocaleString()}</span>
+              <span className="font-mono text-foreground">{uiHeya.monthlyMaintenanceDisplay}</span>
             </div>
           </div>
         </CardHeader>
@@ -120,7 +118,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
             Facilities influence training gains, injury recovery, and nutrition quality.
             They decay monthly if maintenance costs aren't covered. Invest to improve — costs scale with level.
           </p>
-          {heya.funds < monthlyMaintenance && (
+          {!uiHeya.maintenanceAffordable && (
             <div className="mt-3 flex items-center gap-2 text-sm text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <span>Warning: Current funds may not cover monthly maintenance. Facilities will degrade.</span>
@@ -185,7 +183,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                       onClick={() => handleUpgrade(axis, 1)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +1 (¥{cost1.toLocaleString()})
+                      +1 ({display1})
                     </Button>
                     <Button
                       size="sm"
@@ -195,7 +193,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                       onClick={() => handleUpgrade(axis, 5)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +5 (¥{cost5.toLocaleString()})
+                      +5 ({display5})
                     </Button>
                   </div>
                 )}

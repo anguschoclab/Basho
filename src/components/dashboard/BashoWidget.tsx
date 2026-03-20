@@ -15,26 +15,36 @@ export function BashoWidget() {
     if (!world?.currentBasho) return null;
     const basho = world.currentBasho;
     const matches = basho.matches || [];
-    const completed = matches.filter((m: any) => m.result);
 
-    let kinboshi = 0, upsets = 0, injuries = 0;
-    for (const m of completed) {
-      if ((m.result as any)?.isKinboshi) kinboshi++;
-      if (m.result?.upset) upsets++;
+    // ⚡ Bolt Performance Optimization: Single-pass loops to avoid allocating intermediate arrays
+    let completedCount = 0;
+    let kinboshi = 0;
+    let upsets = 0;
+    let injuries = 0;
+
+    for (const m of matches) {
+      if (m.result) {
+        completedCount++;
+        if ((m.result as any)?.isKinboshi) kinboshi++;
+        if (m.result?.upset) upsets++;
+      }
     }
+
     for (const r of world.rikishi.values()) {
       if (r.injured) injuries++;
     }
 
-    const standings = Array.from(basho.standings.entries())
-      .map(([id, rec]) => ({ id, ...rec }))
-      .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    const standingsArr = [];
+    for (const [id, rec] of basho.standings.entries()) {
+      standingsArr.push({ id, ...rec });
+    }
+    standingsArr.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
 
     return {
       day: basho.day,
-      bouts: completed.length,
+      bouts: completedCount,
       kinboshi, upsets, injuries,
-      top5: standings.slice(0, 5),
+      top5: standingsArr.slice(0, 5),
     };
   }, [world?.currentBasho?.day, world?.currentBasho?.matches?.length]);
 
@@ -70,7 +80,7 @@ export function BashoWidget() {
             {world.currentBasho.bashoName?.toUpperCase()} — Day {stats.day}
           </span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/basho")} className="h-6 text-xs gap-1 text-muted-foreground">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/basho")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View tournament details">
           View <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
