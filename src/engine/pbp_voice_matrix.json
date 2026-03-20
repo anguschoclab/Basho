@@ -337,6 +337,175 @@
         "tags": [
           "crowd_roar"
         ]
+      },
+      {
+        "id": "t_dec_71",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_72",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_73",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_74",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_75",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_76",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_77",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_78",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_79",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_80",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_81",
+        "text": "A battering-ram of a tachi-ai by {leader}! {trailer} is instantly on the defensive."
+      },
+      {
+        "id": "t_dec_82",
+        "text": "{leader} launches off the shikiri-sen like a missile!"
+      },
+      {
+        "id": "t_dec_83",
+        "text": "{trailer} is caught standing straight up by {leader}'s overwhelming tachi-ai."
+      },
+      {
+        "id": "t_dec_84",
+        "text": "{leader}'s initial charge is simply too much to handle today."
+      },
+      {
+        "id": "t_dec_85",
+        "text": "Incredible burst of speed from {leader} right at the tachi-ai!"
+      },
+      {
+        "id": "t_dec_86",
+        "text": "{leader} gets lower, hits harder, and entirely dominates the collision."
+      },
+      {
+        "id": "t_dec_87",
+        "text": "The sheer velocity of {leader}'s tachi-ai leaves {trailer} scrambling."
+      },
+      {
+        "id": "t_dec_88",
+        "text": "A ferocious, unyielding tachi-ai from {leader} sets the tone immediately."
+      },
+      {
+        "id": "t_dec_89",
+        "text": "{leader} takes total command right from the jump with a bone-jarring impact."
+      },
+      {
+        "id": "t_dec_90",
+        "text": "No hesitation! {leader} fires a perfect, heavy-handed tachi-ai."
+      },
+      {
+        "id": "t_dec_91",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_92",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_93",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_94",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_95",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_96",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_97",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_98",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_99",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_100",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_101",
+        "text": "{leader} explodes off the line with a terrifying tachi-ai, instantly gaining the upper hand!"
+      },
+      {
+        "id": "t_dec_102",
+        "text": "A brutal tachi-ai! {leader} blasts forward, seeking immediate control."
+      },
+      {
+        "id": "t_dec_103",
+        "text": "{leader} detonates at the tachi-ai, completely overwhelming {trailer}'s defenses!"
+      },
+      {
+        "id": "t_dec_104",
+        "text": "An explosive tachi-ai from {leader}! Pure power sumo right from the jump."
+      },
+      {
+        "id": "t_dec_105",
+        "text": "{trailer} is blown backward! {leader} wins the tachi-ai decisively."
+      },
+      {
+        "id": "t_dec_106",
+        "text": "A vicious initial charge! {leader}'s tachi-ai is a masterclass in kinetic energy."
+      },
+      {
+        "id": "t_dec_107",
+        "text": "{leader} crashes into {trailer} with devastating force off the mark!"
+      },
+      {
+        "id": "t_dec_108",
+        "text": "The Kokugikan shakes as {leader} delivers a mammoth tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_109",
+        "text": "{trailer} never saw it coming—{leader} launches a lightning-fast tachi-ai."
+      },
+      {
+        "id": "t_dec_110",
+        "text": "Textbook aggression! {leader} owns the center from the first millisecond."
       }
     ],
     "even": [
@@ -539,6 +708,126 @@
       {
         "id": "t_even_50",
         "text": "A solid, workmanlike tachiai from both rikishi!"
+      },
+      {
+        "id": "t_even_51",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_52",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_53",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_54",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_55",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_56",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_57",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_58",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_59",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_60",
+        "text": "No clear winner at the initial charge; the real fight begins now."
+      },
+      {
+        "id": "t_even_61",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_62",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_63",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_64",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_65",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_66",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_67",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_68",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_69",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_70",
+        "text": "No clear winner at the initial charge; the real fight begins now."
+      },
+      {
+        "id": "t_even_71",
+        "text": "Both men collide with a sickening crack at the tachi-ai! Dead even."
+      },
+      {
+        "id": "t_even_72",
+        "text": "A perfectly matched tachi-ai. Neither side gives an inch."
+      },
+      {
+        "id": "t_even_73",
+        "text": "Massive impact on the tachi-ai! They lock horns immediately."
+      },
+      {
+        "id": "t_even_74",
+        "text": "The tachi-ai is a stalemate! It's going to be a battle of attrition."
+      },
+      {
+        "id": "t_even_75",
+        "text": "They meet dead center! A true test of immovable objects."
+      },
+      {
+        "id": "t_even_76",
+        "text": "Incredible tension at the tachi-ai—neither rikishi yields ground."
+      },
+      {
+        "id": "t_even_77",
+        "text": "A ferocious clash, but neither man can establish an early advantage."
+      },
+      {
+        "id": "t_even_78",
+        "text": "The collision sounds like thunder, but the result is a dead heat."
+      },
+      {
+        "id": "t_even_79",
+        "text": "Both rikishi fire off the line simultaneously—perfectly synchronized violence."
+      },
+      {
+        "id": "t_even_80",
+        "text": "No clear winner at the initial charge; the real fight begins now."
       }
     ],
     "slow": [
@@ -741,6 +1030,126 @@
       {
         "id": "t_slow_50",
         "text": "Both men let the tachiai develop slowly and deliberately."
+      },
+      {
+        "id": "t_slow_51",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_52",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_53",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_54",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_55",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_56",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_57",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_58",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_59",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_60",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
+      },
+      {
+        "id": "t_slow_61",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_62",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_63",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_64",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_65",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_66",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_67",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_68",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_69",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_70",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
+      },
+      {
+        "id": "t_slow_71",
+        "text": "A measured, calculating tachi-ai. Both rikishi respect the other's power."
+      },
+      {
+        "id": "t_slow_72",
+        "text": "No reckless charges here. A highly technical, slow-burn tachi-ai."
+      },
+      {
+        "id": "t_slow_73",
+        "text": "They stand up at the tachi-ai, feeling out the distance like chess grandmasters."
+      },
+      {
+        "id": "t_slow_74",
+        "text": "A surprisingly soft tachi-ai! Both men are looking for grips rather than a collision."
+      },
+      {
+        "id": "t_slow_75",
+        "text": "A cautious opening—neither rikishi wants to overcommit on the first step."
+      },
+      {
+        "id": "t_slow_76",
+        "text": "A tactical tachi-ai. It's less about impact and more about positioning."
+      },
+      {
+        "id": "t_slow_77",
+        "text": "They rise together, wary of traps, prioritizing safety over early aggression."
+      },
+      {
+        "id": "t_slow_78",
+        "text": "The initial charge is almost gentle as both men hunt for a favorable angle."
+      },
+      {
+        "id": "t_slow_79",
+        "text": "A rare, stand-up tachi-ai—the mental warfare has already begun."
+      },
+      {
+        "id": "t_slow_80",
+        "text": "Instead of colliding, they lock eyes and hands—a purely technical opening."
       }
     ]
   },
@@ -1989,6 +2398,126 @@
       {
         "id": "str_nod_15_c",
         "text": "A fearsome nodowa from {leader}—pure, unadulterated power sumo."
+      },
+      {
+        "id": "c_nod_16",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_17",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_18",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_19",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_20",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_21",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_22",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_23",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_24",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_25",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_26",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_27",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_28",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_29",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_30",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_31",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_32",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_33",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_34",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_35",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_36",
+        "text": "A masterful nodowa from {leader} keeps {trailer} struggling for oxygen and balance."
+      },
+      {
+        "id": "c_nod_37",
+        "text": "{leader} drives a brutal nodowa into {trailer}'s throat, forcing their chin to the rafters."
+      },
+      {
+        "id": "c_nod_38",
+        "text": "The nodowa pressure is immense! {leader} is dictating the entire bout by the neck."
+      },
+      {
+        "id": "c_nod_39",
+        "text": "{leader} locks in a punishing nodowa, denying {trailer} any forward momentum."
+      },
+      {
+        "id": "c_nod_40",
+        "text": "Fingers buried in the windpipe—{leader}'s nodowa is a weapon of pure control."
+      },
+      {
+        "id": "c_nod_41",
+        "text": "{leader} thrusts a stiff arm directly into {trailer}'s throat!"
+      },
+      {
+        "id": "c_nod_42",
+        "text": "The nodowa elevates {trailer}'s center of gravity—a highly effective tactic."
+      },
+      {
+        "id": "c_nod_43",
+        "text": "{leader} maintains ruthless pressure with a sustained nodowa to the neck."
+      },
+      {
+        "id": "c_nod_44",
+        "text": "{trailer} gasps as {leader}'s nodowa stifles all breathing and offense."
+      },
+      {
+        "id": "c_nod_45",
+        "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
       }
     ],
     "harite_slap": [
@@ -2121,6 +2650,126 @@
       {
         "id": "grp_dbl_5",
         "text": "Moro-zashi! {leader} has double inside control!"
+      },
+      {
+        "id": "c_mor_06",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_07",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_08",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_09",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_10",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_11",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_12",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_13",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_14",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_15",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_mor_16",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_17",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_18",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_19",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_20",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_21",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_22",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_23",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_24",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_25",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_mor_26",
+        "text": "{leader} digs in with a crushing morozashi, completely neutralizing {trailer}'s momentum."
+      },
+      {
+        "id": "c_mor_27",
+        "text": "{leader} establishes a dominant morozashi, controlling the center of gravity."
+      },
+      {
+        "id": "c_mor_28",
+        "text": "{trailer} is trapped! {leader}'s morozashi leaves no avenue for escape."
+      },
+      {
+        "id": "c_mor_29",
+        "text": "A textbook morozashi! {leader} has both arms inside and is steering the bout."
+      },
+      {
+        "id": "c_mor_30",
+        "text": "{leader} slips under the guard to secure a lethal double-inside grip."
+      },
+      {
+        "id": "c_mor_31",
+        "text": "With a deep morozashi, {leader} has effectively shut down all of {trailer}'s options."
+      },
+      {
+        "id": "c_mor_32",
+        "text": "{leader}'s morozashi is unshakeable—pure yotsu mastery on display."
+      },
+      {
+        "id": "c_mor_33",
+        "text": "{trailer} desperately tries to break {leader}'s vice-like morozashi hold."
+      },
+      {
+        "id": "c_mor_34",
+        "text": "The double-inside grip is locked! {leader} is now the undisputed master of this exchange."
+      },
+      {
+        "id": "c_mor_35",
+        "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
       }
     ],
     "over_under": [
@@ -3452,6 +4101,318 @@
       {
         "id": "f_n_50",
         "text": "{winner} with a clinical {kimarite} to finish!"
+      },
+      {
+        "id": "f_norm_51",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_52",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_53",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_54",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_55",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_56",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_57",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_58",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_59",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_60",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_61",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_62",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_63",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_64",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_65",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_66",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_67",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_68",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_69",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_70",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_90",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!",
+        "tags": [
+          "crowd_roar",
+          "dominant"
+        ]
+      },
+      {
+        "id": "f_norm_91",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_92",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish.",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_93",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_75",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_76",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_77",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_78",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_79",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_80",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_81",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_82",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_83",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_84",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
+      },
+      {
+        "id": "f_norm_85",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_86",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_87",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_88",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_89",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_90",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_91",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_92",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_93",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_94",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
+      },
+      {
+        "id": "f_norm_95",
+        "text": "With an iron-clad grip, {winner} executes a devastating uwatenage, launching {loser} to the clay!"
+      },
+      {
+        "id": "f_norm_96",
+        "text": "{winner} locks in a deep uwatenage and twists violently — {loser} goes flying!"
+      },
+      {
+        "id": "f_norm_97",
+        "text": "A magnificent uwatenage! {winner} uses {loser}'s own momentum against them for the finish."
+      },
+      {
+        "id": "f_norm_98",
+        "text": "The uwatenage is absolute perfection! {winner} throws {loser} down with supreme authority."
+      },
+      {
+        "id": "f_norm_99",
+        "text": "{winner} secures the overarm grip and unleashes a flawless uwatenage!"
+      },
+      {
+        "id": "f_norm_100",
+        "text": "A beautiful, sweeping uwatenage from {winner} seals the victory in style."
+      },
+      {
+        "id": "f_norm_101",
+        "text": "{loser} is sent airborne by a textbook uwatenage from {winner}!"
+      },
+      {
+        "id": "f_norm_102",
+        "text": "The crowd erupts as {winner} executes a spectacular, high-amplitude uwatenage!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_norm_103",
+        "text": "{winner} finds the leverage, pivots sharply, and drops {loser} with a crushing uwatenage."
+      },
+      {
+        "id": "f_norm_104",
+        "text": "An unstoppable uwatenage! {winner} displays incredible technique to end the bout."
       }
     ],
     "upset": [
@@ -5334,5 +6295,115 @@
         }
       ]
     }
+  },
+  "tactical": {
+    "oshi_strategy": [
+      {
+        "id": "tac_oshi_1",
+        "text": "📋 {leader}'s game plan: deny the belt, full forward pressure."
+      },
+      {
+        "id": "tac_oshi_2",
+        "text": "📋 {leader} comes in with a clear oshi strategy — no belt wrestling today."
+      },
+      {
+        "id": "tac_oshi_3",
+        "text": "📋 The commentators note {leader} is set up for relentless pushing."
+      },
+      {
+        "id": "tac_oshi_4",
+        "text": "📋 {leader} wants to keep both hands on {trailer}'s chest — pure oshi."
+      }
+    ],
+    "yotsu_strategy": [
+      {
+        "id": "tac_yotsu_1",
+        "text": "📋 {leader}'s approach: get to the belt at all costs."
+      },
+      {
+        "id": "tac_yotsu_2",
+        "text": "📋 {leader} wants this on the mawashi — a patient belt-hunting plan."
+      },
+      {
+        "id": "tac_yotsu_3",
+        "text": "📋 Classic yotsu preparation from {leader} — absorb and grapple."
+      },
+      {
+        "id": "tac_yotsu_4",
+        "text": "📋 {leader} aims to establish migi-yotsu early — right hand inside."
+      }
+    ],
+    "speedster_strategy": [
+      {
+        "id": "tac_speed_1",
+        "text": "📋 {leader} will use footwork — movement sumo is the plan."
+      },
+      {
+        "id": "tac_speed_2",
+        "text": "📋 Quick feet, sharp angles — {leader} aims to stay mobile."
+      },
+      {
+        "id": "tac_speed_3",
+        "text": "📋 The commentators say {leader} will rely on lateral movement today."
+      },
+      {
+        "id": "tac_speed_4",
+        "text": "📋 {leader}'s game: don't stand still, don't let {trailer} square up."
+      }
+    ],
+    "trickster_strategy": [
+      {
+        "id": "tac_trick_1",
+        "text": "📋 Expect the unexpected — {leader} is reading the opponent's habits."
+      },
+      {
+        "id": "tac_trick_2",
+        "text": "📋 {leader} has that look in his eyes — something tricky is coming."
+      },
+      {
+        "id": "tac_trick_3",
+        "text": "📋 Misdirection and feints — that's {leader}'s plan today."
+      },
+      {
+        "id": "tac_trick_4",
+        "text": "📋 {leader} studies {trailer}'s tendencies — a trap is being set."
+      }
+    ],
+    "counter_strategy": [
+      {
+        "id": "tac_ctr_1",
+        "text": "📋 {leader} is set to absorb and redirect — a counter strategy."
+      },
+      {
+        "id": "tac_ctr_2",
+        "text": "📋 Patient and calculated — {leader} waits for the opponent to overcommit."
+      },
+      {
+        "id": "tac_ctr_3",
+        "text": "📋 The analysis desk notes {leader} is fighting reactively today."
+      },
+      {
+        "id": "tac_ctr_4",
+        "text": "📋 {leader}'s plan: let {trailer} attack, then use their momentum against them."
+      }
+    ],
+    "adaptive_strategy": [
+      {
+        "id": "tac_adapt_1",
+        "text": "📋 {leader} reads the matchup and adjusts — a flexible approach."
+      },
+      {
+        "id": "tac_adapt_2",
+        "text": "📋 No fixed plan — {leader} adapts to whatever comes."
+      },
+      {
+        "id": "tac_adapt_3",
+        "text": "📋 A calculated game plan from {leader} — exploiting the opponent's weakness."
+      },
+      {
+        "id": "tac_adapt_4",
+        "text": "📋 {leader} can go oshi or yotsu — and will choose based on what {trailer} gives."
+      }
+    ]
   }
 }

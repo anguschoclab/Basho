@@ -121,20 +121,37 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
 
   // Top rivals from h2h
   const h2h = r.h2h ?? {};
-  const topRivals: UIRivalEntry[] = Object.entries(h2h)
-    .map(([oppId, rec]) => {
-      const opp = world.rikishi.get(oppId);
-      return {
-        opponentId: oppId,
-        opponentShikona: opp?.shikona ?? "Unknown",
-        wins: rec.wins,
-        losses: rec.losses,
-        record: `${rec.wins}-${rec.losses}`,
-        totalBouts: rec.wins + rec.losses,
-      };
-    })
-    .sort((a, b) => b.totalBouts - a.totalBouts)
-    .slice(0, 5);
+  // ⚡ Bolt Performance Optimization:
+  // We avoid instantiating intermediate objects and looking up world.rikishi.get()
+  // for *every* rival. Instead, we compute the total bounds, sort the IDs,
+  // and only look up the rikishi and format the DTO for the top 5 rivals.
+  const rivalEntries: { id: string; wins: number; losses: number; tb: number }[] = [];
+  for (const oppId in h2h) {
+    const rec = h2h[oppId];
+    rivalEntries.push({
+      id: oppId,
+      wins: rec.wins,
+      losses: rec.losses,
+      tb: rec.wins + rec.losses
+    });
+  }
+
+  rivalEntries.sort((a, b) => b.tb - a.tb);
+
+  const topRivals: UIRivalEntry[] = [];
+  const topCount = Math.min(5, rivalEntries.length);
+  for (let i = 0; i < topCount; i++) {
+    const rInfo = rivalEntries[i];
+    const opp = world.rikishi.get(rInfo.id);
+    topRivals.push({
+      opponentId: rInfo.id,
+      opponentShikona: opp?.shikona ?? "Unknown",
+      wins: rInfo.wins,
+      losses: rInfo.losses,
+      record: `${rInfo.wins}-${rInfo.losses}`,
+      totalBouts: rInfo.tb,
+    });
+  }
 
   const rankInfo = RANK_NAMES[r.rank];
   const rankLabel = rankInfo?.en ?? r.rank;
