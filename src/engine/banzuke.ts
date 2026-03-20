@@ -11,6 +11,7 @@ import type { Rank, Division, RankPosition } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
 import type { BoutResult, MatchSchedule } from "./types/basho";
 import { KIMARITE_REGISTRY } from "./kimarite";
+import { stableSort } from "./utils/sort";
 
 // === RANK HIERARCHY ===
 
@@ -322,7 +323,7 @@ export function determineSpecialPrizes(
   const stats = new Map<string, { wins: number; opponents: string[]; kimarites: string[] }>();
   const yokozunaIds = new Set<string>();
 
-  for (const r of rikishiMap.values()) {
+  for (const r of stableSort(Array.from(rikishiMap.values()), x => (x as any).id || String(x))) {
     if (r.division === "makuuchi" && r.rank === "yokozuna") {
       yokozunaIds.add(r.id);
     }
@@ -343,7 +344,7 @@ export function determineSpecialPrizes(
   }
 
   const candidates: Rikishi[] = [];
-  for (const r of rikishiMap.values()) {
+  for (const r of stableSort(Array.from(rikishiMap.values()), x => (x as any).id || String(x))) {
     if (r.division !== "makuuchi") continue;
     if (r.rank === "yokozuna" || r.rank === "ozeki") continue; // Not eligible
     

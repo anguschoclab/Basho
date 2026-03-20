@@ -20,6 +20,7 @@ import type { WorldState } from "./types/world";
 import type { BoutResult, BashoName, BashoState } from "./types/basho";
 import type { Division } from "./types/banzuke";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
+import { stableSort } from "./utils/sort";
 
 /** =========================
  *  Types
@@ -1330,7 +1331,7 @@ function checkTitleRace(args: {
   // Collect all standings into array
   const entries: Array<{ id: Id; wins: number; losses: number }> = [];
   if (standings instanceof Map) {
-    standings.forEach((v, k) => entries.push({ id: k, wins: v.wins, losses: v.losses }));
+    stableSort(Array.from(standings.entries()), (x) => String(x[0])).forEach(([k, v]) => entries.push({ id: k, wins: v.wins, losses: v.losses }));
   } else {
     for (const [k, v] of Object.entries(standings as Record<string, { wins: number; losses: number }>)) {
       entries.push({ id: k, wins: v.wins, losses: v.losses });

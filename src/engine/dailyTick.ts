@@ -1,3 +1,4 @@
+import { stableSort } from "./utils/sort";
 /**
  * dailyTick.ts
  * =======================================================
@@ -210,7 +211,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
  * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
  */
 function tickDailyCommon(world: WorldState, subs: string[]): void {
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.isRetired) continue;
 
     // Diet effects
@@ -301,7 +302,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   }
 
   // 5) Daily economy micro-tick (food costs)
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     const welfare = ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = diet === "austerity" ? 1000 : diet === "maintenance" ? 3000 : diet === "heavy_bulk" ? 6000 : 10000;

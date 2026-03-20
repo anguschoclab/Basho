@@ -1,3 +1,4 @@
+import { stableSort } from "./utils/sort";
 import { clamp, clampInt } from './utils';
 // injuries.ts
 // =======================================================
@@ -414,7 +415,7 @@ export function tickWeek(world: WorldState): { recoveredCount: number; newCount:
 
   // 2) New injuries
   let newCount = 0;
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     const active = state.activeByRikishi[r.id];
     if (active) continue;
 
@@ -460,7 +461,7 @@ export function tickWeek(world: WorldState): { recoveredCount: number; newCount:
   }
 
   // 3) Sync into rikishi flags + UI-friendly injuryStatus
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     const inj = state.activeByRikishi[r.id];
     r.injured = Boolean(inj);
     r.injuryWeeksRemaining = inj ? inj.remainingWeeks : 0;

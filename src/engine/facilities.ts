@@ -22,6 +22,7 @@ import type { Id } from "./types/common";
 import type { FacilitiesBand } from "./types/narrative";
 import type { OyakataTraits } from "./types/oyakata";
 import { logEngineEvent } from "./events";
+import { stableSort } from "./utils/sort";
 
 // === CONSTANTS ===
 
@@ -142,7 +143,7 @@ export function investInFacility(
  *  2. NPC stables auto-invest if they can afford it
  */
 export function tickMonthly(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     applyMonthlyDecayOrMaintenance(world, heya);
 
     // NPC auto-investment (skip player heya)

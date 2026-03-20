@@ -17,6 +17,7 @@ import type { TrainingProfile, BeyaTrainingState, IndividualFocus, TrainingInten
 import type { Heya } from "./types/heya";
 import { rngFromSeed } from './rng';
 import { EventBus } from './events';
+import { stableSort } from "./utils/sort";
 
 // Re-export types for UI consumption
 export type { TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState, TrainingProfile } from './types';
@@ -316,9 +317,9 @@ function calculateGrowthVector(
 export function applyWeeklyTraining(world: WorldState): WorldState {
   (globalThis as any)._worldForDegeiko = world;
 
-  const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
+  const rng = rngFromSeed(world.seed, "training", `week::${world.year}_${world.week}`);
 
-  world.rikishi.forEach(rikishi => {
+  stableSort(Array.from(world.rikishi.values()), (x) => x.id).forEach(rikishi => {
     if (rikishi.isRetired) return;
 
     const beyaState = ensureHeyaTrainingState(world, rikishi.heyaId);
