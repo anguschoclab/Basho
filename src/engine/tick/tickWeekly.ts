@@ -12,6 +12,7 @@ import * as rivalries from "../rivalries";
 import * as npcAI from "../npcAI";
 import * as scoutingStore from "../scoutingStore";
 import * as talentpool from "../talentpool";
+import * as myosekiMarket from "../myosekiMarket";
 import { processWeeklyMediaBoundary, createDefaultMediaState } from "../media";
 
 /**
@@ -56,6 +57,7 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
   safeCall(() => { events.tickWeek(world); }) && subs.push("events");
   safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
   safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
+  safeCall(() => { myosekiMarket.tickMyosekiMarket(world); }) && subs.push("myoseki_market");
   // Bi-annual JSA Board Elections (End of year, even years)
   if (world.week === 52 && world.year % 2 === 0) {
     safeCall(() => { governance.runElections(world); }) && subs.push("elections");

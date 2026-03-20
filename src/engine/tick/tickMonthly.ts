@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { autosave } from "../saveload";
 import * as facilities from "../facilities";
+import * as npcAI from "../npcAI";
 import { RANK_HIERARCHY } from "../banzuke";
 
 /**
@@ -25,6 +26,7 @@ function safeCall(fn: () => void): boolean {
 export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
   safeCall(() => { tickMonthlyEconomics(world); }) && subs.push("economics_monthly");
   safeCall(() => { facilities.tickMonthly(world); }) && subs.push("facilities");
+  safeCall(() => { npcAI.tickMonthly(world); }) && subs.push("npcAI_monthly");
 
   logEngineEvent(world, {
     type: "MONTHLY_BOUNDARY",
