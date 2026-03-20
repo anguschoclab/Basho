@@ -13,7 +13,7 @@ import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArro
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
-import { buildPerceptionSnapshot, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
+import { getCachedPerception, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
 
 const STATURE_COLOR: Record<string, string> = {
   legendary: "text-amber-400",
@@ -82,7 +82,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
     const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
     for (const heya of world.heyas.values()) {
       if (heya.rikishiIds.length === 0) continue;
-      const snap = buildPerceptionSnapshot(world, heya.id);
+      const snap = getCachedPerception(world, heya.id);
       const entry = { ...snap, isPlayer: heya.id === playerHeyaId };
       results.push(entry);
       map.set(heya.id, entry);
