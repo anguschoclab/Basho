@@ -40,6 +40,7 @@ export type GameAction =
   | { type: "SET_PLAYER_HEYA"; heyaId: string }
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }
+  | { type: "ADVANCE_TIME" }
   | { type: "ADVANCE_DAY" }
   | { type: "SIMULATE_BOUT"; boutIndex: number }
   | { type: "SIMULATE_ALL_BOUTS" }
