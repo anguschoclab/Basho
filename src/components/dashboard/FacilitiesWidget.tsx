@@ -3,7 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Building, ChevronRight, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
-import { getMonthlyMaintenanceCost } from "@/engine/facilities";
+import { projectHeya } from "@/engine/uiModels";
 
 const AXIS_ICONS = {
   training: Building,
@@ -26,16 +26,16 @@ export function FacilitiesWidget() {
   const world = state.world;
   if (!world?.playerHeyaId) return null;
 
-  const heya = world.heyas.get(world.playerHeyaId);
-  if (!heya) return null;
+  const rawHeya = world.heyas.get(world.playerHeyaId);
+  if (!rawHeya) return null;
 
-  const maintenance = getMonthlyMaintenanceCost(heya);
-  const canAfford = heya.funds >= maintenance;
+  const uiHeya = projectHeya(rawHeya, world);
+  const canAfford = uiHeya.maintenanceAffordable;
   const axes = ["training", "recovery", "nutrition"] as const;
 
   const atRisk = !canAfford;
-  const lowestAxis = axes.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, axes[0]);
-  const lowestLevel = heya.facilities[lowestAxis];
+  const lowestAxis = axes.reduce((low, a) => uiHeya.facilities[a] < uiHeya.facilities[low] ? a : low, axes[0]);
+  const lowestLevel = uiHeya.facilities[lowestAxis];
   const isLow = lowestLevel <= 25;
 
   return (
@@ -66,7 +66,7 @@ export function FacilitiesWidget() {
       <div className="space-y-2.5">
         {axes.map((axis) => {
           const Icon = AXIS_ICONS[axis];
-          const level = heya.facilities[axis];
+          const level = uiHeya.facilities[axis];
           return (
             <div key={axis} className="space-y-1">
               <div className="flex items-center justify-between">
@@ -87,7 +87,7 @@ export function FacilitiesWidget() {
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
         <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
-          ¥{maintenance.toLocaleString()}
+          {uiHeya.monthlyMaintenanceDisplay}
         </span>
       </div>
 

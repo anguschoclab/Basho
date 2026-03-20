@@ -10,6 +10,7 @@ import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "luci
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import { toInjuryEvent, clearInjury } from "@/engine/injuries";
+import { projectRikishi } from "@/engine/uiModels";
 
 /** Defines the structure for injured rikishi info. */
 interface InjuredRikishiInfo {
@@ -73,9 +74,11 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
       const recoveryFacility = playerHeya.facilities?.recovery ?? 50;
       const facilityBonus = Math.round((recoveryFacility - 50) / 10); // -5 to +5 weeks effect
 
+      const uiRikishi = projectRikishi(r, world);
+
       result.push({
         rikishi: r,
-        severity: typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
+        severity: uiRikishi.injurySeverityBand,
         location: injuryStatus?.location || "unknown",
         weeksRemaining,
         weeksTotal,

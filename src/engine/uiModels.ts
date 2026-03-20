@@ -15,9 +15,10 @@ import type { WorldState } from "./types/world";
 import type { Rank, Division, Side } from "./types/banzuke";
 import type { Style, TacticalArchetype } from "./types/combat";
 import type { BoutResult, BashoResult } from "./types/basho";
-import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
+import { toRikishiDescriptor, toPotentialBand, toPrizeBand, PRIZE_LABELS, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
+import { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "./facilities";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -59,6 +60,7 @@ export interface UIRikishi {
   isRetired: boolean;
   isInjured: boolean;
   injurySummary: string; // "Healthy", "Minor knee (2w)", etc.
+  injurySeverityBand: string;
   condition: number; // 0-100 (allowed to show)
   motivation: number; // 0-100 (allowed to show)
   fatigue: number; // 0-100 (allowed to show)
@@ -110,13 +112,27 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
 
   // Injury summary
   let injurySummary = "Healthy";
+  let injurySeverityBand = "unknown";
   if (r.injured && r.injuryStatus) {
     const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
-    const sev = typeof r.injuryStatus.severity === "string"
-      ? r.injuryStatus.severity
-      : r.injuryStatus.severity < 30 ? "Minor" : r.injuryStatus.severity < 70 ? "Moderate" : "Severe";
+    let sevStr = "Unknown";
+    if (typeof r.injuryStatus.severity === "string") {
+      sevStr = r.injuryStatus.severity.charAt(0).toUpperCase() + r.injuryStatus.severity.slice(1);
+      injurySeverityBand = r.injuryStatus.severity.toLowerCase();
+    } else {
+      if (r.injuryStatus.severity < 30) {
+        sevStr = "Minor";
+        injurySeverityBand = "minor";
+      } else if (r.injuryStatus.severity < 70) {
+        sevStr = "Moderate";
+        injurySeverityBand = "moderate";
+      } else {
+        sevStr = "Serious";
+        injurySeverityBand = "serious";
+      }
+    }
     const weeks = r.injuryWeeksRemaining;
-    injurySummary = `${sev}${loc} (${weeks}w)`;
+    injurySummary = `${sevStr}${loc} (${weeks}w)`;
   }
 
   // Top rivals from h2h
@@ -184,6 +200,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary,
+    injurySeverityBand,
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
@@ -303,6 +320,28 @@ export interface UIHeya {
   // Governance
   scandalScore: number;
   governanceStatus: string;
+
+  // Finance visibility rules
+  maintenanceAffordable: boolean;
+  monthlyMaintenanceDisplay: string;
+
+  // Facilities upgrade flags
+  canAffordTraining1: boolean;
+  canAffordTraining5: boolean;
+  canAffordRecovery1: boolean;
+  canAffordRecovery5: boolean;
+  canAffordNutrition1: boolean;
+  canAffordNutrition5: boolean;
+
+  // Cost strings
+  upgradeCostDisplay: {
+    training1: string;
+    training5: string;
+    recovery1: string;
+    recovery5: string;
+    nutrition1: string;
+    nutrition5: string;
+  };
 }
 
 /**
@@ -333,6 +372,19 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
     }
   }
 
+  const maintenance = heya ? getMonthlyMaintenanceCost(heya) : 0;
+  const maintenanceAffordable = heya ? heya.funds >= maintenance : false;
+  const maintenanceDisplay = PRIZE_LABELS[toPrizeBand(maintenance)];
+
+  const getCost = (axis: "training" | "recovery" | "nutrition", points: number) => heya ? getUpgradeCostEstimate(heya, axis, points) : 0;
+
+  const t1 = getCost("training", 1);
+  const t5 = getCost("training", 5);
+  const r1 = getCost("recovery", 1);
+  const r5 = getCost("recovery", 5);
+  const n1 = getCost("nutrition", 1);
+  const n5 = getCost("nutrition", 5);
+
   return {
     id: heya?.id || "",
     name: heya?.name,
@@ -356,6 +408,22 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
     riskWelfare: heya?.riskIndicators?.welfare ?? false,
     scandalScore: heya?.scandalScore || 0,
     governanceStatus: heya?.governanceStatus || "compliant",
+    maintenanceAffordable,
+    monthlyMaintenanceDisplay: maintenanceDisplay,
+    canAffordTraining1: heya ? heya.funds >= t1 : false,
+    canAffordTraining5: heya ? heya.funds >= t5 : false,
+    canAffordRecovery1: heya ? heya.funds >= r1 : false,
+    canAffordRecovery5: heya ? heya.funds >= r5 : false,
+    canAffordNutrition1: heya ? heya.funds >= n1 : false,
+    canAffordNutrition5: heya ? heya.funds >= n5 : false,
+    upgradeCostDisplay: {
+      training1: PRIZE_LABELS[toPrizeBand(t1)],
+      training5: PRIZE_LABELS[toPrizeBand(t5)],
+      recovery1: PRIZE_LABELS[toPrizeBand(r1)],
+      recovery5: PRIZE_LABELS[toPrizeBand(r5)],
+      nutrition1: PRIZE_LABELS[toPrizeBand(n1)],
+      nutrition5: PRIZE_LABELS[toPrizeBand(n5)],
+    }
   };
 }
 
