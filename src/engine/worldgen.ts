@@ -509,6 +509,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     heyas: heyaMap,
     rikishi: rikishiMap,
     oyakata: oyakataMap,
+    staff: new Map(),
     myosekiMarket: generateMyosekiMarket(actualSeed, oyakataMap),
 
     history: [],
