@@ -4,6 +4,7 @@ import type { Id, IdMapRuntime } from "./types/common";
 import type { MyosekiStock, MyosekiMarket, MyosekiTransaction, MyosekiStatus } from "./types/myoseki";
 import type { Oyakata } from "./types/oyakata";
 import { EventBus } from "./events";
+import { stableSort } from "./utils/sort";
 
 const TOTAL_MYOSEKI = 105;
 const BASE_ASKING_PRICE = 150_000_000;
@@ -54,7 +55,7 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 
   let i = 0;
   // First pass: Assign to every active Oyakata
-  for (const oyakata of oyakataMap.values()) {
+  for (const oyakata of stableSort(Array.from(oyakataMap.values()), x => (x as any).id || String(x))) {
     if (i >= TOTAL_MYOSEKI) break;
 
     const name = availableNames[i];
@@ -104,12 +105,12 @@ export function tickMyosekiMarket(world: WorldState): void {
   if (!world.myosekiMarket) return;
 
   const market = world.myosekiMarket;
-  const rng = rngForWorld(world, "myoseki", "tick");
+  const rng = rngForWorld(world, "myoseki", `tick_${world.year}_${world.week}`);
 
   // Only run major logic during specific phases to save CPU? No, run weekly.
   // Build map of oyakataId to heya for faster lookup
   const oyakataHeyaMap = new Map();
-  for (const h of world.heyas.values()) {
+  for (const h of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     if (h.oyakataId) oyakataHeyaMap.set(h.oyakataId, h);
   }
 

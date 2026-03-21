@@ -32,7 +32,7 @@ import {
   type ArchetypeKey,
   type CareerPhase,
 } from "../engine/narrativeDescriptions";
-import { POTENTIAL_LABELS } from "../engine/descriptorBands";
+import { POTENTIAL_LABELS, CONDITION_LABELS, STAT_BAND_LABELS } from "../engine/descriptorBands";
 import {
   RANK_NAMES,
   createScoutedView,
@@ -81,10 +81,10 @@ function findKimariteById(id: string) {
  * stat bar.
  *  * @param { label, value, max = 100, icon: Icon, color } - The { label, value, max = 100, icon:  icon, color }.
  */
-function StatBar({ label, value, max = 100, icon: Icon, color }: {
-  label: string; value: number; max?: number; icon: any; color: string;
+function StatBar({ label, value, max = 100, icon: Icon, color, labelRight }: {
+  label: string; value: number | null; max?: number; icon: any; color: string; labelRight?: string;
 }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const pct = value !== null ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
@@ -92,11 +92,13 @@ function StatBar({ label, value, max = 100, icon: Icon, color }: {
           <Icon className={`h-3 w-3 ${color}`} />
           {label}
         </span>
-        <span className="font-mono text-[10px] text-muted-foreground">{Math.round(value)}</span>
+        <span className="font-mono text-[10px] text-muted-foreground">{labelRight || (value !== null ? Math.round(value) : "")}</span>
       </div>
-      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-        <div className={`h-full rounded-full transition-all`} style={{ width: `${pct}%`, background: `hsl(var(--primary))` }} />
-      </div>
+      {value !== null && (
+        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className={`h-full rounded-full transition-all`} style={{ width: `${pct}%`, background: `hsl(var(--primary))` }} />
+        </div>
+      )}
     </div>
   );
 }
@@ -191,7 +193,7 @@ function RikishiDirectoryView({ world, playerHeyaId, navigate }: { world: WorldS
                       <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                         <span className="font-mono">{r.record} This Basho</span>
                         <span>•</span>
-                        <span>Condition: {Math.round(r.condition)}%</span>
+                        <span>Condition: {CONDITION_LABELS[r.conditionBand].label}</span>
                         {r.isInjured && (
                           <>
                             <span>•</span>
@@ -289,10 +291,10 @@ export default function RikishiPage() {
   // Attribute narratives (needs raw rikishi for owned, scouted for unowned)
   const attrs = isOwned
     ? [
-        { label: "Power", icon: Flame, color: "text-destructive", val: rikishi.power, narrative: describeAttributeVerbose("power", rikishi.power) },
-        { label: "Speed", icon: Zap, color: "text-warning", val: rikishi.speed, narrative: describeAttributeVerbose("speed", rikishi.speed) },
-        { label: "Balance", icon: Shield, color: "text-success", val: rikishi.balance, narrative: describeAttributeVerbose("balance", rikishi.balance) },
-        { label: "Technique", icon: Target, color: "text-primary", val: rikishi.technique, narrative: describeAttributeVerbose("technique", rikishi.technique) },
+        { label: "Power", icon: Flame, color: "text-destructive", val: null, labelRight: STAT_BAND_LABELS[ui.descriptor.powerBand], narrative: describeAttributeVerbose("power", rikishi.power) },
+        { label: "Speed", icon: Zap, color: "text-warning", val: null, labelRight: STAT_BAND_LABELS[ui.descriptor.speedBand], narrative: describeAttributeVerbose("speed", rikishi.speed) },
+        { label: "Balance", icon: Shield, color: "text-success", val: null, labelRight: STAT_BAND_LABELS[ui.descriptor.balanceBand], narrative: describeAttributeVerbose("balance", rikishi.balance) },
+        { label: "Technique", icon: Target, color: "text-primary", val: null, labelRight: STAT_BAND_LABELS[ui.descriptor.techniqueBand], narrative: describeAttributeVerbose("technique", rikishi.technique) },
       ]
     : [
         { label: "Power", icon: Flame, color: "text-destructive", val: null, narrative: scoutedAttrs.power?.narrative || "Hard to judge from a distance." },
@@ -395,12 +397,17 @@ export default function RikishiPage() {
             </div>
 
             {/* Momentum & injury strip */}
-            {(ui.momentum !== 0 || ui.isInjured) && (
+            {(ui.momentumBand !== "steady" || ui.isInjured) && (
               <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/50">
-                {ui.momentum !== 0 && (
-                  <Badge variant="outline" className={ui.momentum > 0 ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
-                    {ui.momentum > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-                    {describeMomentumVerbose(ui.momentum)}
+                {ui.momentumBand !== "steady" && (
+                  <Badge variant="outline" className={ui.momentumBand === "rising" || ui.momentumBand === "on_fire" ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
+                    {ui.momentumBand === "rising" || ui.momentumBand === "on_fire" ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                    {
+                      ui.momentumBand === "on_fire" ? "Riding a wave of confidence—everything is clicking." :
+                      ui.momentumBand === "rising" ? "Form is improving; belief is building." :
+                      ui.momentumBand === "struggling" ? "Confidence wavers; searching for answers." :
+                      "Deep in a slump; the pressure is visible."
+                    }
                   </Badge>
                 )}
                 {ui.isInjured && (
@@ -438,10 +445,10 @@ export default function RikishiPage() {
               {isOwned ? (
                 <div className="space-y-3">
                   {attrs.map(a => (
-                    <StatBar key={a.label} label={a.label} value={a.val!} icon={a.icon} color={a.color} />
+                    <StatBar key={a.label} label={a.label} value={a.val} labelRight={a.labelRight} icon={a.icon} color={a.color} />
                   ))}
                   <Separator />
-                  <StatBar label="Stamina" value={rikishi.stamina} icon={Activity} color="text-muted-foreground" />
+                  <StatBar label="Stamina" value={null} labelRight={describeStamina(rikishi.stamina)} icon={Activity} color="text-muted-foreground" />
                   <StatBar label="Experience" value={rikishi.experience} icon={History} color="text-muted-foreground" />
                 </div>
               ) : (

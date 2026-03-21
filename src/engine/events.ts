@@ -402,6 +402,7 @@ export function tickWeek(world: WorldState): number {
 
   let trimmedCount = 0;
   const newLog: EngineEvent[] = [];
+  const prefixesToRemove = new Set<string>();
 
   for (const ev of eventsState.log) {
     const evTotalWeeks = ev.year * 52 + ev.week;
@@ -422,17 +423,30 @@ export function tickWeek(world: WorldState): number {
       // we do a best-effort pass over dedupe keys that match this event's basic signature,
       // or simply periodically clear out the whole dedupe map for old years.
       // A safe approach is to clear any dedupe key that contains the old year and week.
-      const prefix = `${ev.year}|${ev.week}|`;
-      for (const key of Object.keys(eventsState.dedupe)) {
-        if (key.startsWith(prefix)) {
-          delete eventsState.dedupe[key];
-        }
-      }
+      prefixesToRemove.add(`${ev.year}|${ev.week}|`);
     }
   }
 
   if (trimmedCount > 0) {
     eventsState.log = newLog;
+
+    // Process dedupe keys in a single pass over the map
+    if (prefixesToRemove.size > 0) {
+      for (const key of Object.keys(eventsState.dedupe)) {
+        // Fast path extraction of the prefix instead of splitting the whole string
+        // Format is typically year|week|...
+        const firstPipe = key.indexOf('|');
+        if (firstPipe !== -1) {
+          const secondPipe = key.indexOf('|', firstPipe + 1);
+          if (secondPipe !== -1) {
+            const prefix = key.slice(0, secondPipe + 1);
+            if (prefixesToRemove.has(prefix)) {
+              delete eventsState.dedupe[key];
+            }
+          }
+        }
+      }
+    }
   }
 
   return trimmedCount;

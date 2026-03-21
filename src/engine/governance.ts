@@ -9,6 +9,7 @@ import type { Heya } from "./types/heya";
 import type { GovernanceStatus, GovernanceRuling } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateScandalHeadline } from "./media";
+import { stableSort } from "./utils/sort";
 
 // === CONSTANTS ===
 
@@ -30,7 +31,7 @@ export const SCANDAL_SANCTION_THRESHOLD = 80;
  * - Checks for automatic sanctions
  */
 export function tickWeek(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     processHeyaGovernance(heya, world);
   }
 }
@@ -250,7 +251,7 @@ export function runElections(world: WorldState): void {
   }
 
   // 2. Tally scores from all heyas
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     if (!heya.ichimon || !world.factions[heya.ichimon]) continue;
 
     // Prestige band logic (world_class/elite etc add to base)

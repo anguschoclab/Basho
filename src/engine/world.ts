@@ -44,6 +44,7 @@ import * as talentpool from "./talentpool";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
+import { stableSort } from "./utils/sort";
 
 // Type guard or helper to access current basho
 /**
@@ -63,24 +64,25 @@ function getCurrentBasho(world: WorldState): BashoState | undefined {
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   if (world.cyclePhase === "active_basho") return world;
+  const nextWorld = structuredClone(world);
 
   const name: BashoName =
-    bashoName || world.currentBashoName || "hatsu"; // Default fall back
+    bashoName || nextWorld.currentBashoName || "hatsu"; // Default fall back
 
   // Initialize new basho state
-  const basho = initializeBasho(world, name);
+  const basho = initializeBasho(nextWorld, name);
 
-  world.currentBasho = basho;
-  world.cyclePhase = "active_basho"; 
+  nextWorld.currentBasho = basho;
+  nextWorld.cyclePhase = "active_basho";
 
-  ensureDaySchedule(world, basho.day);
-  EventBus.bashoStarted(world, name);
+  ensureDaySchedule(nextWorld, basho.day);
+  EventBus.bashoStarted(nextWorld, name);
 
   // Reset basho-scoped media tracking (streaks, promo watch)
-  if (world.mediaState) {
-    world.mediaState = resetBashoMediaTracking(world.mediaState);
+  if (nextWorld.mediaState) {
+    nextWorld.mediaState = resetBashoMediaTracking(nextWorld.mediaState);
   }
-  return world;
+  return nextWorld;
 
 }
 
@@ -102,7 +104,7 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
     schedule.generateDaySchedule(world, basho, day, world.seed);
   } else {
       // Basic fallback scheduling
-      const rikishiIds = Array.from(world.rikishi.keys());
+      const rikishiIds = Array.from(world.rikishi.keys()).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
       for(let i=0; i<rikishiIds.length; i+=2) {
           if (i+1 < rikishiIds.length) {
               basho.matches.push({
@@ -122,18 +124,19 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
  *  * @returns The result.
  */
 export function advanceBashoDay(world: WorldState): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
+  const nextWorld = structuredClone(world);
+  const basho = getCurrentBasho(nextWorld);
+  if (!basho) return nextWorld;
 
   const nextDay = basho.day + 1;
   basho.day = nextDay;
   // Legacy sync
   basho.currentDay = nextDay;
 
-  if (nextDay <= 15) ensureDaySchedule(world, nextDay);
+  if (nextDay <= 15) ensureDaySchedule(nextWorld, nextDay);
 
-  EventBus.bashoDay(world, nextDay);
-  return world;
+  EventBus.bashoDay(nextWorld, nextDay);
+  return nextWorld;
 }
 
 /**
@@ -146,16 +149,17 @@ export function simulateBoutForToday(
   world: WorldState,
   unplayedIndex: number
 ): { world: WorldState; result?: BoutResult } {
-  const basho = getCurrentBasho(world);
-  if (!basho) return { world };
+  const nextWorld = structuredClone(world);
+  const basho = getCurrentBasho(nextWorld);
+  if (!basho) return { world: nextWorld };
 
   const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
   const match = todays[unplayedIndex];
-  if (!match) return { world };
+  if (!match) return { world: nextWorld };
 
-  const east = world.rikishi.get(match.eastRikishiId);
-  const west = world.rikishi.get(match.westRikishiId);
-  if (!east || !west) return { world };
+  const east = nextWorld.rikishi.get(match.eastRikishiId);
+  const west = nextWorld.rikishi.get(match.westRikishiId);
+  if (!east || !west) return { world: nextWorld };
 
   const boutContext = {
       id: `d${basho.day}-b${unplayedIndex}`,
@@ -167,8 +171,8 @@ export function simulateBoutForToday(
 
   const result = resolveBout(boutContext, east, west, basho);
 
-  applyBoutResult(world, match, result);
-  return { world, result };
+  applyBoutResult(nextWorld, match, result);
+  return { world: nextWorld, result };
 }
 
 /**
@@ -252,14 +256,15 @@ export function applyBoutResult(
  *  * @returns The result.
  */
 export function endBasho(world: WorldState): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
+  const nextWorld = structuredClone(world);
+  const basho = getCurrentBasho(nextWorld);
+  if (!basho) return nextWorld;
 
   const table = Array.from(basho.standings.entries())
     .map(([id, rec]) => ({ id, wins: rec.wins, losses: rec.losses }))
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
-  if (table.length === 0) return world;
+  if (table.length === 0) return nextWorld;
 
   const bestWins = table[0].wins;
   const topCandidates = table.reduce<Id[]>((acc, t) => {
@@ -288,8 +293,8 @@ export function endBasho(world: WorldState): WorldState {
         
         const eastId = remaining[i];
         const westId = remaining[i + 1];
-        const east = world.rikishi.get(eastId);
-        const west = world.rikishi.get(westId);
+        const east = nextWorld.rikishi.get(eastId);
+        const west = nextWorld.rikishi.get(westId);
         
         if (!east || !west) {
           nextRound.push(eastId);
@@ -328,7 +333,7 @@ export function endBasho(world: WorldState): WorldState {
 
   const awards = determineSpecialPrizes(
     basho.matches, 
-    world.rikishi,
+    nextWorld.rikishi,
     yusho
   );
 
@@ -349,45 +354,45 @@ export function endBasho(world: WorldState): WorldState {
     }
   };
 
-  world.history.push(bashoResult);
+  nextWorld.history.push(bashoResult);
 
   // --- ALMANAC SNAPSHOT (Constitution A5.1) ---
   safeCall(() => {
-    const snapshot = buildAlmanacSnapshot(world);
+    const snapshot = buildAlmanacSnapshot(nextWorld);
     if (snapshot) {
-      if (!world.almanacSnapshots) world.almanacSnapshots = [];
-      world.almanacSnapshots.push(snapshot);
+      if (!nextWorld.almanacSnapshots) nextWorld.almanacSnapshots = [];
+      nextWorld.almanacSnapshots.push(snapshot);
     }
   });
 
-  safeCall(() => historyIndex.indexBashoResult(world, bashoResult));
-  const yushoRikishi = world.rikishi.get(yusho);
-  EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
+  safeCall(() => historyIndex.indexBashoResult(nextWorld, bashoResult));
+  const yushoRikishi = nextWorld.rikishi.get(yusho);
+  EventBus.bashoEnded(nextWorld, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
 
   // Snapshot media heat for sparkline history
   safeCall(() => {
-    if (world.mediaState) {
-      world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
+    if (nextWorld.mediaState) {
+      nextWorld.mediaState = snapshotMediaHeatForBasho(nextWorld.mediaState, basho.bashoName);
     }
   });
 
-  enterPostBasho(world);
+  enterPostBasho(nextWorld);
 
   // --- FTUE UPDATE (Constitution A8) ---
-  if (world.ftue?.isActive) {
-    world.ftue.bashoCompleted += 1;
-    if (world.ftue.bashoCompleted >= 1) {
-      world.ftue.isActive = false;
+  if (nextWorld.ftue?.isActive) {
+    nextWorld.ftue.bashoCompleted += 1;
+    if (nextWorld.ftue.bashoCompleted >= 1) {
+      nextWorld.ftue.isActive = false;
     }
   }
 
   // --- POST-BASHO RESOLUTION PIPELINE (Constitution A3.4 / §6.3) ---
-  runPostBashoResolution(world);
+  runPostBashoResolution(nextWorld);
 
   // Autosave at basho-end boundary (Constitution §6)
-  safeCall(() => { autosave(world); });
+  safeCall(() => { autosave(nextWorld); });
 
-  return world;
+  return nextWorld;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -447,7 +452,7 @@ function runPrestigeDecay(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     let totalWins = 0;
     let totalLosses = 0;
     let hasYusho = false;
@@ -575,7 +580,7 @@ function updateStatureBand(world: WorldState, heya: import("./types").Heya): voi
  * loans/benefactors escalation, succession checks, merger/closure pressure.
  */
 function runGovernanceReview(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
@@ -768,7 +773,7 @@ function runAIMetaDrift(world: WorldState): void {
 
   // Compute basho meta: dominant style this basho
   let oshiWins = 0, yotsuWins = 0;
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if ((r.currentBashoWins ?? 0) > (r.currentBashoLosses ?? 0)) {
       if (r.style === "oshi") oshiWins++;
       else if (r.style === "yotsu") yotsuWins++;
@@ -807,7 +812,8 @@ function runAIMetaDrift(world: WorldState): void {
 function runRetirements(world: WorldState): Record<string, number> {
   const vacanciesByHeyaId: Record<string, number> = {};
 
-  for (const [id, r] of world.rikishi) {
+  const sortedEntries = Array.from(world.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  for (const [id, r] of sortedEntries) {
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
       EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
@@ -947,7 +953,7 @@ function runCareerJournalUpdates(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     // Update career totals from basho records
     r.careerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
     r.careerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
@@ -1009,12 +1015,13 @@ function runCareerJournalUpdates(world: WorldState): void {
  */
 export function publishBanzukeUpdate(world: WorldState): WorldState {
   if (world.cyclePhase !== "post_basho") return world;
+  const nextWorld = structuredClone(world);
 
-  const lastBasho = getCurrentBasho(world);
-  if (!lastBasho) return world;
+  const lastBasho = getCurrentBasho(nextWorld);
+  if (!lastBasho) return nextWorld;
 
   const currentBanzukeList: BanzukeEntry[] = [];
-  for (const r of world.rikishi.values()) {
+  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
@@ -1023,7 +1030,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   }
 
   const performanceList: BashoPerformance[] = [];
-  for (const [id, stats] of lastBasho.standings.entries()) {
+  for (const [id, stats] of stableSort(Array.from(lastBasho.standings.entries()), x => String(x[0]))) {
     const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
@@ -1044,13 +1051,13 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     });
   }
 
-  const result = updateBanzuke(currentBanzukeList, performanceList, world.ozekiKadoban ?? {}); 
+  const result = updateBanzuke(currentBanzukeList, performanceList, nextWorld.ozekiKadoban ?? {});
   
   // Persist updated kadoban state
-  world.ozekiKadoban = result.updatedOzekiKadoban;
+  nextWorld.ozekiKadoban = result.updatedOzekiKadoban;
 
   for (const newEntry of result.newBanzuke) {
-    const rikishi = world.rikishi.get(newEntry.rikishiId);
+    const rikishi = nextWorld.rikishi.get(newEntry.rikishiId);
     if (rikishi) {
       rikishi.division = newEntry.division;
       rikishi.rank = newEntry.position.rank;
@@ -1063,14 +1070,14 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   }
 
   const next = getNextBasho(lastBasho.bashoName);
-  const nextYear = next === "hatsu" ? world.year + 1 : world.year;
+  const nextYear = next === "hatsu" ? nextWorld.year + 1 : nextWorld.year;
 
-  world.year = nextYear;
-  world.currentBashoName = next;
-  world.currentBasho = undefined;
-  enterInterim(world);
+  nextWorld.year = nextYear;
+  nextWorld.currentBashoName = next;
+  nextWorld.currentBasho = undefined;
+  enterInterim(nextWorld);
 
-  return world;
+  return nextWorld;
 }
 
 /**
@@ -1081,26 +1088,29 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
  */
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho" && world.cyclePhase !== "post_basho") return world;
+  const nextWorld = structuredClone(world);
 
   // Convert weeks to days and run through the daily tick pipeline
   const days = Math.max(1, Math.trunc(weeks)) * 7;
 
   for (let i = 0; i < days; i++) {
-    advanceOneDay(world);
+    advanceOneDay(nextWorld);
     // Stop if we've transitioned into active_basho (UI should handle this)
-    if ((world.cyclePhase as string) === "active_basho") break;
+    if ((nextWorld.cyclePhase as string) === "active_basho") break;
   }
 
-  return world;
+  return nextWorld;
 }
 
 /**
  * Advance a single day in the interim period.
  * Used by UI for granular day-by-day control.
  */
-export function advanceDay(world: WorldState): DailyTickReport | null {
-  if (world.cyclePhase === "active_basho") return null;
-  return advanceOneDay(world);
+export function advanceDay(world: WorldState): { world: WorldState, report: DailyTickReport | null } {
+  if (world.cyclePhase === "active_basho") return { world, report: null };
+  const nextWorld = structuredClone(world);
+  const report = advanceOneDay(nextWorld);
+  return { world: nextWorld, report };
 }
 
 /**

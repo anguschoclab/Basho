@@ -156,7 +156,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     cyclePhase: world.cyclePhase,
     currentBashoName: world.currentBashoName,
     heyas: mapToObject(world.heyas),
-    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : undefined,
+    closedHeyas: world.closedHeyas instanceof Map ? mapToObject(world.closedHeyas) : undefined,
     rikishi: mapToObject(world.rikishi),
     oyakata: mapToObject(world.oyakata),
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
@@ -173,7 +173,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     // Sponsor pool (Constitution A6.4)
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
     // Ozeki kadoban tracking
-    ozekiKadoban: (world as any).ozekiKadoban,
+    ozekiKadoban: (world as any).ozekiKadoban ?? {},
     // Hall of Fame
     hallOfFame: (world as any).hallOfFame,
     // Media state
@@ -254,7 +254,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
     heyas: objectToMap(heyasObj),
-    closedHeyas: (serialized as any).closedHeyas ? objectToMap((serialized as any).closedHeyas) : new Map(),
+    closedHeyas: objectToMap((serialized as any).closedHeyas || {}),
     rikishi: objectToMap(rikishiObj),
     oyakata: objectToMap(oyakataObj),
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,
@@ -266,7 +266,7 @@ export function deserializeWorld(serialized: SerializedWorldState): WorldState {
     talentPool: (serialized as any).talentPool,
     almanacSnapshots: (serialized as any).almanacSnapshots || [],
     sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
-    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
+    ozekiKadoban: (serialized as any).ozekiKadoban || {},
     ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
     ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
     calendar: savedCalendar || {

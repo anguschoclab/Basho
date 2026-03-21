@@ -112,7 +112,7 @@ export default function AlmanacPage() {
 
   // Get all rikishi sorted by rank tier then career wins
   const allRikishi = useMemo(() => {
-    return [...world.rikishi.values()].sort((a, b) => {
+    return Array.from(world.rikishi.values()).sort((a, b) => {
       const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 999;
       const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 999;
       if (tierA !== tierB) return tierA - tierB;
@@ -172,12 +172,12 @@ export default function AlmanacPage() {
 
   // Career wins leaders
   const topChampions = useMemo(() => {
-    return [...allRikishi].sort((a, b) => (b.careerWins || 0) - (a.careerWins || 0)).slice(0, 10);
+    return allRikishi.slice().sort((a, b) => (b.careerWins || 0) - (a.careerWins || 0)).slice(0, 10);
   }, [allRikishi]);
 
   // Kinboshi leaders
   const kinboshiLeaders = useMemo(() => {
-    return [...allRikishi]
+    return allRikishi
       .filter((r) => (r.economics?.kinboshiCount || 0) > 0)
       .sort((a, b) => (b.economics?.kinboshiCount || 0) - (a.economics?.kinboshiCount || 0))
       .slice(0, 10);
@@ -706,7 +706,7 @@ export default function AlmanacPage() {
                   {/* Best Win Rate */}
                   {allRikishi.length > 0 &&
                     (() => {
-                      const candidates = [...allRikishi].filter((r) => (r.careerWins || 0) + (r.careerLosses || 0) >= 30);
+                      const candidates = allRikishi.filter((r) => (r.careerWins || 0) + (r.careerLosses || 0) >= 30);
                       const best =
                         candidates
                           .sort((a, b) => {
@@ -736,7 +736,7 @@ export default function AlmanacPage() {
                   {allRikishi.length > 0 &&
                     (() => {
                       const most =
-                        [...allRikishi].sort(
+                        allRikishi.slice().sort(
                           (a, b) =>
                             (b.careerWins || 0) +
                             (b.careerLosses || 0) -
@@ -764,7 +764,7 @@ export default function AlmanacPage() {
                   {allHeya.length > 0 &&
                     (() => {
                       const largest =
-                        [...allHeya].sort((a, b) => ((b as any).rikishiIds?.length || 0) - ((a as any).rikishiIds?.length || 0))[0] ??
+                        allHeya.slice().sort((a, b) => ((b as any).rikishiIds?.length || 0) - ((a as any).rikishiIds?.length || 0))[0] ??
                         null;
 
                       if (!largest) return null;

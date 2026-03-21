@@ -3,6 +3,7 @@ import { logEngineEvent } from "../events";
 import { autosave } from "../saveload";
 import { processYearEndInduction, HOF_CATEGORY_LABELS } from "../hallOfFame";
 import * as talentpool from "../talentpool";
+import * as npcAI from "../npcAI";
 
 /**
  * Safe call.
@@ -73,6 +74,7 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
 
   // 3. Talent pool yearly refresh
   safeCall(() => { talentpool.tickYear(world); });
+  safeCall(() => { npcAI.tickYear(world); }) && subs.push("npcAI_yearly");
 
   subs.push("year_boundary");
 
