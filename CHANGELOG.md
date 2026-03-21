@@ -1,4 +1,5 @@
 # Changelog - Basho: Sumo Stable Manager
+<!-- GitHub sync verified: 2026-03-21 -->
 
 This changelog outlines the systems, concepts, and features brought over and modernized from the legacy `Sumo` repository into the new `sumo-manager-pro` simulation engine.
 
