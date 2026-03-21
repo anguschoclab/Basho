@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { generateMyosekiMarket } from "./myosekiMarket";
 /**
  * File Name: src/engine/worldgen.ts
  * Notes:
@@ -11,9 +10,8 @@ import { generateMyosekiMarket } from "./myosekiMarket";
  */
 
 import { generateMyosekiMarket } from "./myosekiMarket";
-import { rngFromSeed } from "./rng";
+import { rngFromSeed, SeededRNG, rngForWorld } from "./rng";
 import { WorldState } from "./types/world";
-import { generateMyosekiMarket } from "./myosekiMarket";
 import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Heya } from "./types/heya";
 import { Oyakata, OyakataArchetype } from "./types/oyakata";
@@ -22,18 +20,14 @@ import { TacticalArchetype } from "./types/combat";
 import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./types/narrative";
 import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
-import { SeededRNG } from "./rng";
 import { generateStaff } from "./staff";
 import { stableSort } from "./utils/sort";
 import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { type IchimonName, type Faction } from "./types/economy";
-import { rngForWorld } from "./rng";
 import { createDefaultMediaState } from "./media";
 import { BASHO_ORDER } from "./calendar";
-import { generateMyosekiMarket } from "./myosekiMarket";
-
 
 
 const ICHIMONS: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
@@ -516,6 +510,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     heyas: heyaMap,
     rikishi: rikishiMap,
     oyakata: oyakataMap,
+    staff: new Map(),
     myosekiMarket: generateMyosekiMarket(actualSeed, oyakataMap),
 
     history: [],
