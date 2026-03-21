@@ -260,7 +260,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
       });
     }
   }
-  return candidates.sort((a, b) => b.recentWins - a.recentWins);
+  return candidates.sort((a, b) => b.recentWins - a.recentWins || stableTieBreak(a.rikishi.id, b.rikishi.id));
 }
 
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {

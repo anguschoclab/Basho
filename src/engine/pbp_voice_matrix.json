@@ -506,6 +506,28 @@
       {
         "id": "t_dec_110",
         "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_ext_01",
+        "text": "{leader} launches like a cannon at the tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_ext_02",
+        "text": "Furious initial charge! {leader} dominates the collision."
+      },
+      {
+        "id": "t_dec_ext_03",
+        "text": "A terrifying tachi-ai! {leader} blasts {trailer} back immediately.",
+        "tags": [
+          "gasps"
+        ]
+      },
+      {
+        "id": "t_dec_ext_04",
+        "text": "{leader} explodes forward, giving {trailer} absolutely no room to breathe!"
       }
     ],
     "even": [
@@ -2518,6 +2540,22 @@
       {
         "id": "c_nod_45",
         "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_ext_01",
+        "text": "Brutal nodowa! {leader} thrusts a hand straight into the throat of {trailer}!"
+      },
+      {
+        "id": "c_nod_ext_02",
+        "text": "{leader} applies a choking throat grip, pushing {trailer}'s head back!"
+      },
+      {
+        "id": "c_nod_ext_03",
+        "text": "Devastating nodowa! The neck of {trailer} is snapping back under the pressure."
+      },
+      {
+        "id": "c_nod_ext_04",
+        "text": "{leader} locks in a high collar grip and drives upward at the chin!"
       }
     ],
     "harite_slap": [
@@ -2606,6 +2644,22 @@
       {
         "id": "grp_mig_5",
         "text": "Migi-yotsu! {leader} has the exact grip they wanted."
+      },
+      {
+        "id": "c_migi_ext_01",
+        "text": "{leader} secures a firm migi-yotsu grip! The right hand is deep inside."
+      },
+      {
+        "id": "c_migi_ext_02",
+        "text": "Right-hand inside! {leader} establishes their preferred migi-yotsu."
+      },
+      {
+        "id": "c_migi_ext_03",
+        "text": "A classic migi-yotsu battle now as {leader} claims the right inside position."
+      },
+      {
+        "id": "c_migi_ext_04",
+        "text": "{leader} sinks the right arm in for a commanding migi-yotsu hold."
       }
     ],
     "hidari_yotsu_established": [
@@ -2628,6 +2682,22 @@
       {
         "id": "grp_hid_5",
         "text": "Hidari-yotsu established! {leader} controls the inside left."
+      },
+      {
+        "id": "c_hid_ext_01",
+        "text": "Left hand deep! {leader} establishes a powerful hidari-yotsu."
+      },
+      {
+        "id": "c_hid_ext_02",
+        "text": "{leader} locks in their favored hidari-yotsu grip, left hand inside!"
+      },
+      {
+        "id": "c_hid_ext_03",
+        "text": "It's hidari-yotsu! {leader} has the left inside and is cranking the pressure."
+      },
+      {
+        "id": "c_hid_ext_04",
+        "text": "A tight hidari-yotsu grip secured by {leader}. The left arm is a vice."
       }
     ],
     "double_inside": [
@@ -2770,6 +2840,22 @@
       {
         "id": "c_mor_35",
         "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_dbl_ext_01",
+        "text": "Morozashi! {leader} gets both hands inside for a dominant double grip!"
+      },
+      {
+        "id": "c_dbl_ext_02",
+        "text": "{leader} secures morozashi! The double inside grip is locked in tight."
+      },
+      {
+        "id": "c_dbl_ext_03",
+        "text": "Incredible technique to establish morozashi. {leader} has total inside control!"
+      },
+      {
+        "id": "c_dbl_ext_04",
+        "text": "Both arms in! {leader} achieves the formidable morozashi position."
       }
     ],
     "over_under": [
@@ -3668,6 +3754,22 @@
       {
         "id": "m_drv_50",
         "text": "{leader} is unstoppable when they get moving like this!"
+      },
+      {
+        "id": "m_std_ext_01",
+        "text": "{leader} marches forward with heavy, relentless steps."
+      },
+      {
+        "id": "m_std_ext_02",
+        "text": "A powerful, steady drive from {leader} forces {trailer} to backpedal."
+      },
+      {
+        "id": "m_std_ext_03",
+        "text": "Like a bulldozer, {leader} systematically drives {trailer} toward the edge."
+      },
+      {
+        "id": "m_std_ext_04",
+        "text": "{leader}'s raw power is on full display with this steady, grinding advance."
       }
     ],
     "bales_at_tawara": [
@@ -5523,8 +5625,41 @@
           "kinboshi",
           "crowd_roar"
         ]
+      },
+      {
+        "id": "f_kin_ext_01",
+        "text": "Unbelievable! {winner} has toppled the Yokozuna! A historic kinboshi!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_02",
+        "text": "The arena is raining cushions! {winner} pulls off the ultimate upset for a kinboshi!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_03",
+        "text": "A gold star for {winner}! They have defeated the Yokozuna in dramatic fashion!",
+        "tags": [
+          "chants",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_04",
+        "text": "Kinboshi! The crowd goes absolutely wild as {winner} slays the grand champion!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
+        ]
       }
-    ]
+    ],
+    "kimarite": {}
   },
   "connective": {
     "short": [
@@ -5745,6 +5880,60 @@
       {
         "id": "inj_unk_5",
         "text": "An undisclosed injury forces a withdrawal."
+      }
+    ],
+    "concussion": [
+      {
+        "id": "inj_concussion_1",
+        "text": "{rikishi_shikona} suffers a painful concussion during the bout."
+      },
+      {
+        "id": "inj_concussion_2",
+        "text": "The match is halted as {rikishi_shikona} goes down with a visible concussion."
+      },
+      {
+        "id": "inj_concussion_3",
+        "text": "{rikishi_shikona} winces in agony, clearly sustaining a concussion."
+      },
+      {
+        "id": "inj_concussion_4",
+        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent concussion."
+      }
+    ],
+    "dislocation": [
+      {
+        "id": "inj_dislocation_1",
+        "text": "{rikishi_shikona} suffers a painful dislocation during the bout."
+      },
+      {
+        "id": "inj_dislocation_2",
+        "text": "The match is halted as {rikishi_shikona} goes down with a visible dislocation."
+      },
+      {
+        "id": "inj_dislocation_3",
+        "text": "{rikishi_shikona} winces in agony, clearly sustaining a dislocation."
+      },
+      {
+        "id": "inj_dislocation_4",
+        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent dislocation."
+      }
+    ],
+    "laceration": [
+      {
+        "id": "inj_laceration_1",
+        "text": "{rikishi_shikona} suffers a painful laceration during the bout."
+      },
+      {
+        "id": "inj_laceration_2",
+        "text": "The match is halted as {rikishi_shikona} goes down with a visible laceration."
+      },
+      {
+        "id": "inj_laceration_3",
+        "text": "{rikishi_shikona} winces in agony, clearly sustaining a laceration."
+      },
+      {
+        "id": "inj_laceration_4",
+        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent laceration."
       }
     ]
   },
@@ -6292,6 +6481,2466 @@
         {
           "id": "inst_wel_str_4",
           "text": "A formal concern is raised. The stablemaster plays the politicians perfectly, securing an extension on the compliance deadline."
+        }
+      ]
+    },
+    "training": {
+      "default": [
+        {
+          "id": "inst_training_def_1",
+          "text": "An important training event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_training_def_2",
+          "text": "{rikishi_shikona} is at the center of a new training development."
+        },
+        {
+          "id": "inst_training_def_3",
+          "text": "The stable faces a training situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_training_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest training matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_training_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s training event."
+        },
+        {
+          "id": "inst_training_strict_2",
+          "text": "The stablemaster sternly addresses the recent training issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_training_strict_3",
+          "text": "{rikishi_shikona}'s training action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_training_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest training incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_training_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s training event."
+        },
+        {
+          "id": "inst_training_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the training matter."
+        },
+        {
+          "id": "inst_training_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent training challenge."
+        },
+        {
+          "id": "inst_training_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the training news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_training_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s training matter."
+        },
+        {
+          "id": "inst_training_traditionalist_2",
+          "text": "{rikishi_shikona}'s training event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_training_traditionalist_3",
+          "text": "The training situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_training_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent training affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_training_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s training data and metrics."
+        },
+        {
+          "id": "inst_training_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s training development."
+        },
+        {
+          "id": "inst_training_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the training event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_training_scientist_4",
+          "text": "The training situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_training_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s training news."
+        },
+        {
+          "id": "inst_training_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the training challenge."
+        },
+        {
+          "id": "inst_training_gambler_3",
+          "text": "{rikishi_shikona}'s training event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_training_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s training matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_training_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s training event."
+        },
+        {
+          "id": "inst_training_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the training matter."
+        },
+        {
+          "id": "inst_training_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent training challenge."
+        },
+        {
+          "id": "inst_training_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the training news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_training_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s training event."
+        },
+        {
+          "id": "inst_training_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent training disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_training_tyrant_3",
+          "text": "{rikishi_shikona}'s training action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_training_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest training failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_training_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s training event."
+        },
+        {
+          "id": "inst_training_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s training development."
+        },
+        {
+          "id": "inst_training_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the training event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_training_strategist_4",
+          "text": "The training situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "scouting": {
+      "default": [
+        {
+          "id": "inst_scouting_def_1",
+          "text": "An important scouting event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_scouting_def_2",
+          "text": "{rikishi_shikona} is at the center of a new scouting development."
+        },
+        {
+          "id": "inst_scouting_def_3",
+          "text": "The stable faces a scouting situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_scouting_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest scouting matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_scouting_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s scouting event."
+        },
+        {
+          "id": "inst_scouting_strict_2",
+          "text": "The stablemaster sternly addresses the recent scouting issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_scouting_strict_3",
+          "text": "{rikishi_shikona}'s scouting action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_scouting_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest scouting incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_scouting_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s scouting event."
+        },
+        {
+          "id": "inst_scouting_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the scouting matter."
+        },
+        {
+          "id": "inst_scouting_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent scouting challenge."
+        },
+        {
+          "id": "inst_scouting_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the scouting news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_scouting_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s scouting matter."
+        },
+        {
+          "id": "inst_scouting_traditionalist_2",
+          "text": "{rikishi_shikona}'s scouting event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_scouting_traditionalist_3",
+          "text": "The scouting situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_scouting_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent scouting affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_scouting_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s scouting data and metrics."
+        },
+        {
+          "id": "inst_scouting_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s scouting development."
+        },
+        {
+          "id": "inst_scouting_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the scouting event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_scouting_scientist_4",
+          "text": "The scouting situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_scouting_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s scouting news."
+        },
+        {
+          "id": "inst_scouting_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the scouting challenge."
+        },
+        {
+          "id": "inst_scouting_gambler_3",
+          "text": "{rikishi_shikona}'s scouting event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_scouting_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s scouting matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_scouting_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s scouting event."
+        },
+        {
+          "id": "inst_scouting_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the scouting matter."
+        },
+        {
+          "id": "inst_scouting_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent scouting challenge."
+        },
+        {
+          "id": "inst_scouting_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the scouting news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_scouting_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s scouting event."
+        },
+        {
+          "id": "inst_scouting_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent scouting disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_scouting_tyrant_3",
+          "text": "{rikishi_shikona}'s scouting action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_scouting_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest scouting failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_scouting_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s scouting event."
+        },
+        {
+          "id": "inst_scouting_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s scouting development."
+        },
+        {
+          "id": "inst_scouting_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the scouting event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_scouting_strategist_4",
+          "text": "The scouting situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "economy": {
+      "default": [
+        {
+          "id": "inst_economy_def_1",
+          "text": "An important economy event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_economy_def_2",
+          "text": "{rikishi_shikona} is at the center of a new economy development."
+        },
+        {
+          "id": "inst_economy_def_3",
+          "text": "The stable faces a economy situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_economy_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest economy matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_economy_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s economy event."
+        },
+        {
+          "id": "inst_economy_strict_2",
+          "text": "The stablemaster sternly addresses the recent economy issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_economy_strict_3",
+          "text": "{rikishi_shikona}'s economy action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_economy_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest economy incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_economy_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s economy event."
+        },
+        {
+          "id": "inst_economy_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the economy matter."
+        },
+        {
+          "id": "inst_economy_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent economy challenge."
+        },
+        {
+          "id": "inst_economy_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the economy news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_economy_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s economy matter."
+        },
+        {
+          "id": "inst_economy_traditionalist_2",
+          "text": "{rikishi_shikona}'s economy event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_economy_traditionalist_3",
+          "text": "The economy situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_economy_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent economy affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_economy_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s economy data and metrics."
+        },
+        {
+          "id": "inst_economy_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s economy development."
+        },
+        {
+          "id": "inst_economy_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the economy event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_economy_scientist_4",
+          "text": "The economy situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_economy_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s economy news."
+        },
+        {
+          "id": "inst_economy_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the economy challenge."
+        },
+        {
+          "id": "inst_economy_gambler_3",
+          "text": "{rikishi_shikona}'s economy event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_economy_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s economy matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_economy_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s economy event."
+        },
+        {
+          "id": "inst_economy_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the economy matter."
+        },
+        {
+          "id": "inst_economy_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent economy challenge."
+        },
+        {
+          "id": "inst_economy_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the economy news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_economy_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s economy event."
+        },
+        {
+          "id": "inst_economy_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent economy disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_economy_tyrant_3",
+          "text": "{rikishi_shikona}'s economy action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_economy_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest economy failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_economy_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s economy event."
+        },
+        {
+          "id": "inst_economy_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s economy development."
+        },
+        {
+          "id": "inst_economy_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the economy event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_economy_strategist_4",
+          "text": "The economy situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "sponsor": {
+      "default": [
+        {
+          "id": "inst_sponsor_def_1",
+          "text": "An important sponsor event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_sponsor_def_2",
+          "text": "{rikishi_shikona} is at the center of a new sponsor development."
+        },
+        {
+          "id": "inst_sponsor_def_3",
+          "text": "The stable faces a sponsor situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_sponsor_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest sponsor matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_sponsor_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s sponsor event."
+        },
+        {
+          "id": "inst_sponsor_strict_2",
+          "text": "The stablemaster sternly addresses the recent sponsor issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_sponsor_strict_3",
+          "text": "{rikishi_shikona}'s sponsor action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_sponsor_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest sponsor incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_sponsor_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s sponsor event."
+        },
+        {
+          "id": "inst_sponsor_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the sponsor matter."
+        },
+        {
+          "id": "inst_sponsor_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent sponsor challenge."
+        },
+        {
+          "id": "inst_sponsor_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the sponsor news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_sponsor_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s sponsor matter."
+        },
+        {
+          "id": "inst_sponsor_traditionalist_2",
+          "text": "{rikishi_shikona}'s sponsor event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_sponsor_traditionalist_3",
+          "text": "The sponsor situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_sponsor_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent sponsor affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_sponsor_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s sponsor data and metrics."
+        },
+        {
+          "id": "inst_sponsor_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s sponsor development."
+        },
+        {
+          "id": "inst_sponsor_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the sponsor event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_sponsor_scientist_4",
+          "text": "The sponsor situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_sponsor_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s sponsor news."
+        },
+        {
+          "id": "inst_sponsor_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the sponsor challenge."
+        },
+        {
+          "id": "inst_sponsor_gambler_3",
+          "text": "{rikishi_shikona}'s sponsor event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_sponsor_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s sponsor matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_sponsor_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s sponsor event."
+        },
+        {
+          "id": "inst_sponsor_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the sponsor matter."
+        },
+        {
+          "id": "inst_sponsor_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent sponsor challenge."
+        },
+        {
+          "id": "inst_sponsor_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the sponsor news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_sponsor_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s sponsor event."
+        },
+        {
+          "id": "inst_sponsor_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent sponsor disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_sponsor_tyrant_3",
+          "text": "{rikishi_shikona}'s sponsor action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_sponsor_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest sponsor failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_sponsor_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s sponsor event."
+        },
+        {
+          "id": "inst_sponsor_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s sponsor development."
+        },
+        {
+          "id": "inst_sponsor_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the sponsor event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_sponsor_strategist_4",
+          "text": "The sponsor situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "media": {
+      "default": [
+        {
+          "id": "inst_media_def_1",
+          "text": "An important media event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_media_def_2",
+          "text": "{rikishi_shikona} is at the center of a new media development."
+        },
+        {
+          "id": "inst_media_def_3",
+          "text": "The stable faces a media situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_media_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest media matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_media_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s media event."
+        },
+        {
+          "id": "inst_media_strict_2",
+          "text": "The stablemaster sternly addresses the recent media issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_media_strict_3",
+          "text": "{rikishi_shikona}'s media action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_media_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest media incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_media_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s media event."
+        },
+        {
+          "id": "inst_media_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the media matter."
+        },
+        {
+          "id": "inst_media_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent media challenge."
+        },
+        {
+          "id": "inst_media_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the media news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_media_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s media matter."
+        },
+        {
+          "id": "inst_media_traditionalist_2",
+          "text": "{rikishi_shikona}'s media event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_media_traditionalist_3",
+          "text": "The media situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_media_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent media affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_media_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s media data and metrics."
+        },
+        {
+          "id": "inst_media_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s media development."
+        },
+        {
+          "id": "inst_media_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the media event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_media_scientist_4",
+          "text": "The media situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_media_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s media news."
+        },
+        {
+          "id": "inst_media_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the media challenge."
+        },
+        {
+          "id": "inst_media_gambler_3",
+          "text": "{rikishi_shikona}'s media event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_media_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s media matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_media_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s media event."
+        },
+        {
+          "id": "inst_media_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the media matter."
+        },
+        {
+          "id": "inst_media_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent media challenge."
+        },
+        {
+          "id": "inst_media_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the media news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_media_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s media event."
+        },
+        {
+          "id": "inst_media_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent media disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_media_tyrant_3",
+          "text": "{rikishi_shikona}'s media action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_media_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest media failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_media_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s media event."
+        },
+        {
+          "id": "inst_media_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s media development."
+        },
+        {
+          "id": "inst_media_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the media event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_media_strategist_4",
+          "text": "The media situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "rivalry": {
+      "default": [
+        {
+          "id": "inst_rivalry_def_1",
+          "text": "An important rivalry event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_rivalry_def_2",
+          "text": "{rikishi_shikona} is at the center of a new rivalry development."
+        },
+        {
+          "id": "inst_rivalry_def_3",
+          "text": "The stable faces a rivalry situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_rivalry_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest rivalry matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_rivalry_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s rivalry event."
+        },
+        {
+          "id": "inst_rivalry_strict_2",
+          "text": "The stablemaster sternly addresses the recent rivalry issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_rivalry_strict_3",
+          "text": "{rikishi_shikona}'s rivalry action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_rivalry_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest rivalry incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_rivalry_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s rivalry event."
+        },
+        {
+          "id": "inst_rivalry_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the rivalry matter."
+        },
+        {
+          "id": "inst_rivalry_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent rivalry challenge."
+        },
+        {
+          "id": "inst_rivalry_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the rivalry news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_rivalry_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s rivalry matter."
+        },
+        {
+          "id": "inst_rivalry_traditionalist_2",
+          "text": "{rikishi_shikona}'s rivalry event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_rivalry_traditionalist_3",
+          "text": "The rivalry situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_rivalry_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent rivalry affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_rivalry_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s rivalry data and metrics."
+        },
+        {
+          "id": "inst_rivalry_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s rivalry development."
+        },
+        {
+          "id": "inst_rivalry_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the rivalry event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_rivalry_scientist_4",
+          "text": "The rivalry situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_rivalry_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s rivalry news."
+        },
+        {
+          "id": "inst_rivalry_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the rivalry challenge."
+        },
+        {
+          "id": "inst_rivalry_gambler_3",
+          "text": "{rikishi_shikona}'s rivalry event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_rivalry_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s rivalry matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_rivalry_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s rivalry event."
+        },
+        {
+          "id": "inst_rivalry_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the rivalry matter."
+        },
+        {
+          "id": "inst_rivalry_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent rivalry challenge."
+        },
+        {
+          "id": "inst_rivalry_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the rivalry news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_rivalry_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s rivalry event."
+        },
+        {
+          "id": "inst_rivalry_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent rivalry disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_rivalry_tyrant_3",
+          "text": "{rikishi_shikona}'s rivalry action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_rivalry_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest rivalry failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_rivalry_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s rivalry event."
+        },
+        {
+          "id": "inst_rivalry_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s rivalry development."
+        },
+        {
+          "id": "inst_rivalry_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the rivalry event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_rivalry_strategist_4",
+          "text": "The rivalry situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "promotion": {
+      "default": [
+        {
+          "id": "inst_promotion_def_1",
+          "text": "An important promotion event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_promotion_def_2",
+          "text": "{rikishi_shikona} is at the center of a new promotion development."
+        },
+        {
+          "id": "inst_promotion_def_3",
+          "text": "The stable faces a promotion situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_promotion_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest promotion matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_promotion_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s promotion event."
+        },
+        {
+          "id": "inst_promotion_strict_2",
+          "text": "The stablemaster sternly addresses the recent promotion issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_promotion_strict_3",
+          "text": "{rikishi_shikona}'s promotion action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_promotion_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest promotion incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_promotion_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s promotion event."
+        },
+        {
+          "id": "inst_promotion_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the promotion matter."
+        },
+        {
+          "id": "inst_promotion_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent promotion challenge."
+        },
+        {
+          "id": "inst_promotion_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the promotion news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_promotion_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s promotion matter."
+        },
+        {
+          "id": "inst_promotion_traditionalist_2",
+          "text": "{rikishi_shikona}'s promotion event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_promotion_traditionalist_3",
+          "text": "The promotion situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_promotion_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent promotion affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_promotion_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s promotion data and metrics."
+        },
+        {
+          "id": "inst_promotion_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s promotion development."
+        },
+        {
+          "id": "inst_promotion_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the promotion event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_promotion_scientist_4",
+          "text": "The promotion situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_promotion_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s promotion news."
+        },
+        {
+          "id": "inst_promotion_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the promotion challenge."
+        },
+        {
+          "id": "inst_promotion_gambler_3",
+          "text": "{rikishi_shikona}'s promotion event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_promotion_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s promotion matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_promotion_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s promotion event."
+        },
+        {
+          "id": "inst_promotion_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the promotion matter."
+        },
+        {
+          "id": "inst_promotion_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent promotion challenge."
+        },
+        {
+          "id": "inst_promotion_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the promotion news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_promotion_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s promotion event."
+        },
+        {
+          "id": "inst_promotion_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent promotion disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_promotion_tyrant_3",
+          "text": "{rikishi_shikona}'s promotion action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_promotion_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest promotion failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_promotion_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s promotion event."
+        },
+        {
+          "id": "inst_promotion_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s promotion development."
+        },
+        {
+          "id": "inst_promotion_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the promotion event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_promotion_strategist_4",
+          "text": "The promotion situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "discipline": {
+      "default": [
+        {
+          "id": "inst_discipline_def_1",
+          "text": "An important discipline event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_discipline_def_2",
+          "text": "{rikishi_shikona} is at the center of a new discipline development."
+        },
+        {
+          "id": "inst_discipline_def_3",
+          "text": "The stable faces a discipline situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_discipline_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest discipline matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_discipline_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s discipline event."
+        },
+        {
+          "id": "inst_discipline_strict_2",
+          "text": "The stablemaster sternly addresses the recent discipline issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_discipline_strict_3",
+          "text": "{rikishi_shikona}'s discipline action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_discipline_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest discipline incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_discipline_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s discipline event."
+        },
+        {
+          "id": "inst_discipline_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the discipline matter."
+        },
+        {
+          "id": "inst_discipline_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent discipline challenge."
+        },
+        {
+          "id": "inst_discipline_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the discipline news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_discipline_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s discipline matter."
+        },
+        {
+          "id": "inst_discipline_traditionalist_2",
+          "text": "{rikishi_shikona}'s discipline event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_discipline_traditionalist_3",
+          "text": "The discipline situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_discipline_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent discipline affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_discipline_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s discipline data and metrics."
+        },
+        {
+          "id": "inst_discipline_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s discipline development."
+        },
+        {
+          "id": "inst_discipline_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the discipline event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_discipline_scientist_4",
+          "text": "The discipline situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_discipline_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s discipline news."
+        },
+        {
+          "id": "inst_discipline_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the discipline challenge."
+        },
+        {
+          "id": "inst_discipline_gambler_3",
+          "text": "{rikishi_shikona}'s discipline event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_discipline_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s discipline matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_discipline_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s discipline event."
+        },
+        {
+          "id": "inst_discipline_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the discipline matter."
+        },
+        {
+          "id": "inst_discipline_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent discipline challenge."
+        },
+        {
+          "id": "inst_discipline_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the discipline news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_discipline_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s discipline event."
+        },
+        {
+          "id": "inst_discipline_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent discipline disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_discipline_tyrant_3",
+          "text": "{rikishi_shikona}'s discipline action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_discipline_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest discipline failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_discipline_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s discipline event."
+        },
+        {
+          "id": "inst_discipline_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s discipline development."
+        },
+        {
+          "id": "inst_discipline_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the discipline event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_discipline_strategist_4",
+          "text": "The discipline situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "facility": {
+      "default": [
+        {
+          "id": "inst_facility_def_1",
+          "text": "An important facility event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_facility_def_2",
+          "text": "{rikishi_shikona} is at the center of a new facility development."
+        },
+        {
+          "id": "inst_facility_def_3",
+          "text": "The stable faces a facility situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_facility_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest facility matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_facility_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s facility event."
+        },
+        {
+          "id": "inst_facility_strict_2",
+          "text": "The stablemaster sternly addresses the recent facility issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_facility_strict_3",
+          "text": "{rikishi_shikona}'s facility action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_facility_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest facility incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_facility_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s facility event."
+        },
+        {
+          "id": "inst_facility_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the facility matter."
+        },
+        {
+          "id": "inst_facility_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent facility challenge."
+        },
+        {
+          "id": "inst_facility_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the facility news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_facility_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s facility matter."
+        },
+        {
+          "id": "inst_facility_traditionalist_2",
+          "text": "{rikishi_shikona}'s facility event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_facility_traditionalist_3",
+          "text": "The facility situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_facility_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent facility affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_facility_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s facility data and metrics."
+        },
+        {
+          "id": "inst_facility_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s facility development."
+        },
+        {
+          "id": "inst_facility_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the facility event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_facility_scientist_4",
+          "text": "The facility situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_facility_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s facility news."
+        },
+        {
+          "id": "inst_facility_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the facility challenge."
+        },
+        {
+          "id": "inst_facility_gambler_3",
+          "text": "{rikishi_shikona}'s facility event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_facility_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s facility matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_facility_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s facility event."
+        },
+        {
+          "id": "inst_facility_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the facility matter."
+        },
+        {
+          "id": "inst_facility_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent facility challenge."
+        },
+        {
+          "id": "inst_facility_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the facility news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_facility_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s facility event."
+        },
+        {
+          "id": "inst_facility_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent facility disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_facility_tyrant_3",
+          "text": "{rikishi_shikona}'s facility action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_facility_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest facility failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_facility_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s facility event."
+        },
+        {
+          "id": "inst_facility_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s facility development."
+        },
+        {
+          "id": "inst_facility_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the facility event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_facility_strategist_4",
+          "text": "The facility situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "milestone": {
+      "default": [
+        {
+          "id": "inst_milestone_def_1",
+          "text": "An important milestone event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_milestone_def_2",
+          "text": "{rikishi_shikona} is at the center of a new milestone development."
+        },
+        {
+          "id": "inst_milestone_def_3",
+          "text": "The stable faces a milestone situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_milestone_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest milestone matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_milestone_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s milestone event."
+        },
+        {
+          "id": "inst_milestone_strict_2",
+          "text": "The stablemaster sternly addresses the recent milestone issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_milestone_strict_3",
+          "text": "{rikishi_shikona}'s milestone action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_milestone_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest milestone incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_milestone_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s milestone event."
+        },
+        {
+          "id": "inst_milestone_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the milestone matter."
+        },
+        {
+          "id": "inst_milestone_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent milestone challenge."
+        },
+        {
+          "id": "inst_milestone_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the milestone news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_milestone_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s milestone matter."
+        },
+        {
+          "id": "inst_milestone_traditionalist_2",
+          "text": "{rikishi_shikona}'s milestone event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_milestone_traditionalist_3",
+          "text": "The milestone situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_milestone_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent milestone affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_milestone_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s milestone data and metrics."
+        },
+        {
+          "id": "inst_milestone_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s milestone development."
+        },
+        {
+          "id": "inst_milestone_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the milestone event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_milestone_scientist_4",
+          "text": "The milestone situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_milestone_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s milestone news."
+        },
+        {
+          "id": "inst_milestone_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the milestone challenge."
+        },
+        {
+          "id": "inst_milestone_gambler_3",
+          "text": "{rikishi_shikona}'s milestone event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_milestone_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s milestone matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_milestone_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s milestone event."
+        },
+        {
+          "id": "inst_milestone_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the milestone matter."
+        },
+        {
+          "id": "inst_milestone_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent milestone challenge."
+        },
+        {
+          "id": "inst_milestone_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the milestone news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_milestone_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s milestone event."
+        },
+        {
+          "id": "inst_milestone_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent milestone disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_milestone_tyrant_3",
+          "text": "{rikishi_shikona}'s milestone action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_milestone_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest milestone failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_milestone_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s milestone event."
+        },
+        {
+          "id": "inst_milestone_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s milestone development."
+        },
+        {
+          "id": "inst_milestone_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the milestone event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_milestone_strategist_4",
+          "text": "The milestone situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "match": {
+      "default": [
+        {
+          "id": "inst_match_def_1",
+          "text": "An important match event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_match_def_2",
+          "text": "{rikishi_shikona} is at the center of a new match development."
+        },
+        {
+          "id": "inst_match_def_3",
+          "text": "The stable faces a match situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_match_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest match matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_match_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s match event."
+        },
+        {
+          "id": "inst_match_strict_2",
+          "text": "The stablemaster sternly addresses the recent match issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_match_strict_3",
+          "text": "{rikishi_shikona}'s match action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_match_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest match incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_match_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s match event."
+        },
+        {
+          "id": "inst_match_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the match matter."
+        },
+        {
+          "id": "inst_match_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent match challenge."
+        },
+        {
+          "id": "inst_match_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the match news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_match_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s match matter."
+        },
+        {
+          "id": "inst_match_traditionalist_2",
+          "text": "{rikishi_shikona}'s match event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_match_traditionalist_3",
+          "text": "The match situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_match_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent match affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_match_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s match data and metrics."
+        },
+        {
+          "id": "inst_match_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s match development."
+        },
+        {
+          "id": "inst_match_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the match event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_match_scientist_4",
+          "text": "The match situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_match_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s match news."
+        },
+        {
+          "id": "inst_match_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the match challenge."
+        },
+        {
+          "id": "inst_match_gambler_3",
+          "text": "{rikishi_shikona}'s match event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_match_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s match matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_match_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s match event."
+        },
+        {
+          "id": "inst_match_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the match matter."
+        },
+        {
+          "id": "inst_match_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent match challenge."
+        },
+        {
+          "id": "inst_match_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the match news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_match_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s match event."
+        },
+        {
+          "id": "inst_match_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent match disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_match_tyrant_3",
+          "text": "{rikishi_shikona}'s match action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_match_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest match failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_match_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s match event."
+        },
+        {
+          "id": "inst_match_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s match development."
+        },
+        {
+          "id": "inst_match_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the match event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_match_strategist_4",
+          "text": "The match situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "basho": {
+      "default": [
+        {
+          "id": "inst_basho_def_1",
+          "text": "An important basho event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_basho_def_2",
+          "text": "{rikishi_shikona} is at the center of a new basho development."
+        },
+        {
+          "id": "inst_basho_def_3",
+          "text": "The stable faces a basho situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_basho_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest basho matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_basho_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s basho event."
+        },
+        {
+          "id": "inst_basho_strict_2",
+          "text": "The stablemaster sternly addresses the recent basho issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_basho_strict_3",
+          "text": "{rikishi_shikona}'s basho action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_basho_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest basho incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_basho_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s basho event."
+        },
+        {
+          "id": "inst_basho_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the basho matter."
+        },
+        {
+          "id": "inst_basho_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent basho challenge."
+        },
+        {
+          "id": "inst_basho_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the basho news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_basho_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s basho matter."
+        },
+        {
+          "id": "inst_basho_traditionalist_2",
+          "text": "{rikishi_shikona}'s basho event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_basho_traditionalist_3",
+          "text": "The basho situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_basho_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent basho affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_basho_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s basho data and metrics."
+        },
+        {
+          "id": "inst_basho_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s basho development."
+        },
+        {
+          "id": "inst_basho_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the basho event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_basho_scientist_4",
+          "text": "The basho situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_basho_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s basho news."
+        },
+        {
+          "id": "inst_basho_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the basho challenge."
+        },
+        {
+          "id": "inst_basho_gambler_3",
+          "text": "{rikishi_shikona}'s basho event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_basho_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s basho matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_basho_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s basho event."
+        },
+        {
+          "id": "inst_basho_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the basho matter."
+        },
+        {
+          "id": "inst_basho_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent basho challenge."
+        },
+        {
+          "id": "inst_basho_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the basho news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_basho_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s basho event."
+        },
+        {
+          "id": "inst_basho_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent basho disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_basho_tyrant_3",
+          "text": "{rikishi_shikona}'s basho action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_basho_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest basho failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_basho_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s basho event."
+        },
+        {
+          "id": "inst_basho_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s basho development."
+        },
+        {
+          "id": "inst_basho_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the basho event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_basho_strategist_4",
+          "text": "The basho situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "career": {
+      "default": [
+        {
+          "id": "inst_career_def_1",
+          "text": "An important career event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_career_def_2",
+          "text": "{rikishi_shikona} is at the center of a new career development."
+        },
+        {
+          "id": "inst_career_def_3",
+          "text": "The stable faces a career situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_career_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest career matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_career_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s career event."
+        },
+        {
+          "id": "inst_career_strict_2",
+          "text": "The stablemaster sternly addresses the recent career issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_career_strict_3",
+          "text": "{rikishi_shikona}'s career action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_career_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest career incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_career_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s career event."
+        },
+        {
+          "id": "inst_career_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the career matter."
+        },
+        {
+          "id": "inst_career_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent career challenge."
+        },
+        {
+          "id": "inst_career_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the career news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_career_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s career matter."
+        },
+        {
+          "id": "inst_career_traditionalist_2",
+          "text": "{rikishi_shikona}'s career event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_career_traditionalist_3",
+          "text": "The career situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_career_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent career affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_career_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s career data and metrics."
+        },
+        {
+          "id": "inst_career_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s career development."
+        },
+        {
+          "id": "inst_career_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the career event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_career_scientist_4",
+          "text": "The career situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_career_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s career news."
+        },
+        {
+          "id": "inst_career_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the career challenge."
+        },
+        {
+          "id": "inst_career_gambler_3",
+          "text": "{rikishi_shikona}'s career event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_career_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s career matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_career_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s career event."
+        },
+        {
+          "id": "inst_career_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the career matter."
+        },
+        {
+          "id": "inst_career_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent career challenge."
+        },
+        {
+          "id": "inst_career_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the career news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_career_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s career event."
+        },
+        {
+          "id": "inst_career_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent career disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_career_tyrant_3",
+          "text": "{rikishi_shikona}'s career action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_career_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest career failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_career_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s career event."
+        },
+        {
+          "id": "inst_career_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s career development."
+        },
+        {
+          "id": "inst_career_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the career event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_career_strategist_4",
+          "text": "The career situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "welfare": {
+      "default": [
+        {
+          "id": "inst_welfare_def_1",
+          "text": "An important welfare event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_welfare_def_2",
+          "text": "{rikishi_shikona} is at the center of a new welfare development."
+        },
+        {
+          "id": "inst_welfare_def_3",
+          "text": "The stable faces a welfare situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_welfare_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest welfare matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_welfare_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s welfare event."
+        },
+        {
+          "id": "inst_welfare_strict_2",
+          "text": "The stablemaster sternly addresses the recent welfare issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_welfare_strict_3",
+          "text": "{rikishi_shikona}'s welfare action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_welfare_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest welfare incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_welfare_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s welfare event."
+        },
+        {
+          "id": "inst_welfare_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the welfare matter."
+        },
+        {
+          "id": "inst_welfare_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent welfare challenge."
+        },
+        {
+          "id": "inst_welfare_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the welfare news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_welfare_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s welfare matter."
+        },
+        {
+          "id": "inst_welfare_traditionalist_2",
+          "text": "{rikishi_shikona}'s welfare event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_welfare_traditionalist_3",
+          "text": "The welfare situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_welfare_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent welfare affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_welfare_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s welfare data and metrics."
+        },
+        {
+          "id": "inst_welfare_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s welfare development."
+        },
+        {
+          "id": "inst_welfare_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the welfare event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_welfare_scientist_4",
+          "text": "The welfare situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_welfare_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s welfare news."
+        },
+        {
+          "id": "inst_welfare_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the welfare challenge."
+        },
+        {
+          "id": "inst_welfare_gambler_3",
+          "text": "{rikishi_shikona}'s welfare event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_welfare_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s welfare matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_welfare_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s welfare event."
+        },
+        {
+          "id": "inst_welfare_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the welfare matter."
+        },
+        {
+          "id": "inst_welfare_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent welfare challenge."
+        },
+        {
+          "id": "inst_welfare_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the welfare news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_welfare_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s welfare event."
+        },
+        {
+          "id": "inst_welfare_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent welfare disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_welfare_tyrant_3",
+          "text": "{rikishi_shikona}'s welfare action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_welfare_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest welfare failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_welfare_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s welfare event."
+        },
+        {
+          "id": "inst_welfare_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s welfare development."
+        },
+        {
+          "id": "inst_welfare_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the welfare event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_welfare_strategist_4",
+          "text": "The welfare situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "misc": {
+      "default": [
+        {
+          "id": "inst_misc_def_1",
+          "text": "An important misc event involving {rikishi_shikona} occurs."
+        },
+        {
+          "id": "inst_misc_def_2",
+          "text": "{rikishi_shikona} is at the center of a new misc development."
+        },
+        {
+          "id": "inst_misc_def_3",
+          "text": "The stable faces a misc situation concerning {rikishi_shikona}."
+        },
+        {
+          "id": "inst_misc_def_4",
+          "text": "News breaks regarding {rikishi_shikona}'s latest misc matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_misc_strict_1",
+          "text": "\"Discipline is key,\" notes the Oyakata regarding {rikishi_shikona}'s misc event."
+        },
+        {
+          "id": "inst_misc_strict_2",
+          "text": "The stablemaster sternly addresses the recent misc issue with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_misc_strict_3",
+          "text": "{rikishi_shikona}'s misc action draws a harsh reprimand from the top."
+        },
+        {
+          "id": "inst_misc_strict_4",
+          "text": "No excuses are accepted for {rikishi_shikona}'s latest misc incident."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_misc_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about {rikishi_shikona}'s misc event."
+        },
+        {
+          "id": "inst_misc_indulgent_2",
+          "text": "A gentle word of guidance is given to {rikishi_shikona} over the misc matter."
+        },
+        {
+          "id": "inst_misc_indulgent_3",
+          "text": "{rikishi_shikona} receives warm support navigating the recent misc challenge."
+        },
+        {
+          "id": "inst_misc_indulgent_4",
+          "text": "\"Every step is a lesson,\" the stablemaster softly tells {rikishi_shikona} about the misc news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_misc_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on {rikishi_shikona}'s misc matter."
+        },
+        {
+          "id": "inst_misc_traditionalist_2",
+          "text": "{rikishi_shikona}'s misc event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_misc_traditionalist_3",
+          "text": "The misc situation for {rikishi_shikona} demands a deeply traditional response."
+        },
+        {
+          "id": "inst_misc_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of {rikishi_shikona}'s recent misc affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_misc_scientist_1",
+          "text": "The Oyakata carefully analyzes {rikishi_shikona}'s misc data and metrics."
+        },
+        {
+          "id": "inst_misc_scientist_2",
+          "text": "An empirical approach is taken toward {rikishi_shikona}'s misc development."
+        },
+        {
+          "id": "inst_misc_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the misc event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_misc_scientist_4",
+          "text": "The misc situation with {rikishi_shikona} requires precise statistical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_misc_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off {rikishi_shikona}'s misc news."
+        },
+        {
+          "id": "inst_misc_gambler_2",
+          "text": "A risky, high-reward bet is placed on {rikishi_shikona} overcoming the misc challenge."
+        },
+        {
+          "id": "inst_misc_gambler_3",
+          "text": "{rikishi_shikona}'s misc event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_misc_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on {rikishi_shikona}'s misc matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_misc_nurturer_1",
+          "text": "The Oyakata provides a warm embrace upon hearing about {rikishi_shikona}'s misc event."
+        },
+        {
+          "id": "inst_misc_nurturer_2",
+          "text": "A deeply supportive word is given to {rikishi_shikona} over the misc matter."
+        },
+        {
+          "id": "inst_misc_nurturer_3",
+          "text": "{rikishi_shikona} receives loving encouragement navigating the recent misc challenge."
+        },
+        {
+          "id": "inst_misc_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster tells {rikishi_shikona} about the misc news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_misc_tyrant_1",
+          "text": "\"Failure is unacceptable,\" rages the Oyakata regarding {rikishi_shikona}'s misc event."
+        },
+        {
+          "id": "inst_misc_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent misc disaster with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_misc_tyrant_3",
+          "text": "{rikishi_shikona}'s misc action draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_misc_tyrant_4",
+          "text": "Absolutely no mercy is shown for {rikishi_shikona}'s latest misc failure."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_misc_strategist_1",
+          "text": "The Oyakata methodically calculates the implications of {rikishi_shikona}'s misc event."
+        },
+        {
+          "id": "inst_misc_strategist_2",
+          "text": "A highly calculated tactical approach is taken toward {rikishi_shikona}'s misc development."
+        },
+        {
+          "id": "inst_misc_strategist_3",
+          "text": "\"Let us review the long-term strategy,\" the stablemaster says of the misc event with {rikishi_shikona}."
+        },
+        {
+          "id": "inst_misc_strategist_4",
+          "text": "The misc situation with {rikishi_shikona} demands intricate, forward-looking planning."
         }
       ]
     }

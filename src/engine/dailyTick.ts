@@ -27,6 +27,7 @@ import type { WorldState, CyclePhase } from "./types/world";
 import { EventBus, logEngineEvent } from "./events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
 import { initializeBasho } from "./worldgen";
+import { toRikishiDescriptor } from "./descriptorBands";
 import * as schedule from "./schedule";
 import { needsScheduleForDay } from "./schedule";
 import { ensureHeyaWelfareState } from "./welfare";
@@ -213,6 +214,9 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 function tickDailyCommon(world: WorldState, subs: string[]): void {
   for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
     if (r.isRetired) continue;
+
+    // Persist descriptor for UI hysteresis buffer
+    r.descriptor = toRikishiDescriptor(r, r.descriptor);
 
     // Diet effects
     const heya = world.heyas.get(r.heyaId);

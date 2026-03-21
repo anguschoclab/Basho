@@ -19,6 +19,7 @@ import { toRikishiDescriptor, toPotentialBand, toPrizeBand, PRIZE_LABELS, toCond
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
 import { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "./facilities";
+import { stableTieBreak } from "./utils/sort";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -152,7 +153,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     });
   }
 
-  rivalEntries.sort((a, b) => b.tb - a.tb);
+  rivalEntries.sort((a, b) => b.tb - a.tb || stableTieBreak(a.id, b.id));
 
   const topRivals: UIRivalEntry[] = [];
   const topCount = Math.min(5, rivalEntries.length);
@@ -213,7 +214,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
-    descriptor: toRikishiDescriptor(r),
+    descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     topRivals,
     personalityTraits: r.personalityTraits ?? [],

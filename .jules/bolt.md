@@ -5,3 +5,7 @@
 ## 2025-03-19 - Optimizing tickWeek event trimming dedupe key cleanup
 **Learning:** When cleaning up a large number of events in a log, using `Object.keys()` on a large dedupe map inside a loop over the removed events results in O(N * K) time complexity (where N is the number of events removed and K is the number of dedupe keys). In my benchmarks this could take over 14 seconds for 50,000 events.
 **Action:** Extract the search prefixes (e.g. `year|week|`) into a `Set` in the first pass over the events, and then perform a single O(K) pass over the dedupe keys, using `indexOf` to quickly extract the prefix for comparison against the `Set`. This reduces the complexity to O(N + K) and reduced execution time from 14s to 30ms in my benchmark.
+
+## 2024-03-24 - React useMemo array allocations
+**Learning:** In React components that subscribe to complex global state (like `useGame`), chaining `.values()` iterators into `Array.from()` to use `.reduce()` causes significant garbage collection overhead and temporary array allocations on every render.
+**Action:** Always replace `Array.from(map.values()).reduce()` with direct `for...of` loops over `map.values()` inside `useMemo` blocks when iterating over large datasets like `sponsors` or `rikishi`.

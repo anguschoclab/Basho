@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
+import { FATIGUE_LABELS } from "@/engine/descriptorBands";
 
 export function RosterWidget() {
   const { state } = useGame();
@@ -72,6 +73,8 @@ export function RosterWidget() {
           <div className="h-full rounded-full transition-all duration-500 bg-destructive" style={{ width: `${(exhaustedCount / roster.length) * 100}%` }} />
         </div>
       )}
+
+
 
       {/* Roster list */}
       <div className="space-y-0.5">
