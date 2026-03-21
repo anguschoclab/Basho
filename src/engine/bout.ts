@@ -69,6 +69,9 @@ interface BoutContext {
   day: number;
   rikishiEastId: string;
   rikishiWestId: string;
+  playerSide?: Side;
+  playerTactic?: import("./types/combat").BoutTactic;
+  cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
 /** Defines the structure for engine state. */
