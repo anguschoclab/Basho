@@ -1,6 +1,5 @@
 import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
-import { autosave } from "../saveload";
 import { buildAllPerceptionSnapshots } from "../perception";
 import * as training from "../training";
 import * as injuries from "../injuries";
@@ -13,20 +12,7 @@ import * as npcAI from "../npcAI";
 import * as scoutingStore from "../scoutingStore";
 import * as talentpool from "../talentpool";
 import { processWeeklyMediaBoundary, createDefaultMediaState } from "../media";
-
-/**
- * Safe call.
- *  * @param fn - The Fn.
- *  * @returns The result.
- */
-function safeCall(fn: () => void): boolean {
-  try {
-    fn();
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { runTickPipeline, safeCall, type TickStep } from "./tickOrchestrator";
 
 /**
  * Weekly subsystem tick — called once every 7 daily ticks.
@@ -38,49 +24,48 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
     world.calendar.currentWeek = world.week;
   }
 
-  // Build perception cache FIRST — consumed by npcAI and UI (A7.1)
-  safeCall(() => {
-    const snapshots = buildAllPerceptionSnapshots(world);
-    const cache: Record<string, import("../perception").PerceptionSnapshot> = {};
-    for (const [id, snap] of snapshots) cache[id] = snap;
-    world.perceptionCache = cache;
-  }) && subs.push("perception_cache");
+  const steps: TickStep[] = [
+    {
+      label: "perception_cache",
+      run: (w) => {
+        const snapshots = buildAllPerceptionSnapshots(w);
+        const cache: Record<string, import("../perception").PerceptionSnapshot> = {};
+        for (const [id, snap] of snapshots) cache[id] = snap;
+        w.perceptionCache = cache;
+      },
+    },
+    { label: "npcAI", run: (w) => { npcAI.tickWeek?.(w); } },
+    { label: "training", run: (w) => { training.tickWeek(w); } },
+    { label: "injuries", run: (w) => { injuries.tickWeek(w); } },
+    { label: "economics_weekly", run: (w) => { economics.tickWeek(w); } },
+    { label: "welfare", run: (w) => { welfare.tickWeek(w); } },
+    { label: "governance", run: (w) => { governance.tickWeek(w); } },
+    { label: "rivalries", run: (w) => { rivalries.tickWeek(w); } },
+    { label: "events", run: (w) => { events.tickWeek(w); } },
+    { label: "scouting", run: (w) => { scoutingStore.tickWeek(w); } },
+    { label: "talentpool", run: (w) => { talentpool.tickWeek(w); } },
+    {
+      label: "media",
+      run: (w) => {
+        if (!w.mediaState) w.mediaState = createDefaultMediaState();
+        const { state } = processWeeklyMediaBoundary({
+          state: w.mediaState,
+          world: w,
+          rivalries: w.rivalriesState,
+        });
+        w.mediaState = state;
+      },
+    },
+    { label: "recruitment_window", run: (w) => { tickRecruitmentWindowClose(w); } },
+    { label: "mid_interim_recruitment", run: (w) => { tickMidInterimRecruitment(w); } },
+  ];
 
-  safeCall(() => { npcAI.tickWeek?.(world); }) && subs.push("npcAI");
-  safeCall(() => { training.tickWeek(world); }) && subs.push("training");
-  safeCall(() => { injuries.tickWeek(world); }) && subs.push("injuries");
-  safeCall(() => { economics.tickWeek(world); }) && subs.push("economics_weekly");
-  safeCall(() => { welfare.tickWeek(world); }) && subs.push("welfare");
-  safeCall(() => { governance.tickWeek(world); }) && subs.push("governance");
-  safeCall(() => { rivalries.tickWeek(world); }) && subs.push("rivalries");
-  safeCall(() => { events.tickWeek(world); }) && subs.push("events");
-  safeCall(() => { scoutingStore.tickWeek(world); }) && subs.push("scouting");
-  safeCall(() => { talentpool.tickWeek(world); }) && subs.push("talentpool");
   // Bi-annual JSA Board Elections (End of year, even years)
   if (world.week === 52 && world.year % 2 === 0) {
-    safeCall(() => { governance.runElections(world); }) && subs.push("elections");
+    steps.push({ label: "elections", run: (w) => { governance.runElections(w); } });
   }
 
-
-  // Media weekly boundary — decay heat/pressure, generate features
-  safeCall(() => {
-    if (!world.mediaState) world.mediaState = createDefaultMediaState();
-    const { state } = processWeeklyMediaBoundary({
-      state: world.mediaState,
-      world,
-      rivalries: world.rivalriesState,
-    });
-    world.mediaState = state;
-  }) && subs.push("media");
-
-  // Recruitment window lifecycle — check if window should close
-  safeCall(() => { tickRecruitmentWindowClose(world); }) && subs.push("recruitment_window");
-
-  // Mid-interim recruitment window (Constitution: recruitment at week 3 of interim)
-  safeCall(() => { tickMidInterimRecruitment(world); }) && subs.push("mid_interim_recruitment");
-
-  // Autosave at weekly boundary (Constitution §6)
-  safeCall(() => { autosave(world); });
+  runTickPipeline(world, subs, steps, { autosave: true });
 }
 
 /**
@@ -111,20 +96,17 @@ export function tickRecruitmentWindowClose(world: WorldState): void {
 
 /**
  * Mid-interim recruitment window (Constitution: recruitment occurs at mid-interim week 3).
- * Opens a second, shorter window for player and triggers NPC opportunistic recruitment.
  */
 export function tickMidInterimRecruitment(world: WorldState): void {
   if (world.cyclePhase !== "interim") return;
 
   const interimDaysRemaining = world._interimDaysRemaining ?? 0;
-  const totalInterimDays = 42; // 6 weeks
+  const totalInterimDays = 42;
   const elapsedDays = totalInterimDays - interimDaysRemaining;
   const elapsedWeeks = Math.floor(elapsedDays / 7);
 
-  // Fire at week 3 of interim (roughly day 21)
   if (elapsedWeeks !== 3) return;
 
-  // Don't re-open if a window is already open
   const existingWindow = world._recruitmentWindow;
   if (existingWindow?.isOpen) return;
 
@@ -133,7 +115,7 @@ export function tickMidInterimRecruitment(world: WorldState): void {
   if (playerHeya) {
     world._recruitmentWindow = {
       openedAtWeek: world.week,
-      closesAtWeek: world.week + 2, // Shorter 2-week window
+      closesAtWeek: world.week + 2,
       vacancies: 0,
       isOpen: true,
       phase: "mid_interim"
