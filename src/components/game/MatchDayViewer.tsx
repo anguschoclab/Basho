@@ -356,7 +356,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.west}
                     side="west"
                     isWinner={match.result?.winner === "west"}
-                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } as any })}
                   />
 
                   {/* Result badge */}
