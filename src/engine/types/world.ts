@@ -40,8 +40,8 @@ import type { LineageEdge } from "../lineage";
 
 export interface WorldState {
   hallOfFame?: import("../hallOfFame").HallOfFameState;
-  historyIndex: import("../historyIndex").HistoryIndex;
-  banzuke: import("../banzuke").BanzukeState;
+  historyIndex?: any;
+  banzuke?: any;
   staff: IdMapRuntime<import("./staff").Staff>;
   lineage?: LineageEdge[];
   id: string;
