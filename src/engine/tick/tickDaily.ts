@@ -22,18 +22,18 @@
  * =======================================================
  */
 
-import type { WorldState, CyclePhase } from "./types/world";
-import { EventBus, logEngineEvent } from "./events";
-import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
-import { initializeBasho } from "./worldgen";
-import * as schedule from "./schedule";
-import { needsScheduleForDay } from "./schedule";
-import { ensureHeyaWelfareState } from "./welfare";
-import { resetBashoMediaTracking } from "./media";
+import type { WorldState, CyclePhase } from "../types/world";
+import { EventBus, logEngineEvent } from "../events";
+import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
+import { initializeBasho } from "../worldgen";
+import * as schedule from "../schedule";
+import { needsScheduleForDay } from "../schedule";
+import { ensureHeyaWelfareState } from "../welfare";
+import { resetBashoMediaTracking } from "../media";
 
-import { tickWeeklySubsystems } from "./tick/tickWeekly";
-import { tickMonthlyBoundary } from "./tick/tickMonthly";
-import { tickYearBoundary } from "./tick/tickYearly";
+import { tickWeeklySubsystems } from "./tickWeekly";
+import { tickMonthlyBoundary } from "./tickMonthly";
+import { tickYearBoundary } from "./tickYearly";
 
 // ============================================================================
 // TYPES
