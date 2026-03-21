@@ -1,4 +1,4 @@
-# Changelog - Sumo Manager Pro Migration
+# Changelog - Basho: Sumo Stable Manager
 
 This changelog outlines the systems, concepts, and features brought over and modernized from the legacy `Sumo` repository into the new `sumo-manager-pro` simulation engine.
 
