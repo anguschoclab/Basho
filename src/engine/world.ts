@@ -21,7 +21,7 @@ import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout";
 import { updateH2H } from "./h2h";
 import { EventBus, logEngineEvent } from "./events";
-import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./dailyTick";
+import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./tick/tickDaily";
 import { buildAlmanacSnapshot } from "./almanac";
 import { autosave } from "./saveload";
 import { runSponsorChurn } from "./economics";
