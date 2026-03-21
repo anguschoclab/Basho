@@ -345,7 +345,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.east}
                     side="east"
                     isWinner={match.result?.winner === "east"}
-                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } as any })}
                   />
 
                   {/* H2H center */}
