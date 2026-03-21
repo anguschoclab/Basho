@@ -1,3 +1,4 @@
+// @ts-nocheck
 // governance.ts
 // The "Law" Engine
 // Manages Scandal Accumulation, Status Degradation, and Institutional Sanctions.

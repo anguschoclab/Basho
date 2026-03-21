@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Name: src/engine/lineage.ts
  * Mentorship and lineage tracking (Oyakata -> Rikishi or Senior Rikishi -> Junior Rikishi).

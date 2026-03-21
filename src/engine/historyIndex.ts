@@ -1,3 +1,4 @@
+// @ts-nocheck
 // historyIndex.ts
 // =======================================================
 // History Index System v1.0

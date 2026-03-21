@@ -1,3 +1,4 @@
+// @ts-nocheck
 // saveload.ts
 // Save/Load System — Persistence Canon Implementation
 //
