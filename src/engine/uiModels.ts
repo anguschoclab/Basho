@@ -15,7 +15,7 @@ import type { WorldState } from "./types/world";
 import type { Rank, Division, Side } from "./types/banzuke";
 import type { Style, TacticalArchetype } from "./types/combat";
 import type { BoutResult } from "./types/basho";
-import { toRikishiDescriptor, toPotentialBand, toPrizeBand, PRIZE_LABELS, type RikishiDescriptor, type PotentialBand, type ConditionBand, type FatigueBand, type MomentumBand, toConditionBand, toFatigueBand, toMomentumBand } from "./descriptorBands";
+import { toRikishiDescriptor, toPotentialBand, toPrizeBand, PRIZE_LABELS, toConditionBand, toFatigueBand, toMomentumBand, toMotivationBand, type ConditionBand, type FatigueBand, type MomentumBand, type MotivationBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
 import { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "./facilities";
@@ -63,6 +63,7 @@ export interface UIRikishi {
   injurySummary: string; // "Healthy", "Minor knee (2w)", etc.
   injurySeverityBand: string;
   conditionBand: ConditionBand;
+  motivationBand: MotivationBand;
   fatigueBand: FatigueBand;
   momentumBand: MomentumBand;
 
@@ -201,9 +202,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     isInjured: r.injured,
     injurySummary,
     injurySeverityBand,
-    conditionBand: toConditionBand(r.condition ?? 100, r.descriptor?.conditionBand),
-    fatigueBand: toFatigueBand(r.fatigue ?? 0, r.descriptor?.fatigueBand),
-    momentumBand: toMomentumBand(r.momentum ?? 0, r.descriptor?.momentumBand),
+    conditionBand: toConditionBand(r.condition),
+    motivationBand: toMotivationBand(r.motivation),
+    fatigueBand: toFatigueBand(r.fatigue),
+    momentumBand: toMomentumBand(r.momentum),
     careerPhase: getCareerPhase(r.experience),
     currentBashoWins: r.currentBashoWins,
     currentBashoLosses: r.currentBashoLosses,
@@ -270,9 +272,9 @@ export function projectRosterEntry(r: Rikishi): UIRosterEntry {
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
     isInjured: r.injured,
-    conditionBand: toConditionBand(r.condition ?? 100, r.descriptor?.conditionBand),
-    fatigueBand: toFatigueBand(r.fatigue ?? 0, r.descriptor?.fatigueBand),
-    momentumBand: toMomentumBand(r.momentum ?? 0, r.descriptor?.momentumBand),
+    conditionBand: toConditionBand(r.condition),
+    fatigueBand: toFatigueBand(r.fatigue),
+    momentumBand: toMomentumBand(r.momentum),
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
   };
 }
