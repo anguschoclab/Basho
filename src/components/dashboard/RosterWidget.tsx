@@ -25,13 +25,14 @@ export function RosterWidget() {
         entries.push(projectRosterEntry(r));
       }
     }
-    return entries.sort((a, b) => b.momentum - a.momentum);
+    return entries.sort((a, b) => a.id.localeCompare(b.id));
   }, [world]);
 
   if (!world) return null;
 
   const injuredCount = roster.reduce((count, r) => count + (r.isInjured ? 1 : 0), 0);
-  const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
+  const exhaustedCount = roster.reduce((count, r) => count + (r.fatigueBand === "exhausted" || r.fatigueBand === "spent" ? 1 : 0), 0);
+  const fatigueWarning = exhaustedCount > 0;
 
   return (
     <div className="widget-card p-4 space-y-3">
@@ -61,19 +62,16 @@ export function RosterWidget() {
         )}
         <div className="flex items-center gap-1 text-muted-foreground ml-auto">
           <AlertTriangle className="h-3 w-3" />
-          <span className="text-[10px]">Avg fatigue: {avgFatigue}%</span>
+          <span className="text-[10px]">{exhaustedCount} exhausted</span>
         </div>
       </div>
 
-      {/* Team fatigue overview bar */}
-      <div className="h-1 rounded-full bg-muted overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
-          }`}
-          style={{ width: `${avgFatigue}%` }}
-        />
-      </div>
+      {/* Team fatigue warning */}
+      {fatigueWarning && (
+        <div className="h-1 rounded-full bg-muted overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-500 bg-destructive" style={{ width: `${(exhaustedCount / roster.length) * 100}%` }} />
+        </div>
+      )}
 
       {/* Roster list */}
       <div className="space-y-0.5">
@@ -89,9 +87,8 @@ export function RosterWidget() {
             <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
               <div
                 className={`h-full rounded-full transition-all duration-300 ${
-                  entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
+                  entry.fatigueBand === "spent" || entry.fatigueBand === "exhausted" ? "bg-destructive w-[90%]" : entry.fatigueBand === "tired" ? "bg-warning w-[60%]" : entry.fatigueBand === "light" ? "bg-primary/60 w-[30%]" : "bg-success w-[10%]"
                 }`}
-                style={{ width: `${entry.fatigue}%` }}
               />
             </div>
           </div>

@@ -175,6 +175,37 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   spent: "Spent",
 };
 
+
+// === Motivation Bands ===
+
+export type MotivationBand = "driven" | "eager" | "content" | "distracted" | "apathetic";
+
+export const MOTIVATION_LABELS: Record<MotivationBand, string> = {
+  driven: "Driven",
+  eager: "Eager",
+  content: "Content",
+  distracted: "Distracted",
+  apathetic: "Apathetic"
+};
+
+/**
+ * To motivation band.
+ *  * @param value - The value.
+ *  * @param prev - The previous band.
+ *  * @returns The result.
+ */
+export function toMotivationBand(value: number, prev?: MotivationBand): MotivationBand {
+  const bands: BandDef<MotivationBand>[] = [
+    { band: "apathetic", min: 0, max: 20 },
+    { band: "distracted", min: 20, max: 40 },
+    { band: "content", min: 40, max: 65 },
+    { band: "eager", min: 65, max: 85 },
+    { band: "driven", min: 85, max: Infinity },
+  ];
+  return toBand(value, bands, prev);
+}
+
+
 // === Momentum Bands ===
 
 /** Type representing momentum band. */

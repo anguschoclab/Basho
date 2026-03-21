@@ -12,6 +12,7 @@ import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
 import { stableSort } from "./utils/sort";
+import { toSatisfactionBand, type SatisfactionBand } from "./descriptorBands";
 
 /** Type representing digest kind. */
 export type DigestKind =
