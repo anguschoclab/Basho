@@ -185,16 +185,21 @@ export type MomentumBand = "on_fire" | "rising" | "steady" | "struggling" | "in_
  *  * @param momentum - The Momentum.
  *  * @returns The result.
  */
-export function toMomentumBand(momentum: number): MomentumBand {
+export function toMomentumBand(momentum: number, prev?: MomentumBand): MomentumBand {
   // Momentum typically stored as -5..+5 or 0..100
   const v = Math.abs(momentum) > 10
     ? (clamp(momentum, 0, 100) - 50) / 10
     : clamp(momentum, -5, 5);
-  if (v >= 3) return "on_fire";
-  if (v >= 1) return "rising";
-  if (v <= -3) return "in_crisis";
-  if (v <= -1) return "struggling";
-  return "steady";
+  // Map the v values into pseudo-bands for hysteresis logic
+  const v100 = (v + 5) * 10; // Maps -5..5 to 0..100
+  const MOMENTUM_BANDS_DEF: BandDef<MomentumBand>[] = [
+    { band: "in_crisis", min: 0, max: 30 }, // v <= -3 -> v100 <= 20 (roughly)
+    { band: "struggling", min: 30, max: 45 }, // v <= -1 -> v100 <= 40
+    { band: "steady", min: 45, max: 60 }, // v = 0 -> v100 = 50
+    { band: "rising", min: 60, max: 80 }, // v >= 1 -> v100 >= 60
+    { band: "on_fire", min: 80, max: Infinity }, // v >= 3 -> v100 >= 80
+  ];
+  return toBand(v100, MOMENTUM_BANDS_DEF, prev);
 }
 
 /** m o m e n t u m_ l a b e l s. */
@@ -509,7 +514,7 @@ export function toRikishiDescriptor(r: {
     techniqueBand: toStatBand(r.technique, prev?.techniqueBand),
     conditionBand: toConditionBand(r.condition, prev?.conditionBand),
     fatigueBand: toFatigueBand(r.fatigue, prev?.fatigueBand),
-    momentumBand: toMomentumBand(r.momentum),
+    momentumBand: toMomentumBand(r.momentum, prev?.momentumBand),
     potentialBand: toPotentialBand(r.talentSeed, prev?.potentialBand),
   };
 }

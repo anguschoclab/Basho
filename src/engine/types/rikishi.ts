@@ -7,6 +7,7 @@ import type { Style, TacticalArchetype, KimariteId } from "./combat";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
+import type { RikishiDescriptor } from "../descriptorBands";
 
 /** Defines the structure for rikishi stats. */
 export interface RikishiStats {
@@ -93,4 +94,7 @@ export interface Rikishi {
   motivation: number;
 
   talentSeed?: number;
+
+  // Cached bands for hysteresis
+  descriptor?: RikishiDescriptor;
 }
