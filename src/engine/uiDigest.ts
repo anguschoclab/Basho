@@ -215,6 +215,7 @@ export interface YokozunaCandidate {
 
 export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   const candidates: OzekiRunCandidate[] = [];
+  if (!world.historyIndex?.rikishi) return candidates;
   const playerHeyaId = world.playerHeyaId;
 
   for (const r of world.rikishi.values()) {
