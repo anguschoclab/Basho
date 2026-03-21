@@ -238,7 +238,7 @@ function useResolvedMatch() {
  * match day viewer.
  *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
  */
-export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
+export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
   const resolvedMatches = useMemo(() => {

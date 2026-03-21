@@ -1111,7 +1111,10 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
     year: 2025,
     day: 1,
     bashoName,
-    bashoNumber: 1
+    bashoNumber: 1,
+    matches: [],
+    standings: new Map(),
+    isActive: false,
   };
 
   const bout: BoutContext = { id: `sim-${seed}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };

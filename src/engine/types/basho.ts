@@ -47,6 +47,8 @@ export interface BoutResult {
   isKinboshi?: boolean;
   log: BoutLogEntry[];
   narrative?: string[];
+  pbpLines?: any[];
+  pbp?: string[];
 }
 
 /** Defines the structure for match schedule. */
