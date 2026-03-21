@@ -62,8 +62,8 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">{c.narrative}</p>
                   <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
-                    <span>Yūshō: {c.consecutiveYusho}</span>
-                    <span>Current basho: {c.recentWins}W</span>
+                    <span>Yūshō: {c.consecutiveYushos}</span>
+                    <span>Recent yūshō: {c.recentYushos}</span>
                   </div>
                 </div>
               </div>

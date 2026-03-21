@@ -396,7 +396,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     {/* Scouting Brief */}
                     <div className="grid grid-cols-2 gap-2 text-xs mb-3 p-2 bg-muted/30 rounded">
                       <div className="text-muted-foreground">Opponent Style:</div>
-                      <div className="font-medium capitalize">{world.rikishi.get(match.eastRikishiId)?.isPlayer ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
+                      <div className="font-medium capitalize">{match.isPlayerBout && world.rikishi.get(match.eastRikishiId)?.heyaId === world.playerHeyaId ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
                     </div>
 
                     {/* Tactic Buttons */}

@@ -980,8 +980,8 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
   }
 
-  const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
-  const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
+  const eastTactics = computeTacticalModifiers(east, west);
+  const westTactics = computeTacticalModifiers(west, east);
 
     // Emit tactical strategy entries into the log for PBP consumption
   if (st.tacticalResult) {

@@ -159,7 +159,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
                     e.preventDefault();
                     handleToggleCompare(snap.heyaId);
                   } else {
-                    navigate({ to: "/stable/$id", params: { id: snap.heyaId } });
+                    navigate({ to: "/stable/$id", params: { id: snap.heyaId } as any });
                   }
                 }}
               >
