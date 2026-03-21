@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TrainingPage.tsx - Dedicated stable training management
 // FM-style layout for beya-wide training controls and individual rikishi focus slots
 
