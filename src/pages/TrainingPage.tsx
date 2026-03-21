@@ -10,8 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import type { Rikishi } from "../../types/rikishi";
-import type { IndividualFocusType } from "../../types/training";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { IndividualFocusType } from "@/engine/types/training";
 import {
   INTENSITY_EFFECTS,
   FOCUS_EFFECTS,

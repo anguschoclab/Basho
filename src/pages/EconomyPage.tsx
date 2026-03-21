@@ -37,7 +37,7 @@ import {
   AlertTriangle,
   Info
 } from "lucide-react";
-import type { RunwayBand, KoenkaiBandType } from "../../types/narrative";
+import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
 
 // Runway narrative descriptions
 const RUNWAY_CONFIG: Record<

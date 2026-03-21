@@ -11,7 +11,7 @@ import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { Division, RankPosition } from "../../types/banzuke";
+import type { Division, RankPosition } from "@/engine/types/banzuke";
 import { projectRosterEntry } from "@/engine/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { buildRankRows, buildPrevRankMap, rankRowClass } from "@/components/banzuke/banzukeHelpers";

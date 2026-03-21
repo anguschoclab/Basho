@@ -53,9 +53,9 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
-import type { Rikishi } from "../../types/rikishi";
-import type { Rank } from "../../types/banzuke";
-import type { TacticalArchetype } from "../../types/combat";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rank } from "@/engine/types/banzuke";
+import type { TacticalArchetype } from "@/engine/types/combat";
 import {
   describeAttribute,
   describeAggression,
