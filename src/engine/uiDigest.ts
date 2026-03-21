@@ -265,6 +265,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
+  if (!world.historyIndex?.rikishi) return candidates;
 
   for (const r of world.rikishi.values()) {
     if (r.rank !== "ozeki") continue;
