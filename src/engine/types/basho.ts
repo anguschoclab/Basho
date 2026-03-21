@@ -26,8 +26,9 @@ export interface BashoInfo {
 
 /** Defines the structure for bout log entry. */
 export interface BoutLogEntry {
-  phase: "tachiai" | "clinch" | "momentum" | "finish";
-  data?: Record<string, number | string | boolean | null | undefined>;
+  phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical";
+  description: string;
+  data?: Record<string, any>;
 }
 
 /** Defines the structure for bout result. */
@@ -44,6 +45,9 @@ export interface BoutResult {
   upset: boolean;
   isKinboshi?: boolean;
   log: BoutLogEntry[];
+  narrative?: string[];
+  pbpLines?: any[];
+  pbp?: string[];
 }
 
 /** Defines the structure for match schedule. */

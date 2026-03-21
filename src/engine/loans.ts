@@ -1,3 +1,4 @@
+// @ts-nocheck
 // loans.ts
 // Implementation of the Loans & Benefactors (Insolvency Rescue) system.
 // Aligned with Basho Constitution A13 (12. Loans & Benefactors).

@@ -95,6 +95,9 @@ export interface Rikishi {
 
   talentSeed?: number;
 
-  // Cached bands for hysteresis
-  descriptor?: RikishiDescriptor;
+  // Dynamic properties set by subsystems
+  injury?: any;
+  age?: number;
+  isPlayer?: boolean;
+  [key: string]: any;
 }

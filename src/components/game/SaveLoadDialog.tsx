@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
 import { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
+import { formatSaveDate } from "@/engine/utils/formatters";
 
 // Global open signal for keyboard shortcut integration
 const openListeners = new Set<() => void>();

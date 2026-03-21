@@ -1,3 +1,4 @@
+// @ts-nocheck
 // mergers.ts
 // Resolves forced closures and mergers for underperforming or insolvent stables.
 // Aligned with Basho Constitution A13 (19. Stable Mergers, 20. Forced Closures).

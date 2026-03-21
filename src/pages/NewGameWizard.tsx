@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";

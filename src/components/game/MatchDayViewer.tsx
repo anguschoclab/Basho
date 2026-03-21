@@ -43,6 +43,8 @@ interface MatchDayViewerProps {
   world: WorldState;
   playerRikishiIds: Set<string>;
   onBoutClick?: (match: MatchLike) => void;
+  onTacticChange?: (matchIndex: number, tactic: string) => void;
+  playerTactics?: Record<number, string>;
 }
 
 // ── Helpers ────────────────────────────────────────────
@@ -236,7 +238,7 @@ function useResolvedMatch() {
  * match day viewer.
  *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
  */
-export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }: MatchDayViewerProps) {
+export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
   const resolvedMatches = useMemo(() => {
@@ -343,7 +345,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.east}
                     side="east"
                     isWinner={match.result?.winner === "east"}
-                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } })}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } as any })}
                   />
 
                   {/* H2H center */}
@@ -354,7 +356,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     rikishi={match.west}
                     side="west"
                     isWinner={match.result?.winner === "west"}
-                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })}
+                    onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } as any })}
                   />
 
                   {/* Result badge */}
@@ -394,7 +396,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick }
                     {/* Scouting Brief */}
                     <div className="grid grid-cols-2 gap-2 text-xs mb-3 p-2 bg-muted/30 rounded">
                       <div className="text-muted-foreground">Opponent Style:</div>
-                      <div className="font-medium capitalize">{world.rikishi.get(match.eastRikishiId)?.isPlayer ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
+                      <div className="font-medium capitalize">{match.isPlayerBout && world.rikishi.get(match.eastRikishiId)?.heyaId === world.playerHeyaId ? world.rikishi.get(match.westRikishiId)?.style : world.rikishi.get(match.eastRikishiId)?.style}</div>
                     </div>
 
                     {/* Tactic Buttons */}

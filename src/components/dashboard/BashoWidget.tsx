@@ -80,7 +80,7 @@ export function BashoWidget() {
             {world.currentBasho.bashoName?.toUpperCase()} — Day {stats.day}
           </span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/basho")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View tournament details">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/basho" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View tournament details">
           View <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

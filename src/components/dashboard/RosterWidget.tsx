@@ -42,7 +42,7 @@ export function RosterWidget() {
           <Users className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">My Roster</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/rikishi")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View all rikishi">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/rikishi" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View all rikishi">
           All Rikishi <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
@@ -98,7 +98,7 @@ export function RosterWidget() {
         ))}
         {roster.length > 8 && (
           <button
-            onClick={() => navigate("/rikishi")}
+            onClick={() => navigate({ to: "/rikishi" })}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors"
           >
             +{roster.length - 8} more wrestlers →

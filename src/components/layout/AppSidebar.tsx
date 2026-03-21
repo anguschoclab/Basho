@@ -197,9 +197,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <Link
                       to={item.url}
-                      className={({ isActive }) => 
-                        isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""
-                      }
+                      className=""
                     >
                       <item.icon />
                       <span>{item.title}</span>

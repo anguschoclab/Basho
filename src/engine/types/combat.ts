@@ -121,3 +121,14 @@ export const ARCHETYPE_PROFILES: Record<
     familyBias: { OSHI: 0.9, YOTSU: 1.0, THROW: 1.1, TRIP: 1.1, PULLDOWN: 0.9, REVERSAL: 1.5, SPECIAL: 1.05 }
   }
 };
+
+/** Type representing bout tactic. */
+export type BoutTactic = "STANDARD" | "YOTSU_BELT" | "OSHI_THRUST" | "HENKA";
+
+/** Defines the structure for tactical result. */
+export interface TacticalResult {
+  playerTactic: BoutTactic;
+  cpuTactic: BoutTactic;
+  advantage: "PLAYER" | "CPU" | "NEUTRAL";
+  winProbabilityShift: number;
+}

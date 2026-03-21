@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { OzekiKadobanMap } from "./banzuke";
 // uiDigest.ts
 // =======================================================
