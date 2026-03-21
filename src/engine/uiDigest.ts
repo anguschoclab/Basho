@@ -238,7 +238,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
     if (recentCount < 1) continue;
 
     // Add current basho wins if active
-    for (const e of world.banzuke.makuuchi) {
+    for (const e of (world.banzuke?.makuuchi ?? [])) {
       if (e.id === r.id) {
         recentWins += e.wins;
         break;
