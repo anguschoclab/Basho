@@ -987,6 +987,17 @@ export function generateInjuryWithdrawalHeadline(args: {
         `${shikona} Forced to Bow Out with Ruined ${capitalize(area)}`,
         `Medical Evac for ${shikona} Following Brutal Fall`,
         `Kyodo News Reports Extensive ${capitalize(area)} Surgery for ${shikona}`,
+        `${shikona} Seen Limping Outside Kokugikan: ${capitalize(area)} Issues Rumored`,
+        `Is ${shikona} Hiding a Secret ${capitalize(area)} Injury?`,
+        `Oyakata Declines to Comment on ${shikona}'s ${capitalize(area)}`,
+        `Tabloids Report ${shikona} Underwent Clandestine ${capitalize(area)} Treatment`,
+        `Whispers of a Torn ${capitalize(area)} Surround ${shikona}`,
+        `${shikona}'s Camp Silent on Sudden ${capitalize(area)} Agony`,
+        `Late-Night Hospital Visit Spark Fears for ${shikona}'s ${capitalize(area)}`,
+        `Has ${shikona} Been Fighting with a Fractured ${capitalize(area)}?`,
+        `JSA Medical Committee Reviews ${shikona}'s ${capitalize(area)} Status`,
+        `${shikona} Struggles in Practice: ${capitalize(area)} Clearly Compromised`,
+
         `A Crushing Blow to ${shikona}'s Hopes: Major Injury`,
         `${shikona} Off the Dohyo indefinitely due to ${capitalize(area)} Tear`,
         `Stablemaster Confirms ${shikona}'s Worst Fears Realized`,
@@ -1153,6 +1164,11 @@ if (type === "scandal") {
           `Secret Video Surfaces: Brutal Discipline at ${heya.name}`,
           `${heya.name} Faces Historic Sanctions as Details Leak`,
           `Nikkan Sports Front Page: The Fall of ${heya.name} Begins`,
+          `Whistleblower Inside ${heya.name} Exposes Extortion Ring`,
+          `${heya.name} Leadership Paralyzed Amidst Blackmail Allegations`,
+          `Tabloids Feast on ${heya.name}'s Unraveling Reputation`,
+          `JSA Chairman 'Deeply Disturbed' by ${heya.name} Revelations`,
+
           `Kyodo News: ${heya.name} Under Federal Investigation`,
           `Disaster at ${heya.name}: JSA Suspends Stable Operations`,
           `${heya.name} Oyakata Refuses to Resign Amid Outcry`,
@@ -1322,7 +1338,12 @@ if (type === "merger_threat") {
       `${heya.name} Master Seeks Lifeline to Avoid JSA Takeover`,
       `Rumors Swirl About Imminent Closure of ${heya.name}`,
       `JSA Audit Concludes ${heya.name} May Not Be Viable`,
-      `Nikkan Sports Exclusive: Inside the Collapse of ${heya.name}`
+      `Nikkan Sports Exclusive: Inside the Collapse of ${heya.name}`,
+      `JSA Gives ${heya.name} 60 Days to Liquidate Assets`,
+      `Rival Oyakata Circle Like Vultures Over ${heya.name}'s Rikishi`,
+      `Tears at ${heya.name} as Council Mandates Consolidation`,
+      `Historic ${heya.name} Sign To Be Removed Following JSA Decree`,
+
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "forced_merger") {

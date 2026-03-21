@@ -506,6 +506,28 @@
       {
         "id": "t_dec_110",
         "text": "Textbook aggression! {leader} owns the center from the first millisecond."
+      },
+      {
+        "id": "t_dec_ext_01",
+        "text": "{leader} launches like a cannon at the tachi-ai!",
+        "tags": [
+          "crowd_roar"
+        ]
+      },
+      {
+        "id": "t_dec_ext_02",
+        "text": "Furious initial charge! {leader} dominates the collision."
+      },
+      {
+        "id": "t_dec_ext_03",
+        "text": "A terrifying tachi-ai! {leader} blasts {trailer} back immediately.",
+        "tags": [
+          "gasps"
+        ]
+      },
+      {
+        "id": "t_dec_ext_04",
+        "text": "{leader} explodes forward, giving {trailer} absolutely no room to breathe!"
       }
     ],
     "even": [
@@ -2518,6 +2540,22 @@
       {
         "id": "c_nod_45",
         "text": "A classic, unrelenting nodowa from {leader} keeps {trailer} entirely at bay."
+      },
+      {
+        "id": "c_nod_ext_01",
+        "text": "Brutal nodowa! {leader} thrusts a hand straight into the throat of {trailer}!"
+      },
+      {
+        "id": "c_nod_ext_02",
+        "text": "{leader} applies a choking throat grip, pushing {trailer}'s head back!"
+      },
+      {
+        "id": "c_nod_ext_03",
+        "text": "Devastating nodowa! The neck of {trailer} is snapping back under the pressure."
+      },
+      {
+        "id": "c_nod_ext_04",
+        "text": "{leader} locks in a high collar grip and drives upward at the chin!"
       }
     ],
     "harite_slap": [
@@ -2606,6 +2644,22 @@
       {
         "id": "grp_mig_5",
         "text": "Migi-yotsu! {leader} has the exact grip they wanted."
+      },
+      {
+        "id": "c_migi_ext_01",
+        "text": "{leader} secures a firm migi-yotsu grip! The right hand is deep inside."
+      },
+      {
+        "id": "c_migi_ext_02",
+        "text": "Right-hand inside! {leader} establishes their preferred migi-yotsu."
+      },
+      {
+        "id": "c_migi_ext_03",
+        "text": "A classic migi-yotsu battle now as {leader} claims the right inside position."
+      },
+      {
+        "id": "c_migi_ext_04",
+        "text": "{leader} sinks the right arm in for a commanding migi-yotsu hold."
       }
     ],
     "hidari_yotsu_established": [
@@ -2628,6 +2682,22 @@
       {
         "id": "grp_hid_5",
         "text": "Hidari-yotsu established! {leader} controls the inside left."
+      },
+      {
+        "id": "c_hid_ext_01",
+        "text": "Left hand deep! {leader} establishes a powerful hidari-yotsu."
+      },
+      {
+        "id": "c_hid_ext_02",
+        "text": "{leader} locks in their favored hidari-yotsu grip, left hand inside!"
+      },
+      {
+        "id": "c_hid_ext_03",
+        "text": "It's hidari-yotsu! {leader} has the left inside and is cranking the pressure."
+      },
+      {
+        "id": "c_hid_ext_04",
+        "text": "A tight hidari-yotsu grip secured by {leader}. The left arm is a vice."
       }
     ],
     "double_inside": [
@@ -2770,6 +2840,22 @@
       {
         "id": "c_mor_35",
         "text": "{leader} uses the morozashi to completely control the pace and direction of the match."
+      },
+      {
+        "id": "c_dbl_ext_01",
+        "text": "Morozashi! {leader} gets both hands inside for a dominant double grip!"
+      },
+      {
+        "id": "c_dbl_ext_02",
+        "text": "{leader} secures morozashi! The double inside grip is locked in tight."
+      },
+      {
+        "id": "c_dbl_ext_03",
+        "text": "Incredible technique to establish morozashi. {leader} has total inside control!"
+      },
+      {
+        "id": "c_dbl_ext_04",
+        "text": "Both arms in! {leader} achieves the formidable morozashi position."
       }
     ],
     "over_under": [
@@ -3668,6 +3754,22 @@
       {
         "id": "m_drv_50",
         "text": "{leader} is unstoppable when they get moving like this!"
+      },
+      {
+        "id": "m_std_ext_01",
+        "text": "{leader} marches forward with heavy, relentless steps."
+      },
+      {
+        "id": "m_std_ext_02",
+        "text": "A powerful, steady drive from {leader} forces {trailer} to backpedal."
+      },
+      {
+        "id": "m_std_ext_03",
+        "text": "Like a bulldozer, {leader} systematically drives {trailer} toward the edge."
+      },
+      {
+        "id": "m_std_ext_04",
+        "text": "{leader}'s raw power is on full display with this steady, grinding advance."
       }
     ],
     "bales_at_tawara": [
@@ -5522,6 +5624,38 @@
         "tags": [
           "kinboshi",
           "crowd_roar"
+        ]
+      },
+      {
+        "id": "f_kin_ext_01",
+        "text": "Unbelievable! {winner} has toppled the Yokozuna! A historic kinboshi!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_02",
+        "text": "The arena is raining cushions! {winner} pulls off the ultimate upset for a kinboshi!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_03",
+        "text": "A gold star for {winner}! They have defeated the Yokozuna in dramatic fashion!",
+        "tags": [
+          "chants",
+          "kinboshi"
+        ]
+      },
+      {
+        "id": "f_kin_ext_04",
+        "text": "Kinboshi! The crowd goes absolutely wild as {winner} slays the grand champion!",
+        "tags": [
+          "crowd_roar",
+          "kinboshi"
         ]
       }
     ]
