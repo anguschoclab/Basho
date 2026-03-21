@@ -22,7 +22,7 @@ import HistoryPage from './pages/HistoryPage'
 import AlmanacPage from './pages/AlmanacPage'
 import MediaPage from './pages/MediaPage'
 import HallOfFamePage from './pages/HallOfFamePage'
-import MyosekiMarketPage from './pages/MyosekiMarketPage'
+// MyosekiMarketPage already imported above
 import InjuryRecoveryPage from './pages/InjuryRecoveryPage'
 import SponsorManagementPage from './pages/SponsorManagementPage'
 import SettingsPage from './pages/SettingsPage'

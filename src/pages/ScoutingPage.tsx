@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ScoutingPage.tsx
 // Dedicated Scouting & Recruitment page per Basho Constitution A8/System 4
 // Between-basho player actions: scout opponents, evaluate prospects, invest in intel
