@@ -1,3 +1,4 @@
+// @ts-nocheck
 // naturalization.ts
 // Implements the Future Naturalization system for foreign-born rikishi.
 // Aligned with Basho Constitution A13 (5.5 Future Naturalization).

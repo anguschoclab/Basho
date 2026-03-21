@@ -9,8 +9,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning, Landmark, Users } from "lucide-react";
 import { spendPoliticalCapital } from "@/engine/governance";
 import { Button } from "@/components/ui/button";
-import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
-import type { Heya } from "../../types/heya";
+import type { GovernanceStatus, GovernanceRuling } from "@/engine/types/economy";
+import type { Heya } from "@/engine/types/heya";
 import { getStatusColor, getStatusLabel } from "@/engine/governance";
 import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
 

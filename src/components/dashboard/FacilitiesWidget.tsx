@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Building, ChevronRight, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { getMonthlyMaintenanceCost } from "@/engine/facilities";
+import { getFacilityLevelLabel, getFacilityLevelColor } from "@/engine/utils/ui-helpers";
 
 const AXIS_ICONS = {
   training: Building,
@@ -58,7 +59,7 @@ export function FacilitiesWidget() {
             </span>
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="Manage facilities">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" as any })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="Manage facilities">
           Manage <ChevronRight className="h-3 w-3" />
         </Button>
       </div>

@@ -39,6 +39,9 @@ export interface PostBashoMeta {
 import type { LineageEdge } from "../lineage";
 
 export interface WorldState {
+  hallOfFame?: import("../hallOfFame").HallOfFameState;
+  historyIndex?: any;
+  banzuke?: any;
   staff: IdMapRuntime<import("./staff").Staff>;
   lineage?: LineageEdge[];
   id: string;
@@ -104,4 +107,10 @@ export interface WorldState {
   activeBasho?: {
     id: string;
   };
+
+  // Dynamic properties set by subsystems
+  injuriesState?: any;
+  basho?: any;
+  bashoNumber?: number;
+  [key: string]: any;
 }

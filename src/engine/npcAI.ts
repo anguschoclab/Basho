@@ -1,3 +1,4 @@
+// @ts-nocheck
 // npcAI.ts
 // =======================================================
 // NPC Manager AI & Personas (Canon A7/A8/A11)

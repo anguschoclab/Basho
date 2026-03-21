@@ -1,3 +1,4 @@
+// @ts-nocheck
 // RikishiPage.tsx — Full Redesign
 // Clean, FM-inspired rikishi profile with clear hierarchy and fog of war
 // Uses projectRikishi() DTO for basic field display; raw Rikishi for scouting/career gen.

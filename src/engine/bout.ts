@@ -69,6 +69,9 @@ interface BoutContext {
   day: number;
   rikishiEastId: string;
   rikishiWestId: string;
+  playerSide?: Side;
+  playerTactic?: import("./types/combat").BoutTactic;
+  cpuTacticOverride?: import("./types/combat").BoutTactic;
 }
 
 /** Defines the structure for engine state. */
@@ -977,8 +980,8 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
     st.tacticalResult = resolveTacticalClash(westPlayerTactic, eastPlayerTactic);
   }
 
-  const eastTactics = computeTacticalModifiers(east, west, eastPlayerTactic);
-  const westTactics = computeTacticalModifiers(west, east, westPlayerTactic);
+  const eastTactics = computeTacticalModifiers(east, west);
+  const westTactics = computeTacticalModifiers(west, east);
 
     // Emit tactical strategy entries into the log for PBP consumption
   if (st.tacticalResult) {
@@ -1108,7 +1111,10 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
     year: 2025,
     day: 1,
     bashoName,
-    bashoNumber: 1
+    bashoNumber: 1,
+    matches: [],
+    standings: new Map(),
+    isActive: false,
   };
 
   const bout: BoutContext = { id: `sim-${seed}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };

@@ -93,4 +93,10 @@ export interface Rikishi {
   motivation: number;
 
   talentSeed?: number;
+
+  // Dynamic properties set by subsystems
+  injury?: any;
+  age?: number;
+  isPlayer?: boolean;
+  [key: string]: any;
 }

@@ -56,9 +56,9 @@ import {
   Upload,
   Clock
 } from "lucide-react";
-import type { Heya } from "../../types/heya";
-import type { StatureBand, StableSelectionMode } from "../../types/narrative";
-import type { BashoName } from "../../types/basho";
+import type { Heya } from "@/engine/types/heya";
+import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
+import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR } from "@/engine/calendar";
 import { deleteSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
 import { RANK_HIERARCHY } from "@/engine/banzuke";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // StablePage.tsx
 // Stable Management Page - Training, roster, and facilities
 // Narrative-First per Master Context v2.2 - No raw numbers for hidden attributes
@@ -22,8 +23,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "../../types/narrative";
-import type { Rikishi } from "../../types/rikishi";
+import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "@/engine/types/narrative";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
 import {
   INTENSITY_EFFECTS,

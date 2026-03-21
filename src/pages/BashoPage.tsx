@@ -27,9 +27,9 @@ import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
-import type { Rikishi } from "../../types/rikishi";
-import type { BoutResult } from "../../types/basho";
-import type { Division } from "../../types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult } from "@/engine/types/basho";
+import type { Division } from "@/engine/types/banzuke";
 
 /** Type representing match like. */
 type MatchLike = {

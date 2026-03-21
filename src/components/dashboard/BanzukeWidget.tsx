@@ -67,7 +67,7 @@ export function BanzukeWidget() {
           <ScrollText className="h-4 w-4 text-primary" />
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Banzuke</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/banzuke")} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full banzuke rankings">
+        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/banzuke" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full banzuke rankings">
           Full Rankings <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
