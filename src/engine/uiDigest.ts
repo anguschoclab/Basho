@@ -315,7 +315,7 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; na
 
     let wins = 0;
     let losses = 0;
-    for (const e of world.banzuke.makuuchi) {
+    for (const e of (world.banzuke?.makuuchi ?? [])) {
       if (e.id === rid) {
         wins = e.wins;
         losses = e.losses;
