@@ -215,6 +215,7 @@ export interface YokozunaCandidate {
 
 export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   const candidates: OzekiRunCandidate[] = [];
+  if (!world.historyIndex?.rikishi) return candidates;
   const playerHeyaId = world.playerHeyaId;
 
   for (const r of world.rikishi.values()) {
@@ -237,7 +238,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
     if (recentCount < 1) continue;
 
     // Add current basho wins if active
-    for (const e of world.banzuke.makuuchi) {
+    for (const e of (world.banzuke?.makuuchi ?? [])) {
       if (e.id === r.id) {
         recentWins += e.wins;
         break;
@@ -264,6 +265,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
+  if (!world.historyIndex?.rikishi) return candidates;
 
   for (const r of world.rikishi.values()) {
     if (r.rank !== "ozeki") continue;
@@ -313,7 +315,7 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; na
 
     let wins = 0;
     let losses = 0;
-    for (const e of world.banzuke.makuuchi) {
+    for (const e of (world.banzuke?.makuuchi ?? [])) {
       if (e.id === rid) {
         wins = e.wins;
         losses = e.losses;
