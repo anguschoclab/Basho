@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
+import { FATIGUE_LABELS } from "@/engine/descriptorBands";
 
 export function RosterWidget() {
   const { state } = useGame();
@@ -25,13 +26,14 @@ export function RosterWidget() {
         entries.push(projectRosterEntry(r));
       }
     }
-    return entries.sort((a, b) => b.momentum - a.momentum);
+    const momentumWeight: Record<string, number> = { "on_fire": 2, "rising": 1, "steady": 0, "struggling": -1, "in_crisis": -2 };
+    return entries.sort((a, b) => (momentumWeight[b.momentumBand] || 0) - (momentumWeight[a.momentumBand] || 0));
   }, [world]);
 
   if (!world) return null;
 
   const injuredCount = roster.reduce((count, r) => count + (r.isInjured ? 1 : 0), 0);
-  const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
+
 
   return (
     <div className="widget-card p-4 space-y-3">
@@ -59,21 +61,10 @@ export function RosterWidget() {
             <span>hurt</span>
           </div>
         )}
-        <div className="flex items-center gap-1 text-muted-foreground ml-auto">
-          <AlertTriangle className="h-3 w-3" />
-          <span className="text-[10px]">Avg fatigue: {avgFatigue}%</span>
-        </div>
+
       </div>
 
-      {/* Team fatigue overview bar */}
-      <div className="h-1 rounded-full bg-muted overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
-          }`}
-          style={{ width: `${avgFatigue}%` }}
-        />
-      </div>
+
 
       {/* Roster list */}
       <div className="space-y-0.5">
@@ -85,15 +76,11 @@ export function RosterWidget() {
             {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
               <Star className="h-3 w-3 text-gold shrink-0" />
             )}
-            {/* Fatigue bar */}
-            <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
-              <div
-                className={`h-full rounded-full transition-all duration-300 ${
-                  entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
-                }`}
-                style={{ width: `${entry.fatigue}%` }}
-              />
-            </div>
+            <span className={`text-[10px] w-14 text-right shrink-0 ${
+                  entry.fatigueBand === "exhausted" || entry.fatigueBand === "spent" ? "text-destructive" : entry.fatigueBand === "tired" ? "text-warning" : "text-muted-foreground"
+                }`}>
+              {FATIGUE_LABELS[entry.fatigueBand]}
+            </span>
           </div>
         ))}
         {roster.length > 8 && (

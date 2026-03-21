@@ -466,8 +466,8 @@ export default function StablePage() {
                         </div>
                       </div>
                       <div className="flex gap-2 items-center flex-wrap justify-end">
-                        {entry.momentum !== 0 &&
-                          (entry.momentum > 0 ? (
+                        {entry.momentumBand !== "steady" &&
+                          (entry.momentumBand === "rising" || entry.momentumBand === "on_fire" ? (
                             <span className="text-xs text-success flex items-center gap-1">
                               <TrendingUp className="h-3 w-3" /> Hot
                             </span>
@@ -682,15 +682,15 @@ export default function StablePage() {
                         </div>
 
                         <div className="mt-2 flex gap-2 items-center flex-wrap">
-                          {rikishi.momentum !== 0 && (
+                          {rikishi.descriptor?.momentumBand && rikishi.descriptor.momentumBand !== "steady" && (
                             <>
-                              {rikishi.momentum > 0 ? (
+                              {rikishi.descriptor.momentumBand === "rising" || rikishi.descriptor.momentumBand === "on_fire" ? (
                                 <TrendingUp className="h-3 w-3 text-success" />
                               ) : (
                                 <TrendingDown className="h-3 w-3 text-destructive" />
                               )}
                               <span className="text-xs text-muted-foreground">
-                                {rikishi.momentum > 0 ? "Rising form" : "Struggling"}
+                                {rikishi.descriptor.momentumBand === "rising" || rikishi.descriptor.momentumBand === "on_fire" ? "Rising form" : "Struggling"}
                               </span>
                             </>
                           )}
