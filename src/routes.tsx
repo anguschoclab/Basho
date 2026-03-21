@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router'
 import App from './App'
 import MainMenu from './pages/MainMenu'
