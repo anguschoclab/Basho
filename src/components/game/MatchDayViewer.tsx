@@ -43,6 +43,8 @@ interface MatchDayViewerProps {
   world: WorldState;
   playerRikishiIds: Set<string>;
   onBoutClick?: (match: MatchLike) => void;
+  onTacticChange?: (matchIndex: number, tactic: string) => void;
+  playerTactics?: Record<number, string>;
 }
 
 // ── Helpers ────────────────────────────────────────────
