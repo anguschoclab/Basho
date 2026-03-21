@@ -160,7 +160,7 @@ export function tickMonthly(world: WorldState): void {
  */
 function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): void {
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
-  const totalMaintenance = axes.reduce((sum, a) => sum + maintenanceCost(heya.facilities[a]), 0);
+  const totalMaintenance = maintenanceCost(heya.facilities.training) + maintenanceCost(heya.facilities.recovery) + maintenanceCost(heya.facilities.nutrition);
 
   if (heya.funds >= totalMaintenance) {
     // Pay maintenance — no decay
