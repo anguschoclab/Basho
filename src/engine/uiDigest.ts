@@ -11,7 +11,8 @@ import type { OzekiKadobanMap } from "./banzuke";
 import type { WorldState } from "./types/world";
 import { queryEvents } from "./events";
 import { generateH2HCommentary } from "./h2h";
-import { stableSort } from "./utils/sort";
+import { stableSort, stableTieBreak } from "./utils/sort";
+import { toSatisfactionBand } from "./descriptorBands";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -259,7 +260,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
       });
     }
   }
-  return candidates.sort((a, b) => b.recentWins - a.recentWins);
+  return candidates.sort((a, b) => b.recentWins - a.recentWins || stableTieBreak(a.rikishi.id, b.rikishi.id));
 }
 
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {

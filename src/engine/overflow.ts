@@ -63,7 +63,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): number {
     });
 
     // Sort by score ascending (lowest score = release first)
-    scoredCandidates.sort((a, b) => a.score - b.score);
+    scoredCandidates.sort((a, b) => a.score - b.score || (a.rikishi.id < b.rikishi.id ? -1 : a.rikishi.id > b.rikishi.id ? 1 : 0));
 
     const toRelease = scoredCandidates.slice(0, overflowCount);
 
