@@ -107,4 +107,10 @@ export interface WorldState {
   activeBasho?: {
     id: string;
   };
+
+  // Dynamic properties set by subsystems
+  injuriesState?: any;
+  basho?: any;
+  bashoNumber?: number;
+  [key: string]: any;
 }
