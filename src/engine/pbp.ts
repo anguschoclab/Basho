@@ -151,11 +151,12 @@ export interface TacticalFact extends PbpFactBase {
 export interface InjuryFact extends PbpFactBase {
   phase: "injury";
   injuryType: string;
+  oyakataPersonality?: import("./types/oyakata").OyakataArchetype | "default" | "strict" | "indulgent";
 }
 
 export interface InstitutionalFact extends PbpFactBase {
   phase: "institutional";
-  eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT";
+  eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT" | import("./types/events").EventCategory;
   oyakataPersonality?: import("./types/oyakata").OyakataArchetype | "default";
 }
 
@@ -262,28 +263,16 @@ export interface PbpLibrary {
     tachiai_win: PhraseBucket;
   };
 
-  injury: {
-    sprain: PhraseBucket;
-    strain: PhraseBucket;
-    contusion: PhraseBucket;
-    inflammation: PhraseBucket;
-    tear: PhraseBucket;
-    fracture: PhraseBucket;
-    nerve: PhraseBucket;
-    unknown: PhraseBucket;
-  };
+  injury: Record<string, { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket }>;
 
-  institutional: {
-    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
-    GOVERNANCE_RULING: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
-    WELFARE_ALERT: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
-  };
+  institutional: Record<string, { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket }>;
 
   finish: {
     normal: PhraseBucket;
     upset: PhraseBucket;
     close_call: PhraseBucket;
     kinboshi: PhraseBucket;
+    kimarite: Record<string, PhraseBucket>;
   };
 
   tactical: {
@@ -1267,6 +1256,7 @@ function selectPhraseForFact(
       if (isKinboshi) bucket = lib.finish.kinboshi;
       else if (fact.closeCall) bucket = lib.finish.close_call;
       else if (fact.upset) bucket = lib.finish.upset;
+      else if (fact.kimariteId && lib.finish.kimarite?.[fact.kimariteId]) bucket = lib.finish.kimarite[fact.kimariteId];
 
       const chosen = weightedPick(bucket, rng);
 
@@ -1284,8 +1274,12 @@ function selectPhraseForFact(
 
     case "injury": {
       const injFact = fact as InjuryFact;
-      const injuryType = injFact.injuryType as keyof PbpLibrary["injury"];
-      const bucket = lib.injury[injuryType] || lib.injury.unknown;
+      const injuryType = injFact.injuryType;
+      const eventBucketGroup = lib.injury[injuryType] || lib.injury.unknown;
+      let bucket = eventBucketGroup.default;
+      if (injFact.oyakataPersonality && injFact.oyakataPersonality !== "default") {
+        bucket = eventBucketGroup[injFact.oyakataPersonality as keyof typeof eventBucketGroup];
+      }
       const chosen = weightedPick(bucket, rng);
       return { phrase: chosen, tags: mergeTags(chosen.tags) };
     }
@@ -1293,9 +1287,9 @@ function selectPhraseForFact(
     case "institutional": {
       const instFact = fact as InstitutionalFact;
       const eventBucketGroup = lib.institutional[instFact.eventType];
-      let bucket = eventBucketGroup.default;
+      let bucket = eventBucketGroup ? eventBucketGroup.default : [{ id: "inst_fb", text: "An institutional event occurs." }];
 
-      if (instFact.oyakataPersonality && instFact.oyakataPersonality !== "default") {
+      if (instFact.oyakataPersonality && instFact.oyakataPersonality !== "default" && eventBucketGroup && eventBucketGroup[instFact.oyakataPersonality as keyof typeof eventBucketGroup]) {
         bucket = eventBucketGroup[instFact.oyakataPersonality as keyof typeof eventBucketGroup];
       }
 
