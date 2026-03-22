@@ -239,7 +239,7 @@ function normalizeRank(rank: string): string {
  *  * @param b - The B.
  *  * @returns The result.
  */
-function stableTieBreakLocal(a: Sponsor, b: Sponsor): number {
+function stableTieBreak(a: Sponsor, b: Sponsor): number {
   return a.sponsorId.localeCompare(b.sponsorId);
 }
 
@@ -540,7 +540,7 @@ export function assignKenshoBanners(
       sponsor: s,
       score: s.prestigeAffinity * 0.5 + s.loyalty * 0.3 + (s.tier === "T5" ? 20 : 0) + (s.tier === "T4" ? 8 : 0)
     }))
-    .sort((a, b) => b.score - a.score || stableTieBreakLocal(a.sponsor, b.sponsor));
+    .sort((a, b) => b.score - a.score || stableTieBreak(a.sponsor, b.sponsor));
 
   // Build tier buckets
   const t4plus = scored.filter((x) => x.sponsor.tier === "T4" || x.sponsor.tier === "T5");
@@ -625,7 +625,7 @@ export function createKoenkai(
 
   const eligibleSponsors = Array.from(sponsorPool.sponsors.values())
     .filter((s) => s.active && (s.tier === "T1" || s.tier === "T2" || s.tier === "T3"))
-    .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity || stableTieBreakLocal(a, b));
+    .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
 
   const picked = eligibleSponsors.slice(0, Math.min(memberCount, eligibleSponsors.length));
   const members: SponsorRelationship[] = [];
@@ -704,7 +704,7 @@ export function selectBenefactor(
       .filter((m) => m.role === "koenkai_pillar")
       .map((m) => sponsorPool.sponsors.get(m.sponsorId))
       .filter((s): s is Sponsor => s !== undefined)
-      .sort((a, b) => b.riskAppetite - a.riskAppetite || stableTieBreakLocal(a, b));
+      .sort((a, b) => b.riskAppetite - a.riskAppetite || stableTieBreak(a, b));
 
     if (pillars.length > 0 && pillars[0].riskAppetite >= 50) return pillars[0];
   }
@@ -712,7 +712,7 @@ export function selectBenefactor(
   // Priority 2: Global pool highest-tier sponsor with high riskAppetite (deterministic order)
   const eligible = Array.from(sponsorPool.sponsors.values())
     .filter((s) => s.active && (s.tier === "T4" || s.tier === "T5") && s.riskAppetite >= 60)
-    .sort((a, b) => b.riskAppetite - a.riskAppetite || b.prestigeAffinity - a.prestigeAffinity || stableTieBreakLocal(a, b));
+    .sort((a, b) => b.riskAppetite - a.riskAppetite || b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
 
   if (eligible.length > 0) return eligible[0];
 

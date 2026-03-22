@@ -182,8 +182,7 @@ export function simulateEntireBasho(
   const injuries: string[] = [];
 
   // Initialize standings (sekitori only)
-  const sortedRikishi = Array.from(world.rikishi.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  for (const [id, rikishi] of sortedRikishi) {
+  for (const [id, rikishi] of world.rikishi) {
     if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
       standings.set(id, { wins: 0, losses: 0 });
       rikishi.currentBashoWins = 0;
@@ -280,7 +279,7 @@ export function simulateEntireBasho(
       losses: record.losses
     }))
     .filter((s) => !!s.rikishi)
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
 
   const yushoEntry = sortedStandings[0];
   const yushoWinner = {
@@ -460,7 +459,7 @@ export function runAutoSim(
         bestRank: rikishi?.rank || "unknown"
       };
     })
-    .sort((a, b) => b.yushoCount - a.yushoCount || (a.rikishiId < b.rikishiId ? -1 : a.rikishiId > b.rikishiId ? 1 : 0))
+    .sort((a, b) => b.yushoCount - a.yushoCount)
     .slice(0, 10);
 
   // Era labels (simple heuristic; deterministic)

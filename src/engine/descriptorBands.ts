@@ -91,13 +91,6 @@ export function toStatBand(value: number, prev?: StatBand): StatBand {
   return toBand(value, STAT_BANDS, prev);
 }
 
-/**
- * Generic descriptor band (alias for toStatBand) for generic 0-100 attributes.
- */
-export function toDescriptorBand(value: number, prev?: StatBand): StatBand {
-  return toStatBand(value, prev);
-}
-
 /** s t a t_ b a n d_ l a b e l s. */
 export const STAT_BAND_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
@@ -175,37 +168,6 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   spent: "Spent",
 };
 
-
-// === Motivation Bands ===
-
-export type MotivationBand = "driven" | "eager" | "content" | "distracted" | "apathetic";
-
-export const MOTIVATION_LABELS: Record<MotivationBand, string> = {
-  driven: "Driven",
-  eager: "Eager",
-  content: "Content",
-  distracted: "Distracted",
-  apathetic: "Apathetic"
-};
-
-/**
- * To motivation band.
- *  * @param value - The value.
- *  * @param prev - The previous band.
- *  * @returns The result.
- */
-export function toMotivationBand(value: number, prev?: MotivationBand): MotivationBand {
-  const bands: BandDef<MotivationBand>[] = [
-    { band: "apathetic", min: 0, max: 20 },
-    { band: "distracted", min: 20, max: 40 },
-    { band: "content", min: 40, max: 65 },
-    { band: "eager", min: 65, max: 85 },
-    { band: "driven", min: 85, max: Infinity },
-  ];
-  return toBand(value, bands, prev);
-}
-
-
 // === Momentum Bands ===
 
 /** Type representing momentum band. */
@@ -216,21 +178,16 @@ export type MomentumBand = "on_fire" | "rising" | "steady" | "struggling" | "in_
  *  * @param momentum - The Momentum.
  *  * @returns The result.
  */
-export function toMomentumBand(momentum: number, prev?: MomentumBand): MomentumBand {
+export function toMomentumBand(momentum: number): MomentumBand {
   // Momentum typically stored as -5..+5 or 0..100
   const v = Math.abs(momentum) > 10
     ? (clamp(momentum, 0, 100) - 50) / 10
     : clamp(momentum, -5, 5);
-  // Map the v values into pseudo-bands for hysteresis logic
-  const v100 = (v + 5) * 10; // Maps -5..5 to 0..100
-  const MOMENTUM_BANDS_DEF: BandDef<MomentumBand>[] = [
-    { band: "in_crisis", min: 0, max: 30 }, // v <= -3 -> v100 <= 20 (roughly)
-    { band: "struggling", min: 30, max: 45 }, // v <= -1 -> v100 <= 40
-    { band: "steady", min: 45, max: 60 }, // v = 0 -> v100 = 50
-    { band: "rising", min: 60, max: 80 }, // v >= 1 -> v100 >= 60
-    { band: "on_fire", min: 80, max: Infinity }, // v >= 3 -> v100 >= 80
-  ];
-  return toBand(v100, MOMENTUM_BANDS_DEF, prev);
+  if (v >= 3) return "on_fire";
+  if (v >= 1) return "rising";
+  if (v <= -3) return "in_crisis";
+  if (v <= -1) return "struggling";
+  return "steady";
 }
 
 /** m o m e n t u m_ l a b e l s. */
@@ -294,39 +251,6 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
   heated: "Heated",
   fierce: "Fierce",
   legendary: "Legendary",
-};
-
-// === Satisfaction Bands ===
-
-/** Type representing satisfaction band. */
-export type SatisfactionBand = "thrilled" | "happy" | "content" | "concerned" | "unhappy";
-
-/** s a t i s f a c t i o n_ b a n d s. */
-export const SATISFACTION_BANDS: BandDef<SatisfactionBand>[] = [
-  { band: "unhappy", min: 0, max: 20 },
-  { band: "concerned", min: 20, max: 40 },
-  { band: "content", min: 40, max: 60 },
-  { band: "happy", min: 60, max: 80 },
-  { band: "thrilled", min: 80, max: Infinity },
-];
-
-/**
- * To satisfaction band.
- *  * @param satisfaction - The Satisfaction.
- *  * @param prev - The Prev.
- *  * @returns The result.
- */
-export function toSatisfactionBand(satisfaction: number, prev?: SatisfactionBand): SatisfactionBand {
-  return toBand(satisfaction, SATISFACTION_BANDS, prev);
-}
-
-/** s a t i s f a c t i o n_ l a b e l s. */
-export const SATISFACTION_LABELS: Record<SatisfactionBand, string> = {
-  thrilled: "Thrilled",
-  happy: "Happy",
-  content: "Content",
-  concerned: "Concerned",
-  unhappy: "Unhappy",
 };
 
 // === Oyakata Trait Bands ===
@@ -478,26 +402,6 @@ export function toPotentialBand(talentSeed: number | undefined, prev?: Potential
   return toBand(talentSeed, POTENTIAL_BANDS, prev) ?? "unknown";
 }
 
-// === Injury Severity Bands ===
-
-export type InjurySeverityBand = "minor" | "moderate" | "serious" | "unknown";
-
-export const INJURY_SEVERITY_BANDS: BandDef<InjurySeverityBand>[] = [
-  { band: "minor", min: 0, max: 30 },
-  { band: "moderate", min: 30, max: 70 },
-  { band: "serious", min: 70, max: Infinity },
-];
-
-export function toInjurySeverityBand(severity: number | string | undefined, prev?: InjurySeverityBand): InjurySeverityBand {
-  if (severity == null) return "unknown";
-  if (typeof severity === "string") {
-    const s = severity.toLowerCase();
-    if (s === "minor" || s === "moderate" || s === "serious") return s as InjurySeverityBand;
-    return "unknown";
-  }
-  return toBand(severity, INJURY_SEVERITY_BANDS, prev) ?? "unknown";
-}
-
 /** p o t e n t i a l_ l a b e l s. */
 export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; description: string }> = {
   generational: { label: "Generational Talent", description: "A once-in-a-decade prospect with limitless ceiling." },
@@ -545,7 +449,7 @@ export function toRikishiDescriptor(r: {
     techniqueBand: toStatBand(r.technique, prev?.techniqueBand),
     conditionBand: toConditionBand(r.condition, prev?.conditionBand),
     fatigueBand: toFatigueBand(r.fatigue, prev?.fatigueBand),
-    momentumBand: toMomentumBand(r.momentum, prev?.momentumBand),
+    momentumBand: toMomentumBand(r.momentum),
     potentialBand: toPotentialBand(r.talentSeed, prev?.potentialBand),
   };
 }

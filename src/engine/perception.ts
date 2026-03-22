@@ -14,7 +14,6 @@ import type { Rank } from "./types/banzuke";
 import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
-import { stableSort } from "./utils/sort";
 
 // === Band types for perception ===
 
@@ -340,7 +339,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
  */
 export function buildAllPerceptionSnapshots(world: WorldState): Map<Id, PerceptionSnapshot> {
   const snapshots = new Map<Id, PerceptionSnapshot>();
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     snapshots.set(heya.id, buildPerceptionSnapshot(world, heya.id));
   }
   return snapshots;

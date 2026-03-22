@@ -1,7 +1,7 @@
 // BoutResultDisplay.tsx — Polished bout result with dramatic winner reveal
 // Supports kimarite/kimariteId/kimariteName fields across engine revisions
 
-import { cn, safeNumber } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,15 @@ function safeString(v: unknown, fallback = ""): string {
   return typeof v === "string" ? v : fallback;
 }
 
+/**
+ * Safe number.
+ *  * @param v - The V.
+ *  * @param fallback - The Fallback.
+ *  * @returns The result.
+ */
+function safeNumber(v: unknown, fallback = 0): number {
+  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+}
 
 /**
  * Format stance.

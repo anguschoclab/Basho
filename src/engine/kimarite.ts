@@ -3,7 +3,6 @@
 // Source list: Japan Sumo Association kimarite page.  [oai_citation:1‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
 
 import type { Style, Stance, TacticalArchetype } from "./types/combat";
-import { stableTieBreak } from "./utils/sort";
 
 /** Defines the structure for kimarite. */
 export interface Kimarite {
@@ -306,7 +305,7 @@ export function getKimariteForStyle(style: Style): Kimarite[] {
   return KIMARITE_ALL
     .filter(k => k.category !== "forfeit" && k.category !== "result")
     .filter(k => k.styleAffinity[style] >= 5)
-    .sort((a, b) => b.styleAffinity[style] - a.styleAffinity[style] || stableTieBreak(a.id, b.id));
+    .sort((a, b) => b.styleAffinity[style] - a.styleAffinity[style]);
 }
 
 /**
@@ -318,7 +317,7 @@ export function getKimariteForArchetype(archetype: TacticalArchetype): Kimarite[
   return KIMARITE_ALL
     .filter(k => k.category !== "forfeit" && k.category !== "result")
     .filter(k => (k.archetypeBonus[archetype] ?? 0) > 0)
-    .sort((a, b) => (b.archetypeBonus[archetype] ?? 0) - (a.archetypeBonus[archetype] ?? 0) || stableTieBreak(a.id, b.id));
+    .sort((a, b) => (b.archetypeBonus[archetype] ?? 0) - (a.archetypeBonus[archetype] ?? 0));
 }
 
 // Stats

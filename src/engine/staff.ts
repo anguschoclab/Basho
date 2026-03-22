@@ -2,7 +2,6 @@ import type { Staff, StaffRole, StaffCareerPhase, CompetenceBand, ReputationBand
 import { type SeededRNG, rngFromSeed } from "./rng";
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
-import { stableSort } from "./utils/sort";
 
 function rollBand(rng: SeededRNG, bands: readonly any[]): any {
   return bands[Math.floor(rng.next() * bands.length)];
@@ -47,7 +46,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
 export function tickStaffWeek(world: WorldState): void {
   if (!world.staff) return;
 
-  for (const staff of stableSort(Array.from(world.staff.values()), x => (x as any).id || String(x))) {
+  for (const staff of world.staff.values()) {
     staff.fatigue = Math.max(0, Math.min(100, staff.fatigue + 1));
   }
 }
@@ -55,7 +54,7 @@ export function tickStaffWeek(world: WorldState): void {
 export function tickStaffYear(world: WorldState): void {
   if (!world.staff) return;
 
-  for (const staff of stableSort(Array.from(world.staff.values()), x => (x as any).id || String(x))) {
+  for (const staff of world.staff.values()) {
     staff.age += 1;
     staff.yearsAtBeya += 1;
 

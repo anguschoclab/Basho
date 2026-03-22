@@ -1,8 +1,9 @@
-# Changelog - Sumo Manager Pro Migration
+# Changelog - Basho: Sumo Stable Manager
+<!-- GitHub sync verified: 2026-03-21 -->
 
 This changelog outlines the systems, concepts, and features brought over and modernized from the legacy `Sumo` repository into the new `sumo-manager-pro` simulation engine.
 
-## [v1.0.0] - 2025 Initial Port and Migration
+## [v1.1.0] - 2025 Tick Orchestrator Refactor & Initial Port
 
 ### Added (New Features & Ports)
 - **Lineage & Mentorship System:** Ported the `lineage.ts` concept from the legacy repo. Mentors can now be assigned to mentees, triggering dynamic `mentor_student` rivalries. Integrated properly into the deterministic runtime data mappings (`Map`).

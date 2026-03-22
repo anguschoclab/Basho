@@ -5,7 +5,7 @@ export * from './autoSim';
 export * from './banzuke';
 export * from './bout';
 export * from './calendar';
-export * from './dailyTick';
+export * from './tick/tickDaily';
 export * from './descriptorBands';
 export * from './economics';
 export * from './events';

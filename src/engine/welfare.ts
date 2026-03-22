@@ -17,7 +17,6 @@ import { rngForWorld } from "./rng";
 import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
-import { stableSort } from "./utils/sort";
 
 
 
@@ -212,7 +211,7 @@ function setComplianceState(state: WelfareState, next: ComplianceState) {
 export function tickWeek(world: WorldState): number {
   let events = 0;
 
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     const w = ensureHeyaWelfareState(heya);
     const beforeRisk = w.welfareRisk;
 

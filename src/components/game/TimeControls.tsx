@@ -26,7 +26,6 @@ import { AutoSimControls } from "./AutoSimControls";
 export function TimeControls() {
   const {
     state,
-    advanceTime,
     advanceDay,
     simulateAllBouts,
     endDay,
@@ -59,7 +58,7 @@ export function TimeControls() {
   };
 
   const handleAdvanceDay = () => {
-    advanceTime();
+    advanceDay();
   };
 
   const handleEndBasho = () => {
@@ -83,8 +82,8 @@ export function TimeControls() {
   };
 
   const handleAdvanceOneDay = () => {
-    advanceTime();
-    toast({ title: "Time advanced", description: `Day ${(world.dayIndexGlobal || 0) + 1} complete.` });
+    advanceOneDay();
+    toast({ title: "Day advanced", description: `Day ${(world.dayIndexGlobal || 0) + 1} complete.` });
   };
 
   const handleAutoSim = async (config: any) => {

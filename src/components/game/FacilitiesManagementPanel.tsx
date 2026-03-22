@@ -17,11 +17,11 @@ import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import {
+  getUpgradeCostEstimate,
+  getMonthlyMaintenanceCost,
   type FacilityAxis,
   type UpgradeResult,
 } from "@/engine/facilities";
-import { getHeyaFacilitiesSummary } from "@/engine/uiDigest";
-import { STAT_BAND_LABELS } from "@/engine/descriptorBands";
 
 const AXIS_META: Record<FacilityAxis, { label: string; icon: typeof Building; description: string; effectLabel: string }> = {
   training: {
@@ -60,6 +60,28 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   minimal: "Minimal",
 };
 
+import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/engine/utils/ui-helpers";
+
+/**
+ * Get effect percent.
+ *  * @param axis - The Axis.
+ *  * @param level - The Level.
+ *  * @returns The result.
+ */
+function getEffectPercent(axis: FacilityAxis, level: number): string {
+  if (axis === "training") {
+    const mult = 0.85 + (level / 100) * 0.35;
+    return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
+  }
+  if (axis === "recovery") {
+    const mult = 0.9 + level / 166;
+    return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
+  }
+  // nutrition
+  const mult = 0.92 + (level / 100) * 0.16;
+  return `${mult >= 1 ? "+" : ""}${((mult - 1) * 100).toFixed(0)}%`;
+}
+
 /** Defines the structure for facilities management panel props. */
 interface FacilitiesManagementPanelProps {
   heya: Heya;
@@ -75,7 +97,7 @@ interface FacilitiesManagementPanelProps {
 export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: FacilitiesManagementPanelProps) {
   const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
 
-  const uiHeya = useMemo(() => projectHeya(heya, world), [heya, world]);
+  const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya.facilities]);
 
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
 
@@ -83,9 +105,6 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
     const result = onUpgrade(axis, points);
     if (result) setLastResult(result);
   };
-
-  const summary = getHeyaFacilitiesSummary(heya);
-  if (!summary) return null;
 
   return (
     <>
@@ -109,7 +128,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 <Coins className="h-3.5 w-3.5" />
                 Monthly Upkeep
               </div>
-              <span className="font-mono text-foreground">{uiHeya.monthlyMaintenanceDisplay}</span>
+              <span className="font-mono text-foreground">¥{monthlyMaintenance.toLocaleString()}</span>
             </div>
           </div>
         </CardHeader>
@@ -118,7 +137,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
             Facilities influence training gains, injury recovery, and nutrition quality.
             They decay monthly if maintenance costs aren't covered. Invest to improve — costs scale with level.
           </p>
-          {!uiHeya.maintenanceAffordable && (
+          {heya.funds < monthlyMaintenance && (
             <div className="mt-3 flex items-center gap-2 text-sm text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <span>Warning: Current funds may not cover monthly maintenance. Facilities will degrade.</span>
@@ -145,12 +164,12 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
         {axes.map((axis) => {
           const meta = AXIS_META[axis];
           const Icon = meta.icon;
-          const band = summary[`${axis}Band`];
+          const level = heya.facilities[axis];
           const cost5 = getUpgradeCostEstimate(heya, axis, 5);
           const cost1 = getUpgradeCostEstimate(heya, axis, 1);
           const canAfford5 = heya.funds >= cost5;
           const canAfford1 = heya.funds >= cost1;
-          const atMax = summary.isMaxed[axis];
+          const atMax = level >= 100;
 
           return (
             <Card key={axis} className="paper">
@@ -164,10 +183,21 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 {/* Level bar */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className={`text-sm font-semibold capitalize`}>
-                      {STAT_BAND_LABELS[band as keyof typeof STAT_BAND_LABELS] ?? band}
+                    <span className={`text-sm font-semibold ${getLevelColor(level)}`}>
+                      {getLevelBand(level)}
                     </span>
+                    <span className="text-xs font-mono text-muted-foreground">{level}/100</span>
                   </div>
+                  <Progress value={level} className="h-2" />
+                </div>
+
+                {/* Effect display */}
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <TrendingUp className="h-3 w-3" />
+                  <span>{meta.effectLabel}: </span>
+                  <span className={`font-medium ${level >= 50 ? "text-emerald-400" : "text-foreground"}`}>
+                    {getEffectPercent(axis, level)}
+                  </span>
                 </div>
 
                 <p className="text-xs text-muted-foreground">{meta.description}</p>
@@ -183,7 +213,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                       onClick={() => handleUpgrade(axis, 1)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +1 ({display1})
+                      +1 (¥{cost1.toLocaleString()})
                     </Button>
                     <Button
                       size="sm"
@@ -193,7 +223,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                       onClick={() => handleUpgrade(axis, 5)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +5 ({display5})
+                      +5 (¥{cost5.toLocaleString()})
                     </Button>
                   </div>
                 )}

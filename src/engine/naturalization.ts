@@ -6,7 +6,6 @@
 import type { WorldState } from "./types/world";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./media";
-import { stableSort } from "./utils/sort";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -16,7 +15,7 @@ import { stableSort } from "./utils/sort";
 export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
   const foreignRikishi = [];
-  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+  for (const r of world.rikishi.values()) {
     if (r.nationality !== "Japan") {
       foreignRikishi.push(r);
     }

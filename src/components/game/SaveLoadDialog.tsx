@@ -177,12 +177,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           </DialogHeader>
 
           {/* Mode tabs */}
-          <div className="flex gap-1 rounded-lg bg-muted p-1" role="tablist">
+          <div className="flex gap-1 rounded-lg bg-muted p-1">
             <button
-              role="tab"
-              aria-selected={mode === "save"}
-              aria-controls="save-load-panel"
-              id="save-tab"
               className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 mode === "save" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -192,10 +188,6 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
               Save
             </button>
             <button
-              role="tab"
-              aria-selected={mode === "load"}
-              aria-controls="save-load-panel"
-              id="load-tab"
               className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 mode === "load" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -206,7 +198,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
             </button>
           </div>
 
-          <ScrollArea className="max-h-[350px]" id="save-load-panel" role="tabpanel" aria-labelledby={mode === "save" ? "save-tab" : "load-tab"}>
+          <ScrollArea className="max-h-[350px]">
             <div className="space-y-1.5">
               {/* Existing saves */}
               {slots.map((slot) => (
@@ -242,7 +234,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                       size="icon"
                       className="h-7 w-7 opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive shrink-0"
                       onClick={() => handleDelete(slot.slotName)}
-                      aria-label={`Delete save slot ${slot.slotName}`}
+                      aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
+                      title={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

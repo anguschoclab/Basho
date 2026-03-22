@@ -12,7 +12,7 @@
  */
 
 import type { WorldState, CyclePhase } from "./types/world";
-import { advanceOneDay, type DailyTickReport } from "./dailyTick";
+import { advanceOneDay, type DailyTickReport } from "./tick/tickDaily";
 import { queryEvents } from "./events";
 import type { UIDigest, DigestSection, DigestItem } from "./uiDigest";
 

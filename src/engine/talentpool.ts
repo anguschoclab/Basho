@@ -20,7 +20,6 @@ import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
 import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
-import { stableSort } from "./utils/sort";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -231,7 +230,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
-  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+  for (const r of world.rikishi.values()) {
     if (r.heyaId !== heyaId) continue;
     if ((r.nationality || "Japan") !== "Japan") count += 1;
   }
@@ -1029,7 +1028,7 @@ function npcOfferTick(world: WorldState): void {
   const playerHeyaId = world.playerHeyaId as string | undefined;
   const priorities = world.npcScoutingPriorities ?? {};
 
-  const heyaIds = Array.from(world.heyas.keys()).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).filter((id) => !playerHeyaId || id !== playerHeyaId);
+  const heyaIds = Array.from(world.heyas.keys()).filter((id) => !playerHeyaId || id !== playerHeyaId);
   if (heyaIds.length === 0) return;
 
   const rng = rngForWorld(world, "talentpool", `npc_offers::w${now}`);

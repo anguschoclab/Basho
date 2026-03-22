@@ -12,7 +12,6 @@ import type { Id } from "./types/common";
 import { reportScandal } from "./governance";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
-import { stableSort } from "./utils/sort";
 
 // === CONSTANTS ===
 
@@ -34,7 +33,7 @@ const SUPPORTER_INCOME_FACTOR = 15_000;
  * - Check Solvency
  */
 export function tickWeek(world: WorldState): void {
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     processHeyaFinances(heya, world);
   }
 }
@@ -195,7 +194,7 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
   const churned: string[] = [];
   let retained = 0;
 
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     const koenkaiId = `koenkai_${heya.id}`;
     const koenkai = pool.koenkais?.get(koenkaiId);
     if (!koenkai) continue;

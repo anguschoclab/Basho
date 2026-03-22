@@ -21,7 +21,6 @@ import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand 
 import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { generateStaff } from "./staff";
-import { stableSort } from "./utils/sort";
 import { Staff } from "./types/staff";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
@@ -213,7 +212,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   const RUNWAY_BANDS: RunwayBand[] = ["secure", "comfortable", "tight", "critical"];
 
   // 1. Create Heyas & Oyakata
-  stableSort(heyaNames, x => x).forEach((name, idx) => {
+  heyaNames.forEach((name, idx) => {
     const heyaId = `heya_${idx}`;
     const oyakataId = `oyakata_${idx}`;
     const hRng = rngFromSeed(actualSeed, "worldgen", `heya::${heyaId}`);
@@ -404,7 +403,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   let rikishiCounter = 0;
   const heyaList = Array.from(heyaMap.values());
 
-  stableSort(rankSlots, (x) => String(x.rankNumber) + x.rank + x.side).forEach((slot) => {
+  rankSlots.forEach((slot) => {
     const rid = `rikishi_${rikishiCounter++}`;
     const rrng = rngFromSeed(actualSeed, "worldgen", `rikishi::${rid}`);
     
@@ -544,7 +543,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     world.sponsorPool = sponsorPool;
 
     // Create kōenkai for each heya
-    for (const heya of stableSort(Array.from(heyaMap.values()), x => (x as any).id || String(x))) {
+    for (const heya of heyaMap.values()) {
       const koenkaiRng = rngFromSeed(actualSeed, "sponsors", `koenkai::${heya.id}`);
       const koenkai = createKoenkai(heya.id, sponsorPool, heya.prestigeBand, koenkaiRng, 0);
       sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
