@@ -177,8 +177,12 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           </DialogHeader>
 
           {/* Mode tabs */}
-          <div className="flex gap-1 rounded-lg bg-muted p-1">
+          <div className="flex gap-1 rounded-lg bg-muted p-1" role="tablist">
             <button
+              role="tab"
+              aria-selected={mode === "save"}
+              aria-controls="save-load-panel"
+              id="save-tab"
               className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 mode === "save" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -188,6 +192,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
               Save
             </button>
             <button
+              role="tab"
+              aria-selected={mode === "load"}
+              aria-controls="save-load-panel"
+              id="load-tab"
               className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 mode === "load" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -198,7 +206,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
             </button>
           </div>
 
-          <ScrollArea className="max-h-[350px]">
+          <ScrollArea className="max-h-[350px]" id="save-load-panel" role="tabpanel" aria-labelledby={mode === "save" ? "save-tab" : "load-tab"}>
             <div className="space-y-1.5">
               {/* Existing saves */}
               {slots.map((slot) => (

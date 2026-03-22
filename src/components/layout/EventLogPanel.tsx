@@ -245,6 +245,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
               key={f.value}
               onClick={() => setFilter(f.value)}
               aria-pressed={filter === f.value}
+              aria-label={`Filter events by ${f.label}`}
               className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${
                 filter === f.value
                   ? "bg-primary text-primary-foreground"
@@ -291,7 +292,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                   >
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : e.id)}
-                      aria-expanded={isExpanded}
+                      aria-label={isExpanded ? `Collapse details for ${e.title}` : `Expand details for ${e.title}`}
                       className="w-full text-left"
                       aria-expanded={isExpanded}
                       aria-controls={`event-details-${e.id}`}

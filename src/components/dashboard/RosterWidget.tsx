@@ -99,6 +99,7 @@ export function RosterWidget() {
         {roster.length > 8 && (
           <button
             onClick={() => navigate({ to: "/rikishi" })}
+            aria-label={`View ${roster.length - 8} more wrestlers`}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors"
           >
             +{roster.length - 8} more wrestlers →

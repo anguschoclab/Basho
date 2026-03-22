@@ -50,6 +50,8 @@ function ProfileRow({ label, icon, value, options, onChange }: {
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
+            aria-label={`Set ${label} to ${opt.label}`}
+            aria-pressed={value === opt.value}
             className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
               value === opt.value
                 ? "bg-primary text-primary-foreground border-primary shadow-sm"
@@ -136,6 +138,8 @@ export function TrainingWidget() {
 
       <button
         onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+        aria-label={expanded ? "Hide training quick-change options" : "Show training quick-change options"}
         className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors"
       >
         {expanded ? "Hide quick-change ▲" : "Quick-change ▼"}
