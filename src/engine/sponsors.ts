@@ -1,3 +1,4 @@
+import { stableTieBreak } from "./utils/sort";
 import { clamp } from './utils';
 // sponsors.ts
 // Procedural Sponsors, Kenshō & Supporters System
@@ -240,7 +241,7 @@ function normalizeRank(rank: string): string {
  *  * @returns The result.
  */
 function stableTieBreakLocal(a: Sponsor, b: Sponsor): number {
-  return a.sponsorId.localeCompare(b.sponsorId);
+  return stableTieBreak(a.sponsorId, b.sponsorId);
 }
 
 /**

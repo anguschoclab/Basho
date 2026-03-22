@@ -1,3 +1,4 @@
+import { stableTieBreak } from "./utils/sort";
 import { clamp } from './utils';
 
 function localClampInt(val: number, min: number, max: number): number {
@@ -499,7 +500,7 @@ export function updateBanzuke(
   scored.sort((a, b) => {
     if (a.desiredKey !== b.desiredKey) return a.desiredKey - b.desiredKey;
     if (a.oldKey !== b.oldKey) return a.oldKey - b.oldKey;
-    return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
+    return stableTieBreak(a.entry.rikishiId, b.entry.rikishiId);
   });
 
   // 6) Assign into slots top-to-bottom with eligibility constraints.
@@ -1025,7 +1026,7 @@ function normalizeRosterToTemplate(current: BanzukeEntry[], needed: number): Ban
     const ak = positionKey(a);
     const bk = positionKey(b);
     if (ak !== bk) return ak - bk;
-    return a.rikishiId.localeCompare(b.rikishiId);
+    return stableTieBreak(a.rikishiId, b.rikishiId);
   });
 
   if (sorted.length > needed) return sorted.slice(0, needed);
