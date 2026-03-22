@@ -362,6 +362,8 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapA.rikishiPerceptions.map(r => (
                 <button
                   key={r.rikishiId}
+                  aria-label={`Select ${r.shikona} from ${snapA.heyaName}`}
+                  aria-pressed={selectedA === r.rikishiId}
                   className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
                     selectedA === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
                   }`}
@@ -381,6 +383,8 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapB.rikishiPerceptions.map(r => (
                 <button
                   key={r.rikishiId}
+                  aria-label={`Select ${r.shikona} from ${snapB.heyaName}`}
+                  aria-pressed={selectedB === r.rikishiId}
                   className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
                     selectedB === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
                   }`}

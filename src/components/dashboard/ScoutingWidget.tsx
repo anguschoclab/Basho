@@ -117,6 +117,7 @@ export function ScoutingWidget() {
         {prospects.length > 6 && (
           <button
             onClick={() => navigate({ to: "/talent-pool" })}
+            aria-label={`View ${prospects.length - 6} more prospects`}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"
           >
             +{prospects.length - 6} more prospects →
