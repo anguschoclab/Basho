@@ -10,7 +10,6 @@ import type { Division, Rank } from "./types/banzuke";
 import type { Id } from "./types/common";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
-import { stableSort } from "./utils/sort";
 
 // === CAREER RECORD TYPES ===
 
@@ -461,7 +460,7 @@ function getRankValue(rank: Rank): number {
  */
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
-  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+  for (const r of world.rikishi.values()) {
     if (r.heyaId === heya.id) {
       rikishiInHeya.push(r);
     }
@@ -535,7 +534,7 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
   let totalMakuuchiWins = 0;
   let makuuchiInjuryCount = 0;
 
-  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+  for (const r of world.rikishi.values()) {
     if (r.division === "makuuchi") {
       makuuchiRikishiCount++;
       totalMakuuchiWins += r.currentBashoWins;
