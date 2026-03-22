@@ -5659,7 +5659,1610 @@
         ]
       }
     ],
-    "kimarite": {}
+    "kimarite": {
+      "tsukidashi": [
+        {
+          "id": "f_kim_tsukidashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukidashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukidashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukidashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsukitaoshi": [
+        {
+          "id": "f_kim_tsukitaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukitaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukitaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukitaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "oshidashi": [
+        {
+          "id": "f_kim_oshidashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_oshidashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_oshidashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_oshidashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "oshitaoshi": [
+        {
+          "id": "f_kim_oshitaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_oshitaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_oshitaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_oshitaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "yorikiri": [
+        {
+          "id": "f_kim_yorikiri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_yorikiri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_yorikiri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_yorikiri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "yoritaoshi": [
+        {
+          "id": "f_kim_yoritaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_yoritaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_yoritaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_yoritaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "abisetaoshi": [
+        {
+          "id": "f_kim_abisetaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_abisetaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_abisetaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_abisetaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "uwatenage": [
+        {
+          "id": "f_kim_uwatenage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_uwatenage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_uwatenage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_uwatenage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "shitatenage": [
+        {
+          "id": "f_kim_shitatenage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_shitatenage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_shitatenage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_shitatenage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kotenage": [
+        {
+          "id": "f_kim_kotenage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kotenage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kotenage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kotenage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sukuinage": [
+        {
+          "id": "f_kim_sukuinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sukuinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sukuinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sukuinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kubinage": [
+        {
+          "id": "f_kim_kubinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kubinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kubinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kubinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "ipponzeoi": [
+        {
+          "id": "f_kim_ipponzeoi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_ipponzeoi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_ipponzeoi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_ipponzeoi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "koshinage": [
+        {
+          "id": "f_kim_koshinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_koshinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_koshinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_koshinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "yaguranage": [
+        {
+          "id": "f_kim_yaguranage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_yaguranage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_yaguranage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_yaguranage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kakenage": [
+        {
+          "id": "f_kim_kakenage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kakenage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kakenage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kakenage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "nichonage": [
+        {
+          "id": "f_kim_nichonage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_nichonage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_nichonage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_nichonage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "uwatedashinage": [
+        {
+          "id": "f_kim_uwatedashinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_uwatedashinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_uwatedashinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_uwatedashinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "shitatedashinage": [
+        {
+          "id": "f_kim_shitatedashinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_shitatedashinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_shitatedashinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_shitatedashinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsukaminage": [
+        {
+          "id": "f_kim_tsukaminage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukaminage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukaminage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukaminage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "uchigake": [
+        {
+          "id": "f_kim_uchigake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_uchigake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_uchigake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_uchigake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sotogake": [
+        {
+          "id": "f_kim_sotogake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sotogake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sotogake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sotogake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "chongake": [
+        {
+          "id": "f_kim_chongake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_chongake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_chongake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_chongake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kirikaeshi": [
+        {
+          "id": "f_kim_kirikaeshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kirikaeshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kirikaeshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kirikaeshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kawazugake": [
+        {
+          "id": "f_kim_kawazugake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kawazugake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kawazugake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kawazugake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kekaeshi": [
+        {
+          "id": "f_kim_kekaeshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kekaeshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kekaeshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kekaeshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "ketaguri": [
+        {
+          "id": "f_kim_ketaguri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_ketaguri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_ketaguri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_ketaguri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "mitokorozeme": [
+        {
+          "id": "f_kim_mitokorozeme_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_mitokorozeme_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_mitokorozeme_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_mitokorozeme_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "watashikomi": [
+        {
+          "id": "f_kim_watashikomi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_watashikomi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_watashikomi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_watashikomi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "nimaigeri": [
+        {
+          "id": "f_kim_nimaigeri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_nimaigeri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_nimaigeri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_nimaigeri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "komatasukui": [
+        {
+          "id": "f_kim_komatasukui_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_komatasukui_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_komatasukui_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_komatasukui_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sotokomata": [
+        {
+          "id": "f_kim_sotokomata_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sotokomata_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sotokomata_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sotokomata_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "omata": [
+        {
+          "id": "f_kim_omata_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_omata_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_omata_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_omata_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsumatori": [
+        {
+          "id": "f_kim_tsumatori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsumatori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsumatori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsumatori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kozumatori": [
+        {
+          "id": "f_kim_kozumatori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kozumatori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kozumatori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kozumatori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "ashitori": [
+        {
+          "id": "f_kim_ashitori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_ashitori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_ashitori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_ashitori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "susotori": [
+        {
+          "id": "f_kim_susotori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_susotori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_susotori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_susotori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "susoharai": [
+        {
+          "id": "f_kim_susoharai_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_susoharai_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_susoharai_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_susoharai_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "izori": [
+        {
+          "id": "f_kim_izori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_izori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_izori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_izori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "shumokuzori": [
+        {
+          "id": "f_kim_shumokuzori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_shumokuzori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_shumokuzori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_shumokuzori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kakezori": [
+        {
+          "id": "f_kim_kakezori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kakezori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kakezori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kakezori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tasukizori": [
+        {
+          "id": "f_kim_tasukizori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tasukizori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tasukizori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tasukizori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sototasukizori": [
+        {
+          "id": "f_kim_sototasukizori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sototasukizori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sototasukizori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sototasukizori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsutaezori": [
+        {
+          "id": "f_kim_tsutaezori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsutaezori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsutaezori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsutaezori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsukiotoshi": [
+        {
+          "id": "f_kim_tsukiotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukiotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukiotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukiotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "makiotoshi": [
+        {
+          "id": "f_kim_makiotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_makiotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_makiotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_makiotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tottari": [
+        {
+          "id": "f_kim_tottari_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tottari_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tottari_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tottari_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sakatottari": [
+        {
+          "id": "f_kim_sakatottari_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sakatottari_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sakatottari_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sakatottari_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "katasukashi": [
+        {
+          "id": "f_kim_katasukashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_katasukashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_katasukashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_katasukashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sotomuso": [
+        {
+          "id": "f_kim_sotomuso_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sotomuso_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sotomuso_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sotomuso_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "uchimuso": [
+        {
+          "id": "f_kim_uchimuso_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_uchimuso_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_uchimuso_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_uchimuso_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "shitatehineri": [
+        {
+          "id": "f_kim_shitatehineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_shitatehineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_shitatehineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_shitatehineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "uwatehineri": [
+        {
+          "id": "f_kim_uwatehineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_uwatehineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_uwatehineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_uwatehineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "zunebari": [
+        {
+          "id": "f_kim_zunebari_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_zunebari_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_zunebari_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_zunebari_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kainahineri": [
+        {
+          "id": "f_kim_kainahineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kainahineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kainahineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kainahineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "gasshohineri": [
+        {
+          "id": "f_kim_gasshohineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_gasshohineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_gasshohineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_gasshohineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tokkurinage": [
+        {
+          "id": "f_kim_tokkurinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tokkurinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tokkurinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tokkurinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kubihineri": [
+        {
+          "id": "f_kim_kubihineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kubihineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kubihineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kubihineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kotehineri": [
+        {
+          "id": "f_kim_kotehineri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kotehineri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kotehineri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kotehineri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "amiuchi": [
+        {
+          "id": "f_kim_amiuchi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_amiuchi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_amiuchi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_amiuchi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sabaori": [
+        {
+          "id": "f_kim_sabaori_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sabaori_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sabaori_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sabaori_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "harimanage": [
+        {
+          "id": "f_kim_harimanage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_harimanage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_harimanage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_harimanage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "dainigiri": [
+        {
+          "id": "f_kim_dainigiri_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_dainigiri_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_dainigiri_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_dainigiri_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "hikkake": [
+        {
+          "id": "f_kim_hikkake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_hikkake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_hikkake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_hikkake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "hikiotoshi": [
+        {
+          "id": "f_kim_hikiotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_hikiotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_hikiotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_hikiotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "hatakikomi": [
+        {
+          "id": "f_kim_hatakikomi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_hatakikomi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_hatakikomi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_hatakikomi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "sokubiotoshi": [
+        {
+          "id": "f_kim_sokubiotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_sokubiotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_sokubiotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_sokubiotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsuridashi": [
+        {
+          "id": "f_kim_tsuridashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsuridashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsuridashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsuridashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okuritsuridashi": [
+        {
+          "id": "f_kim_okuritsuridashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okuritsuridashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okuritsuridashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okuritsuridashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsuriotoshi": [
+        {
+          "id": "f_kim_tsuriotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsuriotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsuriotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsuriotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okuritsuriotoshi": [
+        {
+          "id": "f_kim_okuritsuriotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okuritsuriotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okuritsuriotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okuritsuriotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okuridashi": [
+        {
+          "id": "f_kim_okuridashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okuridashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okuridashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okuridashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okuritaoshi": [
+        {
+          "id": "f_kim_okuritaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okuritaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okuritaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okuritaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okurinage": [
+        {
+          "id": "f_kim_okurinage_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okurinage_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okurinage_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okurinage_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okurigake": [
+        {
+          "id": "f_kim_okurigake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okurigake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okurigake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okurigake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "okurihikiotoshi": [
+        {
+          "id": "f_kim_okurihikiotoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_okurihikiotoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_okurihikiotoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_okurihikiotoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "waridashi": [
+        {
+          "id": "f_kim_waridashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_waridashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_waridashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_waridashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "utchari": [
+        {
+          "id": "f_kim_utchari_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_utchari_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_utchari_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_utchari_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kimedashi": [
+        {
+          "id": "f_kim_kimedashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kimedashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kimedashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kimedashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "kimetaoshi": [
+        {
+          "id": "f_kim_kimetaoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_kimetaoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_kimetaoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_kimetaoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "ushiromotare": [
+        {
+          "id": "f_kim_ushiromotare_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_ushiromotare_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_ushiromotare_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_ushiromotare_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "yobimodoshi": [
+        {
+          "id": "f_kim_yobimodoshi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_yobimodoshi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_yobimodoshi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_yobimodoshi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "isamiashi": [
+        {
+          "id": "f_kim_isamiashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_isamiashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_isamiashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_isamiashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "koshikudake": [
+        {
+          "id": "f_kim_koshikudake_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_koshikudake_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_koshikudake_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_koshikudake_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsukite": [
+        {
+          "id": "f_kim_tsukite_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukite_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukite_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukite_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "tsukihiza": [
+        {
+          "id": "f_kim_tsukihiza_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_tsukihiza_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_tsukihiza_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_tsukihiza_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "fumidashi": [
+        {
+          "id": "f_kim_fumidashi_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_fumidashi_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_fumidashi_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_fumidashi_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "fusensho": [
+        {
+          "id": "f_kim_fusensho_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_fusensho_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_fusensho_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_fusensho_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ],
+      "hansoku": [
+        {
+          "id": "f_kim_hansoku_1",
+          "text": "{winner} clinches the victory with a brilliant {kimarite}!"
+        },
+        {
+          "id": "f_kim_hansoku_2",
+          "text": "A stunning {kimarite} from {winner} ends the bout!"
+        },
+        {
+          "id": "f_kim_hansoku_3",
+          "text": "{winner} executes {kimarite} to perfection, defeating {loser}!"
+        },
+        {
+          "id": "f_kim_hansoku_4",
+          "text": "The gyoji signals {kimarite} — {winner} is the victor!"
+        }
+      ]
+    }
   },
   "connective": {
     "short": [
@@ -5706,236 +7309,1842 @@
     ]
   },
   "injury": {
-    "sprain": [
-      {
-        "id": "inj_spr_1",
-        "text": "A nasty sprain slows the rikishi down."
-      },
-      {
-        "id": "inj_spr_2",
-        "text": "The rikishi suffers a painful sprained joint."
-      },
-      {
-        "id": "inj_spr_3",
-        "text": "A twisted limb results in a severe sprain."
-      },
-      {
-        "id": "inj_spr_4",
-        "text": "Medical staff diagnoses a debilitating sprain."
-      },
-      {
-        "id": "inj_spr_5",
-        "text": "A sharp movement causes a sudden sprain."
-      }
-    ],
-    "strain": [
-      {
-        "id": "inj_str_1",
-        "text": "An overextension leads to a muscle strain."
-      },
-      {
-        "id": "inj_str_2",
-        "text": "The heavy lifting takes its toll with a deep strain."
-      },
-      {
-        "id": "inj_str_3",
-        "text": "A pulled muscle strains the rikishi's mobility."
-      },
-      {
-        "id": "inj_str_4",
-        "text": "The rikishi winces from a clear muscular strain."
-      },
-      {
-        "id": "inj_str_5",
-        "text": "A severe strain will require time off the dohyo."
-      }
-    ],
-    "contusion": [
-      {
-        "id": "inj_con_1",
-        "text": "A brutal impact leaves a deep contusion."
-      },
-      {
-        "id": "inj_con_2",
-        "text": "The rikishi sports a dark contusion from the collision."
-      },
-      {
-        "id": "inj_con_3",
-        "text": "A heavy blow results in a painful contusion."
-      },
-      {
-        "id": "inj_con_4",
-        "text": "Swelling and bruising mark a serious contusion."
-      },
-      {
-        "id": "inj_con_5",
-        "text": "The blunt force of the tachiai causes a contusion."
-      }
-    ],
-    "inflammation": [
-      {
-        "id": "inj_inf_1",
-        "text": "Chronic inflammation flares up unexpectedly."
-      },
-      {
-        "id": "inj_inf_2",
-        "text": "Severe inflammation limits the joint's movement."
-      },
-      {
-        "id": "inj_inf_3",
-        "text": "The rikishi is sidelined by painful inflammation."
-      },
-      {
-        "id": "inj_inf_4",
-        "text": "Wear and tear results in acute inflammation."
-      },
-      {
-        "id": "inj_inf_5",
-        "text": "Medical reports cite severe localized inflammation."
-      }
-    ],
-    "tear": [
-      {
-        "id": "inj_tea_1",
-        "text": "A devastating muscle tear stops the rikishi in their tracks."
-      },
-      {
-        "id": "inj_tea_2",
-        "text": "A loud pop signals a serious ligament tear."
-      },
-      {
-        "id": "inj_tea_3",
-        "text": "The diagnosis is grim: a full tear requiring surgery."
-      },
-      {
-        "id": "inj_tea_4",
-        "text": "A partial tear will keep the rikishi out for weeks."
-      },
-      {
-        "id": "inj_tea_5",
-        "text": "The sheer force of the throw causes a tissue tear."
-      }
-    ],
-    "fracture": [
-      {
-        "id": "inj_fra_1",
-        "text": "A sickening crack confirms a bone fracture."
-      },
-      {
-        "id": "inj_fra_2",
-        "text": "The rikishi suffers a structural fracture."
-      },
-      {
-        "id": "inj_fra_3",
-        "text": "A heavy fall results in a clean fracture."
-      },
-      {
-        "id": "inj_fra_4",
-        "text": "X-rays reveal a hairline fracture."
-      },
-      {
-        "id": "inj_fra_5",
-        "text": "A brutal collision leaves the rikishi with a fracture."
-      }
-    ],
-    "nerve": [
-      {
-        "id": "inj_nrv_1",
-        "text": "A pinched nerve causes shooting pain down the limb."
-      },
-      {
-        "id": "inj_nrv_2",
-        "text": "Nerve damage leaves the rikishi with lingering numbness."
-      },
-      {
-        "id": "inj_nrv_3",
-        "text": "A jarring impact causes severe nerve irritation."
-      },
-      {
-        "id": "inj_nrv_4",
-        "text": "The rikishi loses grip strength due to a nerve issue."
-      },
-      {
-        "id": "inj_nrv_5",
-        "text": "A complex nerve injury complicates recovery."
-      }
-    ],
-    "unknown": [
-      {
-        "id": "inj_unk_1",
-        "text": "The rikishi goes down with an unspecified injury."
-      },
-      {
-        "id": "inj_unk_2",
-        "text": "Medical staff is unsure of the exact nature of the injury."
-      },
-      {
-        "id": "inj_unk_3",
-        "text": "A mysterious ailment sidelines the rikishi."
-      },
-      {
-        "id": "inj_unk_4",
-        "text": "The injury details remain unclear at this time."
-      },
-      {
-        "id": "inj_unk_5",
-        "text": "An undisclosed injury forces a withdrawal."
-      }
-    ],
-    "concussion": [
-      {
-        "id": "inj_concussion_1",
-        "text": "{rikishi_shikona} suffers a painful concussion during the bout."
-      },
-      {
-        "id": "inj_concussion_2",
-        "text": "The match is halted as {rikishi_shikona} goes down with a visible concussion."
-      },
-      {
-        "id": "inj_concussion_3",
-        "text": "{rikishi_shikona} winces in agony, clearly sustaining a concussion."
-      },
-      {
-        "id": "inj_concussion_4",
-        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent concussion."
-      }
-    ],
-    "dislocation": [
-      {
-        "id": "inj_dislocation_1",
-        "text": "{rikishi_shikona} suffers a painful dislocation during the bout."
-      },
-      {
-        "id": "inj_dislocation_2",
-        "text": "The match is halted as {rikishi_shikona} goes down with a visible dislocation."
-      },
-      {
-        "id": "inj_dislocation_3",
-        "text": "{rikishi_shikona} winces in agony, clearly sustaining a dislocation."
-      },
-      {
-        "id": "inj_dislocation_4",
-        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent dislocation."
-      }
-    ],
-    "laceration": [
-      {
-        "id": "inj_laceration_1",
-        "text": "{rikishi_shikona} suffers a painful laceration during the bout."
-      },
-      {
-        "id": "inj_laceration_2",
-        "text": "The match is halted as {rikishi_shikona} goes down with a visible laceration."
-      },
-      {
-        "id": "inj_laceration_3",
-        "text": "{rikishi_shikona} winces in agony, clearly sustaining a laceration."
-      },
-      {
-        "id": "inj_laceration_4",
-        "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent laceration."
-      }
-    ]
+    "sprain": {
+      "default": [
+        {
+          "id": "inj_spr_1",
+          "text": "A nasty sprain slows the rikishi down."
+        },
+        {
+          "id": "inj_spr_2",
+          "text": "The rikishi suffers a painful sprained joint."
+        },
+        {
+          "id": "inj_spr_3",
+          "text": "A twisted limb results in a severe sprain."
+        },
+        {
+          "id": "inj_spr_4",
+          "text": "Medical staff diagnoses a debilitating sprain."
+        },
+        {
+          "id": "inj_spr_5",
+          "text": "A sharp movement causes a sudden sprain."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_sprain_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a sprain."
+        },
+        {
+          "id": "inj_sprain_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s sprain. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_sprain_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the sprain."
+        },
+        {
+          "id": "inj_sprain_strict_4",
+          "text": "The sprain draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_sprain_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate sprain."
+        },
+        {
+          "id": "inj_sprain_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the sprain."
+        },
+        {
+          "id": "inj_sprain_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the sprain."
+        },
+        {
+          "id": "inj_sprain_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the sprain."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_sprain_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s sprain."
+        },
+        {
+          "id": "inj_sprain_traditionalist_2",
+          "text": "{rikishi_shikona}'s sprain is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_sprain_traditionalist_3",
+          "text": "\"Endure the sprain with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_sprain_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s sprain."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_sprain_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s sprain."
+        },
+        {
+          "id": "inj_sprain_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s sprain is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_sprain_scientist_3",
+          "text": "\"{rikishi_shikona}'s sprain requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_sprain_scientist_4",
+          "text": "The sprain forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_sprain_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s sprain."
+        },
+        {
+          "id": "inj_sprain_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the sprain."
+        },
+        {
+          "id": "inj_sprain_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s sprain."
+        },
+        {
+          "id": "inj_sprain_gambler_4",
+          "text": "The sprain is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_sprain_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate sprain."
+        },
+        {
+          "id": "inj_sprain_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the sprain."
+        },
+        {
+          "id": "inj_sprain_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the sprain."
+        },
+        {
+          "id": "inj_sprain_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the sprain."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_sprain_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a sprain."
+        },
+        {
+          "id": "inj_sprain_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s sprain. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_sprain_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the sprain."
+        },
+        {
+          "id": "inj_sprain_tyrant_4",
+          "text": "The sprain draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_sprain_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s sprain."
+        },
+        {
+          "id": "inj_sprain_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s sprain is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_sprain_strategist_3",
+          "text": "\"{rikishi_shikona}'s sprain requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_sprain_strategist_4",
+          "text": "The sprain forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "strain": {
+      "default": [
+        {
+          "id": "inj_str_1",
+          "text": "An overextension leads to a muscle strain."
+        },
+        {
+          "id": "inj_str_2",
+          "text": "The heavy lifting takes its toll with a deep strain."
+        },
+        {
+          "id": "inj_str_3",
+          "text": "A pulled muscle strains the rikishi's mobility."
+        },
+        {
+          "id": "inj_str_4",
+          "text": "The rikishi winces from a clear muscular strain."
+        },
+        {
+          "id": "inj_str_5",
+          "text": "A severe strain will require time off the dohyo."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_strain_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a strain."
+        },
+        {
+          "id": "inj_strain_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s strain. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_strain_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the strain."
+        },
+        {
+          "id": "inj_strain_strict_4",
+          "text": "The strain draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_strain_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate strain."
+        },
+        {
+          "id": "inj_strain_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the strain."
+        },
+        {
+          "id": "inj_strain_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the strain."
+        },
+        {
+          "id": "inj_strain_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the strain."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_strain_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s strain."
+        },
+        {
+          "id": "inj_strain_traditionalist_2",
+          "text": "{rikishi_shikona}'s strain is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_strain_traditionalist_3",
+          "text": "\"Endure the strain with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_strain_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s strain."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_strain_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s strain."
+        },
+        {
+          "id": "inj_strain_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s strain is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_strain_scientist_3",
+          "text": "\"{rikishi_shikona}'s strain requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_strain_scientist_4",
+          "text": "The strain forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_strain_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s strain."
+        },
+        {
+          "id": "inj_strain_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the strain."
+        },
+        {
+          "id": "inj_strain_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s strain."
+        },
+        {
+          "id": "inj_strain_gambler_4",
+          "text": "The strain is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_strain_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate strain."
+        },
+        {
+          "id": "inj_strain_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the strain."
+        },
+        {
+          "id": "inj_strain_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the strain."
+        },
+        {
+          "id": "inj_strain_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the strain."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_strain_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a strain."
+        },
+        {
+          "id": "inj_strain_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s strain. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_strain_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the strain."
+        },
+        {
+          "id": "inj_strain_tyrant_4",
+          "text": "The strain draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_strain_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s strain."
+        },
+        {
+          "id": "inj_strain_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s strain is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_strain_strategist_3",
+          "text": "\"{rikishi_shikona}'s strain requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_strain_strategist_4",
+          "text": "The strain forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "contusion": {
+      "default": [
+        {
+          "id": "inj_con_1",
+          "text": "A brutal impact leaves a deep contusion."
+        },
+        {
+          "id": "inj_con_2",
+          "text": "The rikishi sports a dark contusion from the collision."
+        },
+        {
+          "id": "inj_con_3",
+          "text": "A heavy blow results in a painful contusion."
+        },
+        {
+          "id": "inj_con_4",
+          "text": "Swelling and bruising mark a serious contusion."
+        },
+        {
+          "id": "inj_con_5",
+          "text": "The blunt force of the tachiai causes a contusion."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_contusion_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a contusion."
+        },
+        {
+          "id": "inj_contusion_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s contusion. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_contusion_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the contusion."
+        },
+        {
+          "id": "inj_contusion_strict_4",
+          "text": "The contusion draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_contusion_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate contusion."
+        },
+        {
+          "id": "inj_contusion_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the contusion."
+        },
+        {
+          "id": "inj_contusion_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the contusion."
+        },
+        {
+          "id": "inj_contusion_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the contusion."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_contusion_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s contusion."
+        },
+        {
+          "id": "inj_contusion_traditionalist_2",
+          "text": "{rikishi_shikona}'s contusion is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_contusion_traditionalist_3",
+          "text": "\"Endure the contusion with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_contusion_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s contusion."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_contusion_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s contusion."
+        },
+        {
+          "id": "inj_contusion_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s contusion is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_contusion_scientist_3",
+          "text": "\"{rikishi_shikona}'s contusion requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_contusion_scientist_4",
+          "text": "The contusion forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_contusion_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s contusion."
+        },
+        {
+          "id": "inj_contusion_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the contusion."
+        },
+        {
+          "id": "inj_contusion_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s contusion."
+        },
+        {
+          "id": "inj_contusion_gambler_4",
+          "text": "The contusion is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_contusion_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate contusion."
+        },
+        {
+          "id": "inj_contusion_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the contusion."
+        },
+        {
+          "id": "inj_contusion_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the contusion."
+        },
+        {
+          "id": "inj_contusion_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the contusion."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_contusion_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a contusion."
+        },
+        {
+          "id": "inj_contusion_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s contusion. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_contusion_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the contusion."
+        },
+        {
+          "id": "inj_contusion_tyrant_4",
+          "text": "The contusion draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_contusion_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s contusion."
+        },
+        {
+          "id": "inj_contusion_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s contusion is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_contusion_strategist_3",
+          "text": "\"{rikishi_shikona}'s contusion requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_contusion_strategist_4",
+          "text": "The contusion forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "inflammation": {
+      "default": [
+        {
+          "id": "inj_inf_1",
+          "text": "Chronic inflammation flares up unexpectedly."
+        },
+        {
+          "id": "inj_inf_2",
+          "text": "Severe inflammation limits the joint's movement."
+        },
+        {
+          "id": "inj_inf_3",
+          "text": "The rikishi is sidelined by painful inflammation."
+        },
+        {
+          "id": "inj_inf_4",
+          "text": "Wear and tear results in acute inflammation."
+        },
+        {
+          "id": "inj_inf_5",
+          "text": "Medical reports cite severe localized inflammation."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_inflammation_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a inflammation."
+        },
+        {
+          "id": "inj_inflammation_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s inflammation. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_inflammation_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the inflammation."
+        },
+        {
+          "id": "inj_inflammation_strict_4",
+          "text": "The inflammation draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_inflammation_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate inflammation."
+        },
+        {
+          "id": "inj_inflammation_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the inflammation."
+        },
+        {
+          "id": "inj_inflammation_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the inflammation."
+        },
+        {
+          "id": "inj_inflammation_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the inflammation."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_inflammation_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s inflammation."
+        },
+        {
+          "id": "inj_inflammation_traditionalist_2",
+          "text": "{rikishi_shikona}'s inflammation is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_inflammation_traditionalist_3",
+          "text": "\"Endure the inflammation with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_inflammation_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s inflammation."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_inflammation_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s inflammation."
+        },
+        {
+          "id": "inj_inflammation_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s inflammation is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_inflammation_scientist_3",
+          "text": "\"{rikishi_shikona}'s inflammation requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_inflammation_scientist_4",
+          "text": "The inflammation forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_inflammation_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s inflammation."
+        },
+        {
+          "id": "inj_inflammation_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the inflammation."
+        },
+        {
+          "id": "inj_inflammation_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s inflammation."
+        },
+        {
+          "id": "inj_inflammation_gambler_4",
+          "text": "The inflammation is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_inflammation_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate inflammation."
+        },
+        {
+          "id": "inj_inflammation_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the inflammation."
+        },
+        {
+          "id": "inj_inflammation_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the inflammation."
+        },
+        {
+          "id": "inj_inflammation_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the inflammation."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_inflammation_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a inflammation."
+        },
+        {
+          "id": "inj_inflammation_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s inflammation. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_inflammation_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the inflammation."
+        },
+        {
+          "id": "inj_inflammation_tyrant_4",
+          "text": "The inflammation draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_inflammation_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s inflammation."
+        },
+        {
+          "id": "inj_inflammation_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s inflammation is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_inflammation_strategist_3",
+          "text": "\"{rikishi_shikona}'s inflammation requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_inflammation_strategist_4",
+          "text": "The inflammation forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "tear": {
+      "default": [
+        {
+          "id": "inj_tea_1",
+          "text": "A devastating muscle tear stops the rikishi in their tracks."
+        },
+        {
+          "id": "inj_tea_2",
+          "text": "A loud pop signals a serious ligament tear."
+        },
+        {
+          "id": "inj_tea_3",
+          "text": "The diagnosis is grim: a full tear requiring surgery."
+        },
+        {
+          "id": "inj_tea_4",
+          "text": "A partial tear will keep the rikishi out for weeks."
+        },
+        {
+          "id": "inj_tea_5",
+          "text": "The sheer force of the throw causes a tissue tear."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_tear_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a tear."
+        },
+        {
+          "id": "inj_tear_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s tear. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_tear_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the tear."
+        },
+        {
+          "id": "inj_tear_strict_4",
+          "text": "The tear draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_tear_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate tear."
+        },
+        {
+          "id": "inj_tear_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the tear."
+        },
+        {
+          "id": "inj_tear_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the tear."
+        },
+        {
+          "id": "inj_tear_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the tear."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_tear_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s tear."
+        },
+        {
+          "id": "inj_tear_traditionalist_2",
+          "text": "{rikishi_shikona}'s tear is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_tear_traditionalist_3",
+          "text": "\"Endure the tear with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_tear_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s tear."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_tear_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s tear."
+        },
+        {
+          "id": "inj_tear_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s tear is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_tear_scientist_3",
+          "text": "\"{rikishi_shikona}'s tear requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_tear_scientist_4",
+          "text": "The tear forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_tear_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s tear."
+        },
+        {
+          "id": "inj_tear_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the tear."
+        },
+        {
+          "id": "inj_tear_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s tear."
+        },
+        {
+          "id": "inj_tear_gambler_4",
+          "text": "The tear is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_tear_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate tear."
+        },
+        {
+          "id": "inj_tear_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the tear."
+        },
+        {
+          "id": "inj_tear_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the tear."
+        },
+        {
+          "id": "inj_tear_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the tear."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_tear_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a tear."
+        },
+        {
+          "id": "inj_tear_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s tear. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_tear_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the tear."
+        },
+        {
+          "id": "inj_tear_tyrant_4",
+          "text": "The tear draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_tear_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s tear."
+        },
+        {
+          "id": "inj_tear_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s tear is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_tear_strategist_3",
+          "text": "\"{rikishi_shikona}'s tear requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_tear_strategist_4",
+          "text": "The tear forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "fracture": {
+      "default": [
+        {
+          "id": "inj_fra_1",
+          "text": "A sickening crack confirms a bone fracture."
+        },
+        {
+          "id": "inj_fra_2",
+          "text": "The rikishi suffers a structural fracture."
+        },
+        {
+          "id": "inj_fra_3",
+          "text": "A heavy fall results in a clean fracture."
+        },
+        {
+          "id": "inj_fra_4",
+          "text": "X-rays reveal a hairline fracture."
+        },
+        {
+          "id": "inj_fra_5",
+          "text": "A brutal collision leaves the rikishi with a fracture."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_fracture_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a fracture."
+        },
+        {
+          "id": "inj_fracture_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s fracture. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_fracture_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the fracture."
+        },
+        {
+          "id": "inj_fracture_strict_4",
+          "text": "The fracture draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_fracture_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate fracture."
+        },
+        {
+          "id": "inj_fracture_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the fracture."
+        },
+        {
+          "id": "inj_fracture_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the fracture."
+        },
+        {
+          "id": "inj_fracture_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the fracture."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_fracture_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s fracture."
+        },
+        {
+          "id": "inj_fracture_traditionalist_2",
+          "text": "{rikishi_shikona}'s fracture is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_fracture_traditionalist_3",
+          "text": "\"Endure the fracture with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_fracture_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s fracture."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_fracture_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s fracture."
+        },
+        {
+          "id": "inj_fracture_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s fracture is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_fracture_scientist_3",
+          "text": "\"{rikishi_shikona}'s fracture requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_fracture_scientist_4",
+          "text": "The fracture forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_fracture_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s fracture."
+        },
+        {
+          "id": "inj_fracture_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the fracture."
+        },
+        {
+          "id": "inj_fracture_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s fracture."
+        },
+        {
+          "id": "inj_fracture_gambler_4",
+          "text": "The fracture is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_fracture_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate fracture."
+        },
+        {
+          "id": "inj_fracture_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the fracture."
+        },
+        {
+          "id": "inj_fracture_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the fracture."
+        },
+        {
+          "id": "inj_fracture_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the fracture."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_fracture_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a fracture."
+        },
+        {
+          "id": "inj_fracture_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s fracture. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_fracture_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the fracture."
+        },
+        {
+          "id": "inj_fracture_tyrant_4",
+          "text": "The fracture draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_fracture_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s fracture."
+        },
+        {
+          "id": "inj_fracture_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s fracture is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_fracture_strategist_3",
+          "text": "\"{rikishi_shikona}'s fracture requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_fracture_strategist_4",
+          "text": "The fracture forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "nerve": {
+      "default": [
+        {
+          "id": "inj_nrv_1",
+          "text": "A pinched nerve causes shooting pain down the limb."
+        },
+        {
+          "id": "inj_nrv_2",
+          "text": "Nerve damage leaves the rikishi with lingering numbness."
+        },
+        {
+          "id": "inj_nrv_3",
+          "text": "A jarring impact causes severe nerve irritation."
+        },
+        {
+          "id": "inj_nrv_4",
+          "text": "The rikishi loses grip strength due to a nerve issue."
+        },
+        {
+          "id": "inj_nrv_5",
+          "text": "A complex nerve injury complicates recovery."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_nerve_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a nerve."
+        },
+        {
+          "id": "inj_nerve_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s nerve. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_nerve_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the nerve."
+        },
+        {
+          "id": "inj_nerve_strict_4",
+          "text": "The nerve draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_nerve_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate nerve."
+        },
+        {
+          "id": "inj_nerve_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the nerve."
+        },
+        {
+          "id": "inj_nerve_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the nerve."
+        },
+        {
+          "id": "inj_nerve_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the nerve."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_nerve_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s nerve."
+        },
+        {
+          "id": "inj_nerve_traditionalist_2",
+          "text": "{rikishi_shikona}'s nerve is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_nerve_traditionalist_3",
+          "text": "\"Endure the nerve with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_nerve_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s nerve."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_nerve_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s nerve."
+        },
+        {
+          "id": "inj_nerve_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s nerve is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_nerve_scientist_3",
+          "text": "\"{rikishi_shikona}'s nerve requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_nerve_scientist_4",
+          "text": "The nerve forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_nerve_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s nerve."
+        },
+        {
+          "id": "inj_nerve_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the nerve."
+        },
+        {
+          "id": "inj_nerve_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s nerve."
+        },
+        {
+          "id": "inj_nerve_gambler_4",
+          "text": "The nerve is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_nerve_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate nerve."
+        },
+        {
+          "id": "inj_nerve_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the nerve."
+        },
+        {
+          "id": "inj_nerve_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the nerve."
+        },
+        {
+          "id": "inj_nerve_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the nerve."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_nerve_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a nerve."
+        },
+        {
+          "id": "inj_nerve_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s nerve. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_nerve_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the nerve."
+        },
+        {
+          "id": "inj_nerve_tyrant_4",
+          "text": "The nerve draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_nerve_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s nerve."
+        },
+        {
+          "id": "inj_nerve_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s nerve is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_nerve_strategist_3",
+          "text": "\"{rikishi_shikona}'s nerve requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_nerve_strategist_4",
+          "text": "The nerve forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "unknown": {
+      "default": [
+        {
+          "id": "inj_unk_1",
+          "text": "The rikishi goes down with an unspecified injury."
+        },
+        {
+          "id": "inj_unk_2",
+          "text": "Medical staff is unsure of the exact nature of the injury."
+        },
+        {
+          "id": "inj_unk_3",
+          "text": "A mysterious ailment sidelines the rikishi."
+        },
+        {
+          "id": "inj_unk_4",
+          "text": "The injury details remain unclear at this time."
+        },
+        {
+          "id": "inj_unk_5",
+          "text": "An undisclosed injury forces a withdrawal."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_unknown_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a unknown."
+        },
+        {
+          "id": "inj_unknown_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s unknown. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_unknown_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the unknown."
+        },
+        {
+          "id": "inj_unknown_strict_4",
+          "text": "The unknown draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_unknown_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate unknown."
+        },
+        {
+          "id": "inj_unknown_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the unknown."
+        },
+        {
+          "id": "inj_unknown_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the unknown."
+        },
+        {
+          "id": "inj_unknown_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the unknown."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_unknown_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s unknown."
+        },
+        {
+          "id": "inj_unknown_traditionalist_2",
+          "text": "{rikishi_shikona}'s unknown is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_unknown_traditionalist_3",
+          "text": "\"Endure the unknown with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_unknown_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s unknown."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_unknown_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s unknown."
+        },
+        {
+          "id": "inj_unknown_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s unknown is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_unknown_scientist_3",
+          "text": "\"{rikishi_shikona}'s unknown requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_unknown_scientist_4",
+          "text": "The unknown forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_unknown_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s unknown."
+        },
+        {
+          "id": "inj_unknown_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the unknown."
+        },
+        {
+          "id": "inj_unknown_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s unknown."
+        },
+        {
+          "id": "inj_unknown_gambler_4",
+          "text": "The unknown is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_unknown_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after a unfortunate unknown."
+        },
+        {
+          "id": "inj_unknown_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the unknown."
+        },
+        {
+          "id": "inj_unknown_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the unknown."
+        },
+        {
+          "id": "inj_unknown_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the unknown."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_unknown_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a unknown."
+        },
+        {
+          "id": "inj_unknown_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s unknown. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_unknown_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the unknown."
+        },
+        {
+          "id": "inj_unknown_tyrant_4",
+          "text": "The unknown draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_unknown_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s unknown."
+        },
+        {
+          "id": "inj_unknown_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s unknown is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_unknown_strategist_3",
+          "text": "\"{rikishi_shikona}'s unknown requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_unknown_strategist_4",
+          "text": "The unknown forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "concussion": {
+      "default": [
+        {
+          "id": "inj_concussion_1",
+          "text": "{rikishi_shikona} suffers a painful concussion during the bout."
+        },
+        {
+          "id": "inj_concussion_2",
+          "text": "The match is halted as {rikishi_shikona} goes down with a visible concussion."
+        },
+        {
+          "id": "inj_concussion_3",
+          "text": "{rikishi_shikona} winces in agony, clearly sustaining a concussion."
+        },
+        {
+          "id": "inj_concussion_4",
+          "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent concussion."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_concussion_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a concussion."
+        },
+        {
+          "id": "inj_concussion_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s concussion. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_concussion_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the concussion."
+        },
+        {
+          "id": "inj_concussion_strict_4",
+          "text": "The concussion draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_concussion_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate concussion."
+        },
+        {
+          "id": "inj_concussion_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the concussion."
+        },
+        {
+          "id": "inj_concussion_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the concussion."
+        },
+        {
+          "id": "inj_concussion_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the concussion."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_concussion_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s concussion."
+        },
+        {
+          "id": "inj_concussion_traditionalist_2",
+          "text": "{rikishi_shikona}'s concussion is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_concussion_traditionalist_3",
+          "text": "\"Endure the concussion with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_concussion_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s concussion."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_concussion_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s concussion."
+        },
+        {
+          "id": "inj_concussion_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s concussion is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_concussion_scientist_3",
+          "text": "\"{rikishi_shikona}'s concussion requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_concussion_scientist_4",
+          "text": "The concussion forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_concussion_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s concussion."
+        },
+        {
+          "id": "inj_concussion_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the concussion."
+        },
+        {
+          "id": "inj_concussion_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s concussion."
+        },
+        {
+          "id": "inj_concussion_gambler_4",
+          "text": "The concussion is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_concussion_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate concussion."
+        },
+        {
+          "id": "inj_concussion_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the concussion."
+        },
+        {
+          "id": "inj_concussion_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the concussion."
+        },
+        {
+          "id": "inj_concussion_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the concussion."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_concussion_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a concussion."
+        },
+        {
+          "id": "inj_concussion_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s concussion. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_concussion_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the concussion."
+        },
+        {
+          "id": "inj_concussion_tyrant_4",
+          "text": "The concussion draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_concussion_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s concussion."
+        },
+        {
+          "id": "inj_concussion_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s concussion is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_concussion_strategist_3",
+          "text": "\"{rikishi_shikona}'s concussion requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_concussion_strategist_4",
+          "text": "The concussion forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "dislocation": {
+      "default": [
+        {
+          "id": "inj_dislocation_1",
+          "text": "{rikishi_shikona} suffers a painful dislocation during the bout."
+        },
+        {
+          "id": "inj_dislocation_2",
+          "text": "The match is halted as {rikishi_shikona} goes down with a visible dislocation."
+        },
+        {
+          "id": "inj_dislocation_3",
+          "text": "{rikishi_shikona} winces in agony, clearly sustaining a dislocation."
+        },
+        {
+          "id": "inj_dislocation_4",
+          "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent dislocation."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_dislocation_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a dislocation."
+        },
+        {
+          "id": "inj_dislocation_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s dislocation. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_dislocation_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the dislocation."
+        },
+        {
+          "id": "inj_dislocation_strict_4",
+          "text": "The dislocation draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_dislocation_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate dislocation."
+        },
+        {
+          "id": "inj_dislocation_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the dislocation."
+        },
+        {
+          "id": "inj_dislocation_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the dislocation."
+        },
+        {
+          "id": "inj_dislocation_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the dislocation."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_dislocation_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s dislocation."
+        },
+        {
+          "id": "inj_dislocation_traditionalist_2",
+          "text": "{rikishi_shikona}'s dislocation is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_dislocation_traditionalist_3",
+          "text": "\"Endure the dislocation with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_dislocation_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s dislocation."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_dislocation_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s dislocation."
+        },
+        {
+          "id": "inj_dislocation_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s dislocation is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_dislocation_scientist_3",
+          "text": "\"{rikishi_shikona}'s dislocation requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_dislocation_scientist_4",
+          "text": "The dislocation forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_dislocation_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s dislocation."
+        },
+        {
+          "id": "inj_dislocation_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the dislocation."
+        },
+        {
+          "id": "inj_dislocation_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s dislocation."
+        },
+        {
+          "id": "inj_dislocation_gambler_4",
+          "text": "The dislocation is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_dislocation_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate dislocation."
+        },
+        {
+          "id": "inj_dislocation_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the dislocation."
+        },
+        {
+          "id": "inj_dislocation_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the dislocation."
+        },
+        {
+          "id": "inj_dislocation_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the dislocation."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_dislocation_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a dislocation."
+        },
+        {
+          "id": "inj_dislocation_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s dislocation. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_dislocation_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the dislocation."
+        },
+        {
+          "id": "inj_dislocation_tyrant_4",
+          "text": "The dislocation draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_dislocation_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s dislocation."
+        },
+        {
+          "id": "inj_dislocation_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s dislocation is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_dislocation_strategist_3",
+          "text": "\"{rikishi_shikona}'s dislocation requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_dislocation_strategist_4",
+          "text": "The dislocation forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    },
+    "laceration": {
+      "default": [
+        {
+          "id": "inj_laceration_1",
+          "text": "{rikishi_shikona} suffers a painful laceration during the bout."
+        },
+        {
+          "id": "inj_laceration_2",
+          "text": "The match is halted as {rikishi_shikona} goes down with a visible laceration."
+        },
+        {
+          "id": "inj_laceration_3",
+          "text": "{rikishi_shikona} winces in agony, clearly sustaining a laceration."
+        },
+        {
+          "id": "inj_laceration_4",
+          "text": "Medical staff rush in to tend to {rikishi_shikona}'s apparent laceration."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inj_laceration_strict_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a laceration."
+        },
+        {
+          "id": "inj_laceration_strict_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s laceration. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_laceration_strict_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the laceration."
+        },
+        {
+          "id": "inj_laceration_strict_4",
+          "text": "The laceration draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inj_laceration_indulgent_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate laceration."
+        },
+        {
+          "id": "inj_laceration_indulgent_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the laceration."
+        },
+        {
+          "id": "inj_laceration_indulgent_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the laceration."
+        },
+        {
+          "id": "inj_laceration_indulgent_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the laceration."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inj_laceration_traditionalist_1",
+          "text": "\"The old ways demand resilience,\" notes the Oyakata after {rikishi_shikona}'s laceration."
+        },
+        {
+          "id": "inj_laceration_traditionalist_2",
+          "text": "{rikishi_shikona}'s laceration is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inj_laceration_traditionalist_3",
+          "text": "\"Endure the laceration with fighting spirit,\" the stablemaster instructs {rikishi_shikona}."
+        },
+        {
+          "id": "inj_laceration_traditionalist_4",
+          "text": "Tradition dictates stoicism in the face of {rikishi_shikona}'s laceration."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inj_laceration_scientist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s laceration."
+        },
+        {
+          "id": "inj_laceration_scientist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s laceration is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_laceration_scientist_3",
+          "text": "\"{rikishi_shikona}'s laceration requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_laceration_scientist_4",
+          "text": "The laceration forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inj_laceration_gambler_1",
+          "text": "The Oyakata gambles on a quick return despite {rikishi_shikona}'s laceration."
+        },
+        {
+          "id": "inj_laceration_gambler_2",
+          "text": "A risky bet is placed on {rikishi_shikona} overcoming the laceration."
+        },
+        {
+          "id": "inj_laceration_gambler_3",
+          "text": "\"We push forward,\" the stablemaster declares, ignoring {rikishi_shikona}'s laceration."
+        },
+        {
+          "id": "inj_laceration_gambler_4",
+          "text": "The laceration is just another high-stakes challenge for {rikishi_shikona}."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inj_laceration_nurturer_1",
+          "text": "The stablemaster comforts {rikishi_shikona} after an unfortunate laceration."
+        },
+        {
+          "id": "inj_laceration_nurturer_2",
+          "text": "\"{rikishi_shikona}'s health comes first,\" says the Oyakata regarding the laceration."
+        },
+        {
+          "id": "inj_laceration_nurturer_3",
+          "text": "A gentle word of support is offered to {rikishi_shikona} for the laceration."
+        },
+        {
+          "id": "inj_laceration_nurturer_4",
+          "text": "The Oyakata ensures {rikishi_shikona} receives immediate care for the laceration."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inj_laceration_tyrant_1",
+          "text": "The Oyakata demands no excuses as {rikishi_shikona} suffers a laceration."
+        },
+        {
+          "id": "inj_laceration_tyrant_2",
+          "text": "A harsh reprimand follows {rikishi_shikona}'s laceration. Weakness is unacceptable."
+        },
+        {
+          "id": "inj_laceration_tyrant_3",
+          "text": "\"{rikishi_shikona} must train through the pain,\" barks the stablemaster regarding the laceration."
+        },
+        {
+          "id": "inj_laceration_tyrant_4",
+          "text": "The laceration draws an explosive reaction from the top. Discipline must be maintained."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inj_laceration_strategist_1",
+          "text": "The Oyakata adjusts the recovery metrics for {rikishi_shikona}'s laceration."
+        },
+        {
+          "id": "inj_laceration_strategist_2",
+          "text": "A careful analysis of {rikishi_shikona}'s laceration is conducted to minimize downtime."
+        },
+        {
+          "id": "inj_laceration_strategist_3",
+          "text": "\"{rikishi_shikona}'s laceration requires calculated rehabilitation,\" states the stablemaster."
+        },
+        {
+          "id": "inj_laceration_strategist_4",
+          "text": "The laceration forces a tactical shift in {rikishi_shikona}'s training regimen."
+        }
+      ]
+    }
   },
   "institutional": {
     "GOVERNANCE_STATUS_CHANGED": {
@@ -6138,6 +9347,42 @@
           "id": "inst_gsc_str_4",
           "text": "With the governance change official, the stablemaster skillfully outmaneuvers rivals in the backrooms of the Kokugikan."
         }
+      ],
+      "strict": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_1",
+          "text": "\"Discipline is absolute,\" the Oyakata declares regarding the governance status changed event."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_2",
+          "text": "The stablemaster furiously addresses the recent governance status changed matter. No excuses."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_3",
+          "text": "The governance status changed draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_4",
+          "text": "Absolutely no mercy is shown regarding the latest governance status changed development."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about the governance status changed event."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_2",
+          "text": "A gentle word of guidance is given regarding the governance status changed matter."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_3",
+          "text": "The heya receives warm support navigating the recent governance status changed challenge."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_4",
+          "text": "\"We will grow from this together,\" the stablemaster says of the governance status changed news."
+        }
       ]
     },
     "GOVERNANCE_RULING": {
@@ -6310,6 +9555,42 @@
           "id": "inst_gov_str_4",
           "text": "The board’s decision is final, but the stablemaster’s calculated political machinations ensure the heya ultimately benefits."
         }
+      ],
+      "strict": [
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_1",
+          "text": "\"Discipline is absolute,\" the Oyakata declares regarding the governance ruling event."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_2",
+          "text": "The stablemaster furiously addresses the recent governance ruling matter. No excuses."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_3",
+          "text": "The governance ruling draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_4",
+          "text": "Absolutely no mercy is shown regarding the latest governance ruling development."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about the governance ruling event."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_2",
+          "text": "A gentle word of guidance is given regarding the governance ruling matter."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_3",
+          "text": "The heya receives warm support navigating the recent governance ruling challenge."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_4",
+          "text": "\"We will grow from this together,\" the stablemaster says of the governance ruling news."
+        }
       ]
     },
     "WELFARE_ALERT": {
@@ -6481,6 +9762,42 @@
         {
           "id": "inst_wel_str_4",
           "text": "A formal concern is raised. The stablemaster plays the politicians perfectly, securing an extension on the compliance deadline."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_WELFARE_ALERT_strict_1",
+          "text": "\"Discipline is absolute,\" the Oyakata declares regarding the welfare alert event."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_2",
+          "text": "The stablemaster furiously addresses the recent welfare alert matter. No excuses."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_3",
+          "text": "The welfare alert draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_4",
+          "text": "Absolutely no mercy is shown regarding the latest welfare alert development."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about the welfare alert event."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_2",
+          "text": "A gentle word of guidance is given regarding the welfare alert matter."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_3",
+          "text": "The heya receives warm support navigating the recent welfare alert challenge."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_4",
+          "text": "\"We will grow from this together,\" the stablemaster says of the welfare alert news."
         }
       ]
     },
@@ -8941,6 +12258,170 @@
         {
           "id": "inst_misc_strategist_4",
           "text": "The misc situation with {rikishi_shikona} demands intricate, forward-looking planning."
+        }
+      ]
+    },
+    "injury": {
+      "default": [
+        {
+          "id": "inst_injury_default_1",
+          "text": "An important injury event occurs."
+        },
+        {
+          "id": "inst_injury_default_2",
+          "text": "The heya is at the center of a new injury development."
+        },
+        {
+          "id": "inst_injury_default_3",
+          "text": "The stable faces a injury situation."
+        },
+        {
+          "id": "inst_injury_default_4",
+          "text": "News breaks regarding the latest injury matter."
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_injury_strict_1",
+          "text": "\"Discipline is absolute,\" the Oyakata declares regarding the injury event."
+        },
+        {
+          "id": "inst_injury_strict_2",
+          "text": "The stablemaster furiously addresses the recent injury matter. No excuses."
+        },
+        {
+          "id": "inst_injury_strict_3",
+          "text": "The injury draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_injury_strict_4",
+          "text": "Absolutely no mercy is shown regarding the latest injury development."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_injury_indulgent_1",
+          "text": "The Oyakata smiles patiently upon hearing about the injury event."
+        },
+        {
+          "id": "inst_injury_indulgent_2",
+          "text": "A gentle word of guidance is given regarding the injury matter."
+        },
+        {
+          "id": "inst_injury_indulgent_3",
+          "text": "The heya receives warm support navigating the recent injury challenge."
+        },
+        {
+          "id": "inst_injury_indulgent_4",
+          "text": "\"We will grow from this together,\" the stablemaster says of the injury news."
+        }
+      ],
+      "traditionalist": [
+        {
+          "id": "inst_injury_traditionalist_1",
+          "text": "\"We must uphold the old ways,\" declares the Oyakata on the injury matter."
+        },
+        {
+          "id": "inst_injury_traditionalist_2",
+          "text": "The injury event is judged by the ancient standards of sumo."
+        },
+        {
+          "id": "inst_injury_traditionalist_3",
+          "text": "The injury situation demands a deeply traditional response."
+        },
+        {
+          "id": "inst_injury_traditionalist_4",
+          "text": "Tradition strictly dictates the outcome of the recent injury affair."
+        }
+      ],
+      "scientist": [
+        {
+          "id": "inst_injury_scientist_1",
+          "text": "The Oyakata carefully analyzes the data and metrics behind the injury event."
+        },
+        {
+          "id": "inst_injury_scientist_2",
+          "text": "An empirical approach is taken toward the injury development."
+        },
+        {
+          "id": "inst_injury_scientist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the injury matter."
+        },
+        {
+          "id": "inst_injury_scientist_4",
+          "text": "The injury situation requires precise, calculated tactical planning."
+        }
+      ],
+      "gambler": [
+        {
+          "id": "inst_injury_gambler_1",
+          "text": "\"Let the dice roll,\" the Oyakata laughs off the injury news."
+        },
+        {
+          "id": "inst_injury_gambler_2",
+          "text": "A risky, high-reward bet is placed on overcoming the injury challenge."
+        },
+        {
+          "id": "inst_injury_gambler_3",
+          "text": "The injury event is seen as a thrilling, high-stakes gamble."
+        },
+        {
+          "id": "inst_injury_gambler_4",
+          "text": "The stablemaster enthusiastically rolls with the punches on the injury matter."
+        }
+      ],
+      "nurturer": [
+        {
+          "id": "inst_injury_nurturer_1",
+          "text": "The Oyakata smiles patiently upon hearing about the injury event."
+        },
+        {
+          "id": "inst_injury_nurturer_2",
+          "text": "A gentle word of guidance is given regarding the injury matter."
+        },
+        {
+          "id": "inst_injury_nurturer_3",
+          "text": "The heya receives warm support navigating the recent injury challenge."
+        },
+        {
+          "id": "inst_injury_nurturer_4",
+          "text": "\"We will grow from this together,\" the stablemaster says of the injury news."
+        }
+      ],
+      "tyrant": [
+        {
+          "id": "inst_injury_tyrant_1",
+          "text": "\"Discipline is absolute,\" the Oyakata declares regarding the injury event."
+        },
+        {
+          "id": "inst_injury_tyrant_2",
+          "text": "The stablemaster furiously addresses the recent injury matter. No excuses."
+        },
+        {
+          "id": "inst_injury_tyrant_3",
+          "text": "The injury draws an explosive reprimand from the top."
+        },
+        {
+          "id": "inst_injury_tyrant_4",
+          "text": "Absolutely no mercy is shown regarding the latest injury development."
+        }
+      ],
+      "strategist": [
+        {
+          "id": "inst_injury_strategist_1",
+          "text": "The Oyakata carefully analyzes the data and metrics behind the injury event."
+        },
+        {
+          "id": "inst_injury_strategist_2",
+          "text": "An empirical approach is taken toward the injury development."
+        },
+        {
+          "id": "inst_injury_strategist_3",
+          "text": "\"Let us review the evidence,\" the stablemaster says of the injury matter."
+        },
+        {
+          "id": "inst_injury_strategist_4",
+          "text": "The injury situation requires precise, calculated tactical planning."
         }
       ]
     }
