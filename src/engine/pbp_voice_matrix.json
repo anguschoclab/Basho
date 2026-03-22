@@ -24,7 +24,7 @@
     "decisive": [
       {
         "id": "t_dec_01",
-        "text": "{winner} explodes off the shikirisen!",
+        "text": "{leader} explodes off the shikirisen!",
         "tags": [
           "crowd_roar"
         ]

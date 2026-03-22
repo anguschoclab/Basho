@@ -1010,7 +1010,17 @@ export function generateInjuryWithdrawalHeadline(args: {
         `${shikona} Undergoes Emergency ${capitalize(area)} Evaluation`,
         `A Gruesome ${capitalize(area)} Injury Haults ${shikona}'s Basho`,
         `${shikona} Scratches the Rest of the Tournament`,
-        `Stable Mourns Loss of ${shikona} to Deep ${capitalize(area)} Injury`
+        `Stable Mourns Loss of ${shikona} to Deep ${capitalize(area)} Injury`,
+        `${shikona} Seen Limping Outside Kokugikan: ${capitalize(area)} Issues Rumored`,
+        `Is ${shikona} Hiding a Secret ${capitalize(area)} Injury?`,
+        `Oyakata Declines to Comment on ${shikona}'s ${capitalize(area)}`,
+        `Tabloids Report ${shikona} Underwent Clandestine ${capitalize(area)} Treatment`,
+        `Whispers of a Torn ${capitalize(area)} Surround ${shikona}`,
+        `${shikona}'s Camp Silent on Sudden ${capitalize(area)} Agony`,
+        `Late-Night Hospital Visit Spark Fears for ${shikona}'s ${capitalize(area)}`,
+        `Has ${shikona} Been Fighting with a Fractured ${capitalize(area)}?`,
+        `JSA Medical Committee Reviews ${shikona}'s ${capitalize(area)} Status`,
+        `${shikona} Struggles in Practice: ${capitalize(area)} Clearly Compromised`,
       ]
     : isModerate
     ? [
@@ -1034,7 +1044,19 @@ export function generateInjuryWithdrawalHeadline(args: {
         `Kyodo News: ${shikona} Will Sit Out Remaining Bouts`,
         `${shikona} Sacrifices Basho for ${capitalize(area)} Recovery`,
         `A Prudent Withdrawal for ${shikona} Over ${capitalize(area)}`,
-        `${shikona} Out! ${capitalize(area)} Trouble Persists`
+        `${shikona} Out! ${capitalize(area)} Trouble Persists`,
+        `${shikona}'s Body Gives In: ${capitalize(area)} Too Weak`,
+        `No Point Risking It: ${shikona} Withdraws`,
+        `${shikona} Limps Out of the Basho Due to ${capitalize(area)}`,
+        `Stablemaster Decides to Rest ${shikona}'s ${capitalize(area)}`,
+        `${shikona} Scratched After Failing Medical Check`,
+        `A Tough Call: ${shikona} Quits to Preserve ${capitalize(area)}`,
+        `${shikona}'s Basho Curtailed by ${capitalize(area)} Issue`,
+        `The Grind Claims ${shikona} — ${capitalize(area)} Strain`,
+        `Kyodo News: ${shikona} Will Sit Out Remaining Bouts`,
+        `${shikona} Sacrifices Basho for ${capitalize(area)} Recovery`,
+        `A Prudent Withdrawal for ${shikona} Over ${capitalize(area)}`,
+        `${shikona} Out! ${capitalize(area)} Trouble Persists`,
       ]
     : [
         `${shikona} Pulls Out After ${capitalize(area)} Concern`,
@@ -1057,7 +1079,18 @@ export function generateInjuryWithdrawalHeadline(args: {
         `${shikona} Takes a Kyujo for a Small ${capitalize(area)} Bump`,
         `A Slight ${capitalize(area)} Limp Forces ${shikona} Out`,
         `${shikona} Decides Against Pushing His ${capitalize(area)}`,
-        `An Overcautious ${shikona} Sidelines His ${capitalize(area)}`
+        `An Overcautious ${shikona} Sidelines His ${capitalize(area)}`,
+        `${shikona} Withdraws Following Mild ${capitalize(area)} Scare`,
+        `A Tactical Rest? ${shikona} Points to ${capitalize(area)}`,
+        `${shikona} Bows Out to Avoid Worsening ${capitalize(area)}`,
+        `A Light Strain Pushes ${shikona} to the Sidelines`,
+        `${shikona} Scratched Due to ${capitalize(area)} Soreness`,
+        `No ${shikona} Today — Minor ${capitalize(area)} Precaution`,
+        `Stablemaster Hopes ${shikona} Heals Quickly`,
+        `${shikona} Takes a Kyujo for a Small ${capitalize(area)} Bump`,
+        `A Slight ${capitalize(area)} Limp Forces ${shikona} Out`,
+        `${shikona} Decides Against Pushing His ${capitalize(area)}`,
+        `An Overcautious ${shikona} Sidelines His ${capitalize(area)}`,
       ];
 
   const subtitles = isSerious
@@ -1171,7 +1204,25 @@ if (type === "scandal") {
 
           `Kyodo News: ${heya.name} Under Federal Investigation`,
           `Disaster at ${heya.name}: JSA Suspends Stable Operations`,
-          `${heya.name} Oyakata Refuses to Resign Amid Outcry`,
+
+          `JSA Summons ${heya.name} Master Over Secret Bribes`,
+          `Nikkan Sports: Yakuza Ties Alleged at ${heya.name}`,
+          `Rikishi Rebellion! Mutiny at ${heya.name} Over Hazing`,
+          `${heya.name} Master Detained in Roppongi Brawl`,
+          `Embezzlement Scandal: Where Did ${heya.name}'s Funds Go?`,
+          `JSA Emergency Meeting: Expulsion Looms for ${heya.name}`,
+          `Sponsors Flee ${heya.name} Amid Abuse Allegations`,
+          `Cover-Up Exposed! ${heya.name} Hid Injuries from JSA`,
+          `${heya.name} Master Accused of Forging Medical Documents`,
+          `Drunken Rampage by Top ${heya.name} Rikishi Caught on Tape`,
+          `${heya.name} Facilities Raided by Police in Gambling Probe`,
+          `Secret Video Surfaces: Brutal Discipline at ${heya.name}`,
+          `${heya.name} Faces Historic Sanctions as Details Leak`,
+          `Nikkan Sports Front Page: The Fall of ${heya.name} Begins`,
+          `Whistleblower Inside ${heya.name} Exposes Extortion Ring`,
+          `${heya.name} Leadership Paralyzed Amidst Blackmail Allegations`,
+          `Tabloids Feast on ${heya.name}'s Unraveling Reputation`,
+          `JSA Chairman 'Deeply Disturbed' by ${heya.name} Revelations`,          `${heya.name} Oyakata Refuses to Resign Amid Outcry`,
           `Whistleblower Speaks Out on ${heya.name} Corruption`,
           `${heya.name} Mastermind Revealed in Illegal Betting Ring`
         ]
@@ -1197,7 +1248,23 @@ if (type === "scandal") {
           `Nikkan Sports: ${heya.name} Master Clashes with Media`,
           `Scandal Alert: Undisclosed Payments to ${heya.name} Uncovered`,
           `${heya.name} Under JSA Scrutiny After Public Incident`,
-          `Social Media Backlash Hits ${heya.name} Over Viral Video`
+          `Social Media Backlash Hits ${heya.name} Over Viral Video`,
+          `${heya.name} Rikishi Spotted at Hostess Club Before Basho`,
+          `Rumors of Tax Evasion Surround ${heya.name} Leadership`,
+          `${heya.name} Master Fined for Breaking JSA Curfew`,
+          `Stablemaster Rivalry Spills Over: ${heya.name} Implicated`,
+          `Questionable Training Methods at ${heya.name} Spark Outrage`,
+          `${heya.name} Oyakata Apologizes for Embarrassing Conduct`,
+          `JSA Investigates Illegal Moonlighting by ${heya.name} Wrestlers`,
+          `Sponsor Pulls Funding from ${heya.name} Following PR Disaster`,
+          `Kyodo News: Unrest Among Lower Ranks at ${heya.name}`,
+          `${heya.name} Faces Heat Over Mishandled Injury Protocols`,
+          `Gossip Mags Target ${heya.name}'s Late-Night Excursions`,
+          `${heya.name} Stablemaster Warned for Insulting JSA Officials`,
+          `Nikkan Sports: ${heya.name} Master Clashes with Media`,
+          `Scandal Alert: Undisclosed Payments to ${heya.name} Uncovered`,
+          `${heya.name} Under JSA Scrutiny After Public Incident`,
+          `Social Media Backlash Hits ${heya.name} Over Viral Video`,
         ]
       : [
           `${heya.name} Receives JSA Warning`,
@@ -1219,7 +1286,23 @@ if (type === "scandal") {
           `${heya.name} Master Downplays Warning from Elders`,
           `JSA Cites ${heya.name} for Procedural Error`,
           `Small Fine Issued to ${heya.name} Over Conduct`,
-          `${heya.name} Ordered to Review Internal Rules`
+          `${heya.name} Ordered to Review Internal Rules`,
+          `${heya.name} Reprimanded for Dress Code Violation`,
+          `Minor Curfew Breach Reported at ${heya.name}`,
+          `${heya.name} Stablemaster Reminded of Media Protocols`,
+          `JSA Issues Formal Notice to ${heya.name} Over Paperwork`,
+          `${heya.name} Rikishi Warned After Heated Argument in Public`,
+          `Kyodo News Brief: ${heya.name} Slapped with Small Fine`,
+          `${heya.name} Must Improve Disciplinary Oversight, Says JSA`,
+          `Nikkan Sports Notes Minor Disturbance at ${heya.name}`,
+          `${heya.name} Apologizes for Scheduling Mishap`,
+          `JSA Urges ${heya.name} to Maintain Decorum`,
+          `${heya.name} Warned About Unauthorized Sponsor Deals`,
+          `Quiet Resolution to Minor Incident at ${heya.name}`,
+          `${heya.name} Master Downplays Warning from Elders`,
+          `JSA Cites ${heya.name} for Procedural Error`,
+          `Small Fine Issued to ${heya.name} Over Conduct`,
+          `${heya.name} Ordered to Review Internal Rules`,
         ];
     title = titles[Math.floor(rng.next() * titles.length)];
     subtitle = args.fineAmount
@@ -1343,6 +1426,22 @@ if (type === "merger_threat") {
       `Rival Oyakata Circle Like Vultures Over ${heya.name}'s Rikishi`,
       `Tears at ${heya.name} as Council Mandates Consolidation`,
       `Historic ${heya.name} Sign To Be Removed Following JSA Decree`,
+      `Is This the Final Basho for ${heya.name}?`,
+      `Dwindling Talent and Debt: ${heya.name} Put on Notice`,
+      `JSA Eyes Absorption of ${heya.name} into Rival Stable`,
+      `${heya.name} Given One Last Chance to Survive`,
+      `Desperate Times at ${heya.name}: Merger Threat Looms`,
+      `Elder Council Debates the Fate of ${heya.name}`,
+      `${heya.name} Warned: Restructure or Face Forced Closure`,
+      `Sponsors Abandon Ship as ${heya.name} Nears Demise`,
+      `${heya.name} Master Seeks Lifeline to Avoid JSA Takeover`,
+      `Rumors Swirl About Imminent Closure of ${heya.name}`,
+      `JSA Audit Concludes ${heya.name} May Not Be Viable`,
+      `Nikkan Sports Exclusive: Inside the Collapse of ${heya.name}`,
+      `JSA Gives ${heya.name} 60 Days to Liquidate Assets`,
+      `Rival Oyakata Circle Like Vultures Over ${heya.name}'s Rikishi`,
+      `Tears at ${heya.name} as Council Mandates Consolidation`,
+      `Historic ${heya.name} Sign To Be Removed Following JSA Decree`,
 
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
@@ -1367,7 +1466,17 @@ if (type === "merger_threat") {
       `Final Bell Rings for ${heya.name} Operations`,
       `JSA Intervenes: ${heya.name} Wrestlers Dispersed`,
       `Elder Council Approves Hostile Takeover of ${heya.name}`,
-      `A Quiet Demise for ${heya.name} After Board Decree`
+      `A Quiet Demise for ${heya.name} After Board Decree`,
+      `A Bleak Day in Sumo: ${heya.name} Absorbed`,
+      `JSA Overrules Protest: ${heya.name} Must Merge`,
+      `Scandal Claims its Ultimate Prize: ${heya.name}`,
+      `${heya.name} Shutters Amid Tears and Shame`,
+      `The Last Keiko at ${heya.name} Before Eviction`,
+      `A Historic Stable No More: ${heya.name} Dissolves`,
+      `Final Bell Rings for ${heya.name} Operations`,
+      `JSA Intervenes: ${heya.name} Wrestlers Dispersed`,
+      `Elder Council Approves Hostile Takeover of ${heya.name}`,
+      `A Quiet Demise for ${heya.name} After Board Decree`,
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "emergency_loan") {
