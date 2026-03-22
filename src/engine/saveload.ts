@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { stableTieBreak } from "./utils/sort";
 // saveload.ts
 // Save/Load System — Persistence Canon Implementation
 //
@@ -442,7 +443,7 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
       return an - bn;
     }
     if (aIsSlot !== bIsSlot) return aIsSlot ? -1 : 1;
-    return b.savedAt.localeCompare(a.savedAt);
+    return stableTieBreak(b.savedAt, a.savedAt);
   });
 
   return infos;
@@ -619,6 +620,6 @@ export function quickSave(world: WorldState, timestampISO?: string): boolean {
     if (!existing.has(slot)) return saveGame(world, slot);
   }
 
-  const oldest = infos.slice().sort((a, b) => a.savedAt.localeCompare(b.savedAt))[0];
+  const oldest = infos.slice().sort((a, b) => stableTieBreak(a.savedAt, b.savedAt))[0];
   return saveGame(world, oldest?.slotName || "slot_1");
 }
