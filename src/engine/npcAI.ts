@@ -630,14 +630,14 @@ export function tickWeek(world: WorldState): number {
 export function tickMonthly(world: WorldState): void {
   // 1. Myoseki Bidding
   if (world.myosekiMarket) {
-    for (const heya of world.heyas.values()) {
+    for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
       if (heya.id === world.playerHeyaId) continue;
 
       const oyakata = world.oyakata.get(heya.oyakataId);
       if (!oyakata) continue;
 
       if (heya.funds > 300_000_000 && oyakata.traits.ambition > 50) {
-        const stocks = Object.values(world.myosekiMarket.stocks);
+        const stocks = stableSort(Object.values(world.myosekiMarket.stocks), x => (x as any).id || String(x));
         for (const stock of stocks) {
           if (stock.status === "available" && stock.askingPrice && stock.askingPrice < (heya.funds - 100_000_000)) {
             buyMyoseki(world, oyakata.id, heya.id, stock.id);

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { clamp, clampInt } from './utils';
+import { stableSort } from './utils/sort';
 // injuries.ts
 // =======================================================
 // Injury System v1.0 — Deterministic injury model + recovery + durability

@@ -433,7 +433,7 @@ export function tickWeek(world: WorldState): number {
 
     // Process dedupe keys in a single pass over the map
     if (prefixesToRemove.size > 0) {
-      for (const key of Object.keys(eventsState.dedupe)) {
+      for (const key of Object.keys(eventsState.dedupe).sort()) {
         // Fast path extraction of the prefix instead of splitting the whole string
         // Format is typically year|week|...
         const firstPipe = key.indexOf('|');
