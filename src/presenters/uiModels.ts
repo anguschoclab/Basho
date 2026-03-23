@@ -9,16 +9,16 @@
  * Usage: import { projectRikishi } from "@/engine/uiModels" in any page/component.
  */
 
-import type { Id } from "./types/common";
-import type { Rikishi } from "./types/rikishi";
-import type { Heya } from "./types/heya";
-import type { WorldState } from "./types/world";
-import type { Rank, Division, Side } from "./types/banzuke";
-import type { Style, TacticalArchetype } from "./types/combat";
-import type { BoutResult, BashoResult } from "./types/basho";
-import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
-import { getCareerPhase } from "./training";
-import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
+import type { Id } from "../engine/types/common";
+import type { Rikishi } from "../engine/types/rikishi";
+import type { Heya } from "../engine/types/heya";
+import type { WorldState } from "../engine/types/world";
+import type { Rank, Division, Side } from "../engine/types/banzuke";
+import type { Style, TacticalArchetype } from "../engine/types/combat";
+import type { BoutResult, BashoResult } from "../engine/types/basho";
+import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "../engine/descriptorBands";
+import { getCareerPhase } from "../engine/training";
+import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollText, ChevronRight } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
-import { projectRosterEntry } from "@/engine/uiModels";
+import { projectRosterEntry } from "@/presenters/uiModels";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4, juryo: 5,

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { RankChangeIndicator } from "./RankChangeIndicator";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
-import type { UIRosterEntry } from "@/engine/uiModels";
+import type { UIRosterEntry } from "@/presenters/uiModels";
 
 interface Props {
   entry: UIRosterEntry | null;

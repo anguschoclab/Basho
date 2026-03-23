@@ -1,4 +1,4 @@
-import type { UIRosterEntry } from "@/engine/uiModels";
+import type { UIRosterEntry } from "@/presenters/uiModels";
 import type { BanzukeSnapshot } from "@/engine/types/banzuke";
 import { rankScore } from "./RankChangeIndicator";
 

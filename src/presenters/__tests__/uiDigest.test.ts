@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildWeeklyDigest } from "../uiDigest";
-import { generateWorld } from "../worldgen";
-import { advanceDays } from "../tick/tickDaily";
+import { generateWorld } from "../../engine/worldgen";
+import { advanceDays } from "../../engine/tick/tickDaily";
 
 describe("UI Digest", () => {
   it("should build a weekly digest safely when passed null or world", () => {

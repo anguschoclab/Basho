@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { projectRikishi, projectHeya } from "../uiModels";
-import { generateWorld } from "../worldgen";
+import { generateWorld } from "../../engine/worldgen";
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {

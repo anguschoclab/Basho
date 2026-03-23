@@ -25,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "@/engine/types/narrative";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
+import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import {
   INTENSITY_EFFECTS,
   FOCUS_EFFECTS,

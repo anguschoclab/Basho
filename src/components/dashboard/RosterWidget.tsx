@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
-import { projectRosterEntry, type UIRosterEntry } from "@/engine/uiModels";
+import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 
 export function RosterWidget() {
   const { state } = useGame();

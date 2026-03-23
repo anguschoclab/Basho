@@ -16,7 +16,7 @@ import { Separator } from "../components/ui/separator";
 import { formatRank } from "../engine/banzuke";
 import { KIMARITE_REGISTRY } from "../engine/kimarite";
 import { generateCareerRecord, type RikishiCareerRecord, type BashoPerformance } from "../engine/almanac";
-import { projectRikishi, projectRosterEntry, type UIRosterEntry } from "../engine/uiModels";
+import { projectRikishi, projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import type { WorldState } from "../engine/types";
 import {
   describeAttributeVerbose,

@@ -40,8 +40,7 @@ export * from './talentpool';
 export * from './timeBoundary';
 export * from './training';
 export * from './types';
-export * from './uiDigest';
-export * from './uiModels';
+// uiDigest and uiModels relocated to src/presenters/
 export * from './welfare';
 export * from './world';
 export * from './worldgen';
