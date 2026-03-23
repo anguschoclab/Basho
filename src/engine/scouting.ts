@@ -14,7 +14,6 @@ import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Rank } from "./types/banzuke";
 import { Style, TacticalArchetype } from "./types/combat";
 import { describeAttribute, describeAggression, describeExperience, type AttributeKey } from "./narrativeDescriptions";
-import { generateRookie } from "./lifecycle"; 
 
 // ============================================
 // UI LABELS (shared, stable exports)
@@ -501,67 +500,6 @@ export function describeScoutingLevel(level: number): { label: string; descripti
   return { label: "Unknown", description: "Insufficient data", color: "text-muted-foreground" };
 }
 
-// ============================================
-// PART 2: RECRUITMENT SYSTEM (Integrated)
-// ============================================
-
-/** Defines the structure for scout candidate. */
-export interface ScoutCandidate {
-  id: string;
-  name: string;
-  age: number;
-  origin: string;
-  archetype: string;
-  stats: RikishiStats;
-  cost: number;
-  potential: number; // 0-100 hidden stat
-}
-
-// Legacy helper: generate a small list of candidates for UI prototypes.
-// Prefer the persistent Talent Pool system (engine/talentpool.ts) for actual gameplay.
-/**
- * Generate scout candidates.
- *  * @param world - The World.
- *  * @param count - The Count.
- *  * @param currentYear - The Current year.
- *  * @returns The result.
- */
-export function generateScoutCandidates(world: WorldState, count: number, currentYear: number): ScoutCandidate[] {
-  const candidates: ScoutCandidate[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const rookie = generateRookie(world, currentYear, "jonokuchi");
-    
-    // Calculate a signing cost based on stats
-    const statSum = Object.values(rookie.stats).reduce((a, b) => a + b, 0);
-    const cost = Math.floor(statSum * 100 + (rookie.archetype === "trickster" ? 50000 : 0));
-
-    candidates.push({
-      id: rookie.id,
-      name: rookie.shikona,
-      age: currentYear - rookie.birthYear,
-      origin: rookie.origin!,
-      archetype: rookie.archetype,
-      stats: rookie.stats,
-      cost: cost,
-      potential: 50 + rngFromSeed(world.seed, "scouting", `potential::${rookie.id}`).next() * 50
-    });
-  }
-
-  return candidates;
-}
-
-/**
- * Recruit candidate.
- *  * @param state - The State.
- *  * @param candidateId - The Candidate id.
- *  * @param targetHeyaId - The Target heya id.
- *  * @returns The result.
- */
-export function recruitCandidate(state: WorldState, candidateId: string, targetHeyaId: string): WorldState {
-  console.log(`Recruiting candidate ${candidateId} to heya ${targetHeyaId}`);
-  return state;
-}
 
 // ============================================
 // PART 3: UTILS
