@@ -72,19 +72,32 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   const staffUpkeep = staffCount * 6000;
 
   const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
-  const totalBurn = rikishiSalaries + facilityUpkeep + staffUpkeep + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
+  // Essential burn must be paid (roster, staff, facilities)
+  const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
+  // Overhead (Oyakata salary, recruitment) is supplementary
+  const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
   // 2. Calculate Income (Koenkai / Supporters)
   const supporterIncome = (heya.reputation || 10) * SUPPORTER_INCOME_FACTOR;
 
-  // KŌENKAI TIER-1 SURVIVAL FLOOR (Constitution §A6):
+  // KŌENKAI TIER-1 SURVIVAL FLOOR (Constitution §A6 & C2.4):
   // Guarantees minimum base funding that covers staff/roster costs for new heya
-  // without sekitori. Prevents instant insolvency.
-  const KOENKAI_SURVIVAL_FLOOR = 350_000; // Covers basic roster + minimal facilities
+  // without sekitori. Formula: (5 * ¥2000) + (3 * ¥6000) = ¥28,000.
+  const KOENKAI_SURVIVAL_FLOOR = 28_000; 
   const effectiveIncome = Math.max(supporterIncome, KOENKAI_SURVIVAL_FLOOR);
 
+  // If a stable is deeply unprofitable, overhead (Oyakata salary, recruitment) is paused
+  // to prevent instant insolvency, but base roster costs must always be paid.
+  let effectiveBurn = totalBurn;
+  if (effectiveIncome < totalBurn && effectiveIncome <= KOENKAI_SURVIVAL_FLOOR) {
+      effectiveBurn = Math.max(baseBurn, effectiveIncome);
+  } else if (effectiveIncome < totalBurn) {
+      // Can afford some overhead but not all
+      effectiveBurn = effectiveIncome; 
+  }
+
   // 3. Apply to Funds
-  const net = effectiveIncome - totalBurn;
+  const net = effectiveIncome - effectiveBurn;
   heya.funds += net;
 
   // 4. Runway calculation

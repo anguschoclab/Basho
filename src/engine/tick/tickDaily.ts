@@ -1,4 +1,4 @@
-import { stableSort } from "./utils/sort";
+import { stableSort } from "../utils/sort";
 /**
  * dailyTick.ts
  * =======================================================
@@ -23,26 +23,15 @@ import { stableSort } from "./utils/sort";
  * =======================================================
  */
 
-<<<<<<<< HEAD:src/engine/dailyTick.ts
-import type { WorldState, CyclePhase } from "./types/world";
-import { EventBus, logEngineEvent } from "./events";
-import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
-import { initializeBasho } from "./worldgen";
-import { toRikishiDescriptor } from "./descriptorBands";
-import * as schedule from "./schedule";
-import { needsScheduleForDay } from "./schedule";
-import { ensureHeyaWelfareState } from "./welfare";
-import { resetBashoMediaTracking } from "./media";
-========
 import type { WorldState, CyclePhase } from "../types/world";
 import { EventBus, logEngineEvent } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
 import { initializeBasho } from "../worldgen";
+import { toRikishiDescriptor } from "../descriptorBands";
 import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
 import { ensureHeyaWelfareState } from "../welfare";
 import { resetBashoMediaTracking } from "../media";
->>>>>>>> origin/lovable-sync-1774080302:src/engine/tick/tickDaily.ts
 
 import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
@@ -293,7 +282,18 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     world._postBashoDays -= 1;
   }
 
-  // Phase transition check
+  // 0.5) Enforce Weekly Boundary (C3.3) before Basho Torikumi 
+  // Constitution C3.3: Training injuries must lock in before Day 1 Torikumi.
+  // If we are about to transition to active_basho, or 7 days have passed, trigger the weekly tick.
+  const aboutToStartBasho = world.cyclePhase === "pre_basho" && (world._interimDaysRemaining || 0) <= 0;
+  world._daysSinceLastWeeklyTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
+  
+  if (world._daysSinceLastWeeklyTick >= 7 || aboutToStartBasho) {
+    tickWeeklySubsystems(world, subsystemsRun);
+    world._daysSinceLastWeeklyTick = 0;
+  }
+
+  // Phase transition check (this might generate Torikumi for Day 1)
   const transition = checkPhaseTransition(world);
 
   const report: DailyTickReport = {
@@ -325,11 +325,6 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     heya.funds -= dailyFoodCost;
   }
   subsystemsRun.push("daily_economy");
-
-  // 6) Weekly tick gate — trigger full weekly subsystem pass every 7 days
-  if (world.dayIndexGlobal % 7 === 0) {
-    tickWeeklySubsystems(world, subsystemsRun);
-  }
 
   // 7) Monthly tick gate
   if (monthBoundary) {

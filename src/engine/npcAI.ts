@@ -694,5 +694,44 @@ export function tickMonthly(world: WorldState): void {
  * NPC Manager AI yearly decision loop.
  */
 export function tickYear(world: WorldState): void {
-  // Yearly logic has been moved or is currently empty, reserving for future mechanics
+  for (const heya of world.heyas.values()) {
+    if (heya.id === world.playerHeyaId) continue;
+    const persona = getManagerPersona(world, heya.id);
+    
+    // Macro strategic assessments per Constitution A3.5
+    if (persona.traits.ambition > 70 && persona.perception.rosterStrengthBand === "weak") {
+       logEngineEvent(world, {
+           type: "NPC_YEARLY_STRATEGY",
+           category: "narrative",
+           importance: "minor",
+           scope: "heya",
+           heyaId: heya.id,
+           title: `${heya.name || heya.id} declares rebuilding year`,
+           summary: `The ambitious master of ${heya.name || heya.id} is dissatisfied with the roster's strength and has mandated a strict rebuilding phase for ${world.calendar.year}.`,
+           data: { year: world.calendar.year, strategy: "rebuild" }
+       });
+    } else if (persona.perception.rosterStrengthBand === "dominant" && persona.traits.tradition > 70) {
+       logEngineEvent(world, {
+           type: "NPC_YEARLY_STRATEGY",
+           category: "narrative",
+           importance: "minor",
+           scope: "heya",
+           heyaId: heya.id,
+           title: `${heya.name || heya.id} seeks to establish dynasty`,
+           summary: `Proud of his dominant stable, the traditional master of ${heya.name || heya.id} focuses on solidifying their legacy this year.`,
+           data: { year: world.calendar.year, strategy: "dynasty" }
+       });
+    } else if (persona.welfareDiscipline > 0.8 && persona.perception.welfareRiskBand === "elevated") {
+       logEngineEvent(world, {
+           type: "NPC_YEARLY_STRATEGY",
+           category: "narrative",
+           importance: "minor",
+           scope: "heya",
+           heyaId: heya.id,
+           title: `${heya.name || heya.id} focuses on rikishi health`,
+           summary: `Following a taxing year, the master of ${heya.name || heya.id} prioritizes rest and recovery over aggressive results.`,
+           data: { year: world.calendar.year, strategy: "recovery" }
+       });
+    }
+  }
 }

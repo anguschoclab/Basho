@@ -45,4 +45,31 @@ describe("PBP Matrix Validation", () => {
     expect(allValid).toBe(true);
     expect(errors.length).toBe(0);
   });
+
+  it("satisfies the Constitutional minimum phrase counts per cell", () => {
+    const lib = getVoiceMatrix();
+    const errors: string[] = [];
+
+    for (const [context, cells] of Object.entries(lib)) {
+      if (context === "meta" || context === "version" || typeof cells !== "object" || Array.isArray(cells)) continue;
+
+      for (const [cellName, phrases] of Object.entries(cells as Record<string, any[]>)) {
+        if (!Array.isArray(phrases)) continue;
+
+        if (phrases.length < 50) {
+          errors.push(`[Reject] ${context}.${cellName} has only ${phrases.length} phrases (min 50 required).`);
+        }
+
+        const isHighIntensity = cellName.includes("decisive") || cellName.includes("high") || context === "finish";
+        if (isHighIntensity && phrases.length < 100) {
+          console.warn(`[SEV-1 Warning] High-intensity cell ${context}.${cellName} has only ${phrases.length} phrases (target: 100).`);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      console.error(errors.join("\n"));
+    }
+    expect(errors.length).toBe(0);
+  });
 });

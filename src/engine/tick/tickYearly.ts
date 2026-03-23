@@ -3,6 +3,7 @@ import { logEngineEvent } from "../events";
 import { processYearEndInduction, HOF_CATEGORY_LABELS } from "../hallOfFame";
 import * as talentpool from "../talentpool";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
+import * as npcAI from "../npcAI";
 
 /**
  * Year boundary tick — Constitution A3.5.
@@ -44,6 +45,7 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
       },
     },
     { label: "talentpool_yearly", run: (w) => { talentpool.tickYear(w); } },
+    { label: "npcAI_yearly", run: (w) => { npcAI.tickYear(w); } },
   ];
 
   runTickPipeline(world, subs, steps, { autosave: true });

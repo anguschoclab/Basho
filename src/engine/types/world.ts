@@ -88,6 +88,7 @@ export interface WorldState {
 
   _interimDaysRemaining?: number;
   _postBashoDays?: number;
+  _daysSinceLastWeeklyTick?: number;
 
   _recruitmentWindow?: RecruitmentWindow;
 
