@@ -65,3 +65,30 @@ export function tickStaffYear(world: WorldState): void {
     else if (staff.careerPhase === "declining" && staff.age >= 65) staff.careerPhase = "retired";
   }
 }
+
+/**
+ * Hire a new staff member for a heya.
+ * Cost: ¥500,000 baseline.
+ */
+export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): Staff | null {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return null;
+
+  const HIRE_COST = 500_000;
+  if (heya.funds < HIRE_COST) return null;
+
+  heya.funds -= HIRE_COST;
+
+  const sequence = (heya.staffIds?.length || 0) + 1;
+  const staff = generateStaff(world.seed, role, heyaId, sequence);
+
+  // Add to world
+  if (!world.staff) world.staff = new Map();
+  world.staff.set(staff.id, staff);
+
+  // Add to heya
+  if (!heya.staffIds) heya.staffIds = [];
+  heya.staffIds.push(staff.id);
+
+  return staff;
+}

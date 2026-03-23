@@ -1,10 +1,40 @@
 import type { GameState, GameAction } from "./gameTypes";
+import { investInFacility } from "@/engine/facilities";
+import { hireStaff } from "@/engine/staff";
 
-// Placeholder for future finance-related global actions (e.g. paying salary, upgrading heya)
-// In Redux slice pattern, this intercepts finance actions and mutates world's economy
+/**
+ * Handle finance-related global actions.
+ */
 export function financeSlice(state: GameState, action: GameAction): GameState {
+  if (!state.world) return state;
+
   switch (action.type) {
-    // e.g. case "PAY_SALARY": ...
+    case "UPGRADE_HEYA": {
+      const world = structuredClone(state.world);
+      const result = investInFacility(world, action.heyaId, action.axis, action.points || 5);
+      
+      if (result.success) {
+        return {
+          ...state,
+          world,
+        };
+      }
+      return state;
+    }
+
+    case "RECRUIT_STAFF": {
+      const world = structuredClone(state.world);
+      const result = hireStaff(world, action.heyaId, action.role);
+      
+      if (result) {
+        return {
+          ...state,
+          world,
+        };
+      }
+      return state;
+    }
+
     default:
       return state;
   }

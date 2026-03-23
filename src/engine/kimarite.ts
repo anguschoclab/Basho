@@ -200,8 +200,7 @@ export const KIMARITE_REGISTRY: Kimarite[] = [
   K({ id: "katasukashi", name: "Katasukashi", nameJa: "肩すかし", category: "pull", kimariteClass: "evasion", vector: "lateral", gripNeed: "none", requiredStances: ["no-grip"], description: "Shoulder swing-down" }),
   K({ id: "sotomuso", name: "Sotomuso", nameJa: "外無双", category: "twist", kimariteClass: "twist", description: "Outside thigh twist-down" }),
   K({ id: "uchimuso", name: "Uchimuso", nameJa: "内無双", category: "twist", kimariteClass: "twist", description: "Inside thigh twist-down" }),
-  K({ id: "sototasukizori_dummy", name: "REMOVE_ME", category: "result", kimariteClass: "result" }), // placeholder guard (removed below)
-].filter(k => k.id !== "sototasukizori_dummy");
+];
 
 // Continue the remaining official entries (to keep this response readable, they are appended below).
 // NOTE: This registry MUST include all 82 kimarite; the appended block completes it.

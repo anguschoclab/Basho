@@ -54,7 +54,9 @@ export type GameAction =
   | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_AUTO_PLAY"; value: boolean }
   | { type: "UPDATE_WORLD"; world: WorldState }
-  | { type: "LOAD_WORLD"; world: WorldState };
+  | { type: "LOAD_WORLD"; world: WorldState }
+  | { type: "UPGRADE_HEYA"; heyaId: string; axis: "training" | "recovery" | "nutrition"; points?: number }
+  | { type: "RECRUIT_STAFF"; heyaId: string; role: any };
 
 /** Initial game state. */
 export const initialGameState: GameState = {

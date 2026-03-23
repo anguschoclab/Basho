@@ -114,12 +114,14 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
 
   const truth = getRikishi(world, rikishiId);
   if (!truth) {
-    // Create a minimal placeholder entry to avoid crashes (should be rare)
-    const placeholder: ScoutedRikishi = {
+    if (existing) return existing;
+    console.warn(`Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`);
+    
+    return {
       rikishiId,
       publicInfo: {
         id: rikishiId,
-        shikona: "Unknown",
+        shikona: "Unknown Wrestler",
         rank: "unknown",
         height: 0,
         weight: 0
@@ -131,8 +133,6 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
       scoutingLevel: 0,
       attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 }
     };
-    table[rikishiId] = existing ?? placeholder;
-    return table[rikishiId];
   }
 
   if (existing) {

@@ -304,8 +304,13 @@ function isSerializedSaveGame(x: any): x is SaveGame {
 type MigrationFn = (save: SaveGame) => SaveGame;
 
 const MIGRATIONS: Record<string, MigrationFn> = {
-  // Add as needed:
-  // "0.9.0->1.0.0": (save) => ({ ...save, version: "1.0.0" as SaveVersion })
+  // Example of a non-lossy minimal bump migration
+  "1.0.0->1.0.1": (save) => {
+    console.log("Migrating save from 1.0.0 to 1.0.1 (Identity migration)");
+    return { ...save, version: "1.0.1" as SaveVersion };
+  },
+  // Add future migrations here:
+  // "1.0.1->1.1.0": (save) => migrateTo110(save),
 };
 
 /**
