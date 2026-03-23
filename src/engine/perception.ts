@@ -149,11 +149,13 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   if (!rivalriesState?.pairs) return "dormant";
 
   let maxHeat = 0;
-  for (const rId of (heya.rikishiIds || [])) {
-    for (const pair of Object.values(rivalriesState.pairs)) {
-      if (pair.aId === rId || pair.bId === rId) {
-        if (pair.heat > maxHeat) maxHeat = pair.heat;
-      }
+  const rIds = heya.rikishiIds || [];
+  if (rIds.length === 0) return "dormant";
+
+  const rIdSet = new Set(rIds);
+  for (const pair of Object.values(rivalriesState.pairs)) {
+    if (rIdSet.has(pair.aId) || rIdSet.has(pair.bId)) {
+      if (pair.heat > maxHeat) maxHeat = pair.heat;
     }
   }
 
