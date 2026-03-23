@@ -99,11 +99,11 @@ export const ARCHETYPE_NAMES: Record<
 // ============================================
 
 /** Type representing confidence level. */
-export type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
+type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
 /** Type representing scouting investment. */
 export type ScoutingInvestment = "none" | "light" | "standard" | "deep";
 /** Type representing attribute type. */
-export type AttributeType = "physical" | "combat" | "style" | "hidden";
+type AttributeType = "physical" | "combat" | "style" | "hidden";
 
 /** Defines the structure for public rikishi info. */
 export interface PublicRikishiInfo {
@@ -122,7 +122,7 @@ export interface PublicRikishiInfo {
 }
 
 /** Defines the structure for scouted attribute truth snapshot. */
-export interface ScoutedAttributeTruthSnapshot {
+interface ScoutedAttributeTruthSnapshot {
   power: number;
   speed: number;
   balance: number;
@@ -395,7 +395,7 @@ export function recordObservation(scouted: ScoutedRikishi, currentWeek: number):
 // --- Display Helpers ---
 
 /** Defines the structure for scouted attributes. */
-export interface ScoutedAttributes {
+interface ScoutedAttributes {
   power: ScoutedAttribute;
   speed: ScoutedAttribute;
   balance: ScoutedAttribute;
@@ -405,7 +405,7 @@ export interface ScoutedAttributes {
 }
 
 /** Defines the structure for scouted attribute. */
-export interface ScoutedAttribute {
+interface ScoutedAttribute {
   value: string;
   confidence: ConfidenceLevel;
   narrative: string;

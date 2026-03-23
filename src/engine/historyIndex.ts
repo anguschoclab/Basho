@@ -34,7 +34,7 @@ import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
 import type { BashoName, BashoResult } from "./types/basho";
 
 /** Canon key for a basho (unique) */
-export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
+type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
 
 /** Helper to make a stable key */
 export function makeBashoKey(year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoKey {
@@ -42,7 +42,7 @@ export function makeBashoKey(year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): 
 }
 
 /** Minimal "what happened this basho" record for a rikishi */
-export interface RikishiHistoryEntry {
+interface RikishiHistoryEntry {
   bashoKey: BashoKey;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -71,7 +71,7 @@ export interface RikishiHistoryEntry {
 }
 
 /** Per-basho rollup for quick UI "History" page */
-export interface BashoHistorySummary {
+interface BashoHistorySummary {
   bashoKey: BashoKey;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
@@ -93,7 +93,7 @@ export interface BashoHistorySummary {
 }
 
 /** The full JSON-safe index */
-export interface HistoryIndex {
+interface HistoryIndex {
   version: "1.0.0";
 
   /** All basho keys in chronological order */
@@ -331,7 +331,7 @@ export function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey |
  *  Optional: attach index to world (non-invasive pattern)
  *  ======================================================= */
 
-export interface WorldWithHistoryIndex extends WorldState {
+interface WorldWithHistoryIndex extends WorldState {
   historyIndex?: HistoryIndex;
 }
 

@@ -10,10 +10,10 @@ describe("PBP Matrix Validation", () => {
     const errors: string[] = [];
 
     function checkText(text: string, context: string) {
-      const matches = text.match(/\{(\w+)\}/g);
+      const matches = text.match(/{(\w+)}/g);
       if (matches) {
         for (const match of matches) {
-          const token = match.replace(/[\{\}]/g, "");
+          const token = match.replace(/[{}]/g, "");
           if (!validTokens.includes(token)) {
             allValid = false;
             errors.push(`Invalid token {${token}} in ${context}: "${text}"`);

@@ -95,7 +95,7 @@ export interface InjuriesState {
 }
 
 /** For timeBoundary-style simple event output */
-export interface InjuryEvent {
+interface InjuryEvent {
   rikishiId: string;
   severity: InjurySeverity;
   weeksOut: number;

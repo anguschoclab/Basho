@@ -18,7 +18,7 @@ export type RecruitmentPhilosophy =
   | "underdog_hunter";  // Seeks hidden gems and overlooked talent
 
 /** Defines the structure for oyakata style profile. */
-export interface OyakataStyleProfile {
+interface OyakataStyleProfile {
   philosophy: RecruitmentPhilosophy;
   preferredArchetypes: TacticalArchetype[];
   preferredStyle: Style | "any";

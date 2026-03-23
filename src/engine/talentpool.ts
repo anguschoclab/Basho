@@ -45,7 +45,7 @@ const DOMESTIC_REGIONS = ["Hokkaido", "Aomori", "Tokyo", "Osaka", "Fukuoka", "Na
 const FOREIGN_REGIONS = ["Mongolia", "Georgia", "Brazil", "Ukraine", "USA", "Bulgaria"];
 
 /** Type representing offer result. */
-export type OfferResult =
+type OfferResult =
   | { ok: true; signed: true; rikishiId: Id }
   | { ok: true; signed: false; reason: string }
   | { ok: false; reason: string };
@@ -405,7 +405,7 @@ export function refreshYearlyCohort(world: WorldState, year: number): void {
  *  * @param poolType - The Pool type.
  *  * @returns The result.
  */
-export function getPool(world: WorldState, poolType: TalentPoolType): TalentPoolState {
+function getPool(world: WorldState, poolType: TalentPoolType): TalentPoolState {
   return ensureWorldPool(world).pools[poolType];
 }
 

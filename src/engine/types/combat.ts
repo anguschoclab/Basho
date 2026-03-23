@@ -35,13 +35,13 @@ export type TacticalArchetype =
   | "counter_specialist";
 
 /** Type representing kimarite family. */
-export type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERSAL" | "SPECIAL";
+type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERSAL" | "SPECIAL";
 
 /** Type representing kimarite id. */
 export type KimariteId = string;
 
 /** Type representing kimarite class. */
-export type KimariteClass =
+type KimariteClass =
   | "force_out"
   | "push"
   | "thrust"
@@ -57,7 +57,7 @@ export type KimariteClass =
   | "forfeit";
 
 /** a r c h e t y p e_ p r o f i l e s. */
-export const ARCHETYPE_PROFILES: Record<
+const ARCHETYPE_PROFILES: Record<
   TacticalArchetype,
   {
     tachiaiBonus: number;

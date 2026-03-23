@@ -168,7 +168,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
 // ─── NPC Weekly Decision Loop (Canon A7.1) ──────────────
 
 /** Decision output for a single NPC heya per week */
-export interface NPCWeeklyDecision {
+interface NPCWeeklyDecision {
   heyaId: Id;
   archetype: OyakataArchetype | "unknown";
   trainingIntensity: TrainingIntensity;

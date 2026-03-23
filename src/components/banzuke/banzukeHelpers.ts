@@ -3,7 +3,7 @@ import type { BanzukeSnapshot } from "@/engine/types/banzuke";
 import { rankScore } from "./RankChangeIndicator";
 
 /** Defines the structure for rank row. */
-export interface RankRow {
+interface RankRow {
   rankLabel: string;
   rankKey: string;
   east: UIRosterEntry | null;

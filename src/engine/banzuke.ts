@@ -285,7 +285,7 @@ export interface MovementEvent {
 }
 
 /** Defines the structure for banzuke update result. */
-export interface BanzukeUpdateResult {
+interface BanzukeUpdateResult {
   newBanzuke: BanzukeEntry[];
   events: MovementEvent[];
   updatedOzekiKadoban: OzekiKadobanMap;
@@ -301,7 +301,7 @@ export interface BanzukeUpdateResult {
 // === AWARDS LOGIC ===
 
 /** Defines the structure for special prizes result. */
-export interface SpecialPrizesResult {
+interface SpecialPrizesResult {
   ginoSho?: string;
   kantosho?: string;
   shukunsho?: string;
