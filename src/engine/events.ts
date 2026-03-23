@@ -1,3 +1,4 @@
+import { stableTieBreak } from "./utils/sort";
 /**
  * events.ts
  * =======================================================
@@ -144,7 +145,7 @@ export function queryEvents(
     const ta = a.year * 1e6 + a.week * 100 + (a.day ?? 0);
     const tb = b.year * 1e6 + b.week * 100 + (b.day ?? 0);
     if (ta !== tb) return tb - ta;
-    return b.id.localeCompare(a.id);
+    return stableTieBreak(b.id, a.id);
   }).slice(0, filters.limit ?? 50);
 }
 

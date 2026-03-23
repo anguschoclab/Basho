@@ -1,4 +1,5 @@
 import { clamp, stableSort } from './utils';
+import { stableTieBreak } from './utils/sort';
 // matchmaking.ts
 // =======================================================
 // Matchmaking System v1.1 — Deterministic torikumi pairing for ALL divisions
@@ -302,7 +303,7 @@ export function buildCandidatePairs(
     if (p2.score !== p1.score) return p2.score - p1.score;
     const a1 = `${p1.eastId}-${p1.westId}`;
     const a2 = `${p2.eastId}-${p2.westId}`;
-    return a1.localeCompare(a2);
+    return stableTieBreak(a1, a2);
   });
 
   return out;
