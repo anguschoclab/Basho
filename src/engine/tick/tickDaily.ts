@@ -1,7 +1,7 @@
 import { stableSort } from "../utils/sort";
 /**
  * dailyTick.ts
- * =======================================================
+ * =======
  * Canon Daily Tick Pipeline (A3.1 / A4.1)
  *
  * Implements the authoritative AdvanceOneDay() pipeline from the
@@ -20,26 +20,28 @@ import { stableSort } from "../utils/sort";
  *   - Weekly (A3.2): every 7 days — training, injuries, economy, governance, etc.
  *   - Monthly (A3.3): on month boundary — salaries, rent, kōenkai, loans
  *   - Year (A3.5): on year boundary — HoF, era labels, annual summary
- * =======================================================
+ * =======
  */
+
 
 import type { WorldState, CyclePhase } from "../types/world";
 import { EventBus, logEngineEvent } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
 import { initializeBasho } from "../worldgen";
-import { toRikishiDescriptor } from "../descriptorBands";
 import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
 import { ensureHeyaWelfareState } from "../welfare";
 import { resetBashoMediaTracking } from "../media";
 
+import { toRikishiDescriptor } from "../descriptorBands";
+
 import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
 import { tickYearBoundary } from "./tickYearly";
 
-// ============================================================================
+// ====
 // TYPES
-// ============================================================================
+// ====
 
 /** Defines the structure for daily tick report. */
 export interface DailyTickReport {
@@ -52,9 +54,9 @@ export interface DailyTickReport {
   yearBoundary?: boolean;
 }
 
-// ============================================================================
+// ====
 // CALENDAR HELPERS
-// ============================================================================
+// ====
 
 /** Days per month (non-leap for simplicity; deterministic) */
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -96,9 +98,9 @@ function advanceCalendarDay(world: WorldState): { monthBoundary: boolean; yearBo
   return { monthBoundary, yearBoundary };
 }
 
-// ============================================================================
+// ====
 // PHASE TRANSITION LOGIC
-// ============================================================================
+// ====
 
 /**
  * Get interim days total.
@@ -204,9 +206,9 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
   return undefined;
 }
 
-// ============================================================================
+// ====
 // SUBSYSTEM TICKS
-// ============================================================================
+// ====
 
 /**
  * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
@@ -246,9 +248,9 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
   subs.push("daily_fatigue");
 }
 
-// ============================================================================
+// ====
 // MAIN PIPELINE: AdvanceOneDay()
-// ============================================================================
+// ====
 
 /**
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
@@ -282,18 +284,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     world._postBashoDays -= 1;
   }
 
-  // 0.5) Enforce Weekly Boundary (C3.3) before Basho Torikumi 
-  // Constitution C3.3: Training injuries must lock in before Day 1 Torikumi.
-  // If we are about to transition to active_basho, or 7 days have passed, trigger the weekly tick.
-  const aboutToStartBasho = world.cyclePhase === "pre_basho" && (world._interimDaysRemaining || 0) <= 0;
-  world._daysSinceLastWeeklyTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
-  
-  if (world._daysSinceLastWeeklyTick >= 7 || aboutToStartBasho) {
-    tickWeeklySubsystems(world, subsystemsRun);
-    world._daysSinceLastWeeklyTick = 0;
-  }
-
-  // Phase transition check (this might generate Torikumi for Day 1)
+  // Phase transition check
   const transition = checkPhaseTransition(world);
 
   const report: DailyTickReport = {
@@ -326,6 +317,11 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   }
   subsystemsRun.push("daily_economy");
 
+  // 6) Weekly tick gate — trigger full weekly subsystem pass every 7 days
+  if (world.dayIndexGlobal % 7 === 0) {
+    tickWeeklySubsystems(world, subsystemsRun);
+  }
+
   // 7) Monthly tick gate
   if (monthBoundary) {
     tickMonthlyBoundary(world, subsystemsRun);
@@ -339,9 +335,9 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   return report;
 }
 
-// ============================================================================
+// ====
 // CONVENIENCE: Advance multiple days
-// ============================================================================
+// ====
 
 /**
  * Advance days.
@@ -369,9 +365,9 @@ export function advanceFullInterim(world: WorldState): DailyTickReport[] {
   return advanceDays(world, totalDays);
 }
 
-// ============================================================================
+// ====
 // PHASE INITIALIZERS (called by world.ts on phase entry)
-// ============================================================================
+// ====
 
 /**
  * Enter post basho.
