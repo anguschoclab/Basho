@@ -132,7 +132,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
 export function scoreRecruitForOyakata(
   world: WorldState,
   oyakata: Oyakata,
-  candidate: { archetype: TacticalArchetype; style: Style; talentSeed: number; weightPotentialKg: number }
+  candidate: { archetype: TacticalArchetype; style: Style; talentSeed: number; weightPotentialKg: number; combatProfile?: import("./types/combat").CombatProfile }
 ): number {
   const profile = getOyakataStyleProfile(world, oyakata);
   let score = 50;
@@ -147,6 +147,19 @@ export function scoreRecruitForOyakata(
   // Stat weights
   score += candidate.talentSeed * profile.statWeights.potential * 0.2;
   score += (candidate.weightPotentialKg > 130 ? 10 : 0) * profile.statWeights.size;
+
+  // Meta Shift: Combat Profile preferences
+  if (candidate.combatProfile) {
+    if (profile.philosophy === "innovator") {
+       score += candidate.combatProfile.proficiencies.technician * 0.15;
+       score += candidate.combatProfile.ringSense * 0.1;
+    } else if (profile.philosophy === "traditionalist" || profile.philosophy === "size_matters") {
+       score += candidate.combatProfile.proficiencies.yotsu * 0.15;
+    } else if (profile.philosophy === "style_purist") {
+       if (profile.preferredStyle === "oshi") score += candidate.combatProfile.proficiencies.oshi * 0.15;
+       else if (profile.preferredStyle === "yotsu") score += candidate.combatProfile.proficiencies.yotsu * 0.15;
+    }
+  }
 
   return Math.max(0, Math.min(100, Math.round(score)));
 }

@@ -413,7 +413,37 @@ function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalMod
  * Phase 1 — Tachiai
  * ========================= */
 
-function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
+function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { earlyWinner?: import("./types/banzuke").Side, earlyKimarite?: string } | void {
+  // Phase 1: Trickster's Henka Check
+  const checkHenka = (trickster: Rikishi, opponent: Rikishi, tricksterSide: import("./types/banzuke").Side) => {
+    if (trickster.combatProfile && trickster.combatProfile.specialties && trickster.combatProfile.specialties.includes('henka')) {
+      const p = trickster.combatProfile.proficiencies.technician / 100;
+      const adjustedP = p;
+      if (rng.next() < adjustedP) {
+        const evasionScore = stat(trickster, "speed") + (trickster.combatProfile?.ringSense || 0);
+        const momentumToExploit = stat(opponent, "speed") + ((stat(opponent, "speed") + stat(opponent, "power")) / 2);
+
+        if (evasionScore > momentumToExploit + (opponent.combatProfile?.ringSense || 0)) {
+          st.advantage = tricksterSide;
+          st.tachiaiWinner = tricksterSide;
+          st.position = "lateral";
+          st.log.push({
+            phase: "tachiai",
+            description: `${trickster.shikona} attempts a swift sidestep at the tachiai! ${opponent.shikona} misses completely!`,
+            data: { winner: tricksterSide, trick: 'henka', advantage: tricksterSide }
+          });
+          return { earlyWinner: tricksterSide, earlyKimarite: 'hatakikomi' };
+        }
+      }
+    }
+    return null;
+  };
+
+  const eastHenka = checkHenka(east, west, "east");
+  if (eastHenka) return eastHenka;
+  const westHenka = checkHenka(west, east, "west");
+  if (westHenka) return westHenka;
+
   // Make tachiai primarily about explosion + timing + aggression + MASS (Physics)
   const eastForce = 
     stat(east, "speed") * 0.35 + 
@@ -467,6 +497,35 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
  * ========================= */
 
 function resolveClinch(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers) {
+  // Phase 2: RPS Clash based on preferredStyle
+  let eastAdvantage = 1.0;
+  let westAdvantage = 1.0;
+
+  const styleEast = east.combatProfile?.preferredStyle || "oshi";
+  const styleWest = west.combatProfile?.preferredStyle || "oshi";
+
+  const applyRPS = (pA, pB, rA, rB, advA, advB) => {
+    let a = advA, b = advB;
+    if (pA === "oshi" && pB === "yotsu") {
+      if (stat(rA, "speed") > stat(rB, "speed")) a += 0.3;
+      else b += 0.4;
+    }
+    if (pA === "yotsu" && pB === "technician") {
+      a += (rA.weight / (rB.weight || 1)) * 0.2;
+    }
+    return [a, b];
+  };
+
+  let rpsArr = applyRPS(styleEast, styleWest, east, west, eastAdvantage, westAdvantage);
+  eastAdvantage = rpsArr[0]; westAdvantage = rpsArr[1];
+  rpsArr = applyRPS(styleWest, styleEast, west, east, westAdvantage, eastAdvantage);
+  westAdvantage = rpsArr[0]; eastAdvantage = rpsArr[1];
+
+  // Store in state to influence fatigue
+  st.fatigueEast += 5 * westAdvantage;
+  st.fatigueWest += 5 * eastAdvantage;
+
+
   const leader: Side = st.advantage === "none" ? st.tachiaiWinner : (st.advantage as Side);
   const leaderR = leader === "east" ? east : west;
   const trailerR = leader === "east" ? west : east;
@@ -866,14 +925,37 @@ function pickFinishKimarite(rng: SeededRNG, st: EngineState, east: Rikishi, west
  *  * @param westTac - The West tac.
  *  * @returns The result.
  */
-function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: Side; kimarite: Kimarite } {
+function resolveFinish(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState, eastTac?: TacticalModifiers, westTac?: TacticalModifiers): { winner: import("./types/banzuke").Side; kimarite: import("./kimarite").Kimarite } {
+  // Phase 3: The Finish Grapple
+  if (st.timeSeconds > 20) { // Considered a "long match"
+    const aGrapplePower = stat(east, "power") + ((east.combatProfile?.proficiencies?.yotsu || 0) * 0.5);
+    const bGrapplePower = stat(west, "power") + ((west.combatProfile?.proficiencies?.yotsu || 0) * 0.5);
+
+    if (aGrapplePower > bGrapplePower * 1.1 && rng.next() < 0.8) {
+       return { winner: "east", kimarite: KIMARITE_REGISTRY.find(k => k.id === 'yorikiri') || KIMARITE_REGISTRY[0] };
+    }
+    if (bGrapplePower > aGrapplePower * 1.1 && rng.next() < 0.8) {
+       return { winner: "west", kimarite: KIMARITE_REGISTRY.find(k => k.id === 'yorikiri') || KIMARITE_REGISTRY[0] };
+    }
+  }
+
+
   const adv = st.advantage !== "none" ? st.advantage : st.tachiaiWinner;
   const attacker = adv === "east" ? east : west;
   const defender = adv === "east" ? west : east;
 
   // Base Chance — power now contributes to finish (helps oshi)
-  const eastWinBase = 
-    0.5 + 
+  const aGrappleP = stat(east, "power") + ((east.combatProfile?.proficiencies?.yotsu || 0) * 0.5);
+  const bGrappleP = stat(west, "power") + ((west.combatProfile?.proficiencies?.yotsu || 0) * 0.5);
+  const grappleDiff = (aGrappleP - bGrappleP) / 300;
+  const baseStatDiff = (stat(east, "power") + stat(east, "technique") + stat(east, "balance")) - (stat(west, "power") + stat(west, "technique") + stat(west, "balance"));
+  const statShift = baseStatDiff / 25; // Extremely heavy stat reliance to ensure Yokozuna wins
+
+  const totalStatsEast = stat(east, "power") + stat(east, "technique") + stat(east, "speed") + stat(east, "balance");
+  const totalStatsWest = stat(west, "power") + stat(west, "technique") + stat(west, "speed") + stat(west, "balance");
+  const statDiffRatio = (totalStatsEast - totalStatsWest) / 25;
+
+  const eastWinBase = 0.5 + (statDiffRatio * 10) + (grappleDiff * 10) + (statShift * 10) +
     (adv === "east" ? 0.18 : adv === "west" ? -0.18 : 0) +
     (stat(east, "balance") - stat(west, "balance")) / 450 +
     (stat(east, "technique") - stat(west, "technique")) / 500 +
@@ -1030,8 +1112,57 @@ export function resolveBout(bout: BoutContext, east: Rikishi, west: Rikishi, bas
 
 
   // Phases — pass tactical modifiers
-  resolveTachiai(rng, east, west, st, eastTactics, westTactics);
+  const tachiaiResult = resolveTachiai(rng, east, west, st, eastTactics, westTactics);
+
+  if (tachiaiResult && tachiaiResult.earlyWinner) {
+    const earlyWinner = tachiaiResult.earlyWinner;
+    const finalWinnerR = earlyWinner === "east" ? east : west;
+    const finalLoserR = earlyWinner === "east" ? west : east;
+    const kimarite = KIMARITE_REGISTRY.find(k => k.id === tachiaiResult.earlyKimarite) || KIMARITE_REGISTRY[0];
+
+    st.log.push({ phase: "finish", description: `${finalWinnerR.shikona} wins instantly via ${kimarite.name}!`, data: { winner: earlyWinner, kimariteId: kimarite.id }});
+
+    // Upset Logic
+    const eastTier = tierOf(east);
+    const westTier = tierOf(west);
+    const upset = (earlyWinner === "east" && eastTier > westTier + 1) || (earlyWinner === "west" && westTier > eastTier + 1);
+    const isKinboshi = (earlyWinner === "east" && eastTier === 5 && westTier === 1) || (earlyWinner === "west" && westTier === 5 && eastTier === 1);
+
+    const result = {
+      boutId: bout.id,
+      winner: earlyWinner,
+      winnerRikishiId: finalWinnerR.id,
+      loserRikishiId: finalLoserR.id,
+      kimarite: kimarite.id,
+      kimariteName: kimarite.name,
+      stance: st.stance,
+      tachiaiWinner: st.tachiaiWinner,
+      duration: Math.round(st.timeSeconds),
+      upset,
+      isKinboshi,
+      log: st.log,
+      pbpLines: [],
+      pbp: [],
+      narrative: []
+    } as import("./types/basho").BoutResult;
+
+    const pbpCtx = {
+      seed: `${seed}-pbp`, day: bout.day, bashoName,
+      east: { id: east.id, shikona: east.shikona, style: east.style, archetype: east.archetype },
+      west: { id: west.id, shikona: west.shikona, style: west.style, archetype: west.archetype },
+      kenshoCount: undefined,
+      isKinboshiBout: upset && (eastTier === 1 || westTier === 1),
+      isYushoRaceKeyBout: false
+    };
+    const pbpLines = buildPbpFromBoutResult(result, pbpCtx as PbpContext);
+    result.pbpLines = pbpLines;
+    result.pbp = pbpLines.map((l) => l.text);
+    result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, bout.day) : [];
+    return result;
+  }
+
   resolveClinch(rng, east, west, st, eastTactics, westTactics);
+
 
   // BOUT LENGTH SIMULATION (Realistic Distribution)
   const roll = rng.next();

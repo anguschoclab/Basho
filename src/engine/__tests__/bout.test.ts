@@ -219,3 +219,84 @@ describe("Bout RPS Tactical Clash", () => {
     }
   });
 });
+
+describe("Phase 1: Henka Check", () => {
+  it("allows Tricksters to win instantly with Henka", () => {
+    const trickster = mockRikishi("e1", { shikona: "Ura", archetype: "trickster", style: "technician" });
+    trickster.combatProfile = {
+      proficiencies: { oshi: 10, yotsu: 10, technician: 100 },
+      preferredStyle: "technician",
+      specialties: ["henka"],
+      ringSense: 100,
+      aggressiveness: 10
+    };
+    trickster.speed = 100;
+    trickster.stats.speed = 100;
+
+    const dummy = mockRikishi("w1", { shikona: "Dummy", archetype: "oshi_specialist", style: "oshi" });
+    dummy.combatProfile = {
+      proficiencies: { oshi: 100, yotsu: 10, technician: 10 },
+      preferredStyle: "oshi",
+      specialties: [],
+      ringSense: 0,
+      aggressiveness: 100
+    };
+    dummy.speed = 1;
+    dummy.stats.speed = 1;
+    dummy.power = 100;
+    dummy.stats.power = 100;
+
+    let earlyWins = 0;
+    for (let i = 0; i < 50; i++) {
+        const result = simulateBout(trickster, dummy, `test-henka-${i}`);
+        if (result.log.some(l => l.data?.trick === "henka") && result.winner === "east") earlyWins++;
+    }
+    expect(earlyWins).toBeGreaterThan(0);
+  });
+});
+
+describe("Yokozuna Meta Balance", () => {
+  it("ensures Yokozunas win ~85% of matches despite tricksters", () => {
+     const yokozuna = mockRikishi("e1", { shikona: "Hakuho", archetype: "yotsu_specialist", style: "yotsu", rank: "yokozuna", rankNumber: 1 });
+     yokozuna.combatProfile = {
+       proficiencies: { oshi: 80, yotsu: 100, technician: 80 },
+       preferredStyle: "yotsu",
+       specialties: [],
+       ringSense: 200,
+       aggressiveness: 80
+     };
+     yokozuna.power = 200;
+     yokozuna.stats.power = 200;
+     yokozuna.speed = 150;
+     yokozuna.stats.speed = 150;
+     yokozuna.balance = 200;
+     yokozuna.stats.balance = 200;
+     yokozuna.technique = 200;
+     yokozuna.stats.technique = 200;
+
+     const maegashira = mockRikishi("w1", { shikona: "Ura", archetype: "trickster", style: "technician", rank: "maegashira", rankNumber: 4 });
+     maegashira.combatProfile = {
+       proficiencies: { oshi: 30, yotsu: 30, technician: 90 },
+       preferredStyle: "technician",
+       specialties: ["henka"],
+       ringSense: 80,
+       aggressiveness: 40
+     };
+     maegashira.power = 10;
+     maegashira.stats.power = 10;
+     maegashira.speed = 85;
+     maegashira.stats.speed = 85;
+     maegashira.balance = 60;
+     maegashira.stats.balance = 60;
+     maegashira.technique = 85;
+     maegashira.stats.technique = 85;
+
+     let yWins = 0;
+     for (let i = 0; i < 100; i++) {
+         const result = simulateBout(yokozuna, maegashira, `test-yoko-${i}`);
+         if (result.winner === "east") yWins++;
+     }
+
+     expect(yWins).toBeGreaterThan(75);
+  });
+});

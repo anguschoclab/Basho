@@ -2,6 +2,18 @@
  * Combat / Style Types
  */
 
+export type CombatArchetype = "oshi" | "yotsu" | "technician";
+
+export type TechnicalMove = "henka" | "ashitori" | "none";
+
+export interface CombatProfile {
+  proficiencies: Record<CombatArchetype, number>;
+  preferredStyle: CombatArchetype;
+  specialties: TechnicalMove[];
+  ringSense: number;
+  aggressiveness: number;
+}
+
 export type Style = "oshi" | "yotsu" | "hybrid";
 
 /** Type representing stance. */

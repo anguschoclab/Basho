@@ -173,6 +173,13 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
   const nationality = isForeign ? originRegion : "Japan";
 
   const isAmateurStar = rng.bool(isUni ? 0.08 : 0.04);
+  const combatProfile: import("./types/combat").CombatProfile = {
+    proficiencies: { oshi: 30 + rng.next() * 60, yotsu: 30 + rng.next() * 60, technician: 30 + rng.next() * 60 },
+    preferredStyle: style === "oshi" ? "oshi" : style === "yotsu" ? "yotsu" : "technician",
+    specialties: archetype === "trickster" ? ["henka"] as import("./types/combat").TechnicalMove[] : [] as import("./types/combat").TechnicalMove[],
+    ringSense: 40 + rng.next() * 60,
+    aggressiveness: 50 + rng.next() * 50
+  };
 
   const qualityBoost = isAmateurStar ? 18 : isUni ? 8 : 0;
   const talentSeed = clamp(Math.round(35 + rng.next() * 45 + qualityBoost), 10, 100);
@@ -217,6 +224,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
     heightPotentialCm,
     weightPotentialKg,
     talentSeed,
+    combatProfile,
     temperament: { discipline, volatility },
     isAmateurStar
   };
@@ -800,7 +808,8 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
       archetype: c.archetype,
       style: c.style,
       talentSeed: c.talentSeed,
-      weightPotentialKg: c.weightPotentialKg
+      weightPotentialKg: c.weightPotentialKg,
+      combatProfile: c.combatProfile
     }) - 50) * 0.5;
   }
 

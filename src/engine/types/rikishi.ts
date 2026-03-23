@@ -3,7 +3,7 @@
  */
 
 import type { Id } from "./common";
-import type { Style, TacticalArchetype, KimariteId } from "./combat";
+import type { Style, TacticalArchetype, KimariteId, CombatProfile } from "./combat";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
@@ -62,6 +62,7 @@ export interface Rikishi {
 
   style: Style;
   trainingFocus?: string;
+  combatProfile: CombatProfile;
   archetype: TacticalArchetype;
 
   division: Division;

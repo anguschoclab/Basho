@@ -105,6 +105,7 @@ export interface TachiaiFact extends PbpFactBase {
   tachiaiQuality: number;
   /** observed stance at impact (optional) */
   stance?: Stance;
+  trick?: string;
 }
 
 /** Defines the structure for clinch fact. */
@@ -1135,6 +1136,16 @@ function selectPhraseForFact(
 ): { phrase: Phrase; tags: PbpTag[] } {
   switch (fact.phase) {
     case "tachiai": {
+      if (fact.trick === 'henka') {
+         return {
+           phrase: {
+             id: 'henka_attempt',
+             text: "{leader} attempts a swift sidestep at the tachiai! {trailer} misses completely!",
+             tags: ["gasps"]
+           },
+           tags: ["gasps"]
+         };
+      }
       const bucket =
         fact.tachiaiQuality >= 0.75
           ? lib.tachiai.decisive
