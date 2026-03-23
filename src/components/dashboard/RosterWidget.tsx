@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { BaseWidget } from "./BaseWidget";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
@@ -34,17 +34,11 @@ export function RosterWidget() {
   const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">My Roster</span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/rikishi" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View all rikishi">
-          All Rikishi <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+    <BaseWidget
+      title="My Roster"
+      icon={Users}
+      headerAction={{ label: "All Rikishi", onClick: () => navigate({ to: "/rikishi" }) }}
+    >
       {/* Summary row with visual indicators */}
       <div className="flex gap-3 text-xs">
         <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md">
@@ -105,6 +99,6 @@ export function RosterWidget() {
           </button>
         )}
       </div>
-    </div>
+    </BaseWidget>
   );
 }

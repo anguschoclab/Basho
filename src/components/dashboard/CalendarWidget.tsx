@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
+import { BaseWidget } from "./BaseWidget";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -45,19 +46,16 @@ export function CalendarWidget() {
   const dayProgress = bashoDay > 0 ? (bashoDay / 15) * 100 : 0;
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Calendar</span>
-        </div>
-        <div className="flex items-center gap-1.5">
+    <BaseWidget
+      title="Calendar"
+      icon={Calendar}
+      headerContent={
+        <>
           <span className={`h-2 w-2 rounded-full ${phaseInfo.dotClass}`} />
           <span className="text-[10px] font-medium text-muted-foreground">{phaseInfo.label}</span>
-        </div>
-      </div>
-
+        </>
+      }
+    >
       {/* Date display */}
       <div className="space-y-1">
         <div className="font-display text-2xl font-bold leading-tight">
@@ -135,6 +133,6 @@ export function CalendarWidget() {
           </>
         )}
       </div>
-    </div>
+    </BaseWidget>
   );
 }

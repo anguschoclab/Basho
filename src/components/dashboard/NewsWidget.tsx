@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { BaseWidget } from "./BaseWidget";
 import {
   Newspaper, Trophy, Swords, HeartPulse, GraduationCap, Coins, Star,
   Search, MessageCircle, AlertTriangle, Scale,
@@ -35,15 +36,15 @@ export function NewsWidget() {
   }, [world?.events?.log?.length]);
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Newspaper className="h-4 w-4 text-primary" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">News & Events</span>
-        {recentEvents.length > 0 && (
+    <BaseWidget
+      title="News & Events"
+      icon={Newspaper}
+      headerContent={
+        recentEvents.length > 0 && (
           <Badge variant="secondary" className="text-[10px] ml-auto">{recentEvents.length}</Badge>
-        )}
-      </div>
-
+        )
+      }
+    >
       <ScrollArea className="h-[260px]">
         {recentEvents.length === 0 ? (
           <div className="text-center py-8">
@@ -80,6 +81,6 @@ export function NewsWidget() {
           </div>
         )}
       </ScrollArea>
-    </div>
+    </BaseWidget>
   );
 }

@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Button } from "@/components/ui/button";
-import { Coins, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Coins, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { BaseWidget } from "./BaseWidget";
 
 const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: any; bgAccent: string }> = {
   secure:      { label: "Secure",      color: "text-primary",        icon: TrendingUp,   bgAccent: "bg-primary/10" },
@@ -26,17 +26,11 @@ export function FinancesWidget() {
   const Icon = config.icon;
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Coins className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Finances</span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/economy" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View financial details">
-          Details <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+    <BaseWidget
+      title="Finances"
+      icon={Coins}
+      headerAction={{ label: "Details", onClick: () => navigate({ to: "/economy" }) }}
+    >
       <div className="flex items-center gap-3">
         <div className={`p-2.5 rounded-xl ${config.bgAccent}`}>
           <Icon className={`h-6 w-6 ${config.color}`} />
@@ -66,6 +60,6 @@ export function FinancesWidget() {
           ⚠ High insolvency risk — take action immediately
         </div>
       )}
-    </div>
+    </BaseWidget>
   );
 }

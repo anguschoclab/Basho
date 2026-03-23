@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
+import { BaseWidget } from "./BaseWidget";
 import {
   Building2, ChevronRight, Heart, Shield, Users, Flame, TrendingUp, HandCoins,
 } from "lucide-react";
@@ -63,18 +63,17 @@ export function StableWidget() {
   if (!p) return null;
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stable Status</span>
-        </div>
-        <div className="flex items-center gap-1.5">
+    <BaseWidget
+      title="Stable Status"
+      icon={Building2}
+      headerContent={
+        <>
           <Badge variant="outline" className="text-[10px] capitalize border-gold/30 text-gold">{p.statureBand}</Badge>
           <Badge variant="secondary" className="text-[10px] capitalize">{p.prestigeBand}</Badge>
-        </div>
-      </div>
-
+        </>
+      }
+      footerAction={{ label: "Manage Stable", onClick: () => navigate({ to: "/stable" }) }}
+    >
       <div className="divide-y divide-border/30">
         <Row icon={<Heart className="h-3.5 w-3.5" />} label="Morale" value={p.moraleBand} />
         <Row icon={<Shield className="h-3.5 w-3.5" />} label="Welfare" value={p.welfareRiskBand} />
@@ -84,9 +83,6 @@ export function StableWidget() {
         <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={p.koenkaiBand === "none" ? "None" : p.koenkaiBand} />
       </div>
 
-      <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors" aria-label="Manage stable">
-        Manage Stable <ChevronRight className="h-3 w-3" />
-      </Button>
-    </div>
+    </BaseWidget>
   );
 }

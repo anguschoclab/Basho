@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-react";
 import {
   ensureHeyaTrainingState,
@@ -90,17 +90,11 @@ export function TrainingWidget() {
   };
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Dumbbell className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Training</span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/training" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full training plan">
-          Full Plan <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+    <BaseWidget
+      title="Training"
+      icon={Dumbbell}
+      headerAction={{ label: "Full Plan", onClick: () => navigate({ to: "/training" }) }}
+    >
       {/* Current profile */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="secondary" className="text-[10px] gap-1">
@@ -163,6 +157,6 @@ export function TrainingWidget() {
           />
         </div>
       )}
-    </div>
+    </BaseWidget>
   );
 }

@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollText, ChevronRight } from "lucide-react";
+import { ScrollText } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry } from "@/presenters/uiModels";
+import { BaseWidget } from "./BaseWidget";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4, juryo: 5,
@@ -61,17 +61,11 @@ export function BanzukeWidget() {
   if (!world) return null;
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ScrollText className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Banzuke</span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/banzuke" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full banzuke rankings">
-          Full Rankings <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+    <BaseWidget
+      title="Banzuke"
+      icon={ScrollText}
+      headerAction={{ label: "Full Rankings", onClick: () => navigate({ to: "/banzuke" }) }}
+    >
       <div className="space-y-0.5">
         {topRanked.map(({ entry, isPlayer }, i) => (
           <div
@@ -92,6 +86,6 @@ export function BanzukeWidget() {
           </div>
         ))}
       </div>
-    </div>
+    </BaseWidget>
   );
 }

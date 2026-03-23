@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Building, ChevronRight, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
+import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
+import { BaseWidget } from "./BaseWidget";
 import { getMonthlyMaintenanceCost } from "@/engine/facilities";
 import { getFacilityLevelLabel, getFacilityLevelColor } from "@/engine/utils/ui-helpers";
 
@@ -40,13 +40,13 @@ export function FacilitiesWidget() {
   const isLow = lowestLevel <= 25;
 
   return (
-    <div className={`widget-card p-4 space-y-3 ${
-      atRisk ? "border-destructive/40 ring-1 ring-destructive/20" : ""
-    }`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Wrench className={`h-4 w-4 ${atRisk ? "text-destructive" : "text-primary"}`} />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Facilities</span>
+    <BaseWidget
+      title="Facilities"
+      icon={Wrench}
+      className={atRisk ? "border-destructive/40 ring-1 ring-destructive/20" : ""}
+      iconClassName={atRisk ? "text-destructive" : ""}
+      headerContent={
+        <>
           {atRisk && (
             <span className="flex items-center gap-1 text-[10px] font-medium text-destructive bg-destructive/10 px-1.5 py-0.5 rounded-full">
               <AlertTriangle className="h-2.5 w-2.5" />
@@ -58,12 +58,10 @@ export function FacilitiesWidget() {
               Low
             </span>
           )}
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" as any })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="Manage facilities">
-          Manage <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+        </>
+      }
+      headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
+    >
       <div className="space-y-2.5">
         {axes.map((axis) => {
           const Icon = AXIS_ICONS[axis];
@@ -98,6 +96,6 @@ export function FacilitiesWidget() {
           <span>Funds won't cover maintenance — facilities will decay</span>
         </div>
       )}
-    </div>
+    </BaseWidget>
   );
 }

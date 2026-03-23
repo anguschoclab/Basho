@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { buildWeeklyDigest, type DigestSection, type DigestItem } from "@/presenters/uiDigest";
+import { BaseWidget } from "./BaseWidget";
 import {
   AlertTriangle, TrendingUp, Activity, Coins, FileText, Sparkles,
   Users, Building2, Newspaper,
@@ -31,17 +32,15 @@ export function DigestWidget() {
   const totalItems = digest.sections.reduce((s, sec) => s + sec.items.length, 0);
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Newspaper className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Weekly Digest</span>
-        </div>
-        {totalItems > 0 && (
+    <BaseWidget
+      title="Weekly Digest"
+      icon={Newspaper}
+      headerContent={
+        totalItems > 0 && (
           <Badge variant="secondary" className="text-[10px]">{totalItems} events</Badge>
-        )}
-      </div>
-
+        )
+      }
+    >
       <p className="text-xs text-muted-foreground italic">{digest.headline}</p>
 
       {digest.sections.length === 0 ? (
@@ -84,6 +83,6 @@ export function DigestWidget() {
           </div>
         </ScrollArea>
       )}
-    </div>
+    </BaseWidget>
   );
 }

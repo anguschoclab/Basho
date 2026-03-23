@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Search, ChevronRight, Globe, GraduationCap, School, Sparkles } from "lucide-react";
+import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
+import { BaseWidget } from "./BaseWidget";
 import { toPotentialBand, POTENTIAL_LABELS, type PotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/talentpool";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
@@ -52,17 +52,11 @@ export function ScoutingWidget() {
   const topProspects = prospects.slice(0, 6);
 
   return (
-    <div className="widget-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scouting</span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/talent-pool" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View full scouting board">
-          Full Board <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
-
+    <BaseWidget
+      title="Scouting"
+      icon={Search}
+      headerAction={{ label: "Full Board", onClick: () => navigate({ to: "/talent-pool" }) }}
+    >
       {/* Pool summary with icons */}
       <div className="flex gap-2 text-xs">
         {(["high_school", "university", "foreign"] as TalentPoolType[]).map(pool => {
@@ -123,6 +117,6 @@ export function ScoutingWidget() {
           </button>
         )}
       </div>
-    </div>
+    </BaseWidget>
   );
 }

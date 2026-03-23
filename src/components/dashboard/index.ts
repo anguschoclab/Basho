@@ -1,3 +1,4 @@
+export * from './BaseWidget';
 export * from './BanzukeWidget';
 export * from './BashoWidget';
 export * from './CalendarWidget';

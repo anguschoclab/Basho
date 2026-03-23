@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { RikishiName } from "@/components/ClickableName";
-import { Trophy, ChevronRight, Crown, Star, Swords, HeartPulse } from "lucide-react";
+import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
+import { BaseWidget } from "./BaseWidget";
 
 export function BashoWidget() {
   const { state } = useGame();
@@ -52,11 +52,7 @@ export function BashoWidget() {
 
   if (!stats || !world.currentBasho) {
     return (
-      <div className="widget-card p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-muted-foreground" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tournament</span>
-        </div>
+      <BaseWidget title="Tournament" icon={Trophy}>
         <div className="text-center py-8">
           <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
             <Trophy className="h-6 w-6 text-muted-foreground/30" />
@@ -64,26 +60,19 @@ export function BashoWidget() {
           <div className="text-sm text-muted-foreground font-medium">No active basho</div>
           <div className="text-xs text-muted-foreground/60 mt-1">Advance time to begin the tournament</div>
         </div>
-      </div>
+      </BaseWidget>
     );
   }
 
   return (
-    <div className="widget-card p-4 space-y-3 border-primary/20 relative overflow-hidden">
+    <BaseWidget
+      title={`${world.currentBasho.bashoName?.toUpperCase()} — Day ${stats.day}`}
+      icon={Trophy}
+      className="border-primary/20 relative overflow-hidden"
+      headerAction={{ label: "View", onClick: () => navigate({ to: "/basho" }) }}
+    >
       {/* Subtle shimmer accent for active tournament */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/50 to-transparent shimmer-bar" />
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-accent" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {world.currentBasho.bashoName?.toUpperCase()} — Day {stats.day}
-          </span>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/basho" })} className="h-6 text-xs gap-1 text-muted-foreground" aria-label="View tournament details">
-          View <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
 
       {/* Quick stats with visual emphasis */}
       <div className="grid grid-cols-4 gap-2">
@@ -122,6 +111,6 @@ export function BashoWidget() {
           );
         })}
       </div>
-    </div>
+    </BaseWidget>
   );
 }
