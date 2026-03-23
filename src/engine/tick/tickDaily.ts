@@ -284,6 +284,17 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     world._postBashoDays -= 1;
   }
 
+  // 0.5) Enforce Weekly Boundary (C3.3) before Basho Torikumi 
+  // Constitution C3.3: Training injuries must lock in before Day 1 Torikumi.
+  // If we are about to transition to active_basho, or 7 days have passed, trigger the weekly tick.
+  const aboutToStartBasho = world.cyclePhase === "pre_basho" && (world._interimDaysRemaining || 0) <= 0;
+  world._daysSinceLastWeeklyTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
+  
+  if (world._daysSinceLastWeeklyTick >= 7 || aboutToStartBasho) {
+    tickWeeklySubsystems(world, subsystemsRun);
+    world._daysSinceLastWeeklyTick = 0;
+  }
+
   // Phase transition check
   const transition = checkPhaseTransition(world);
 
@@ -317,10 +328,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   }
   subsystemsRun.push("daily_economy");
 
-  // 6) Weekly tick gate — trigger full weekly subsystem pass every 7 days
-  if (world.dayIndexGlobal % 7 === 0) {
-    tickWeeklySubsystems(world, subsystemsRun);
-  }
+
 
   // 7) Monthly tick gate
   if (monthBoundary) {
