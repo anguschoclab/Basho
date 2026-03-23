@@ -497,7 +497,7 @@ export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => num
 // === ALMANAC SNAPSHOT ===
 
 /** Defines the structure for almanac snapshot. */
-export interface AlmanacSnapshot {
+interface AlmanacSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;

@@ -13,7 +13,7 @@ import { clamp, clampInt, pick, weightedPick, simpleHashToIndex } from './utils'
 // Types
 // ----------------------------
 
-export interface ShikonaGenerationConfig {
+interface ShikonaGenerationConfig {
   nationality?: string;
   heyaId?: string;
   rank?: string; // e.g. "Jonokuchi", "Yokozuna"

@@ -89,7 +89,7 @@ export interface RivalriesState {
 }
 
 /** A lightweight UI row */
-export interface RivalryDigestRow {
+interface RivalryDigestRow {
   rivalId: Id;
   rivalName?: string;
 

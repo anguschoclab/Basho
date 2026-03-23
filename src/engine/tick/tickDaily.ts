@@ -367,7 +367,7 @@ export function advanceDays(world: WorldState, days: number): DailyTickReport[] 
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function advanceFullInterim(world: WorldState): DailyTickReport[] {
+function advanceFullInterim(world: WorldState): DailyTickReport[] {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return [];
   const totalDays = getInterimDaysTotal();
   return advanceDays(world, totalDays);

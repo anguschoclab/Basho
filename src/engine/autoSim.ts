@@ -64,12 +64,12 @@ export interface AutoSimConfig {
  * Your real banzuke system should apply promotions/demotions deterministically.
  * This module will call the hook if present and use its reported events.
  */
-export interface BanzukeUpdateHookResult {
+interface BanzukeUpdateHookResult {
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
 }
 /** Type representing banzuke update hook. */
-export type BanzukeUpdateHook = (args: {
+type BanzukeUpdateHook = (args: {
   world: WorldState;
   bashoName: BashoName;
   year: number;
@@ -127,7 +127,7 @@ export interface RecordEntry {
 // === BASHO SIMULATION ===
 
 /** Defines the structure for basho sim result. */
-export interface BashoSimResult {
+interface BashoSimResult {
   bashoName: BashoName;
   year: number;
   yushoWinner: { id: string; shikona: string; wins: number; losses: number };
@@ -140,7 +140,7 @@ export interface BashoSimResult {
 }
 
 /** Defines the structure for promotion event. */
-export interface PromotionEvent {
+interface PromotionEvent {
   rikishiId: string;
   from: string;
   to: string;
@@ -148,7 +148,7 @@ export interface PromotionEvent {
 }
 
 /** Defines the structure for demotion event. */
-export interface DemotionEvent {
+interface DemotionEvent {
   rikishiId: string;
   from: string;
   to: string;

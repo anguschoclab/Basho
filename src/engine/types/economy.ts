@@ -6,7 +6,7 @@ import type { Id } from "./common";
 import type { BashoName } from "./basho";
 
 /** Defines the structure for kensho record. */
-export interface KenshoRecord {
+interface KenshoRecord {
   bashoName: BashoName;
   day: number;
   opponentId: Id;

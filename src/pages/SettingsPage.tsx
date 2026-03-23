@@ -30,7 +30,7 @@ export function getAutosaveEnabled(): boolean {
  * Set autosave enabled.
  *  * @param enabled - The Enabled.
  */
-export function setAutosaveEnabled(enabled: boolean) {
+function setAutosaveEnabled(enabled: boolean) {
   try {
     localStorage.setItem(AUTOSAVE_ENABLED_KEY, String(enabled));
   } catch { /* silent */ }

@@ -36,7 +36,7 @@ export function ensureEventsState(world: WorldState): EventsState {
 }
 
 /** Defines the structure for log engine event params. */
-export interface LogEngineEventParams {
+interface LogEngineEventParams {
   type: string;
   category: EventCategory;
   phase?: EventPhase;

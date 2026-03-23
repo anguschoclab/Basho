@@ -23,7 +23,7 @@ import { clamp } from './utils';
 export const HYSTERESIS_DELTA = 5;
 
 /** Defines the structure for band def. */
-export interface BandDef<T extends string> {
+interface BandDef<T extends string> {
   band: T;
   min: number; // inclusive
   max: number; // exclusive (use Infinity for top band)
@@ -202,7 +202,7 @@ export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
 // === Financial Bands (derived from runway weeks, NOT raw yen) ===
 
 /** Type representing financial band. */
-export type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
+type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 
 /**
  * To financial band.
@@ -223,7 +223,7 @@ export function toFinancialBand(funds: number, weeklyBurn: number): FinancialBan
 // === Rivalry Heat Bands ===
 
 /** Type representing rivalry heat band. */
-export type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary";
+type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary";
 
 /** r i v a l r y_ h e a t_ b a n d s. */
 export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
@@ -256,7 +256,7 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
 // === Oyakata Trait Bands ===
 
 /** Type representing trait band. */
-export type TraitBand = "extreme" | "high" | "moderate" | "low" | "minimal";
+type TraitBand = "extreme" | "high" | "moderate" | "low" | "minimal";
 
 /** t r a i t_ b a n d s. */
 export const TRAIT_BANDS: BandDef<TraitBand>[] = [
@@ -289,7 +289,7 @@ export const TRAIT_LABELS: Record<TraitBand, string> = {
 // === Win Rate Assessment (public-facing record context) ===
 
 /** Type representing win rate assessment. */
-export type WinRateAssessment = "dominant" | "strong" | "competitive" | "struggling" | "in_trouble";
+type WinRateAssessment = "dominant" | "strong" | "competitive" | "struggling" | "in_trouble";
 
 /**
  * To win rate assessment.
@@ -320,7 +320,7 @@ export const WIN_RATE_LABELS: Record<WinRateAssessment, string> = {
 // === Prize / Currency Bands (never show raw ¥) ===
 
 /** Type representing prize band. */
-export type PrizeBand = "grand" | "substantial" | "modest" | "small" | "token";
+type PrizeBand = "grand" | "substantial" | "modest" | "small" | "token";
 
 /**
  * To prize band.
@@ -347,7 +347,7 @@ export const PRIZE_LABELS: Record<PrizeBand, string> = {
 // === Scandal Score Bands ===
 
 /** Type representing scandal band. */
-export type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
+type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
 
 /** s c a n d a l_ b a n d s. */
 export const SCANDAL_BANDS: BandDef<ScandalBand>[] = [

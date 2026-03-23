@@ -28,7 +28,7 @@ type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i rikishi. */
-export interface UIRikishi {
+interface UIRikishi {
   id: Id;
   shikona: string;
   realName: string;
@@ -90,7 +90,7 @@ export interface UIRikishi {
 }
 
 /** Defines the structure for u i rival entry. */
-export interface UIRivalEntry {
+interface UIRivalEntry {
   opponentId: Id;
   opponentShikona: string;
   wins: number;
@@ -250,7 +250,7 @@ export function projectRosterEntry(r: Rikishi): UIRosterEntry {
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i heya. */
-export interface UIHeya {
+interface UIHeya {
   id: Id;
   name: string;
   nameJa: string;
@@ -348,7 +348,7 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i bout row. */
-export interface UIBoutRow {
+interface UIBoutRow {
   eastId: Id;
   eastShikona: string;
   eastRank: string;
@@ -368,34 +368,13 @@ export interface UIBoutRow {
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
-  const east = world.rikishi.get(bout.winnerRikishiId);
-  const west = world.rikishi.get(bout.loserRikishiId);
-  // Determine actual east/west from bout log or use winner=east, loser=west as approximation
-  const eastHeya = east ? world.heyas.get(east.heyaId) : undefined;
-  const westHeya = west ? world.heyas.get(west.heyaId) : undefined;
-
-  return {
-    eastId: bout.winnerRikishiId,
-    eastShikona: east?.shikona ?? "Unknown",
-    eastRank: east?.rank ?? "unknown",
-    eastHeyaName: eastHeya?.name ?? "",
-    westId: bout.loserRikishiId,
-    westShikona: west?.shikona ?? "Unknown",
-    westRank: west?.rank ?? "unknown",
-    westHeyaName: westHeya?.name ?? "",
-    winnerId: bout.winnerRikishiId,
-    kimarite: bout.kimariteName ?? bout.kimarite,
-    isUpset: bout.upset,
-  };
-}
 
 // ─────────────────────────────────────────
 //  UIBashoSummary — Post-basho recap
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i basho summary. */
-export interface UIBashoSummary {
+interface UIBashoSummary {
   year: number;
   bashoNumber: number;
   bashoName: string;
@@ -413,32 +392,10 @@ export interface UIBashoSummary {
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function projectBashoSummary(result: BashoResult, world: WorldState): UIBashoSummary {
-  const lookup = (id?: Id) => {
-    if (!id) return undefined;
-    const r = world.rikishi.get(id);
-    return r?.shikona ?? "Unknown";
-  };
-  const yushoR = world.rikishi.get(result.yusho);
-  const yushoHeya = yushoR ? world.heyas.get(yushoR.heyaId) : undefined;
-
-  return {
-    year: result.year,
-    bashoNumber: result.bashoNumber,
-    bashoName: result.bashoName,
-    yushoShikona: lookup(result.yusho) ?? "Unknown",
-    yushoHeyaName: yushoHeya?.name ?? "",
-    junYushoShikona: result.junYusho.map(id => lookup(id) ?? "Unknown"),
-    ginoShoShikona: lookup(result.ginoSho),
-    kantoshoShikona: lookup(result.kantosho),
-    shukunshoShikona: lookup(result.shukunsho),
-  };
-}
 
 // ─────────────────────────────────────────
 //  Legacy compat: RikishiUIModel alias
 // ─────────────────────────────────────────
 /** @deprecated Use UIRikishi + projectRikishi instead */
-export type RikishiUIModel = UIRikishi;
+type RikishiUIModel = UIRikishi;
 /** @deprecated Use projectRikishi instead */
-export const toRikishiUIModel = projectRikishi;

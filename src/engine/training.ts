@@ -36,7 +36,6 @@ export const INTENSITY_MULTIPLIERS: Record<TrainingIntensity, { growth: number; 
 
 // Aliases for UI
 /** i n t e n s i t y_ e f f e c t s. */
-export const INTENSITY_EFFECTS = INTENSITY_MULTIPLIERS;
 
 // 2. RECOVERY EMPHASIS EFFECTS
 /** r e c o v e r y_ m u l t i p l i e r s. */
@@ -47,11 +46,10 @@ export const RECOVERY_MULTIPLIERS: Record<RecoveryEmphasis, { fatigueDecay: numb
 };
 
 /** r e c o v e r y_ e f f e c t s. */
-export const RECOVERY_EFFECTS = RECOVERY_MULTIPLIERS;
 
 // 3. FOCUS BIAS MATRIX (From Canon Table 4.3)
 /** f o c u s_ b i a s_ m a t r i x. */
-export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats, number>> = {
+const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats, number>> = {
   power:     { strength: 1.30, speed: 0.85, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   speed:     { strength: 0.85, speed: 1.30, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   technique: { strength: 0.90, speed: 0.90, technique: 1.35, balance: 1.10, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
@@ -60,7 +58,6 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats,
 };
 
 /** f o c u s_ e f f e c t s. */
-export const FOCUS_EFFECTS = FOCUS_BIAS_MATRIX;
 
 // 4. INDIVIDUAL FOCUS MODES (From Canon Table 5.2)
 const INDIVIDUAL_FOCUS_MODES: Record<IndividualFocusType, { growth: number; fatigue: number; injuryRisk: number }> = {
@@ -97,7 +94,7 @@ const STAT_CEILING_KEYS: (keyof RikishiStats)[] = [
  *  * @param statKey - The Stat key.
  *  * @returns The result.
  */
-export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
+function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
   // Base ceiling: linear map from talentSeed
   // talentSeed 0 → ceiling 45, talentSeed 100 → ceiling 99
   const baseCeiling = 45 + (talentSeed / 100) * 54;
@@ -113,7 +110,7 @@ export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats):
  *   ratio = current / ceiling
  *   mult  = (1 - ratio^3)  — cubic falloff gives gentle taper then hard wall
  */
-export function diminishingReturnsMult(currentStat: number, ceiling: number): number {
+function diminishingReturnsMult(currentStat: number, ceiling: number): number {
   if (ceiling <= 0) return 0;
   const ratio = Math.min(currentStat / ceiling, 1);
   return Math.max(0, 1 - ratio * ratio * ratio);
@@ -167,7 +164,7 @@ export function ensureHeyaTrainingState(world: WorldState, beyaId: Id): BeyaTrai
  *  * @param beyaState - The Beya state.
  *  * @returns The result.
  */
-export function getIndividualFocus(rikishiId: Id, beyaState: BeyaTrainingState): IndividualFocus | undefined {
+function getIndividualFocus(rikishiId: Id, beyaState: BeyaTrainingState): IndividualFocus | undefined {
   return beyaState.focusSlots.find(slot => slot.rikishiId === rikishiId);
 }
 
@@ -313,7 +310,7 @@ function calculateGrowthVector(
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function applyWeeklyTraining(world: WorldState): WorldState {
+function applyWeeklyTraining(world: WorldState): WorldState {
   (globalThis as any)._worldForDegeiko = world;
 
   const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
