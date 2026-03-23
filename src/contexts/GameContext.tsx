@@ -8,6 +8,10 @@ import type { Heya } from "@/engine/types/heya";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
+import { registerLocalStorage } from "./localStorageProvider";
+
+// Register browser localStorage as the engine's storage backend
+registerLocalStorage();
 
 import type { GamePhase, GameState } from "./gameTypes";
 import { initialGameState } from "./gameTypes";

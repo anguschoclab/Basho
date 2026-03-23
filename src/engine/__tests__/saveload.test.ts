@@ -11,45 +11,29 @@ import {
   getSaveSlotInfos,
   quickSave
 } from "../saveload";
+import { setStorageProvider, type IStorageProvider } from "../storageProvider";
 import { WorldState } from "../types/world";
 import { Rikishi } from "../types/rikishi";
 import { Heya } from "../types/heya";
 import { Oyakata } from "../types/oyakata";
 
-// Setup localStorage mock using Vitest API
-const localStorageMock = (() => {
+// Setup in-memory storage provider for tests
+function createMemoryStorage(): IStorageProvider {
   let store: Record<string, string> = {};
   return {
     getItem: vi.fn((key: string) => store[key] || null),
     setItem: vi.fn((key: string, value: string) => { store[key] = value.toString(); }),
     removeItem: vi.fn((key: string) => { delete store[key]; }),
-    clear: vi.fn(() => { store = {}; }),
+    key: vi.fn((i: number) => Object.keys(store)[i] || null),
     get length() { return Object.keys(store).length; },
-    key: vi.fn((i: number) => Object.keys(store)[i] || null)
-  };
-})();
+    _clear() { store = {}; }
+  } as IStorageProvider & { _clear(): void };
+}
+
+const memoryStorage = createMemoryStorage();
 
 beforeAll(() => {
-  globalThis.localStorage = localStorageMock as any;
-
-// Force window object for tests so hasLocalStorage() returns true
-if (typeof window === 'undefined') {
-  globalThis.window = { localStorage: localStorageMock } as any;
-}
-if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
-  }
-
-
-// Force window object for tests so hasLocalStorage() returns true
-if (typeof window === 'undefined') {
-  globalThis.window = { localStorage: localStorageMock } as any;
-}
-if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-  } else {
-
-  }
+  setStorageProvider(memoryStorage);
 });
 
 // Helper to create basic world state
@@ -81,7 +65,7 @@ function createMockWorld(): WorldState {
 
 describe("Save/Load System", () => {
   beforeEach(() => {
-    localStorageMock.clear();
+    (memoryStorage as any)._clear();
   });
 
   it("should serialize and deserialize a WorldState correctly (Map translation)", () => {

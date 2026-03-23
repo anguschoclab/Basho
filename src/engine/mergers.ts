@@ -107,15 +107,20 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
 
   // Candidates: not the source, not player (unless forced, but usually NPC targets NPC),
   // has room in roster (< 25 rikishi), and prestige >= modest.
-  const candidates = Array.from(world.heyas.values()).filter(h =>
-    h.id !== sourceHeyaId &&
-    h.rikishiIds.length < 25 &&
-    (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
-  );
+  const candidates: Heya[] = [];
+  for (const h of world.heyas.values()) {
+    if (h.id !== sourceHeyaId && h.rikishiIds.length < 25 &&
+      (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")) {
+      candidates.push(h);
+    }
+  }
 
   if (candidates.length === 0) {
     // Fallback: any stable with room
-    const fallback = Array.from(world.heyas.values()).filter(h => h.id !== sourceHeyaId && h.rikishiIds.length < 30);
+    const fallback: Heya[] = [];
+    for (const h of world.heyas.values()) {
+      if (h.id !== sourceHeyaId && h.rikishiIds.length < 30) fallback.push(h);
+    }
     if (fallback.length === 0) return null;
     return fallback[rng.int(0, fallback.length - 1)].id;
   }

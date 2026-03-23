@@ -31,6 +31,7 @@ export * from './pbpMatrix';
 export * from './perception';
 export * from './rivalries';
 export * from './saveload';
+export * from './storageProvider';
 export * from './schedule';
 export * from './scouting';
 export * from './scoutingStore';

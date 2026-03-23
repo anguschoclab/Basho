@@ -626,7 +626,9 @@ export function tickWeek(world: WorldState): number {
 export function tickMonthly(world: WorldState): void {
   // 1. Myoseki Bidding
   if (world.myosekiMarket) {
-    for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+    const heyaArrMonth: any[] = [];
+    for (const h of world.heyas.values()) heyaArrMonth.push(h);
+    for (const heya of stableSort(heyaArrMonth, x => (x as any).id || String(x))) {
       if (heya.id === world.playerHeyaId) continue;
 
       const oyakata = world.oyakata.get(heya.oyakataId);
@@ -647,7 +649,9 @@ export function tickMonthly(world: WorldState): void {
   // 2. Roster Management (Retirement & Scouting)
   const vacanciesByHeyaId: Record<Id, number> = {};
 
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  const heyaArrRoster: any[] = [];
+  for (const h of world.heyas.values()) heyaArrRoster.push(h);
+  for (const heya of stableSort(heyaArrRoster, x => (x as any).id || String(x))) {
     if (heya.id === world.playerHeyaId) continue;
 
     // Evaluate retirements

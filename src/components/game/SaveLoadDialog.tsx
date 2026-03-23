@@ -135,7 +135,16 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   const handleExport = () => {
     if (state.world) {
-      exportSave(state.world, undefined, new Date().toISOString());
+      const { json, filename } = exportSave(state.world, undefined, new Date().toISOString());
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
       toast({ title: "Save Exported", description: "File downloaded." });
     }
   };

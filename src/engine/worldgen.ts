@@ -401,7 +401,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   }
 
   let rikishiCounter = 0;
-  const heyaList = Array.from(heyaMap.values());
+  const heyaList = [...heyaMap.values()];
 
   rankSlots.forEach((slot) => {
     const rid = `rikishi_${rikishiCounter++}`;

@@ -1,4 +1,4 @@
-import { stableTieBreak } from "./utils/sort";
+// stableTieBreak is defined locally below for sponsor-specific comparison
 import { clamp } from './utils';
 // sponsors.ts
 // Procedural Sponsors, Kenshō & Supporters System
@@ -529,7 +529,8 @@ export function assignKenshoBanners(
   const count = Math.max(0, Math.floor(bannerCount));
   if (count === 0) return [];
 
-  const activeSponsors = Array.from(sponsorPool.sponsors.values()).filter((s) => s.active);
+  const activeSponsors: Sponsor[] = [];
+  for (const s of sponsorPool.sponsors.values()) { if (s.active) activeSponsors.push(s); }
   if (activeSponsors.length === 0) return [];
 
   const caps = TIER_CAPS[importance];
@@ -624,9 +625,11 @@ export function createKoenkai(
   // Select initial members (3-7 sponsors)
   const memberCount = 3 + Math.floor(rng.next() * 5);
 
-  const eligibleSponsors = Array.from(sponsorPool.sponsors.values())
-    .filter((s) => s.active && (s.tier === "T1" || s.tier === "T2" || s.tier === "T3"))
-    .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
+  const eligibleSponsors: Sponsor[] = [];
+  for (const s of sponsorPool.sponsors.values()) {
+    if (s.active && (s.tier === "T1" || s.tier === "T2" || s.tier === "T3")) eligibleSponsors.push(s);
+  }
+  eligibleSponsors.sort((a, b) => b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
 
   const picked = eligibleSponsors.slice(0, Math.min(memberCount, eligibleSponsors.length));
   const members: SponsorRelationship[] = [];
@@ -711,9 +714,11 @@ export function selectBenefactor(
   }
 
   // Priority 2: Global pool highest-tier sponsor with high riskAppetite (deterministic order)
-  const eligible = Array.from(sponsorPool.sponsors.values())
-    .filter((s) => s.active && (s.tier === "T4" || s.tier === "T5") && s.riskAppetite >= 60)
-    .sort((a, b) => b.riskAppetite - a.riskAppetite || b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
+  const eligible: Sponsor[] = [];
+  for (const s of sponsorPool.sponsors.values()) {
+    if (s.active && (s.tier === "T4" || s.tier === "T5") && s.riskAppetite >= 60) eligible.push(s);
+  }
+  eligible.sort((a, b) => b.riskAppetite - a.riskAppetite || b.prestigeAffinity - a.prestigeAffinity || stableTieBreak(a, b));
 
   if (eligible.length > 0) return eligible[0];
 

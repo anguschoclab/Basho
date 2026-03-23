@@ -214,7 +214,9 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
  * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
  */
 function tickDailyCommon(world: WorldState, subs: string[]): void {
-  for (const r of stableSort(Array.from(world.rikishi.values()), x => (x as any).id || String(x))) {
+  const rikishiArr: any[] = [];
+  for (const r of world.rikishi.values()) rikishiArr.push(r);
+  for (const r of stableSort(rikishiArr, x => (x as any).id || String(x))) {
     if (r.isRetired) continue;
 
     // Persist descriptor for UI hysteresis buffer
@@ -319,7 +321,9 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   }
 
   // 5) Daily economy micro-tick (food costs)
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  const heyaArr: any[] = [];
+  for (const h of world.heyas.values()) heyaArr.push(h);
+  for (const heya of stableSort(heyaArr, x => (x as any).id || String(x))) {
     const welfare = ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = diet === "austerity" ? 1000 : diet === "maintenance" ? 3000 : diet === "heavy_bulk" ? 6000 : 10000;
