@@ -9,7 +9,6 @@ import type { Loan, LoanType } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./media";
 import { rngForWorld } from "./rng";
-import { stableSort } from "./utils/sort";
 
 /**
  * Check and issue loans for insolvent stables.
@@ -135,7 +134,7 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: string): voi
  * Process monthly loan repayments for all heyas.
  */
 export function processMonthlyLoanRepayments(world: WorldState): void {
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     if (!heya.activeLoans || heya.activeLoans.length === 0) continue;
 
     let totalPayment = 0;

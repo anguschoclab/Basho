@@ -22,6 +22,7 @@ export interface BashoInfo {
   venueJa: string;
   startDay: number;
   season: Season;
+  description: string;
 }
 
 /** Defines the structure for bout log entry. */

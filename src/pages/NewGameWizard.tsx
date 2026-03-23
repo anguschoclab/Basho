@@ -11,7 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building2, CircleUser, Star, ArrowRight, ArrowLeft, Trophy, DollarSign, Building } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
-import { makeDeterministicSeed } from "@/engine/utils/seed";
+
+// Function borrowed from MainMenu
+function makeDeterministicSeed(prefix = "world"): string {
+  const hash = Math.random().toString(36).substring(2, 8);
+  return `${prefix}-${hash}`;
+}
 
 const OYAKATA_BACKGROUNDS = [
   {

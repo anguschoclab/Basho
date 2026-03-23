@@ -412,8 +412,6 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
                           <button
                             key={t.id}
                             onClick={() => onTacticChange(idx, t.id as any)}
-                            aria-label={`Select ${t.label} tactic: ${t.desc}`}
-                            aria-pressed={isSelected}
                             className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
                           >
                             <div className="font-semibold text-xs">{t.label}</div>

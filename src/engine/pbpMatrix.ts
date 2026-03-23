@@ -69,30 +69,46 @@ function loadVoiceMatrix(): PbpLibrary {
       upset: castBucket(matrixData.finish.upset),
       close_call: castBucket(matrixData.finish.close_call),
       kinboshi: castBucket(matrixData.finish.kinboshi),
-      kimarite: Object.fromEntries(Object.entries((matrixData.finish as any).kimarite || {}).map(([k, v]) => [k, castBucket(v as any)]))
     },
-    injury: Object.fromEntries(Object.entries((matrixData as any).injury || {}).map(([k, v]: [string, any]) => [k, {
-        default: castBucket(v?.default || []),
-        strict: castBucket(v?.strict || []),
-        indulgent: castBucket(v?.indulgent || []),
-        traditionalist: castBucket(v?.traditionalist || []),
-        scientist: castBucket(v?.scientist || []),
-        gambler: castBucket(v?.gambler || []),
-        nurturer: castBucket(v?.nurturer || []),
-        tyrant: castBucket(v?.tyrant || []),
-        strategist: castBucket(v?.strategist || [])
-      }])) as any,
-    institutional: Object.fromEntries(Object.entries((matrixData as any).institutional || {}).map(([k, v]: [string, any]) => [k, {
-        default: castBucket(v?.default || []),
-        strict: castBucket(v?.strict || []),
-        indulgent: castBucket(v?.indulgent || []),
-        traditionalist: castBucket(v?.traditionalist || []),
-        scientist: castBucket(v?.scientist || []),
-        gambler: castBucket(v?.gambler || []),
-        nurturer: castBucket(v?.nurturer || []),
-        tyrant: castBucket(v?.tyrant || []),
-        strategist: castBucket(v?.strategist || [])
-      }])) as any,
+    injury: {
+      sprain: castBucket((matrixData as any).injury?.sprain || []),
+      strain: castBucket((matrixData as any).injury?.strain || []),
+      contusion: castBucket((matrixData as any).injury?.contusion || []),
+      inflammation: castBucket((matrixData as any).injury?.inflammation || []),
+      tear: castBucket((matrixData as any).injury?.tear || []),
+      fracture: castBucket((matrixData as any).injury?.fracture || []),
+      nerve: castBucket((matrixData as any).injury?.nerve || []),
+      unknown: castBucket((matrixData as any).injury?.unknown || []),
+    },
+    institutional: {
+      GOVERNANCE_STATUS_CHANGED: {
+        default: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.default || []),
+        traditionalist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.GOVERNANCE_STATUS_CHANGED?.strategist || []),
+      },
+      GOVERNANCE_RULING: {
+        default: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.default || []),
+        traditionalist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.GOVERNANCE_RULING?.strategist || []),
+      },
+      WELFARE_ALERT: {
+        default: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.default || []),
+        traditionalist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.traditionalist || []),
+        scientist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.scientist || []),
+        gambler: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.gambler || []),
+        nurturer: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.nurturer || []),
+        tyrant: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.tyrant || []),
+        strategist: castBucket((matrixData as any).institutional?.WELFARE_ALERT?.strategist || []),
+      }
+    },
     connective: {
       short: castBucket(matrixData.connective.short),
     },
@@ -136,20 +152,10 @@ export function validateDiversityGates(
     finish: lib.finish,
   };
   for (const [ctx, buckets] of Object.entries(sections)) {
-    const validateBucket = (bucketName: string, items: unknown) => {
-        if (Array.isArray(items)) {
-          if (items.length < minPhrases) failures.push({ context: ctx, bucket: bucketName, count: items.length });
-        } else if (items && typeof items === 'object') {
-          for (const [subKey, subItems] of Object.entries(items)) {
-            validateBucket(bucketName + '.' + subKey, subItems);
-          }
-        } else {
-          if (0 < minPhrases) failures.push({ context: ctx, bucket: bucketName, count: 0 });
-        }
-      };
-      for (const [bucket, phrases] of Object.entries(buckets)) {
-        validateBucket(bucket, phrases);
-      }
+    for (const [bucket, phrases] of Object.entries(buckets)) {
+      const count = Array.isArray(phrases) ? phrases.length : 0;
+      if (count < minPhrases) failures.push({ context: ctx, bucket, count });
+    }
   }
   return failures;
 }

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { advanceOneDay, advanceDays, enterPostBasho, enterInterim } from "../dailyTick";
+import { advanceOneDay, advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
 import type { WorldState, CyclePhase } from "../types/world";
 import type { Heya } from "../types/heya";
 

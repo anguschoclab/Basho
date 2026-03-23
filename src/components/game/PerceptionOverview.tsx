@@ -13,7 +13,7 @@ import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArro
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
-import { getCachedPerception, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
+import { buildPerceptionSnapshot, type PerceptionSnapshot, type RikishiPerception } from "@/engine/perception";
 
 const STATURE_COLOR: Record<string, string> = {
   legendary: "text-amber-400",
@@ -82,7 +82,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
     const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
     for (const heya of world.heyas.values()) {
       if (heya.rikishiIds.length === 0) continue;
-      const snap = getCachedPerception(world, heya.id);
+      const snap = buildPerceptionSnapshot(world, heya.id);
       const entry = { ...snap, isPlayer: heya.id === playerHeyaId };
       results.push(entry);
       map.set(heya.id, entry);
@@ -362,8 +362,6 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapA.rikishiPerceptions.map(r => (
                 <button
                   key={r.rikishiId}
-                  aria-label={`Select ${r.shikona} from ${snapA.heyaName}`}
-                  aria-pressed={selectedA === r.rikishiId}
                   className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
                     selectedA === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
                   }`}
@@ -383,8 +381,6 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapB.rikishiPerceptions.map(r => (
                 <button
                   key={r.rikishiId}
-                  aria-label={`Select ${r.shikona} from ${snapB.heyaName}`}
-                  aria-pressed={selectedB === r.rikishiId}
                   className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
                     selectedB === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
                   }`}
