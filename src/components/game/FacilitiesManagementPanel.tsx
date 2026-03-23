@@ -60,7 +60,7 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   minimal: "Minimal",
 };
 
-import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/engine/utils/ui-helpers";
+import { getFacilityLevelLabel as getLevelBand, getFacilityLevelColor as getLevelColor } from "@/presenters/uiDigest";
 
 /**
  * Get effect percent.

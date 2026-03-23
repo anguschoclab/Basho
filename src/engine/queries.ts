@@ -12,6 +12,7 @@ import type { Oyakata } from "./types/oyakata";
 import type { Division } from "./types/banzuke";
 import type { Style } from "./types/combat";
 import type { Id } from "./types/common";
+import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
 
 // ─── Single-Entity Lookups ──────────────────────────────
 
@@ -71,7 +72,7 @@ export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
-  for (const r of world.rikishi.values()) {
+  for (const r of getSelectorsActiveRikishi(world)) {
     if (r.heyaId !== heyaId) continue;
     if ((r.nationality || "Japan") !== "Japan") count += 1;
   }
@@ -112,7 +113,7 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutra
  * Get all heyas as an array (stable iteration order from the Map).
  */
 export function getAllHeyas(world: WorldState): Heya[] {
-  return Array.from(world.heyas.values());
+  return getAvailableStables(world);
 }
 
 /**
@@ -121,7 +122,7 @@ export function getAllHeyas(world: WorldState): Heya[] {
 export function getNPCHeyas(world: WorldState): Heya[] {
   const playerHeyaId = world.playerHeyaId;
   const out: Heya[] = [];
-  for (const heya of world.heyas.values()) {
+  for (const heya of getAvailableStables(world)) {
     if (heya.id !== playerHeyaId) out.push(heya);
   }
   return out;
@@ -134,7 +135,7 @@ export function getNPCHeyas(world: WorldState): Heya[] {
  * "Active" = present in world.rikishi (the map is the canonical set).
  */
 export function getActiveRikishi(world: WorldState): Rikishi[] {
-  return Array.from(world.rikishi.values());
+  return getSelectorsActiveRikishi(world);
 }
 
 /**
@@ -142,7 +143,7 @@ export function getActiveRikishi(world: WorldState): Rikishi[] {
  */
 export function getRikishiByDivision(world: WorldState, division: Division): Rikishi[] {
   const out: Rikishi[] = [];
-  for (const r of world.rikishi.values()) {
+  for (const r of getSelectorsActiveRikishi(world)) {
     if (r.division === division) out.push(r);
   }
   return out;

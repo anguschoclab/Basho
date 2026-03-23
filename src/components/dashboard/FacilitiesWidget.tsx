@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { getMonthlyMaintenanceCost } from "@/engine/facilities";
-import { getFacilityLevelLabel, getFacilityLevelColor } from "@/engine/utils/ui-helpers";
+import { getFacilityLevelLabel, getFacilityLevelColor } from "@/presenters/uiDigest";
 
 const AXIS_ICONS = {
   training: Building,

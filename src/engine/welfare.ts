@@ -18,6 +18,7 @@ import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
 import { getRikishi } from "./queries";
+import { getAvailableStables } from "./selectors";
 
 
 
@@ -212,7 +213,7 @@ function setComplianceState(state: WelfareState, next: ComplianceState) {
 export function tickWeek(world: WorldState): number {
   let events = 0;
 
-  for (const heya of world.heyas.values()) {
+  for (const heya of getAvailableStables(world)) {
     const w = ensureHeyaWelfareState(heya);
     const beforeRisk = w.welfareRisk;
 

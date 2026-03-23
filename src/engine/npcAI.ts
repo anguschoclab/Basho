@@ -17,6 +17,7 @@ import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
 import { getHeyaStyleBias, getOyakataForHeya, getRikishi, getHeya } from "./queries";
+import { getAvailableStables } from "./selectors";
 import {
   getCachedPerception,
   type PerceptionSnapshot,
@@ -536,7 +537,7 @@ export function tickWeek(world: WorldState): number {
   if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
-  for (const heya of world.heyas.values()) {
+  for (const heya of getAvailableStables(world)) {
     // Skip player-owned heya — player makes their own decisions
     if (heya.id === playerHeyaId) continue;
 
@@ -613,9 +614,7 @@ export function tickWeek(world: WorldState): number {
 export function tickMonthly(world: WorldState): void {
   // 1. Myoseki Bidding
   if (world.myosekiMarket) {
-    const heyaArrMonth: any[] = [];
-    for (const h of world.heyas.values()) heyaArrMonth.push(h);
-    for (const heya of stableSort(heyaArrMonth, x => (x as any).id || String(x))) {
+    for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
       if (heya.id === world.playerHeyaId) continue;
 
       const oyakata = world.oyakata.get(heya.oyakataId);
@@ -636,9 +635,7 @@ export function tickMonthly(world: WorldState): void {
   // 2. Roster Management (Retirement & Scouting)
   const vacanciesByHeyaId: Record<Id, number> = {};
 
-  const heyaArrRoster: any[] = [];
-  for (const h of world.heyas.values()) heyaArrRoster.push(h);
-  for (const heya of stableSort(heyaArrRoster, x => (x as any).id || String(x))) {
+  for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
     if (heya.id === world.playerHeyaId) continue;
 
     // Evaluate retirements
@@ -685,7 +682,7 @@ export function tickMonthly(world: WorldState): void {
  * NPC Manager AI yearly decision loop.
  */
 export function tickYear(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of getAvailableStables(world)) {
     if (heya.id === world.playerHeyaId) continue;
     const persona = getManagerPersona(world, heya.id);
     

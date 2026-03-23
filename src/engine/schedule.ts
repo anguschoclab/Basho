@@ -9,6 +9,7 @@ import type { BashoState, MatchSchedule } from "./types/basho";
 import type { Division } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
+import { getActiveRikishi } from "./selectors";
 import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
 /** Defines the structure for division schedule config. */
@@ -48,7 +49,7 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
  */
 function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
-  for (const r of world.rikishi.values()) {
+  for (const r of getActiveRikishi(world)) {
     if (r.division === division && !r.injured) {
       pool.push(r);
     }
