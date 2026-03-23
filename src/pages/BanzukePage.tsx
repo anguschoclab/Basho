@@ -12,9 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { Division, RankPosition } from "@/engine/types/banzuke";
-import { projectRosterEntry } from "@/presenters/uiModels";
+import { projectRosterEntry, buildPrevRankScores, buildBanzukeRows } from "@/presenters/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import { buildRankRows, buildPrevRankMap, rankRowClass } from "@/components/banzuke/banzukeHelpers";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -23,9 +22,9 @@ export default function BanzukePage() {
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const prevRankMap = useMemo(() => {
-    if (!world) return new Map();
-    return buildPrevRankMap(world.history);
+  const prevScoreMap = useMemo(() => {
+    if (!world?.history) return new Map<string, number>();
+    return buildPrevRankScores(world.history);
   }, [world]);
 
   const rosterEntries = useMemo(() => {
@@ -35,8 +34,8 @@ export default function BanzukePage() {
       if (!r.isRetired) arr.push(r);
     }
     return arr
-      .map(r => projectRosterEntry(r));
-  }, [world]);
+      .map(r => projectRosterEntry(r, world, prevScoreMap.get(r.id)));
+  }, [world, prevScoreMap]);
 
   const heyaNameMap = useMemo(() => {
     if (!world) return new Map<string, string>();
@@ -49,18 +48,11 @@ export default function BanzukePage() {
     return map;
   }, [world]);
 
-  // Build set of player stable rikishi IDs
-  const playerRikishiIds = useMemo(() => {
-    if (!world) return new Set<string>();
-    const playerHeya = Array.from(world.heyas.values()).find(h => h.isPlayerOwned);
-    if (!playerHeya) return new Set<string>();
-    return new Set(playerHeya.rikishiIds);
-  }, [world]);
 
   if (!world) return null;
 
   const kadobanMap: OzekiKadobanMap = world.ozekiKadoban ?? {};
-  const hasPrevBasho = prevRankMap.size > 0;
+  const hasPrevBasho = prevScoreMap.size > 0;
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
   const competitionTabs = [
@@ -146,7 +138,7 @@ export default function BanzukePage() {
           </TabsList>
 
           {divisions.map(div => {
-            const rows = buildRankRows(rosterEntries, div, searchQuery);
+            const rows = buildBanzukeRows(rosterEntries, div, searchQuery);
             return (
               <TabsContent key={div} value={div}>
                 <Card className="overflow-hidden">
@@ -170,7 +162,7 @@ export default function BanzukePage() {
                           {rows.map((row, i) => (
                             <tr
                               key={row.rankKey}
-                              className={`border-b hover:bg-muted/50 transition-colors bout-enter ${rankRowClass(row.rankTier)}`}
+                              className={`border-b hover:bg-muted/50 transition-colors bout-enter ${row.rankTierClass}`}
                               style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
                             >
                               <RikishiCell
@@ -178,9 +170,7 @@ export default function BanzukePage() {
                                 kadobanMap={kadobanMap}
                                 heyaName={row.east ? heyaNameMap.get(row.east.id) : undefined}
                                 showChanges={showChanges && hasPrevBasho}
-                                prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
-                                isPlayerStable={row.east ? playerRikishiIds.has(row.east.id) : false}
                                 side="east"
                               />
                               <td className="p-3 text-center">
@@ -204,9 +194,7 @@ export default function BanzukePage() {
                                 kadobanMap={kadobanMap}
                                 heyaName={row.west ? heyaNameMap.get(row.west.id) : undefined}
                                 showChanges={showChanges && hasPrevBasho}
-                                prevRankMap={prevRankMap}
                                 searchQuery={searchQuery}
-                                isPlayerStable={row.west ? playerRikishiIds.has(row.west.id) : false}
                                 side="west"
                               />
                             </tr>
