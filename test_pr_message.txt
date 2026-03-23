@@ -1,0 +1,13 @@
+🧪 [testing improvement] Add tests for holiday engine system
+
+🎯 **What:**
+The holiday system (`src/engine/holiday.ts`) was lacking test coverage for its primary scheduling entry point `runHoliday`. This PR adds a complete test suite to ensure robust handling of specific holiday targets, safe gate checks, and basho interruptions.
+
+📊 **Coverage:**
+- Advancing simulation to specific short-term points: `nextDay`, `nextWeek`, `nextMonth`.
+- Handling simulation interruption upon basho phases: `endOfBasho` and `nextBashoDay1`.
+- Testing proper evaluation and early stop behavior when safety gates (e.g. `insolvencyWarning`) trigger.
+- Handling simulation loops hitting max cap limits.
+
+✨ **Result:**
+The `runHoliday` core functionality is now thoroughly unit-tested, improving code reliability for scheduling actions and preventing future regressions in time orchestration mechanics.
