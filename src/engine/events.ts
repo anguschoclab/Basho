@@ -434,6 +434,24 @@ export function tickWeek(world: WorldState): number {
 
   if (trimmedCount > 0) {
     eventsState.log = newLog;
+
+    // Process dedupe keys in a single pass over the map
+    if (prefixesToRemove.size > 0) {
+      for (const key of Object.keys(eventsState.dedupe).sort()) {
+        // Fast path extraction of the prefix instead of splitting the whole string
+        // Format is typically year|week|...
+        const firstPipe = key.indexOf('|');
+        if (firstPipe !== -1) {
+          const secondPipe = key.indexOf('|', firstPipe + 1);
+          if (secondPipe !== -1) {
+            const prefix = key.slice(0, secondPipe + 1);
+            if (prefixesToRemove.has(prefix)) {
+              delete eventsState.dedupe[key];
+            }
+          }
+        }
+      }
+    }
   }
 
   return trimmedCount;
