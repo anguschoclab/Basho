@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { simulateBout } from "../bout";
+import { simulateBout } from "../bout/boutResolver";
 import type { Rikishi } from "../types/rikishi";
 import type { TacticalArchetype, Style } from "../types/combat";
 import type { Division, Rank, Side } from "../types/banzuke";
@@ -128,12 +128,15 @@ describe("10-Basho Meta Shift Simulation", () => {
 
   for (let b = 0; b < NUM_BASHOS; b++) {
     const standings = simulateBasho(field, b);
-    // Find yusho winner
-    let bestId = "";
+    // Find yusho winner (resolve ties randomly but deterministically)
+    let bestIds: string[] = [];
     let bestWins = -1;
     for (const [id, rec] of standings) {
-      if (rec.wins > bestWins) { bestWins = rec.wins; bestId = id; }
+      if (rec.wins > bestWins) { bestWins = rec.wins; bestIds = [id]; }
+      else if (rec.wins === bestWins) { bestIds.push(id); }
     }
+    const ha = hashCode(`${b}-tiebreaker`);
+    const bestId = bestIds[Math.abs(ha) % bestIds.length];
     const winner = fieldMap.get(bestId)!;
     yushoLog.push({ basho: b + 1, winnerId: bestId, archetype: winner.archetype as TacticalArchetype, wins: bestWins });
     archetypeYushos[winner.archetype]++;

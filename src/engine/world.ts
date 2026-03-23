@@ -18,7 +18,7 @@ import { toRankPosition } from "./types";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { initializeBasho } from "./worldgen";
 import { getNextBasho } from "./calendar";
-import { resolveBout } from "./bout";
+import { resolveBout } from "./bout/boutResolver";
 import { updateH2H } from "./h2h";
 import { EventBus, logEngineEvent } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./tick/tickDaily";

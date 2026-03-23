@@ -12,14 +12,9 @@
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult } from "./types/basho";
-import { simulateBout } from "./bout";
+import { simulateBout } from "./bout/boutResolver";
 import { getNextBasho, BASHO_CALENDAR, getBashoNumber } from "./calendar";
-import {
-  advanceWeeks,
-  processWeeklyBoundary,
-  processMonthlyBoundary,
-  type TimeState
-} from "./timeBoundary";
+import { advanceDays } from "./tick/tickDaily";
 import { RANK_HIERARCHY } from "./banzuke";
 import { initializeBasho, generateDaySchedule } from "./worldgen";
 import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, type DivisionScheduleConfig } from "./schedule";
@@ -405,17 +400,8 @@ export function runAutoSim(
     // Canon: inter-basho time is fixed 6 weeks
     const interBashoWeeks = 6;
 
-    // Boundary-aware deterministic time advancement
-    const timeState: TimeState = {
-      year: world.year,
-      month: BASHO_CALENDAR[bashoName].month,
-      week: 3,
-      dayIndexGlobal: daysSimulated,
-      weekIndexGlobal: Math.floor(daysSimulated / 7),
-      phase: "interbasho"
-    };
-
-    advanceInterBashoDeterministic(world, interBashoWeeks, timeState, `${bashoSeed}-inter`);
+    // Boundary-aware deterministic time advancement is handled inside advanceDays
+    advanceInterBashoDeterministic(world, interBashoWeeks, `${bashoSeed}-inter`);
 
     // Update world state
     world.currentBashoName = nextBasho;
@@ -610,7 +596,6 @@ function checkStopCondition(
 function advanceInterBashoDeterministic(
   world: WorldState,
   weeks: number,
-  timeState: TimeState,
   seed: string
 ): void {
   // Always seed here even if the boundary processors use RNG internally
@@ -618,17 +603,8 @@ function advanceInterBashoDeterministic(
   // We do not consume RNG here; we only ensure callers pass a deterministic seed around.
   void seed;
 
-  // Advance whole weeks using existing engine function
-  advanceWeeks(world, weeks);
-
-  // Ensure weekly/monthly boundary processors run deterministically after advancement.
-  for (let i = 0; i < weeks; i++) {
-    processWeeklyBoundary(world, timeState);
-
-    if ((timeState.week + i + 1) % 4 === 0) {
-      processMonthlyBoundary(world, timeState);
-    }
-  }
+  // advanceDays automatically handles weekly, monthly, and yearly boundaries
+  advanceDays(world, weeks * 7);
 }
 
 // === DURATION / UTILITIES ===

@@ -19,7 +19,7 @@ import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side } from "./types/banzuke";
 import type { Stance, Style, TacticalArchetype } from "./types/combat";
 import type { BoutResult } from "./types/basho";
-import type { Advantage, Position } from "./bout";
+import type { Advantage, Position } from "./bout/boutPhysics";
 
 /** =========================
  *  Fact Layer Types

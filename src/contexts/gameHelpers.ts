@@ -27,3 +27,13 @@ export function getMatchesForDay(world: WorldState | null) {
       west: world.rikishi.get(m.westRikishiId),
     }));
 }
+
+/** Reducer function signature */
+export type Reducer<S = any, A = any> = (state: S, action: A) => S;
+
+/** Compose an array of reducers. Each slice is run sequentially on the state. */
+export function combineReducers<S, A>(slices: Array<Reducer<S, A>>): Reducer<S, A> {
+  return (state: S, action: A) => {
+    return slices.reduce((currentState, slice) => slice(currentState, action), state);
+  };
+}

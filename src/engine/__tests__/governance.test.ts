@@ -1,8 +1,7 @@
-import { describe, it, expect, mock } from "bun:test";
-
+import { describe, it, expect, vi } from "vitest";
 
 // Mock rng.ts entirely
-mock.module("../rng", () => ({
+vi.mock("../rng", () => ({
   rngFromSeed: () => ({
     next: () => 0.5,
     int: (min: number, max: number) => Math.floor(0.5 * (max - min + 1)) + min,
@@ -19,12 +18,11 @@ mock.module("../rng", () => ({
   }),
 }));
 
-// Mock media.ts to avoid its dependencies
-export const generateScandalHeadlineMock = mock(() => null);
-
-mock.module("../media", () => ({
-  generateScandalHeadline: generateScandalHeadlineMock,
+vi.mock("../media", () => ({
+  generateScandalHeadline: vi.fn(() => null),
 }));
+
+import { generateScandalHeadline } from "../media";
 
 import { tickWeek, reportScandal, SCANDAL_DECAY_RATE, SCANDAL_WARNING_THRESHOLD, SCANDAL_PROBATION_THRESHOLD, SCANDAL_SANCTION_THRESHOLD } from "../governance";
 import type { WorldState, Heya } from "../types";
@@ -146,7 +144,7 @@ describe("Governance: tickWeek", () => {
 
 
   it("should catch errors from media generation and not throw", () => {
-    generateScandalHeadlineMock.mockImplementationOnce(() => {
+    vi.mocked(generateScandalHeadline).mockImplementationOnce(() => {
       throw new Error("API Limit Reached");
     });
 
@@ -226,7 +224,7 @@ describe("Governance: reportScandal", () => {
 
 
   it("should catch errors from media generation in reportScandal and not throw", () => {
-    generateScandalHeadlineMock.mockImplementationOnce(() => {
+    vi.mocked(generateScandalHeadline).mockImplementationOnce(() => {
       throw new Error("API Limit Reached");
     });
 
@@ -259,7 +257,7 @@ describe("Governance: reportScandal", () => {
 
   it("should not halt scandal reporting when generateScandalHeadline throws an error", () => {
     // Mock the media generation to throw an error
-    generateScandalHeadlineMock.mockImplementationOnce(() => {
+    vi.mocked(generateScandalHeadline).mockImplementationOnce(() => {
       throw new Error("Simulated media generation failure");
     });
 
@@ -281,8 +279,8 @@ describe("Governance: reportScandal", () => {
 
 describe("Governance: Public Helpers", () => {
   describe("getStatusLabel", () => {
-    it("should return correct label for each status", () => {
-      const { getStatusLabel } = require("../governance");
+    it("should return correct label for each status", async () => {
+      const { getStatusLabel } = await import("../governance");
       expect(getStatusLabel("good_standing")).toBe("Good Standing");
       expect(getStatusLabel("warning")).toBe("Under Review");
       expect(getStatusLabel("probation")).toBe("Probation");
@@ -291,8 +289,8 @@ describe("Governance: Public Helpers", () => {
   });
 
   describe("getStatusColor", () => {
-    it("should return correct tailwind color class for each status", () => {
-      const { getStatusColor } = require("../governance");
+    it("should return correct tailwind color class for each status", async () => {
+      const { getStatusColor } = await import("../governance");
       expect(getStatusColor("good_standing")).toBe("text-green-600");
       expect(getStatusColor("warning")).toBe("text-yellow-600");
       expect(getStatusColor("probation")).toBe("text-orange-600");

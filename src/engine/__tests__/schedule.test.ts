@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { describe, it, expect, beforeEach } from "vitest";
 import { mockRikishi } from "./utils";
 import { scheduleDivisionDay } from "../schedule";
 import type { WorldState } from "../types/world";

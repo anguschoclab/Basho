@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { describe, it, expect, beforeEach } from "vitest";
 import { generateMyosekiMarket, buyMyoseki, leaseMyoseki, tickMyosekiMarket } from "../myosekiMarket";
 import type { Oyakata } from "../types/oyakata";
 import type { WorldState } from "../types/world";

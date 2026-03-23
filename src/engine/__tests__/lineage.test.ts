@@ -1,4 +1,4 @@
-import { test, expect, describe } from "bun:test";
+import { test, expect, describe } from "vitest";
 import { assignMentor, getMentor, menteesOf, ensureLineage } from "../lineage";
 import { WorldState } from "../types/world";
 import { Rikishi } from "../types/rikishi";

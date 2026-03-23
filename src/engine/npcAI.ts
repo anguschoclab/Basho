@@ -29,6 +29,11 @@ import {
 } from "./perception";
 import { logEngineEvent } from "./events";
 
+// Strategies
+import { getFinanceStrategy } from "./npcFinanceStrategy";
+import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
+import { getRetirementStrategy } from "./npcRetirementStrategy";
+
 // ─── Persona ────────────────────────────────────────────
 
 /**
@@ -612,66 +617,45 @@ export function tickWeek(world: WorldState): number {
  * - Roster management: retire aging/injured rikishi, recruit to fill vacancies
  */
 export function tickMonthly(world: WorldState): void {
-  // 1. Myoseki Bidding
+  // 1. Myoseki Bidding via Finance Strategy
   if (world.myosekiMarket) {
     for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
       if (heya.id === world.playerHeyaId) continue;
-
       const oyakata = world.oyakata.get(heya.oyakataId);
       if (!oyakata) continue;
 
-      if (heya.funds > 300_000_000 && oyakata.traits.ambition > 50) {
-        const stocks = stableSort(Object.values(world.myosekiMarket.stocks), x => (x as any).id || String(x));
-        for (const stock of stocks) {
-          if (stock.status === "available" && stock.askingPrice && stock.askingPrice < (heya.funds - 100_000_000)) {
-            buyMyoseki(world, oyakata.id, heya.id, stock.id);
-            break; // Only buy one per month per heya
-          }
-        }
-      }
+      const financeStrat = getFinanceStrategy(oyakata.archetype);
+      financeStrat.evaluateFinances(world, heya as import("./types/heya").Heya, oyakata);
     }
   }
 
-  // 2. Roster Management (Retirement & Scouting)
+  // 2. Roster Management (Retirement & Scouting Strategy)
   const vacanciesByHeyaId: Record<Id, number> = {};
 
   for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
     if (heya.id === world.playerHeyaId) continue;
+    const oyakata = world.oyakata.get(heya.oyakataId);
+    if (!oyakata) continue;
 
     // Evaluate retirements
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(r, world.year, world.seed);
-      if (retireReason) {
-        // Emit retirement event
-        EventBus.retirement(world, r.id, heya.id, r.shikona || r.name || r.id, retireReason);
-
-        // Remove from heya
-        heya.rikishiIds = heya.rikishiIds.filter(id => id !== r.id);
-
-        // Remove from global active map
-        world.rikishi.delete(r.id);
-      }
-    }
+    const retirementStrat = getRetirementStrategy(oyakata.archetype);
+    retirementStrat.evaluateRetirements(world, heya as import("./types/heya").Heya, oyakata);
 
     // Evaluate vacancies
-    const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks === 0) {
-      const targetSize = 8;
-      const currentSize = heya.rikishiIds.length;
-      if (currentSize < targetSize) {
-        vacanciesByHeyaId[heya.id] = targetSize - currentSize;
-      }
+    const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
+    const vacancies = recruitmentStrat.evaluateVacancies(world, heya as import("./types/heya").Heya, oyakata);
+    
+    if (vacancies > 0) {
+      vacanciesByHeyaId[heya.id] = vacancies;
     }
   }
 
   // Execute recruiting if under global capacity
   if (Object.keys(vacanciesByHeyaId).length > 0) {
-    const globalCap = world.heyas.size * HARD_CAP_ROSTER_SIZE;
+    // Note: HARD_CAP_ROSTER_SIZE is exported from overflow, or we just trust talentpool
+    const globalCap = world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === 'number' ? HARD_CAP_ROSTER_SIZE : 30);
     if (world.rikishi.size < globalCap) {
+      // Assuming talentpool is globally available in this file
       talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId);
     }
   }

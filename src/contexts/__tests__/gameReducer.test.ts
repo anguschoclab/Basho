@@ -1,9 +1,9 @@
 // gameReducer.test.ts — Unit tests for each GameAction type
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { mock } from "bun:test";
+// removed bun:test
 import { gameReducer } from "../gameReducer";
 import { initialGameState, type GameState } from "../gameTypes";
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "../../engine/types/world";
 
 // Mock heavy engine modules to keep tests fast and isolated
 
@@ -27,8 +27,7 @@ function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
     heyas,
     rikishi,
     currentBashoName: "hatsu",
-      currentBasho: {},
-      calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     cyclePhase: "interim" as const,
     playerHeyaId: "heya-1",
     currentBasho: null,
@@ -48,7 +47,7 @@ function stateInBasho(): GameState {
 
 describe("gameReducer", () => {
   beforeEach(() => {
-    mock.restore();
+    vi.restoreAllMocks();
   });
 
   // === Pure navigation / selection actions ===

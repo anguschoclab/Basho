@@ -4,7 +4,7 @@ import * as injuries from "../injuries";
 import * as rivalries from "../rivalries";
 import * as economics from "../economics";
 import * as scoutingStore from "../scoutingStore";
-import { mock } from "bun:test";
+import { vi } from "vitest";
 import { generateWorld } from "../worldgen";
 
 
@@ -183,21 +183,10 @@ describe("applyBoutResult error handling", () => {
     };
 
     // Mock subsystems to throw errors
-    const injuryMock = mock.module("../injuries", () => ({
-      onBoutResolved: () => { throw new Error("Injury system failed"); }
-    }));
-
-    const rivalriesMock = mock.module("../rivalries", () => ({
-      onBoutResolved: () => { throw new Error("Rivalries system failed"); }
-    }));
-
-    const economicsMock = mock.module("../economics", () => ({
-      onBoutResolved: () => { throw new Error("Economics system failed"); }
-    }));
-
-    const scoutingMock = mock.module("../scoutingStore", () => ({
-      onBoutResolved: () => { throw new Error("Scouting system failed"); }
-    }));
+    vi.spyOn(injuries, "onBoutResolved").mockImplementation(() => { throw new Error("Injury system failed"); });
+    vi.spyOn(rivalries, "onBoutResolved").mockImplementation(() => { throw new Error("Rivalries system failed"); });
+    vi.spyOn(economics, "onBoutResolved").mockImplementation(() => { throw new Error("Economics system failed"); });
+    vi.spyOn(scoutingStore, "onBoutResolved").mockImplementation(() => { throw new Error("Scouting system failed"); });
 
     // Expect applyBoutResult not to throw an error
     expect(() => {

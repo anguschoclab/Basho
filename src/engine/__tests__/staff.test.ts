@@ -1,4 +1,4 @@
-import { expect, test, describe } from "bun:test";
+import { expect, test, describe } from "vitest";
 import { generateStaff, tickStaffWeek, tickStaffYear } from "../staff";
 import { WorldState } from "../types/world";
 import { Staff } from "../types/staff";

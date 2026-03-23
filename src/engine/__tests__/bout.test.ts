@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { mockRikishi } from "./utils";
-import { resolveBout, simulateBout } from "../bout";
+import { resolveBout, simulateBout } from "../bout/boutResolver";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BoutResult } from "../types/basho";
 import type { TacticalArchetype } from "../types/combat";

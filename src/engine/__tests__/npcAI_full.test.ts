@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { mockRikishi } from "./utils";
 import { determineNPCStyleBias, getManagerPersona, makeNPCWeeklyDecision } from "../npcAI";
 import { generateOyakata, OYAKATA_ARCHETYPES, getArchetypeDescription } from "../oyakataPersonalities";
