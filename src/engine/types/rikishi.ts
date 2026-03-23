@@ -3,10 +3,17 @@
  */
 
 import type { Id } from "./common";
-import type { Style, TacticalArchetype, KimariteId, CombatProfile } from "./combat";
+import type { Style, TacticalArchetype, KimariteId, CombatProfile, BoutTactic, RikishiArchetype } from "./combat";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
+
+/** Log of tactical success/failure during a basho. */
+export interface ArchetypeEvidence {
+  tactic: BoutTactic;
+  success: boolean;
+  bashoId: string;
+}
 
 /** Defines the structure for rikishi stats. */
 export interface RikishiStats {
@@ -63,8 +70,15 @@ export interface Rikishi {
   style: Style;
   trainingFocus?: string;
   combatProfile: CombatProfile;
+  
+  /** @deprecated use tacticalArchetypePrimary */
   archetype: TacticalArchetype;
-  derivedArchetype: import("./combat").RikishiArchetype;
+  /** @deprecated use tacticalArchetypePrimary */
+  derivedArchetype: RikishiArchetype;
+
+  tacticalArchetypePrimary: RikishiArchetype;
+  tacticalArchetypeSecondary?: RikishiArchetype;
+  archetypeEvidence: ArchetypeEvidence[];
 
   division: Division;
   rank: Rank;

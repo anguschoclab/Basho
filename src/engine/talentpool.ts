@@ -649,6 +649,9 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     style: candidate.style,
     archetype: candidate.archetype,
     derivedArchetype: deriveArchetype(stats, { height, weight }, candidate.style),
+    tacticalArchetypePrimary: deriveArchetype(stats, { height, weight }, candidate.style),
+    tacticalArchetypeSecondary: undefined, // Initial recruits start with single archetype
+    archetypeEvidence: [],
     combatProfile: candidate.combatProfile,
     careerWins: 0,
     careerLosses: 0,

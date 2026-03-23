@@ -414,8 +414,12 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     const birthYear = currentYear - (20 + rrng.int(0, 11));
     
     const stats = generateRikishiStats(rrng, slot.rank, archetype);
+    const height = 170 + rrng.next() * 25;
+    const weight = stats.weight;
 
     const style = archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid";
+    const derived = deriveArchetype(stats, { height, weight }, style);
+
     const combatProfile = {
       proficiencies: {
         oshi: archetype.includes("oshi") ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40,
@@ -439,8 +443,8 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       origin: origin,
       birthYear: birthYear,
       
-      height: 170 + rrng.next() * 25,
-      weight: stats.weight,
+      height: height,
+      weight: weight,
       
       stats: stats,
       power: stats.strength,
@@ -472,7 +476,10 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       style: style,
       combatProfile,
       archetype: archetype,
-      derivedArchetype: deriveArchetype(stats, { height: 170 + rrng.next() * 25, weight: stats.weight }, style),
+      derivedArchetype: derived,
+      tacticalArchetypePrimary: derived,
+      tacticalArchetypeSecondary: (slot.rank === "yokozuna" || slot.rank === "ozeki") ? "All_Rounder" : undefined,
+      archetypeEvidence: [],
       
       division: slot.division,
       rank: slot.rank,

@@ -2,8 +2,8 @@ import { RikishiStats } from "./types/rikishi";
 import { RikishiArchetype, Style } from "./types/combat";
 
 /**
- * Derives the first-class Archetype for a rikishi based on stats, 
- * physicals, and combat style.
+ * @deprecated Use immutable tacticalArchetypePrimary on Rikishi state.
+ * This is now used only for initial seeding during generation.
  * 
  * @param stats - Raw rikishi stats (strength, technique, etc.)
  * @param physicals - Height (cm) and Weight (kg)
