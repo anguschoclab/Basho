@@ -1,7 +1,7 @@
-import { stableSort } from "./utils/sort";
+import { stableSort } from "../utils/sort";
 /**
  * dailyTick.ts
- * =======================================================
+ * =======
  * Canon Daily Tick Pipeline (A3.1 / A4.1)
  *
  * Implements the authoritative AdvanceOneDay() pipeline from the
@@ -20,20 +20,10 @@ import { stableSort } from "./utils/sort";
  *   - Weekly (A3.2): every 7 days — training, injuries, economy, governance, etc.
  *   - Monthly (A3.3): on month boundary — salaries, rent, kōenkai, loans
  *   - Year (A3.5): on year boundary — HoF, era labels, annual summary
- * =======================================================
+ * =======
  */
 
-<<<<<<<< HEAD:src/engine/dailyTick.ts
-import type { WorldState, CyclePhase } from "./types/world";
-import { EventBus, logEngineEvent } from "./events";
-import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "./calendar";
-import { initializeBasho } from "./worldgen";
-import { toRikishiDescriptor } from "./descriptorBands";
-import * as schedule from "./schedule";
-import { needsScheduleForDay } from "./schedule";
-import { ensureHeyaWelfareState } from "./welfare";
-import { resetBashoMediaTracking } from "./media";
-========
+
 import type { WorldState, CyclePhase } from "../types/world";
 import { EventBus, logEngineEvent } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
@@ -42,15 +32,16 @@ import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
 import { ensureHeyaWelfareState } from "../welfare";
 import { resetBashoMediaTracking } from "../media";
->>>>>>>> origin/lovable-sync-1774080302:src/engine/tick/tickDaily.ts
+
+import { toRikishiDescriptor } from "../descriptorBands";
 
 import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
 import { tickYearBoundary } from "./tickYearly";
 
-// ============================================================================
+// ====
 // TYPES
-// ============================================================================
+// ====
 
 /** Defines the structure for daily tick report. */
 export interface DailyTickReport {
@@ -63,9 +54,9 @@ export interface DailyTickReport {
   yearBoundary?: boolean;
 }
 
-// ============================================================================
+// ====
 // CALENDAR HELPERS
-// ============================================================================
+// ====
 
 /** Days per month (non-leap for simplicity; deterministic) */
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -107,9 +98,9 @@ function advanceCalendarDay(world: WorldState): { monthBoundary: boolean; yearBo
   return { monthBoundary, yearBoundary };
 }
 
-// ============================================================================
+// ====
 // PHASE TRANSITION LOGIC
-// ============================================================================
+// ====
 
 /**
  * Get interim days total.
@@ -215,9 +206,9 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
   return undefined;
 }
 
-// ============================================================================
+// ====
 // SUBSYSTEM TICKS
-// ============================================================================
+// ====
 
 /**
  * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
@@ -257,9 +248,9 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
   subs.push("daily_fatigue");
 }
 
-// ============================================================================
+// ====
 // MAIN PIPELINE: AdvanceOneDay()
-// ============================================================================
+// ====
 
 /**
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
@@ -344,9 +335,9 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   return report;
 }
 
-// ============================================================================
+// ====
 // CONVENIENCE: Advance multiple days
-// ============================================================================
+// ====
 
 /**
  * Advance days.
@@ -374,9 +365,9 @@ export function advanceFullInterim(world: WorldState): DailyTickReport[] {
   return advanceDays(world, totalDays);
 }
 
-// ============================================================================
+// ====
 // PHASE INITIALIZERS (called by world.ts on phase entry)
-// ============================================================================
+// ====
 
 /**
  * Enter post basho.
