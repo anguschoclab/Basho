@@ -11,7 +11,7 @@ import { rngFromSeed, SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "../types/basho";
 import type { Side } from "../types/banzuke";
-import type { Stance, TacticalArchetype } from "../types/combat";
+import type { Stance, TacticalArchetype, RikishiArchetype } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
@@ -214,6 +214,7 @@ function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalMod
   const weightDiff = self.weight - opponent.weight;
   const techAdv = stat(self, "technique") - stat(opponent, "technique");
   const speedAdv = stat(self, "speed") - stat(opponent, "speed");
+  const derived = self.derivedArchetype as RikishiArchetype;
 
   // Base neutral modifiers
   const mods: TacticalModifiers = {
@@ -402,6 +403,32 @@ function computeTacticalModifiers(self: Rikishi, opponent: Rikishi): TacticalMod
         mods.description = "Accept the belt battle — counter from the clinch";
       }
       break;
+  }
+
+  // Phase 2 Integration: First-Class Archetype Lenses
+  if (derived) {
+    switch (derived) {
+      case "Explosive_Blitzer":
+        mods.tachiaiAggression += 8;
+        mods.clinchPreference = "push";
+        mods.description = `${mods.description} | Explosive Blitzer Lens`;
+        break;
+      case "Immovable_Mountain":
+        mods.clinchBonus += 10;
+        mods.momentumPersistence += 0.15;
+        mods.description = `${mods.description} | Immovable Mountain Lens`;
+        break;
+      case "Defensive_Stalwart":
+        mods.counterResist += 0.08;
+        mods.momentumPersistence += 0.10;
+        mods.description = `${mods.description} | Defensive Stalwart Lens`;
+        break;
+      case "Acrobatic_Trickster":
+        mods.fatigueEfficiency *= 0.85;
+        mods.finishBonus += 0.04;
+        mods.description = `${mods.description} | Acrobatic Trickster Lens`;
+        break;
+    }
   }
 
   return mods;
@@ -644,8 +671,14 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
   const baseDrain = 0.6 + rng.next() * 0.7;
 
   // Tactical AI: fatigue efficiency modifies drain rate
-  const eastEfficiency = eastTac?.fatigueEfficiency ?? 1.0;
-  const westEfficiency = westTac?.fatigueEfficiency ?? 1.0;
+  let eastEfficiency = eastTac?.fatigueEfficiency ?? 1.0;
+  let westEfficiency = westTac?.fatigueEfficiency ?? 1.0;
+
+  // NEW: Blitzer Exponential Drain after 5 seconds
+  if (st.timeSeconds > 5) {
+    if (east.derivedArchetype === "Explosive_Blitzer") eastEfficiency *= 1.8;
+    if (west.derivedArchetype === "Explosive_Blitzer") westEfficiency *= 1.8;
+  }
 
   st.fatigueEast += (baseDrain + eastLoad) * (st.advantage === "east" ? 0.9 : 1.15) * eastEfficiency;
   st.fatigueWest += (baseDrain + westLoad) * (st.advantage === "west" ? 0.9 : 1.15) * westEfficiency;
@@ -750,7 +783,7 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
       const advTac = advSide === "east" ? eastTac : westTac;
       const counterResistMod = advTac?.counterResist ?? 0;
 
-      const counterChance = clamp01(
+      let counterChance = clamp01(
         0.08 +
           stat(disR, "technique") / 250 +
           stat(disR, "balance") / 300 +
@@ -759,6 +792,14 @@ function resolveMomentumTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: E
           archBonus -
           counterResistMod  // opponent's tactical counter-resistance
       );
+
+      // NEW: Mountain Edge Resilience Buff
+      // If a 'Mountain' is backed against the tawara, they get a massive counter-chance boost
+      const lastEntry = st.log[st.log.length - 1];
+      const isAtEdge = lastEntry?.data?.edgeEvent !== undefined;
+      if (isAtEdge && disR.derivedArchetype === "Immovable_Mountain") {
+         counterChance = clamp01(counterChance + 0.25);
+      }
 
       if (rng.next() < counterChance) {
         st.advantage = "none";

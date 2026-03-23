@@ -21,6 +21,7 @@ import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
 import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
 import { getOyakataForHeya, getHeya, getForeignCountInHeya as getForeignCountInHeyaQuery } from "./queries";
+import { deriveArchetype } from "./archetype";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -324,6 +325,13 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
     temperament: {
       discipline: 50,
       volatility: 50
+    },
+    combatProfile: rikishi.combatProfile || {
+      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
+      preferredStyle: rikishi.style === "oshi" ? "oshi" : rikishi.style === "yotsu" ? "yotsu" : "technician",
+      specialties: [],
+      ringSense: 50,
+      aggressiveness: 50
     }
   };
 
@@ -640,6 +648,8 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     stamina: stats.stamina,
     style: candidate.style,
     archetype: candidate.archetype,
+    derivedArchetype: deriveArchetype(stats, { height, weight }, candidate.style),
+    combatProfile: candidate.combatProfile,
     careerWins: 0,
     careerLosses: 0,
     currentBashoWins: 0,

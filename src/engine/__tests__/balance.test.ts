@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { deriveArchetype } from '../archetype';
 
 const ARCHETYPES = [
   "oshi_specialist",
@@ -181,5 +182,37 @@ describe("Bout Balance — 1000 fights per matchup", () => {
       console.log(`  ${arch.padEnd(22)} ${pct}%${flag}`);
     }
     expect(true).toBe(true);
+  });
+});
+
+describe("Archetype Derivation Logic", () => {
+  it("derives Explosive_Blitzer correctly", () => {
+    const stats = { speed: 75, mental: 80, strength: 50, technique: 50, balance: 50, stamina: 50, adaptability: 50 } as any;
+    const physicals = { height: 180, weight: 140 };
+    expect(deriveArchetype(stats, physicals, "oshi")).toBe("Explosive_Blitzer");
+  });
+
+  it("derives Immovable_Mountain correctly", () => {
+    const stats = { strength: 70, balance: 75, speed: 40, mental: 50, technique: 50, stamina: 50, adaptability: 50 } as any;
+    const physicals = { height: 185, weight: 180 };
+    expect(deriveArchetype(stats, physicals, "yotsu")).toBe("Immovable_Mountain");
+  });
+
+  it("derives Defensive_Stalwart correctly", () => {
+    const stats = { technique: 80, balance: 85, speed: 50, mental: 50, strength: 50, stamina: 50, adaptability: 50 } as any;
+    const physicals = { height: 182, weight: 150 };
+    expect(deriveArchetype(stats, physicals, "yotsu")).toBe("Defensive_Stalwart");
+  });
+
+  it("derives Acrobatic_Trickster correctly", () => {
+    const stats = { speed: 85, technique: 80, strength: 40, mental: 50, balance: 50, stamina: 50, adaptability: 50 } as any;
+    const physicals = { height: 175, weight: 110 };
+    expect(deriveArchetype(stats, physicals, "hybrid")).toBe("Acrobatic_Trickster");
+  });
+
+  it("fallbacks to All_Rounder", () => {
+    const stats = { speed: 50, technique: 50, strength: 50, mental: 50, balance: 50, stamina: 50, adaptability: 50 } as any;
+    const physicals = { height: 180, weight: 150 };
+    expect(deriveArchetype(stats, physicals, "hybrid")).toBe("All_Rounder");
   });
 });

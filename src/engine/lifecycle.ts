@@ -12,6 +12,7 @@ import { Rank } from "./types/banzuke";
 import { TacticalArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import { generateRikishiName } from "./shikona";
+import { deriveArchetype } from "./archetype";
 
 // --- RETIREMENT LOGIC ---
 
@@ -149,6 +150,14 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
     // Style
     style: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid",
     archetype: archetype,
+    derivedArchetype: deriveArchetype(stats, { height: 175 + rng.next() * 20, weight: stats.weight }, archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid"),
+    combatProfile: {
+      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
+      preferredStyle: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "technician",
+      specialties: [],
+      ringSense: 50,
+      aggressiveness: stats.mental
+    },
     
     careerWins: 0,
     careerLosses: 0,

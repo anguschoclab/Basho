@@ -14,6 +14,7 @@ import type { Rikishi, RikishiStats } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { TrainingProfile, BeyaTrainingState, IndividualFocus, TrainingIntensity, TrainingFocus, RecoveryEmphasis, IndividualFocusType } from "./types/training";
+import type { RikishiArchetype } from "./types/combat";
 import type { Heya } from "./types/heya";
 import { rngFromSeed } from './rng';
 import { EventBus } from './events';
@@ -55,6 +56,15 @@ const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats, number
   technique: { strength: 0.90, speed: 0.90, technique: 1.35, balance: 1.10, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   balance:   { strength: 0.90, speed: 0.95, technique: 1.10, balance: 1.35, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   neutral:   { strength: 1.00, speed: 1.00, technique: 1.00, balance: 1.00, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
+};
+
+// 4. ARCHETYPE AFFINITY (NEW)
+const ARCHETYPE_AFFINITY: Record<RikishiArchetype, Partial<Record<keyof RikishiStats, number>>> = {
+  Explosive_Blitzer: { speed: 1.25, mental: 1.15, technique: 0.9, balance: 0.9, stamina: 0.85 },
+  Immovable_Mountain: { weight: 1.30, balance: 1.20, strength: 1.15, technique: 0.85, speed: 0.70 },
+  Defensive_Stalwart: { technique: 1.25, balance: 1.20, stamina: 1.10, speed: 0.9, mental: 1.1 },
+  Acrobatic_Trickster: { speed: 1.20, technique: 1.20, adaptability: 1.20, strength: 0.8, weight: 0.75 },
+  All_Rounder: { strength: 1.05, speed: 1.05, technique: 1.05, balance: 1.05, stamina: 1.05 },
 };
 
 /** f o c u s_ e f f e c t s. */
@@ -277,6 +287,8 @@ function calculateGrowthVector(
 
 
   const talentSeed = rikishi.talentSeed ?? 50;
+  const archetype = rikishi.derivedArchetype as RikishiArchetype;
+  const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
   const growth: Record<keyof RikishiStats, number> = {
     strength: 0, speed: 0, technique: 0, balance: 0,
@@ -287,7 +299,8 @@ function calculateGrowthVector(
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
     const ceiling = getStatCeiling(talentSeed, stat);
     const drMult = diminishingReturnsMult(currentVal, ceiling);
-    return totalMult * rawMult * drMult;
+    const affinityMult = affinity && affinity[stat] ? affinity[stat]! : 1.0;
+    return totalMult * rawMult * drMult * affinityMult;
   };
 
   growth.strength = applyCapped('strength', bias.strength, rikishi.stats?.strength || 50) * nutritionMult;

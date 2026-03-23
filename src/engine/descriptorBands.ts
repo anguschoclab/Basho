@@ -1,4 +1,5 @@
 import { clamp } from './utils';
+import type { RikishiArchetype } from './types/combat';
 // descriptorBands.ts
 // =======================================================
 // No-Leak Observability Layer (Constitution A7.1)
@@ -412,6 +413,32 @@ export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; descriptio
   unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
 };
 
+// === Archetype Labels (First-Class Narrative Tags) ===
+
+/** a r c h e t y p e_ l a b e l s. */
+export const ARCHETYPE_LABELS: Record<RikishiArchetype, { label: string; description: string }> = {
+  Defensive_Stalwart: { 
+    label: "Defensive Stalwart", 
+    description: "A technical specialist who prioritizes stability and reactive counters." 
+  },
+  Explosive_Blitzer: { 
+    label: "Explosive Blitzer", 
+    description: "Relies on a massive initial charge to end matches instantly, but tires quickly." 
+  },
+  Acrobatic_Trickster: { 
+    label: "Acrobatic Trickster", 
+    description: "Uses superior movement and technique to outmaneuver heavier opponents." 
+  },
+  Immovable_Mountain: { 
+    label: "Immovable Mountain", 
+    description: "A massive, powerful presence who is near-impossible to push out once established." 
+  },
+  All_Rounder: { 
+    label: "All-Rounder", 
+    description: "A balanced fighter with no glaring weaknesses and high adaptability." 
+  },
+};
+
 
 // === Injury Modifiers (C5.4) ===
 
@@ -457,6 +484,7 @@ export interface RikishiDescriptor {
   fatigueBand: FatigueBand;
   momentumBand: MomentumBand;
   potentialBand?: PotentialBand;
+  archetypeLabel?: { label: string; description: string };
   injuryModifiers?: string[];
 }
 
@@ -482,6 +510,7 @@ export function toRikishiDescriptor(r: {
     location?: string;
     weeksRemaining: number;
   };
+  derivedArchetype?: RikishiArchetype;
 }, prev?: Partial<RikishiDescriptor>): RikishiDescriptor {
   return {
     powerBand: toStatBand(r.power, prev?.powerBand),
@@ -492,6 +521,7 @@ export function toRikishiDescriptor(r: {
     fatigueBand: toFatigueBand(r.fatigue, prev?.fatigueBand),
     momentumBand: toMomentumBand(r.momentum),
     potentialBand: toPotentialBand(r.talentSeed, prev?.potentialBand),
+    archetypeLabel: r.derivedArchetype ? ARCHETYPE_LABELS[r.derivedArchetype] : undefined,
     injuryModifiers: getInjuryModifiers(r.injured ?? false, r.injuryStatus),
   };
 }

@@ -22,6 +22,7 @@ import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { generateStaff } from "./staff";
 import { Staff } from "./types/staff";
+import { deriveArchetype } from "./archetype";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { type IchimonName, type Faction } from "./types/economy";
@@ -471,6 +472,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       style: style,
       combatProfile,
       archetype: archetype,
+      derivedArchetype: deriveArchetype(stats, { height: 170 + rrng.next() * 25, weight: stats.weight }, style),
       
       division: slot.division,
       rank: slot.rank,

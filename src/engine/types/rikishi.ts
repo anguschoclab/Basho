@@ -64,6 +64,7 @@ export interface Rikishi {
   trainingFocus?: string;
   combatProfile: CombatProfile;
   archetype: TacticalArchetype;
+  derivedArchetype: import("./combat").RikishiArchetype;
 
   division: Division;
   rank: Rank;

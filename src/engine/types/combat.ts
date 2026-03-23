@@ -34,6 +34,14 @@ export type TacticalArchetype =
   | "hybrid_oshi_yotsu"
   | "counter_specialist";
 
+/** Primary Rikishi Archetype (Derived) */
+export type RikishiArchetype =
+  | "Defensive_Stalwart"
+  | "Explosive_Blitzer"
+  | "Acrobatic_Trickster"
+  | "Immovable_Mountain"
+  | "All_Rounder";
+
 /** Type representing kimarite family. */
 type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERSAL" | "SPECIAL";
 

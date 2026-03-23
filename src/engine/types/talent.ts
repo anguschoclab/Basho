@@ -3,7 +3,7 @@
  */
 
 import type { Id } from "./common";
-import type { TacticalArchetype, Style } from "./combat";
+import type { TacticalArchetype, Style, CombatProfile } from "./combat";
 
 /** Type representing talent pool type. */
 export type TalentPoolType = "high_school" | "university" | "foreign";

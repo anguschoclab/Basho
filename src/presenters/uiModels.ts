@@ -16,7 +16,8 @@ import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
 import type { Style, TacticalArchetype } from "../engine/types/combat";
 import type { BoutResult, BashoResult } from "../engine/types/basho";
-import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "../engine/descriptorBands";
+import { toRikishiDescriptor, toPotentialBand, ARCHETYPE_LABELS, type RikishiDescriptor, type PotentialBand } from "../engine/descriptorBands";
+import type { RikishiArchetype } from "../engine/types/combat";
 import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
 
@@ -55,6 +56,8 @@ export interface UIRikishi {
   styleName: string;
   archetype: TacticalArchetype;
   archetypeName: string;
+  derivedArchetype: RikishiArchetype;
+  derivedArchetypeName: string;
 
   // Status
   isRetired: boolean;
@@ -144,6 +147,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const archInfo = ARCHETYPE_NAMES[r.archetype];
   const archetypeName = archInfo?.label ?? r.archetype;
 
+  const derivedArchetype = r.derivedArchetype || "All_Rounder";
+  const derivedArchetypeName = ARCHETYPE_LABELS[derivedArchetype]?.label ?? "All-Rounder";
+
   return {
     id: r.id,
     shikona: r.shikona,
@@ -165,6 +171,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     styleName,
     archetype: r.archetype,
     archetypeName,
+    derivedArchetype,
+    derivedArchetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary,
@@ -220,6 +228,7 @@ export interface UIRosterEntry {
   fatigue: number;
   momentum: number;
   potentialBand: PotentialBand;
+  archetypeLabel?: string;
   rankDelta?: UIRankDelta;
 }
 
@@ -266,6 +275,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     fatigue: r.fatigue,
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
+    archetypeLabel: r.derivedArchetype ? ARCHETYPE_LABELS[r.derivedArchetype]?.label : undefined,
     rankDelta,
   };
 }

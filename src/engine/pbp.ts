@@ -143,7 +143,9 @@ interface TacticalFact extends PbpFactBase {
   phase: "tactical";
   side: Side;
   archetype?: TacticalArchetype;
+  derivedArchetype?: import("./types/combat").RikishiArchetype;
   opponentArchetype?: TacticalArchetype;
+  opponentDerivedArchetype?: import("./types/combat").RikishiArchetype;
   clinchPreference?: "belt" | "push" | "neutral";
   strategy: string;
   tacticalResult?: import("./types/combat").TacticalResult;
@@ -174,6 +176,7 @@ export interface PbpContext {
     shikona: string;
     style?: Style;
     archetype?: TacticalArchetype;
+    derivedArchetype?: import("./types/combat").RikishiArchetype;
     rankLabel?: string;
   };
 
@@ -182,6 +185,7 @@ export interface PbpContext {
     shikona: string;
     style?: Style;
     archetype?: TacticalArchetype;
+    derivedArchetype?: import("./types/combat").RikishiArchetype;
     rankLabel?: string;
   };
 
@@ -291,9 +295,11 @@ export interface PbpLibrary {
     oshi_strategy: PhraseBucket;
     yotsu_strategy: PhraseBucket;
     speedster_strategy: PhraseBucket;
-    trickster_strategy: PhraseBucket;
-    counter_strategy: PhraseBucket;
     adaptive_strategy: PhraseBucket;
+    blitzer_fatigue: PhraseBucket;
+    mountain_resilience: PhraseBucket;
+    stalwart_counter: PhraseBucket;
+    trickster_agility: PhraseBucket;
   };
 
   connective: {
@@ -955,6 +961,19 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "tac_adapt_51", text: "📋 {leader} approaches the shikiri with quiet confidence — prepared for all outcomes." },
       { id: "tac_adapt_52", text: "📋 The adaptive fighter's edge: maximum preparation, zero rigidity." },
     ],
+    blitzer_fatigue: [
+      { id: "tac_blitz_1", text: "📋 {leader} is a known Blitzer—they'll be looking to end this in seconds." },
+      { id: "mom_blitz_1", text: "The Blitzer's early fuse is burning out! {leader} is visibly slowing!" }
+    ],
+    mountain_resilience: [
+      { id: "tac_mtn_1", text: "📋 {leader} stands like an Immovable Mountain today." }
+    ],
+    stalwart_counter: [
+      { id: "tac_stal_1", text: "📋 {leader} is playing the Stalwart—waiting for the perfect counter." }
+    ],
+    trickster_agility: [
+      { id: "tac_tri_1", text: "📋 {leader}'s acrobatic trickery will be on full display." }
+    ]
   },
 
   connective: {
@@ -1194,7 +1213,14 @@ function selectPhraseForFact(
         else bucket = lib.momentum.edge_dance;
       }
       else if (fact.reason === "timing_counter") bucket = lib.momentum.counter_turn;
-      else if (fact.reason === "fatigue_turn") bucket = lib.momentum.fatigue_swing;
+      else if (fact.reason === "fatigue_turn") {
+        const derived = fact.leader === "east" ? ctx.east.derivedArchetype : ctx.west.derivedArchetype;
+        if (derived === "Explosive_Blitzer") {
+           bucket = lib.tactical.blitzer_fatigue;
+        } else {
+           bucket = lib.momentum.fatigue_swing;
+        }
+      }
       else if (fact.reason === "grip_change") bucket = lib.momentum.grip_change;
       else if (fact.reason === "footwork_angle") bucket = lib.momentum.footwork_angle;
       else if (fact.reason === "mistake") bucket = lib.momentum.mistake;
@@ -1270,10 +1296,17 @@ function selectPhraseForFact(
         return { phrase: chosen, tags: ["tactical"] };
       }
 
-      // Legacy fallback
+      // Archetype-driven narrative
       const arch = tacFact.archetype;
+      const derived = tacFact.derivedArchetype;
+      
       let bucket = lib.tactical.adaptive_strategy;
-      if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
+      
+      if (derived === "Explosive_Blitzer") bucket = lib.tactical.blitzer_fatigue;
+      else if (derived === "Immovable_Mountain") bucket = lib.tactical.mountain_resilience;
+      else if (derived === "Defensive_Stalwart") bucket = lib.tactical.stalwart_counter;
+      else if (derived === "Acrobatic_Trickster") bucket = lib.tactical.trickster_agility;
+      else if (arch === "oshi_specialist") bucket = lib.tactical.oshi_strategy;
       else if (arch === "yotsu_specialist") bucket = lib.tactical.yotsu_strategy;
       else if (arch === "speedster") bucket = lib.tactical.speedster_strategy;
       else if (arch === "trickster") bucket = lib.tactical.trickster_strategy;
