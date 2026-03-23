@@ -412,6 +412,39 @@ export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; descriptio
   unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
 };
 
+
+// === Injury Modifiers (C5.4) ===
+
+export function getInjuryModifiers(
+  isInjured: boolean,
+  injuryStatus?: { type: string; severity: string | number; location?: string; weeksRemaining: number; }
+): string[] {
+  if (!isInjured || !injuryStatus || injuryStatus.type === "none") {
+    return [];
+  }
+
+  const modifiers: string[] = [];
+  const sev = typeof injuryStatus.severity === "string"
+    ? (injuryStatus.severity === "minor" ? 10 : injuryStatus.severity === "moderate" ? 50 : 80)
+    : injuryStatus.severity;
+
+  const loc = injuryStatus.location?.toLowerCase() || "";
+  const isLowerBody = ["knee", "ankle", "foot", "leg", "hip"].includes(loc);
+  const isCoreOrUpper = ["back", "neck", "shoulder"].includes(loc);
+
+  if (sev < 30) { // minor
+    if (isLowerBody) modifiers.push("taped_up");
+    else if (isCoreOrUpper) modifiers.push("moving_gingerly");
+    else modifiers.push("taped_up");
+  } else { // moderate or severe
+    if (isLowerBody) modifiers.push("favoring_it");
+    else if (isCoreOrUpper) modifiers.push("hampered");
+    else modifiers.push("hampered");
+  }
+
+  return modifiers;
+}
+
 // === Aggregated Rikishi Descriptor (for UI cards) ===
 
 /** Defines the structure for rikishi descriptor. */
@@ -424,6 +457,7 @@ export interface RikishiDescriptor {
   fatigueBand: FatigueBand;
   momentumBand: MomentumBand;
   potentialBand?: PotentialBand;
+  injuryModifiers?: string[];
 }
 
 /**
@@ -441,6 +475,13 @@ export function toRikishiDescriptor(r: {
   fatigue: number;
   momentum: number;
   talentSeed?: number;
+  injured?: boolean;
+  injuryStatus?: {
+    type: string;
+    severity: string | number;
+    location?: string;
+    weeksRemaining: number;
+  };
 }, prev?: Partial<RikishiDescriptor>): RikishiDescriptor {
   return {
     powerBand: toStatBand(r.power, prev?.powerBand),
@@ -451,5 +492,6 @@ export function toRikishiDescriptor(r: {
     fatigueBand: toFatigueBand(r.fatigue, prev?.fatigueBand),
     momentumBand: toMomentumBand(r.momentum),
     potentialBand: toPotentialBand(r.talentSeed, prev?.potentialBand),
+    injuryModifiers: getInjuryModifiers(r.injured ?? false, r.injuryStatus),
   };
 }

@@ -1,16 +1,11 @@
-/**
- * Deterministic string tie-breaker for use in Array.sort().
- * Avoids environment-dependent localeCompare to ensure absolute determinism.
- */
-export function stableTieBreak(a: string, b: string): number {
+export function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] { return [...arr].sort((a, b) => {
+  const ka = keyFn(a);
+  const kb = keyFn(b);
+  return ka < kb ? -1 : ka > kb ? 1 : 0;
+}); }
+
+export function stableTieBreak(a: string | number, b: string | number): number {
   if (a < b) return -1;
   if (a > b) return 1;
   return 0;
-}
-
-/**
- * Deterministically sorts an array based on a string key derived from each element.
- */
-export function stableSort<T>(arr: T[], keyFn: (x: T) => string): T[] {
-  return [...arr].sort((a, b) => stableTieBreak(keyFn(a), keyFn(b)));
 }
