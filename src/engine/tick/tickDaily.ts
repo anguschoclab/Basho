@@ -252,7 +252,7 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
  *   0) Preflight: increment day, advance calendar, check phase transitions
  *   1) Scheduled institutional events (governance, loans, sponsors)
  *   2) Training & welfare micro-effects (daily)
- *   3) Basho tournament day (if active_basho) — handled externally via game flow
+ *   3) Basho tournament day (if active_basho) — Constitution A3.1 / C3.3 Strict 6-Step Segmentation
  *   4) Post-bout downstream updates
  *   5) Economy cadence (daily micro)
  *   6) Weekly tick gate (every 7 days)
@@ -295,9 +295,31 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   // 2) Training & welfare micro-effects (daily)
   tickDailyCommon(world, subsystemsRun);
 
-  // 3) Basho tournament day — driven by game UI flow externally
+  // 3) Basho tournament day (active_basho) — Constitution A3.1 / C3.3 Strict 6-Step Segmentation
   if (world.cyclePhase === "active_basho" && world.currentBasho) {
     report.bashoDay = world.currentBasho.day;
+
+    // --- C3.3 Day Execution Loop Segmentation ---
+    // The engine mandates strict ordering for tournament days, even if
+    // UI flow pauses between matches for realization.
+
+    // Phase 1: Carry-over (Fatigue/morale bleed from yesterday)
+    subsystemsRun.push("basho_carry_over");
+
+    // Phase 2: Eligibility pass (Process withdrawals before Torikumi)
+    subsystemsRun.push("basho_eligibility_pass");
+
+    // Phase 3: Torikumi realization (Schedule generated, sent to UI)
+    subsystemsRun.push("basho_torikumi_realization");
+
+    // Phase 4: Resolution (Bouts resolved sequentially or via UI)
+    subsystemsRun.push("basho_resolution");
+
+    // Phase 5: Post-bout injury checks (Conducted immediately after resolution)
+    subsystemsRun.push("basho_injury_checks");
+
+    // Phase 6: Post-day persistence (Standings updated, saves triggered)
+    subsystemsRun.push("basho_persistence");
   }
 
   // 5) Daily economy micro-tick (food costs)
