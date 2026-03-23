@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { getSponsorshipDetails } from "@/engine/uiDigest";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,8 +60,6 @@ export function StableWidget() {
     return getCachedPerception(world, world.playerHeyaId);
   }, [world]);
 
-  const sponsorshipDetails = world?.playerHeyaId ? getSponsorshipDetails(world, world.playerHeyaId) : null;
-
   if (!p) return null;
 
   return (
@@ -84,7 +81,7 @@ export function StableWidget() {
         <Row icon={<Users className="h-3.5 w-3.5" />} label="Roster" value={p.rosterStrengthBand} />
         <Row icon={<TrendingUp className="h-3.5 w-3.5" />} label="Finances" value={p.runwayBand} />
         <Row icon={<Flame className="h-3.5 w-3.5" />} label="Media" value={p.stableMediaHeatBand} />
-        <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={sponsorshipDetails?.koenkaiStrengthBand === "none" ? "None" : sponsorshipDetails?.koenkaiStrengthBand ?? "None"} />
+        <Row icon={<HandCoins className="h-3.5 w-3.5" />} label="Supporters" value={p.koenkaiBand === "none" ? "None" : p.koenkaiBand} />
       </div>
 
       <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/stable" })} className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors" aria-label="Manage stable">

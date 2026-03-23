@@ -13,7 +13,6 @@ import type { Id } from "./types/common";
 import type { Side } from "./types/banzuke";
 import type { WorldState } from "./types/world";
 import type { BoutResult } from "./types/basho";
-import { stableTieBreak } from "./utils/sort";
 
 /** =========================
  *  Core Types
@@ -258,7 +257,7 @@ export function applyRivalryWeeklyDecay(state: RivalriesState, currentWeek: numb
  */
 export function getRivalriesForRikishi(state: RivalriesState, rikishiId: Id): RivalryPairState[] {
   const rows = Object.values(state.pairs).filter(p => p.aId === rikishiId || p.bId === rikishiId);
-  return rows.sort((x, y) => y.heat - x.heat || (y.meetings - x.meetings) || stableTieBreak(x.key, y.key));
+  return rows.sort((x, y) => y.heat - x.heat || (y.meetings - x.meetings));
 }
 
 /**
@@ -476,7 +475,7 @@ function heatBand(heat: number): RivalryHeatBand {
  */
 function topTriggers(pair: RivalryPairState, n: number): RivalryTrigger[] {
   const entries = Object.entries(pair.triggers) as Array<[RivalryTrigger, number]>;
-  entries.sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0) || stableTieBreak(a[0], b[0]));
+  entries.sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0));
   return entries.slice(0, n).map(e => e[0]);
 }
 

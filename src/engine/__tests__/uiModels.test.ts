@@ -23,17 +23,6 @@ describe("UI Models Projections", () => {
     expect(uiRikishi.shikona).toBe(rikishi.shikona);
     expect(uiRikishi.heyaName).toBeDefined();
     expect(uiRikishi.rank).toBe(rikishi.rank);
-
-    // Check injury bands
-    rikishi.injured = true;
-    rikishi.injuryStatus = { location: "knee", severity: 25 };
-    rikishi.injuryWeeksRemaining = 2;
-    const uiRikishiInjured = projectRikishi(rikishi, world);
-    expect(uiRikishiInjured.injurySeverityBand).toBe("minor");
-
-    rikishi.injuryStatus = { location: "knee", severity: 80 };
-    const uiRikishiSeriouslyInjured = projectRikishi(rikishi, world);
-    expect(uiRikishiSeriouslyInjured.injurySeverityBand).toBe("serious");
   });
 
   it("should project a Heya safely for the UI", () => {
@@ -48,11 +37,43 @@ describe("UI Models Projections", () => {
     expect(uiHeya.oyakataName).toBeDefined();
     expect(uiHeya.rosterSize).toBe((heya.rikishiIds || []).length);
     // expect(uiHeya.funds).toBeDefined();
+  });
 
-    // Check financial bands
-    expect(typeof uiHeya.maintenanceAffordable).toBe("boolean");
-    expect(typeof uiHeya.monthlyMaintenanceDisplay).toBe("string");
-    expect(typeof uiHeya.canAffordTraining1).toBe("boolean");
-    expect(uiHeya.upgradeCostDisplay.training1).toBeDefined();
+  describe("Injury Modifiers", () => {
+    it("should project injury modifiers when rikishi has a minor knee injury", () => {
+      const world = generateWorld("test-inj-1");
+      const rikishiId = Array.from(world.rikishi.keys())[0];
+      const rikishi = world.rikishi.get(rikishiId)!;
+
+      rikishi.injured = true;
+      rikishi.injuryStatus = { type: "sprain", severity: "minor", location: "knee", weeksRemaining: 1 };
+
+      const uiRikishi = projectRikishi(rikishi, world);
+      expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");
+    });
+
+    it("should project injury modifiers when rikishi has a moderate back injury", () => {
+      const world = generateWorld("test-inj-2");
+      const rikishiId = Array.from(world.rikishi.keys())[0];
+      const rikishi = world.rikishi.get(rikishiId)!;
+
+      rikishi.injured = true;
+      rikishi.injuryStatus = { type: "strain", severity: 40, location: "back", weeksRemaining: 2 };
+
+      const uiRikishi = projectRikishi(rikishi, world);
+      expect(uiRikishi.descriptor.injuryModifiers).toContain("hampered");
+    });
+
+    it("should not project injury modifiers when rikishi is healthy", () => {
+      const world = generateWorld("test-inj-3");
+      const rikishiId = Array.from(world.rikishi.keys())[0];
+      const rikishi = world.rikishi.get(rikishiId)!;
+
+      rikishi.injured = false;
+      rikishi.injuryStatus = undefined;
+
+      const uiRikishi = projectRikishi(rikishi, world);
+      expect(uiRikishi.descriptor.injuryModifiers).toEqual([]);
+    });
   });
 });

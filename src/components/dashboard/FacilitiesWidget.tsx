@@ -27,18 +27,17 @@ export function FacilitiesWidget() {
   const world = state.world;
   if (!world?.playerHeyaId) return null;
 
-  const rawHeya = world.heyas.get(world.playerHeyaId);
-  if (!rawHeya) return null;
+  const heya = world.heyas.get(world.playerHeyaId);
+  if (!heya) return null;
 
-  const uiHeya = projectHeya(rawHeya, world);
-  const canAfford = uiHeya.maintenanceAffordable;
+  const maintenance = getMonthlyMaintenanceCost(heya);
+  const canAfford = heya.funds >= maintenance;
   const axes = ["training", "recovery", "nutrition"] as const;
 
-  const summary = getHeyaFacilitiesSummary(heya);
-  if (!summary) return null;
-
   const atRisk = !canAfford;
-  const isLow = summary.isLow;
+  const lowestAxis = axes.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, axes[0]);
+  const lowestLevel = heya.facilities[lowestAxis];
+  const isLow = lowestLevel <= 25;
 
   return (
     <div className={`widget-card p-4 space-y-3 ${
@@ -68,7 +67,7 @@ export function FacilitiesWidget() {
       <div className="space-y-2.5">
         {axes.map((axis) => {
           const Icon = AXIS_ICONS[axis];
-          const band = summary[`${axis}Band`];
+          const level = heya.facilities[axis];
           return (
             <div key={axis} className="space-y-1">
               <div className="flex items-center justify-between">
@@ -76,10 +75,11 @@ export function FacilitiesWidget() {
                   <Icon className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
                 </div>
-                <span className={`text-[10px] font-medium capitalize`}>
-                  {STAT_BAND_LABELS[band as keyof typeof STAT_BAND_LABELS] ?? band}
+                <span className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}>
+                  {getFacilityLevelLabel(level)}
                 </span>
               </div>
+              <Progress value={level} className="h-1.5" />
             </div>
           );
         })}
@@ -88,7 +88,7 @@ export function FacilitiesWidget() {
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
         <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
-          {uiHeya.monthlyMaintenanceDisplay}
+          ¥{maintenance.toLocaleString()}
         </span>
       </div>
 

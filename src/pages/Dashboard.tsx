@@ -142,7 +142,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               {editMode && (
-                <Button variant="ghost" size="sm" onClick={resetLayout} className="h-7 text-xs gap-1 text-muted-foreground" aria-label="Reset layout">
+                <Button variant="ghost" size="sm" onClick={resetLayout} className="h-7 text-xs gap-1 text-muted-foreground">
                   <RotateCcw className="h-3 w-3" /> Reset
                 </Button>
               )}
@@ -151,7 +151,6 @@ export default function Dashboard() {
                 size="sm"
                 onClick={() => setEditMode(!editMode)}
                 className="h-7 text-xs gap-1"
-                aria-label={editMode ? "Done customizing layout" : "Customize layout"}
               >
                 <GripVertical className="h-3 w-3" />
                 {editMode ? "Done" : "Customize"}
@@ -174,7 +173,6 @@ export default function Dashboard() {
                 key={i}
                 onClick={() => navigate({ to: alert.link as any })}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-sm"
-                aria-label={alert.text}
               >
                 <AlertTriangle className={`h-3.5 w-3.5 shrink-0 ${alert.color}`} />
                 <span className={`text-xs font-medium flex-1 ${alert.color}`}>{alert.text}</span>

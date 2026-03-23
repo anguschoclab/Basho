@@ -121,6 +121,6 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
   }
 
   // Weight by prestige and funds
-  candidates.sort((a, b) => b.funds - a.funds || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  candidates.sort((a, b) => b.funds - a.funds);
   return candidates[rng.int(0, Math.min(candidates.length - 1, 3))].id;
 }

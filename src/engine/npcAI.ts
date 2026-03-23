@@ -15,10 +15,7 @@ import type { OyakataArchetype, Oyakata } from "./types/oyakata";
 import type { Id } from "./types/common";
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
-import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
-import { buyMyoseki } from "./myosekiMarket";
-import * as talentpool from "./talentpool";
-import { checkRetirement } from "./lifecycle";
+import { enforceHardCapRosterOverflow } from "./overflow";
 import {
   getCachedPerception,
   type PerceptionSnapshot,
@@ -28,8 +25,7 @@ import {
   type RosterStrengthBand,
   type RikishiPerception
 } from "./perception";
-import { logEngineEvent, EventBus } from "./events";
-import { stableSort } from "./utils/sort";
+import { logEngineEvent } from "./events";
 
 // ─── Persona ────────────────────────────────────────────
 
@@ -553,7 +549,7 @@ export function tickWeek(world: WorldState): number {
   if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => (x as any).id || String(x))) {
+  for (const heya of world.heyas.values()) {
     // Skip player-owned heya — player makes their own decisions
     if (heya.id === playerHeyaId) continue;
 
