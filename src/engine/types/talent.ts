@@ -43,6 +43,7 @@ export interface TalentCandidate {
   visibilityBand: VisibilityBand;
   reputationSeed: number;
   tags: string[];
+  combatProfile: CombatProfile;
   availabilityState: CandidateAvailabilityState;
   competingSuitors: SuitorRef[];
 

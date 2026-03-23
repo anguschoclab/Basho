@@ -414,6 +414,21 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     
     const stats = generateRikishiStats(rrng, slot.rank, archetype);
 
+    const style = archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid";
+    const combatProfile = {
+      proficiencies: {
+        oshi: archetype.includes("oshi") ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40,
+        yotsu: archetype.includes("yotsu") ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40,
+        technician: archetype === "trickster" || archetype === "speedster" ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40
+      },
+      preferredStyle: style === "hybrid" ? "oshi" : style,
+      specialties: archetype === "trickster" ? ["henka"] : [],
+      ringSense: 40 + rrng.next() * 60,
+      aggressiveness: stats.mental
+    };
+
+    if (combatProfile.preferredStyle === "hybrid") combatProfile.preferredStyle = archetype.includes("technician") || archetype === "trickster" ? "technician" : "oshi";
+
     const newRikishi: Rikishi = {
       id: rid,
       shikona: generateRikishiName(`${actualSeed}::worldgen::rikishi::${rid}`),
@@ -453,7 +468,8 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       motivation: 50 + rrng.next() * 50,
       talentSeed: Math.round(25 + rrng.next() * 65),
       
-      style: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid",
+      style: style,
+      combatProfile,
       archetype: archetype,
       
       division: slot.division,

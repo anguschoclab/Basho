@@ -33,6 +33,7 @@ function createTestWorld(overrides: Partial<WorldState> = {}): WorldState {
     year: 2025,
     week: 1,
     dayIndexGlobal: 0,
+    _daysSinceLastWeeklyTick: 0,
     calendar: {
       year: 2025,
       month: 1,
@@ -233,7 +234,7 @@ describe("Daily Tick: Phase Transitions", () => {
 
 describe("Daily Tick: Weekly Boundary", () => {
   it("should trigger weekly subsystems every 7 days", () => {
-    const world = createTestWorld({ dayIndexGlobal: 6 });
+    const world = createTestWorld({ dayIndexGlobal: 6, _daysSinceLastWeeklyTick: 6 });
     
     const report = advanceOneDay(world);
     
@@ -244,7 +245,7 @@ describe("Daily Tick: Weekly Boundary", () => {
   });
 
   it("should not trigger weekly subsystems on non-7th days", () => {
-    const world = createTestWorld({ dayIndexGlobal: 4 });
+    const world = createTestWorld({ dayIndexGlobal: 4, _daysSinceLastWeeklyTick: 4 });
     
     const report = advanceOneDay(world);
     
@@ -253,7 +254,7 @@ describe("Daily Tick: Weekly Boundary", () => {
   });
 
   it("should update calendar.currentWeek on weekly boundary", () => {
-    const world = createTestWorld({ dayIndexGlobal: 13, week: 1 });
+    const world = createTestWorld({ dayIndexGlobal: 13, week: 1, _daysSinceLastWeeklyTick: 6 });
     
     advanceOneDay(world);
     
