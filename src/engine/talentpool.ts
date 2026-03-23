@@ -20,6 +20,7 @@ import { rngFromSeed, rngForWorld } from "./rng";
 import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
 import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
+import { getOyakataForHeya, getHeya, getForeignCountInHeya as getForeignCountInHeyaQuery } from "./queries";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -237,12 +238,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
  *  * @returns The result.
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
-  let count = 0;
-  for (const r of world.rikishi.values()) {
-    if (r.heyaId !== heyaId) continue;
-    if ((r.nationality || "Japan") !== "Japan") count += 1;
-  }
-  return count;
+  return getForeignCountInHeyaQuery(world, heyaId);
 }
 
 /**
@@ -754,9 +750,7 @@ function defaultTraits(): OyakataTraits {
  *  * @returns The result.
  */
 function getTraitsForHeya(world: WorldState, heyaId: Id): OyakataTraits {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return defaultTraits();
-  const oyakata = world.oyakata.get(heya.oyakataId);
+  const oyakata = getOyakataForHeya(world, heyaId);
   return oyakata?.traits ?? defaultTraits();
 }
 
@@ -767,9 +761,7 @@ function getTraitsForHeya(world: WorldState, heyaId: Id): OyakataTraits {
  *  * @returns The result.
  */
 function getArchetypeForHeya(world: WorldState, heyaId: Id): string {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return "traditionalist";
-  const oyakata = world.oyakata.get(heya.oyakataId);
+  const oyakata = getOyakataForHeya(world, heyaId);
   return oyakata?.archetype ?? "traditionalist";
 }
 

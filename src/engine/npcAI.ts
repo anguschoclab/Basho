@@ -16,6 +16,7 @@ import type { Id } from "./types/common";
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
+import { getHeyaStyleBias, getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import {
   getCachedPerception,
   type PerceptionSnapshot,
@@ -36,21 +37,7 @@ import { logEngineEvent } from "./events";
  *  * @returns The result.
  */
 export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
-  const stable = world.heyas.get(stableId);
-  if (!stable) return "neutral";
-
-  let oshi = 0;
-  let yotsu = 0;
-
-  for (const rId of stable.rikishiIds) {
-    const rikishi = world.rikishi.get(rId);
-    if (!rikishi) continue;
-    if (rikishi.style === "oshi") oshi += 1;
-    if (rikishi.style === "yotsu") yotsu += 1;
-  }
-
-  if (oshi === yotsu) return "neutral";
-  return oshi > yotsu ? "oshi" : "yotsu";
+  return getHeyaStyleBias(world, stableId);
 }
 
 const QUIRK_POOL = [
@@ -126,8 +113,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
   perception: PerceptionSnapshot;
   mood: OyakataMood;
 } {
-  const heya = world.heyas.get(heyaId);
-  const oyakata = heya ? world.oyakata?.get(heya.oyakataId) : undefined;
+  const heya = getHeya(world, heyaId);
+  const oyakata = getOyakataForHeya(world, heyaId);
   const perception = getCachedPerception(world, heyaId);
 
   if (!heya || !oyakata) {
@@ -448,7 +435,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   if (styleProfile && perception.rikishiPerceptions.length > 0) {
     for (const rp of perception.rikishiPerceptions) {
       if (protectedSet.has(rp.rikishiId)) continue;
-      const rikishi = world.rikishi.get(rp.rikishiId);
+      const rikishi = getRikishi(world, rp.rikishiId);
       if (!rikishi) continue;
 
       const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;

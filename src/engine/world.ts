@@ -44,6 +44,7 @@ import * as talentpool from "./talentpool";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
+import { getHeyaRoster, getRikishi, getActiveRikishi } from "./queries";
 
 // Type guard or helper to access current basho
 /**
@@ -455,17 +456,15 @@ function runPrestigeDecay(world: WorldState): void {
     let sanshoPrizeCount = 0;
     let sekitoriCount = 0;
 
-    for (const rId of heya.rikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
+    for (const r of getHeyaRoster(world, heya.id)) {
       totalWins += r.currentBashoWins ?? 0;
       totalLosses += r.currentBashoLosses ?? 0;
 
-      if (lastBasho.yusho === rId) hasYusho = true;
-      if (lastBasho.junYusho.includes(rId)) hasJunYusho = true;
-      if (lastBasho.ginoSho === rId) sanshoPrizeCount++;
-      if (lastBasho.kantosho === rId) sanshoPrizeCount++;
-      if (lastBasho.shukunsho === rId) sanshoPrizeCount++;
+      if (lastBasho.yusho === r.id) hasYusho = true;
+      if (lastBasho.junYusho.includes(r.id)) hasJunYusho = true;
+      if (lastBasho.ginoSho === r.id) sanshoPrizeCount++;
+      if (lastBasho.kantosho === r.id) sanshoPrizeCount++;
+      if (lastBasho.shukunsho === r.id) sanshoPrizeCount++;
 
       if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
     }
@@ -550,9 +549,7 @@ function updateStatureBand(world: WorldState, heya: import("./types").Heya): voi
     jonidan: 2, jonokuchi: 1
   };
 
-  for (const rId of heya.rikishiIds) {
-    const r = world.rikishi.get(rId);
-    if (!r) continue;
+  for (const r of getHeyaRoster(world, heya.id)) {
     const w = RANK_WEIGHT[r.rank] ?? 5;
     rosterScore += w;
     if (w > maxRankWeight) maxRankWeight = w;
@@ -768,7 +765,7 @@ function runAIMetaDrift(world: WorldState): void {
 
   // Compute basho meta: dominant style this basho
   let oshiWins = 0, yotsuWins = 0;
-  for (const r of world.rikishi.values()) {
+  for (const r of getActiveRikishi(world)) {
     if ((r.currentBashoWins ?? 0) > (r.currentBashoLosses ?? 0)) {
       if (r.style === "oshi") oshiWins++;
       else if (r.style === "yotsu") yotsuWins++;
@@ -947,7 +944,7 @@ function runCareerJournalUpdates(world: WorldState): void {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) return;
 
-  for (const r of world.rikishi.values()) {
+  for (const r of getActiveRikishi(world)) {
     // Update career totals from basho records
     r.careerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
     r.careerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);

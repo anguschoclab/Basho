@@ -17,6 +17,7 @@ import { rngForWorld } from "./rng";
 import { ensureHeyaTrainingState } from "./training";
 import { getManagerPersona } from "./npcAI";
 import { logEngineEvent } from "./events";
+import { getRikishi } from "./queries";
 
 
 
@@ -78,7 +79,7 @@ function computeHeyaInjuryPressure(world: WorldState, heya: Heya): { pressure: n
   const isHarshTraining = intensity === "punishing" || intensity === "intensive";
 
   for (const rid of (heya.rikishiIds || [])) {
-    const r = world.rikishi.get(rid);
+    const r = getRikishi(world, rid);
     if (!r) continue;
 
     const status = r.injuryStatus ?? r.injury;

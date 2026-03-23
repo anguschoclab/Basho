@@ -29,6 +29,7 @@ export * from './oyakataStylePreferences';
 export * from './pbp';
 export * from './pbpMatrix';
 export * from './perception';
+export * from './queries';
 export * from './rivalries';
 export * from './saveload';
 export * from './storageProvider';

@@ -14,6 +14,7 @@ import type { Rank } from "./types/banzuke";
 import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
+import { getHeyaRoster, getHeyaStyleBias } from "./queries";
 
 // === Band types for perception ===
 
@@ -178,13 +179,13 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
     jonidan: 5, jonokuchi: 2
   };
 
+  const roster = getHeyaRoster(world, heya.id);
   let total = 0;
-  for (const rId of (heya.rikishiIds || [])) {
-    const r = world.rikishi.get(rId);
-    if (r) total += RANK_WEIGHT[r.rank] ?? 5;
+  for (const r of roster) {
+    total += RANK_WEIGHT[r.rank] ?? 5;
   }
 
-  const avg = (heya.rikishiIds || []).length > 0 ? total / (heya.rikishiIds || []).length : 0;
+  const avg = roster.length > 0 ? total / roster.length : 0;
   if (avg >= 60) return "dominant";
   if (avg >= 40) return "strong";
   if (avg >= 25) return "competitive";
@@ -201,13 +202,12 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
 function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   // Derive from welfare risk + recent momentum
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
+  const roster = getHeyaRoster(world, heya.id);
   let momentumSum = 0;
-  let count = 0;
-  for (const rId of (heya.rikishiIds || [])) {
-    const r = world.rikishi.get(rId);
-    if (r) { momentumSum += r.momentum ?? 0; count++; }
+  for (const r of roster) {
+    momentumSum += r.momentum ?? 0;
   }
-  const avgMomentum = count > 0 ? momentumSum / count : 0;
+  const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
 
   const score = (100 - welfareRisk) * 0.6 + (avgMomentum + 5) * 4; // normalize momentum (-5..5) to 0..40
   if (score >= 85) return "inspired";
@@ -288,30 +288,20 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
 
   // Build per-rikishi perceptions
-  const rikishiPerceptions: RikishiPerception[] = (heya.rikishiIds || [])
-    .map(rId => {
-      const r = world.rikishi.get(rId);
-      if (!r) return null;
-      return {
-        rikishiId: r.id,
-        shikona: r.shikona,
-        rank: r.rank,
-        style: r.style,
-        healthBand: bandHealth(r),
-        mediaHeatBand: bandMediaHeat(getRikishiMediaHeat(world, r.id)),
-        momentum: bandRikishiMomentum(r.momentum ?? 0)
-      };
-    })
-    .filter((x): x is RikishiPerception => x != null);
+  const roster = getHeyaRoster(world, heyaId);
+  const rikishiPerceptions: RikishiPerception[] = roster
+    .map(r => ({
+      rikishiId: r.id,
+      shikona: r.shikona,
+      rank: r.rank,
+      style: r.style,
+      healthBand: bandHealth(r),
+      mediaHeatBand: bandMediaHeat(getRikishiMediaHeat(world, r.id)),
+      momentum: bandRikishiMomentum(r.momentum ?? 0)
+    }));
 
   // Determine style bias
-  let oshi = 0, yotsu = 0;
-  for (const rId of (heya.rikishiIds || [])) {
-    const r = world.rikishi.get(rId);
-    if (r?.style === "oshi") oshi++;
-    if (r?.style === "yotsu") yotsu++;
-  }
-  const styleBias: Style | "neutral" = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
+  const styleBias = getHeyaStyleBias(world, heyaId);
 
   return {
     heyaId,
