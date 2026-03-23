@@ -13,6 +13,7 @@ import { stableTieBreak } from "./utils/sort";
 // IMPORTANT:
 // - This module does NOT import from index.ts (barrel). Leaf import only.
 // - This keeps migrations "non-lossy": we never delete unknown keys; we only fill missing required ones.
+// - Storage access is abstracted via IStorageProvider (see storageProvider.ts).
 
 import type {
   WorldState,
@@ -29,6 +30,7 @@ import type {
   CyclePhase
 } from "./types";
 import { CURRENT_SAVE_VERSION } from "./types";
+import { getStorageProvider, hasStorageProvider, type IStorageProvider } from "./storageProvider";
 
 // === SAVE VERSION ===
 /** c u r r e n t_ s a v e_ v e r s i o n_ l o c a l. */
@@ -40,17 +42,9 @@ const AUTOSAVE_SLOT_NAME = "autosave";
 const AUTOSAVE_KEY = `${SAVE_KEY_PREFIX}${AUTOSAVE_SLOT_NAME}`;
 const SAVE_SLOT_COUNT = 10;
 
-// === STORAGE GUARDS ===
-/**
- * Has local storage.
- *  * @returns The result.
- */
-function hasLocalStorage(): boolean {
-  try {
-    return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-  } catch {
-    return false;
-  }
+/** Helper to get storage or null */
+function getStorage(): IStorageProvider | null {
+  return getStorageProvider();
 }
 
 // === SERIALIZATION HELPERS ===
@@ -371,10 +365,11 @@ function toSlotKey(slotNameOrKey: string): string {
  *  * @returns The result.
  */
 export function getSaveSlotKeys(): string[] {
-  if (!hasLocalStorage()) return [];
+  const storage = getStorage();
+  if (!storage) return [];
   const keys: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i);
     if (key?.startsWith(SAVE_KEY_PREFIX)) keys.push(key);
   }
   return keys.sort();
@@ -399,14 +394,15 @@ export interface SaveSlotInfo {
  *  * @returns The result.
  */
 export function getSaveSlotInfos(): SaveSlotInfo[] {
-  if (!hasLocalStorage()) return [];
+  const storage = getStorage();
+  if (!storage) return [];
 
   const keys = getSaveSlotKeys();
   const infos: SaveSlotInfo[] = [];
 
   for (const key of keys) {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = storage.getItem(key);
       if (!raw) continue;
 
       const parsed = JSON.parse(raw);
@@ -458,17 +454,18 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
  *  * @returns The result.
  */
 export function saveGame(world: WorldState, slotName: string, timestampISO?: string): boolean {
-  if (!hasLocalStorage()) return false;
+  const storage = getStorage();
+  if (!storage) return false;
 
   try {
     const key = toSlotKey(slotName);
 
-    const existingRaw = localStorage.getItem(key);
+    const existingRaw = storage.getItem(key);
     const existingParsed = existingRaw ? JSON.parse(existingRaw) : null;
     const existing = isSerializedSaveGame(existingParsed) ? (existingParsed as SaveGame) : undefined;
 
     const save = createSaveGame(world, slotName, existing, timestampISO);
-    localStorage.setItem(key, JSON.stringify(save));
+    storage.setItem(key, JSON.stringify(save));
     return true;
   } catch (e) {
     console.error("Failed to save game:", e);
@@ -491,11 +488,12 @@ export function autosave(world: WorldState, timestampISO?: string): boolean {
  *  * @returns The result.
  */
 export function loadGame(slotNameOrKey: string): WorldState | null {
-  if (!hasLocalStorage()) return null;
+  const storage = getStorage();
+  if (!storage) return null;
 
   try {
     const key = toSlotKey(slotNameOrKey);
-    const raw = localStorage.getItem(key);
+    const raw = storage.getItem(key);
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
@@ -526,8 +524,9 @@ export function loadAutosave(): WorldState | null {
  *  * @returns The result.
  */
 export function hasAutosave(): boolean {
-  if (!hasLocalStorage()) return false;
-  return localStorage.getItem(AUTOSAVE_KEY) !== null;
+  const storage = getStorage();
+  if (!storage) return false;
+  return storage.getItem(AUTOSAVE_KEY) !== null;
 }
 
 /**
@@ -536,11 +535,12 @@ export function hasAutosave(): boolean {
  *  * @returns The result.
  */
 export function deleteSave(slotNameOrKey: string): boolean {
-  if (!hasLocalStorage()) return false;
+  const storage = getStorage();
+  if (!storage) return false;
 
   try {
     const key = toSlotKey(slotNameOrKey);
-    localStorage.removeItem(key);
+    storage.removeItem(key);
     return true;
   } catch (e) {
     console.error("Failed to delete save:", e);
@@ -555,21 +555,15 @@ export function deleteSave(slotNameOrKey: string): boolean {
  *  * @param world - The World.
  *  * @param filename - The Filename.
  */
-export function exportSave(world: WorldState, filename?: string, timestampISO?: string): void {
+/**
+ * Export save — returns the JSON string and suggested filename.
+ * The caller (UI layer) is responsible for triggering the download.
+ */
+export function exportSave(world: WorldState, filename?: string, timestampISO?: string): { json: string; filename: string } {
   const save = createSaveGame(world, undefined, undefined, timestampISO);
   const json = JSON.stringify(save, null, 2);
-
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-
-  URL.revokeObjectURL(url);
+  const defaultFilename = filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
+  return { json, filename: defaultFilename };
 }
 
 /**
