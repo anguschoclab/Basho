@@ -35,7 +35,7 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Rent/maintenance & facility upkeep
  * - Loans/interest
  */
-export function tickMonthlyEconomics(world: WorldState): void {
+function tickMonthlyEconomics(world: WorldState): void {
   for (const heya of world.heyas.values()) {
     let totalSalaries = 0;
     for (const rId of heya.rikishiIds) {

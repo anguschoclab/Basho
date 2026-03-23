@@ -72,7 +72,7 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
  * Check if the player's recruitment window should close.
  * Per A3.4, windows have a fixed duration set at open time.
  */
-export function tickRecruitmentWindowClose(world: WorldState): void {
+function tickRecruitmentWindowClose(world: WorldState): void {
   const rw = world._recruitmentWindow;
   if (!rw || !rw.isOpen) return;
 
@@ -97,7 +97,7 @@ export function tickRecruitmentWindowClose(world: WorldState): void {
 /**
  * Mid-interim recruitment window (Constitution: recruitment occurs at mid-interim week 3).
  */
-export function tickMidInterimRecruitment(world: WorldState): void {
+function tickMidInterimRecruitment(world: WorldState): void {
   if (world.cyclePhase !== "interim") return;
 
   const interimDaysRemaining = world._interimDaysRemaining ?? 0;

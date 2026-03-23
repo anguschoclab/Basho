@@ -178,7 +178,7 @@ export function setScoutingInvestment(world: WorldState, rikishiId: Id, investme
  * - a bout is simulated AND the player watched it
  * - OR the bout is a player bout (auto-observed)
  */
-export function observeBout(world: WorldState, eastId: Id, westId: Id): void {
+function observeBout(world: WorldState, eastId: Id, westId: Id): void {
   const table = ensureScoutingTable(world);
   const currentWeek = getWorldWeek(world);
 
@@ -193,7 +193,7 @@ export function observeBout(world: WorldState, eastId: Id, westId: Id): void {
  * Apply scouting decay across all stored entries.
  * Call once per week tick (between basho weeks, training weeks, etc.).
  */
-export function applyWeeklyScoutingDecay(world: WorldState): void {
+function applyWeeklyScoutingDecay(world: WorldState): void {
   const table = ensureScoutingTable(world);
   const currentWeek = getWorldWeek(world);
 

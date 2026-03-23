@@ -96,7 +96,7 @@ export interface Koenkai {
 // === KENSHO BANNER SLOT ===
 
 /** Defines the structure for kensho banner slot. */
-export interface KenshoBannerSlot {
+interface KenshoBannerSlot {
   bannerId: string;
   boutId: string;
   sponsorId: string;
@@ -351,7 +351,7 @@ export function generateSponsorName(rng: SeededRNG, tier: SponsorTier): { displa
  *  * @param existingIds - The Existing ids.
  *  * @returns The result.
  */
-export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
+function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
   const { displayName, shortName } = generateSponsorName(rng, tier);
 
   // Deterministic, collision-safe sponsorId without “searching forever”.
@@ -468,7 +468,7 @@ export function generateSponsorPool(worldSeed: string, worldSizeScalar: number =
 // === KENSHO BANNER ASSIGNMENT ===
 
 /** Type representing bout importance bucket. */
-export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
+type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
 
 const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number }> = {
   low: { maxT4Plus: 0, maxT3: 1 },
@@ -486,7 +486,7 @@ const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number
  *  * @param isPlayoff - The Is playoff.
  *  * @returns The result.
  */
-export function determineBoutImportance(
+function determineBoutImportance(
   eastRank: string,
   westRank: string,
   day: number,
@@ -519,7 +519,7 @@ export function determineBoutImportance(
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-export function assignKenshoBanners(
+function assignKenshoBanners(
   boutId: string,
   bannerCount: number,
   importance: BoutImportanceBucket,
@@ -682,7 +682,7 @@ const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
  *  * @param strengthBand - The Strength band.
  *  * @returns The result.
  */
-export function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
+function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
   return KOENKAI_MONTHLY_INCOME[strengthBand];
 }
 
@@ -696,7 +696,7 @@ export function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-export function selectBenefactor(
+function selectBenefactor(
   beyaId: string,
   sponsorPool: SponsorPool,
   koenkai: Koenkai | undefined,

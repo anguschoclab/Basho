@@ -257,7 +257,7 @@ export function scorePairing(args: {
 }
 
 /** Defines the structure for candidate build options. */
-export interface CandidateBuildOptions {
+interface CandidateBuildOptions {
   seed: string;
   rules?: Partial<MatchmakingRules>;
   /** If provided, candidates are built within this division only */

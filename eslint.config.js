@@ -29,6 +29,7 @@ export default tseslint.config(
       "no-empty": "off",
       "no-case-declarations": "off",
       "react-hooks/rules-of-hooks": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
   {

@@ -38,7 +38,7 @@ export type RankPosition =
  *  * @param rank - The Rank.
  *  * @returns The result.
  */
-export function isNumberedRank(rank: Rank): rank is NumberedRank {
+function isNumberedRank(rank: Rank): rank is NumberedRank {
   return (
     rank === "maegashira" ||
     rank === "juryo" ||
@@ -84,7 +84,7 @@ export interface BanzukeSnapshot {
 }
 
 /** Defines the structure for rikishi basho performance. */
-export interface RikishiBashoPerformance {
+interface RikishiBashoPerformance {
   rikishiId: Id;
   division: Division;
   priorRank: RankPosition;

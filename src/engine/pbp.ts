@@ -50,7 +50,7 @@ export type { Advantage, Position } from "./bout";
 type LegacyPosition = "frontal" | "front" | "lateral" | "rear";
 
 /** Type representing edge event. */
-export type EdgeEvent =
+type EdgeEvent =
   | "bales_at_tawara"
   | "steps_out_then_recovers"
   | "heel_on_straw"
@@ -59,7 +59,7 @@ export type EdgeEvent =
   | "slips_but_survives";
 
 /** Type representing grip event. */
-export type GripEvent =
+type GripEvent =
   | "migi_yotsu_established"
   | "hidari_yotsu_established"
   | "double_inside"
@@ -68,7 +68,7 @@ export type GripEvent =
   | "grip_break";
 
 /** Type representing strike event. */
-export type StrikeEvent =
+type StrikeEvent =
   | "tsuppari_barrage"
   | "nodowa_pressure"
   | "harite_slap"
@@ -76,7 +76,7 @@ export type StrikeEvent =
   | "shoulder_blast";
 
 /** Type representing momentum shift reason. */
-export type MomentumShiftReason =
+type MomentumShiftReason =
   | "tachiai_win"
   | "timing_counter"
   | "grip_change"
@@ -85,7 +85,7 @@ export type MomentumShiftReason =
   | "mistake";
 
 /** Defines the structure for pbp fact base. */
-export interface PbpFactBase {
+interface PbpFactBase {
   phase: BoutPhase;
   /** Deterministic ordering within a phase (0..N) */
   beat: number;
@@ -98,7 +98,7 @@ export interface PbpFactBase {
 }
 
 /** Defines the structure for tachiai fact. */
-export interface TachiaiFact extends PbpFactBase {
+interface TachiaiFact extends PbpFactBase {
   phase: "tachiai";
   tachiaiWinner: Side;
   /** 0..1: how decisive tachiai was */
@@ -109,7 +109,7 @@ export interface TachiaiFact extends PbpFactBase {
 }
 
 /** Defines the structure for clinch fact. */
-export interface ClinchFact extends PbpFactBase {
+interface ClinchFact extends PbpFactBase {
   phase: "clinch";
   position: Position;
   advantage: Advantage;
@@ -118,7 +118,7 @@ export interface ClinchFact extends PbpFactBase {
 }
 
 /** Defines the structure for momentum fact. */
-export interface MomentumFact extends PbpFactBase {
+interface MomentumFact extends PbpFactBase {
   phase: "momentum";
   advantage: Advantage;
   reason: MomentumShiftReason;
@@ -127,7 +127,7 @@ export interface MomentumFact extends PbpFactBase {
 }
 
 /** Defines the structure for finish fact. */
-export interface FinishFact extends PbpFactBase {
+interface FinishFact extends PbpFactBase {
   phase: "finish";
   winner: Side;
   /** finishing kimarite id/name if known */
@@ -139,7 +139,7 @@ export interface FinishFact extends PbpFactBase {
 }
 
 /** Defines the structure for tactical fact. */
-export interface TacticalFact extends PbpFactBase {
+interface TacticalFact extends PbpFactBase {
   phase: "tactical";
   side: Side;
   archetype?: TacticalArchetype;
@@ -149,19 +149,19 @@ export interface TacticalFact extends PbpFactBase {
   tacticalResult?: import("./types/combat").TacticalResult;
 }
 
-export interface InjuryFact extends PbpFactBase {
+interface InjuryFact extends PbpFactBase {
   phase: "injury";
   injuryType: string;
 }
 
-export interface InstitutionalFact extends PbpFactBase {
+interface InstitutionalFact extends PbpFactBase {
   phase: "institutional";
   eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT";
   oyakataPersonality?: import("./types/oyakata").OyakataArchetype | "default";
 }
 
 /** Type representing pbp fact. */
-export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact;
+type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact;
 
 /** Defines the structure for pbp context. */
 export interface PbpContext {

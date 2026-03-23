@@ -14,7 +14,7 @@ export interface WidgetDef {
 }
 
 /** Defines the structure for widget placement. */
-export interface WidgetPlacement {
+interface WidgetPlacement {
   id: string;
   column: number;
   order: number;
