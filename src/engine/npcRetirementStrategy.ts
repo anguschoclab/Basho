@@ -18,12 +18,7 @@ export const DefaultRetirementStrategy: RetirementStrategy = {
 
       // checkRetirement will check injury/age thresholds. 
       // We can pass oyakata compassion trait to give a slight modifier if checkRetirement supported it.
-      let retireReason: string | null = null;
-      
-      const lib = require("./retirements");
-      if (lib && lib.checkRetirement) {
-         retireReason = lib.checkRetirement(r, world.calendar?.year ?? world.year ?? 2026, world.seed);
-      }
+      const retireReason = checkRetirement(r, world.calendar?.year ?? world.year ?? 2026, world.seed);
 
       // Tyrant oyakata might force retirement earlier if underperforming
       if (!retireReason && oyakata.archetype === "tyrant" && r.stats && (r.stats as any).strength < 20) {

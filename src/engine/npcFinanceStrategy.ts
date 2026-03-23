@@ -22,19 +22,7 @@ export const DefaultFinanceStrategy: FinanceStrategy = {
       const stocks = stableSort(Object.values(world.myosekiMarket.stocks), (x: any) => x.id || String(x));
       for (const stock of stocks) {
         if (stock.status === "available" && stock.askingPrice && stock.askingPrice < (heya.funds - 100_000_000)) {
-           // We need to trigger the buy via the market module. Since we don't know the exact import,
-           // we'll rely on the existing market module pattern used in npcAI.ts.
-           // Actually, npcAI just calls buyMyoseki(world, oyakata.id, heya.id, stock.id);
-           // I'll define it here assuming market.ts or where it's imported from in npcAI.ts
-           if (typeof (world as any).executeMyosekiPurchase === 'function') {
-               (world as any).executeMyosekiPurchase(oyakata.id, heya.id, stock.id);
-           } else {
-               // Fallback / standard
-               const marketModule = require("../market");
-               if (marketModule && marketModule.buyMyoseki) {
-                   marketModule.buyMyoseki(world, oyakata.id, heya.id, stock.id);
-               }
-           }
+           buyMyoseki(world, oyakata.id, heya.id, stock.id);
            break; // Only buy one per month per heya
         }
       }

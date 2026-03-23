@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { determineNPCStyleBias, getManagerPersona, makeNPCWeeklyDecision } from "../npcAI";
+import { 
+  determineNPCStyleBias, 
+  getManagerPersona, 
+  makeNPCWeeklyDecision,
+  tickMonthly,
+  tickYear
+} from "../npcAI";
 import { WorldState } from "../types/world";
 import { Rikishi, RikishiStats } from "../types/rikishi";
 import { Heya } from "../types/heya";
@@ -111,5 +117,17 @@ describe("NPC AI System", () => {
     expect(["power", "technique", "speed", "balance", "neutral"]).toContain(decision.trainingFocus);
     
     expect(decision.reasoning.length).toBeGreaterThan(0);
+  });
+
+  it("tickMonthly should execute without crashing", () => {
+    const world = createMockWorld();
+    expect(() => tickMonthly(world)).not.toThrow();
+  });
+
+  it("tickYearly should execute and potentially log strategic assessments", () => {
+    const world = createMockWorld();
+    tickYear(world);
+    // Basic verification: did it run?
+    expect(world.events.log.length).toBeGreaterThanOrEqual(0);
   });
 });

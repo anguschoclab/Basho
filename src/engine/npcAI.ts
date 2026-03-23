@@ -9,6 +9,7 @@
 
 import { rngForWorld } from "./rng";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
+import * as talentpool from "./talentpool";
 import type { WorldState } from "./types/world";
 import type { Style } from "./types/combat";
 import type { OyakataArchetype, Oyakata } from "./types/oyakata";
@@ -18,6 +19,7 @@ import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
 import { getHeyaStyleBias, getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
+import { stableSort } from "./utils/sort";
 import {
   getCachedPerception,
   type PerceptionSnapshot,

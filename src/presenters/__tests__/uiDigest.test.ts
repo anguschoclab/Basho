@@ -75,6 +75,22 @@ describe("Banzuke Hysteresis Pipeline", () => {
     const newEntry = projectRosterEntry(newEntryR, world); // No prev score map matched
     expect(newEntry.rankDelta?.type).toBe("new");
 
+    // Test "down" rank delta
+    const downR = Array.from(world.rikishi.values())[2];
+    downR.rank = "maegashira";
+    downR.rankNumber = 12;
+    downR.side = "east";
+    // Previous was Maegashira 8 East (5016)
+    // Current is Maegashira 12 East (Tier 5 * 1000 + 12 * 2 = 5024)
+    // Higher score = lower rank. Score diff 5024 - 5016 = 8. steps = 4.
+    const downEntry = projectRosterEntry(downR, world, 5016);
+    expect(downEntry.rankDelta?.type).toBe("down");
+    expect(downEntry.rankDelta?.steps).toBe(4);
+
+    // Test "same" rank delta
+    const sameEntry = projectRosterEntry(r, world, 5010.5); // Maegashira 5 West
+    expect(sameEntry.rankDelta?.type).toBe("unchanged");
+
     // Check Row Building groups correctly and maps rank tier class seamlessly
     const rows = buildBanzukeRows([entry], r.division, "");
     expect(rows.length).toBe(1);
@@ -84,5 +100,10 @@ describe("Banzuke Hysteresis Pipeline", () => {
 
     // Check rank formatting
     expect(rows[0].rankLabel).toBe("Maegashira #5");
+  });
+
+  it("should handle empty or malformed banzuke data gracefully", () => {
+    const rows = buildBanzukeRows([], "makuuchi", "");
+    expect(rows).toEqual([]);
   });
 });
