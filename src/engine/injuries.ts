@@ -22,6 +22,7 @@ import type { Heya } from "./types/heya";
 import type { TrainingProfile } from "./training";
 import { computeTrainingMultipliers, getCareerPhase, PHASE_EFFECTS } from "./training";
 import { logEngineEvent } from "./events";
+import { stableSort } from "./utils/sort";
 
 /** =========================
  *  Types
