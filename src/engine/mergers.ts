@@ -9,6 +9,7 @@ import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./media";
 import { updateFacilitiesBand } from "./facilities";
 import { rngForWorld } from "./rng";
+import { stableTieBreak } from "./utils/sort";
 
 /**
  * Execute a stable merger.
@@ -126,6 +127,6 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
   }
 
   // Weight by prestige and funds
-  candidates.sort((a, b) => b.funds - a.funds);
+  candidates.sort((a, b) => b.funds - a.funds || stableTieBreak(a.id, b.id));
   return candidates[rng.int(0, Math.min(candidates.length - 1, 3))].id;
 }

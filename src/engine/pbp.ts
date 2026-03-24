@@ -1425,7 +1425,7 @@ function mergeTags(...lists: Array<PbpTag[] | undefined>): PbpTag[] {
  *  * @returns The result.
  */
 function weightedPick(bucket: PhraseBucket, rng: SeededRNG): Phrase {
-  if (!bucket.length) return { id: "fallback", text: "…" };
+  if (!bucket || !bucket.length) return { id: "fallback", text: "…" };
   const total = bucket.reduce((s, p) => s + (p.weight ?? 1), 0);
   let roll = rng.next() * total;
   for (const p of bucket) {
