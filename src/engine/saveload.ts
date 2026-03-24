@@ -57,7 +57,7 @@ function getStorage(): IStorageProvider | null {
 function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string, T> {
   if (!(map instanceof Map)) return map;
   const obj: Record<string, T> = {};
-  const keys = Array.from(map.keys()).sort();
+  const keys = Array.from(map.keys()).sort(stableTieBreak);
   for (const key of keys) obj[key] = map.get(key)!;
   return obj;
 }
@@ -70,7 +70,7 @@ function mapToObject<T>(map: Map<string, T> | Record<string, T>): Record<string,
 function objectToMap<T>(obj: Record<string, T>): Map<string, T> {
   const map = new Map<string, T>();
   // stable: keys in JS objects are not guaranteed sorted, so we sort
-  for (const key of Object.keys(obj).sort()) map.set(key, obj[key]);
+  for (const key of Object.keys(obj).sort(stableTieBreak)) map.set(key, obj[key]);
   return map;
 }
 
@@ -377,7 +377,7 @@ export function getSaveSlotKeys(): string[] {
     const key = storage.key(i);
     if (key?.startsWith(SAVE_KEY_PREFIX)) keys.push(key);
   }
-  return keys.sort();
+  return keys.sort(stableTieBreak);
 }
 
 // === METADATA LISTING ===

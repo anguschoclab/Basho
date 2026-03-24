@@ -4,6 +4,7 @@ import { Rikishi } from "./types/rikishi";
 import { Heya } from "./types/heya";
 import { logEngineEvent } from "./events";
 import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./talentpool";
+import { stableTieBreak } from "./utils/sort";
 
 // Hard cap constants
 /** h a r d_ c a p_ r o s t e r_ s i z e. */
@@ -62,7 +63,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): number {
     });
 
     // Sort by score ascending (lowest score = release first)
-    scoredCandidates.sort((a, b) => a.score - b.score);
+    scoredCandidates.sort((a, b) => a.score - b.score || stableTieBreak(a.rikishi.id, b.rikishi.id));
 
     const toRelease = scoredCandidates.slice(0, overflowCount);
 

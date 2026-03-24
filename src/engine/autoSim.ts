@@ -18,6 +18,7 @@ import { advanceDays } from "./tick/tickDaily";
 import { RANK_HIERARCHY } from "./banzuke";
 import { initializeBasho, generateDaySchedule } from "./worldgen";
 import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, type DivisionScheduleConfig } from "./schedule";
+import { stableTieBreak } from "./utils/sort";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -274,7 +275,7 @@ export function simulateEntireBasho(
       losses: record.losses
     }))
     .filter((s) => !!s.rikishi)
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const yushoEntry = sortedStandings[0];
   const yushoWinner = {
@@ -445,7 +446,7 @@ export function runAutoSim(
         bestRank: rikishi?.rank || "unknown"
       };
     })
-    .sort((a, b) => b.yushoCount - a.yushoCount)
+    .sort((a, b) => b.yushoCount - a.yushoCount || stableTieBreak(a.id, b.id))
     .slice(0, 10);
 
   // Era labels (simple heuristic; deterministic)

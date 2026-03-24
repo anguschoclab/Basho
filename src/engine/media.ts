@@ -20,6 +20,7 @@ import type { WorldState } from "./types/world";
 import type { BoutResult, BashoName, BashoState } from "./types/basho";
 import type { Division } from "./types/banzuke";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
+import { stableTieBreak } from "./utils/sort";
 
 /** =========================
  *  Types
@@ -365,12 +366,12 @@ export function buildMediaDigest(args: {
 
   const topHeadlines = args.state.headlines
     .filter(h => h.week === week)
-    .sort((a, b) => b.impact - a.impact)
+    .sort((a, b) => b.impact - a.impact || stableTieBreak(a.id, b.id))
     .slice(0, limit);
 
   const notableRikishi = Object.entries(args.state.mediaHeat)
     .map(([id, heat]) => ({ rikishiId: id, heat }))
-    .sort((a, b) => b.heat - a.heat)
+    .sort((a, b) => b.heat - a.heat || stableTieBreak(a.rikishiId, b.rikishiId))
     .slice(0, 5)
     .map(row => ({
       rikishiId: row.rikishiId,
@@ -381,7 +382,7 @@ export function buildMediaDigest(args: {
 
   const heyaPressure = Object.entries(args.state.heyaPressure)
     .map(([id, pressure]) => ({ heyaId: id, pressure }))
-    .sort((a, b) => b.pressure - a.pressure)
+    .sort((a, b) => b.pressure - a.pressure || stableTieBreak(a.heyaId, b.heyaId))
     .slice(0, 5)
     .map(row => ({
       heyaId: row.heyaId,
@@ -479,11 +480,11 @@ function createWeeklyFeatureHeadline(args: {
 
   // Candidate: hottest rikishi
   const hot = Object.entries(state.mediaHeat)
-    .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
+    .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0) || stableTieBreak(a[0], b[0]))
     .slice(0, 8);
 
   const pressed = Object.entries(state.heyaPressure)
-    .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
+    .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0) || stableTieBreak(a[0], b[0]))
     .slice(0, 6);
 
   const pickHot = hot.length > 0 && (pressed.length === 0 || rng.next() < 0.6);
@@ -1393,7 +1394,7 @@ function checkTitleRace(args: {
   if (entries.length === 0) return { state: args.state, headline: null };
 
   // Sort by wins desc
-  entries.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+  entries.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const topWins = entries[0].wins;
   // Leaders: all rikishi within 1 win of top
@@ -1454,7 +1455,7 @@ function checkTitleRace(args: {
     beat: "title_race",
     tone: "hype",
     rikishiIds: allIds,
-    heyaIds: [...new Set(heyaIds)].sort(),
+    heyaIds: [...new Set(heyaIds)].sort(stableTieBreak),
     title,
     subtitle,
     impact,

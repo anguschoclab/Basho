@@ -18,6 +18,7 @@ import type { Style, TacticalArchetype } from "./types/combat";
 import type { BoutResult, BashoResult } from "./types/basho";
 import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type PotentialBand } from "./descriptorBands";
 import { getCareerPhase } from "./training";
+import { stableTieBreak } from "./utils/sort";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
 
 /** Career phase type inferred from training engine */
@@ -134,7 +135,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
         totalBouts: rec.wins + rec.losses,
       };
     })
-    .sort((a, b) => b.totalBouts - a.totalBouts)
+    .sort((a, b) => b.totalBouts - a.totalBouts || stableTieBreak(a.rikishiId, b.rikishiId))
     .slice(0, 5);
 
   const rankInfo = RANK_NAMES[r.rank];
