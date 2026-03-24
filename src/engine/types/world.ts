@@ -56,6 +56,7 @@ export interface WorldState {
 
   heyas: IdMapRuntime<Heya>;
   rikishi: IdMapRuntime<Rikishi>;
+  historicalRikishi: IdMapRuntime<Rikishi>;
   oyakata: IdMapRuntime<Oyakata>;
 
   currentBasho?: BashoState;

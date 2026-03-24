@@ -42,7 +42,7 @@ export interface HoFInductee {
 }
 
 /** Defines the structure for hall of fame state. */
-interface HallOfFameState {
+export interface HallOfFameState {
   version: "1.0.0";
   inductees: HoFInductee[];
   /** Set of rikishiId+category to prevent re-induction */

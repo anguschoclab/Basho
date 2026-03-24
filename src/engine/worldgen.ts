@@ -212,6 +212,8 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   const FACILITY_BANDS: FacilitiesBand[] = ["world_class", "excellent", "adequate", "basic", "minimal"];
   const RUNWAY_BANDS: RunwayBand[] = ["secure", "comfortable", "tight", "critical"];
 
+  const currentYear = 2025;
+
   // 1. Create Heyas & Oyakata
   heyaNames.forEach((name, idx) => {
     const heyaId = `heya_${idx}`;
@@ -359,7 +361,6 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
   // --------------------------------
   // 2. Create Rikishi — enough to populate 46 stables realistically
   // Real sumo: ~700 total rikishi, ~70 sekitori (makuuchi 42 + juryo 28)
-  const currentYear = 2025;
 
   // Build rank slots with proper east/west pairing
   interface RankSlot { rank: Rank; division: Division; rankNumber: number; side: Side }
@@ -535,6 +536,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     
     heyas: heyaMap,
     rikishi: rikishiMap,
+    historicalRikishi: new Map(),
     oyakata: oyakataMap,
     staff: new Map(),
     myosekiMarket: generateMyosekiMarket(actualSeed, oyakataMap),

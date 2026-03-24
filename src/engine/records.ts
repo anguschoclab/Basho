@@ -18,32 +18,49 @@ export function ensureRecordsState(world: WorldState): WorldRecords {
 
 /**
  * Updates a specific leaderboard with a new entry if it qualifies for the Top 10.
+ * Uses sorted insertion to maintain order efficiently.
  */
 function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number, year: number, month: number) {
-  // If rikishi already in list, update value if higher
+  if (value <= 0) return;
+
   const existingIndex = list.findIndex(e => e.rikishiId === rikishi.id);
+  
+  // If already in list
   if (existingIndex !== -1) {
+    // Only update if current value is strictly better
     if (value > list[existingIndex].value) {
-      list[existingIndex].value = value;
-      list[existingIndex].shikona = rikishi.shikona;
-      list[existingIndex].achievedDate = { year, month };
+      list.splice(existingIndex, 1); // remove and re-insert to maintain sort
+    } else {
+      return; // No improvement, do nothing
+    }
+  }
+
+  // Find insertion point (descending order)
+  let insertAt = list.findIndex(e => value > e.value);
+  
+  if (insertAt === -1) {
+    // If list not full, add to end
+    if (list.length < 10) {
+      list.push({
+        rikishiId: rikishi.id,
+        shikona: rikishi.shikona,
+        value,
+        achievedDate: { year, month }
+      });
     }
   } else {
-    // New entry
-    list.push({
+    // Insert at specific position
+    list.splice(insertAt, 0, {
       rikishiId: rikishi.id,
       shikona: rikishi.shikona,
       value,
       achievedDate: { year, month }
     });
-  }
-
-  // Sort descending
-  list.sort((a, b) => b.value - a.value);
-
-  // Keep Top 10
-  if (list.length > 10) {
-    list.pop();
+    
+    // Trim if over capacity
+    if (list.length > 10) {
+      list.pop();
+    }
   }
 }
 

@@ -873,6 +873,7 @@ function runRetirements(world: WorldState): Record<string, number> {
       }
 
       onRikishiRetired(world, id);
+      world.historicalRikishi.set(id, r);
       world.rikishi.delete(id);
       const heya = world.heyas.get(r.heyaId);
       if (heya) {

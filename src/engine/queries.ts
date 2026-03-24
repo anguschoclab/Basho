@@ -21,7 +21,7 @@ import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } fr
  * @returns The Rikishi, or undefined if not found.
  */
 export function getRikishi(world: WorldState, id: Id): Rikishi | undefined {
-  return world.rikishi.get(id);
+  return world.rikishi.get(id) || world.historicalRikishi?.get(id);
 }
 
 /**
