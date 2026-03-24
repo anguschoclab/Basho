@@ -43,13 +43,20 @@ function tickMonthlyEconomics(world: WorldState): void {
       if (!r) continue;
       const info = RANK_HIERARCHY[r.rank];
       if (info?.isSekitori) {
-        const salary = info.salary ?? 0;
+        const baseSalary = info.salary ?? 0;
+        
+        // Kinboshi Stipend (Constitution §3.4): ¥40,000 per star, only in Makuuchi
+        const kinboshiCount = r.stats?.achievements?.kinboshiEarned ?? 0;
+        const kinboshiStipend = r.division === 'makuuchi' ? kinboshiCount * 40_000 : 0;
+        
+        const totalRikishiPay = baseSalary + kinboshiStipend;
+
         if (!r.economics) {
           r.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
         }
-        r.economics.cash += salary;
-        r.economics.totalEarnings += salary;
-        totalSalaries += salary;
+        r.economics.cash += totalRikishiPay;
+        r.economics.totalEarnings += totalRikishiPay;
+        totalSalaries += totalRikishiPay;
       } else {
         totalSalaries += 70_000;
       }

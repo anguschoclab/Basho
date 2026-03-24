@@ -59,16 +59,38 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
           </div>
 
           <div className="pt-2 border-t border-primary/5">
-            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Special Accolades</h4>
-            <div className="space-y-1">
-              {rikishi.kinboshiCount > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Kinboshi (Gold Stars)</span>
-                  <span className="font-mono text-yellow-500">★ {rikishi.kinboshiCount}</span>
-                </div>
-              )}
+            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Prestige & Achievements</h4>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex justify-between items-center p-2 rounded bg-yellow-500/5 border border-yellow-500/10">
+                <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                  <span className="text-lg">★</span> Gold Stars (Kinboshi)
+                </span>
+                <span className="font-mono text-sm font-bold">
+                  {rikishi.achievements.kinboshiEarned}
+                  {(rikishi.rank === 'yokozuna') && (
+                    <span className="text-muted-foreground font-normal ml-1">
+                      / {rikishi.achievements.kinboshiConceded} <span className="text-[10px] italic">conceded</span>
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center p-2 rounded bg-slate-400/5 border border-slate-400/10">
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-300 flex items-center gap-1">
+                  <span className="text-lg">☆</span> Silver Stars (Ginboshi)
+                </span>
+                <span className="font-mono text-sm font-bold">
+                  {rikishi.achievements.ginboshiEarned}
+                  {(rikishi.rank === 'ozeki') && (
+                    <span className="text-muted-foreground font-normal ml-1">
+                      / {rikishi.achievements.ginboshiConceded} <span className="text-[10px] italic">conceded</span>
+                    </span>
+                  )}
+                </span>
+              </div>
+
               {Object.entries(rikishi.specialPrizes).some(([_, count]) => count > 0) && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 mt-1">
                   {rikishi.specialPrizes.shukunSho > 0 && (
                     <div className="text-[10px] text-center p-1 rounded bg-blue-500/10 border border-blue-500/20">
                       <div className="text-blue-400 font-bold">SHUKUN</div>
@@ -88,9 +110,6 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
                     </div>
                   )}
                 </div>
-              )}
-              {!rikishi.kinboshiCount && !Object.values(rikishi.specialPrizes).some(v => v > 0) && (
-                <p className="text-xs text-muted-foreground italic">No historical accolades yet.</p>
               )}
             </div>
           </div>

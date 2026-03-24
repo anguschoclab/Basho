@@ -151,20 +151,47 @@ export function onBoutResolved(
 ): void {
   const { result, east, west } = context;
   
-  const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
   // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return;
 
   const winner = result.winner === "east" ? east : west;
   const winnerHeya = world.heyas.get(winner.heyaId);
 
-  // Determine Kensho count based on rank + popularity
-  let kenshoCount = 0;
-  if (east.rank === "yokozuna" || west.rank === "yokozuna") kenshoCount += 5;
-  else if (east.rank === "ozeki" || west.rank === "ozeki") kenshoCount += 2;
+  if (!winner.economics) {
+    winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
+  }
   
-  // Random variance
-  if (rng.bool(0.5)) kenshoCount += 1;
+  // 1. Determine Kensho count (Envelopes) per User Spec
+  let kenshoCount = 0;
+  const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
+
+  if (result.awardFact === 'kinboshi') {
+    kenshoCount = rng.int(15, 30);
+  } else if (result.awardFact === 'ginboshi') {
+    kenshoCount = rng.int(5, 10);
+  } else {
+    // Standard Makuuchi Win: 1-3 envelopes
+    kenshoCount = rng.int(1, 3);
+    // Rank bonuses
+    if (east.rank === "yokozuna" || west.rank === "yokozuna") kenshoCount += 2;
+    else if (east.rank === "ozeki" || west.rank === "ozeki") kenshoCount += 1;
+  }
+
+  result.kenshoEnvelopes = kenshoCount;
+
+  // 2. Marketability Shift (Permanent)
+  if (!winner.stats) {
+     winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 } };
+  }
+  
+  const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;
+  if (marketabilityScale > 0) {
+    if ((winner as any).marketability === undefined) (winner as any).marketability = 50;
+    (winner as any).marketability += marketabilityScale;
+    
+    // Also sync with popularity (presentation layer)
+    winner.economics.popularity = Math.min(100, winner.economics.popularity + (marketabilityScale * 2));
+  }
 
   if (kenshoCount > 0 && winnerHeya) {
     // Constitution: ¥70,000 per banner
@@ -179,8 +206,6 @@ export function onBoutResolved(
     const retirementDiversion = rikishiGross * 0.3;
     const rikishiNet = rikishiGross - retirementDiversion;
 
-    if (!winner.economics) winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
-    
     winner.economics.cash += rikishiNet;
     winner.economics.retirementFund += retirementDiversion;
     winner.economics.currentBashoEarnings += rikishiNet;

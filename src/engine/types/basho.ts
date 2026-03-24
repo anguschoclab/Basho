@@ -45,6 +45,8 @@ export interface BoutResult {
   duration: number;
   upset: boolean;
   isKinboshi?: boolean;
+  awardFact?: 'kinboshi' | 'ginboshi' | null;
+  kenshoEnvelopes: number;
   log: BoutLogEntry[];
   narrative?: string[];
   pbpLines?: any[];

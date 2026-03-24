@@ -211,8 +211,20 @@ export function applyBoutResult(
   standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
   standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
 
-  // Track kinboshi count on winner's economics
-  if (result.isKinboshi) {
+  // Track achievement counters on winner
+  if (result.awardFact) {
+    if (!winner.stats.achievements) {
+      winner.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
+    }
+    if (result.awardFact === 'kinboshi') {
+      winner.stats.achievements.kinboshiEarned++;
+    } else if (result.awardFact === 'ginboshi') {
+      winner.stats.achievements.ginboshiEarned++;
+    }
+  }
+
+  // Update legacy kinboshiCount if it exists on economics for backward compat (optional but safe)
+  if (result.awardFact === 'kinboshi') {
     if (!winner.economics) {
       winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
     }
@@ -364,7 +376,7 @@ export function endBasho(world: WorldState): WorldState {
     
     // Ensure stats.specialPrizes exists
     if (!r.stats) {
-      r.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, kinboshiCount: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } };
+      r.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 } };
     }
     if (!r.stats.specialPrizes) {
       r.stats.specialPrizes = { shukunSho: 0, kantoSho: 0, ginoSho: 0 };

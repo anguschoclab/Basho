@@ -13,6 +13,7 @@ export const VOCABULARY = {
   decorator_exhausted: ['gasping for air', 'running on fumes', 'heaving', 'clearly spent'],
   decorator_wobbling: ['teetering on the edge', 'scrambling for footing', 'visibly off-balance', 'struggling to stay upright'],
   ZABUTON_RAIN: "The arena erupts! A rain of purple zabuton floods the dohyo in celebration of a historic kinboshi!",
+  GINBOSHI_REACTION: "An incredible upset against the Ozeki! The crowd erupts as the first zabuton begin to fly!",
 };
 
 export const SENTENCE_TEMPLATES: Record<string, string[]> = {

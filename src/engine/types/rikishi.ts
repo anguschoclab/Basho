@@ -27,11 +27,16 @@ export interface RikishiStats {
   mental: number;
   adaptability: number;
   balance: number;
-  kinboshiCount: number;
   specialPrizes: {
     shukunSho: number; // Outstanding Performance
     kantoSho: number;  // Fighting Spirit
     ginoSho: number;   // Technique
+  };
+  achievements: {
+    kinboshiEarned: number;
+    ginboshiEarned: number;
+    kinboshiConceded: number;
+    ginboshiConceded: number;
   };
 }
 

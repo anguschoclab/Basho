@@ -92,6 +92,20 @@ export default function AlmanacPage() {
     active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
   };
 
+  const giantSlayers = useMemo(() => {
+    return Array.from(world.rikishi.values())
+      .map(r => ({
+        rikishiId: r.id,
+        shikona: r.shikona,
+        value: (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0),
+        details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
+        achievedDate: { year: world.year, month: 1 } // Placeholder for current session
+      }))
+      .filter(entry => entry.value > 0)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [world.rikishi, world.year]);
+
   return (
     <>
       <Helmet>
@@ -176,7 +190,7 @@ export default function AlmanacPage() {
                   <LeaderboardWidget title="Makuuchi Wins" entries={records.allTime.makuuchiWins} icon={Users} colorClass="text-blue-400" />
                   <LeaderboardWidget title="Yūshō Count" entries={records.allTime.yusho} icon={Trophy} colorClass="text-amber-400" />
                   <LeaderboardWidget title="Consecutive Yūshō" entries={records.allTime.consecutiveYusho} icon={Star} colorClass="text-purple-400" />
-                  <LeaderboardWidget title="Kinboshi Stars" entries={records.allTime.kinboshi} icon={Medal} colorClass="text-yellow-400" />
+                  <LeaderboardWidget title="Giant Slayers" entries={giantSlayers as any} icon={Medal} colorClass="text-yellow-400" />
                </div>
              </div>
 

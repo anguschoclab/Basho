@@ -87,12 +87,16 @@ interface UIRikishi {
   // H2H top rivals
   topRivals: UIRivalEntry[];
 
-  // Accolades
-  kinboshiCount: number;
   specialPrizes: {
     shukunSho: number;
     kantoSho: number;
     ginoSho: number;
+  };
+  achievements: {
+    kinboshiEarned: number;
+    ginboshiEarned: number;
+    kinboshiConceded: number;
+    ginboshiConceded: number;
   };
 
   // Economics
@@ -201,18 +205,23 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     favoredKimarite: r.favoredKimarite ?? [],
 
     // Accolades
-    kinboshiCount: r.stats?.kinboshiCount ?? 0,
     specialPrizes: {
       shukunSho: r.stats?.specialPrizes?.shukunSho ?? 0,
       kantoSho: r.stats?.specialPrizes?.kantoSho ?? 0,
       ginoSho: r.stats?.specialPrizes?.ginoSho ?? 0,
+    },
+    achievements: {
+      kinboshiEarned: r.stats?.achievements?.kinboshiEarned ?? 0,
+      ginboshiEarned: r.stats?.achievements?.ginboshiEarned ?? 0,
+      kinboshiConceded: r.stats?.achievements?.kinboshiConceded ?? 0,
+      ginboshiConceded: r.stats?.achievements?.ginboshiConceded ?? 0,
     },
 
     // Salary
     salaryBreakdown: getSalaryBreakdown(
       RANK_HIERARCHY[r.rank].salary,
       r.division,
-      r.stats?.kinboshiCount ?? 0
+      r.stats?.achievements?.kinboshiEarned ?? 0
     ),
   };
 }

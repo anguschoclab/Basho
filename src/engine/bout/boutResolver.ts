@@ -23,18 +23,27 @@ export function resolveBout(
   // 2. Generate narrative based on data frames
   generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`);
 
-  // 2.5. Kinboshi Fact Stamping
-  // Rule: If winner.division === 'Makuuchi' && winner.position === 'Maegashira' && loser.position === 'Yokozuna' && kimarite !== 'Fusensho' -> BoutResult.isKinboshi = true.
+  // 2.5. Giant Slayer Detection (Constitution & User Spec)
   const winner = result.winner === 'east' ? east : west;
   const loser = result.winner === 'east' ? west : east;
 
-  if (
-    winner.division === 'makuuchi' && 
-    winner.rank === 'maegashira' && 
-    loser.rank === 'yokozuna' && 
-    result.kimarite !== 'fusensho'
-  ) {
-    result.isKinboshi = true;
+  // Ensure achievements object exists
+  if (!winner.stats.achievements) {
+    winner.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
+  }
+  if (!loser.stats.achievements) {
+    loser.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
+  }
+
+  if (winner.rank === 'maegashira' && result.kimarite !== 'fusensho') {
+    if (loser.rank === 'yokozuna') {
+      result.awardFact = 'kinboshi';
+      result.isKinboshi = true;
+      loser.stats.achievements.kinboshiConceded++;
+    } else if (loser.rank === 'ozeki') {
+      result.awardFact = 'ginboshi';
+      loser.stats.achievements.ginboshiConceded++;
+    }
   }
 
   // 3. Apply any ensuing injuries based on the bout's physical toll

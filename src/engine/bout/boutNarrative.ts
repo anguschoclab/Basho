@@ -33,10 +33,15 @@ export function generateBoutNarrative(
     };
   }).filter(l => l.text);
   
-  if (result.isKinboshi) {
+  if (result.awardFact === 'kinboshi') {
     pbpLines.push({
       text: VOCABULARY.ZABUTON_RAIN as string,
       id: `${result.boutId}-kinboshi`
+    });
+  } else if (result.awardFact === 'ginboshi') {
+    pbpLines.push({
+      text: VOCABULARY.GINBOSHI_REACTION as string,
+      id: `${result.boutId}-ginboshi`
     });
   }
 
