@@ -14,7 +14,7 @@ import type { Side } from "../types/banzuke";
 import type { Stance, TacticalArchetype, RikishiArchetype } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../banzuke";
-import { KIMARITE_ALL, getKimariteCount, type Kimarite, getKimariteByClass, getKimariteForFamily } from "../kimarite";
+import { KIMARITE_ALL, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
 import { resolveTacticalClash, determineCPUTactic } from "../h2h";
 import { 
   TacticalFamily, 
@@ -96,6 +96,8 @@ export interface EngineState {
   tacticalResult?: import("../types/combat").TacticalResult;
   playerSide?: import("../types/banzuke").Side;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
+  eastId: string;
+  westId: string;
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -163,20 +165,44 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
 /**
  * Helper to pick a specific Kimarite from a class for the finish
  */
-function pickMoveFromClass(rng: SeededRNG, kimariteClass: import('../types/combat').KimariteClass | undefined, family?: TacticalFamily): Kimarite {
+function pickMoveFromClass(rng: SeededRNG, kimariteClass: KimariteClass | undefined, family?: TacticalFamily, moveId?: string): Kimarite {
+  if (moveId) {
+    const m = KIMARITE_ALL.find(k => k.id === moveId);
+    if (m) return m;
+  }
+
   let matches = getKimariteByClass(kimariteClass || 'force_out');
   if (family) {
     matches = matches.filter(k => k.tacticalFamily === family);
   }
+  
   if (matches.length === 0) {
-    // try by family if class empty
     if (family) {
-      const familyMatches = KIMARITE_ALL.filter(k => k.tacticalFamily === family);
-      if (familyMatches.length > 0) return familyMatches[rng.int(0, familyMatches.length - 1)];
+      matches = KIMARITE_ALL.filter(k => k.tacticalFamily === family);
     }
-    return KIMARITE_ALL[0]; // Fallback
+    if (matches.length === 0) return KIMARITE_ALL[0];
   }
-  return matches[rng.int(0, matches.length - 1)];
+
+  // Weighted Selection
+  const totalWeight = matches.reduce((s, m) => {
+    let w = m.baseWeight || 1;
+    if (m.rarity === 'uncommon') w *= 0.55;
+    else if (m.rarity === 'rare') w *= 0.20;
+    else if (m.rarity === 'legendary') w *= 0.05;
+    return s + w;
+  }, 0);
+  const roll = rng.next() * totalWeight;
+  let cumulative = 0;
+  for (const m of matches) {
+    let w = m.baseWeight || 1;
+    if (m.rarity === 'uncommon') w *= 0.55;
+    else if (m.rarity === 'rare') w *= 0.20;
+    else if (m.rarity === 'legendary') w *= 0.05;
+    cumulative += w;
+    if (roll < cumulative) return m;
+  }
+  
+  return matches[0];
 }
 
 /**
@@ -202,6 +228,47 @@ function calculateHeightLeverage(attacker: Rikishi, defender: Rikishi, targetFam
 // =========================================================
 // MOVE-DRIVEN ACTION ENGINE (v4.0 - Move-Based)
 // =========================================================
+
+/**
+ * REQUIREMENTS HELPER: Check if a move's state gates are met
+ */
+function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rikishi, st: EngineState): boolean {
+  if (!k.requirements) return true;
+  const req = k.requirements;
+
+  // edgeOfRing: Advantage against attacker or very low balance
+  if (req.edgeOfRing) {
+    const isAtEdge = st.advantage === (attacker.id === st.eastId ? 'west' : 'east') || 
+                     (attacker.id === st.eastId ? st.balanceEast : st.balanceWest) < 25;
+    if (!isAtEdge) return false;
+  }
+
+  if (req.maxAttackerBalance !== undefined) {
+    const bal = attacker.id === st.eastId ? st.balanceEast : st.balanceWest;
+    if (bal > req.maxAttackerBalance) return false;
+  }
+
+  if (req.minStrengthDifferential !== undefined) {
+    const diff = stat(attacker, 'strength') - stat(defender, 'strength');
+    if (diff < req.minStrengthDifferential) return false;
+  }
+
+  if (req.canFlank) {
+    if (st.position !== 'lateral' && st.position !== 'rear') return false;
+  }
+
+  if (req.requiresWeightAdvantage) {
+    if ((attacker.weight || 150) < (defender.weight || 150) + 10) return false;
+  }
+
+  if (req.isDesperation) {
+    const bal = attacker.id === st.eastId ? st.balanceEast : st.balanceWest;
+    const isLosing = st.advantage === (attacker.id === st.eastId ? 'west' : 'east');
+    if (bal > 30 || !isLosing) return false;
+  }
+
+  return true;
+}
 
 /**
  * AI Action Selection Logic
@@ -242,15 +309,49 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
   const intentRoll = rng.next();
   const intent: CombatAction['intent'] = intentRoll < 0.7 ? 'attack' : intentRoll < 0.9 ? 'defend' : 'counter';
 
-  // 3. Select a target Kimarite (using the new registry)
-  const familyMoves = getKimariteForFamily(family);
-  const move = familyMoves[rng.int(0, familyMoves.length - 1)] || KIMARITE_ALL[0];
+  // 3. Filter available moves by family and requirements
+  const familyMoves = getKimariteForFamily(family).filter(m => checkKimariteRequirements(m, r, opponent, st));
+  
+  // 4. Fallback if no moves meet requirements (use a basic move from the family)
+  let move: Kimarite;
+  if (familyMoves.length === 0) {
+    const safeMoves = getKimariteForFamily(family).filter(m => !m.requirements);
+    move = safeMoves[rng.int(0, safeMoves.length - 1)] || KIMARITE_ALL[0];
+  } else {
+    // 5. Weighted Selection
+    const totalMoveWeight = familyMoves.reduce((s, m) => {
+      let weight = m.baseWeight || 1;
+      if (m.rarity === 'uncommon') weight *= 0.55;
+      else if (m.rarity === 'rare') weight *= 0.20;
+      else if (m.rarity === 'legendary') weight *= 0.05;
+      
+      if (r.favoredKimarite?.includes(m.id)) weight *= 2.0; // Archetype/Favorite bonus
+      return s + weight;
+    }, 0);
+    const moveRoll = rng.next() * totalMoveWeight;
+    let moveCumulative = 0;
+    move = familyMoves[0];
+    for (const m of familyMoves) {
+      let weight = m.baseWeight || 1;
+      if (m.rarity === 'uncommon') weight *= 0.55;
+      else if (m.rarity === 'rare') weight *= 0.20;
+      else if (m.rarity === 'legendary') weight *= 0.05;
+
+      if (r.favoredKimarite?.includes(m.id)) weight *= 2.0;
+      moveCumulative += weight;
+      if (moveRoll < moveCumulative) {
+        move = m;
+        break;
+      }
+    }
+  }
 
   return {
     family,
     intent,
     targetKimariteClass: (move as any).kimariteClass || 'special',
-    statWeighting: move.statWeights
+    statWeighting: move.statWeights,
+    moveId: move.id // Add moveId to CombatAction for penalty tracking
   };
 }
 
@@ -420,13 +521,24 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   const westPower = calculateActionPower(west, westAction, east, st) * westRelLeverage + jitter(rng, 5);
 
   // 4. Update Balance Pools (Universal Defense)
-  // Overflow hits balance. Defense is factored internally in power for now, 
-  // but we can add explicit stat(opponent, 'balance') soak.
   const eastSoak = stat(east, 'balance') / 20;
   const westSoak = stat(west, 'balance') / 20;
 
-  const eastDamage = Math.max(0, westPower - eastPower - eastSoak);
-  const westDamage = Math.max(0, eastPower - westPower - westSoak);
+  let eastDamage = Math.max(0, westPower - eastPower - eastSoak);
+  let westDamage = Math.max(0, eastPower - westPower - westSoak);
+
+  // v1.3 Execution Penalty: High Risk failure
+  const eastMove = eastAction.moveId ? KIMARITE_ALL.find(k => k.id === eastAction.moveId) : null;
+  const westMove = westAction.moveId ? KIMARITE_ALL.find(k => k.id === westAction.moveId) : null;
+
+  if (eastMove?.isHighRisk && eastPower < westPower) {
+    eastDamage += (westPower - eastPower) * 0.5; // 50% extra penalty for high risk fail
+    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'east', moveId: eastMove.id } });
+  }
+  if (westMove?.isHighRisk && westPower < eastPower) {
+    westDamage += (eastPower - westPower) * 0.5;
+    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'west', moveId: westMove.id } });
+  }
 
   st.balanceEast -= eastDamage;
   st.balanceWest -= westDamage;
@@ -450,9 +562,9 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
 
   // 7. Victory Check (Balance hits 0)
   if (st.balanceWest <= 0) {
-    return { winner: "east", kimarite: pickMoveFromClass(rng, eastAction.targetKimariteClass, eastAction.family) };
+    return { winner: "east", kimarite: pickMoveFromClass(rng, eastAction.targetKimariteClass, eastAction.family, eastAction.moveId) };
   } else if (st.balanceEast <= 0) {
-    return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass, westAction.family) };
+    return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass, westAction.family, westAction.moveId) };
   }
 
   // 8. Log State Update
@@ -502,7 +614,9 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     balanceWest: stat(west, 'balance'),
     log: [],
     mizuiriDeclared: false,
-    playerSide: bout.playerSide
+    playerSide: bout.playerSide,
+    eastId: east.id,
+    westId: west.id
   };
 
   // 1. Tachiai Phase

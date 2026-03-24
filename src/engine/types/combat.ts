@@ -37,6 +37,7 @@ export interface CombatAction {
     speed: number;
     balance: number;
   };
+  moveId?: string;
 }
 
 export type ActionPreference = Record<TacticalFamily, number>;

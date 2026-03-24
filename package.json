@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "check:determinism": "node scripts/check-determinism.mjs",
     "check:engine-rng": "node scripts/check-determinism.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test": "vitest run"
   },
   "dependencies": {
     "@playwright/test": "^1.58.2",

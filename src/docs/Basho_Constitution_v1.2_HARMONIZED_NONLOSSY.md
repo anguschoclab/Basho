@@ -1,4 +1,4 @@
-# Basho Constitution — Unified Canonical Megacontract v1.3 (Move-Based Refactor)
+# Basho Constitution — Unified Canonical Megacontract v1.3 (Move-Based Rarity & Weighting)
 **Build date:** 2026-03-24
 **Status:** HARMONIZED / MOVE-BASED / IMPLEMENTATION-GRADE  
 **Project name:** **Basho** (all legacy naming normalized to “Basho” throughout this edition)
@@ -24124,13 +24124,13 @@ End of document.
 
 This registry is **binding engine data**, not reference material.
 
-## Tier Definitions (Simulation)
-- Common: bread-and-butter, majority of bouts
-- Uncommon: situational but believable
-- Rare: specialist or positional edge
-- Legendary: highlight-only, extreme rarity
+## Tier Definitions (v1.3 Move-Based Weighting)
+- Common: weight ≥ 200 (Bread-and-butter finishes)
+- Uncommon: weight 50–199 (Positional or stylistic variance)
+- Rare: weight 10–49 (Specialist or highlight-reel techniques)
+- Legendary: weight < 10 (Ultra-rare historic maneuvers)
 
-Tier multipliers:
+Tier multipliers (Applied in `selectAction` & `pickMoveFromClass`):
 - Common: 1.00
 - Uncommon: 0.55
 - Rare: 0.20

@@ -18,8 +18,8 @@ import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side } from "./types/banzuke";
 import type { Stance, Style, TacticalArchetype } from "./types/combat";
-import type { BoutResult } from "./types/basho";
 import type { Advantage, Position } from "./bout/boutPhysics";
+import { KIMARITE_ALL } from "./kimarite";
 
 /** =========================
  *  Fact Layer Types
@@ -136,6 +136,8 @@ interface EngagementFact extends PbpFactBase {
   eastPower: number;
   westPower: number;
   advantage: Advantage;
+  event?: string;
+  moveId?: string;
 }
 
 /** Defines the structure for finish fact. */
@@ -1017,6 +1019,11 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     generic: [
       { id: "eng_gen_1", text: "{leader} continues the assault, keeping {trailer} under pressure." },
       { id: "eng_gen_2", text: "The battle rages in the center of the dohyo!" }
+    ],
+    high_risk_fail: [
+      { id: "eng_hr_fail_1", text: "{leader} attempts a wild {kimarite}, but slips! {leader} is entirely off balance!", tags: ["gasps"] },
+      { id: "eng_hr_fail_2", text: "A desperate {kimarite} by {leader} backfires! {trailer} capitalizes on the opening!", tags: ["gasps"] },
+      { id: "eng_hr_fail_3", text: "{leader} goes for broke with {kimarite} and misses! Heartstopping moment!", tags: ["gasps"] }
     ]
   }
 };
@@ -1151,7 +1158,9 @@ export function buildPbpFromBoutResult(
           eastPower: entry.data.eastPower,
           westPower: entry.data.westPower,
           advantage: entry.data.advantage as Advantage,
-          leader: entry.data.advantage as Advantage
+          leader: entry.data.advantage as Advantage,
+          event: entry.data.event,
+          moveId: entry.data.moveId
         });
       } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
@@ -1392,6 +1401,17 @@ function selectPhraseForFact(
       
       let bucket = lib.engagement?.generic || lib.momentum.steady_drive;
       
+      if (eng.event === 'high_risk_fail') {
+         const move = KIMARITE_ALL.find(k => k.id === eng.moveId);
+         const kimariteName = move ? (move.name || move.id) : "move";
+         bucket = lib.engagement?.high_risk_fail || bucket;
+         const failChosen = weightedPick(bucket, rng);
+         return {
+           phrase: { ...failChosen, text: failChosen.text.replace("{kimarite}", kimariteName) },
+           tags: mergeTags(failChosen.tags)
+         };
+      }
+
       if (eastFam === 'push' && westFam === 'push') bucket = lib.engagement?.push_v_push || bucket;
       else if (eastFam === 'belt' && westFam === 'belt') bucket = lib.engagement?.belt_v_belt || bucket;
       else if ((eastFam === 'push' && westFam === 'belt') || (eastFam === 'belt' && westFam === 'push')) bucket = lib.engagement?.push_v_belt || bucket;
