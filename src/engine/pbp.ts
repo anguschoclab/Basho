@@ -279,9 +279,9 @@ export interface PbpLibrary {
   };
 
   institutional: {
-    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
-    GOVERNANCE_RULING: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
-    WELFARE_ALERT: { default: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    GOVERNANCE_STATUS_CHANGED: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    GOVERNANCE_RULING: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
+    WELFARE_ALERT: { default: PhraseBucket; strict: PhraseBucket; indulgent: PhraseBucket; traditionalist: PhraseBucket; scientist: PhraseBucket; gambler: PhraseBucket; nurturer: PhraseBucket; tyrant: PhraseBucket; strategist: PhraseBucket };
   };
 
   finish: {
