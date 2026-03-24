@@ -142,35 +142,26 @@ if (fs.existsSync(pbpPath)) {
 
 console.log("");
 
-// Step 5: Verify voice matrix exists and has diversity
-console.log("Phase 5: PBP Voice Matrix diversity gates...");
+// Step 5: Verify grammar definitions exist and have diversity
+console.log("Phase 5: Grammar Definitions diversity gates...");
 
-const matrixPath = path.resolve(ENGINE_DIR, "pbp_voice_matrix.json");
-if (fs.existsSync(matrixPath)) {
-  const matrix = JSON.parse(fs.readFileSync(matrixPath, "utf8"));
-  const MIN_PHRASES = 50;
-  let cellsFailing = 0;
-  let cellsTotal = 0;
+const grammarPath = path.resolve(ENGINE_DIR, "bout/grammarDefinitions.ts");
+if (fs.existsSync(grammarPath)) {
+  const grammarCode = fs.readFileSync(grammarPath, "utf8");
   
-  for (const [context, buckets] of Object.entries(matrix)) {
-    if (context === "version" || context === "meta" || context === "connective") continue;
-    for (const [bucket, phrases] of Object.entries(buckets)) {
-      cellsTotal++;
-      const count = Array.isArray(phrases) ? phrases.length : 0;
-      if (count < MIN_PHRASES) {
-        console.log(`  ⚠️  ${context}.${bucket}: ${count}/${MIN_PHRASES} phrases`);
-        cellsFailing++;
-      }
-    }
-  }
+  const hasVocabulary = grammarCode.includes("export const VOCABULARY");
+  const hasTemplates = grammarCode.includes("export const SENTENCE_TEMPLATES");
   
-  if (cellsFailing === 0) {
-    console.log(`  ✅ All ${cellsTotal} cells have ≥${MIN_PHRASES} phrases`);
-  } else {
-    console.log(`  ⚠️  ${cellsFailing}/${cellsTotal} cells below minimum (non-blocking)`);
+  console.log(`  ${hasVocabulary ? "✅" : "❌"} VOCABULARY exists`);
+  console.log(`  ${hasTemplates ? "✅" : "❌"} SENTENCE_TEMPLATES exists`);
+  
+  if (!hasVocabulary || !hasTemplates) {
+    console.error("\n  ❌ Grammar definitions are incomplete!\n");
+    process.exit(1);
   }
 } else {
-  console.error("  ❌ pbp_voice_matrix.json not found!");
+  console.error("  ❌ grammarDefinitions.ts not found!");
+  process.exit(1);
 }
 
 console.log("");

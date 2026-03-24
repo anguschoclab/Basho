@@ -46,11 +46,11 @@ describe("Dynamic Narrative Engine Diversity", () => {
     it("produces diverse outputs for identical physical ticks", () => {
         const outputs = new Set<string>();
         for (let i = 0; i < 20; i++) {
-            outputs.add(synthesizeTickNarrative(baseEvent));
+            outputs.add(synthesizeTickNarrative(baseEvent, `test-seed-${i}`));
         }
-        // With current templates (2 structures, multiple adverbs/verbs), 
-        // 5 distinct outputs is a safe assertion for 20 rolls.
-        expect(outputs.size).toBeGreaterThanOrEqual(2); 
+        // With current templates and expanded vocabulary, 
+        // 5 distinct outputs is very likely for 20 unique seeds.
+        expect(outputs.size).toBeGreaterThanOrEqual(5); 
     });
 
     it("injects exhaustion vocabulary when attacker is exhausted", () => {
@@ -59,10 +59,10 @@ describe("Dynamic Narrative Engine Diversity", () => {
             context: { ...mockContext, attackerFatigueLevel: "exhausted" }
         } as TickResolutionEvent;
 
-        // Run several times to ensure the template with [decorator_exhausted?] is picked
+        // Run several times with different seeds to ensure the template with [decorator_exhausted?] is picked
         let foundExhaustion = false;
-        for (let i = 0; i < 10; i++) {
-            const output = synthesizeTickNarrative(exhaustedEvent);
+        for (let i = 0; i < 20; i++) {
+            const output = synthesizeTickNarrative(exhaustedEvent, `exhaust-seed-${i}`);
             if (VOCABULARY.decorator_exhausted.some(word => output.includes(word))) {
                 foundExhaustion = true;
                 break;
@@ -77,7 +77,7 @@ describe("Dynamic Narrative Engine Diversity", () => {
             context: { ...mockContext, isRepeatedAction: true }
         } as TickResolutionEvent;
 
-        const output = synthesizeTickNarrative(repeatedEvent);
+        const output = synthesizeTickNarrative(repeatedEvent, "repeated-seed");
         expect(output).toContain("relentlessly goes back to the well");
     });
 });

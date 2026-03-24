@@ -27,7 +27,6 @@ export * from './overflow';
 export * from './oyakataPersonalities';
 export * from './oyakataStylePreferences';
 export * from './pbp';
-export * from './pbpMatrix';
 export * from './perception';
 export * from './queries';
 export * from './rivalries';

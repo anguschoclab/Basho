@@ -95,6 +95,7 @@ export interface EngineState {
   lastActionFamilyEast?: TacticalFamily;
   lastActionFamilyWest?: TacticalFamily;
   lastAdvantage?: Advantage;
+  day: number;
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -580,14 +581,18 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   const defenderBalance = sideWithAdvantage === 'west' ? st.balanceEast : st.balanceWest;
   const attackerLastFamily = sideWithAdvantage === 'west' ? st.lastActionFamilyWest : st.lastActionFamilyEast;
 
+  const h2h = attacker.h2h?.[defender.id];
+  const isRivalry = !!(h2h && (h2h.wins + h2h.losses) >= 3);
+  const isChampionshipBout = st.day === 15 && (attacker.currentBashoWins ?? 0) >= 10 && (defender.currentBashoWins ?? 0) >= 10;
+
   const narrativeContext: NarrativeContext = {
     attackerFatigueLevel: attackerFatigue > 60 ? 'exhausted' : attackerFatigue > 30 ? 'gasping' : 'fresh',
     defenderBalanceLevel: defenderBalance < 20 ? 'critical' : defenderBalance < 50 ? 'wobbling' : 'planted',
     isEdgeOfRing: defenderBalance < 25 || st.advantage !== 'none',
     isRepeatedAction: attackerAction.family === attackerLastFamily,
     isReversal: st.lastAdvantage !== 'none' && st.lastAdvantage !== sideWithAdvantage,
-    isRivalry: false, // Could be determined if we had rivalry data
-    isChampionshipBout: false
+    isRivalry,
+    isChampionshipBout
   };
 
   const tickResolutionEvent: TickResolutionEvent = {
@@ -648,6 +653,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     tachiaiWinner: "east",
     fatigueEast: 0,
     fatigueWest: 0,
+    day: bout.day,
     balanceEast: stat(east, 'balance'), // Initialize pools
     balanceWest: stat(west, 'balance'),
     log: [],

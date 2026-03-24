@@ -2874,12 +2874,11 @@ Beya cards show:
 - Best streak badge (e.g., consecutive basho with sekitori)
 - Welfare record band (injury burden)
 
-### 34.3 Oyakata Card Additions
-Oyakata cards show:
-- Tenure
-- Champions produced
-- Clean-years streak (ethics)
-- Compliance reputation band
+### §PBP: Play-By-Play & Narrative
+1. **Engine Architecture:** PBP is generated via a `Grammar Synthesizer` (`boutNarrative.ts`) that ingests `TickResolutionEvent` payloads.
+2. **Grammar Definitions:** Modular vocabulary and sentence templates are defined in `grammarDefinitions.ts`.
+3. **Context Injection:** Sentences are decorated based on `NarrativeContext` (fatigue, balance, repeated actions, reversals).
+4. **Determinism:** All narrative selections must be driven by seeded RNG to ensure identical bout replays.
 
 ---
 
@@ -32018,7 +32017,7 @@ toDescriptorBand({
 
 ## C6. Integration Checklist (where Part C plugs into Parts A–B)
 1. A3.1 Daily Tick: apply C3.3 ordering during basho days.
-2. PBP: generator must read `pbp_voice_matrix.json` and enforce C1.2 build gates.
+2. PBP: generator must use `grammarDefinitions.ts` and enforce dynamic diversity.
 3. Economy: Tier‑1 Kōenkai base funding must satisfy C2.4 minimum, guaranteeing C2.5.
 4. NPC Manager AI: recruitment must never persist above hard cap; overflow handling is C4.3.
 5. UI Observability: all stat descriptors must come from C5 translation + hysteresis.

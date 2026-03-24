@@ -189,7 +189,8 @@ toDescriptorBand({
 
 ## C6. Integration Checklist (where Part C plugs into Parts A–B)
 1. A3.1 Daily Tick: apply C3.3 ordering during basho days.
-2. PBP: generator must read `pbp_voice_matrix.json` and enforce C1.2 build gates.
+# Play-By-Play Narrative Generation
+The PBP system has been upgraded from static lookup tables to a dynamic, context-aware grammar synthesizer. Sentences are assembled using templates and modular vocabulary defined in `src/engine/bout/grammarDefinitions.ts`, resolving tokens based on physical tick data and bout memory.
 3. Economy: Tier‑1 Kōenkai base funding must satisfy C2.4 minimum, guaranteeing C2.5.
 4. NPC Manager AI: recruitment must never persist above hard cap; overflow handling is C4.3.
 5. UI Observability: all stat descriptors must come from C5 translation + hysteresis.
