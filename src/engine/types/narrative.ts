@@ -9,9 +9,9 @@ export type PrestigeBand = "elite" | "respected" | "modest" | "struggling" | "un
 export type FacilitiesBand = "world_class" | "excellent" | "adequate" | "basic" | "minimal";
 
 /** Type representing koenkai band type. */
-type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
+export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 /** Type representing koenkai band. */
-type KoenkaiBand = KoenkaiBandType;
+export type KoenkaiBand = KoenkaiBandType;
 /** Type representing runway band. */
 export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 

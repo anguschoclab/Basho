@@ -9,6 +9,8 @@ import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { getRivalry, upsertRivalry, makeRivalryKey } from "./rivalries";
+import type { Heya } from "./types/heya";
+import type { HistoricalOyakata } from "./history";
 
 export interface LineageEdge {
   mentorId: Id;
@@ -93,4 +95,33 @@ export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
     if (r) acc.push(r);
     return acc;
   }, []);
+}
+
+/**
+ * Records the transition of stable leadership from one Oyakata to another.
+ */
+export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataId: Id, newOyakataName: string) {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return;
+
+  if (!heya.lineage) heya.lineage = [];
+
+  // Close the current tenure if exists
+  if (heya.lineage.length > 0) {
+    const lastTenure = heya.lineage[heya.lineage.length - 1];
+    if (!lastTenure.endYear) {
+      lastTenure.endYear = world.year;
+    }
+  }
+
+  // Start new tenure
+  const newTenure: HistoricalOyakata = {
+    oyakataId: newOyakataId,
+    name: newOyakataName,
+    startYear: world.year,
+    achievements: []
+  };
+
+  heya.lineage.push(newTenure);
+  heya.oyakataId = newOyakataId;
 }

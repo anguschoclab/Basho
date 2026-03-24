@@ -1,16 +1,3 @@
-// AlmanacPage.tsx
-// Almanac Page - Historical records, career summaries, and deep links
-// Per Constitution §8: "The Almanac is the memory of the world."
-//
-// FIXES / UPDATES:
-// - Removes unused imports (RikishiName/StableName if not used; use Link + names directly)
-// - Avoids navigate({ to: ) during render (prevents React warnings }); shows a safe fallback card instead
-// - Makes statureBand sorting & color robust to missing/unknown bands
-// - Search is fully case-safe for JP names + EN text (handles undefined fields safely)
-// - Stable directory links to /stable/:id (matches other pages)
-// - Yusho winner aggregation safe when history has missing/unknown rikishi IDs
-// - Keeps UI narrative-first (no hidden stats), only uses allowed visible records
-
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -21,10 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
-import { toWinRateAssessment, WIN_RATE_LABELS } from "@/engine/descriptorBands";
-import { generateHeyaRecord, type HeyaRecord } from "@/engine/almanac";
-import type { Rikishi } from "@/engine/types/rikishi";
-import type { Heya } from "@/engine/types/heya";
+import type { RecordEntry } from "@/engine/types/records";
 import {
   Building2,
   ChevronRight,
@@ -35,807 +19,196 @@ import {
   Star,
   TrendingUp,
   Trophy,
-  Users
+  Users,
+  History,
+  Award
 } from "lucide-react";
 
-// Compute career stats for almanac display
-/**
- * Compute career stats.
- *  * @param rikishi - The Rikishi.
- */
-function computeCareerStats(rikishi: Rikishi) {
-  const wins = rikishi.careerWins || 0;
-  const losses = rikishi.careerLosses || 0;
-  const totalBouts = wins + losses;
-
-  // No-Leak: show win rate as assessment band, not percentage
-  const assessment = WIN_RATE_LABELS[toWinRateAssessment(wins, losses)];
-  const estimatedBasho = Math.floor(totalBouts / 15);
-
-  return { winRateLabel: assessment, totalBouts, estimatedBasho };
+/** Leaderboard widget for record book displays. */
+function LeaderboardWidget({ title, entries, icon: Icon, colorClass = "text-primary" }: { title: string, entries: RecordEntry[], icon: any, colorClass?: string }) {
+  return (
+    <Card className="paper h-full">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Icon className={`h-5 w-5 ${colorClass}`} />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-1">
+          {entries.length === 0 ? (
+            <p className="text-muted-foreground text-center py-6 text-sm">No records yet</p>
+          ) : (
+            entries.map((entry, idx) => (
+              <Link
+                key={`${entry.rikishiId}-${idx}`}
+                to={`/rikishi/${entry.rikishiId}`}
+                className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+              >
+                <span className={`w-5 text-center font-bold ${idx < 3 ? colorClass : "text-muted-foreground"}`}>
+                  {idx + 1}
+                </span>
+                <span className="flex-1 font-display truncate">{entry.shikona}</span>
+                <div className="text-right">
+                  <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                    {entry.value}
+                  </Badge>
+                  <div className="text-[10px] text-muted-foreground font-mono">
+                    {entry.achievedDate.year}.{entry.achievedDate.month}
+                  </div>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
-// Get stable tier color (robust)
-/**
- * Get stable tier color.
- *  * @param statureBand - The Stature band.
- *  * @returns The result.
- */
-function getStableTierColor(statureBand: string | undefined): string {
-  const colors: Record<string, string> = {
-    legendary: "text-amber-400",
-    powerful: "text-purple-400",
-    established: "text-blue-400",
-    rebuilding: "text-orange-400",
-    fragile: "text-red-400",
-    new: "text-emerald-400"
-  };
-  return colors[String(statureBand || "")] || "text-muted-foreground";
-}
-
-/**
- * Normalize query.
- *  * @param q - The Q.
- */
-function normalizeQuery(q: string) {
-  return (q || "").trim().toLowerCase();
-}
-
-/** almanac page. */
 export default function AlmanacPage() {
   const navigate = useNavigate();
   const { state } = useGame();
   const { world } = state;
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("rikishi");
+  const [activeTab, setActiveTab] = useState("past-bashos");
 
   if (!world) {
     return (
-      <div className="p-6 max-w-5xl mx-auto space-y-4">
-        <Card className="paper">
+      <div className="p-6 max-w-5xl mx-auto space-y-4 text-center">
+        <Card className="paper py-12">
           <CardHeader>
             <CardTitle>Almanac unavailable</CardTitle>
             <CardDescription>The world state is not loaded yet.</CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-2">
-            <ButtonLikeLink onClick={() => navigate({ to: "/" })}>Return to Dashboard</ButtonLikeLink>
-          </CardContent>
         </Card>
       </div>
     );
   }
 
-  const getRikishiById = (id: string): Rikishi | null => {
-    return world.rikishi.get(id) ?? null;
+  const records = world.records || { 
+    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
   };
-
-  // Get all rikishi sorted by rank tier then career wins
-  const allRikishi = useMemo(() => {
-    return [...world.rikishi.values()].sort((a, b) => {
-      const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 999;
-      const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 999;
-      if (tierA !== tierB) return tierA - tierB;
-      return (b.careerWins || 0) - (a.careerWins || 0);
-    });
-  }, [world.rikishi]);
-
-  // Get all heya sorted by stature (robust if band missing)
-  const allHeya = useMemo(() => {
-    const statureOrder = ["legendary", "powerful", "established", "rebuilding", "fragile", "new"];
-    return Array.from(world.heyas.values()).sort((a, b) => {
-      const bandA = (a as any).statureBand ?? "new";
-      const bandB = (b as any).statureBand ?? "new";
-      const orderA = statureOrder.indexOf(bandA);
-      const orderB = statureOrder.indexOf(bandB);
-      return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
-    });
-  }, [world.heyas]);
-
-  // Filter by search
-  const filteredRikishi = useMemo(() => {
-    if (!searchQuery) return allRikishi;
-    const query = normalizeQuery(searchQuery);
-
-    return allRikishi.filter((r) => {
-      const shikona = normalizeQuery(r.shikona || "");
-      const nat = normalizeQuery((r as any).nationality || "");
-      const heya = world.heyas.get(r.heyaId);
-      const heyaName = normalizeQuery(heya?.name || "");
-      const heyaJa = (heya?.nameJa || "").trim(); // JA: keep case/kanji
-
-      // JA search should also match exact substring on original query
-      const raw = searchQuery.trim();
-      const jaMatch = raw.length > 0 && (r.shikona?.includes(raw) || heyaJa.includes(raw));
-
-      return (
-        shikona.includes(query) ||
-        nat.includes(query) ||
-        heyaName.includes(query) ||
-        jaMatch
-      );
-    });
-  }, [allRikishi, searchQuery, world.heyas]);
-
-  const filteredHeya = useMemo(() => {
-    if (!searchQuery) return allHeya;
-    const query = normalizeQuery(searchQuery);
-    const raw = searchQuery.trim();
-
-    return allHeya.filter((h) => {
-      const name = normalizeQuery(h.name || "");
-      const ja = (h.nameJa || "").trim();
-      const descriptor = normalizeQuery((h as any).descriptor || "");
-      return name.includes(query) || descriptor.includes(query) || (raw.length > 0 && ja.includes(raw));
-    });
-  }, [allHeya, searchQuery]);
-
-  // Career wins leaders
-  const topChampions = useMemo(() => {
-    return [...allRikishi].sort((a, b) => (b.careerWins || 0) - (a.careerWins || 0)).slice(0, 10);
-  }, [allRikishi]);
-
-  // Kinboshi leaders
-  const kinboshiLeaders = useMemo(() => {
-    return [...allRikishi]
-      .filter((r) => (r.economics?.kinboshiCount || 0) > 0)
-      .sort((a, b) => (b.economics?.kinboshiCount || 0) - (a.economics?.kinboshiCount || 0))
-      .slice(0, 10);
-  }, [allRikishi]);
-
-  // Historical yusho winners from world.history
-  const yushoWinners = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const record of world.history || []) {
-      const id = (record as any)?.yusho;
-      if (typeof id === "string" && id.length > 0) {
-        counts.set(id, (counts.get(id) || 0) + 1);
-      }
-    }
-
-    return Array.from(counts.entries())
-      .map(([rid, count]) => ({ rikishi: getRikishiById(rid), count, rikishiId: rid }))
-      .filter((e) => e.rikishi)
-      .sort((a, b) => b.count - a.count);
-  }, [world.history, world.rikishi]);
-
-  // Sanshō leaders from world.history
-  const sanshoLeaders = useMemo(() => {
-    const counts = new Map<string, { ginoSho: number; kantosho: number; shukunsho: number; total: number }>();
-    for (const record of world.history || []) {
-      const br = record as any;
-      for (const [field] of [["ginoSho"], ["kantosho"], ["shukunsho"]] as const) {
-        const id = br?.[field];
-        if (typeof id === "string" && id.length > 0) {
-          const existing = counts.get(id) || { ginoSho: 0, kantosho: 0, shukunsho: 0, total: 0 };
-          existing[field as "ginoSho" | "kantosho" | "shukunsho"]++;
-          existing.total++;
-          counts.set(id, existing);
-        }
-      }
-    }
-
-    return Array.from(counts.entries())
-      .map(([rid, data]) => ({ rikishi: getRikishiById(rid), ...data, rikishiId: rid }))
-      .filter((e) => e.rikishi)
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 15);
-  }, [world.history, world.rikishi]);
-
-  // Win streak records
-  const streakRecords = useMemo(() => {
-    const streaks: Array<{ rikishi: Rikishi; streak: number; isActive: boolean }> = [];
-    for (const r of allRikishi) {
-      // Current win streak from basho record
-      const currentStreak = r.currentBashoRecord?.wins || 0;
-      if (currentStreak > 0) {
-        streaks.push({ rikishi: r, streak: currentStreak, isActive: true });
-      }
-      // Career-long streak approximation: consecutive wins this basho as proxy
-      const careerWins = r.careerWins || 0;
-      const careerLosses = r.careerLosses || 0;
-      if (careerWins > 0 && careerLosses > 0) {
-        // Estimate longest streak from win rate + total bouts
-        const totalBouts = careerWins + careerLosses;
-        const winRate = careerWins / totalBouts;
-        // Rough estimate: geometric distribution expected max streak
-        const estimatedStreak = Math.min(
-          careerWins,
-          Math.max(currentStreak, Math.floor(Math.log(totalBouts) / Math.log(1 / winRate)))
-        );
-        if (estimatedStreak > currentStreak) {
-          streaks.push({ rikishi: r, streak: estimatedStreak, isActive: false });
-        }
-      }
-    }
-    return streaks.sort((a, b) => b.streak - a.streak).slice(0, 10);
-  }, [allRikishi]);
-
-  const activeYokozunaCount = allRikishi.reduce((acc, r) => r.rank === "yokozuna" ? acc + 1 : acc, 0);
 
   return (
     <>
       <Helmet>
-        <title>Almanac - Historical Records</title>
+        <title>Almanac - The Memory of the World</title>
       </Helmet>
 
       <div className="p-6 max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold flex items-center gap-3">
-              <Scroll className="h-8 w-8" />
+            <h1 className="font-display text-4xl font-bold flex items-center gap-3">
+              <Scroll className="h-10 w-10 text-primary" />
               力士名鑑
             </h1>
-            <p className="text-muted-foreground">Almanac - The Memory of the World</p>
+            <p className="text-muted-foreground">The authoritative history of the Sumo world.</p>
           </div>
-          <Badge variant="outline" className="text-lg px-4 py-2">
+          <Badge variant="outline" className="text-lg px-4 py-2 bg-secondary/50">
             Year {world.year}
           </Badge>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search rikishi or heya..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card className="paper">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Users className="h-8 w-8 text-primary" />
-                <div>
-                  <div className="text-2xl font-bold">{allRikishi.length}</div>
-                  <div className="text-sm text-muted-foreground">Active Rikishi</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="paper">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-8 w-8 text-primary" />
-                <div>
-                  <div className="text-2xl font-bold">{allHeya.length}</div>
-                  <div className="text-sm text-muted-foreground">Active Heya</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="paper">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Trophy className="h-8 w-8 text-amber-400" />
-                <div>
-                  <div className="text-2xl font-bold">{(world.history || []).length}</div>
-                  <div className="text-sm text-muted-foreground">Basho Completed</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="paper">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Crown className="h-8 w-8 text-amber-400" />
-                <div>
-                  <div className="text-2xl font-bold">{activeYokozunaCount}</div>
-                  <div className="text-sm text-muted-foreground">Active Yokozuna</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-xl grid-cols-5">
-            <TabsTrigger value="rikishi">Rikishi</TabsTrigger>
-            <TabsTrigger value="heya">Heya</TabsTrigger>
-            <TabsTrigger value="champions">Champions</TabsTrigger>
-            <TabsTrigger value="leaderboards">Leaderboards</TabsTrigger>
-            <TabsTrigger value="records">Records</TabsTrigger>
+          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+            <TabsTrigger value="past-bashos" className="flex items-center gap-2">
+              <History className="h-4 w-4" />
+              Past Bashos
+            </TabsTrigger>
+            <TabsTrigger value="records" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Record Book
+            </TabsTrigger>
+            <TabsTrigger value="hof" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Hall of Fame
+            </TabsTrigger>
           </TabsList>
 
-          {/* Rikishi Tab */}
-          <TabsContent value="rikishi">
-            <Card className="paper">
-              <CardHeader>
-                <CardTitle>力士一覧 - Rikishi Directory</CardTitle>
-                <CardDescription>{filteredRikishi.length} wrestlers • Click to view profile</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[500px]">
-                  <div className="space-y-2">
-                    {filteredRikishi.map((rikishi) => {
-                      const stats = computeCareerStats(rikishi);
-                      const heya = world.heyas.get(rikishi.heyaId);
-                      const rankJa = RANK_HIERARCHY[rikishi.rank]?.nameJa ?? String(rikishi.rank);
-
-                      return (
-                        <Link
-                          key={rikishi.id}
-                          to={`/rikishi/${rikishi.id}`}
-                          className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 transition-colors group"
-                        >
-                          <div className={`w-1 h-12 rounded-full ${rikishi.side === "east" ? "bg-east" : "bg-west"}`} />
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-display font-bold truncate">{rikishi.shikona}</span>
-                              <Badge variant="outline" className={`rank-${rikishi.rank} text-xs`}>
-                                {rankJa}
-                              </Badge>
-                            </div>
-
-                            <div className="text-xs text-muted-foreground flex items-center gap-2">
-                              {heya ? <span className="hover:text-primary">{heya.name}</span> : <span>—</span>}
-                              <span>•</span>
-                              <span>{(rikishi as any).nationality || "—"}</span>
-                            </div>
-                          </div>
-
-                          <div className="text-right">
-                            <div className="font-mono font-bold">
-                              {rikishi.careerWins}-{rikishi.careerLosses}
-                            </div>
-                            <div className="text-xs text-muted-foreground">{stats.winRateLabel}</div>
-                          </div>
-
-                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Heya Tab */}
-          <TabsContent value="heya">
-            <Card className="paper">
-              <CardHeader>
-                <CardTitle>部屋一覧 - Stable Directory</CardTitle>
-                <CardDescription>{filteredHeya.length} active stables • Click to view details</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[500px]">
-                  <div className="space-y-2">
-                    {filteredHeya.map((heya: Heya) => {
-                      const rosterIds = (heya as any).rikishiIds || [];
-                      const rosterCount = rosterIds.length;
-
-                      const sekitoriCount = rosterIds
-                        .map((rid: string) => world.rikishi.get(rid))
-                        .filter((r: Rikishi | undefined) => r && RANK_HIERARCHY[r.rank]?.isSekitori)
-                        .length;
-
-                      const band = (heya as any).statureBand ?? "new";
-
-                      return (
-                        <Link
-                          key={heya.id}
-                          to={`/stable/${heya.id}`}
-                          className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/60 transition-colors group"
-                        >
-                          <Building2 className={`h-8 w-8 ${getStableTierColor(band)}`} />
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-display font-bold truncate">{heya.name}</span>
-                              {heya.nameJa && <span className="text-muted-foreground text-sm">{heya.nameJa}</span>}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {(heya as any).descriptor || `${band} stable`}
-                            </div>
-                          </div>
-
-                          <div className="text-right">
-                            <div className="font-bold">{rosterCount} wrestlers</div>
-                            <div className="text-xs text-muted-foreground">{sekitoriCount} sekitori</div>
-                          </div>
-
-                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Champions Tab */}
-          <TabsContent value="champions">
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Yusho Winners */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-amber-400" />
-                    優勝回数 - Yusho Count
-                  </CardTitle>
-                  <CardDescription>Championship victories in recorded history</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {yushoWinners.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">No tournaments completed yet</p>
-                    ) : (
-                      yushoWinners.slice(0, 10).map((entry, idx) => (
-                        <Link
-                          key={entry.rikishi!.id}
-                          to={`/rikishi/${entry.rikishi!.id}`}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors"
-                        >
-                          <span className="w-6 text-center font-bold text-muted-foreground">{idx + 1}</span>
-                          {idx === 0 && <Crown className="h-4 w-4 text-amber-400" />}
-                          {idx === 1 && <Medal className="h-4 w-4 text-gray-400" />}
-                          {idx === 2 && <Medal className="h-4 w-4 text-amber-600" />}
-                          <span className="flex-1 font-display">{entry.rikishi!.shikona}</span>
-                          <span className="font-mono font-bold text-amber-400">{entry.count} 優勝</span>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Career Wins Leaders */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-success" />
-                    通算勝利 - Career Wins
-                  </CardTitle>
-                  <CardDescription>Most career victories</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {topChampions.map((rikishi, idx) => (
-                      <Link
-                        key={rikishi.id}
-                        to={`/rikishi/${rikishi.id}`}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors"
-                      >
-                        <span className="w-6 text-center font-bold text-muted-foreground">{idx + 1}</span>
-                        {idx < 3 && <Star className="h-4 w-4 text-amber-400" fill="currentColor" />}
-                        <span className="flex-1 font-display">{rikishi.shikona}</span>
-                        <span className="font-mono font-bold">{rikishi.careerWins}勝</span>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Leaderboards Tab */}
-          <TabsContent value="leaderboards">
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Yūshō Leaderboard */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Trophy className="h-5 w-5 text-amber-400" />
-                    優勝 Yūshō
-                  </CardTitle>
-                  <CardDescription>Championship titles won</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    {yushoWinners.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-6 text-sm">No tournaments completed yet</p>
-                    ) : (
-                      yushoWinners.slice(0, 15).map((entry, idx) => (
-                        <Link
-                          key={entry.rikishi!.id}
-                          to={`/rikishi/${entry.rikishi!.id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
-                        >
-                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-amber-400" : "text-muted-foreground"}`}>
-                            {idx + 1}
-                          </span>
-                          {idx === 0 && <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />}
-                          {idx === 1 && <Medal className="h-3.5 w-3.5 text-gray-400 shrink-0" />}
-                          {idx === 2 && <Medal className="h-3.5 w-3.5 text-amber-600 shrink-0" />}
-                          {idx > 2 && <span className="w-3.5 shrink-0" />}
-                          <span className="flex-1 font-display truncate">{entry.rikishi!.shikona}</span>
-                          <Badge variant="outline" className="font-mono text-xs tabular-nums">
-                            {entry.count}
-                          </Badge>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Career Wins Leaderboard */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <TrendingUp className="h-5 w-5 text-emerald-400" />
-                    通算勝利 Total Wins
-                  </CardTitle>
-                  <CardDescription>All-time career victories</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    {topChampions.map((rikishi, idx) => {
-                      const totalBouts = (rikishi.careerWins || 0) + (rikishi.careerLosses || 0);
-                      return (
-                        <Link
-                          key={rikishi.id}
-                          to={`/rikishi/${rikishi.id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
-                        >
-                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-emerald-400" : "text-muted-foreground"}`}>
-                            {idx + 1}
-                          </span>
-                          {idx < 3 ? (
-                            <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0" fill="currentColor" />
-                          ) : (
-                            <span className="w-3.5 shrink-0" />
-                          )}
-                          <span className="flex-1 font-display truncate">{rikishi.shikona}</span>
-                          <div className="text-right">
-                            <Badge variant="outline" className="font-mono text-xs tabular-nums">
-                              {rikishi.careerWins}勝
-                            </Badge>
-                            <div className="text-[10px] text-muted-foreground font-mono">
-                              {rikishi.careerWins}-{rikishi.careerLosses}
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Kinboshi Leaderboard */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Star className="h-5 w-5 text-yellow-400" />
-                    金星 Kinboshi
-                  </CardTitle>
-                  <CardDescription>Gold stars (maegashira defeating yokozuna)</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    {kinboshiLeaders.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-6 text-sm">No kinboshi recorded yet</p>
-                    ) : (
-                      kinboshiLeaders.map((rikishi, idx) => (
-                        <Link
-                          key={rikishi.id}
-                          to={`/rikishi/${rikishi.id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
-                        >
-                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-yellow-400" : "text-muted-foreground"}`}>
-                            {idx + 1}
-                          </span>
-                          {idx < 3 ? (
-                            <Star className="h-3.5 w-3.5 text-yellow-400 shrink-0" fill="currentColor" />
-                          ) : (
-                            <span className="w-3.5 shrink-0" />
-                          )}
-                          <span className="flex-1 font-display truncate">{rikishi.shikona}</span>
-                          <Badge variant="outline" className="font-mono text-xs tabular-nums">
-                            {rikishi.economics?.kinboshiCount || 0}★
-                          </Badge>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Sanshō Leaderboard */}
-              <Card className="paper">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Medal className="h-5 w-5 text-purple-400" />
-                    三賞 Sanshō
-                  </CardTitle>
-                  <CardDescription>Special prizes (技能・敢闘・殊勲)</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    {sanshoLeaders.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-6 text-sm">No special prizes awarded yet</p>
-                    ) : (
-                      sanshoLeaders.map((entry, idx) => (
-                        <Link
-                          key={entry.rikishi!.id}
-                          to={`/rikishi/${entry.rikishi!.id}`}
-                          className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
-                        >
-                          <span className={`w-5 text-center font-bold ${idx < 3 ? "text-purple-400" : "text-muted-foreground"}`}>
-                            {idx + 1}
-                          </span>
-                          {idx < 3 ? (
-                            <Medal className="h-3.5 w-3.5 text-purple-400 shrink-0" />
-                          ) : (
-                            <span className="w-3.5 shrink-0" />
-                          )}
-                          <span className="flex-1 font-display truncate">{entry.rikishi!.shikona}</span>
-                          <div className="flex items-center gap-1.5">
-                            {entry.ginoSho > 0 && (
-                              <span className="text-[10px] text-muted-foreground" title="Ginō-shō (Technique)">技{entry.ginoSho}</span>
-                            )}
-                            {entry.kantosho > 0 && (
-                              <span className="text-[10px] text-muted-foreground" title="Kantō-shō (Fighting Spirit)">敢{entry.kantosho}</span>
-                            )}
-                            {entry.shukunsho > 0 && (
-                              <span className="text-[10px] text-muted-foreground" title="Shukunshō (Outstanding)">殊{entry.shukunsho}</span>
-                            )}
-                            <Badge variant="outline" className="font-mono text-xs tabular-nums">
-                              {entry.total}
-                            </Badge>
-                          </div>
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Records Tab */}
-          <TabsContent value="records">
-            <Card className="paper">
-              <CardHeader>
-                <CardTitle>記録 - Historical Records</CardTitle>
-                <CardDescription>Notable achievements and milestones</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Best Win Rate */}
-                  {allRikishi.length > 0 &&
-                    (() => {
-                      const candidates = [...allRikishi].filter((r) => (r.careerWins || 0) + (r.careerLosses || 0) >= 30);
-                      const best =
-                        candidates
-                          .sort((a, b) => {
-                            const ra = (a.careerWins || 0) / Math.max(1, (a.careerWins || 0) + (a.careerLosses || 0));
-                            const rb = (b.careerWins || 0) / Math.max(1, (b.careerWins || 0) + (b.careerLosses || 0));
-                            return rb - ra;
-                          })[0] ?? null;
-
-                      if (!best) return null;
-
-                      const rateLabel = WIN_RATE_LABELS[toWinRateAssessment(best.careerWins || 0, best.careerLosses || 0)];
-
-                      return (
-                        <div className="p-4 rounded-lg bg-secondary/50">
-                          <div className="text-sm text-muted-foreground">Best Career Win Rate (min 30 bouts)</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Link to={`/rikishi/${best.id}`} className="font-display font-bold text-lg hover:text-primary">
-                              {best.shikona}
-                            </Link>
-                            <span className="font-mono text-success">{rateLabel}</span>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                  {/* Most Experienced */}
-                  {allRikishi.length > 0 &&
-                    (() => {
-                      const most =
-                        [...allRikishi].sort(
-                          (a, b) =>
-                            (b.careerWins || 0) +
-                            (b.careerLosses || 0) -
-                            ((a.careerWins || 0) + (a.careerLosses || 0))
-                        )[0] ?? null;
-
-                      if (!most) return null;
-
-                      const bouts = (most.careerWins || 0) + (most.careerLosses || 0);
-
-                      return (
-                        <div className="p-4 rounded-lg bg-secondary/50">
-                          <div className="text-sm text-muted-foreground">Most Career Bouts</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Link to={`/rikishi/${most.id}`} className="font-display font-bold text-lg hover:text-primary">
-                              {most.shikona}
-                            </Link>
-                            <span className="font-mono">{bouts} bouts</span>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                  {/* Largest Stable */}
-                  {allHeya.length > 0 &&
-                    (() => {
-                      const largest =
-                        [...allHeya].sort((a, b) => ((b as any).rikishiIds?.length || 0) - ((a as any).rikishiIds?.length || 0))[0] ??
-                        null;
-
-                      if (!largest) return null;
-
-                      const count = (largest as any).rikishiIds?.length || 0;
-
-                      return (
-                        <div className="p-4 rounded-lg bg-secondary/50">
-                          <div className="text-sm text-muted-foreground">Largest Active Stable</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Link to={`/stable/${largest.id}`} className="font-display font-bold text-lg hover:text-primary">
-                              {largest.name}
-                            </Link>
-                            <span className="font-mono">{count} wrestlers</span>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                  {/* Win Streak Records */}
-                  {streakRecords.length > 0 && (
-                    <div className="p-4 rounded-lg bg-secondary/50 space-y-2">
-                      <div className="text-sm text-muted-foreground font-semibold flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        連勝記録 Win Streaks
+          <TabsContent value="past-bashos">
+            <div className="grid gap-6">
+              {(world.history || []).length === 0 ? (
+                <Card className="paper py-12 text-center">
+                  <p className="text-muted-foreground">No tournaments have been completed yet in this world.</p>
+                </Card>
+              ) : (
+                [...world.history].reverse().map((basho: any, idx) => (
+                  <Card key={idx} className="paper overflow-hidden">
+                    <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
+                      <div>
+                        <h3 className="font-bold text-lg capitalize">{basho.bashoName} {basho.year}</h3>
+                        <p className="text-xs text-muted-foreground">Tournament Snapshot</p>
                       </div>
-                      <div className="space-y-1">
-                        {streakRecords.slice(0, 5).map((entry, idx) => (
-                          <div key={`${entry.rikishi.id}-${idx}`} className="flex items-center gap-2 text-sm">
-                            <span className={`w-5 text-center font-bold ${idx === 0 ? "text-amber-400" : "text-muted-foreground"}`}>
-                              {idx + 1}
-                            </span>
-                            <Link
-                              to={`/rikishi/${entry.rikishi.id}`}
-                              className="flex-1 font-display hover:text-primary truncate"
-                            >
-                              {entry.rikishi.shikona}
-                            </Link>
-                            <span className="font-mono font-bold">{entry.streak}連勝</span>
-                            {entry.isActive && (
-                              <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-400/30">
-                                ACTIVE
-                              </Badge>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                      <Trophy className="h-6 w-6 text-amber-400" />
                     </div>
-                  )}
+                    <CardContent className="p-4 grid md:grid-cols-3 gap-4">
+                       <div className="space-y-1">
+                          <p className="text-xs uppercase text-muted-foreground font-semibold">Yūshō Winner</p>
+                          <p className="font-display font-bold text-lg">{basho.yushoShikona || "Reserved"}</p>
+                       </div>
+                       <div className="space-y-1">
+                          <p className="text-xs uppercase text-muted-foreground font-semibold">Attendance</p>
+                          <p className="font-mono text-lg">Full House</p>
+                       </div>
+                       <div className="text-right">
+                          <Link to={`/basho/${basho.id || idx}`} className="text-primary hover:underline text-sm font-semibold">
+                            View Full Results →
+                          </Link>
+                       </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="records" className="space-y-8">
+             <div className="space-y-4">
+               <h2 className="text-2xl font-bold flex items-center gap-2">
+                 <Star className="h-6 w-6 text-amber-400" />
+                 All-Time Records
+               </h2>
+               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  <LeaderboardWidget title="Total Wins" entries={records.allTime.careerWins} icon={TrendingUp} colorClass="text-emerald-400" />
+                  <LeaderboardWidget title="Makuuchi Wins" entries={records.allTime.makuuchiWins} icon={Users} colorClass="text-blue-400" />
+                  <LeaderboardWidget title="Yūshō Count" entries={records.allTime.yusho} icon={Trophy} colorClass="text-amber-400" />
+                  <LeaderboardWidget title="Consecutive Yūshō" entries={records.allTime.consecutiveYusho} icon={Star} colorClass="text-purple-400" />
+                  <LeaderboardWidget title="Kinboshi Stars" entries={records.allTime.kinboshi} icon={Medal} colorClass="text-yellow-400" />
+               </div>
+             </div>
+
+             <div className="space-y-4">
+               <h2 className="text-2xl font-bold flex items-center gap-2">
+                 <TrendingUp className="h-6 w-6 text-success" />
+                 Active Leaders
+               </h2>
+               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  <LeaderboardWidget title="Total Wins" entries={records.active.careerWins} icon={TrendingUp} colorClass="text-emerald-400" />
+                  <LeaderboardWidget title="Makuuchi Wins" entries={records.active.makuuchiWins} icon={Users} colorClass="text-blue-400" />
+                  <LeaderboardWidget title="Yūshō Count" entries={records.active.yusho} icon={Trophy} colorClass="text-amber-400" />
+               </div>
+             </div>
+          </TabsContent>
+
+          <TabsContent value="hof">
+            <Card className="paper py-12 text-center border-dashed">
+              <div className="flex flex-col items-center gap-4">
+                <Award className="h-16 w-16 text-amber-400/50" />
+                <div>
+                  <h3 className="text-xl font-bold">The Hall of Fame</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mt-2">
+                    Reserved for the greatest legends of Sumo history. Wrestlers become eligible after retiring with exceptional achievements.
+                  </p>
                 </div>
-              </CardContent>
+                <Badge variant="secondary" className="mt-4">Expansion in Progress</Badge>
+              </div>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
     </>
-  );
-}
-
-/**
- * Tiny internal helper so we don't import Button here just for a fallback screen.
- * (Keeps the file self-contained and avoids unused imports in projects without Button.)
- */
-function ButtonLikeLink(props: { onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={props.onClick}
-      className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-      type="button"
-    >
-      {props.children}
-    </button>
   );
 }

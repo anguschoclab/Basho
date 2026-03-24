@@ -14,6 +14,7 @@ import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 import type { MyosekiMarket } from "./myoseki";
+import type { WorldRecords } from "./records";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
@@ -107,6 +108,13 @@ export interface WorldState {
 
   activeBasho?: {
     id: string;
+  };
+
+  records: WorldRecords;
+
+  settings: {
+    archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
+    [key: string]: any;
   };
 
   // Dynamic properties set by subsystems

@@ -6,6 +6,7 @@ import type { Id } from "./common";
 import type { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./narrative";
 import type { GovernanceStatus, GovernanceRuling, WelfareState, Loan, IchimonName } from "./economy";
 import type { BeyaTrainingState } from "./training";
+import type { HistoricalOyakata } from "./history";
 
 /** Defines the structure for heya. */
 export interface Heya {
@@ -52,4 +53,7 @@ export interface Heya {
   ichimon?: IchimonName;
   politicalCapital?: number;
   location?: string;
+
+  lineage: HistoricalOyakata[];
+  historicalYusho: number;
 }

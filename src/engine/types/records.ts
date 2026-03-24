@@ -22,4 +22,29 @@ export interface MatchResultLog {
   kimarite: string;
   bashoId: string;
   day: number;
+  year: number;
+}
+
+export interface RecordEntry {
+  rikishiId: string;
+  shikona: string;
+  value: number;
+  achievedDate: { year: number; month: number };
+}
+
+export interface WorldRecords {
+  allTime: {
+    careerWins: RecordEntry[];
+    makuuchiWins: RecordEntry[];
+    yusho: RecordEntry[];
+    consecutiveYusho: RecordEntry[];
+    kinboshi: RecordEntry[];
+  };
+  active: {
+    careerWins: RecordEntry[];
+    makuuchiWins: RecordEntry[];
+    yusho: RecordEntry[];
+    consecutiveYusho: RecordEntry[];
+    kinboshi: RecordEntry[];
+  };
 }

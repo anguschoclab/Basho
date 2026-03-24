@@ -305,7 +305,14 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       ichimon: getRandom(hRng, ICHIMONS),
       politicalCapital: hRng.int(50, 200),
       
-      location: getRandom(hRng, ["Tokyo", "Tokyo", "Tokyo", "Osaka", "Nagoya", "Fukuoka"])
+      location: getRandom(hRng, ["Tokyo", "Tokyo", "Tokyo", "Osaka", "Nagoya", "Fukuoka"]),
+      lineage: [{
+        oyakataId: oyakataId,
+        name: oyakataMap.get(oyakataId)?.name || "Original Master",
+        startYear: currentYear - hRng.int(1, 15),
+        achievements: []
+      }],
+      historicalYusho: hRng.int(0, 5)
     };
     heyaMap.set(heyaId, heya);
   });
@@ -447,6 +454,13 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       momentum: 50,
       stamina: stats.stamina,
       
+      currentBashoWins: 0,
+      currentBashoLosses: 0,
+      makuuchiWins: 0,
+      consecutiveYusho: 0,
+      careerHistory: [],
+      milestones: [],
+
       injuryStatus: {
         type: "none",
         isInjured: false,
@@ -541,6 +555,13 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       currentWeek: 1,
       currentDay: 1
     },
+    records: {
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+    },
+    settings: {
+      archiveMode: "standard"
+    }
   } as WorldState;
 
   // Persistent Talent Pools (created immediately so scouting has targets)

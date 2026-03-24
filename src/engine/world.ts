@@ -46,6 +46,10 @@ import { determineSpecialPrizes, updateBanzuke } from "./banzuke";
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
 import { getHeyaRoster, getRikishi, getActiveRikishi } from "./queries";
+import { onBashoEnded, onRikishiRetired } from "./records";
+import { runHistoryUpdates } from "./history";
+import { recordOyakataHandover } from "./lineage";
+import { runArchivalPruning } from "./archival";
 
 // Type guard or helper to access current basho
 /**
@@ -428,6 +432,13 @@ function runPostBashoResolution(world: WorldState): void {
 
   // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
   runCareerJournalUpdates(world);
+  onBashoEnded(world);
+  runHistoryUpdates(world);
+
+  // === 7.1 ARCHIVAL PRUNING (Year-end) ===
+  if (world.calendar.month === 11) { // November is the last basho
+    runArchivalPruning(world);
+  }
 
   // === 8. FUTURE NATURALIZATION ===
   checkNaturalizations(world);
@@ -854,10 +865,14 @@ function runRetirements(world: WorldState): Record<string, number> {
               summary: `Retired accomplished rikishi ${r.shikona ?? r.name} has acquired the ${availableStock.name} elder stock and become an Oyakata.`,
               data: { rikishiId: id, oyakataId: newOyakataId, myosekiName: availableStock.name }
             });
+
+            // ARCHIVAL: Record lineage transition
+            recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name);
           }
         }
       }
 
+      onRikishiRetired(world, id);
       world.rikishi.delete(id);
       const heya = world.heyas.get(r.heyaId);
       if (heya) {

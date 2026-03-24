@@ -148,3 +148,10 @@ export function getRikishiByDivision(world: WorldState, division: Division): Rik
   }
   return out;
 }
+
+/**
+ * Get the currently active basho state, or undefined if no basho is active.
+ */
+export function getCurrentBasho(world: WorldState) {
+  return world.currentBasho;
+}
