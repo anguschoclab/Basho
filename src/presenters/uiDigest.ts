@@ -142,6 +142,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const trainingItems: DigestItem[] = [];
   const careerItems: DigestItem[] = [];
   const rivalryItems: DigestItem[] = [];
+  const mediaItems: DigestItem[] = [];
 
   for (const e of recentEvents) {
     if (e.week < thisWeek - 1 || e.week > thisWeek) continue;
@@ -154,15 +155,17 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       heyaId: e.heyaId
     };
 
-    if (e.category === "economy" || e.category === "sponsor") econItems.push({ ...item, kind: "economy" });
+    if (e.category === "media" || e.type.includes("SCANDAL")) mediaItems.push(item);
+    else if (e.category === "economy" || e.category === "sponsor") econItems.push({ ...item, kind: "economy" });
     else if (e.category === "scouting") scoutItems.push({ ...item, kind: "scouting" });
     else if (e.category === "training") trainingItems.push({ ...item, kind: "training" });
     else if (e.category === "career") careerItems.push(item);
     else if (e.category === "rivalry") rivalryItems.push(item);
-    else if (e.type.startsWith("GOVERNANCE") || e.type.includes("SCANDAL") || e.category === "discipline") govItems.push(item);
+    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline") govItems.push(item);
     else if (e.category === "welfare" || e.type.startsWith("COMPLIANCE") || e.type.startsWith("WELFARE")) welfareItems.push(item);
   }
 
+  if (mediaItems.length) sections.push({ id: "media", title: "Media & Scandals", items: mediaItems });
   if (trainingItems.length) sections.push({ id: "training", title: "Training", items: trainingItems });
   if (careerItems.length) sections.push({ id: "career", title: "Career Updates", items: careerItems });
   if (rivalryItems.length) sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });

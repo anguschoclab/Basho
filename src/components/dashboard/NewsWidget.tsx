@@ -19,8 +19,8 @@ const CAT_ICON: Record<string, any> = {
 
 const CAT_COLOR: Record<string, string> = {
   match: "text-primary", basho: "text-gold", training: "text-success",
-  injury: "text-destructive", economy: "text-warning", promotion: "text-primary",
-  rivalry: "text-accent", milestone: "text-gold", welfare: "text-warning",
+  promotion: "text-primary", rivalry: "text-accent", milestone: "text-gold", welfare: "text-warning",
+  media_jsa: "text-foreground", media_sports: "text-blue-500", media_tabloid: "text-yellow-500",
 };
 
 /** news widget. */
@@ -56,9 +56,22 @@ export function NewsWidget() {
         ) : (
           <div className="space-y-0.5 pr-2">
             {recentEvents.map((e) => {
-              const Icon = CAT_ICON[e.category] || Newspaper;
-              const color = CAT_COLOR[e.category] || "text-muted-foreground";
+              let Icon = CAT_ICON[e.category] || Newspaper;
+              let color = CAT_COLOR[e.category] || "text-muted-foreground";
               const isPlayer = e.heyaId === world?.playerHeyaId;
+
+              // Special handling for media outlets
+              if (e.category === "media" && (e.data as any)?.outlet) {
+                const outlet = (e.data as any).outlet;
+                if (outlet === "TABLOID") {
+                  color = "text-yellow-500 font-bold";
+                } else if (outlet === "SPORTS_DAILY") {
+                  color = "text-blue-500 font-semibold";
+                } else if (outlet === "JSA_OFFICIAL") {
+                  color = "text-foreground font-mono uppercase border-b border-foreground/20";
+                  Icon = Scale;
+                }
+              }
 
               return (
                 <div
@@ -69,7 +82,7 @@ export function NewsWidget() {
                 >
                   <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{e.title}</div>
+                    <div className={`font-medium truncate ${e.category === 'media' && (e.data as any)?.outlet === 'TABLOID' ? 'text-yellow-600' : ''}`}>{e.title}</div>
                     <div className="text-[11px] text-muted-foreground truncate">{e.summary}</div>
                   </div>
                   <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">

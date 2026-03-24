@@ -40,3 +40,24 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
     "[Attacker] relentlessly goes back to the well! Another [action_name]!"
   ]
 };
+
+export const MEDIA_TEMPLATES = {
+  TABLOID_SCANDAL: [
+    "EXCLUSIVE: [Rikishi] Spotted in Roppongi at 3 AM Following Brutal Loss!",
+    "Rumbling in the Heya: Is [Rikishi] Hiding a Devastating Knee Injury?",
+    "TABLOID: [Rikishi] seen with questionable associates in Osaka.",
+    "FLASH: Midnight brawl at the bar! Was [Rikishi] involved?"
+  ],
+  SPORTS_DAILY_SCANDAL: [
+    "Questions Surround [Rikishi]'s Focus Ahead of the Upcoming Basho.",
+    "[Rikishi] Draws Criticism from Deliberation Council Over Recent Conduct.",
+    "Editorial: The decline of discipline? [Rikishi] in the spotlight for the wrong reasons.",
+    "Sports Daily: [Rikishi] missed morning keiko; rumors of internal rift."
+  ],
+  JSA_OFFICIAL_RESPONSE: [
+    "JSA Issues Formal Warning to [Rikishi] Regarding Code of Conduct.",
+    "Official Notice: [Rikishi] Suspended for 3 Days Pending Investigation.",
+    "JSA Statement: Compliance review initiated for [Rikishi]'s stable.",
+    "Disciplinary Action: [Rikishi] fined for violation of JSA regulations."
+  ]
+};

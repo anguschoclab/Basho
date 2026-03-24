@@ -21,6 +21,10 @@ import type { BoutResult, BashoName, BashoState } from "./types/basho";
 import type { Division } from "./types/banzuke";
 import { buildRivalryDigest, type RivalriesState, getRivalryBoutModifiers } from "./rivalries";
 import { stableTieBreak } from "./utils/sort";
+import type { RikishiBehavior, OutletType, NewsItem, ScandalType } from "./types/media";
+import type { Rikishi } from "./types/rikishi";
+import { logEngineEvent } from "./events";
+import { reportScandal } from "./governance";
 
 /** =========================
  *  Types
@@ -348,7 +352,169 @@ export function processWeeklyMediaBoundary(args: {
     state = { ...state, headlines: state.headlines.slice(state.headlines.length - maxHeadlines) };
   }
 
+
   return { state, headlines: generated };
+}
+
+/**
+ * Evaluates all rikishi for potential scandals during the weekly tick.
+ * This is the main entry point from tickWeekly.ts.
+ */
+export function evaluateScandals(world: WorldState): void {
+  const rng = rngForWorld(world, "media", `scandals_week${world.week}`);
+  
+  for (const rikishi of world.rikishi.values()) {
+    if (rikishi.isRetired) continue;
+    
+    // Ensure behavior exists (migration/defaulting)
+    if (!rikishi.behavior) {
+      rikishi.behavior = { discipline: 80, mediaSavvy: 50, stress: 10 };
+    }
+
+    const scandal = rollForScandal(rikishi, rng);
+    if (scandal) {
+      processScandal(world, rikishi, scandal, rng);
+    }
+  }
+}
+
+/**
+ * Determines if a rikishi misbehaves and if the media catches them.
+ */
+function rollForScandal(rikishi: Rikishi, rng: SeededRNG): ScandalType | null {
+  const { discipline, stress, mediaSavvy } = rikishi.behavior;
+
+  // High stress + low discipline creates a misbehavior risk
+  // Range: (100 * 1.5) - (1 * 2) = 148 max risk
+  // (0 * 1.5) - (100 * 2) = -200 min risk
+  const riskThreshold = (stress * 1.5) - (discipline * 2);
+
+  if (rng.next() * 100 < riskThreshold) {
+    // Rikishi misbehaved! Now, does the media catch it?
+    const caughtChance = 100 - mediaSavvy;
+
+    if (rng.next() * 100 < caughtChance) {
+      // Caught! Pick a scandal type
+      const types: ScandalType[] = [
+        'LATE_NIGHT_BRAWL',
+        'SECRET_INJURY_LEAK',
+        'ILLEGAL_GAMBLING',
+        'TRAINING_ABUSE_ALLEGATION',
+        'COACH_DISPUTE'
+      ];
+      return types[Math.floor(rng.next() * types.length)];
+    }
+  }
+  return null;
+}
+
+/**
+ * Resolves a scandal, generating headlines and applying initial world effects.
+ */
+function processScandal(world: WorldState, rikishi: Rikishi, type: ScandalType, rng: SeededRNG): void {
+  const outletRoll = rng.next();
+  let outlet: OutletType = 'TABLOID';
+  if (outletRoll > 0.85) outlet = 'JSA_OFFICIAL';
+  else if (outletRoll > 0.5) outlet = 'SPORTS_DAILY';
+
+  const severity: 'minor' | 'major' | 'critical' = 
+    type === 'ILLEGAL_GAMBLING' || type === 'TRAINING_ABUSE_ALLEGATION' ? 'critical' :
+    type === 'LATE_NIGHT_BRAWL' ? 'major' : 'minor';
+
+  const newsItem: NewsItem = {
+    id: makeId(`scandal-${world.week}-${rikishi.id}-${rng.next()}`),
+    date: world.week,
+    outlet,
+    headline: generateScandalHeadlineText(rikishi, type, outlet, rng),
+    bodyTokens: `SCANDAL_${type}`,
+    targetRikishiId: rikishi.id,
+    impact: calculateScandalImpact(severity, outlet)
+  };
+
+  // 1. Log to the internal event system (A7 Compliance/Governance)
+  logEngineEvent(world, {
+    type: "SCANDAL_REPORTED",
+    category: "media",
+    importance: severity === 'critical' ? 'headline' : 'major',
+    scope: "heya",
+    heyaId: rikishi.heyaId,
+    rikishiId: rikishi.id,
+    title: newsItem.headline,
+    summary: `${rikishi.shikona} involved in ${type.replace(/_/g, ' ').toLowerCase()}. reported by ${outlet}.`,
+    data: { 
+      rikishiId: rikishi.id, 
+      scandalType: type, 
+      outlet, 
+      moraleShift: newsItem.impact.moraleShift,
+      fanPerceptionShift: newsItem.impact.fanPerceptionShift,
+      fineAmount: newsItem.impact.fines || 0
+    }
+  });
+
+  // 2. Integration with Governance for fines
+  if (newsItem.impact.fines) {
+    reportScandal(world, rikishi.heyaId, severity, type, rikishi.id);
+  }
+
+  // 3. Add to media headlines
+  if (world.mediaState) {
+    const mediaHeadline: MediaHeadline = {
+      id: newsItem.id,
+      week: world.week,
+      tier: newsItem.impact.fines ? "national" : "local",
+      beat: "discipline",
+      tone: "controversy",
+      rikishiIds: [rikishi.id],
+      heyaIds: [rikishi.heyaId],
+      title: newsItem.headline,
+      impact: Math.min(100, Math.abs(newsItem.impact.fanPerceptionShift) * 5),
+      tags: ["scandal", type, outlet]
+    };
+    world.mediaState.headlines.push(mediaHeadline);
+  }
+}
+
+function calculateScandalImpact(severity: 'minor' | 'major' | 'critical', outlet: OutletType) {
+  const multiplier = outlet === 'TABLOID' ? 1.5 : outlet === 'SPORTS_DAILY' ? 1.0 : 0.8;
+  
+  const baseMorale = severity === 'critical' ? -30 : severity === 'major' ? -15 : -5;
+  const baseFan = severity === 'critical' ? -25 : severity === 'major' ? -10 : -3;
+  
+  return {
+    moraleShift: Math.round(baseMorale * multiplier),
+    fanPerceptionShift: Math.round(baseFan * multiplier),
+    fines: severity === 'critical' ? 5000000 : severity === 'major' ? 1000000 : 0
+  };
+}
+
+function generateScandalHeadlineText(rikishi: Rikishi, type: ScandalType, outlet: OutletType, rng: SeededRNG): string {
+  // We'll hook this into grammarDefinitions later, for now a basic picker
+  const name = rikishi.shikona;
+  const templates: Record<string, string[]> = {
+    LATE_NIGHT_BRAWL: [
+      `${name} involved in Roppongi altercations!`,
+      `${name} seen in midnight scuffle after heavy drinking.`,
+    ],
+    SECRET_INJURY_LEAK: [
+      `Is ${name} hiding a knee injury? Insiders speak.`,
+      `Rumors of ${name}'s training absence confirmed?`,
+    ],
+    ILLEGAL_GAMBLING: [
+      `SHOCKING: ${name} linked to illegal betting ring!`,
+      `${name} faces investigation over "dark" associations.`,
+    ],
+    TRAINING_ABUSE_ALLEGATION: [
+      `Crisis at the heya: ${name} accused of harsh behavior.`,
+      `Stablemate speaks out against ${name}'s training methods.`,
+    ],
+    COACH_DISPUTE: [
+      `${name} and Coach at odds! Tensions boiling over.`,
+      `Public fallout: ${name} seen arguing with Oyakata.`,
+    ]
+  };
+
+  const pool = templates[type] || [`Scandal involving ${name} surfaces.`];
+  return pool[Math.floor(rng.next() * pool.length)];
 }
 
 /** =========================

@@ -7,6 +7,7 @@ import type { Style, CombatArchetype, KimariteId, CombatProfile, BoutTactic } fr
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
+import type { RikishiBehavior } from "./media";
 
 /** Log of tactical success/failure during a basho. */
 export interface ArchetypeEvidence {
@@ -105,6 +106,11 @@ export interface Rikishi {
   personalityTraits: string[];
   condition: number;
   motivation: number;
+
+  behavior: RikishiBehavior;
+
+  motivationCap?: number;
+  motivationCapWeeks?: number;
 
   talentSeed?: number;
 

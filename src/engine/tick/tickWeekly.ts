@@ -11,7 +11,7 @@ import * as rivalries from "../rivalries";
 import * as npcAI from "../npcAI";
 import * as scoutingStore from "../scoutingStore";
 import * as talentpool from "../talentpool";
-import { processWeeklyMediaBoundary, createDefaultMediaState } from "../media";
+import { processWeeklyMediaBoundary, createDefaultMediaState, evaluateScandals } from "../media";
 import { runTickPipeline, safeCall, type TickStep } from "./tickOrchestrator";
 
 /**
@@ -48,12 +48,27 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
       label: "media",
       run: (w) => {
         if (!w.mediaState) w.mediaState = createDefaultMediaState();
+        
+        // 1. Core Media Boundary (Heat/Pressure)
         const { state } = processWeeklyMediaBoundary({
           state: w.mediaState,
           world: w,
           rivalries: w.rivalriesState,
         });
         w.mediaState = state;
+
+        // 2. Scandal Engine
+        evaluateScandals(w);
+
+        // 3. Status Decay (Motivation Caps, etc)
+        for (const rikishi of w.rikishi.values()) {
+          if (rikishi.motivationCapWeeks && rikishi.motivationCapWeeks > 0) {
+            rikishi.motivationCapWeeks -= 1;
+            if (rikishi.motivationCapWeeks === 0) {
+              rikishi.motivationCap = undefined;
+            }
+          }
+        }
       },
     },
     { label: "recruitment_window", run: (w) => { tickRecruitmentWindowClose(w); } },

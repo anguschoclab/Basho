@@ -6,13 +6,13 @@
  * - Uses high-fidelity types for recruit generation.
  */
 
-import { rngFromSeed, SeededRNG } from "./rng";
+import { rngFromSeed } from "./rng";
 import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Rank } from "./types/banzuke";
-import { TacticalArchetype } from "./types/combat";
+import { CombatArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import { generateRikishiName } from "./shikona";
-import { deriveArchetype } from "./archetype";
+import { rollArchetype, buildCombatProfile } from "./archetype";
 
 // --- RETIREMENT LOGIC ---
 
@@ -67,9 +67,9 @@ const ORIGINS = [
   { name: "Nippon Sport Science Univ", weightMod: 1.05, stamMod: 1.2, isElite: true },
 ];
 
-const ARCHETYPES: TacticalArchetype[] = [
-  "oshi_specialist", "yotsu_specialist", "speedster", 
-  "trickster", "all_rounder", "hybrid_oshi_yotsu", "counter_specialist"
+const ARCHETYPES: CombatArchetype[] = [
+  "oshi", "yotsu", "speedster", 
+  "trickster", "hybrid", "giant"
 ];
 
 /**
@@ -146,18 +146,15 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
     
     momentum: 50,
     stamina: stats.stamina,
+
+    tacticalArchetypePrimary: archetype,
+    archetypeEvidence: [],
     
     // Style
-    style: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid",
+    style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
     archetype: archetype,
-    derivedArchetype: deriveArchetype(stats, { height: 175 + rng.next() * 20, weight: stats.weight }, archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid"),
-    combatProfile: {
-      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
-      preferredStyle: archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "technician",
-      specialties: [],
-      ringSense: 50,
-      aggressiveness: stats.mental
-    },
+    derivedArchetype: archetype,
+    combatProfile: buildCombatProfile(archetype),
     
     careerWins: 0,
     careerLosses: 0,
@@ -182,6 +179,11 @@ export function generateRookie(world: WorldState, currentYear: number, targetRan
     
     condition: 100,
     motivation: 50 + rng.next() * 50,
+    behavior: {
+      discipline: 60 + rng.int(0, 30),
+      mediaSavvy: 30 + rng.int(0, 40),
+      stress: 0
+    },
     personalityTraits: [],
     favoredKimarite: [],
     weakAgainstStyles: []

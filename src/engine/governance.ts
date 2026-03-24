@@ -108,42 +108,66 @@ function processHeyaGovernance(heya: Heya, world: WorldState): void {
 
 /**
  * Trigger a scandal event against a stable.
- * This is called by the Event System or Economy (bankruptcy).
+ * This is called by the Media Engine or Economy (bankruptcy).
  */
 export function reportScandal(
   world: WorldState,
   heyaId: string,
   severity: "minor" | "major" | "critical",
-  reason: string
+  reason: string,
+  rikishiId?: string
 ): void {
   const heya = world.heyas.get(heyaId);
   if (!heya) return;
 
   let points = 0;
   let fine = 0;
+  let repPenalty = 0;
 
   switch (severity) {
     case "minor":
       points = 10;
       fine = 500_000;
+      repPenalty = 2;
       break;
     case "major":
       points = 35;
       fine = 2_000_000;
+      repPenalty = 8;
       break;
     case "critical":
       points = 60;
       fine = 10_000_000;
+      repPenalty = 20;
       break;
   }
 
   // Apply Effects
   heya.scandalScore = Math.min(100, (heya.scandalScore || 0) + points);
   heya.funds -= fine;
+  heya.reputation = Math.max(0, (heya.reputation || 50) - repPenalty);
+
+  // If a specific rikishi is involved, apply local effects
+  if (rikishiId) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (rikishi) {
+      // Apply motivation cap for 4 weeks if it's a JSA level (major/critical)
+      if (severity !== "minor") {
+        rikishi.motivationCap = 50; 
+        rikishi.motivationCapWeeks = 4;
+        rikishi.motivation = Math.min(rikishi.motivation, 50);
+      }
+      
+      // Popularity hit
+      if (rikishi.economics) {
+        rikishi.economics.popularity = Math.max(0, (rikishi.economics.popularity || 50) - repPenalty);
+      }
+    }
+  }
 
   // Log Ruling
   const ruling: GovernanceRuling = {
-    id: `scandal-${world.year}-${world.week}-${heya.id}-${world.dayIndexGlobal}`,
+    id: `scandal-${world.year}-${world.week}-${heya.id}-${world.dayIndexGlobal}-${Math.floor(Math.random() * 1000)}`,
     date: `${world.year}-W${world.week}`,
     heyaId: heya.id,
     type: "fine",
@@ -151,7 +175,8 @@ export function reportScandal(
     reason: `Scandal: ${reason}`,
     effects: {
       fineAmount: fine,
-      scandalScoreDelta: points
+      scandalScoreDelta: points,
+      prestigePenalty: repPenalty
     }
   };
 
@@ -163,9 +188,16 @@ export function reportScandal(
     importance: severity === "critical" ? "headline" : severity === "major" ? "major" : "notable",
     scope: "heya",
     heyaId: heya.id,
+    rikishiId,
     title: `Scandal: ${reason}`,
-    summary: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}.`,
-    data: { severity, fineAmount: fine, scandalScoreDelta: points }
+    summary: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}. Reputation hit: -${repPenalty}.`,
+    data: { 
+      severity, 
+      fineAmount: fine, 
+      scandalScoreDelta: points, 
+      repPenalty,
+      rikishiId: rikishiId || "none"
+    }
   });
 
   // Generate media headline for scandal
@@ -176,8 +208,9 @@ export function reportScandal(
       type: "scandal",
       severity,
       reason,
-      description: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}.`,
+      description: `Scandal reported (${severity}) — fine ¥${fine.toLocaleString()}. Reputation hit: -${repPenalty}.`,
       fineAmount: fine,
+      repPenalty,
     });
   } catch (_) { /* media optional */ }
   
