@@ -481,7 +481,7 @@ export default function RikishiPage() {
                 <Swords className="h-3.5 w-3.5" /> Fighting Style
               </h3>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg bg-muted/50 text-center">
                   <div className="text-xl font-display">{ui.styleName}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{ui.style}</div>
@@ -489,6 +489,12 @@ export default function RikishiPage() {
                 <div className="p-3 rounded-lg bg-muted/50 text-center">
                   <div className="text-xl font-display">{ui.archetypeName}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{ui.archetype}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/50 text-center border border-primary/20">
+                  <div className="text-xl font-display text-primary">
+                    {ui.preferredGrip === 'migi' ? 'Migi-yotsu' : ui.preferredGrip === 'hidari' ? 'Hidari-yotsu' : 'None'}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Preferred Grip</div>
                 </div>
               </div>
 

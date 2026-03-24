@@ -11,7 +11,7 @@ import { rngFromSeed, SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "../types/basho";
 import type { Side } from "../types/banzuke";
-import { Stance, TacticalArchetype, RikishiArchetype, TacticalFamily, TACTICAL_MATRIX, CombatAction, CombatProfile, NarrativeContext, TickResolutionEvent } from "../types/combat";
+import { Stance, TacticalArchetype, RikishiArchetype, TacticalFamily, TACTICAL_MATRIX, CombatAction, CombatProfile, NarrativeContext, TickResolutionEvent, GrappleState, HandPosition } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../banzuke";
 import { KIMARITE_ALL, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
@@ -96,6 +96,7 @@ export interface EngineState {
   lastActionFamilyWest?: TacticalFamily;
   lastAdvantage?: Advantage;
   day: number;
+  grappleState: GrappleState;
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -230,7 +231,7 @@ function calculateHeightLeverage(attacker: Rikishi, defender: Rikishi, targetFam
 /**
  * REQUIREMENTS HELPER: Check if a move's state gates are met
  */
-function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rikishi, st: EngineState): boolean {
+export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rikishi, st: EngineState): boolean {
   if (!k.requirements) return true;
   const req = k.requirements;
 
@@ -263,6 +264,12 @@ function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rik
     const bal = attacker.id === st.eastId ? st.balanceEast : st.balanceWest;
     const isLosing = st.advantage === (attacker.id === st.eastId ? 'west' : 'east');
     if (bal > 30 || !isLosing) return false;
+  }
+
+  if (req.requiredGrip) {
+    const grip = attacker.id === st.eastId ? st.grappleState.east : st.grappleState.west;
+    if (req.requiredGrip.rightHand && grip.rightHand !== req.requiredGrip.rightHand) return false;
+    if (req.requiredGrip.leftHand && grip.leftHand !== req.requiredGrip.leftHand) return false;
   }
 
   return true;
@@ -362,7 +369,7 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
 /**
  * Calculate Action Power based on Move-Specific Math (v1.3)
  */
-function calculateActionPower(r: Rikishi, action: CombatAction, opponent: Rikishi, st: EngineState): number {
+export function calculateActionPower(r: Rikishi, action: CombatAction, opponent: Rikishi, st: EngineState): number {
   const w = action.statWeighting;
   const s = r.stats || r;
   const oppS = opponent.stats || opponent;
@@ -411,7 +418,120 @@ function calculateActionPower(r: Rikishi, action: CombatAction, opponent: Rikish
   const fatiguePenalty = (r.fatigue || 0) * 0.4;
   power -= fatiguePenalty;
 
+  // v1.6 Grip Multipliers
+  if (action.family === 'belt') {
+    if (st.grappleState.gripAdvantage === (r.id === st.eastId ? 'moro_zashi_east' : 'moro_zashi_west')) {
+      power *= 1.3; // Double inside bonus
+    } else if (st.grappleState.gripAdvantage === (r.id === st.eastId ? 'west_strong' : 'east_strong')) {
+      power *= 0.85; // Awkward grip penalty
+    }
+  }
+
   return Math.max(1, power * weightLiability);
+}
+
+/**
+ * v1.6 resolveGripClash: Triggered when wrestlers enter or maintain a belt grapple
+ */
+export function resolveGripClash(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): void {
+  const eastPref = east.combatProfile.preferredGrip;
+  const westPref = west.combatProfile.preferredGrip;
+
+  // Ai-Yotsu (Symmetric - e.g., both prefer Migi)
+  if (eastPref === westPref && eastPref !== 'none') {
+    st.grappleState = establishSymmetricGrip(east, west, eastPref);
+    st.log.push({ phase: 'engagement', data: { event: 'grip_stalemate', type: 'ai_yotsu' } });
+    return;
+  }
+
+  // Kenka-Yotsu (Asymmetric - Migi vs Hidari)
+  if (eastPref !== westPref && eastPref !== 'none' && westPref !== 'none') {
+    st.grappleState = establishAsymmetricGrip(rng, east, west);
+    const winner = st.grappleState.gripAdvantage === 'east_strong' ? 'east' : 'west';
+    st.log.push({ 
+      phase: 'engagement', 
+      data: { 
+        event: 'grip_clash_resolved', 
+        winner, 
+        grip: winner === 'east' ? east.combatProfile.preferredGrip : west.combatProfile.preferredGrip 
+      } 
+    });
+    return;
+  }
+
+  st.grappleState = establishMessyGrip(rng, east, west);
+  if (st.grappleState.gripAdvantage.startsWith('moro_zashi')) {
+    const winner = st.grappleState.gripAdvantage === 'moro_zashi_east' ? 'east' : 'west';
+    st.log.push({ phase: 'engagement', data: { event: 'moro_zashi_secured', winner } });
+  }
+}
+
+function establishSymmetricGrip(east: Rikishi, west: Rikishi, pref: 'migi' | 'hidari'): GrappleState {
+  // In Ai-Yotsu, both get one hand inside on their preferred side
+  return {
+    east: { 
+      rightHand: pref === 'migi' ? 'inside' : 'outside', 
+      leftHand: pref === 'migi' ? 'outside' : 'inside' 
+    },
+    west: { 
+      rightHand: pref === 'migi' ? 'inside' : 'outside', 
+      leftHand: pref === 'migi' ? 'outside' : 'inside' 
+    },
+    gripAdvantage: 'neutral'
+  };
+}
+
+function establishAsymmetricGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): GrappleState {
+  const eastPower = stat(east, 'technique') + stat(east, 'speed') / 2 + jitter(rng, 10);
+  const westPower = stat(west, 'technique') + stat(west, 'speed') / 2 + jitter(rng, 10);
+
+  const winner = eastPower > westPower ? 'east' : 'west';
+  
+  if (winner === 'east') {
+    const pref = east.combatProfile.preferredGrip;
+    return {
+      east: { 
+        rightHand: pref === 'migi' ? 'inside' : 'outside', 
+        leftHand: pref === 'hidari' ? 'inside' : 'outside' 
+      },
+      west: { 
+        rightHand: pref === 'migi' ? 'blocked' : 'outside', 
+        leftHand: pref === 'hidari' ? 'blocked' : 'outside' 
+      },
+      gripAdvantage: 'east_strong'
+    };
+  } else {
+    const pref = west.combatProfile.preferredGrip;
+    return {
+      east: { 
+        rightHand: pref === 'migi' ? 'blocked' : 'outside', 
+        leftHand: pref === 'hidari' ? 'blocked' : 'outside' 
+      },
+      west: { 
+        rightHand: pref === 'migi' ? 'inside' : 'outside', 
+        leftHand: pref === 'hidari' ? 'inside' : 'outside' 
+      },
+      gripAdvantage: 'west_strong'
+    };
+  }
+}
+
+function establishMessyGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): GrappleState {
+  const roll = rng.next();
+  if (roll < 0.1) {
+    // Rare Moro-zashi!
+    const winner = rng.next() < 0.5 ? 'east' : 'west';
+    return {
+      east: { rightHand: winner === 'east' ? 'inside' : 'blocked', leftHand: winner === 'east' ? 'inside' : 'blocked' },
+      west: { rightHand: winner === 'west' ? 'inside' : 'blocked', leftHand: winner === 'west' ? 'inside' : 'blocked' },
+      gripAdvantage: winner === 'east' ? 'moro_zashi_east' : 'moro_zashi_west'
+    };
+  }
+  return {
+    east: { rightHand: 'outside', leftHand: 'outside' },
+    west: { rightHand: 'outside', leftHand: 'outside' },
+    gripAdvantage: 'neutral'
+  };
 }
 
 // =========================================================
@@ -484,6 +604,12 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
   st.position = "front";
   st.timeSeconds += 1 + rng.next();
 
+  // v1.6 Grip Resolution
+  if (eastAction.family === 'belt' || westAction.family === 'belt') {
+    resolveGripClash(rng, east, west, st);
+    st.stance = "belt-dominant";
+  }
+
   st.log.push({
     phase: "tachiai",
     data: {
@@ -509,6 +635,14 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   // 1. AI selects actions
   const eastAction = selectAction(rng, east, st, west);
   const westAction = selectAction(rng, west, st, east);
+
+  // v1.6 Grip Resolution (Ongoing)
+  if (st.stance === "belt-dominant" || eastAction.family === 'belt' || westAction.family === 'belt') {
+    resolveGripClash(rng, east, west, st);
+    if (st.stance !== "belt-dominant") st.stance = "belt-dominant";
+  } else if (eastAction.family === 'push' && westAction.family === 'push') {
+    st.stance = "push-dominant";
+  }
 
   // 2. Check RPS Matrix for Leverage
   let eastRelLeverage = 1.0;
@@ -661,7 +795,12 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     playerSide: bout.playerSide,
     eastId: east.id,
     westId: west.id,
-    lastAdvantage: 'none'
+    lastAdvantage: 'none',
+    grappleState: {
+      east: { rightHand: 'outside', leftHand: 'outside' },
+      west: { rightHand: 'outside', leftHand: 'outside' },
+      gripAdvantage: 'neutral'
+    }
   };
 
   // 1. Tachiai Phase

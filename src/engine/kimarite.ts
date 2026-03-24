@@ -16,6 +16,10 @@ export interface KimariteRequirements {
   canFlank?: boolean;
   requiresWeightAdvantage?: boolean;
   isDesperation?: boolean;
+  requiredGrip?: {
+    rightHand?: 'inside' | 'outside';
+    leftHand?: 'inside' | 'outside';
+  };
 }
 
 /** Defines the structure for kimarite (v1.3 Move-Based Architecture). */
@@ -160,9 +164,9 @@ export const KIMARITE_ALL: (Kimarite & { kimariteClass?: KimariteClass })[] = [
   K({ id: 'amata', name: 'Amata', nameJa: 'あまた', jsaCategory: 'Tokushuwaza', baseWeight: 1, description: 'Obsolete/Reclassified technique' }),
 
   // === Nageite (Throwing Techniques - 13 moves) ===
-  K({ id: 'uwatenage', name: 'Uwatenage', nameJa: '上手投げ', jsaCategory: 'Nageite', baseWeight: 350, description: 'Overarm throw', leverageTarget: 'high_center_of_gravity' }),
+  K({ id: 'uwatenage', name: 'Uwatenage', nameJa: '上手投げ', jsaCategory: 'Nageite', baseWeight: 350, description: 'Overarm throw', leverageTarget: 'high_center_of_gravity', requirements: { requiredGrip: { rightHand: 'outside' } } }),
   K({ id: 'sukuinage', name: 'Sukuinage', nameJa: '掬い投げ', jsaCategory: 'Nageite', baseWeight: 200, description: 'Beltless arm throw', requiresBeltGrip: false }),
-  K({ id: 'shitatenage', name: 'Shitatenage', nameJa: '下手投げ', jsaCategory: 'Nageite', baseWeight: 150, description: 'Underarm throw' }),
+  K({ id: 'shitatenage', name: 'Shitatenage', nameJa: '下手投げ', jsaCategory: 'Nageite', baseWeight: 150, description: 'Underarm throw', requirements: { requiredGrip: { rightHand: 'inside' } } }),
   K({ id: 'kotenage', name: 'Kotenage', nameJa: '小手投げ', jsaCategory: 'Nageite', baseWeight: 120, description: 'Armlock throw', requiresBeltGrip: false }),
   K({ id: 'shitatedashinage', name: 'Shitatedashinage', nameJa: '下手出し投げ', jsaCategory: 'Nageite', baseWeight: 80, description: 'Pulling underarm throw', tacticalFamily: 'trick' }),
   K({ id: 'uwatedashinage', name: 'Uwatedashinage', nameJa: '上手出し投げ', jsaCategory: 'Nageite', baseWeight: 60, description: 'Pulling overarm throw', tacticalFamily: 'trick' }),

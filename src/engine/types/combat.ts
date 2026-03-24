@@ -6,6 +6,8 @@ import { Rikishi, RikishiStats } from "./rikishi";
 
 export type CombatArchetype = 'oshi' | 'yotsu' | 'trickster' | 'speedster' | 'hybrid' | 'giant';
 
+export type GripPreference = 'migi' | 'hidari' | 'none'; // Right-inside, Left-inside, or no preference
+
 export interface CombatProfile {
   archetype: CombatArchetype;
   // The % chance the AI will select a specific family during the Engagement Phase
@@ -15,6 +17,7 @@ export interface CombatProfile {
     trick: number;
     speed: number;
   };
+  preferredGrip: GripPreference;
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
   statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height', number>>;
@@ -30,6 +33,14 @@ export const TACTICAL_MATRIX: Record<TacticalFamily, TacticalFamily[]> = {
   'trick': ['push'],    // Trickster uses pusher's momentum against them
   'speed': ['push', 'belt']   // Speedster flanks slow heavy fighters
 };
+
+export type HandPosition = 'inside' | 'outside' | 'blocked';
+
+export interface GrappleState {
+  east: { rightHand: HandPosition; leftHand: HandPosition; };
+  west: { rightHand: HandPosition; leftHand: HandPosition; };
+  gripAdvantage: 'east_strong' | 'west_strong' | 'neutral' | 'moro_zashi_east' | 'moro_zashi_west';
+}
 
 export interface CombatAction {
   family: TacticalFamily;

@@ -61,3 +61,18 @@ export const MEDIA_TEMPLATES = {
     "Disciplinary Action: [Rikishi] fined for violation of JSA regulations."
   ]
 };
+
+export const GRIP_TEMPLATES = {
+  moro_zashi: [
+    "Brilliant maneuver! [Attacker] slips both arms in for a deep moro-zashi grip!",
+    "[Attacker] secures the double-inside grip! [Defender] is in serious trouble."
+  ],
+  kenka_yotsu_stalemate: [
+    "A classic kenka-yotsu battle. Neither man can secure their preferred grip.",
+    "They are deadlocked fighting for the inside left hand."
+  ],
+  grip_secured: [
+    "[Attacker] gets their favored [grip_preference] grip and locks it in.",
+    "A fierce grip fight, but [Attacker] wins the inside position!"
+  ]
+};

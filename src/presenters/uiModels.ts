@@ -90,6 +90,7 @@ export interface UIRikishi {
   // Flavor
   personalityTraits: string[];
   favoredKimarite: string[];
+  preferredGrip: string;
 }
 
 /** Defines the structure for u i rival entry. */
@@ -193,6 +194,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
     favoredKimarite: r.favoredKimarite ?? [],
+    preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
   };
 }
 
