@@ -500,11 +500,11 @@ function createWeeklyFeatureHeadline(args: {
 
     const title = rng.next() < 0.5
       ? `${r.shikona} Draws Eyes This Week`
-      : `Spotlight on ${r.shikona}`;
+      : rng.next() < 0.5 ? `Spotlight on ${r.shikona}` : `${r.shikona}'s Sizzling Form Cannot Be Ignored`;
 
     const subtitle = beat === "streak"
       ? "Momentum is building — and the crowd is noticing."
-      : "The story behind the rise, told through keiko and grit.";
+      : rng.next() < 0.5 ? "The story behind the rise, told through keiko and grit." : "The media circus circles the dohyo as the new rising star emerges.";
 
     return {
       id: makeId(`mh-feature-${week}-${id}-${Math.floor(rng.next() * 1e6)}`),
@@ -582,7 +582,9 @@ function buildBoutHeadlineTitle(args: {
     const opts = [
       `${w} Stuns ${l}`,
       `${w} Shocks the Arena Against ${l}`,
-      `${l} Falls — ${w} Seizes the Moment`
+      `${l} Falls — ${w} Seizes the Moment`,
+      `${w} Derails ${l}'s Basho Ambitions`,
+      `Massive Upset! ${w} Topples ${l}`
     ];
     return opts[Math.floor(rng.next() * opts.length)];
   }
@@ -590,7 +592,9 @@ function buildBoutHeadlineTitle(args: {
   const opts = [
     `${w} Defeats ${l} by ${args.kimariteName}`,
     `${w} Overcomes ${l}`,
-    `${w} Turns Back ${l}`
+    `${w} Turns Back ${l}`,
+    `${w} Proves Too Strong for ${l}`,
+    `Textbook Sumo: ${w} Dispatches ${l}`
   ];
 
   // Main event tier wants punchier copy
@@ -623,7 +627,9 @@ function buildBoutHeadlineSubtitle(args: {
     const opts = [
       "A momentum swing that changes the conversation.",
       "The crowd roars as the script flips.",
-      "A result that won’t be forgotten soon."
+      "A result that won’t be forgotten soon.",
+      "The Kokugikan roof nearly blew off after that finish.",
+      "Is this a fluke, or the beginning of a true crisis?"
     ];
     return opts[Math.floor(rng.next() * opts.length)];
   }
@@ -753,7 +759,7 @@ function updateStreakAndGenerateHeadline(args: {
     ? [`${r.shikona} Is Unstoppable — ${streak} Straight Wins`, `${streak}-0: ${r.shikona} Rewrites the Narrative`]
     : milestone >= 8
     ? [`${r.shikona} Surges to ${streak} Consecutive Victories`, `${streak} and Counting for ${r.shikona}`]
-    : [`${r.shikona} Extends Win Streak to ${streak}`, `Hot Streak: ${r.shikona} Now ${streak}-0`];
+    : [`${r.shikona} Extends Win Streak to ${streak}`, `Hot Streak: ${r.shikona} Now ${streak}-0`, `${streak} Wins! ${r.shikona} Keeps Rolling`];
 
   const subtitles = milestone >= 10
     ? "The entire division is watching. This is history in the making."
@@ -861,7 +867,7 @@ function checkPromotionWatch(args: {
       title: rng.next() < 0.5
         ? `${winner.shikona} Fights to Survive in Juryo — ${wins}-${losses}`
         : `Demotion Looms for ${winner.shikona}`,
-      subtitle: "Every remaining bout is do-or-die at the bottom of the paid ranks.",
+      subtitle: rng.next() < 0.5 ? "Every remaining bout is do-or-die at the bottom of the paid ranks." : "A devastating fall to Makushita edges closer.",
       tone: "concern",
       beat: "promotion_watch",
     };
@@ -988,13 +994,14 @@ export function generateInjuryWithdrawalHeadline(args: {
     : [
         `${shikona} Pulls Out After ${capitalize(area)} Concern`,
         `${shikona} Withdraws — Minor Injury Cited`,
+        `JSA confirms ${shikona}'s Kyujo status over ${capitalize(area)}.`
       ];
 
   const subtitles = isSerious
     ? `A devastating blow — ${shikona} was carried off after the bout with ${oppName}.`
     : isModerate
     ? `The ${rank} could not continue after ${description.toLowerCase()}`
-    : `A precautionary withdrawal. The stable hopes for a quick recovery.`;
+    : `A precautionary withdrawal. The stable hopes for a quick recovery or faces questions later.`;
 
   const headline: MediaHeadline = {
     id: makeId(`mh-injury-${week}-${day ?? 0}-${rikishiId}`),
@@ -1078,14 +1085,16 @@ if (type === "scandal") {
           `${heya.name} Rocked by Major Scandal`,
           `Crisis at ${heya.name} — JSA Steps In`,
           `Disgrace: ${heya.name} Faces Expulsion Threats`,
-          `Late-Night Roppongi Incident Haunts ${heya.name}`
+          `Late-Night Roppongi Incident Haunts ${heya.name}`,
+          `Unthinkable Conduct! The Fall of ${heya.name}`
         ]
       : severity === "major"
       ? [
           `${heya.name} Under Fire: ${reason}`,
           `Scandal Clouds Hang Over ${heya.name}`,
           `Kyodo News: Internal Friction Plagues ${heya.name}`,
-          `Tabloids Feast on ${heya.name}'s Woes`
+          `Tabloids Feast on ${heya.name}'s Woes`,
+          `Secret Training Incidents at ${heya.name} Leaked`
         ]
       : [
           `${heya.name} Receives JSA Warning`,
@@ -1178,7 +1187,8 @@ if (type === "merger_threat") {
       `${heya.name} Faces Closure Threat`,
       `Association Reviews ${heya.name} Viability`,
       `End of an Era? ${heya.name} Struggles to Stay Open`,
-      `Financial Ruin Prompts JSA Ultimatum for ${heya.name}`
+      `Financial Ruin Prompts JSA Ultimatum for ${heya.name}`,
+      `A Disgrace to Tradition: ${heya.name} Nears Bankruptcy`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else if (type === "forced_merger") {
@@ -1202,7 +1212,8 @@ if (type === "merger_threat") {
       `${heya.name} Fails Welfare Review`,
       `Sanctions Continue for ${heya.name}`,
       `Whistleblowers Detail Brutal Regimen at ${heya.name}`,
-      `Dietary and Medical Neglect Investigated at ${heya.name}`
+      `Dietary and Medical Neglect Investigated at ${heya.name}`,
+      `Cruel Keiko Methods Exposed at ${heya.name}`
     ];
     title = titles[Math.floor(rng.next() * titles.length)];
   } else {
@@ -1331,6 +1342,7 @@ function checkRetirementWatch(args: {
     : [
         `${shikona} Struggles at ${age} — ${wins}-${losses}`,
         `Retirement Watch: ${shikona} Faces Another Tough Basho`,
+        `End of the Road? ${shikona}'s Final Stand Approaches`
       ];
 
   const subtitles = isHighRank
