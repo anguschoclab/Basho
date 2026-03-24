@@ -20,6 +20,8 @@ import { toRikishiDescriptor, toPotentialBand, ARCHETYPE_LABELS, type RikishiDes
 import type { RikishiArchetype } from "../engine/types/combat";
 import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
+import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
+import { RANK_HIERARCHY } from "../engine/banzuke";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -92,6 +94,17 @@ export interface UIRikishi {
   favoredKimarite: string[];
   preferredGrip: string;
   preferredGripDepth: string;
+
+  // Accolades
+  kinboshiCount: number;
+  specialPrizes: {
+    shukunSho: number;
+    kantoSho: number;
+    ginoSho: number;
+  };
+
+  // Economics
+  salaryBreakdown: SalaryBreakdown;
 }
 
 /** Defines the structure for u i rival entry. */
@@ -222,6 +235,21 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     favoredKimarite: calculateMostFrequentKimarite(r.id, r.history ?? []),
     preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
     preferredGripDepth: r.combatProfile?.preferredGripDepth ?? 'standard',
+
+    // Accolades
+    kinboshiCount: r.stats?.kinboshiCount ?? 0,
+    specialPrizes: {
+      shukunSho: r.stats?.specialPrizes?.shukunSho ?? 0,
+      kantoSho: r.stats?.specialPrizes?.kantoSho ?? 0,
+      ginoSho: r.stats?.specialPrizes?.ginoSho ?? 0,
+    },
+
+    // Salary
+    salaryBreakdown: getSalaryBreakdown(
+      RANK_HIERARCHY[r.rank].salary,
+      r.division,
+      r.stats?.kinboshiCount ?? 0
+    ),
   };
 }
 

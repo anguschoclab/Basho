@@ -32,6 +32,13 @@ export function generateBoutNarrative(
       id: `${result.boutId}-${entry.phase}`
     };
   }).filter(l => l.text);
+  
+  if (result.isKinboshi) {
+    pbpLines.push({
+      text: VOCABULARY.ZABUTON_RAIN as string,
+      id: `${result.boutId}-kinboshi`
+    });
+  }
 
   result.pbpLines = pbpLines;
   result.pbp = pbpLines.map((l) => l.text);

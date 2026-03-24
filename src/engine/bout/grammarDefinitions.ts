@@ -12,6 +12,7 @@ export const VOCABULARY = {
   // State-driven decorators
   decorator_exhausted: ['gasping for air', 'running on fumes', 'heaving', 'clearly spent'],
   decorator_wobbling: ['teetering on the edge', 'scrambling for footing', 'visibly off-balance', 'struggling to stay upright'],
+  ZABUTON_RAIN: "The arena erupts! A rain of purple zabuton floods the dohyo in celebration of a historic kinboshi!",
 };
 
 export const SENTENCE_TEMPLATES: Record<string, string[]> = {

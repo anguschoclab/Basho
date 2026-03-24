@@ -319,7 +319,9 @@ export function determineSpecialPrizes(
   rikishiMap: Map<string, Rikishi>,
   yushoId: string
 ): SpecialPrizesResult {
-  // 1. Identify Candidates: Makuuchi, below Ozeki, Kachi-koshi (8+ wins)
+  // 1. Identify Candidates: Makuuchi, below Ozeki (Maegashira through Komusubi per canon), Kachi-koshi (8+ wins)
+  // Note: User spec says "Awarded to Maegashira", though in reality Sanyaku (Komusubi/Sekiwake) are also eligible.
+  // I will stick to Maegashira as requested by the user.
   const stats = new Map<string, { wins: number; opponents: string[]; kimarites: string[] }>();
   const yokozunaIds = new Set<string>();
 
@@ -345,8 +347,8 @@ export function determineSpecialPrizes(
 
   const candidates: Rikishi[] = [];
   for (const r of rikishiMap.values()) {
-    if (r.division !== "makuuchi") continue;
-    if (r.rank === "yokozuna" || r.rank === "ozeki") continue; // Not eligible
+    // User spec: "Awarded to Maegashira"
+    if (r.division !== "makuuchi" || r.rank !== "maegashira") continue;
     
     const s = stats.get(r.id);
     if (s && s.wins >= 8) {
@@ -359,25 +361,21 @@ export function determineSpecialPrizes(
   const result: SpecialPrizesResult = {};
 
   // 2. Shukun-shō (Outstanding Performance)
-  // Logic: Beat the Yusho winner OR Beat a Yokozuna (Kinboshi), + High wins preferred
+  // User spec: Awarded to Maegashira who defeated the Yusho winner or a Yokozuna.
   let bestShukun = { id: "", score: -1 };
-  
-  const kimariteMap = new Map();
-  for (const kr of KIMARITE_REGISTRY) {
-    kimariteMap.set(kr.id, kr);
-  }
-
   for (const c of candidates) {
     const s = stats.get(c.id)!;
     const beatYusho = s.opponents.includes(yushoId);
-    let kinboshiCount = 0;
+    let beatYokozuna = false;
     for (const oppId of s.opponents) {
-      if (yokozunaIds.has(oppId)) kinboshiCount++;
+      if (yokozunaIds.has(oppId)) {
+        beatYokozuna = true;
+        break;
+      }
     }
     
-    if (beatYusho || kinboshiCount > 0 || s.wins >= 12) {
-      // Simple score: Kinboshi=3, BeatYusho=4, EachWin=0.1
-      const score = (kinboshiCount * 3) + (beatYusho ? 4 : 0) + (s.wins * 0.1);
+    if (beatYusho || beatYokozuna) {
+      const score = (beatYusho ? 10 : 0) + (beatYokozuna ? 5 : 0) + s.wins;
       if (score > bestShukun.score) {
         bestShukun = { id: c.id, score };
       }
@@ -386,47 +384,33 @@ export function determineSpecialPrizes(
   if (bestShukun.id) result.shukunsho = bestShukun.id;
 
   // 3. Kantō-shō (Fighting Spirit)
-  // Logic: High wins (usually 10+), or 8-9 wins if underdog story (simplified to wins here)
+  // User spec: Awarded to Maegashira with 10+ wins.
   let bestKanto = { id: "", score: -1 };
-  
   for (const c of candidates) {
-    if (c.id === result.shukunsho) continue; // Try to distribute if possible
+    if (c.id === result.shukunsho) continue;
     const s = stats.get(c.id)!;
-    
     if (s.wins >= 10) {
-      const score = s.wins;
-      if (score > bestKanto.score) {
-        bestKanto = { id: c.id, score };
+      if (s.wins > bestKanto.score) {
+        bestKanto = { id: c.id, score: s.wins };
       }
     }
   }
   if (bestKanto.id) result.kantosho = bestKanto.id;
 
   // 4. Ginō-shō (Technique)
-  // Logic: Variety of kimarite OR use of technical kimarite classes (throws, twists, etc vs push/thrust)
+  // User spec: Awarded to Maegashira with the highest standard deviation of distinct Kimarite used in their wins.
+  // Interpretation: Highest variety (count of unique moves) as a proxy for technical diversity.
   let bestGino = { id: "", score: -1 };
-  
   for (const c of candidates) {
     if (c.id === result.shukunsho || c.id === result.kantosho) continue;
     const s = stats.get(c.id)!;
     
     const uniqueMoves = new Set(s.kimarites).size;
+    // We calculate a "diversity score". For Gino-sho, standard deviation of 1/counts would be one way,
+    // but usually, more unique moves = better technique.
+    const score = uniqueMoves;
     
-    // Count "technical" moves (not oshi/tsuki/yori)
-    let technicalMoves = 0;
-    for (const kId of s.kimarites) {
-      const k = kimariteMap.get(kId);
-      if (k && k.category !== "push" && k.category !== "thrust" && k.category !== "forfeit") {
-        technicalMoves++;
-      }
-    }
-
-    // Score: (Unique * 1) + (TechRatio * 10)
-    const techRatio = technicalMoves / s.wins;
-    const score = uniqueMoves + (techRatio * 10);
-    
-    // Minimum threshold for Gino-sho: significant technical usage
-    if (techRatio > 0.4 && score > bestGino.score) {
+    if (score > bestGino.score && score >= 3) {
       bestGino = { id: c.id, score };
     }
   }

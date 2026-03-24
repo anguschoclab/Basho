@@ -248,6 +248,21 @@ export const EventBus = {
       tags: ["economy", "kensho"]
     }),
 
+  specialPrizesAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, prizeType: 'Shukun' | 'Kanto' | 'Gino', amount: number) =>
+    logEngineEvent(world, {
+      type: "SPECIAL_PRIZES_AWARDED",
+      category: "basho",
+      importance: "headline",
+      phase: "basho_wrap",
+      scope: "rikishi",
+      rikishiId,
+      heyaId,
+      title: "Special Prize Awarded!",
+      summary: `Awarded ${prizeType}-shō for outstanding performance (¥${amount.toLocaleString()}).`,
+      data: { rikishiId, heyaId, prizeType, amount },
+      tags: ["basho", "award", "economy"]
+    }),
+
   // --- Rivalries ---
   rivalryEscalated: (world: WorldState, aId: Id, bId: Id, heatBand: string, tone: string, summary: string) =>
     logEngineEvent(world, {

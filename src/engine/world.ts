@@ -355,6 +355,40 @@ export function endBasho(world: WorldState): WorldState {
     }
   };
 
+  // --- APPLY SPECIAL PRIZES (Constitution & User Spec) ---
+  const SANSHO_PRIZE_AMOUNT = 2_000_000;
+  const processAward = (rikishiId: string | undefined, type: 'Shukun' | 'Kanto' | 'Gino') => {
+    if (!rikishiId) return;
+    const r = world.rikishi.get(rikishiId);
+    if (!r) return;
+    
+    // Ensure stats.specialPrizes exists
+    if (!r.stats) {
+      r.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, kinboshiCount: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } };
+    }
+    if (!r.stats.specialPrizes) {
+      r.stats.specialPrizes = { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
+    }
+
+    // Increment stat
+    if (type === 'Shukun') r.stats.specialPrizes.shukunSho++;
+    else if (type === 'Kanto') r.stats.specialPrizes.kantoSho++;
+    else if (type === 'Gino') r.stats.specialPrizes.ginoSho++;
+
+    // Emit event
+    EventBus.specialPrizesAwarded(world, r.id, r.heyaId, type, SANSHO_PRIZE_AMOUNT);
+
+    // Treasury Injection
+    const heya = world.heyas.get(r.heyaId);
+    if (heya) {
+      heya.funds += SANSHO_PRIZE_AMOUNT;
+    }
+  };
+
+  processAward(awards.shukunsho, 'Shukun');
+  processAward(awards.kantosho, 'Kanto');
+  processAward(awards.ginoSho, 'Gino');
+
   world.history.push(bashoResult);
 
   // --- ALMANAC SNAPSHOT (Constitution A5.1) ---

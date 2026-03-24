@@ -20,6 +20,8 @@ import { toRikishiDescriptor, toPotentialBand, type RikishiDescriptor, type Pote
 import { getCareerPhase } from "./training";
 import { stableTieBreak } from "./utils/sort";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "./scouting";
+import { getSalaryBreakdown, type SalaryBreakdown } from "./economics_awards";
+import { RANK_HIERARCHY } from "./banzuke";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -84,6 +86,17 @@ interface UIRikishi {
 
   // H2H top rivals
   topRivals: UIRivalEntry[];
+
+  // Accolades
+  kinboshiCount: number;
+  specialPrizes: {
+    shukunSho: number;
+    kantoSho: number;
+    ginoSho: number;
+  };
+
+  // Economics
+  salaryBreakdown: SalaryBreakdown;
 
   // Flavor
   personalityTraits: string[];
@@ -186,6 +199,21 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
     favoredKimarite: r.favoredKimarite ?? [],
+
+    // Accolades
+    kinboshiCount: r.stats?.kinboshiCount ?? 0,
+    specialPrizes: {
+      shukunSho: r.stats?.specialPrizes?.shukunSho ?? 0,
+      kantoSho: r.stats?.specialPrizes?.kantoSho ?? 0,
+      ginoSho: r.stats?.specialPrizes?.ginoSho ?? 0,
+    },
+
+    // Salary
+    salaryBreakdown: getSalaryBreakdown(
+      RANK_HIERARCHY[r.rank].salary,
+      r.division,
+      r.stats?.kinboshiCount ?? 0
+    ),
   };
 }
 

@@ -164,6 +164,7 @@ On month boundary:
 **Post‑basho window**
 - playoffs resolve (if needed)
 - awards lock (yūshō, sanshō, trophies)
+    - **Sanshō Rule:** Each prize (Shukun, Kanto, Gino) triggers a ¥2,000,000 treasury injection to the stable.
 - banzuke recompute and lock for next basho
 - snapshots written (Almanac)
 - records/streaks/HoF eligibility recompute (post-lock only)
@@ -207,6 +208,7 @@ These outputs are:
 3) Compute and lock awards.
 4) Reassign ranks and lock next banzuke.
 5) Emit end-of-basho historical events (rank snapshots, promotions/demotions, awards).
+    - **Institutional Award Processing:** Special prizes are persisted to the Rikishi stats object and trigger stable-level economic injections.
 6) Build snapshots and recompute records/HoF eligibility using locked events only.
 
 ### A5.2 Almanac is snapshot-driven
@@ -223,6 +225,7 @@ Kyūjō/withdrawal and injury durations are always public in history; diagnosis 
 ## A6. Economy / Sponsors / Governance: money is ledger-true, pressure is narrative, rules are institutional
 ### A6.1 Accounts never merge
 Beya funds, rikishi cash, retirement funds, oyakata personal funds, and league treasury are separate. Transfers only occur via explicitly defined routes.
+- **Kinboshi Stipends:** Maegashira who defeat Yokozuna earn a persistent "Gold Star" stipend of ¥40,000/month, paid only while competing in Makuuchi.
 
 ### A6.2 Kenshō (per-bout) canonical cadence
 For a basho bout:
@@ -232,7 +235,8 @@ For a basho bout:
 4) ceremony hooks queued (PBP/UI)
 5) kenshō split executed (50/50 rikishi/beya; retirement fund diversions as specified)
 6) prestige updates and sponsor cooldowns applied
-7) ledger entry finalized
+7) **Fact Stamping:** If a Maegashira defeats a Yokozuna, the bout is stamped as a `Kinboshi`.
+8) ledger entry finalized
 
 ### A6.3 Governance decision engine is deterministic and public
 Council actions follow a pipeline:
@@ -294,6 +298,7 @@ PBP is generated from:
 - sponsor ceremony hooks (names/tier tags)
 - crowd memory context
 - media desk tone/faction tags
+- **Special Reactions:** Specific facts (e.g., Kinboshi) trigger mandatory narrative tokens like `<ZABUTON_RAIN>`.
 It must never:
 - alter the bout,
 - introduce “new facts” not in the event log.

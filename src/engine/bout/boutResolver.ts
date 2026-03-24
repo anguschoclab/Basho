@@ -23,6 +23,20 @@ export function resolveBout(
   // 2. Generate narrative based on data frames
   generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`);
 
+  // 2.5. Kinboshi Fact Stamping
+  // Rule: If winner.division === 'Makuuchi' && winner.position === 'Maegashira' && loser.position === 'Yokozuna' && kimarite !== 'Fusensho' -> BoutResult.isKinboshi = true.
+  const winner = result.winner === 'east' ? east : west;
+  const loser = result.winner === 'east' ? west : east;
+
+  if (
+    winner.division === 'makuuchi' && 
+    winner.rank === 'maegashira' && 
+    loser.rank === 'yokozuna' && 
+    result.kimarite !== 'fusensho'
+  ) {
+    result.isKinboshi = true;
+  }
+
   // 3. Apply any ensuing injuries based on the bout's physical toll
   // (Left as a hook for narrative injuries)
 
