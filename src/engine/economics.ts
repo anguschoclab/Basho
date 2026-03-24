@@ -162,26 +162,25 @@ export function onBoutResolved(
   }
   
   // 1. Determine Kensho count (Envelopes) per User Spec
-  let kenshoCount = 0;
-  const rng = rngForWorld(world, "kensho", `${context.match?.day ?? "bout"}::${east.id}::${west.id}`);
-
+  // 2. Award Windfalls (v2 Spec)
+  let kenshoCount = 0; // Initialize kenshoCount
   if (result.awardFact === 'kinboshi') {
-    kenshoCount = rng.int(15, 30);
+    // Kinboshi Win: 15–25 Envelopes (¥900,000–¥1,500,000 total)
+    // Ref: Plan 3.A
+    kenshoCount = Math.floor(15 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 11);
+    result.kenshoEnvelopes = kenshoCount;
   } else if (result.awardFact === 'ginboshi') {
-    kenshoCount = rng.int(5, 10);
+    // Ginboshi Win: 5–8 Envelopes (¥300,000–¥480,000 total)
+    kenshoCount = Math.floor(5 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 4);
+    result.kenshoEnvelopes = kenshoCount;
   } else {
-    // Standard Makuuchi Win: 1-3 envelopes
-    kenshoCount = rng.int(1, 3);
-    // Rank bonuses
-    if (east.rank === "yokozuna" || west.rank === "yokozuna") kenshoCount += 2;
-    else if (east.rank === "ozeki" || west.rank === "ozeki") kenshoCount += 1;
+    // Standard Win: 1–3 Envelopes
+    kenshoCount = Math.floor(1 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 3);
+    result.kenshoEnvelopes = kenshoCount;
   }
-
-  result.kenshoEnvelopes = kenshoCount;
-
   // 2. Marketability Shift (Permanent)
   if (!winner.stats) {
-     winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 } };
+     winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } } };
   }
   
   const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;

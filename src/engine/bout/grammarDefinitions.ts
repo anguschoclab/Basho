@@ -12,8 +12,8 @@ export const VOCABULARY = {
   // State-driven decorators
   decorator_exhausted: ['gasping for air', 'running on fumes', 'heaving', 'clearly spent'],
   decorator_wobbling: ['teetering on the edge', 'scrambling for footing', 'visibly off-balance', 'struggling to stay upright'],
-  ZABUTON_RAIN: "The arena erupts! A rain of purple zabuton floods the dohyo in celebration of a historic kinboshi!",
-  GINBOSHI_REACTION: "An incredible upset against the Ozeki! The crowd erupts as the first zabuton begin to fly!",
+  ZABUTON_RAIN: "A historic kinboshi! The arena erupts into chaos as a rain of purple zabuton floods the dohyo!",
+  GINBOSHI_REACTION: "An upset for the ages! The Maegashira has taken a silver star from the Ozeki, and the first zabuton are already flying!",
 };
 
 export const SENTENCE_TEMPLATES: Record<string, string[]> = {

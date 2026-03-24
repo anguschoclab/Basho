@@ -59,77 +59,39 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
           </div>
 
           <div className="pt-2 border-t border-primary/5">
-            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Prestige & Achievements</h4>
-            <div className="grid grid-cols-1 gap-2">
-              <div className="flex justify-between items-center p-2 rounded bg-yellow-500/5 border border-yellow-500/10">
-                <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                  <span className="text-lg">★</span> Gold Stars (Kinboshi)
-                </span>
-                <span className="font-mono text-sm font-bold">
-                  {rikishi.achievements.kinboshiEarned}
-                  {(rikishi.rank === 'yokozuna') && (
-                    <span className="text-muted-foreground font-normal ml-1">
-                      / {rikishi.achievements.kinboshiConceded} <span className="text-[10px] italic">conceded</span>
-                    </span>
-                  )}
-                </span>
+            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Career Prestige</h4>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-1 p-2 rounded bg-yellow-500/5 border border-yellow-500/10">
+                <span className="text-[10px] uppercase font-bold text-yellow-600 dark:text-yellow-400">Gold Stars Won</span>
+                <span className="font-display text-xl font-bold">{rikishi.achievements.kinboshiEarned}</span>
               </div>
-
-              <div className="flex justify-between items-center p-2 rounded bg-slate-400/5 border border-slate-400/10">
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-300 flex items-center gap-1">
-                  <span className="text-lg">☆</span> Silver Stars (Ginboshi)
-                </span>
-                <span className="font-mono text-sm font-bold">
-                  {rikishi.achievements.ginboshiEarned}
-                  {(rikishi.rank === 'ozeki') && (
-                    <span className="text-muted-foreground font-normal ml-1">
-                      / {rikishi.achievements.ginboshiConceded} <span className="text-[10px] italic">conceded</span>
-                    </span>
-                  )}
-                </span>
+              <div className="flex flex-col gap-1 p-2 rounded bg-slate-400/5 border border-slate-400/10">
+                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-300">Silver Stars Won</span>
+                <span className="font-display text-xl font-bold">{rikishi.achievements.ginboshiEarned}</span>
               </div>
-
-              {Object.entries(rikishi.specialPrizes).some(([_, count]) => count > 0) && (
-                <div className="grid grid-cols-3 gap-2 mt-1">
-                  {rikishi.specialPrizes.shukunSho > 0 && (
-                    <div className="text-[10px] text-center p-1 rounded bg-blue-500/10 border border-blue-500/20">
-                      <div className="text-blue-400 font-bold">SHUKUN</div>
-                      <div>{rikishi.specialPrizes.shukunSho}</div>
-                    </div>
-                  )}
-                  {rikishi.specialPrizes.kantoSho > 0 && (
-                    <div className="text-[10px] text-center p-1 rounded bg-green-500/10 border border-green-500/20">
-                      <div className="text-green-400 font-bold">KANTO</div>
-                      <div>{rikishi.specialPrizes.kantoSho}</div>
-                    </div>
-                  )}
-                  {rikishi.specialPrizes.ginoSho > 0 && (
-                    <div className="text-[10px] text-center p-1 rounded bg-purple-500/10 border border-purple-500/20">
-                      <div className="text-purple-400 font-bold">GINO</div>
-                      <div>{rikishi.specialPrizes.ginoSho}</div>
-                    </div>
-                  )}
+              {rikishi.rank === 'yokozuna' && (
+                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-red-500/5 border border-red-500/10">
+                  <span className="text-[10px] uppercase font-bold text-red-600 dark:text-red-400">Stars Conceded</span>
+                  <span className="font-display font-bold text-red-600 dark:text-red-400">{rikishi.achievements.kinboshiConceded}</span>
                 </div>
               )}
             </div>
           </div>
 
           <div className="pt-2 border-t border-primary/5 bg-primary/5 -mx-6 px-6 py-3">
-            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Salary Breakdown</h4>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Base Salary</span>
-                <span>¥{rikishi.salaryBreakdown.base.toLocaleString()}</span>
+            <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2 text-center">Monthly Salary Breakdown</h4>
+            <div className="grid grid-cols-3 gap-2 text-[10px] text-center">
+              <div className="flex flex-col p-1 rounded bg-background/50 border border-primary/10">
+                <span className="text-muted-foreground uppercase font-bold mb-1">Base</span>
+                <span className="font-display font-bold text-primary-foreground">¥{(rikishi.salaryBreakdown.base / 1000).toFixed(0)}k</span>
               </div>
-              {rikishi.salaryBreakdown.kinboshiBonus > 0 && (
-                <div className="flex justify-between text-yellow-500/80">
-                  <span>Kinboshi Stipend</span>
-                  <span>+ ¥{rikishi.salaryBreakdown.kinboshiBonus.toLocaleString()}</span>
-                </div>
-              )}
-              <div className="flex justify-between font-bold pt-1 border-t border-primary/10 text-primary">
-                <span>Monthly Total</span>
-                <span>¥{rikishi.salaryBreakdown.total.toLocaleString()}</span>
+              <div className="flex flex-col p-1 rounded bg-background/50 border border-primary/10">
+                <span className="text-muted-foreground uppercase font-bold mb-1">Kinboshi</span>
+                <span className="font-display font-bold text-amber-500">¥{(rikishi.salaryBreakdown.kinboshiBonus / 1000).toFixed(0)}k</span>
+              </div>
+              <div className="flex flex-col p-1 rounded bg-primary/20 border border-primary/30">
+                <span className="text-primary uppercase font-bold mb-1">Total</span>
+                <span className="font-display font-bold text-primary">¥{(rikishi.salaryBreakdown.total / 1000).toFixed(0)}k</span>
               </div>
             </div>
           </div>

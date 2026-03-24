@@ -17,6 +17,7 @@ import { clamp } from './utils';
 //
 // NOTE: This module stays RNG-driven but deterministic given the provided rng + inputs.
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import type { Rikishi } from "./types/rikishi";
 // === SPONSOR TIER SYSTEM ===
 
 /** Type representing sponsor tier. */
@@ -106,6 +107,91 @@ interface KenshoBannerSlot {
 }
 
 // === NAME GENERATION COMPONENTS ===
+
+// v2 Procedural Components
+const PREFIXES = {
+  regional: ["Kyoto", "Osaka", "Nagoya", "Kanto", "Kansai", "Hokkaido", "Kyushu"],
+  prestige: ["Imperial", "Diamond", "Golden", "Royal", "Platinum", "Zenith", "Apex"]
+};
+
+const IDENTITIES = {
+  family: ["Sato", "Tanaka", "Watanabe", "Ito", "Nakamura", "Kobayashi", "Kato"],
+  abstract: ["Harmony", "Unity", "Zenith", "Rising Sun", "Horizon", "Eternal", "Aether"]
+};
+
+const INDUSTRIES = {
+  heavy: ["Heavy Industries", "Steel", "Energy", "Shipbuilding"],
+  logistics: ["Logistics", "Forwarding", "Shipping", "Warehousing"],
+  fmcg: ["Sake Brewery", "Textiles", "Foods", "Beverages"],
+  tech: ["Electronics", "Semiconductors", "Software", "Photonics"],
+  construction: ["Construction", "Infrastructure", "Development", "Land"]
+};
+
+const FINISHING_SUFFIXES = ["Corp", "Ltd", "Group", "Holdings", "Global", "Enterprises"];
+
+/**
+ * Procedural Sponsor Name Generator V2
+ * Based on Tier: Local, Regional, National, Global
+ */
+export function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
+  const rollIndex = (arr: string[]) => Math.floor(rng.next() * arr.length);
+  
+  // Tier 1 (Local): [Family Name] [Small Industry (Sake/Textiles)]
+  if (tier === "T0" || tier === "T1") {
+    const family = IDENTITIES.family[rollIndex(IDENTITIES.family)];
+    const industry = INDUSTRIES.fmcg[rollIndex(INDUSTRIES.fmcg)];
+    return { displayName: `${family} ${industry}`, shortName: family };
+  }
+  
+  // Tier 2 (Regional): [Prefecture] [Industry] [Suffix]
+  if (tier === "T2") {
+    const region = PREFIXES.regional[rollIndex(PREFIXES.regional)];
+    const industryList = [...INDUSTRIES.heavy, ...INDUSTRIES.construction, ...INDUSTRIES.logistics];
+    const industry = industryList[rollIndex(industryList)];
+    const suffix = FINISHING_SUFFIXES[rollIndex(FINISHING_SUFFIXES.slice(0, 4))]; // Avoid Global for regional
+    return { displayName: `${region} ${industry} ${suffix}`, shortName: region };
+  }
+  
+  // Tier 3 (National): [Prestige] [Identity] [Holdings]
+  if (tier === "T3" || tier === "T4") {
+    const prestige = PREFIXES.prestige[rollIndex(PREFIXES.prestige)];
+    const identity = IDENTITIES.family[rollIndex(IDENTITIES.family)];
+    const suffix = "Holdings";
+    return { displayName: `${prestige} ${identity} ${suffix}`, shortName: identity };
+  }
+  
+  // Tier 4 (Global): [Abstract Identity] [Global Suffix]
+  if (tier === "T5") {
+    const abstract = IDENTITIES.abstract[rollIndex(IDENTITIES.abstract)];
+    const suffix = "Global";
+    return { displayName: `${abstract} ${suffix}`, shortName: abstract };
+  }
+
+  // Fallback to legacy
+  return { displayName: "Standard Sponsor", shortName: "Standard" };
+}
+
+/**
+ * Apply achievement impacts to Rikishi popularity and sponsor availability.
+ * Values per Spec 3.B.
+ */
+export function applyAchievementImpact(world: any, rikishi: Rikishi, awardType: 'kinboshi' | 'ginboshi' | 'sansho'): void {
+  if (!rikishi.economics) return;
+  
+  let popBoost = 0;
+  if (awardType === 'kinboshi') popBoost = 20;
+  else if (awardType === 'ginboshi') popBoost = 8;
+  else if (awardType === 'sansho') popBoost = 12;
+  
+  rikishi.economics.popularity = Math.min(100, (rikishi.economics.popularity || 0) + popBoost);
+  
+  // Check for tier eligibility jumps (National/Regional status)
+  if (rikishi.economics.popularity >= 80) {
+    // Logic for "Tier 3/National" sponsor trigger
+  } else if (rikishi.economics.popularity >= 50) {
+    // Logic for "Tier 2/Regional" sponsor trigger
+  }
+}
 
 const SPONSOR_NAME_PREFIXES = [
   "Hokuto",
@@ -352,7 +438,7 @@ export function generateSponsorName(rng: SeededRNG, tier: SponsorTier): { displa
  *  * @returns The result.
  */
 function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
-  const { displayName, shortName } = generateSponsorName(rng, tier);
+  const { displayName, shortName } = generateSponsorNameV2(rng, tier);
 
   // Deterministic, collision-safe sponsorId without “searching forever”.
   const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");

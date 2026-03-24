@@ -17,6 +17,19 @@ export interface ArchetypeEvidence {
   bashoId: string;
 }
 
+/** Career achievements and prestige ledger. */
+export interface RikishiAchievements {
+  kinboshiEarned: number;    // Gold Stars (v Yokozuna)
+  ginboshiEarned: number;    // Silver Stars (v Ozeki)
+  kinboshiConceded: number;  // For Yokozuna: times beaten by Maegashira
+  ginboshiConceded: number;  // For Ozeki: times beaten by Maegashira
+  specialPrizes: {
+    shukunSho: number; // Outstanding Performance
+    kantoSho: number;  // Fighting Spirit
+    ginoSho: number;   // Technique
+  };
+}
+
 /** Defines the structure for rikishi stats. */
 export interface RikishiStats {
   strength: number;
@@ -27,17 +40,7 @@ export interface RikishiStats {
   mental: number;
   adaptability: number;
   balance: number;
-  specialPrizes: {
-    shukunSho: number; // Outstanding Performance
-    kantoSho: number;  // Fighting Spirit
-    ginoSho: number;   // Technique
-  };
-  achievements: {
-    kinboshiEarned: number;
-    ginboshiEarned: number;
-    kinboshiConceded: number;
-    ginboshiConceded: number;
-  };
+  achievements: RikishiAchievements;
 }
 
 /** Defines the structure for rikishi. */

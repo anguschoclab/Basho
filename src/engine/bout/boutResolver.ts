@@ -1,5 +1,5 @@
 import type { BoutContext } from "../bout/boutPhysics";
-import type { Rikishi } from "../types/rikishi";
+import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 // We import the new cleaned physics runner 
 import { resolveBoutPhysics } from "./boutPhysics";
@@ -23,27 +23,34 @@ export function resolveBout(
   // 2. Generate narrative based on data frames
   generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`);
 
-  // 2.5. Giant Slayer Detection (Constitution & User Spec)
+  // 2.5. Achievement Detection (Gold & Silver Stars - v2)
   const winner = result.winner === 'east' ? east : west;
   const loser = result.winner === 'east' ? west : east;
 
-  // Ensure achievements object exists
-  if (!winner.stats.achievements) {
-    winner.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
-  }
-  if (!loser.stats.achievements) {
-    loser.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
-  }
+  // Initialize achievements if missing
+  const defaultAchievements = (): RikishiAchievements => ({
+    kinboshiEarned: 0,
+    ginboshiEarned: 0,
+    kinboshiConceded: 0,
+    ginboshiConceded: 0,
+    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+  });
 
-  if (winner.rank === 'maegashira' && result.kimarite !== 'fusensho') {
-    if (loser.rank === 'yokozuna') {
-      result.awardFact = 'kinboshi';
-      result.isKinboshi = true;
-      loser.stats.achievements.kinboshiConceded++;
-    } else if (loser.rank === 'ozeki') {
-      result.awardFact = 'ginboshi';
-      loser.stats.achievements.ginboshiConceded++;
-    }
+  if (!winner.stats.achievements) winner.stats.achievements = defaultAchievements();
+  if (!loser.stats.achievements) loser.stats.achievements = defaultAchievements();
+
+  // Rule: Kinboshi (Gold Star) - Maegashira defeats Yokozuna (excluding Fusensho)
+  if (winner.rank === 'maegashira' && loser.rank === 'yokozuna' && result.kimarite !== 'fusensho') {
+    result.awardFact = 'kinboshi';
+    result.isKinboshi = true;
+    winner.stats.achievements.kinboshiEarned++;
+    loser.stats.achievements.kinboshiConceded++;
+  } 
+  // Rule: Ginboshi (Silver Star) - Maegashira defeats Ozeki (excluding Fusensho)
+  else if (winner.rank === 'maegashira' && loser.rank === 'ozeki' && result.kimarite !== 'fusensho') {
+    result.awardFact = 'ginboshi';
+    winner.stats.achievements.ginboshiEarned++;
+    loser.stats.achievements.ginboshiConceded++;
   }
 
   // 3. Apply any ensuing injuries based on the bout's physical toll
