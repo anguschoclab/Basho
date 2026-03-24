@@ -5,47 +5,35 @@
 import type { Style, Stance, TacticalArchetype, TacticalFamily } from "./types/combat";
 import { stableTieBreak } from "./utils/sort";
 
-/** Defines the structure for kimarite. */
+/** Defines the JSA official categories for kimarite. */
+export type JsaCategory = 'Kihonwaza' | 'Nageite' | 'Kakeite' | 'Sorite' | 'Hinerite' | 'Tokushuwaza' | 'Hiwaza';
+
+/** Defines the structure for kimarite (v1.3 Move-Based Architecture). */
 export interface Kimarite {
-  id: string;
-  name: string;     // romaji / display
-  nameJa?: string;  // kanji/kana
-  category: KimariteCategory;
-  kimariteClass: KimariteClass;
-  tacticalFamily: TacticalFamily;
-  description?: string;
-
-  styleAffinity: {
-    oshi: number;
-    yotsu: number;
-    hybrid: number;
+  id: string; // e.g., 'yorikiri'
+  name: string;
+  nameJa?: string;
+  jsaCategory: JsaCategory;
+  tacticalFamily: TacticalFamily; // push, belt, trick, speed
+  
+  // How heavily this specific move relies on specific stats (must sum to 1.0)
+  statWeights: {
+    strength: number;
+    weight: number;
+    speed: number;
+    technique: number;
+    balance: number;
   };
+  
+  // Specific positional/physical requirements
+  requiresBeltGrip?: boolean;
+  leverageTarget?: 'high_center_of_gravity' | 'momentum';
 
-  archetypeBonus: Partial<Record<TacticalArchetype, number>>;
-
-  requiredStances: Stance[];
-
-  vector: "frontal" | "lateral" | "rear";
-  gripNeed: "belt" | "arm" | "none" | "any";
-  baseWeight: number;
-  rarity: "common" | "uncommon" | "rare" | "legendary";
+  description?: string;
+  rarity?: "common" | "uncommon" | "rare" | "legendary";
 }
 
-/** Type representing kimarite category. */
-export type KimariteCategory =
-  | "push"      // oshi family (incl basic push-outs)
-  | "thrust"    // tsuki family
-  | "throw"     // nage family
-  | "trip"      // kake/sweep/leg-pick
-  | "twist"     // hineri / arm-twists
-  | "pull"      // hiki/hataki style
-  | "lift"      // tsuri family
-  | "rear"      // okuri family
-  | "special"   // unusual / mixed
-  | "result"    // non-technique outcomes (isamiashi etc)
-  | "forfeit";  // fusensho / hansoku etc
-
-/** Type representing kimarite class. */
+/** Type representing kimarite class (for engine grouping). */
 export type KimariteClass =
   | "force_out"
   | "push"
@@ -61,279 +49,190 @@ export type KimariteClass =
   | "result"
   | "forfeit";
 
-// --- small helpers to keep the big list readable ---
-// Base makes most kimarite fields optional since K() fills them from defaults
-/** Type representing base. */
-type Base = {
+
+// --- Helpers to maintain the 82 techniques with minimal verbosity ---
+
+/** Base fields needed for definition */
+interface KBase {
   id: string;
   name: string;
   nameJa?: string;
-  category: KimariteCategory;
-  kimariteClass: KimariteClass;
+  jsaCategory: JsaCategory;
   tacticalFamily?: TacticalFamily;
+  statWeights?: Kimarite['statWeights']; // Override defaults
+  requiresBeltGrip?: boolean;
+  leverageTarget?: Kimarite['leverageTarget'];
   description?: string;
-  styleAffinity?: Kimarite["styleAffinity"];
-  archetypeBonus?: Kimarite["archetypeBonus"];
-  requiredStances?: Stance[];
-  vector?: "frontal" | "lateral" | "rear";
-  gripNeed?: "belt" | "arm" | "none" | "any";
-  baseWeight?: number;
-  rarity?: "common" | "uncommon" | "rare" | "legendary";
-};
-
-const SA = (oshi: number, yotsu: number, hybrid: number) => ({ oshi, yotsu, hybrid });
-
-const DEFAULT_ARCH_BONUS = (): Kimarite["archetypeBonus"] => ({
-  // mild defaults; tune later
-  all_rounder: 1,
-});
-
-/**
- * Defaults for category.
- *  * @param category - The Category.
- *  * @returns The result.
- */
-function defaultsForCategory(category: KimariteCategory): Pick<Kimarite, "styleAffinity" | "baseWeight" | "rarity" | "gripNeed" | "vector" | "requiredStances" | "tacticalFamily"> {
-  switch (category) {
-    case "push":
-      return { tacticalFamily: "push", styleAffinity: SA(9, 2, 5), baseWeight: 7, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
-    case "thrust":
-      return { tacticalFamily: "push", styleAffinity: SA(9, 2, 5), baseWeight: 4, rarity: "uncommon", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
-    case "throw":
-      return { tacticalFamily: "belt", styleAffinity: SA(2, 9, 6), baseWeight: 3, rarity: "uncommon", gripNeed: "belt", vector: "lateral", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] };
-    case "twist":
-      return { tacticalFamily: "belt", styleAffinity: SA(3, 8, 6), baseWeight: 2, rarity: "rare", gripNeed: "arm", vector: "lateral", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
-    case "trip":
-      return { tacticalFamily: "speed", styleAffinity: SA(4, 7, 6), baseWeight: 2, rarity: "rare", gripNeed: "any", vector: "lateral", requiredStances: ["no-grip", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
-    case "pull":
-      return { tacticalFamily: "trick", styleAffinity: SA(7, 4, 8), baseWeight: 5, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["no-grip", "push-dominant"] };
-    case "lift":
-      return { tacticalFamily: "push", styleAffinity: SA(1, 9, 4), baseWeight: 1, rarity: "legendary", gripNeed: "belt", vector: "frontal", requiredStances: ["belt-dominant"] };
-    case "rear":
-      return { tacticalFamily: "speed", styleAffinity: SA(5, 6, 6), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "rear", requiredStances: ["belt-dominant", "push-dominant"] };
-    case "special":
-      return { tacticalFamily: "trick", styleAffinity: SA(5, 6, 7), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "frontal", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
-    case "result":
-      return { tacticalFamily: "trick", styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
-    case "forfeit":
-      return { tacticalFamily: "trick", styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
-  }
+  rarity?: Kimarite['rarity'];
+  kimariteClass?: KimariteClass; // Legacy engine compatibility
 }
 
-/**
- * k.
- *  * @param entry - The Entry.
- *  * @returns The result.
- */
-function K(entry: Base): Kimarite {
-  const d = defaultsForCategory(entry.category);
+function K(entry: KBase): Kimarite & { kimariteClass?: KimariteClass } {
+  let defaults: any;
+  switch (entry.jsaCategory) {
+    case 'Kihonwaza':
+      defaults = { tacticalFamily: 'push', statWeights: { strength: 0.4, weight: 0.4, speed: 0.1, technique: 0.1, balance: 0.0 }, kimariteClass: 'force_out' };
+      break;
+    case 'Nageite':
+      defaults = { tacticalFamily: 'belt', statWeights: { strength: 0.3, weight: 0.1, speed: 0.1, technique: 0.5, balance: 0.0 }, requiresBeltGrip: true, kimariteClass: 'throw' };
+      break;
+    case 'Kakeite':
+      defaults = { tacticalFamily: 'speed', statWeights: { strength: 0.1, weight: 0.0, speed: 0.5, technique: 0.4, balance: 0.0 }, kimariteClass: 'trip' };
+      break;
+    case 'Sorite':
+      defaults = { tacticalFamily: 'trick', statWeights: { strength: 0.1, weight: 0.0, speed: 0.1, technique: 0.8, balance: 0.0 }, kimariteClass: 'special' };
+      break;
+    case 'Hinerite':
+      defaults = { tacticalFamily: 'trick', statWeights: { strength: 0.1, weight: 0.1, speed: 0.2, technique: 0.6, balance: 0.0 }, leverageTarget: 'momentum', kimariteClass: 'twist' };
+      break;
+    case 'Tokushuwaza':
+      defaults = { tacticalFamily: 'trick', statWeights: { strength: 0.2, weight: 0.2, speed: 0.2, technique: 0.4, balance: 0.0 }, kimariteClass: 'special' };
+      break;
+    case 'Hiwaza':
+      defaults = { tacticalFamily: 'trick', statWeights: { strength: 0.1, weight: 0.4, speed: 0.2, technique: 0.3, balance: 0.0 }, kimariteClass: 'result' };
+      break;
+  }
+
   return {
+    ...defaults,
     ...entry,
-    styleAffinity: entry.styleAffinity ?? d.styleAffinity,
-    archetypeBonus: entry.archetypeBonus ?? DEFAULT_ARCH_BONUS(),
-    tacticalFamily: entry.tacticalFamily ?? d.tacticalFamily,
-    baseWeight: entry.baseWeight ?? d.baseWeight,
-    rarity: entry.rarity ?? d.rarity,
-    gripNeed: entry.gripNeed ?? d.gripNeed,
-    vector: entry.vector ?? d.vector,
-    requiredStances: entry.requiredStances ?? d.requiredStances,
+    statWeights: entry.statWeights ?? defaults.statWeights,
   };
 }
 
-// ---- COMPLETE OFFICIAL 82 KIMARITE (IDs use common romaji) ----
-// Names/kanji are from the JSA list.  [oai_citation:2‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
-/** k i m a r i t e_ r e g i s t r y. */
-export const KIMARITE_REGISTRY: Kimarite[] = [
-  // === Basic techniques (基本技) ===
-  K({ id: "tsukidashi", name: "Tsukidashi", nameJa: "突き出し", category: "thrust", kimariteClass: "thrust", description: "Thrust out" }),
-  K({ id: "tsukitaoshi", name: "Tsukitaoshi", nameJa: "突き倒し", category: "thrust", kimariteClass: "thrust", description: "Thrust down" }),
-  K({ id: "oshidashi", name: "Oshidashi", nameJa: "押し出し", category: "push", kimariteClass: "force_out", baseWeight: 22, rarity: "common", description: "Frontal push out" }),
-  K({ id: "oshitaoshi", name: "Oshitaoshi", nameJa: "押し倒し", category: "push", kimariteClass: "push", baseWeight: 8, rarity: "common", description: "Push down" }),
-  K({ id: "yorikiri", name: "Yorikiri", nameJa: "寄り切り", category: "push", kimariteClass: "force_out", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], styleAffinity: SA(6, 9, 7), baseWeight: 25, rarity: "common", description: "Force out with belt grip" }),
-  K({ id: "yoritaoshi", name: "Yoritaoshi", nameJa: "寄り倒し", category: "push", kimariteClass: "force_out", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], styleAffinity: SA(5, 8, 6), baseWeight: 6, rarity: "uncommon", description: "Crush down while driving" }),
-  K({ id: "abisetaoshi", name: "Abisetaoshi", nameJa: "浴びせ倒し", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], description: "Backward force down by leaning pressure" }),
+/** COMPLETE OFFICIAL 82 KIMARITE (v1.3 taxonomy) */
+export const KIMARITE_ALL: (Kimarite & { kimariteClass?: KimariteClass })[] = [
+  // === Kihonwaza (Basic Techniques - 7 moves) ===
+  K({ id: 'oshidashi', name: 'Oshidashi', nameJa: '押し出し', jsaCategory: 'Kihonwaza', description: 'Frontal push out' }),
+  K({ id: 'oshitaoshi', name: 'Oshitaoshi', nameJa: '押し倒し', jsaCategory: 'Kihonwaza', description: 'Push down' }),
+  K({ id: 'tsukidashi', name: 'Tsukidashi', nameJa: '突き出し', jsaCategory: 'Kihonwaza', description: 'Thrust out', statWeights: { strength: 0.3, weight: 0.3, speed: 0.3, technique: 0.1, balance: 0.0 } }),
+  K({ id: 'tsukitaoshi', name: 'Tsukitaoshi', nameJa: '突き倒し', jsaCategory: 'Kihonwaza', description: 'Thrust down', statWeights: { strength: 0.3, weight: 0.3, speed: 0.3, technique: 0.1, balance: 0.0 } }),
+  K({ id: 'yorikiri', name: 'Yorikiri', nameJa: '寄り切り', jsaCategory: 'Kihonwaza', description: 'Force out', tacticalFamily: 'belt', requiresBeltGrip: true }),
+  K({ id: 'yoritaoshi', name: 'Yoritaoshi', nameJa: '寄り倒し', jsaCategory: 'Kihonwaza', description: 'Crush down', tacticalFamily: 'belt', requiresBeltGrip: true }),
+  K({ id: 'abisetaoshi', name: 'Abisetaoshi', nameJa: '浴びせ倒し', jsaCategory: 'Kihonwaza', description: 'Backward force down', tacticalFamily: 'belt', requiresBeltGrip: true }),
 
-  // === Throws (投げ手) ===
-  K({ id: "uwatenage", name: "Uwatenage", nameJa: "上手投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], baseWeight: 12, rarity: "common", description: "Overarm throw" }),
-  K({ id: "shitatenage", name: "Shitatenage", nameJa: "下手投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], baseWeight: 10, rarity: "common", description: "Underarm throw" }),
-  K({ id: "kotenage", name: "Kotenage", nameJa: "小手投げ", category: "throw", kimariteClass: "throw", gripNeed: "arm", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu", "no-grip"], description: "Armlock throw" }),
-  K({ id: "sukuinage", name: "Sukuinage", nameJa: "掬い投げ", category: "throw", kimariteClass: "throw", gripNeed: "arm", requiredStances: ["no-grip", "push-dominant"], description: "Beltless arm throw" }),
-  K({ id: "kubinage", name: "Kubinage", nameJa: "首投げ", category: "throw", kimariteClass: "throw", gripNeed: "none", requiredStances: ["no-grip", "push-dominant"], rarity: "rare", description: "Headlock throw" }),
-  K({ id: "ipponzeoi", name: "Ipponzeoi", nameJa: "一本背負い", category: "special", kimariteClass: "special", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "legendary", description: "One-armed shoulder throw" }),
-  K({ id: "koshinage", name: "Koshinage", nameJa: "腰投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "rare", description: "Hip throw" }),
-  K({ id: "yaguranage", name: "Yaguranage", nameJa: "櫓投げ", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary", description: "Yagura throw" }),
-  K({ id: "kakenage", name: "Kakenage", nameJa: "掛け投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], rarity: "rare", description: "Hooking throw" }),
-  K({ id: "nichonage", name: "Nichonage", nameJa: "二丁投げ", category: "throw", kimariteClass: "throw", gripNeed: "arm", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], rarity: "legendary", description: "Two-handed arm throw" }),
-  K({ id: "uwatedashinage", name: "Uwatedashinage", nameJa: "上手出し投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], description: "Pulling overarm throw" }),
-  K({ id: "shitatedashinage", name: "Shitatedashinage", nameJa: "下手出し投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], description: "Pulling underarm throw" }),
-  K({ id: "tsukaminage", name: "Tsukaminage", nameJa: "つかみ投げ", category: "throw", kimariteClass: "throw", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary", description: "Grabbing throw" }),
+  // === Nageite (Throwing Techniques - 13 moves) ===
+  K({ id: 'uwatenage', name: 'Uwatenage', nameJa: '上手投げ', jsaCategory: 'Nageite', description: 'Overarm throw', leverageTarget: 'high_center_of_gravity' }),
+  K({ id: 'shitatenage', name: 'Shitatenage', nameJa: '下手投げ', jsaCategory: 'Nageite', description: 'Underarm throw' }),
+  K({ id: 'kotenage', name: 'Kotenage', nameJa: '小手投げ', jsaCategory: 'Nageite', description: 'Armlock throw', requiresBeltGrip: false }),
+  K({ id: 'sukuinage', name: 'Sukuinage', nameJa: '掬い投げ', jsaCategory: 'Nageite', description: 'Beltless arm throw', requiresBeltGrip: false }),
+  K({ id: 'kubinage', name: 'Kubinage', nameJa: '首投げ', jsaCategory: 'Nageite', description: 'Headlock throw', requiresBeltGrip: false, rarity: 'rare' }),
+  K({ id: 'nichonage', name: 'Nichonage', nameJa: '二丁投げ', jsaCategory: 'Nageite', description: 'Two-handed arm throw', rarity: 'legendary' }),
+  K({ id: 'koshinage', name: 'Koshinage', nameJa: '腰投げ', jsaCategory: 'Nageite', description: 'Hip throw', rarity: 'rare' }),
+  K({ id: 'yaguranage', name: 'Yaguranage', nameJa: '櫓投げ', jsaCategory: 'Nageite', description: 'Inner thigh throw', rarity: 'legendary' }),
+  K({ id: 'kakenage', name: 'Kakenage', nameJa: '掛け投げ', jsaCategory: 'Nageite', description: 'Hooking throw' }),
+  K({ id: 'uwatedashinage', name: 'Uwatedashinage', nameJa: '上手出し投げ', jsaCategory: 'Nageite', description: 'Pulling overarm throw' }),
+  K({ id: 'shitatedashinage', name: 'Shitatedashinage', nameJa: '下手出し投げ', jsaCategory: 'Nageite', description: 'Pulling underarm throw' }),
+  K({ id: 'tsukaminage', name: 'Tsukaminage', nameJa: 'つかみ投げ', jsaCategory: 'Nageite', description: 'Grabbing throw', rarity: 'legendary' }),
+  K({ id: 'ipponzeoi', name: 'Ipponzeoi', nameJa: '一本背負い', jsaCategory: 'Nageite', description: 'One-armed shoulder throw', rarity: 'legendary' }),
 
-  // === Leg trips / hooks (掛け手) ===
-  K({ id: "uchigake", name: "Uchigake", nameJa: "内掛け", category: "trip", kimariteClass: "trip", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], description: "Inside leg trip" }),
-  K({ id: "sotogake", name: "Sotogake", nameJa: "外掛け", category: "trip", kimariteClass: "trip", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], description: "Outside leg trip" }),
-  K({ id: "chongake", name: "Chongake", nameJa: "ちょん掛け", category: "trip", kimariteClass: "trip", gripNeed: "any", description: "Chongake trip" }),
-  K({ id: "kirikaeshi", name: "Kirikaeshi", nameJa: "切り返し", category: "trip", kimariteClass: "trip", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], rarity: "rare", description: "Kirikaeshi reversal trip" }),
-  K({ id: "kawazugake", name: "Kawazugake", nameJa: "河津掛け", category: "trip", kimariteClass: "trip", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary", description: "Kawazugake hooked counter" }),
-  K({ id: "kekaeshi", name: "Kekaeshi", nameJa: "蹴返し", category: "trip", kimariteClass: "trip", gripNeed: "none", requiredStances: ["no-grip", "push-dominant"], rarity: "rare", description: "Kicking counter" }),
-  K({ id: "ketaguri", name: "Ketaguri", nameJa: "蹴手繰り", category: "trip", kimariteClass: "trip", gripNeed: "none", requiredStances: ["no-grip"], rarity: "rare", description: "Ankle kick sweep" }),
-  K({ id: "mitokorozeme", name: "Mitokorozeme", nameJa: "三所攻め", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary", description: "Triple-point attack" }),
-  K({ id: "watashikomi", name: "Watashikomi", nameJa: "渡し込み", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "rare", description: "Thigh-hook body drop" }),
-  K({ id: "nimaigeri", name: "Nimaigeri", nameJa: "二枚蹴り", category: "trip", kimariteClass: "trip", gripNeed: "none", requiredStances: ["no-grip"], rarity: "legendary", description: "Double-leg kick" }),
-  K({ id: "komatasukui", name: "Komatasukui", nameJa: "小股掬い", category: "trip", kimariteClass: "trip", gripNeed: "any", rarity: "rare", description: "Thigh scooping drop" }),
-  K({ id: "sotokomata", name: "Sotokomata", nameJa: "外小股", category: "trip", kimariteClass: "trip", gripNeed: "any", rarity: "legendary", description: "Outside thigh scoop" }),
-  K({ id: "omata", name: "Omata", nameJa: "大股", category: "trip", kimariteClass: "trip", gripNeed: "any", rarity: "rare", description: "Big thigh attack" }),
-  K({ id: "tsumatori", name: "Tsumatori", nameJa: "褄取り", category: "trip", kimariteClass: "trip", gripNeed: "any", rarity: "rare", description: "Foot pick (tsuma)" }),
-  K({ id: "kozumatori", name: "Kozumatori", nameJa: "小褄取り", category: "trip", kimariteClass: "trip", gripNeed: "any", rarity: "rare", description: "Small foot pick" }),
-  K({ id: "ashitori", name: "Ashitori", nameJa: "足取り", category: "trip", kimariteClass: "special", gripNeed: "none", requiredStances: ["no-grip"], rarity: "rare", description: "Leg pick" }),
-  K({ id: "susotori", name: "Susotori", nameJa: "裾取り", category: "trip", kimariteClass: "special", gripNeed: "none", requiredStances: ["no-grip"], rarity: "rare", description: "Hem/ankle pick" }),
-  K({ id: "susoharai", name: "Susoharai", nameJa: "裾払い", category: "trip", kimariteClass: "trip", gripNeed: "none", requiredStances: ["no-grip", "push-dominant"], rarity: "rare", description: "Foot sweep" }),
+  // === Kakeite (Tripping/Leg Techniques - 18 moves) ===
+  K({ id: 'uchigake', name: 'Uchigake', nameJa: '内掛け', jsaCategory: 'Kakeite', description: 'Inside leg trip' }),
+  K({ id: 'sotogake', name: 'Sotogake', nameJa: '外掛け', jsaCategory: 'Kakeite', description: 'Outside leg trip' }),
+  K({ id: 'chongake', name: 'Chongake', nameJa: 'ちょん掛け', jsaCategory: 'Kakeite', description: 'Hooking heel trip', rarity: 'rare' }),
+  K({ id: 'kirikaeshi', name: 'Kirikaeshi', nameJa: '切り返し', jsaCategory: 'Kakeite', description: 'Twisting backward trip', rarity: 'rare' }),
+  K({ id: 'kawazugake', name: 'Kawazugake', nameJa: '河津掛け', jsaCategory: 'Kakeite', description: 'Hooking backward trip', rarity: 'legendary' }),
+  K({ id: 'kekaeshi', name: 'Kekaeshi', nameJa: '蹴返し', jsaCategory: 'Kakeite', description: 'Kicking back the leg', rarity: 'rare' }),
+  K({ id: 'ketaguri', name: 'Ketaguri', nameJa: '蹴手繰り', jsaCategory: 'Kakeite', description: 'Ankle kick sweep', rarity: 'rare' }),
+  K({ id: 'mitokorozeme', name: 'Mitokorozeme', nameJa: '三所攻め', jsaCategory: 'Kakeite', description: 'Triple-point attack', rarity: 'legendary' }),
+  K({ id: 'watashikomi', name: 'Watashikomi', nameJa: '渡し込み', jsaCategory: 'Kakeite', description: 'Thigh-hook body drop', rarity: 'rare' }),
+  K({ id: 'nimaigeri', name: 'Nimaigeri', nameJa: '二枚蹴り', jsaCategory: 'Kakeite', description: 'Ankle kick sweep', rarity: 'legendary' }),
+  K({ id: 'komatasukui', name: 'Komatasukui', nameJa: '小股掬い', jsaCategory: 'Kakeite', description: 'Over-thigh scooping throw', rarity: 'rare' }),
+  K({ id: 'sotokomata', name: 'Sotokomata', nameJa: '外小股', jsaCategory: 'Kakeite', description: 'Outside thigh-scooping throw', rarity: 'legendary' }),
+  K({ id: 'omata', name: 'Omata', nameJa: '大股', jsaCategory: 'Kakeite', description: 'Thigh-scooping throw', rarity: 'rare' }),
+  K({ id: 'tsumatori', name: 'Tsumatori', nameJa: '褄取り', jsaCategory: 'Kakeite', description: 'Rear toe pick', rarity: 'rare' }),
+  K({ id: 'kozumatori', name: 'Kozumatori', nameJa: '小褄取り', jsaCategory: 'Kakeite', description: 'Ankle pick', rarity: 'rare' }),
+  K({ id: 'ashitori', name: 'Ashitori', nameJa: '足取り', jsaCategory: 'Kakeite', description: 'Leg pick', rarity: 'rare' }),
+  K({ id: 'susotori', name: 'Susotori', nameJa: '裾取り', jsaCategory: 'Kakeite', description: 'Ankle pick', rarity: 'rare' }),
+  K({ id: 'susoharai', name: 'Susoharai', nameJa: '裾払い', jsaCategory: 'Kakeite', description: 'Ankle sweep', rarity: 'rare' }),
 
-  // === Sori (反り手) ===
-  K({ id: "izori", name: "Izori", nameJa: "居反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "none", requiredStances: ["no-grip"], rarity: "legendary", description: "Sori (back-bend) win" }),
-  K({ id: "shumokuzori", name: "Shumokuzori", nameJa: "撞木反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "legendary", description: "Shumokuzori win" }),
-  K({ id: "kakezori", name: "Kakezori", nameJa: "掛け反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary", description: "Kakezori win" }),
-  K({ id: "tasukizori", name: "Tasukizori", nameJa: "たすき反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "legendary", description: "Tasukizori win" }),
-  K({ id: "sototasukizori", name: "Sototasukizori", nameJa: "外たすき反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "legendary", description: "Outside tasuki-zori" }),
-  K({ id: "tsutaezori", name: "Tsutaezori", nameJa: "伝え反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "none", requiredStances: ["no-grip"], rarity: "legendary", description: "Tsutaezori win" }),
+  // === Sorite (Backwards Body Drops - 6 moves) ===
+  K({ id: 'izori', name: 'Izori', nameJa: '居反り', jsaCategory: 'Sorite', description: 'Backwards body drop', rarity: 'legendary' }),
+  K({ id: 'shumokuzori', name: 'Shumokuzori', nameJa: '撞木反り', jsaCategory: 'Sorite', description: 'Bell-clapper back drop', rarity: 'legendary' }),
+  K({ id: 'kakezori', name: 'Kakezori', nameJa: '掛け反り', jsaCategory: 'Sorite', description: 'Hooking back drop', rarity: 'legendary' }),
+  K({ id: 'tasukizori', name: 'Tasukizori', nameJa: 'たすき反り', jsaCategory: 'Sorite', description: 'Kimono-string back drop', rarity: 'legendary' }),
+  K({ id: 'sototasukizori', name: 'Sototasukizori', nameJa: '外たすき反り', jsaCategory: 'Sorite', description: 'Outer kimono-string back drop', rarity: 'legendary' }),
+  K({ id: 'tsutaezori', name: 'Tsutaezori', nameJa: '伝え反り', jsaCategory: 'Sorite', description: 'Underarm back drop', rarity: 'legendary' }),
 
-  // === Hineri / twist group (捻り手) ===
-  K({ id: "tsukiotoshi", name: "Tsukiotoshi", nameJa: "突き落とし", category: "thrust", kimariteClass: "thrust", tacticalFamily: "trick", description: "Thrust down at angle" }),
-  K({ id: "makiotoshi", name: "Makiotoshi", nameJa: "巻き落とし", category: "twist", kimariteClass: "twist", description: "Winding throw-down" }),
-  K({ id: "tottari", name: "Tottari", nameJa: "とったり", category: "twist", kimariteClass: "twist", description: "Arm-bar take-down" }),
-  K({ id: "sakatottari", name: "Sakatottari", nameJa: "逆取ったり", category: "twist", kimariteClass: "twist", description: "Reverse tottari" }),
-  K({ id: "katasukashi", name: "Katasukashi", nameJa: "肩すかし", category: "pull", kimariteClass: "evasion", vector: "lateral", gripNeed: "none", requiredStances: ["no-grip"], description: "Shoulder swing-down" }),
-  K({ id: "sotomuso", name: "Sotomuso", nameJa: "外無双", category: "twist", kimariteClass: "twist", description: "Outside thigh twist-down" }),
-  K({ id: "uchimuso", name: "Uchimuso", nameJa: "内無双", category: "twist", kimariteClass: "twist", description: "Inside thigh twist-down" }),
+  // === Hinerite (Twisting Techniques - 19 moves) ===
+  K({ id: 'tsukiotoshi', name: 'Tsukiotoshi', nameJa: '突き落とし', jsaCategory: 'Hinerite', description: 'Thrust down' }),
+  K({ id: 'makiotoshi', name: 'Makiotoshi', nameJa: '巻き落とし', jsaCategory: 'Hinerite', description: 'Twisting pull down' }),
+  K({ id: 'tottari', name: 'Tottari', nameJa: 'とったり', jsaCategory: 'Hinerite', description: 'Arm bar throw' }),
+  K({ id: 'sakatottari', name: 'Sakatottari', nameJa: '逆取ったり', jsaCategory: 'Hinerite', description: 'Wrapped arm throw' }),
+  K({ id: 'katasukashi', name: 'Katasukashi', nameJa: '肩すかし', jsaCategory: 'Hinerite', description: 'Under-shoulder swing down' }),
+  K({ id: 'uwatehineri', name: 'Uwatehineri', nameJa: '上手捻り', jsaCategory: 'Hinerite', description: 'Overarm twisting throw', requiresBeltGrip: true }),
+  K({ id: 'shitatehineri', name: 'Shitatehineri', nameJa: '下手捻り', jsaCategory: 'Hinerite', description: 'Underarm twisting throw', requiresBeltGrip: true }),
+  K({ id: 'kotehineri', name: 'Kotehineri', nameJa: '小手捻り', jsaCategory: 'Hinerite', description: 'Armlock twisting throw' }),
+  K({ id: 'amiuchi', name: 'Amiuchi', nameJa: '網打ち', jsaCategory: 'Hinerite', description: 'Fisherman\'s throw', rarity: 'rare' }),
+  K({ id: 'kainahineri', name: 'Kainahineri', nameJa: '腕捻り', jsaCategory: 'Hinerite', description: 'Two-arm twisting throw' }),
+  K({ id: 'gasshohineri', name: 'Gasshohineri', nameJa: '合掌捻り', jsaCategory: 'Hinerite', description: 'Clasped-hand twisting throw', rarity: 'rare' }),
+  K({ id: 'tokkurinage', name: 'Tokkurinage', nameJa: '徳利投げ', jsaCategory: 'Hinerite', description: 'Two-hand head-twisting throw', rarity: 'rare' }),
+  K({ id: 'kubihineri', name: 'Kubihineri', nameJa: '首捻り', jsaCategory: 'Hinerite', description: 'Neck-twisting throw', rarity: 'rare' }),
+  K({ id: 'sotomuso', name: 'Sotomuso', nameJa: '外無双', jsaCategory: 'Hinerite', description: 'Outer thigh-propping twist' }),
+  K({ id: 'uchimuso', name: 'Uchimuso', nameJa: '内無双', jsaCategory: 'Hinerite', description: 'Inner thigh-propping twist' }),
+  K({ id: 'zunebari', name: 'Zunebari', nameJa: '頭捻り', jsaCategory: 'Hinerite', description: 'Head-propping twisting throw', rarity: 'rare' }),
+  K({ id: 'sabaori', name: 'Sabaori', nameJa: '鯖折り', jsaCategory: 'Hinerite', description: 'Forward force down', requiresBeltGrip: true, rarity: 'rare' }),
+  K({ id: 'harimanage', name: 'Harimanage', nameJa: '波離間投げ', jsaCategory: 'Hinerite', description: 'Backward belt throw', rarity: 'legendary' }),
+  K({ id: 'dainigiri', name: 'Dainigiri', nameJa: '大逆手', jsaCategory: 'Hinerite', description: 'Overarm leg-trip throw', rarity: 'legendary' }),
+
+  // === Tokushuwaza (Special Techniques - 14 moves) ===
+  K({ id: 'hatakikomi', name: 'Hatakikomi', nameJa: '叩き込み', jsaCategory: 'Tokushuwaza', description: 'Slap down', kimariteClass: 'slap_pull' }),
+  K({ id: 'hikiotoshi', name: 'Hikiotoshi', nameJa: '引き落とし', jsaCategory: 'Tokushuwaza', description: 'Hand pull down', kimariteClass: 'slap_pull' }),
+  K({ id: 'hikkake', name: 'Hikkake', nameJa: '引っ掛け', jsaCategory: 'Tokushuwaza', description: 'Arm pull down', rarity: 'rare' }),
+  K({ id: 'tsuridashi', name: 'Tsuridashi', nameJa: '吊り出し', jsaCategory: 'Tokushuwaza', description: 'Lift out', tacticalFamily: 'belt', requiresBeltGrip: true, kimariteClass: 'lift' }),
+  K({ id: 'tsuriotoshi', name: 'Tsuriotoshi', nameJa: '吊り落とし', jsaCategory: 'Tokushuwaza', description: 'Lift-and-drop' }),
+  K({ id: 'okuridashi', name: 'Okuridashi', nameJa: '送り出し', jsaCategory: 'Tokushuwaza', description: 'Rear push out', kimariteClass: 'rear' }),
+  K({ id: 'okuritaoshi', name: 'Okuritaoshi', nameJa: '送り倒し', jsaCategory: 'Tokushuwaza', description: 'Rear push down', kimariteClass: 'rear' }),
+  K({ id: 'okurinage', name: 'Okurinage', nameJa: '送り投げ', jsaCategory: 'Tokushuwaza', description: 'Rear throw', kimariteClass: 'rear' }),
+  K({ id: 'okurigake', name: 'Okurigake', nameJa: '送り掛け', jsaCategory: 'Tokushuwaza', description: 'Rear leg trip', kimariteClass: 'rear' }),
+  K({ id: 'okurihikiotoshi', name: 'Okurihikiotoshi', nameJa: '送り引き落とし', jsaCategory: 'Tokushuwaza', description: 'Rear pull down', kimariteClass: 'rear' }),
+  K({ id: 'okuritsuridashi', name: 'Okuritsuridashi', nameJa: '送り吊り出し', jsaCategory: 'Tokushuwaza', description: 'Rear lift out', kimariteClass: 'rear' }),
+  K({ id: 'okuritsuriotoshi', name: 'Okuritsuriotoshi', nameJa: '送り吊り落とし', jsaCategory: 'Tokushuwaza', description: 'Rear lift and drop', kimariteClass: 'rear' }),
+  K({ id: 'sokubiotoshi', name: 'Sokubiotoshi', nameJa: '素首落とし', jsaCategory: 'Tokushuwaza', description: 'Neck-slap down', rarity: 'rare' }),
+  K({ id: 'waridashi', name: 'Waridashi', nameJa: '割り出し', jsaCategory: 'Tokushuwaza', description: 'Upper-arm frontal push out', rarity: 'rare' }),
+
+  // === Edge Reversals & Others (often grouped into Tokushuwaza or Hiwaza) ===
+  K({ id: 'utchari', name: 'Utchari', nameJa: '打っ棄り', jsaCategory: 'Tokushuwaza', description: 'Pivot sweep throw', rarity: 'rare' }),
+  K({ id: 'kimedashi', name: 'Kimedashi', nameJa: '極め出し', jsaCategory: 'Tokushuwaza', description: 'Arm-barring force out' }),
+  K({ id: 'kimetaoshi', name: 'Kimetaoshi', nameJa: '極め倒し', jsaCategory: 'Tokushuwaza', description: 'Arm-barring force down' }),
+  K({ id: 'yobimodoshi', name: 'Yobimodoshi', nameJa: '呼び戻し', jsaCategory: 'Tokushuwaza', description: 'Pulling body slam', rarity: 'legendary' }),
+  K({ id: 'ushiromotare', name: 'Ushiromotare', nameJa: '後ろもたれ', jsaCategory: 'Tokushuwaza', description: 'Backward leaning out', rarity: 'legendary' }),
+
+  // === Hiwaza (Non-Winning Techniques - 5 moves) ===
+  K({ id: 'isamiashi', name: 'Isamiashi', nameJa: '勇み足', jsaCategory: 'Hiwaza', description: 'Inadvertent step out' }),
+  K({ id: 'koshikudake', name: 'Koshikudake', nameJa: '腰砕け', jsaCategory: 'Hiwaza', description: 'Collapsing' }),
+  K({ id: 'tsukite', name: 'Tsukite', nameJa: 'つき手', jsaCategory: 'Hiwaza', description: 'Hand touch down' }),
+  K({ id: 'tsukihiza', name: 'Tsukihiza', nameJa: 'つきひざ', jsaCategory: 'Hiwaza', description: 'Knee touch down' }),
+  K({ id: 'fumidashi', name: 'Fumidashi', nameJa: '踏み出し', jsaCategory: 'Hiwaza', description: 'Stepping out' }),
+
+  // === Forfeits & Extras (Engine internal) ===
+  { id: 'fusensho', name: 'Fusensho', nameJa: '不戦勝', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, description: 'Win by default', kimariteClass: 'forfeit' },
+  { id: 'hansoku', name: 'Hansoku', nameJa: '反則', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, description: 'Win by disqualification', kimariteClass: 'forfeit' },
 ];
 
-// Continue the remaining official entries (to keep this response readable, they are appended below).
-// NOTE: This registry MUST include all 82 kimarite; the appended block completes it.
+// --- Lookup helpers ---
 
-/** k i m a r i t e_ r e g i s t r y_ a p p e n d. */
-export const KIMARITE_REGISTRY_APPEND: Kimarite[] = [
-  // (JSA list continues)  [oai_citation:3‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
-  K({ id: "shitatehineri", name: "Shitatehineri", nameJa: "下手捻り", category: "twist", kimariteClass: "twist", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] }),
-  K({ id: "uwatehineri", name: "Uwatehineri", nameJa: "上手捻り", category: "twist", kimariteClass: "twist", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] }),
-  K({ id: "zunebari", name: "Zunebari", nameJa: "頭捻り", category: "twist", kimariteClass: "twist", gripNeed: "none", requiredStances: ["no-grip", "push-dominant"] }),
-  K({ id: "kainahineri", name: "Kainahineri", nameJa: "腕捻り", category: "twist", kimariteClass: "twist", gripNeed: "arm", requiredStances: ["no-grip", "push-dominant"] }),
-  K({ id: "gasshohineri", name: "Gasshohineri", nameJa: "合掌捻り", category: "twist", kimariteClass: "twist", gripNeed: "arm", requiredStances: ["no-grip"] }),
-  K({ id: "tokkurinage", name: "Tokkurinage", nameJa: "徳利投げ", category: "twist", kimariteClass: "twist", gripNeed: "none", requiredStances: ["no-grip"] }),
-  K({ id: "kubihineri", name: "Kubihineri", nameJa: "首捻り", category: "twist", kimariteClass: "twist", gripNeed: "none", requiredStances: ["no-grip"] }),
-  K({ id: "kotehineri", name: "Kotehineri", nameJa: "小手捻り", category: "twist", kimariteClass: "twist", gripNeed: "arm", requiredStances: ["no-grip", "push-dominant"] }),
-  K({ id: "amiuchi", name: "Amiuchi", nameJa: "網打ち", category: "pull", kimariteClass: "evasion", vector: "lateral", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "rare" }),
-  K({ id: "sabaori", name: "Sabaori", nameJa: "鯖折り", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary" }),
-  K({ id: "harimanage", name: "Harimanage", nameJa: "波離間投げ", category: "twist", kimariteClass: "twist", vector: "lateral", gripNeed: "belt", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"], rarity: "legendary" }),
-  K({ id: "dainigiri", name: "Dainigiri", nameJa: "大逆手", category: "twist", kimariteClass: "twist", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "rare" }),
-  K({ id: "hikkake", name: "Hikkake", nameJa: "引っ掛け", category: "pull", kimariteClass: "slap_pull", vector: "lateral", gripNeed: "arm", requiredStances: ["no-grip", "push-dominant"] }),
-  K({ id: "hikiotoshi", name: "Hikiotoshi", nameJa: "引き落とし", category: "pull", kimariteClass: "slap_pull" }),
-  K({ id: "hatakikomi", name: "Hatakikomi", nameJa: "叩き込み", category: "pull", kimariteClass: "slap_pull", baseWeight: 15, rarity: "common" }),
-  K({ id: "sokubiotoshi", name: "Sokubiotoshi", nameJa: "素首落とし", category: "special", kimariteClass: "special", gripNeed: "none", requiredStances: ["no-grip", "push-dominant"], rarity: "rare" }),
-  K({ id: "tsuridashi", name: "Tsuridashi", nameJa: "吊り出し", category: "lift", kimariteClass: "lift", requiredStances: ["belt-dominant"] }),
-  K({ id: "okuritsuridashi", name: "Okuritsuridashi", nameJa: "送り吊り出し", category: "rear", kimariteClass: "rear", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary" }),
-  K({ id: "tsuriotoshi", name: "Tsuriotoshi", nameJa: "吊り落とし", category: "lift", kimariteClass: "lift", requiredStances: ["belt-dominant"] }),
-  K({ id: "okuritsuriotoshi", name: "Okuritsuriotoshi", nameJa: "送り吊り落とし", category: "rear", kimariteClass: "rear", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary" }),
-  K({ id: "okuridashi", name: "Okuridashi", nameJa: "送り出し", category: "rear", kimariteClass: "rear" }),
-  K({ id: "okuritaoshi", name: "Okuritaoshi", nameJa: "送り倒し", category: "rear", kimariteClass: "rear" }),
-  K({ id: "okurinage", name: "Okurinage", nameJa: "送り投げ", category: "rear", kimariteClass: "rear", rarity: "rare" }),
-  K({ id: "okurigake", name: "Okurigake", nameJa: "送り掛け", category: "rear", kimariteClass: "rear", rarity: "rare" }),
-  K({ id: "okurihikiotoshi", name: "Okurihikiotoshi", nameJa: "送り引き落とし", category: "rear", kimariteClass: "rear", rarity: "rare" }),
-  K({ id: "waridashi", name: "Waridashi", nameJa: "割り出し", category: "special", kimariteClass: "force_out", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "rare" }),
-  K({ id: "utchari", name: "Utchari", nameJa: "打っ棄り", category: "special", kimariteClass: "special", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "rare" }),
-  K({ id: "kimedashi", name: "Kimedashi", nameJa: "極め出し", category: "special", kimariteClass: "special", gripNeed: "arm", requiredStances: ["push-dominant", "no-grip"] }),
-  K({ id: "kimetaoshi", name: "Kimetaoshi", nameJa: "極め倒し", category: "special", kimariteClass: "special", gripNeed: "arm", requiredStances: ["push-dominant", "no-grip"], rarity: "rare" }),
-  K({ id: "ushiromotare", name: "Ushiromotare", nameJa: "後ろもたれ", category: "rear", kimariteClass: "rear", gripNeed: "belt", requiredStances: ["belt-dominant"], rarity: "legendary" }),
-  K({ id: "yobimodoshi", name: "Yobimodoshi", nameJa: "呼び戻し", category: "pull", kimariteClass: "evasion", vector: "lateral", gripNeed: "arm", requiredStances: ["no-grip"], rarity: "legendary" }),
-
-  // --- 5 non-technique bout outcomes (勝負結果) ---
-  K({ id: "isamiashi", name: "Isamiashi", nameJa: "勇み足", category: "result", kimariteClass: "result", description: "Overstep / self-out" }),
-  K({ id: "koshikudake", name: "Koshikudake", nameJa: "腰砕け", category: "result", kimariteClass: "result", description: "Collapse / self-fall" }),
-  K({ id: "tsukite", name: "Tsukite", nameJa: "つき手", category: "result", kimariteClass: "result", description: "Hand touch-down" }),
-  K({ id: "tsukihiza", name: "Tsukihiza", nameJa: "つきひざ", category: "result", kimariteClass: "result", description: "Knee touch-down" }),
-  K({ id: "fumidashi", name: "Fumidashi", nameJa: "踏み出し", category: "result", kimariteClass: "result", description: "Step-out / stumble-out" }),
-
-  // --- forfeits (not part of 82 kimarite) ---
-  K({ id: "fusensho", name: "Fusensho", nameJa: "不戦勝", category: "forfeit", kimariteClass: "forfeit", description: "Win by default (opponent absent)" }),
-  K({ id: "hansoku", name: "Hansoku", nameJa: "反則", category: "forfeit", kimariteClass: "forfeit", description: "Win by foul" }),
-];
-
-// Final exported registry: 82 kimarite + 5 results + forfeits
-/** k i m a r i t e_ a l l. */
-export const KIMARITE_ALL: Kimarite[] = [...KIMARITE_REGISTRY, ...KIMARITE_REGISTRY_APPEND];
-
-// --- Lookup helpers (use KIMARITE_ALL) ---
-/**
- * Get kimarite.
- *  * @param id - The Id.
- *  * @returns The result.
- */
-export function getKimarite(id: string): Kimarite | undefined {
+/** Get kimarite by ID */
+export function getKimarite(id: string): (Kimarite & { kimariteClass?: KimariteClass }) | undefined {
   return KIMARITE_ALL.find(k => k.id === id);
 }
 
-/**
- * Get kimarite by category.
- *  * @param category - The Category.
- *  * @returns The result.
- */
-export function getKimariteByCategory(category: KimariteCategory): Kimarite[] {
-  return KIMARITE_ALL.filter(k => k.category === category);
+/** Get kimarite by JSA category */
+export function getKimariteByJsaCategory(category: JsaCategory): Kimarite[] {
+  return KIMARITE_ALL.filter(k => k.jsaCategory === category);
 }
 
-/**
- * Get kimarite by class.
- *  * @param kimariteClass - The Kimarite class.
- *  * @returns The result.
- */
-export function getKimariteByClass(kimariteClass: KimariteClass): Kimarite[] {
+/** Get kimarite by legacy KimariteClass */
+export function getKimariteByClass(kimariteClass: KimariteClass): (Kimarite & { kimariteClass?: KimariteClass })[] {
   return KIMARITE_ALL.filter(k => k.kimariteClass === kimariteClass);
 }
 
-/**
- * Get kimarite for stance.
- *  * @param stance - The Stance.
- *  * @returns The result.
- */
-export function getKimariteForStance(stance: Stance): Kimarite[] {
-  return KIMARITE_ALL.filter(k =>
-    k.requiredStances.length === 0 || k.requiredStances.includes(stance)
-  );
-}
-
-/**
- * Get kimarite for style.
- *  * @param style - The Style.
- *  * @returns The result.
- */
-export function getKimariteForStyle(style: Style): Kimarite[] {
-  return KIMARITE_ALL
-    .filter(k => k.category !== "forfeit" && k.category !== "result")
-    .filter(k => k.styleAffinity[style] >= 5)
-    .sort((a, b) => b.styleAffinity[style] - a.styleAffinity[style] || stableTieBreak(a.id, b.id));
-}
-
-/**
- * Get kimarite for archetype.
- *  * @param archetype - The Archetype.
- *  * @returns The result.
- */
-export function getKimariteForArchetype(archetype: TacticalArchetype): Kimarite[] {
-  return KIMARITE_ALL
-    .filter(k => k.category !== "forfeit" && k.category !== "result")
-    .filter(k => (k.archetypeBonus[archetype] ?? 0) > 0)
-    .sort((a, b) => (b.archetypeBonus[archetype] ?? 0) - (a.archetypeBonus[archetype] ?? 0) || stableTieBreak(a.id, b.id));
-}
-
-// Stats
-let _cachedCount: number | null = null;
-
-/**
- * Get kimarite count.
- *  * @returns The result.
- */
+/** Get kimarite count (official 82) */
 export function getKimariteCount(): number {
-  // Official 82 only
-  if (_cachedCount === null) {
-    _cachedCount = KIMARITE_ALL.reduce((acc, k) => acc + (k.category !== "forfeit" && k.category !== "result" ? 1 : 0), 0);
-  }
-  return _cachedCount;
+  return KIMARITE_ALL.filter(k => k.id !== 'fusensho' && k.id !== 'hansoku').length;
+}
+
+/** Get kimarite for tactical family */
+export function getKimariteForFamily(family: TacticalFamily): Kimarite[] {
+  return KIMARITE_ALL.filter(k => k.tacticalFamily === family);
 }

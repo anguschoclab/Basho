@@ -14,7 +14,7 @@ import type { Side } from "../types/banzuke";
 import type { Stance, TacticalArchetype, RikishiArchetype } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../banzuke";
-import { KIMARITE_REGISTRY, getKimariteCount, type Kimarite, getKimariteByClass } from "../kimarite";
+import { KIMARITE_ALL, getKimariteCount, type Kimarite, getKimariteByClass, getKimariteForFamily } from "../kimarite";
 import { resolveTacticalClash, determineCPUTactic } from "../h2h";
 import { 
   TacticalFamily, 
@@ -89,6 +89,8 @@ export interface EngineState {
   tachiaiWinner: Side;
   fatigueEast: number;
   fatigueWest: number;
+  balanceEast: number; // NEW: Universal Defense pool
+  balanceWest: number; // NEW
   log: BoutLogEntry[];
   mizuiriDeclared: boolean; // NEW
   tacticalResult?: import("../types/combat").TacticalResult;
@@ -161,10 +163,40 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
 /**
  * Helper to pick a specific Kimarite from a class for the finish
  */
-function pickMoveFromClass(rng: SeededRNG, kimariteClass: import('../types/combat').KimariteClass | undefined): Kimarite {
-  const matches = getKimariteByClass(kimariteClass || 'force_out');
-  if (matches.length === 0) return KIMARITE_REGISTRY[0]; // Fallback
+function pickMoveFromClass(rng: SeededRNG, kimariteClass: import('../types/combat').KimariteClass | undefined, family?: TacticalFamily): Kimarite {
+  let matches = getKimariteByClass(kimariteClass || 'force_out');
+  if (family) {
+    matches = matches.filter(k => k.tacticalFamily === family);
+  }
+  if (matches.length === 0) {
+    // try by family if class empty
+    if (family) {
+      const familyMatches = KIMARITE_ALL.filter(k => k.tacticalFamily === family);
+      if (familyMatches.length > 0) return familyMatches[rng.int(0, familyMatches.length - 1)];
+    }
+    return KIMARITE_ALL[0]; // Fallback
+  }
   return matches[rng.int(0, matches.length - 1)];
+}
+
+/**
+ * Height Leverage Helper: Calculates Gravity Delta bonuses
+ */
+function calculateHeightLeverage(attacker: Rikishi, defender: Rikishi, targetFamily: TacticalFamily): number {
+  const heightA = attacker.height || 180;
+  const heightD = defender.height || 180;
+  
+  // High center of gravity bonus (Taller)
+  if (heightA > heightD + 10) {
+    if (targetFamily === 'belt') return 1.15; // Nageite / Lifting bonus
+  }
+  
+  // Low center of gravity bonus (Shorter)
+  if (heightA < heightD - 10) {
+    if (targetFamily === 'push' || targetFamily === 'speed') return 1.15; // Push / Kakeite (leg trips) bonus
+  }
+  
+  return 1.0;
 }
 
 // =========================================================
@@ -174,85 +206,107 @@ function pickMoveFromClass(rng: SeededRNG, kimariteClass: import('../types/comba
 /**
  * AI Action Selection Logic
  */
-function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState): CombatAction {
+function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
   const profile = ARCHETYPE_PROFILES[r.archetype];
-  const prefs = profile.actionPreferences;
+  const prefs = { ...profile.actionPreferences };
   
+  // v1.3 Mental AI Logic: Avoid weight deficits
+  const mental = stat(r, 'mental');
+  const weightDiff = (opponent.weight || 150) - (r.weight || 150);
+  
+  if (mental > 60 && weightDiff > 30) {
+    // Small wrestler avoids push/belt against giants
+    prefs.push *= 0.2;
+    prefs.belt *= 0.5;
+    prefs.trick *= 2.0;
+    prefs.speed *= 1.5;
+  }
+
   // 1. Pick a Tactical Family based on weighted preferences
   const roll = rng.next();
   let cumulative = 0;
   let family: TacticalFamily = 'push';
   
+  const totalWeight = Object.values(prefs).reduce((a, b) => (a as number) + (b as number), 0) as number;
+  const normalizedRoll = roll * totalWeight;
+
   for (const [fam, weight] of Object.entries(prefs)) {
     cumulative += weight as number;
-    if (roll < cumulative) {
+    if (normalizedRoll < cumulative) {
       family = fam as TacticalFamily;
       break;
     }
   }
 
-  // 2. Pick an Intent (simplistic for now: most are attack)
+  // 2. Pick an Intent
   const intentRoll = rng.next();
   const intent: CombatAction['intent'] = intentRoll < 0.7 ? 'attack' : intentRoll < 0.9 ? 'defend' : 'counter';
 
-  // 3. Select a target Kimarite Class that fits the family
-  // Simplified mapping for the engine
-  let targetClass: import('../types/combat').KimariteClass = 'push';
-  if (family === 'push') targetClass = rng.next() < 0.6 ? 'force_out' : 'push';
-  else if (family === 'belt') targetClass = rng.next() < 0.5 ? 'throw' : 'lift';
-  else if (family === 'trick') targetClass = rng.next() < 0.6 ? 'slap_pull' : 'evasion';
-  else if (family === 'speed') targetClass = rng.next() < 0.7 ? 'trip' : 'rear';
-
-  // 4. Define Stat Weighting for THIS specific move
-  const statWeighting = { strength: 0, weight: 0, technique: 0, speed: 0, balance: 0 };
-  switch (targetClass) {
-    case 'force_out': statWeighting.strength = 0.6; statWeighting.weight = 0.4; break;
-    case 'push': statWeighting.strength = 0.5; statWeighting.speed = 0.3; statWeighting.weight = 0.2; break;
-    case 'throw': statWeighting.technique = 0.5; statWeighting.strength = 0.3; statWeighting.balance = 0.2; break;
-    case 'lift': statWeighting.strength = 0.8; statWeighting.weight = 0.2; break;
-    case 'slap_pull': statWeighting.technique = 0.6; statWeighting.speed = 0.4; break;
-    case 'trip': statWeighting.speed = 0.6; statWeighting.technique = 0.4; break;
-    case 'rear': statWeighting.speed = 0.8; statWeighting.technique = 0.2; break;
-    case 'evasion': statWeighting.speed = 0.7; statWeighting.balance = 0.3; break;
-    default: statWeighting.strength = 0.5; statWeighting.technique = 0.5;
-  }
+  // 3. Select a target Kimarite (using the new registry)
+  const familyMoves = getKimariteForFamily(family);
+  const move = familyMoves[rng.int(0, familyMoves.length - 1)] || KIMARITE_ALL[0];
 
   return {
     family,
     intent,
-    targetKimariteClass: targetClass,
-    statWeighting
+    targetKimariteClass: (move as any).kimariteClass || 'special',
+    statWeighting: move.statWeights
   };
 }
 
 /**
- * Calculate Action Power based on Move-Specific Math
+ * Calculate Action Power based on Move-Specific Math (v1.3)
  */
-function calculateActionPower(r: Rikishi, action: CombatAction, opponent?: Rikishi): number {
+function calculateActionPower(r: Rikishi, action: CombatAction, opponent: Rikishi, st: EngineState): number {
   const w = action.statWeighting;
-  const s = r.stats || r; // back-compat
+  const s = r.stats || r;
+  const oppS = opponent.stats || opponent;
   
   let power = 0;
-  power += (stat(r, 'strength', s.strength) * (w.strength || 0));
-  power += (stat(r, 'weight', r.weight) * (w.weight || 0)); // weight is direct on rikishi
+  
+  // 1. Base Physicals Logic
+  let strengthPower = stat(r, 'strength', s.strength);
+  
+  // Weight (Mass / Momentum) Interaction
+  if (action.family === 'belt') {
+    // Weight acts as a multiplier to strength for belt moves
+    strengthPower *= (1 + (r.weight || 150) / 500);
+  }
+  
+  power += (strengthPower * (w.strength || 0));
+  power += (stat(r, 'weight', r.weight) * (w.weight || 0));
   power += (stat(r, 'technique', s.technique) * (w.technique || 0));
   power += (stat(r, 'speed', s.speed) * (w.speed || 0));
-  power += (stat(r, 'balance', s.balance) * (w.balance || 0));
 
-  // Apply Fatigue penalty
-  const fatiguePenalty = (r.fatigue || 0) * 0.5;
-  power -= fatiguePenalty;
+  // 2. Center of Gravity Leverage
+  const leverage = calculateHeightLeverage(r, opponent, action.family);
+  power *= leverage;
 
-  // Momentum bonus
-  const momentumBonus = (r.momentum || 50) / 10;
-  power += momentumBonus;
-
-  // Specific Opponent Defense Omits
-  if (opponent && action.targetKimariteClass === 'trip') {
-    power -= (stat(opponent, 'balance') * 0.5);
+  // 3. Speed/Flanking: High speed temporarily zeros out Strength defense
+  let opponentStrengthDefense = stat(opponent, 'strength', oppS.strength);
+  if (action.family === 'speed' && stat(r, 'speed') > stat(opponent, 'speed') + 20) {
+    opponentStrengthDefense = 0; // Out of position
   }
 
-  return Math.max(1, power);
+  // 4. Weight Liability
+  // A heavy wrestler being slapped down or countered suffers Balance penalties
+  let weightLiability = 1.0;
+  if ((action.family === 'trick' || action.intent === 'counter') && (opponent.weight || 150) > 160) {
+    weightLiability = 1.3; // Mass weaponized against them
+  }
+
+  // 5. Fatigue drain: Strength interaction
+  if (w.strength > 0.3) {
+    const side = (r.id === st.log[0]?.data?.eastId) ? 'east' : 'west'; // Approximate
+    if (side === 'east') st.fatigueEast += 0.2;
+    else st.fatigueWest += 0.2;
+  }
+
+  // 6. Final Power Calculation
+  const fatiguePenalty = (r.fatigue || 0) * 0.4;
+  power -= fatiguePenalty;
+
+  return Math.max(1, power * weightLiability);
 }
 
 // =========================================================
@@ -269,8 +323,8 @@ function calculateActionPower(r: Rikishi, action: CombatAction, opponent?: Rikis
 
 function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): { earlyWinner?: Side, earlyKimarite?: string } | void {
   // 1. Both Rikishi select actions for the Tachiai
-  const eastAction = selectAction(rng, east, st);
-  const westAction = selectAction(rng, west, st);
+  const eastAction = selectAction(rng, east, st, west);
+  const westAction = selectAction(rng, west, st, east);
 
   // 2. Trickster Henka Check (Phase 1: The Charge)
   const resolveHenka = (trickster: Rikishi, opponent: Rikishi, trickSide: Side, trickAction: CombatAction, oppAction: CombatAction) => {
@@ -314,8 +368,8 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
       westLeverage += 0.4;
   }
 
-  const finalEast = calculateActionPower(east, eastAction) * eastLeverage + jitter(rng, 5);
-  const finalWest = calculateActionPower(west, westAction) * westLeverage + jitter(rng, 5);
+  const finalEast = calculateActionPower(east, eastAction, west, st) * eastLeverage + jitter(rng, 5);
+  const finalWest = calculateActionPower(west, westAction, east, st) * westLeverage + jitter(rng, 5);
 
   const winner = chooseSideByScore(finalEast, finalWest);
   const margin = Math.abs(finalEast - finalWest);
@@ -347,48 +401,61 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   st.tick += 1;
   st.timeSeconds += 2;
 
-  // 1. AI selects actions based on current stance and archetype
-  const eastAction = selectAction(rng, east, st);
-  const westAction = selectAction(rng, west, st);
+  // 1. AI selects actions
+  const eastAction = selectAction(rng, east, st, west);
+  const westAction = selectAction(rng, west, st, east);
 
   // 2. Check RPS Matrix for Leverage
-  let eastLeverage = 1.0;
-  let westLeverage = 1.0;
+  let eastRelLeverage = 1.0;
+  let westRelLeverage = 1.0;
 
   if (TACTICAL_MATRIX[eastAction.family].includes(westAction.family)) {
-      eastLeverage += 0.4; // 40% mechanical advantage for countering
+    eastRelLeverage += 0.4;
   } else if (TACTICAL_MATRIX[westAction.family].includes(eastAction.family)) {
-      westLeverage += 0.4;
+    westRelLeverage += 0.4;
   }
 
   // 3. Execute Move-Specific Math
-  const eastPower = calculateActionPower(east, eastAction, west) * eastLeverage + jitter(rng, 5);
-  const westPower = calculateActionPower(west, westAction, east) * westLeverage + jitter(rng, 5);
+  const eastPower = calculateActionPower(east, eastAction, west, st) * eastRelLeverage + jitter(rng, 5);
+  const westPower = calculateActionPower(west, westAction, east, st) * westRelLeverage + jitter(rng, 5);
 
-  // 4. Update Fatigue & Momentum
-  st.fatigueEast += 0.5 + (westPower / 100);
-  st.fatigueWest += 0.5 + (eastPower / 100);
+  // 4. Update Balance Pools (Universal Defense)
+  // Overflow hits balance. Defense is factored internally in power for now, 
+  // but we can add explicit stat(opponent, 'balance') soak.
+  const eastSoak = stat(east, 'balance') / 20;
+  const westSoak = stat(west, 'balance') / 20;
+
+  const eastDamage = Math.max(0, westPower - eastPower - eastSoak);
+  const westDamage = Math.max(0, eastPower - westPower - westSoak);
+
+  st.balanceEast -= eastDamage;
+  st.balanceWest -= westDamage;
+
+  // 5. Update Fatigue & Momentum
+  st.fatigueEast += 0.5 + (westPower / 200);
+  st.fatigueWest += 0.5 + (eastPower / 200);
   
-  if (eastPower > westPower + 10) east.momentum = Math.min(100, (east.momentum || 50) + 5);
-  else if (westPower > eastPower + 10) west.momentum = Math.min(100, (west.momentum || 50) + 5);
+  if (eastPower > westPower + 5) east.momentum = Math.min(100, (east.momentum || 50) + 3);
+  else if (westPower > eastPower + 5) west.momentum = Math.min(100, (west.momentum || 50) + 3);
 
-  // 5. Stance / Position Shifts (Simplified)
-  if (eastPower > westPower * 1.5) st.advantage = "east";
-  else if (westPower > eastPower * 1.5) st.advantage = "west";
-  else if (rng.next() < 0.2) st.advantage = "none";
+  // 6. Positional Shifts
+  if (eastPower > westPower * 1.3) st.advantage = "east";
+  else if (westPower > eastPower * 1.3) st.advantage = "west";
 
-  if (st.advantage !== "none" && rng.next() < 0.15) st.position = "lateral";
-  else st.position = "front";
-
-  // 6. Finish Resolution (Phase 3: Critical Failure)
-  const THRESHOLD = 2.4; 
-  if (eastPower > westPower * THRESHOLD) {
-      return { winner: "east", kimarite: pickMoveFromClass(rng, eastAction.targetKimariteClass) };
-  } else if (westPower > eastPower * THRESHOLD) {
-      return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass) };
+  // Edge Reversal Check (Mental Stat)
+  if (st.advantage === 'west' && stat(east, 'mental') > 70 && st.balanceEast < 20 && rng.next() < 0.2) {
+    // Utchari trigger!
+    return { winner: "east", kimarite: KIMARITE_ALL.find(k => k.id === 'utchari') as Kimarite };
   }
 
-  // 7. Log State Update
+  // 7. Victory Check (Balance hits 0)
+  if (st.balanceWest <= 0) {
+    return { winner: "east", kimarite: pickMoveFromClass(rng, eastAction.targetKimariteClass, eastAction.family) };
+  } else if (st.balanceEast <= 0) {
+    return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass, westAction.family) };
+  }
+
+  // 8. Log State Update
   st.log.push({
     phase: "engagement",
     data: {
@@ -397,6 +464,8 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
       westAction,
       eastPower: Math.round(eastPower),
       westPower: Math.round(westPower),
+      balanceEast: Math.max(0, Math.round(st.balanceEast)),
+      balanceWest: Math.max(0, Math.round(st.balanceWest)),
       advantage: st.advantage,
       time: st.timeSeconds
     }
@@ -429,6 +498,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     tachiaiWinner: "east",
     fatigueEast: 0,
     fatigueWest: 0,
+    balanceEast: stat(east, 'balance'), // Initialize pools
+    balanceWest: stat(west, 'balance'),
     log: [],
     mizuiriDeclared: false,
     playerSide: bout.playerSide
@@ -442,7 +513,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
 
   if (tachiaiResult && tachiaiResult.earlyWinner) {
     finalWinner = tachiaiResult.earlyWinner;
-    finalKimarite = KIMARITE_REGISTRY.find(k => k.id === tachiaiResult.earlyKimarite) || KIMARITE_REGISTRY[0];
+    finalKimarite = (KIMARITE_ALL.find(k => k.id === tachiaiResult.earlyKimarite) as Kimarite) || KIMARITE_ALL[0];
   } else {
     // 2. Engagement Phase (Action Loop)
     // No more arbitrary target ticks; we loop until victory or max time

@@ -2,15 +2,14 @@ import { describe, it, expect } from "vitest";
 import {
   KIMARITE_ALL,
   getKimarite,
-  getKimariteByCategory,
   getKimariteByClass,
-  getKimariteForStance,
   getKimariteCount,
+  getKimariteByJsaCategory,
 } from "../kimarite";
 
-describe("Kimarite Registry", () => {
+describe("Kimarite Registry (v1.3)", () => {
   it("should contain all official 82 kimarite plus non-techniques", () => {
-    // 82 official + 5 result + 2 forfeit
+    // 82 official + 7 non-standard (fusensho, hansoku, 5 results)
     expect(KIMARITE_ALL.length).toBe(89);
     expect(getKimariteCount()).toBe(82);
   });
@@ -19,34 +18,40 @@ describe("Kimarite Registry", () => {
     const yorikiri = getKimarite("yorikiri");
     expect(yorikiri).toBeDefined();
     expect(yorikiri?.nameJa).toBe("寄り切り");
-    expect(yorikiri?.category).toBe("push");
-    expect(yorikiri?.gripNeed).toBe("belt");
+    expect(yorikiri?.jsaCategory).toBe("Kihonwaza");
+    expect(yorikiri?.tacticalFamily).toBe("belt");
 
     const hatakikomi = getKimarite("hatakikomi");
     expect(hatakikomi).toBeDefined();
-    expect(hatakikomi?.category).toBe("pull");
+    expect(hatakikomi?.jsaCategory).toBe("Tokushuwaza");
     expect(hatakikomi?.kimariteClass).toBe("slap_pull");
   });
 
-  it("should filter by category", () => {
-    const thrusts = getKimariteByCategory("thrust");
-    expect(thrusts.length).toBeGreaterThan(0);
-    expect(thrusts.every(k => k.category === "thrust")).toBe(true);
+  it("should filter by JSA category", () => {
+    const kihonwaza = getKimariteByJsaCategory("Kihonwaza");
+    expect(kihonwaza.length).toBe(7);
+    expect(kihonwaza.every(k => k.jsaCategory === "Kihonwaza")).toBe(true);
     
-    const results = getKimariteByCategory("result");
-    expect(results.length).toBe(5); // isamiashi, koshikudake, etc.
+    const hiwaza = getKimariteByJsaCategory("Hiwaza");
+    expect(hiwaza.length).toBe(5); // isamiashi, koshikudake, etc.
   });
 
-  it("should filter by class", () => {
+  it("should filter by legacy class", () => {
     const forceOuts = getKimariteByClass("force_out");
     expect(forceOuts.some(k => k.id === "yorikiri")).toBe(true);
     expect(forceOuts.some(k => k.id === "oshidashi")).toBe(true);
   });
 
-  it("should filter by required stance", () => {
-    const beltMoves = getKimariteForStance("belt-dominant");
-    expect(beltMoves.some(k => k.id === "uwatenage")).toBe(true);
-    expect(beltMoves.some(k => k.id === "hatakikomi")).toBe(false); // hatakikomi is no-grip / slap_pull
+  it("should have correct stat weights for categories", () => {
+    const yorikiri = getKimarite("yorikiri");
+    // Kihonwaza defaults: strength: 0.4, weight: 0.4, speed: 0.1, technique: 0.1, balance: 0.0
+    expect(yorikiri?.statWeights.strength).toBe(0.4);
+    expect(yorikiri?.statWeights.weight).toBe(0.4);
+
+    const ketaguri = getKimarite("ketaguri");
+    // Kakeite defaults: strength: 0.1, weight: 0.0, speed: 0.5, technique: 0.4, balance: 0.0
+    expect(ketaguri?.statWeights.weight).toBe(0.0);
+    expect(ketaguri?.statWeights.speed).toBe(0.5);
   });
 
   it("should not contain any placeholder guards", () => {

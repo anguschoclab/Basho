@@ -1,6 +1,6 @@
-# Basho Constitution — Unified Canonical Megacontract v1.0 (Harmonized, Non‑Lossy)
-**Build date:** 2026-01-12  
-**Status:** HARMONIZED / NON‑LOSSY / IMPLEMENTATION‑GRADE  
+# Basho Constitution — Unified Canonical Megacontract v1.3 (Move-Based Refactor)
+**Build date:** 2026-03-24
+**Status:** HARMONIZED / MOVE-BASED / IMPLEMENTATION-GRADE  
 **Project name:** **Basho** (all legacy naming normalized to “Basho” throughout this edition)
 
 ---
