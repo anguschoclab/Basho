@@ -5,6 +5,7 @@ import { buildCombatProfile } from "../archetype";
 import { Rikishi } from "../types/rikishi";
 import { CombatAction } from "../types/combat";
 import { KIMARITE_ALL, Kimarite } from "../kimarite";
+import { projectRikishi } from "../../presenters/uiModels";
 
 describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
   const mockRikishi = (id: string, preferredGrip: 'migi' | 'hidari' | 'none'): Rikishi => ({
@@ -108,5 +109,33 @@ describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
 
     const canDoShitatenage = checkKimariteRequirements(shitatenage, east, west, st);
     expect(canDoShitatenage).toBe(true);
+  });
+
+  it("Historical Kimarite Test: Should derive favored move from history", () => {
+    const east = mockRikishi("east", "migi");
+    // Mock history: 5 wins with Yorikiri, 2 with Oshidashi
+    east.history = [
+      { win: true, kimarite: 'yorikiri', day: 1, bashoId: 'b1' },
+      { win: true, kimarite: 'yorikiri', day: 2, bashoId: 'b1' },
+      { win: true, kimarite: 'yorikiri', day: 3, bashoId: 'b1' },
+      { win: true, kimarite: 'yorikiri', day: 4, bashoId: 'b1' },
+      { win: true, kimarite: 'yorikiri', day: 5, bashoId: 'b1' },
+      { win: true, kimarite: 'oshidashi', day: 6, bashoId: 'b1' },
+      { win: true, kimarite: 'oshidashi', day: 7, bashoId: 'b1' },
+      { win: false, kimarite: 'hatakikomi', day: 8, bashoId: 'b1' }, // Loss
+    ] as any;
+
+    const ui = projectRikishi(east, { year: 2026, rikishi: new Map([[east.id, east]]), heyas: new Map() } as any);
+    
+    expect(ui.favoredKimarite[0]).toBe("yorikiri (5)");
+  });
+
+  it("Historical Kimarite Test (Rookie): Should handle 0 wins", () => {
+    const east = mockRikishi("east", "migi");
+    east.history = [];
+
+    const ui = projectRikishi(east, { year: 2026, rikishi: new Map([[east.id, east]]), heyas: new Map() } as any);
+    
+    expect(ui.favoredKimarite[0]).toBe("Unknown (Rookie)");
   });
 });

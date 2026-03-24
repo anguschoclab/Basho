@@ -7,6 +7,7 @@ import { Rikishi, RikishiStats } from "./rikishi";
 export type CombatArchetype = 'oshi' | 'yotsu' | 'trickster' | 'speedster' | 'hybrid' | 'giant';
 
 export type GripPreference = 'migi' | 'hidari' | 'none'; // Right-inside, Left-inside, or no preference
+export type GripDepthPreference = 'maemitsu' | 'deep' | 'standard'; // Front-belt, Deep-back, or Standard
 
 export interface CombatProfile {
   archetype: CombatArchetype;
@@ -18,6 +19,7 @@ export interface CombatProfile {
     speed: number;
   };
   preferredGrip: GripPreference;
+  preferredGripDepth: GripDepthPreference;
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
   statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height', number>>;
@@ -35,10 +37,11 @@ export const TACTICAL_MATRIX: Record<TacticalFamily, TacticalFamily[]> = {
 };
 
 export type HandPosition = 'inside' | 'outside' | 'blocked';
+export type GripDepth = 'maemitsu' | 'deep' | 'standard';
 
 export interface GrappleState {
-  east: { rightHand: HandPosition; leftHand: HandPosition; };
-  west: { rightHand: HandPosition; leftHand: HandPosition; };
+  east: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth; };
+  west: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth; };
   gripAdvantage: 'east_strong' | 'west_strong' | 'neutral' | 'moro_zashi_east' | 'moro_zashi_west';
 }
 

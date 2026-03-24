@@ -270,6 +270,8 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
     const grip = attacker.id === st.eastId ? st.grappleState.east : st.grappleState.west;
     if (req.requiredGrip.rightHand && grip.rightHand !== req.requiredGrip.rightHand) return false;
     if (req.requiredGrip.leftHand && grip.leftHand !== req.requiredGrip.leftHand) return false;
+    if (req.requiredGrip.anyHand && grip.rightHand !== req.requiredGrip.anyHand && grip.leftHand !== req.requiredGrip.anyHand) return false;
+    if (req.requiredGrip.depth && grip.depth !== req.requiredGrip.depth) return false;
   }
 
   return true;
@@ -425,6 +427,12 @@ export function calculateActionPower(r: Rikishi, action: CombatAction, opponent:
     } else if (st.grappleState.gripAdvantage === (r.id === st.eastId ? 'west_strong' : 'east_strong')) {
       power *= 0.85; // Awkward grip penalty
     }
+
+    // v1.6.1 Maemitsu Bonus
+    const depth = r.id === st.eastId ? st.grappleState.east.depth : st.grappleState.west.depth;
+    if (depth === 'maemitsu') {
+      power *= 1.15; // Pulling leverage bonus
+    }
   }
 
   return Math.max(1, power * weightLiability);
@@ -471,11 +479,13 @@ function establishSymmetricGrip(east: Rikishi, west: Rikishi, pref: 'migi' | 'hi
   return {
     east: { 
       rightHand: pref === 'migi' ? 'inside' : 'outside', 
-      leftHand: pref === 'migi' ? 'outside' : 'inside' 
+      leftHand: pref === 'migi' ? 'outside' : 'inside',
+      depth: east.combatProfile.preferredGripDepth
     },
     west: { 
       rightHand: pref === 'migi' ? 'inside' : 'outside', 
-      leftHand: pref === 'migi' ? 'outside' : 'inside' 
+      leftHand: pref === 'migi' ? 'outside' : 'inside',
+      depth: west.combatProfile.preferredGripDepth
     },
     gripAdvantage: 'neutral'
   };
@@ -492,11 +502,13 @@ function establishAsymmetricGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): 
     return {
       east: { 
         rightHand: pref === 'migi' ? 'inside' : 'outside', 
-        leftHand: pref === 'hidari' ? 'inside' : 'outside' 
+        leftHand: pref === 'hidari' ? 'inside' : 'outside',
+        depth: east.combatProfile.preferredGripDepth
       },
       west: { 
         rightHand: pref === 'migi' ? 'blocked' : 'outside', 
-        leftHand: pref === 'hidari' ? 'blocked' : 'outside' 
+        leftHand: pref === 'hidari' ? 'blocked' : 'outside',
+        depth: 'standard' 
       },
       gripAdvantage: 'east_strong'
     };
@@ -505,11 +517,13 @@ function establishAsymmetricGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): 
     return {
       east: { 
         rightHand: pref === 'migi' ? 'blocked' : 'outside', 
-        leftHand: pref === 'hidari' ? 'blocked' : 'outside' 
+        leftHand: pref === 'hidari' ? 'blocked' : 'outside',
+        depth: 'standard'
       },
       west: { 
         rightHand: pref === 'migi' ? 'inside' : 'outside', 
-        leftHand: pref === 'hidari' ? 'inside' : 'outside' 
+        leftHand: pref === 'hidari' ? 'inside' : 'outside',
+        depth: west.combatProfile.preferredGripDepth
       },
       gripAdvantage: 'west_strong'
     };
@@ -522,14 +536,14 @@ function establishMessyGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): Grapp
     // Rare Moro-zashi!
     const winner = rng.next() < 0.5 ? 'east' : 'west';
     return {
-      east: { rightHand: winner === 'east' ? 'inside' : 'blocked', leftHand: winner === 'east' ? 'inside' : 'blocked' },
-      west: { rightHand: winner === 'west' ? 'inside' : 'blocked', leftHand: winner === 'west' ? 'inside' : 'blocked' },
+      east: { rightHand: winner === 'east' ? 'inside' : 'blocked', leftHand: winner === 'east' ? 'inside' : 'blocked', depth: 'deep' },
+      west: { rightHand: winner === 'west' ? 'inside' : 'blocked', leftHand: winner === 'west' ? 'inside' : 'blocked', depth: 'deep' },
       gripAdvantage: winner === 'east' ? 'moro_zashi_east' : 'moro_zashi_west'
     };
   }
   return {
-    east: { rightHand: 'outside', leftHand: 'outside' },
-    west: { rightHand: 'outside', leftHand: 'outside' },
+    east: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
+    west: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
     gripAdvantage: 'neutral'
   };
 }
@@ -797,8 +811,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     westId: west.id,
     lastAdvantage: 'none',
     grappleState: {
-      east: { rightHand: 'outside', leftHand: 'outside' },
-      west: { rightHand: 'outside', leftHand: 'outside' },
+      east: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
+      west: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
       gripAdvantage: 'neutral'
     }
   };

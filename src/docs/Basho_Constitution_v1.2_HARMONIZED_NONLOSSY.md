@@ -22014,14 +22014,15 @@ Same inputs → same bout, forever.
 
 1. Ritual framing (non-mechanical)
 2. Tachiai impulse exchange
-3. Stance establishment
-4. Momentum band resolution
-5. Leverage & mass interaction
-6. Edge pressure resolution
-7. Counter eligibility check
-8. Kimarite selection
-9. Injury checks (per tick + terminal)
-10. Outcome commit & ledger write
+3. Grip Resolution (Kumi-te) [v1.6]
+4. Stance establishment
+5. Momentum band resolution
+6. Leverage & mass interaction
+7. Edge pressure resolution
+8. Counter eligibility check
+9. Kimarite selection
+10. Injury checks (per tick + terminal)
+11. Outcome commit & ledger write
 
 ---
 
@@ -22071,6 +22072,19 @@ Ring position is discrete:
 - Over
 
 Edge states gate finisher eligibility.
+
+### A3.5 Advanced Grip Physics (Kumi-te) [v1.6]
+Grip is the physical state of arm placement during a grapple:
+- **Ai-Yotsu**: Symmetric (e.g., Migi vs Migi). Both secure one inside hand.
+- **Kenka-Yotsu**: Asymmetric (e.g., Migi vs Hidari). Resolution favors technique/speed.
+- **Moro-zashi**: Double-inside grip. Massive advantage (+30% Strength).
+- **Awkward**: Deficit state (-15% overall power penalty).
+
+### A3.6 Grip Depth (Mitsu-ate) [v1.6]
+Grip depth dictates leverage and pulling power:
+- **Maemitsu**: Front-belt grip. Grants +15% pulling leverage bonus.
+- **Deep**: Back-belt grip. Favors weight and driving power (Yorikiri).
+- **Standard**: Default neutral depth.
 
 ---
 

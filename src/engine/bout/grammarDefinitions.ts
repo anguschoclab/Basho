@@ -71,6 +71,10 @@ export const GRIP_TEMPLATES = {
     "A classic kenka-yotsu battle. Neither man can secure their preferred grip.",
     "They are deadlocked fighting for the inside left hand."
   ],
+  maemitsu_secured: [
+    "[Attacker] drops their hips and grabs a tight maemitsu grip on the front of the belt!",
+    "Using their lower center of gravity, [Attacker] secures the front belt."
+  ],
   grip_secured: [
     "[Attacker] gets their favored [grip_preference] grip and locks it in.",
     "A fierce grip fight, but [Attacker] wins the inside position!"

@@ -91,6 +91,7 @@ export interface UIRikishi {
   personalityTraits: string[];
   favoredKimarite: string[];
   preferredGrip: string;
+  preferredGripDepth: string;
 }
 
 /** Defines the structure for u i rival entry. */
@@ -101,6 +102,31 @@ export interface UIRivalEntry {
   losses: number;
   record: string;
   totalBouts: number;
+}
+
+/**
+ * v1.6 Helper: Derive favorite move from historical wins.
+ */
+function calculateMostFrequentKimarite(rikishiId: string, history: any[]): string[] {
+  if (!history || history.length === 0) return ["Unknown (Rookie)"];
+
+  const winCounts: Record<string, number> = {};
+  let totalWins = 0;
+
+  for (const match of history) {
+    if (match.win && match.kimarite) {
+      winCounts[match.kimarite] = (winCounts[match.kimarite] || 0) + 1;
+      totalWins++;
+    }
+  }
+
+  if (totalWins === 0) return ["Unknown (Rookie)"];
+
+  const sorted = Object.entries(winCounts).sort((a, b) => b[1] - a[1]);
+  const [topKimarite, count] = sorted[0];
+  
+  // Return with count for UI flavor as requested
+  return [`${topKimarite} (${count})` || "Unknown"];
 }
 
 /**
@@ -193,8 +219,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
-    favoredKimarite: r.favoredKimarite ?? [],
+    favoredKimarite: calculateMostFrequentKimarite(r.id, r.history ?? []),
     preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
+    preferredGripDepth: r.combatProfile?.preferredGripDepth ?? 'standard',
   };
 }
 
