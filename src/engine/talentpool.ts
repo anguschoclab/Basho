@@ -9,10 +9,20 @@ import { clamp } from './utils';
 // - Supports domestic (high school / university) and foreign pools.
 
 import type { WorldState } from "./types/world";
-import type { TalentPoolWorldState, TalentPoolType, TalentPoolState, TalentCandidate, VisibilityBand, SuitorRef, SuitorInterestBand, SuitorOfferType } from "./types/talent";
+import type { 
+  TalentPoolWorldState, 
+  TalentPoolType, 
+  TalentPoolState, 
+  TalentCandidate, 
+  VisibilityBand, 
+  SuitorRef, 
+  SuitorInterestBand, 
+  SuitorOfferType 
+} from "./types/talent";
 import type { Rank } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
-import type { TacticalArchetype, Style } from "./types/combat";
+import type { CombatArchetype, Style, CombatProfile, TacticalArchetype } from "./types/combat";
+import type { RikishiStats } from "./types/rikishi";
 import type { OyakataTraits } from "./types/oyakata";
 import type { Id } from "./types/common";
 
@@ -21,7 +31,7 @@ import { generateRikishiName } from "./shikona";
 import { determineNPCStyleBias } from "./npcAI";
 import { scoreRecruitForOyakata, getOyakataStyleProfile } from "./oyakataStylePreferences";
 import { getOyakataForHeya, getHeya, getForeignCountInHeya as getForeignCountInHeyaQuery } from "./queries";
-import { deriveArchetype } from "./archetype";
+import { rollArchetype, buildCombatProfile } from "./archetype";
 
 const VERSION: TalentPoolWorldState["version"] = "1.0.0";
 
@@ -32,15 +42,7 @@ export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
 
 const POOL_TYPES: TalentPoolType[] = ["high_school", "university", "foreign"];
 
-const ARCHETYPES: TacticalArchetype[] = [
-  "oshi_specialist",
-  "yotsu_specialist",
-  "speedster",
-  "trickster",
-  "all_rounder",
-  "hybrid_oshi_yotsu",
-  "counter_specialist"
-];
+// ARCHETYPES removed; using CombatArchetype from types
 
 const DOMESTIC_REGIONS = ["Hokkaido", "Aomori", "Tokyo", "Osaka", "Fukuoka", "Nagano", "Aichi", "Saitama"];
 const FOREIGN_REGIONS = ["Mongolia", "Georgia", "Brazil", "Ukraine", "USA", "Bulgaria"];
@@ -159,8 +161,8 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
   const key = candidateKey(world, poolType, year, idx);
   const rng = rngFromSeed(world.seed, "talentpool", key);
 
-  const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
-  const style = styleFromArchetype(archetype);
+  const archetype = rollArchetype(rng);
+  const profile = buildCombatProfile(archetype);
 
   const isUni = poolType === "university";
   const isForeign = poolType === "foreign";
@@ -175,22 +177,22 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
   const nationality = isForeign ? originRegion : "Japan";
 
   const isAmateurStar = rng.bool(isUni ? 0.08 : 0.04);
-  const combatProfile: import("./types/combat").CombatProfile = {
-    proficiencies: { oshi: 30 + rng.next() * 60, yotsu: 30 + rng.next() * 60, technician: 30 + rng.next() * 60 },
-    preferredStyle: style === "oshi" ? "oshi" : style === "yotsu" ? "yotsu" : "technician",
-    specialties: archetype === "trickster" ? ["henka"] as import("./types/combat").TechnicalMove[] : [] as import("./types/combat").TechnicalMove[],
-    ringSense: 40 + rng.next() * 60,
-    aggressiveness: 50 + rng.next() * 50
-  };
+  const combatProfile: CombatProfile = profile;
 
   const qualityBoost = isAmateurStar ? 18 : isUni ? 8 : 0;
   const talentSeed = clamp(Math.round(35 + rng.next() * 45 + qualityBoost), 10, 100);
 
-  const heightPotentialCm = clamp(Math.round(170 + rng.next() * 18 + (isForeign ? 3 : 0)), 160, 205);
-  const weightPotentialKg = clamp(Math.round(105 + rng.next() * 70 + (isForeign ? 10 : 0)), 85, 220);
+  // Use Gaussian for physicals potential
+  const baseHeightMean = 180 + (isForeign ? 3 : 0);
+  const baseWeightMean = 150 + (isForeign ? 10 : 0);
+  const weightMod = profile.statModifiers.weight ?? 1.0;
+  const heightMod = profile.statModifiers.height ?? 1.0;
+
+  const heightPotentialCm = Math.round(rng.gaussian(baseHeightMean * heightMod, 8));
+  const weightPotentialKg = Math.round(rng.gaussian(baseWeightMean * weightMod, 20));
 
   const discipline = clamp(Math.round(30 + rng.next() * 60 + (isUni ? 8 : 0)), 0, 100);
-  const volatility = clamp(Math.round(20 + rng.next() * 70 + (archetype === "trickster" ? 10 : 0)), 0, 100);
+  const volatility = clamp(Math.round(20 + rng.next() * 70 + (archetype === 'trickster' ? 10 : 0)), 0, 100);
 
   const tags: string[] = [];
   if (discipline >= 75) tags.push("disciplined");
@@ -222,7 +224,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
     availabilityState: "available",
     competingSuitors: [],
     archetype,
-    style,
+    style: profile.familyPreferences.push > profile.familyPreferences.belt ? 'oshi' : profile.familyPreferences.belt > profile.familyPreferences.push ? 'yotsu' : 'hybrid',
     heightPotentialCm,
     weightPotentialKg,
     talentSeed,
@@ -317,7 +319,7 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
     tags: ["former_pro"],
     availabilityState: "available",
     competingSuitors: [],
-    archetype: rikishi.archetype || "oshi_specialist",
+    archetype: rikishi.archetype || 'oshi',
     style: rikishi.style || "oshi",
     heightPotentialCm: rikishi.height,
     weightPotentialKg: rikishi.weight,
@@ -326,13 +328,7 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
       discipline: 50,
       volatility: 50
     },
-    combatProfile: rikishi.combatProfile || {
-      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
-      preferredStyle: rikishi.style === "oshi" ? "oshi" : rikishi.style === "yotsu" ? "yotsu" : "technician",
-      specialties: [],
-      ringSense: 50,
-      aggressiveness: 50
-    }
+    combatProfile: rikishi.combatProfile || buildCombatProfile(rikishi.archetype || 'oshi')
   };
 
   tp.candidates[candidateId] = candidate;
@@ -597,16 +593,23 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
   const base = clamp(Math.round(18 + candidate.talentSeed * 0.55 + (isUni ? 10 : 0)), 10, 95);
   const variance = () => (rng.next() * 14) - 7;
 
-  const strength = clamp(Math.round(base + variance()), 10, 100);
-  const technique = clamp(Math.round(base + variance() + (candidate.style === "yotsu" ? 6 : 0)), 10, 100);
-  const speed = clamp(Math.round(base + variance() + (candidate.style === "oshi" ? 4 : 0)), 10, 100);
-  const stamina = clamp(Math.round(base + variance() + 3), 10, 100);
-  const mental = clamp(Math.round(base + variance() + (candidate.temperament.discipline - 50) * 0.15), 10, 100);
-  const adaptability = clamp(Math.round(base + variance()), 10, 100);
-  const balance = clamp(Math.round(base + variance()), 10, 100);
+  const mods = candidate.combatProfile.statModifiers || {};
+  const stdDev = 6;
+  const _genStat = (key: keyof RikishiStats | 'weight' | 'height', defaultVal?: number) => {
+    const mean = (defaultVal ?? base) * (mods[key] ?? 1.0);
+    return Math.min(100, Math.max(10, Math.round(rng.gaussian(mean, stdDev))));
+  };
 
-  const weight = clamp(Math.round(candidate.weightPotentialKg * (0.78 + rng.next() * 0.14)), 90, 250);
-  const height = clamp(Math.round(candidate.heightPotentialCm * (0.96 + rng.next() * 0.06)), 160, 210);
+  const strength = _genStat('strength');
+  const technique = _genStat('technique');
+  const speed = _genStat('speed');
+  const stamina = _genStat('stamina');
+  const mental = _genStat('mental');
+  const adaptability = _genStat('adaptability');
+  const balance = _genStat('balance');
+
+  const weight = clamp(Math.round(candidate.weightPotentialKg * (0.85 + rng.next() * 0.1)), 80, 250);
+  const height = clamp(Math.round(candidate.heightPotentialCm * (0.98 + rng.next() * 0.04)), 160, 210);
 
   const shikona = candidate.name || generateRikishiName(`${world.seed}::talentpool::fallback_name::${candidate.candidateId}`);
 
@@ -648,8 +651,8 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     stamina: stats.stamina,
     style: candidate.style,
     archetype: candidate.archetype,
-    derivedArchetype: deriveArchetype(stats, { height, weight }, candidate.style, candidate.archetype, rng),
-    tacticalArchetypePrimary: deriveArchetype(stats, { height, weight }, candidate.style, candidate.archetype, rng),
+    derivedArchetype: candidate.archetype,
+    tacticalArchetypePrimary: candidate.archetype,
     tacticalArchetypeSecondary: undefined, // Initial recruits start with single archetype
     archetypeEvidence: [],
     combatProfile: candidate.combatProfile,
@@ -881,7 +884,7 @@ function scoreCandidateForHeya(world: WorldState, heyaId: Id, c: TalentCandidate
   }
   if (arch === "strategist") {
     if (c.style === "hybrid") score += 5;
-    if (c.archetype === "all_rounder" || c.archetype === "hybrid_oshi_yotsu") score += 6;
+    if (c.archetype === "hybrid") score += 6;
   }
 
   // Soft penalty for very low-visibility recruits unless patient

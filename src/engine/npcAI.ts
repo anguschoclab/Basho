@@ -447,8 +447,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       if (!rikishi) continue;
 
       const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
-      const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype) || 
-                               (rikishi.derivedArchetype && styleProfile.preferredDerivedArchetypes.includes(rikishi.derivedArchetype));
+      const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype);
 
       // Style purists and traditionalists push wrestlers that match, develop the rest less
       if (matchesArchetype && matchesStyle) {

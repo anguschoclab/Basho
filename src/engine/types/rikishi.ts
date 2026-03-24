@@ -3,7 +3,7 @@
  */
 
 import type { Id } from "./common";
-import type { Style, TacticalArchetype, KimariteId, CombatProfile, BoutTactic, RikishiArchetype } from "./combat";
+import type { Style, CombatArchetype, KimariteId, CombatProfile, BoutTactic } from "./combat";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
@@ -71,13 +71,11 @@ export interface Rikishi {
   trainingFocus?: string;
   combatProfile: CombatProfile;
   
-  /** @deprecated use tacticalArchetypePrimary */
-  archetype: TacticalArchetype;
-  /** @deprecated use tacticalArchetypePrimary */
-  derivedArchetype: RikishiArchetype;
+  archetype: CombatArchetype;
+  derivedArchetype: CombatArchetype;
 
-  tacticalArchetypePrimary: RikishiArchetype;
-  tacticalArchetypeSecondary?: RikishiArchetype;
+  tacticalArchetypePrimary: CombatArchetype;
+  tacticalArchetypeSecondary?: CombatArchetype;
   archetypeEvidence: ArchetypeEvidence[];
 
   division: Division;

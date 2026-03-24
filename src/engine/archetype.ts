@@ -1,89 +1,69 @@
 import { RikishiStats } from "./types/rikishi";
-import { RikishiArchetype, Style, TacticalArchetype } from "./types/combat";
+import { CombatArchetype, CombatProfile } from "./types/combat";
 import { SeededRNG } from "./rng";
 
-/**
- * Mapping of Tactical Archetypes (Combat Philosophy) to possible descriptive labels (RikishiArchetype).
- */
-const LABEL_MAPPING: Record<TacticalArchetype, { label: RikishiArchetype; weight: number }[]> = {
-  oshi_specialist: [
-    { label: "Explosive_Blitzer", weight: 0.7 },
-    { label: "All_Rounder", weight: 0.2 },
-    { label: "Immovable_Mountain", weight: 0.1 }
-  ],
-  yotsu_specialist: [
-    { label: "Defensive_Stalwart", weight: 0.6 },
-    { label: "Immovable_Mountain", weight: 0.3 },
-    { label: "All_Rounder", weight: 0.1 }
-  ],
-  speedster: [
-    { label: "Explosive_Blitzer", weight: 0.5 },
-    { label: "Acrobatic_Trickster", weight: 0.4 },
-    { label: "All_Rounder", weight: 0.1 }
-  ],
-  trickster: [
-    { label: "Acrobatic_Trickster", weight: 0.8 },
-    { label: "Defensive_Stalwart", weight: 0.1 },
-    { label: "All_Rounder", weight: 0.1 }
-  ],
-  all_rounder: [
-    { label: "All_Rounder", weight: 1.0 }
-  ],
-  hybrid_oshi_yotsu: [
-    { label: "All_Rounder", weight: 0.6 },
-    { label: "Explosive_Blitzer", weight: 0.2 },
-    { label: "Defensive_Stalwart", weight: 0.2 }
-  ],
-  counter_specialist: [
-    { label: "Defensive_Stalwart", weight: 0.7 },
-    { label: "Acrobatic_Trickster", weight: 0.2 },
-    { label: "All_Rounder", weight: 0.1 }
-  ]
+export const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, 'archetype'>> = {
+  trickster: {
+    familyPreferences: { push: 10, belt: 15, trick: 55, speed: 20 },
+    statModifiers: { technique: 1.2, speed: 1.1, weight: 0.9, strength: 0.85 }
+  },
+  oshi: {
+    familyPreferences: { push: 75, belt: 10, trick: 5, speed: 10 },
+    statModifiers: { strength: 1.1, speed: 1.1, technique: 0.8 }
+  },
+  yotsu: {
+    familyPreferences: { push: 15, belt: 75, trick: 5, speed: 5 },
+    statModifiers: { strength: 1.15, weight: 1.1, speed: 0.85 }
+  },
+  speedster: {
+    familyPreferences: { push: 10, belt: 5, trick: 15, speed: 70 },
+    statModifiers: { speed: 1.25, technique: 1.1, weight: 0.85, strength: 0.8 }
+  },
+  giant: {
+    familyPreferences: { push: 40, belt: 50, trick: 5, speed: 5 },
+    statModifiers: { weight: 1.3, strength: 1.2, speed: 0.7, balance: 0.9 }
+  },
+  hybrid: {
+    familyPreferences: { push: 40, belt: 40, trick: 10, speed: 10 },
+    statModifiers: { strength: 1.05, technique: 1.05, weight: 1.05 }
+  }
 };
 
 /**
- * @param stats - Raw rikishi stats (strength, technique, etc.)
- * @param physicals - Height (cm) and Weight (kg)
- * @param style - Base combat style (oshi, yotsu, hybrid)
- * @param tacticalArch - Innate Tactical Archetype (Philosophy)
- * @param rng - Optional RNG for deterministic generation
- * @returns {RikishiArchetype} The descriptive archetype label
+ * Randomly assign an archetype based on a global distribution.
  */
-export function deriveArchetype(
-  stats: RikishiStats,
-  physicals: { height: number; weight: number },
-  style: Style,
-  tacticalArch?: TacticalArchetype,
-  rng?: SeededRNG
-): RikishiArchetype {
-  // If we have a tacticalArch and RNG, use weighted random selection
-  if (tacticalArch && rng) {
-    const options = LABEL_MAPPING[tacticalArch];
-    const roll = rng.next();
-    let cumulative = 0;
-    for (const opt of options) {
-      cumulative += opt.weight;
-      if (roll < cumulative) return opt.label;
-    }
-    return options[0].label;
-  }
+export function rollArchetype(rng: SeededRNG): CombatArchetype {
+  const roll = rng.next();
+  if (roll < 0.35) return 'oshi';
+  if (roll < 0.70) return 'yotsu';
+  if (roll < 0.80) return 'trickster';
+  if (roll < 0.90) return 'speedster';
+  if (roll < 0.95) return 'giant';
+  return 'hybrid';
+}
 
-  // Fallback to legacy logic if missing critical info (for backward compatibility)
-  const { strength, technique, speed, mental, balance } = stats;
-  const { weight } = physicals;
+/**
+ * Build a full CombatProfile for a given archetype.
+ */
+export function buildCombatProfile(archetype: CombatArchetype): CombatProfile {
+  return {
+    archetype,
+    ...ARCHETYPE_DEFINITIONS[archetype]
+  };
+}
 
-  if (speed >= 70 && mental >= 70 && style === "oshi") {
-    return "Explosive_Blitzer";
+/**
+ * Legacy support for label generation.
+ * Maps the new archetypes to the old descriptive labels for UI consistency if needed.
+ */
+export function getArchetypeLabel(archetype: CombatArchetype): string {
+  switch (archetype) {
+    case 'oshi': return "Explosive_Blitzer";
+    case 'yotsu': return "Defensive_Stalwart";
+    case 'trickster': return "Acrobatic_Trickster";
+    case 'giant': return "Immovable_Mountain";
+    case 'speedster': return "Explosive_Blitzer"; // Or a new label
+    case 'hybrid': return "All_Rounder";
+    default: return "All_Rounder";
   }
-  if (weight >= 160 && balance >= 65 && strength >= 60) {
-    return "Immovable_Mountain";
-  }
-  if (technique >= 65 && balance >= 70 && style === "yotsu") {
-    return "Defensive_Stalwart";
-  }
-  if (speed >= 75 && technique >= 70 && weight < 130) {
-    return "Acrobatic_Trickster";
-  }
-
-  return "All_Rounder";
 }

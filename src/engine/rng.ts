@@ -53,6 +53,15 @@ export class SeededRNG {
     }
     return arr;
   }
+
+  /** Returns a normally distributed value with mean and standard deviation */
+  gaussian(mean: number, stdDev: number): number {
+    let u = 0, v = 0;
+    while (u === 0) u = this.next();
+    while (v === 0) v = this.next();
+    const num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    return num * stdDev + mean;
+  }
 }
 
 export function rngFromSeed(seed: string, subsystem: string, label: string): SeededRNG {

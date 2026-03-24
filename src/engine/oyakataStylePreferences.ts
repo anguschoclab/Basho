@@ -3,7 +3,7 @@
 
 import type { WorldState } from "./types/world";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
-import type { TacticalArchetype, Style, RikishiArchetype } from "./types/combat";
+import type { CombatArchetype, Style, CombatProfile } from "./types/combat";
 import type { Id } from "./types/common";
 import { rngForWorld } from "./rng";
 
@@ -18,10 +18,9 @@ export type RecruitmentPhilosophy =
   | "underdog_hunter";  // Seeks hidden gems and overlooked talent
 
 /** Defines the structure for oyakata style profile. */
-interface OyakataStyleProfile {
+export interface OyakataStyleProfile {
   philosophy: RecruitmentPhilosophy;
-  preferredArchetypes: TacticalArchetype[];
-  preferredDerivedArchetypes: RikishiArchetype[];
+  preferredArchetypes: CombatArchetype[];
   preferredStyle: Style | "any";
   /** Weight bias for recruit stats. Higher = more important */
   statWeights: {
@@ -41,13 +40,12 @@ const PHILOSOPHY_BY_ARCHETYPE: Record<OyakataArchetype, RecruitmentPhilosophy[]>
   nurturer: ["balanced", "underdog_hunter"],
   tyrant: ["size_matters", "style_purist"],
   strategist: ["meta_chaser", "balanced", "innovator"],
+  strict: ["style_purist", "traditionalist"],
+  indulgent: ["balanced", "underdog_hunter"]
 };
 
 /**
  * Get oyakata style profile.
- *  * @param world - The World.
- *  * @param oyakata - The Oyakata.
- *  * @returns The result.
  */
 export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): OyakataStyleProfile {
   const rng = rngForWorld(world, "oyakataStyle", oyakata.id);
@@ -59,15 +57,10 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
   // Determine preferences based on philosophy
   switch (philosophy) {
     case "style_purist": {
-      const styleBias = oyakata.traits.tradition >= 60 ? "yotsu" : "oshi";
+      const styleBias = (oyakata.traits?.tradition ?? 50) >= 60 ? "yotsu" : "oshi";
       return {
         philosophy,
-        preferredArchetypes: styleBias === "yotsu" 
-          ? ["yotsu_specialist", "counter_specialist"]
-          : ["oshi_specialist", "hybrid_oshi_yotsu"],
-        preferredDerivedArchetypes: styleBias === "yotsu" 
-          ? ["Defensive_Stalwart", "Immovable_Mountain"]
-          : ["Explosive_Blitzer"],
+        preferredArchetypes: styleBias === "yotsu" ? ["yotsu"] : ["oshi"],
         preferredStyle: styleBias as Style,
         statWeights: { power: 0.7, speed: 0.4, technique: 0.9, size: 0.5, potential: 0.6 },
         description: `Exclusively recruits ${styleBias} wrestlers. Refuses to train other styles.`,
@@ -78,16 +71,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
       const metaStyle = meta?.metaBias === "oshi" ? "oshi" : meta?.metaBias === "yotsu" ? "yotsu" : "hybrid";
       return {
         philosophy,
-        preferredArchetypes: metaStyle === "oshi" 
-          ? ["oshi_specialist", "speedster"]
-          : metaStyle === "yotsu"
-            ? ["yotsu_specialist", "counter_specialist"]
-            : ["all_rounder", "hybrid_oshi_yotsu"],
-        preferredDerivedArchetypes: metaStyle === "oshi" 
-          ? ["Explosive_Blitzer"]
-          : metaStyle === "yotsu"
-            ? ["Defensive_Stalwart"]
-            : ["All_Rounder"],
+        preferredArchetypes: metaStyle === "oshi" ? ["oshi", "speedster"] : metaStyle === "yotsu" ? ["yotsu"] : ["hybrid"],
         preferredStyle: metaStyle as Style,
         statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.8 },
         description: `Adapts recruitment to the current dominant style. Currently favoring ${metaStyle}.`,
@@ -96,8 +80,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     case "traditionalist":
       return {
         philosophy,
-        preferredArchetypes: ["yotsu_specialist", "counter_specialist", "all_rounder"],
-        preferredDerivedArchetypes: ["Defensive_Stalwart", "Immovable_Mountain", "All_Rounder"],
+        preferredArchetypes: ["yotsu", "hybrid"],
         preferredStyle: "yotsu",
         statWeights: { power: 0.8, speed: 0.3, technique: 0.7, size: 0.8, potential: 0.5 },
         description: "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
@@ -105,8 +88,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     case "innovator":
       return {
         philosophy,
-        preferredArchetypes: ["speedster", "trickster", "counter_specialist"],
-        preferredDerivedArchetypes: ["Acrobatic_Trickster"],
+        preferredArchetypes: ["speedster", "trickster"],
         preferredStyle: "any",
         statWeights: { power: 0.3, speed: 0.9, technique: 0.8, size: 0.2, potential: 0.9 },
         description: "Seeks unconventional wrestlers who can outthink and outmaneuver opponents.",
@@ -114,8 +96,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     case "size_matters":
       return {
         philosophy,
-        preferredArchetypes: ["oshi_specialist", "all_rounder", "hybrid_oshi_yotsu"],
-        preferredDerivedArchetypes: ["Immovable_Mountain", "Explosive_Blitzer"],
+        preferredArchetypes: ["oshi", "hybrid", "giant"],
         preferredStyle: "oshi",
         statWeights: { power: 0.9, speed: 0.2, technique: 0.4, size: 1.0, potential: 0.5 },
         description: "Recruits the biggest, heaviest prospects. Believes mass wins matches.",
@@ -123,8 +104,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     case "underdog_hunter":
       return {
         philosophy,
-        preferredArchetypes: ["trickster", "speedster", "counter_specialist"],
-        preferredDerivedArchetypes: ["Acrobatic_Trickster", "All_Rounder"],
+        preferredArchetypes: ["trickster", "speedster"],
         preferredStyle: "any",
         statWeights: { power: 0.4, speed: 0.5, technique: 0.5, size: 0.3, potential: 1.0 },
         description: "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
@@ -133,8 +113,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     default:
       return {
         philosophy: "balanced",
-        preferredArchetypes: ["all_rounder", "hybrid_oshi_yotsu"],
-        preferredDerivedArchetypes: ["All_Rounder"],
+        preferredArchetypes: ["hybrid"],
         preferredStyle: "any",
         statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.7 },
         description: "No strong recruitment bias. Evaluates each prospect on individual merit.",
@@ -147,39 +126,38 @@ export function scoreRecruitForOyakata(
   world: WorldState,
   oyakata: Oyakata,
   candidate: { 
-    archetype: TacticalArchetype; 
-    derivedArchetype?: RikishiArchetype;
+    archetype: CombatArchetype; 
     style: Style; 
     talentSeed: number; 
     weightPotentialKg: number; 
-    combatProfile?: import("./types/combat").CombatProfile 
+    combatProfile?: CombatProfile 
   }
 ): number {
   const profile = getOyakataStyleProfile(world, oyakata);
   let score = 50;
 
   // Archetype match bonus
-  if (profile.preferredArchetypes.includes(candidate.archetype)) score += 15;
-  if (candidate.derivedArchetype && profile.preferredDerivedArchetypes.includes(candidate.derivedArchetype)) score += 20;
+  if (profile.preferredArchetypes.includes(candidate.archetype)) score += 25;
 
   // Style match
   if (profile.preferredStyle !== "any" && candidate.style === profile.preferredStyle) score += 15;
   if (profile.preferredStyle !== "any" && candidate.style !== profile.preferredStyle) score -= 10;
 
   // Stat weights
-  score += candidate.talentSeed * profile.statWeights.potential * 0.2;
+  score += (candidate.talentSeed || 50) * profile.statWeights.potential * 0.2;
   score += (candidate.weightPotentialKg > 130 ? 10 : 0) * profile.statWeights.size;
 
   // Meta Shift: Combat Profile preferences
   if (candidate.combatProfile) {
+    const fam = candidate.combatProfile.familyPreferences;
     if (profile.philosophy === "innovator") {
-       score += candidate.combatProfile.proficiencies.technician * 0.15;
-       score += candidate.combatProfile.ringSense * 0.1;
+       score += (fam.trick || 0) * 0.15;
+       score += (fam.speed || 0) * 0.1;
     } else if (profile.philosophy === "traditionalist" || profile.philosophy === "size_matters") {
-       score += candidate.combatProfile.proficiencies.yotsu * 0.15;
+       score += (fam.belt || 0) * 0.15;
     } else if (profile.philosophy === "style_purist") {
-       if (profile.preferredStyle === "oshi") score += candidate.combatProfile.proficiencies.oshi * 0.15;
-       else if (profile.preferredStyle === "yotsu") score += candidate.combatProfile.proficiencies.yotsu * 0.15;
+       if (profile.preferredStyle === "oshi") score += (fam.push || 0) * 0.15;
+       else if (profile.preferredStyle === "yotsu") score += (fam.belt || 0) * 0.15;
     }
   }
 

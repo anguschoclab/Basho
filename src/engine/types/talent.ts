@@ -3,7 +3,7 @@
  */
 
 import type { Id } from "./common";
-import type { TacticalArchetype, Style, CombatProfile } from "./combat";
+import type { CombatArchetype, Style, CombatProfile } from "./combat";
 
 /** Type representing talent pool type. */
 export type TalentPoolType = "high_school" | "university" | "foreign";
@@ -47,7 +47,7 @@ export interface TalentCandidate {
   availabilityState: CandidateAvailabilityState;
   competingSuitors: SuitorRef[];
 
-  archetype: TacticalArchetype;
+  archetype: CombatArchetype;
   style: Style;
   heightPotentialCm: number;
   weightPotentialKg: number;

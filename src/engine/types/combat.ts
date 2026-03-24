@@ -1,17 +1,23 @@
+import { RikishiStats } from "./rikishi";
+
 /**
  * Combat / Style Types
  */
 
-export type CombatArchetype = "oshi" | "yotsu" | "technician";
-
-export type TechnicalMove = "henka" | "ashitori" | "none";
+export type CombatArchetype = 'oshi' | 'yotsu' | 'trickster' | 'speedster' | 'hybrid' | 'giant';
 
 export interface CombatProfile {
-  proficiencies: Record<CombatArchetype, number>;
-  preferredStyle: CombatArchetype;
-  specialties: TechnicalMove[];
-  ringSense: number;
-  aggressiveness: number;
+  archetype: CombatArchetype;
+  // The % chance the AI will select a specific family during the Engagement Phase
+  familyPreferences: {
+    push: number;
+    belt: number;
+    trick: number;
+    speed: number;
+  };
+  // Base stat generation modifiers (mean offsets applied during creation)
+  // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
+  statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height', number>>;
 }
 
 // Define the base tactical families

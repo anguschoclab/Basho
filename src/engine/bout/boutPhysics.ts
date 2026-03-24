@@ -20,8 +20,7 @@ import {
   TacticalFamily, 
   TACTICAL_MATRIX, 
   CombatAction, 
-  ARCHETYPE_PROFILES,
-  ActionPreference 
+  CombatProfile 
 } from "../types/combat";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
@@ -274,10 +273,16 @@ function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rik
  * AI Action Selection Logic
  */
 function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
-  const profile = ARCHETYPE_PROFILES[r.archetype];
-  const prefs = { ...profile.actionPreferences };
+  const prefs = { ...r.combatProfile.familyPreferences };
   
-  // v1.3 Mental AI Logic: Avoid weight deficits
+  // v1.3.1 Dynamic Tactical Shifts
+  // 1. Trickster Edge Case: If in a belt state, prioritize belt moves for survival
+  if (r.archetype === 'trickster' && st.stance.includes('yotsu')) {
+    prefs.belt *= 3.0;
+    prefs.trick *= 0.5;
+  }
+
+  // 2. Mental AI Logic: Avoid weight deficits
   const mental = stat(r, 'mental');
   const weightDiff = (opponent.weight || 150) - (r.weight || 150);
   
@@ -289,16 +294,16 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
     prefs.speed *= 1.5;
   }
 
-  // 1. Pick a Tactical Family based on weighted preferences
+  // 3. Normalized weighted selection
   const roll = rng.next();
   let cumulative = 0;
   let family: TacticalFamily = 'push';
   
-  const totalWeight = Object.values(prefs).reduce((a, b) => (a as number) + (b as number), 0) as number;
+  const totalWeight = Object.values(prefs).reduce((a, b) => a + b, 0);
   const normalizedRoll = roll * totalWeight;
 
   for (const [fam, weight] of Object.entries(prefs)) {
-    cumulative += weight as number;
+    cumulative += weight;
     if (normalizedRoll < cumulative) {
       family = fam as TacticalFamily;
       break;

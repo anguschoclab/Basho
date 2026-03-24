@@ -22,7 +22,7 @@ import { BashoName, BashoState } from "./types/basho";
 import { generateRikishiName } from "./shikona";
 import { generateStaff } from "./staff";
 import { Staff } from "./types/staff";
-import { deriveArchetype } from "./archetype";
+import { rollArchetype, buildCombatProfile } from "./archetype";
 import { ensureTalentPools } from "./talentpool";
 import { generateSponsorPool, createKoenkai, type SponsorPool } from "./sponsors";
 import { type IchimonName, type Faction } from "./types/economy";
@@ -37,10 +37,7 @@ const ORIGINS = [
   "Mongolia", "Georgia", "Brazil", "Nihon University", "Nippon Sport Science Univ"
 ];
 
-const ARCHETYPES: TacticalArchetype[] = [
-  "oshi_specialist", "yotsu_specialist", "speedster", 
-  "trickster", "all_rounder", "hybrid_oshi_yotsu", "counter_specialist"
-];
+// ARCHETYPES removed; now using CombatArchetype from types
 
 const OYAKATA_ARCHETYPES: OyakataArchetype[] = [
   "traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"
@@ -139,39 +136,42 @@ function generateSyntheticCareer(
  *  * @param archetype - The Archetype.
  *  * @returns The result.
  */
-function generateRikishiStats(rng: SeededRNG, rank: Rank, archetype: TacticalArchetype): RikishiStats {
-  const base = rank === "yokozuna" ? 85 :
-               rank === "ozeki" ? 75 :
-               rank === "sekiwake" || rank === "komusubi" ? 65 :
-               rank === "maegashira" ? 55 : 40;
+/**
+ * Generate rikishi stats using Gaussian distribution and archetype modifiers.
+ */
+function generateRikishiStats(rng: SeededRNG, rank: Rank, profile: CombatProfile): RikishiStats {
+  const baseMean = rank === "yokozuna" ? 85 :
+                   rank === "ozeki" ? 75 :
+                   rank === "sekiwake" || rank === "komusubi" ? 65 :
+                   rank === "maegashira" ? 55 : 40;
   
-  const variance = () => (rng.next() * 20) - 10;
+  const mods = profile.statModifiers;
+  const stdDev = 8; // Standard deviation for the bell curve
 
-  // Multipliers based on archetype
-  let strMod = 1, techMod = 1, spdMod = 1, wgtMod = 1, menMod = 1;
+  const _genStat = (key: keyof RikishiStats | 'weight' | 'height', defaultVal?: number) => {
+    const mean = (defaultVal ?? baseMean) * (mods[key] ?? 1.0);
+    return Math.min(100, Math.max(10, Math.round(rng.gaussian(mean, stdDev))));
+  };
 
-  switch (archetype) {
-    case "oshi_specialist": strMod = 1.3; spdMod = 1.1; techMod = 0.8; break;
-    case "yotsu_specialist": strMod = 1.2; techMod = 1.2; spdMod = 0.9; break;
-    case "speedster": spdMod = 1.4; wgtMod = 0.8; strMod = 0.9; break;
-    case "trickster": techMod = 1.4; strMod = 0.8; menMod = 1.2; break;
-    case "all_rounder": break; // Balanced
-    case "hybrid_oshi_yotsu": strMod = 1.1; techMod = 1.1; break;
-    case "counter_specialist": menMod = 1.3; techMod = 1.2; strMod = 0.9; break;
-  }
+  // Physicals Mean Baselines
+  const baseWeightMean = 150;
+  const baseHeightMean = 180;
 
-  const _clamp = (val: number) => Math.min(100, Math.max(10, Math.round(val)));
+  const weight = Math.max(80, Math.round(rng.gaussian(baseWeightMean * (mods.weight ?? 1.0), 20)));
+  const height = Math.max(160, Math.round(rng.gaussian(baseHeightMean * (mods.height ?? 1.0), 8)));
 
   return {
-    strength: _clamp((base + variance()) * strMod),
-    technique: _clamp((base + variance()) * techMod),
-    speed: _clamp((base + variance()) * spdMod),
-    weight: Math.round(Math.min(250, Math.max(90, (140 + variance() * 2) * wgtMod))),
-    stamina: _clamp(base + variance()),
-    mental: _clamp((base + variance()) * menMod),
-    adaptability: _clamp((base + variance()) * (techMod > 1 ? 1.1 : 1.0)),
-    balance: _clamp(base + variance()),
-  };
+    strength: _genStat('strength'),
+    technique: _genStat('technique'),
+    speed: _genStat('speed'),
+    stamina: _genStat('stamina'),
+    mental: _genStat('mental'),
+    adaptability: _genStat('adaptability'),
+    balance: _genStat('balance'),
+    // We'll return height and weight as well since they are generated here now
+    weight,
+    height
+  } as any; // Cast because we added height/weight to the return but RikishiStats might not have them
 }
 
 /**
@@ -409,30 +409,18 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     const rrng = rngFromSeed(actualSeed, "worldgen", `rikishi::${rid}`);
     
     const heya = getRandom(rrng, heyaList);
-    const archetype = getRandom(rrng, ARCHETYPES);
+    const archetype = rollArchetype(rrng);
+    const profile = buildCombatProfile(archetype);
     const origin = getRandom(rrng, ORIGINS);
     const birthYear = currentYear - (20 + rrng.int(0, 11));
     
-    const stats = generateRikishiStats(rrng, slot.rank, archetype);
-    const height = 170 + rrng.next() * 25;
-    const weight = stats.weight;
+    // Stats now includes height/weight
+    const gen = generateRikishiStats(rrng, slot.rank, profile);
+    const stats = gen;
+    const height = gen.height;
+    const weight = gen.weight;
 
-    const style = archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid";
-    const derived = deriveArchetype(stats, { height, weight }, style, archetype, rrng);
-
-    const combatProfile = {
-      proficiencies: {
-        oshi: archetype.includes("oshi") ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40,
-        yotsu: archetype.includes("yotsu") ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40,
-        technician: archetype === "trickster" || archetype === "speedster" ? 80 + rrng.next() * 20 : 30 + rrng.next() * 40
-      },
-      preferredStyle: style === "hybrid" ? "oshi" : style,
-      specialties: archetype === "trickster" ? ["henka"] : [],
-      ringSense: 40 + rrng.next() * 60,
-      aggressiveness: stats.mental
-    };
-
-    if (combatProfile.preferredStyle === "hybrid") combatProfile.preferredStyle = archetype.includes("technician") || archetype === "trickster" ? "technician" : "oshi";
+    const combatProfile = profile;
 
     const newRikishi: Rikishi = {
       id: rid,
@@ -473,12 +461,12 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       motivation: 50 + rrng.next() * 50,
       talentSeed: Math.round(25 + rrng.next() * 65),
       
-      style: style,
+      style: profile.familyPreferences.push > profile.familyPreferences.belt ? 'oshi' : profile.familyPreferences.belt > profile.familyPreferences.push ? 'yotsu' : 'hybrid',
       combatProfile,
       archetype: archetype,
-      derivedArchetype: derived,
-      tacticalArchetypePrimary: derived,
-      tacticalArchetypeSecondary: (slot.rank === "yokozuna" || slot.rank === "ozeki") ? "All_Rounder" : undefined,
+      derivedArchetype: archetype, // No more separate derived archetype logic
+      tacticalArchetypePrimary: archetype,
+      tacticalArchetypeSecondary: (slot.rank === "yokozuna" || slot.rank === "ozeki") ? "hybrid" : undefined,
       archetypeEvidence: [],
       
       division: slot.division,
