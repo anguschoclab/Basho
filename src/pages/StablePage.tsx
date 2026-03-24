@@ -27,9 +27,9 @@ import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, Stature
 import type { Rikishi } from "@/engine/types/rikishi";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import {
-  INTENSITY_EFFECTS,
-  FOCUS_EFFECTS,
-  RECOVERY_EFFECTS,
+  INTENSITY_MULTIPLIERS as INTENSITY_EFFECTS,
+  FOCUS_BIAS_MATRIX as FOCUS_EFFECTS,
+  RECOVERY_MULTIPLIERS as RECOVERY_EFFECTS,
   getIntensityLabel,
   getFocusLabel,
   getRecoveryLabel,

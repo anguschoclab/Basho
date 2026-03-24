@@ -290,7 +290,9 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                   >
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : e.id)}
-                      className="w-full text-left"
+                      className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
+                      aria-expanded={isExpanded}
+                      aria-controls={`event-details-${e.id}`}
                     >
                       <div className="flex items-start gap-2">
                         <div className={`mt-0.5 shrink-0 ${meta.color}`}>
@@ -316,7 +318,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                     </button>
 
                     {isExpanded && (
-                      <div className="mt-1 ml-6 space-y-1.5">
+                      <div id={`event-details-${e.id}`} className="mt-1 ml-6 space-y-1.5">
                         <p className="text-[11px] text-muted-foreground">
                           {e.summary}
                         </p>

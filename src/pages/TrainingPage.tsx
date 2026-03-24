@@ -14,9 +14,9 @@ import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { IndividualFocusType } from "@/engine/types/training";
 import {
-  INTENSITY_EFFECTS,
-  FOCUS_EFFECTS,
-  RECOVERY_EFFECTS,
+  INTENSITY_MULTIPLIERS as INTENSITY_EFFECTS,
+  FOCUS_BIAS_MATRIX as FOCUS_EFFECTS,
+  RECOVERY_MULTIPLIERS as RECOVERY_EFFECTS,
   getIntensityLabel,
   getFocusLabel,
   getRecoveryLabel,
