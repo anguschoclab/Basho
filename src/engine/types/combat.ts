@@ -1,4 +1,4 @@
-import { RikishiStats } from "./rikishi";
+import { Rikishi, RikishiStats } from "./rikishi";
 
 /**
  * Combat / Style Types
@@ -193,4 +193,28 @@ export interface TacticalResult {
   cpuTactic: BoutTactic;
   advantage: "PLAYER" | "CPU" | "NEUTRAL";
   winProbabilityShift: number;
+}
+
+export interface NarrativeContext {
+  // Contextual tags for text decorators
+  attackerFatigueLevel: 'fresh' | 'gasping' | 'exhausted';
+  defenderBalanceLevel: 'planted' | 'wobbling' | 'critical';
+  isEdgeOfRing: boolean;
+  
+  // Memory flags
+  isRepeatedAction: boolean; // e.g., "He tries the thrust AGAIN!"
+  isReversal: boolean; // Power differential flipped from last tick
+  
+  // Stakes
+  isRivalry: boolean;
+  isChampionshipBout: boolean;
+}
+
+export interface TickResolutionEvent {
+  tickNumber: number;
+  attacker: Rikishi;
+  defender: Rikishi;
+  action: CombatAction;
+  powerDifferential: number;
+  context: NarrativeContext; // The new payload
 }

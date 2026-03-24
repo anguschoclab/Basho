@@ -11,17 +11,11 @@ import { rngFromSeed, SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "../types/basho";
 import type { Side } from "../types/banzuke";
-import type { Stance, TacticalArchetype, RikishiArchetype } from "../types/combat";
+import { Stance, TacticalArchetype, RikishiArchetype, TacticalFamily, TACTICAL_MATRIX, CombatAction, CombatProfile, NarrativeContext, TickResolutionEvent } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../banzuke";
 import { KIMARITE_ALL, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
 import { resolveTacticalClash, determineCPUTactic } from "../h2h";
-import { 
-  TacticalFamily, 
-  TACTICAL_MATRIX, 
-  CombatAction, 
-  CombatProfile 
-} from "../types/combat";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
 export type Position = "front" | "lateral" | "rear";
@@ -97,6 +91,10 @@ export interface EngineState {
   cpuTacticOverride?: import("../types/combat").BoutTactic;
   eastId: string;
   westId: string;
+  // Memory for narrative
+  lastActionFamilyEast?: TacticalFamily;
+  lastActionFamilyWest?: TacticalFamily;
+  lastAdvantage?: Advantage;
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -572,7 +570,41 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
     return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass, westAction.family, westAction.moveId) };
   }
 
-  // 8. Log State Update
+  // 8. Construct Narrative Context
+  const sideWithAdvantage = eastPower > westPower ? 'east' : (westPower > eastPower ? 'west' : 'none');
+  const attacker = sideWithAdvantage === 'west' ? west : east;
+  const defender = sideWithAdvantage === 'west' ? east : west;
+  const attackerAction = sideWithAdvantage === 'west' ? westAction : eastAction;
+  
+  const attackerFatigue = sideWithAdvantage === 'west' ? st.fatigueWest : st.fatigueEast;
+  const defenderBalance = sideWithAdvantage === 'west' ? st.balanceEast : st.balanceWest;
+  const attackerLastFamily = sideWithAdvantage === 'west' ? st.lastActionFamilyWest : st.lastActionFamilyEast;
+
+  const narrativeContext: NarrativeContext = {
+    attackerFatigueLevel: attackerFatigue > 60 ? 'exhausted' : attackerFatigue > 30 ? 'gasping' : 'fresh',
+    defenderBalanceLevel: defenderBalance < 20 ? 'critical' : defenderBalance < 50 ? 'wobbling' : 'planted',
+    isEdgeOfRing: defenderBalance < 25 || st.advantage !== 'none',
+    isRepeatedAction: attackerAction.family === attackerLastFamily,
+    isReversal: st.lastAdvantage !== 'none' && st.lastAdvantage !== sideWithAdvantage,
+    isRivalry: false, // Could be determined if we had rivalry data
+    isChampionshipBout: false
+  };
+
+  const tickResolutionEvent: TickResolutionEvent = {
+    tickNumber: st.tick,
+    attacker,
+    defender,
+    action: attackerAction,
+    powerDifferential: Math.abs(eastPower - westPower),
+    context: narrativeContext
+  };
+
+  // 9. Update Memory
+  st.lastActionFamilyEast = eastAction.family;
+  st.lastActionFamilyWest = westAction.family;
+  st.lastAdvantage = sideWithAdvantage;
+
+  // 10. Log State Update
   st.log.push({
     phase: "engagement",
     data: {
@@ -584,7 +616,8 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
       balanceEast: Math.max(0, Math.round(st.balanceEast)),
       balanceWest: Math.max(0, Math.round(st.balanceWest)),
       advantage: st.advantage,
-      time: st.timeSeconds
+      time: st.timeSeconds,
+      tickResolutionEvent // Inject the new payload
     }
   });
 }
@@ -621,7 +654,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     mizuiriDeclared: false,
     playerSide: bout.playerSide,
     eastId: east.id,
-    westId: west.id
+    westId: west.id,
+    lastAdvantage: 'none'
   };
 
   // 1. Tachiai Phase

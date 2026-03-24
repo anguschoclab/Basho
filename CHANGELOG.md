@@ -1,7 +1,22 @@
 # Changelog - Basho: Sumo Stable Manager
-<!-- GitHub sync verified: 2026-03-21 -->
+<!-- GitHub sync verified: 2026-03-24 -->
 
 This changelog outlines the systems, concepts, and features brought over and modernized from the legacy `Sumo` repository into the new `sumo-manager-pro` simulation engine.
+
+## [v1.4.0] - 2026-03-24 Dynamic Narrative Engine
+
+### Added
+- **Context-Aware Grammar Synthesizer:** Replaced static PBP lookup tables with a tokenized grammar system (`grammarDefinitions.ts`).
+- **Narrative Context Payload:** Physics engine now emits `NarrativeContext` including fatigue levels, balance states, and positioning tags.
+- **Short-Term Bout Memory:** The engine now tracks repeated actions and tactical reversals to generate reactive commentary (e.g., "He tries the thrust AGAIN!").
+- **Dynamic Token Resolution:** Implemented regex-based token replacement for archetypal adverbs, verbs, and conditional decorators.
+
+### Changed
+- **Bout Narrative Refactor:** `boutNarrative.ts` now uses the new synthesizer for engagement ticks.
+- **Diversity Testing:** Updated `pbpDiversity.test.ts` to verify vocabulary randomness and context-sensitivity.
+
+### Removed
+- **Obsolete PBP Matrix:** Deleted `pbp_voice_matrix.json` and its loader `pbpMatrix.ts`.
 
 ## [v1.1.0] - 2025 Tick Orchestrator Refactor & Initial Port
 

@@ -15,7 +15,6 @@
 // - narrativeDescriptions.ts remains for static bands; pbp.ts is for dynamic commentary.
 // =======================================================
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import { getVoiceMatrix } from "./pbpMatrix";
 import type { Side } from "./types/banzuke";
 import type { Stance, Style, TacticalArchetype } from "./types/combat";
 import type { Advantage, Position } from "./bout/boutPhysics";
@@ -1039,11 +1038,7 @@ export function buildPbp(
 ): PbpLine[] {
   // Use voice matrix as default library (lazy-loaded singleton)
   if (!lib) {
-    try {
-      lib = getVoiceMatrix();
-    } catch {
-      lib = DEFAULT_PBP_LIBRARY;
-    }
+    lib = DEFAULT_PBP_LIBRARY;
   }
   const ordered = [...facts].sort((a, b) => {
     if (a.phase !== b.phase) return phaseOrder(a.phase) - phaseOrder(b.phase);
