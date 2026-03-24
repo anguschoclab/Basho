@@ -160,6 +160,7 @@ export function scorePairing(args: {
   b: Rikishi;
   rules?: Partial<MatchmakingRules>;
   allowRepeatOverride?: boolean;
+  facedPairs?: Set<string>;
 }): MatchPairing | null {
   const rules = { ...DEFAULT_MATCHMAKING_RULES, ...(args.rules ?? {}) };
   const { basho, a, b } = args;
@@ -169,7 +170,14 @@ export function scorePairing(args: {
   // Hard: no same-heya (if configured)
   if (rules.avoidSameHeya && a.heyaId && b.heyaId && a.heyaId === b.heyaId) return null;
 
-  const faced = haveFacedThisBasho(basho, a.id, b.id);
+  let faced = false;
+  if (args.facedPairs) {
+    const key = a.id < b.id ? `${a.id}-${b.id}` : `${b.id}-${a.id}`;
+    faced = args.facedPairs.has(key);
+  } else {
+    faced = haveFacedThisBasho(basho, a.id, b.id);
+  }
+
   if (rules.avoidRepeatOpponents && faced && !args.allowRepeatOverride) return null;
 
   const reasons: string[] = [];
@@ -283,13 +291,22 @@ export function buildCandidatePairs(
 
   const out: MatchPairing[] = [];
 
+  // Precompute O(1) lookup set for O(N^2) loop to avoid O(N^2 * M) explosion
+  const facedPairs = new Set<string>();
+  for (const m of basho.matches) {
+    const key = m.eastRikishiId < m.westRikishiId
+      ? `${m.eastRikishiId}-${m.westRikishiId}`
+      : `${m.westRikishiId}-${m.eastRikishiId}`;
+    facedPairs.add(key);
+  }
+
   // O(n^2) candidate build; divisions are limited in size (<= ~70 typically).
   for (let i = 0; i < pool.length; i++) {
     for (let j = i + 1; j < pool.length; j++) {
       const a = pool[i];
       const b = pool[j];
 
-      const pairing = scorePairing({ basho, a, b, rules });
+      const pairing = scorePairing({ basho, a, b, rules, facedPairs });
       if (pairing) {
         // Add tiny deterministic jitter for stable tie-breaks, without changing relative magnitudes much
         const jitter = (rng.next() - 0.5) * 0.0001;
