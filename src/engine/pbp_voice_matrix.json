@@ -5012,6 +5012,50 @@
           "id": "inst_GOVERNANCE_STATUS_CHANGED_strategist_5",
           "text": "The JSA updates the governance status. The Oyakata reacts with a sharp plan!"
         }
+      ],
+      "strict": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_0",
+          "text": "The JSA issues a formal decree: the stable's governance status has been officially revised."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_1",
+          "text": "An urgent dispatch from the council confirms a strict alteration in governance status."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_2",
+          "text": "In an uncompromising mandate, the compliance committee updates the governance status."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_3",
+          "text": "The Oyakata sternly accepts the board's decision to modify their institutional standing."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_strict_4",
+          "text": "Following an internal review, the stable's governance status is publicly updated with no room for error."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_0",
+          "text": "The JSA issues a gentle notice: the heya's governance status has been revised."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_1",
+          "text": "A dispatch from the council confirms a lenient alteration in governance status."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_2",
+          "text": "The compliance committee mandates a new, more flexible governance status."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_3",
+          "text": "The stablemaster warmly accepts the board's decision to modify their institutional standing."
+        },
+        {
+          "id": "inst_GOVERNANCE_STATUS_CHANGED_indulgent_4",
+          "text": "Following an internal review, the heya's governance status is updated, easing previous restrictions."
+        }
       ]
     },
     "GOVERNANCE_RULING": {
@@ -5208,6 +5252,50 @@
           "id": "inst_GOVERNANCE_RULING_strategist_5",
           "text": "A new governance ruling has been handed down. The Oyakata reacts with a sharp plan!"
         }
+      ],
+      "strict": [
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_0",
+          "text": "A severe penalty is handed down by the JSA compliance committee."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_1",
+          "text": "The governance board strictly reprimands the stablemaster for recent infractions."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_2",
+          "text": "An official ruling imposes strict disciplinary actions on the heya."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_3",
+          "text": "The stable faces harsh consequences following the latest compliance review."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_strict_4",
+          "text": "The Oyakata is formally sanctioned by the governing body without exception."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_0",
+          "text": "A mild warning is issued by the JSA compliance committee."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_1",
+          "text": "The governance board gently reminds the stablemaster of their responsibilities."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_2",
+          "text": "An official ruling imposes minor disciplinary actions on the heya."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_3",
+          "text": "The stable receives a light penalty following the latest compliance review."
+        },
+        {
+          "id": "inst_GOVERNANCE_RULING_indulgent_4",
+          "text": "The Oyakata is formally cautioned by the governing body, with a focus on future improvement."
+        }
       ]
     },
     "WELFARE_ALERT": {
@@ -5403,6 +5491,50 @@
         {
           "id": "inst_WELFARE_ALERT_strategist_5",
           "text": "A welfare alert has been triggered. The Oyakata reacts with a sharp plan!"
+        }
+      ],
+      "strict": [
+        {
+          "id": "inst_WELFARE_ALERT_strict_0",
+          "text": "Medical staff report an alarming drop in overall rikishi condition, demanding immediate intervention."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_1",
+          "text": "The stable's rigorous training regimen has pushed the fighters to the brink, triggering a formal welfare alert."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_2",
+          "text": "A stern warning is issued regarding the deteriorating physical health of the stable's members."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_3",
+          "text": "Welfare monitors strictly flag the heya for excessive fatigue and injury rates."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_strict_4",
+          "text": "The Oyakata is ordered to address the severe physical toll on the stable immediately."
+        }
+      ],
+      "indulgent": [
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_0",
+          "text": "Medical staff express gentle concern over a dip in overall rikishi condition."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_1",
+          "text": "The stable's recent efforts have left the fighters fatigued, prompting a mild welfare alert."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_2",
+          "text": "A friendly recommendation is given to monitor the physical health of the stable's members."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_3",
+          "text": "Welfare monitors suggest the heya take more time for rest and recovery."
+        },
+        {
+          "id": "inst_WELFARE_ALERT_indulgent_4",
+          "text": "The Oyakata is encouraged to ease up slightly to improve the stable's overall wellbeing."
         }
       ]
     }

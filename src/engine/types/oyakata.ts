@@ -12,7 +12,9 @@ export type OyakataArchetype =
   | "gambler"
   | "nurturer"
   | "tyrant"
-  | "strategist";
+  | "strategist"
+  | "strict"
+  | "indulgent";
 
 /** Defines the structure for oyakata traits. */
 export interface OyakataTraits {

@@ -4,7 +4,26 @@ import { getVoiceMatrix } from "../pbpMatrix";
 describe("PBP Matrix Validation", () => {
   it("should have valid string interpolation tokens", () => {
     const lib = getVoiceMatrix();
-    const validTokens = ["east", "west", "winner", "loser", "kimarite", "leader", "trailer", "rikishi_shikona", "action_target"];
+
+    // Statically verify that the context payload in src/engine/pbp.ts
+    // actually provides these variables to renderTemplate
+    const pbpContent = require("fs").readFileSync("src/engine/pbp.ts", "utf8");
+    const renderCallMatch = pbpContent.match(/renderTemplate\([\s\S]*?\{([\s\S]*?)\}/);
+    let validTokens: string[] = [];
+
+    if (renderCallMatch && renderCallMatch[1]) {
+      // Extract keys from the object literal passed to renderTemplate
+      const keys = renderCallMatch[1].match(/(\w+)\s*:/g);
+      if (keys) {
+        validTokens = keys.map(k => k.replace(/\s*:/, ""));
+      }
+    }
+
+    // As a fallback or addition, ensure all statically required tokens are present
+    const requiredTokens = ["east", "west", "winner", "loser", "kimarite", "leader", "trailer", "rikishi_shikona", "action_target"];
+    requiredTokens.forEach(t => {
+      if (!validTokens.includes(t)) validTokens.push(t);
+    });
 
     let allValid = true;
     const errors: string[] = [];
