@@ -25,7 +25,7 @@ import type { Advantage, Position } from "./bout/boutPhysics";
  *  Fact Layer Types
  *  ========================= */
 
-export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "injury" | "institutional";
+export type BoutPhase = "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "injury" | "institutional" | "engagement";
 
 /** Type representing pbp tag. */
 export type PbpTag =
@@ -106,6 +106,9 @@ interface TachiaiFact extends PbpFactBase {
   /** observed stance at impact (optional) */
   stance?: Stance;
   trick?: string;
+  eastAction?: any;
+  westAction?: any;
+  margin?: number;
 }
 
 /** Defines the structure for clinch fact. */
@@ -126,6 +129,15 @@ interface MomentumFact extends PbpFactBase {
   position?: Position;
 }
 
+interface EngagementFact extends PbpFactBase {
+  phase: "engagement";
+  eastAction: any;
+  westAction: any;
+  eastPower: number;
+  westPower: number;
+  advantage: Advantage;
+}
+
 /** Defines the structure for finish fact. */
 interface FinishFact extends PbpFactBase {
   phase: "finish";
@@ -133,6 +145,7 @@ interface FinishFact extends PbpFactBase {
   /** finishing kimarite id/name if known */
   kimariteId?: string;
   kimariteName?: string;
+  kimariteClass?: string;
   upset?: boolean;
   /** close call / mono-ii vibes */
   closeCall?: boolean;
@@ -163,7 +176,7 @@ interface InstitutionalFact extends PbpFactBase {
 }
 
 /** Type representing pbp fact. */
-type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact;
+type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact | EngagementFact;
 
 /** Defines the structure for pbp context. */
 export interface PbpContext {
@@ -982,6 +995,29 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "x_2", text: "And then—", weight: 1 },
       { id: "x_3", text: "Still moving…", weight: 1 }
     ]
+  },
+  
+  engagement: {
+    push_v_push: [
+      { id: "eng_pp_1", text: "A fierce exchange of thrusts! Both men refuse to back down." },
+      { id: "eng_pp_2", text: "Tsuppari against tsuppari! The air is filled with the sound of impacts." }
+    ],
+    belt_v_belt: [
+      { id: "eng_bb_1", text: "Locked on the belt! A test of strength and leverage." },
+      { id: "eng_bb_2", text: "Neither will let go of the mawashi — a classic wrestling stalemate." }
+    ],
+    push_v_belt: [
+      { id: "eng_pb_1", text: "{leader} tries to push, but {trailer} is anchored to the belt!" },
+      { id: "eng_pb_2", text: "{leader} blasts away at the chest while {trailer} hunts for a better grip." }
+    ],
+    speed_v_power: [
+      { id: "eng_sp_1", text: "{leader} dances around the slower {trailer}, looking for an opening." },
+      { id: "eng_sp_2", text: "Agility vs. Brute force! {leader} is making {trailer} work for every inch." }
+    ],
+    generic: [
+      { id: "eng_gen_1", text: "{leader} continues the assault, keeping {trailer} under pressure." },
+      { id: "eng_gen_2", text: "The battle rages in the center of the dohyo!" }
+    ]
   }
 };
 
@@ -1095,6 +1131,28 @@ export function buildPbpFromBoutResult(
           leader: side,
           tacticalResult: entry.data.tacticalResult as import("./types/combat").TacticalResult
         } as TacticalFact);
+      } else if (entry.phase === "tachiai") {
+        facts.push({
+          phase: "tachiai",
+          beat: 0,
+          tachiaiWinner: entry.data.winner as Side,
+          tachiaiQuality: (entry.data.margin ?? 0) / 100,
+          eastAction: entry.data.eastAction,
+          westAction: entry.data.westAction,
+          margin: entry.data.margin,
+          leader: entry.data.winner as Side
+        });
+      } else if (entry.phase === "engagement") {
+        facts.push({
+          phase: "engagement",
+          beat: ++momentumBeat,
+          eastAction: entry.data.eastAction,
+          westAction: entry.data.westAction,
+          eastPower: entry.data.eastPower,
+          westPower: entry.data.westPower,
+          advantage: entry.data.advantage as Advantage,
+          leader: entry.data.advantage as Advantage
+        });
       } else if (entry.phase === "clinch") {
         const advantage = normalizeAdvantage(entry.data?.advantage);
         facts.push({
@@ -1124,21 +1182,31 @@ export function buildPbpFromBoutResult(
           position: normalizePosition(entry.data?.position),
           leader: advantage
         });
+      } else if (entry.phase === "finish") {
+        facts.push({
+          phase: "finish",
+          beat: 100, // end
+          winner: entry.data.winner as Side,
+          kimariteClass: entry.data.kimariteClass,
+          leader: entry.data.winner as Side
+        });
       }
     }
   }
 
-  // Finish
-  facts.push({
-    phase: "finish",
-    beat: 0,
-    winner: result.winner,
-    kimariteId: result.kimarite,
-    kimariteName: result.kimariteName,
-    upset: !!result.upset,
-    closeCall: false,
-    leader: result.winner // leader = winner at the end
-  });
+  // Final Finish entry (if not already added or to ensure it matches result)
+  if (!facts.find(f => f.phase === "finish")) {
+    facts.push({
+      phase: "finish",
+      beat: 1000,
+      winner: result.winner,
+      kimariteId: result.kimarite,
+      kimariteName: result.kimariteName,
+      upset: !!result.upset,
+      closeCall: false,
+      leader: result.winner
+    });
+  }
 
   return buildPbp(facts, ctx, lib);
 }
@@ -1316,6 +1384,22 @@ function selectPhraseForFact(
       const chosen = weightedPick(bucket, rng);
       return { phrase: chosen, tags: mergeTags(chosen.tags) };
     }
+
+    case "engagement": {
+      const eng = fact as EngagementFact;
+      const eastFam = eng.eastAction?.tacticalFamily;
+      const westFam = eng.westAction?.tacticalFamily;
+      
+      let bucket = lib.engagement?.generic || lib.momentum.steady_drive;
+      
+      if (eastFam === 'push' && westFam === 'push') bucket = lib.engagement?.push_v_push || bucket;
+      else if (eastFam === 'belt' && westFam === 'belt') bucket = lib.engagement?.belt_v_belt || bucket;
+      else if ((eastFam === 'push' && westFam === 'belt') || (eastFam === 'belt' && westFam === 'push')) bucket = lib.engagement?.push_v_belt || bucket;
+      else if (eastFam === 'speed' || westFam === 'speed') bucket = lib.engagement?.speed_v_power || bucket;
+
+      const chosen = weightedPick(bucket, rng);
+      return { phrase: chosen, tags: mergeTags(chosen.tags) };
+    }
   }
 }
 
@@ -1329,12 +1413,12 @@ function phaseOrder(p: BoutPhase): number {
       return -1;
     case "tachiai":
       return 0;
-    case "clinch":
-      return 1;
-    case "momentum":
+    case "engagement":
       return 2;
-    case "finish":
+    case "momentum":
       return 3;
+    case "finish":
+      return 4;
   }
 }
 

@@ -418,7 +418,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     const weight = stats.weight;
 
     const style = archetype.includes("oshi") ? "oshi" : archetype.includes("yotsu") ? "yotsu" : "hybrid";
-    const derived = deriveArchetype(stats, { height, weight }, style);
+    const derived = deriveArchetype(stats, { height, weight }, style, archetype, rrng);
 
     const combatProfile = {
       proficiencies: {

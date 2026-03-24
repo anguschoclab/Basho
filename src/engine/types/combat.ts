@@ -14,6 +14,33 @@ export interface CombatProfile {
   aggressiveness: number;
 }
 
+// Define the base tactical families
+export type TacticalFamily = 'push' | 'belt' | 'trick' | 'speed';
+
+// Matrix: Define what counters what
+export const TACTICAL_MATRIX: Record<TacticalFamily, TacticalFamily[]> = {
+  'push': ['belt'],     // Pusher keeps grappler away
+  'belt': ['trick', 'speed'], // Grappler crushes tricks once grabbed
+  'trick': ['push'],    // Trickster uses pusher's momentum against them
+  'speed': ['push', 'belt']   // Speedster flanks slow heavy fighters
+};
+
+export interface CombatAction {
+  family: TacticalFamily;
+  intent: 'attack' | 'defend' | 'counter' | 'reposition';
+  targetKimariteClass?: KimariteClass; // The move they are attempting
+  statWeighting: {
+    // Defines which stats matter for THIS specific move (0.0 to 1.0)
+    strength: number;
+    weight: number;
+    technique: number;
+    speed: number;
+    balance: number;
+  };
+}
+
+export type ActionPreference = Record<TacticalFamily, number>;
+
 export type Style = "oshi" | "yotsu" | "hybrid";
 
 /** Type representing stance. */
@@ -49,7 +76,7 @@ type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERS
 export type KimariteId = string;
 
 /** Type representing kimarite class. */
-type KimariteClass =
+export type KimariteClass =
   | "force_out"
   | "push"
   | "thrust"
@@ -65,7 +92,7 @@ type KimariteClass =
   | "forfeit";
 
 /** a r c h e t y p e_ p r o f i l e s. */
-const ARCHETYPE_PROFILES: Record<
+export const ARCHETYPE_PROFILES: Record<
   TacticalArchetype,
   {
     tachiaiBonus: number;
@@ -75,6 +102,7 @@ const ARCHETYPE_PROFILES: Record<
     counterBonus: number;
     baseRisk: number;
     familyBias: Record<KimariteFamily, number>;
+    actionPreferences: ActionPreference;
   }
 > = {
   oshi_specialist: {
@@ -84,7 +112,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.2,
     counterBonus: 0,
     baseRisk: 0.6,
-    familyBias: { OSHI: 1.45, YOTSU: 0.85, THROW: 0.9, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 0.9, SPECIAL: 0.75 }
+    familyBias: { OSHI: 1.45, YOTSU: 0.85, THROW: 0.9, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 0.9, SPECIAL: 0.75 },
+    actionPreferences: { push: 0.85, belt: 0.05, trick: 0.05, speed: 0.05 }
   },
   yotsu_specialist: {
     tachiaiBonus: -3,
@@ -93,7 +122,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.15,
     counterBonus: 5,
     baseRisk: 0.45,
-    familyBias: { OSHI: 0.85, YOTSU: 1.4, THROW: 1.35, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 1.05, SPECIAL: 0.8 }
+    familyBias: { OSHI: 0.85, YOTSU: 1.4, THROW: 1.35, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 1.05, SPECIAL: 0.8 },
+    actionPreferences: { belt: 0.80, push: 0.10, trick: 0.05, speed: 0.05 }
   },
   speedster: {
     tachiaiBonus: 5,
@@ -102,7 +132,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.5,
     counterBonus: 8,
     baseRisk: 0.55,
-    familyBias: { OSHI: 0.95, YOTSU: 0.9, THROW: 0.95, TRIP: 1.45, PULLDOWN: 1.0, REVERSAL: 1.1, SPECIAL: 0.9 }
+    familyBias: { OSHI: 0.95, YOTSU: 0.9, THROW: 0.95, TRIP: 1.45, PULLDOWN: 1.0, REVERSAL: 1.1, SPECIAL: 0.9 },
+    actionPreferences: { speed: 0.70, push: 0.10, trick: 0.15, belt: 0.05 }
   },
   trickster: {
     tachiaiBonus: 0,
@@ -111,7 +142,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.6,
     counterBonus: 12,
     baseRisk: 0.65,
-    familyBias: { OSHI: 0.9, YOTSU: 0.85, THROW: 0.9, TRIP: 1.05, PULLDOWN: 1.45, REVERSAL: 1.25, SPECIAL: 1.1 }
+    familyBias: { OSHI: 0.9, YOTSU: 0.85, THROW: 0.9, TRIP: 1.05, PULLDOWN: 1.45, REVERSAL: 1.25, SPECIAL: 1.1 },
+    actionPreferences: { trick: 0.60, speed: 0.40, push: 0.0, belt: 0.0 }
   },
   all_rounder: {
     tachiaiBonus: 2,
@@ -120,7 +152,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.25,
     counterBonus: 3,
     baseRisk: 0.5,
-    familyBias: { OSHI: 1.0, YOTSU: 1.0, THROW: 1.0, TRIP: 1.0, PULLDOWN: 1.0, REVERSAL: 1.0, SPECIAL: 1.0 }
+    familyBias: { OSHI: 1.0, YOTSU: 1.0, THROW: 1.0, TRIP: 1.0, PULLDOWN: 1.0, REVERSAL: 1.0, SPECIAL: 1.0 },
+    actionPreferences: { push: 0.25, belt: 0.25, trick: 0.25, speed: 0.25 }
   },
   hybrid_oshi_yotsu: {
     tachiaiBonus: 3,
@@ -129,7 +162,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.3,
     counterBonus: 5,
     baseRisk: 0.52,
-    familyBias: { OSHI: 1.2, YOTSU: 1.2, THROW: 1.1, TRIP: 0.95, PULLDOWN: 0.85, REVERSAL: 1.05, SPECIAL: 0.9 }
+    familyBias: { OSHI: 1.2, YOTSU: 1.2, THROW: 1.1, TRIP: 0.95, PULLDOWN: 0.85, REVERSAL: 1.05, SPECIAL: 0.9 },
+    actionPreferences: { push: 0.45, belt: 0.45, trick: 0.05, speed: 0.05 }
   },
   counter_specialist: {
     tachiaiBonus: -2,
@@ -138,7 +172,8 @@ const ARCHETYPE_PROFILES: Record<
     volatility: 0.35,
     counterBonus: 15,
     baseRisk: 0.48,
-    familyBias: { OSHI: 0.9, YOTSU: 1.0, THROW: 1.1, TRIP: 1.1, PULLDOWN: 0.9, REVERSAL: 1.5, SPECIAL: 1.05 }
+    familyBias: { OSHI: 0.9, YOTSU: 1.0, THROW: 1.1, TRIP: 1.1, PULLDOWN: 0.9, REVERSAL: 1.5, SPECIAL: 1.05 },
+    actionPreferences: { trick: 0.40, belt: 0.30, push: 0.20, speed: 0.10 }
   }
 };
 

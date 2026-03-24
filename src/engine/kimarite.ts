@@ -2,7 +2,7 @@
 // Includes 5 "bout result" outcomes separately (not kimarite)
 // Source list: Japan Sumo Association kimarite page.  [oai_citation:1‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
 
-import type { Style, Stance, TacticalArchetype } from "./types/combat";
+import type { Style, Stance, TacticalArchetype, TacticalFamily } from "./types/combat";
 import { stableTieBreak } from "./utils/sort";
 
 /** Defines the structure for kimarite. */
@@ -12,6 +12,7 @@ export interface Kimarite {
   nameJa?: string;  // kanji/kana
   category: KimariteCategory;
   kimariteClass: KimariteClass;
+  tacticalFamily: TacticalFamily;
   description?: string;
 
   styleAffinity: {
@@ -69,6 +70,7 @@ type Base = {
   nameJa?: string;
   category: KimariteCategory;
   kimariteClass: KimariteClass;
+  tacticalFamily?: TacticalFamily;
   description?: string;
   styleAffinity?: Kimarite["styleAffinity"];
   archetypeBonus?: Kimarite["archetypeBonus"];
@@ -91,30 +93,30 @@ const DEFAULT_ARCH_BONUS = (): Kimarite["archetypeBonus"] => ({
  *  * @param category - The Category.
  *  * @returns The result.
  */
-function defaultsForCategory(category: KimariteCategory): Pick<Kimarite, "styleAffinity" | "baseWeight" | "rarity" | "gripNeed" | "vector" | "requiredStances"> {
+function defaultsForCategory(category: KimariteCategory): Pick<Kimarite, "styleAffinity" | "baseWeight" | "rarity" | "gripNeed" | "vector" | "requiredStances" | "tacticalFamily"> {
   switch (category) {
     case "push":
-      return { styleAffinity: SA(9, 2, 5), baseWeight: 7, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
+      return { tacticalFamily: "push", styleAffinity: SA(9, 2, 5), baseWeight: 7, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
     case "thrust":
-      return { styleAffinity: SA(9, 2, 5), baseWeight: 4, rarity: "uncommon", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
+      return { tacticalFamily: "push", styleAffinity: SA(9, 2, 5), baseWeight: 4, rarity: "uncommon", gripNeed: "none", vector: "frontal", requiredStances: ["push-dominant", "no-grip"] };
     case "throw":
-      return { styleAffinity: SA(2, 9, 6), baseWeight: 3, rarity: "uncommon", gripNeed: "belt", vector: "lateral", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] };
+      return { tacticalFamily: "belt", styleAffinity: SA(2, 9, 6), baseWeight: 3, rarity: "uncommon", gripNeed: "belt", vector: "lateral", requiredStances: ["belt-dominant", "migi-yotsu", "hidari-yotsu"] };
     case "twist":
-      return { styleAffinity: SA(3, 8, 6), baseWeight: 2, rarity: "rare", gripNeed: "arm", vector: "lateral", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
+      return { tacticalFamily: "belt", styleAffinity: SA(3, 8, 6), baseWeight: 2, rarity: "rare", gripNeed: "arm", vector: "lateral", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
     case "trip":
-      return { styleAffinity: SA(4, 7, 6), baseWeight: 2, rarity: "rare", gripNeed: "any", vector: "lateral", requiredStances: ["no-grip", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
+      return { tacticalFamily: "speed", styleAffinity: SA(4, 7, 6), baseWeight: 2, rarity: "rare", gripNeed: "any", vector: "lateral", requiredStances: ["no-grip", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
     case "pull":
-      return { styleAffinity: SA(7, 4, 8), baseWeight: 5, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["no-grip", "push-dominant"] };
+      return { tacticalFamily: "trick", styleAffinity: SA(7, 4, 8), baseWeight: 5, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: ["no-grip", "push-dominant"] };
     case "lift":
-      return { styleAffinity: SA(1, 9, 4), baseWeight: 1, rarity: "legendary", gripNeed: "belt", vector: "frontal", requiredStances: ["belt-dominant"] };
+      return { tacticalFamily: "push", styleAffinity: SA(1, 9, 4), baseWeight: 1, rarity: "legendary", gripNeed: "belt", vector: "frontal", requiredStances: ["belt-dominant"] };
     case "rear":
-      return { styleAffinity: SA(5, 6, 6), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "rear", requiredStances: ["belt-dominant", "push-dominant"] };
+      return { tacticalFamily: "speed", styleAffinity: SA(5, 6, 6), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "rear", requiredStances: ["belt-dominant", "push-dominant"] };
     case "special":
-      return { styleAffinity: SA(5, 6, 7), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "frontal", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
+      return { tacticalFamily: "trick", styleAffinity: SA(5, 6, 7), baseWeight: 1, rarity: "rare", gripNeed: "any", vector: "frontal", requiredStances: ["no-grip", "push-dominant", "belt-dominant", "migi-yotsu", "hidari-yotsu"] };
     case "result":
-      return { styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
+      return { tacticalFamily: "trick", styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
     case "forfeit":
-      return { styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
+      return { tacticalFamily: "trick", styleAffinity: SA(0, 0, 0), baseWeight: 0, rarity: "common", gripNeed: "none", vector: "frontal", requiredStances: [] };
   }
 }
 
@@ -129,6 +131,7 @@ function K(entry: Base): Kimarite {
     ...entry,
     styleAffinity: entry.styleAffinity ?? d.styleAffinity,
     archetypeBonus: entry.archetypeBonus ?? DEFAULT_ARCH_BONUS(),
+    tacticalFamily: entry.tacticalFamily ?? d.tacticalFamily,
     baseWeight: entry.baseWeight ?? d.baseWeight,
     rarity: entry.rarity ?? d.rarity,
     gripNeed: entry.gripNeed ?? d.gripNeed,
@@ -194,7 +197,7 @@ export const KIMARITE_REGISTRY: Kimarite[] = [
   K({ id: "tsutaezori", name: "Tsutaezori", nameJa: "伝え反り", category: "special", kimariteClass: "special", vector: "rear", gripNeed: "none", requiredStances: ["no-grip"], rarity: "legendary", description: "Tsutaezori win" }),
 
   // === Hineri / twist group (捻り手) ===
-  K({ id: "tsukiotoshi", name: "Tsukiotoshi", nameJa: "突き落とし", category: "thrust", kimariteClass: "thrust", description: "Thrust down at angle" }),
+  K({ id: "tsukiotoshi", name: "Tsukiotoshi", nameJa: "突き落とし", category: "thrust", kimariteClass: "thrust", tacticalFamily: "trick", description: "Thrust down at angle" }),
   K({ id: "makiotoshi", name: "Makiotoshi", nameJa: "巻き落とし", category: "twist", kimariteClass: "twist", description: "Winding throw-down" }),
   K({ id: "tottari", name: "Tottari", nameJa: "とったり", category: "twist", kimariteClass: "twist", description: "Arm-bar take-down" }),
   K({ id: "sakatottari", name: "Sakatottari", nameJa: "逆取ったり", category: "twist", kimariteClass: "twist", description: "Reverse tottari" }),
