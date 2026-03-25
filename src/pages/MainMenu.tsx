@@ -731,7 +731,7 @@ export default function MainMenu() {
 
               {selectedHeyaId && (
                 <div className="mt-6 flex justify-center">
-                  <Button size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
+                  <Button data-testid="begin-journey" size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
                     Begin Journey
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -788,7 +788,7 @@ export default function MainMenu() {
 
               {selectedHeyaId && (
                 <div className="mt-6 flex justify-center">
-                  <Button size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
+                  <Button data-testid="begin-journey" size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
                     Begin Journey
                     <ArrowRight className="w-4 h-4" />
                   </Button>
