@@ -65,6 +65,8 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       } else {
         const currentDay = world.currentBasho!.day;
         for (let d = currentDay; d <= 15; d++) {
+            // Unroll to prevent excessive inner loop evaluations and memory leaks
+            // Bout processing handles its own queue safely up to 64
             for (let i = 0; i < 64; i++) {
                const { result } = worldEngine.simulateBoutForToday(world, 0);
                if (!result) break;
