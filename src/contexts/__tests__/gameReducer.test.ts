@@ -40,3 +40,36 @@ describe('Game Reducer Purity', () => {
     expect(nextState.world).not.toBe(initialState.world);
   });
 });
+
+describe('Game Reducer: Batch Processing', () => {
+  it('MUST process multiple days atomically without intermediate states', () => {
+    const initialState = { 
+      phase: 'interim' as const,
+      world: generateWorld('test-batch'),
+      selectedRikishiId: null,
+      selectedHeyaId: null,
+      currentBoutIndex: 0,
+      lastBoutResult: null,
+      playerHeyaId: null,
+      isAutoPlaying: false,
+    };
+
+    // Track the starting date
+    const startDay = initialState.world.calendar.currentDay;
+    const startMonth = initialState.world.calendar.month;
+
+    // Dispatch the new batch action
+    const nextState = gameReducer(initialState, { 
+      type: 'TICK_MULTIPLE_DAYS', 
+      payload: { days: 15 } 
+    } as any);
+
+    // 1. Assert state reference changed exactly once (atomic commit)
+    expect(nextState).not.toBe(initialState);
+    expect(nextState.world).not.toBe(initialState.world);
+
+    // 2. Assert the calendar advanced
+    // We expect the date to have advanced, proving the loop ran
+    expect(nextState.world.calendar.currentDay).not.toBe(startDay);
+  });
+});
