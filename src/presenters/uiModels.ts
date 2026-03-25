@@ -143,7 +143,7 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
   const [topKimarite, count] = sorted[0];
   
   // Return with count for UI flavor as requested
-  return [`${topKimarite} (${count})` || "Unknown"];
+  return [`${topKimarite} (${count})`];
 }
 
 /**
