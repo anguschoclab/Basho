@@ -197,7 +197,7 @@ export default function TrainingPage() {
                   <button
                     key={intensity}
                     onClick={() => handleIntensityChange(intensity)}
-                    className={`w-full p-3 rounded-lg text-left transition-all ${
+                    className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
                         : "bg-secondary/50 hover:bg-secondary"
@@ -239,7 +239,7 @@ export default function TrainingPage() {
                   <button
                     key={focus}
                     onClick={() => handleFocusChange(focus)}
-                    className={`w-full p-3 rounded-lg text-left transition-all ${
+                    className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
                         : "bg-secondary/50 hover:bg-secondary"
@@ -277,7 +277,7 @@ export default function TrainingPage() {
                   <button
                     key={recovery}
                     onClick={() => handleRecoveryChange(recovery)}
-                    className={`w-full p-3 rounded-lg text-left transition-all ${
+                    className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
                         : "bg-secondary/50 hover:bg-secondary"
@@ -377,7 +377,7 @@ export default function TrainingPage() {
                             key={option.value}
                             onClick={() => handleIndividualFocusChange(rikishi.id, isActive ? null : option.value)}
                             title={option.description}
-                            className={`p-2 rounded-lg transition-all ${
+                            className={`p-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                               isActive
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground"
