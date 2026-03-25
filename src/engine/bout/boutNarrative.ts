@@ -58,7 +58,7 @@ export function generateBoutNarrative(
 
 export function synthesizeTickNarrative(event: TickResolutionEvent, tickSeed?: string): string {
     const { action, context } = event;
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tick") : { next: () => Math.random() };
+    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tick") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tick");
 
     const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
 
@@ -78,7 +78,7 @@ export function synthesizeTickNarrative(event: TickResolutionEvent, tickSeed?: s
 }
 
 function resolveTokens(template: string, event: TickResolutionEvent, tickSeed?: string): string {
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tokens") : { next: () => Math.random() };
+    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tokens") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tokens");
     const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
 
     // Replace [Attacker] with Shikona

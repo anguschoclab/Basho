@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics } from "../bout/boutPhysics";
 import { Rikishi } from "../types/rikishi";
-import { SeededRNG } from "../rng";
+import { SeededRNG, rngFromSeed } from "../rng";
 
 const mockRikishi = (overrides: any = {}): Rikishi => {
   const stats = {
@@ -109,7 +109,7 @@ describe("Bout Physics v1.3 (Move-Based)", () => {
     // This requires a specific RNG sequence or mocking, but we can test if it's reachable.
     // For now, we verify that balanceEast being low and mental being high triggers logic
     // We'll use a seed known to have advantage: west
-    const rng = new SeededRNG("utchari-test"); 
+    const rng = rngFromSeed("test", "test", "utchari-test");
     const east = mockRikishi({ 
       id: "east", 
       stats: { strength: 30, speed: 30, technique: 30, balance: 100, mental: 100 } 

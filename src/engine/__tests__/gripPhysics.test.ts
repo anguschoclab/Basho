@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveGripClash, calculateActionPower, EngineState, checkKimariteRequirements } from "../bout/boutPhysics";
-import { SeededRNG } from "../rng";
+import { SeededRNG, rngFromSeed } from "../rng";
 import { buildCombatProfile } from "../archetype";
 import { Rikishi } from "../types/rikishi";
 import { CombatAction } from "../types/combat";
@@ -49,7 +49,7 @@ describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
     const east = mockRikishi("east", "migi");
     const west = mockRikishi("west", "hidari");
     const st = mockState("east", "west");
-    const rng = new SeededRNG("grip-test");
+    const rng = rngFromSeed("test", "test", "grip-test");
 
     resolveGripClash(rng, east, west, st);
 
