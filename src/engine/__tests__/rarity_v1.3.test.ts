@@ -3,6 +3,9 @@ import { resolveBoutPhysics } from "../bout/boutPhysics";
 import { Rikishi } from "../types/rikishi";
 import { KIMARITE_ALL } from "../kimarite";
 
+import { rngFromSeed } from "../rng";
+const rngForTests = rngFromSeed("test", "test", "rarity");
+
 const mockRikishi = (overrides: any = {}): Rikishi => {
   const stats = {
     strength: 50,
@@ -17,7 +20,7 @@ const mockRikishi = (overrides: any = {}): Rikishi => {
   };
 
   return {
-    id: "test-" + Math.random(),
+    id: "test-" + Math.floor(rngForTests.next() * 1000),
     shikona: "Test",
     heyaId: "test-heya" as any,
     nationality: "Japan",
