@@ -64,6 +64,18 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         world: tickOrchestrator(state.world),
       };
 
+    case "TICK_MULTIPLE_DAYS": {
+      if (!state.world) return state;
+      let nextWorld = state.world;
+      for (let i = 0; i < action.payload.days; i++) {
+        nextWorld = tickOrchestrator(nextWorld);
+      }
+      return {
+        ...state,
+        world: nextWorld,
+      };
+    }
+
     default:
       return state;
   }

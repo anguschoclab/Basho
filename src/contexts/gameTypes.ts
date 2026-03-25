@@ -58,6 +58,7 @@ export type GameAction =
   | { type: "UPGRADE_HEYA"; heyaId: string; axis: "training" | "recovery" | "nutrition"; points?: number }
   | { type: "RECRUIT_STAFF"; heyaId: string; role: any }
   | { type: "TICK_DAY" }
+  | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" };
 

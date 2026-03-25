@@ -39,6 +39,7 @@ interface GameContextValue {
   endDay: () => void;
   endBasho: () => void;
   simFullBasho: () => void;
+  tickMultipleDays: (days: number) => void;
   advanceInterim: (weeks?: number) => void;
   advanceOneDay: () => void;
   goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
@@ -92,6 +93,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const endDay = useCallback(() => dispatch(actions.endDay()), []);
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
   const simFullBasho = useCallback(() => dispatch(actions.simFullBasho()), []);
+  const tickMultipleDays = useCallback((days: number) => dispatch(actions.tickMultipleDays(days)), []);
   const advanceInterim = useCallback((weeks: number = 1) => dispatch(actions.advanceInterim(weeks)), []);
   const advanceOneDayAction = useCallback(() => dispatch(actions.advanceOneDay()), []);
   const updateWorld = useCallback((world: WorldState) => dispatch(actions.updateWorld(world)), []);
@@ -170,6 +172,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     loadFromAutosave: loadFromAutosaveAction, hasAutosave: hasAutosaveCheck, getSaveSlots,
     getRikishi, getHeya, getCurrentDayMatches, getStandings,
     updateWorld, goOnHoliday, runAutoSimAction,
+    tickMultipleDays,
     issueRuling, handleMediaEvent
   };
 

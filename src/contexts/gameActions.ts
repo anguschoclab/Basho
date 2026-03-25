@@ -57,6 +57,11 @@ export const advanceOneDay = (): GameAction => ({
   type: "ADVANCE_ONE_DAY",
 });
 
+export const tickMultipleDays = (days: number): GameAction => ({
+  type: "TICK_MULTIPLE_DAYS",
+  payload: { days },
+});
+
 export const runHoliday = (result: HolidayResult): GameAction => ({
   type: "RUN_HOLIDAY",
   result,
