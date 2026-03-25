@@ -214,19 +214,22 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
  * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
  */
 function tickDailyCommon(world: WorldState, subs: string[]): void {
-  const rikishiArr: any[] = [];
-  for (const r of world.rikishi.values()) rikishiArr.push(r);
-  for (const r of stableSort(rikishiArr, x => (x as any).id || String(x))) {
+  // Pre-calculate heya diet states to avoid repeated lookups per rikishi (O(H) instead of O(R))
+  const heyaDietCache = new Map<string, "austerity" | "maintenance" | "heavy_bulk" | "premium">();
+  for (const heya of world.heyas.values()) {
+    heyaDietCache.set(heya.id, ensureHeyaWelfareState(heya).activeDiet || "maintenance");
+  }
+
+  const rikishiArr = Array.from(world.rikishi.values());
+  for (const r of stableSort(rikishiArr, x => x.id)) {
     if (r.isRetired) continue;
 
     // Persist descriptor for UI hysteresis buffer
     r.descriptor = toRikishiDescriptor(r, r.descriptor);
 
     // Diet effects
-    const heya = world.heyas.get(r.heyaId);
-    if (heya) {
-      const welfare = ensureHeyaWelfareState(heya);
-      const diet = welfare.activeDiet || "maintenance";
+    const diet = heyaDietCache.get(r.heyaId);
+    if (diet) {
 
       if (diet === "austerity") {
         r.weight = Math.max(70, r.weight - 0.05);
@@ -321,12 +324,18 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   }
 
   // 5) Daily economy micro-tick (food costs)
-  const heyaArr: any[] = [];
-  for (const h of world.heyas.values()) heyaArr.push(h);
-  for (const heya of stableSort(heyaArr, x => (x as any).id || String(x))) {
+  const costMap: Record<string, number> = {
+    austerity: 1000,
+    maintenance: 3000,
+    heavy_bulk: 6000,
+    premium: 10000
+  };
+
+  const heyaArr = Array.from(world.heyas.values());
+  for (const heya of stableSort(heyaArr, x => x.id)) {
     const welfare = ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
-    const costPerRikishi = diet === "austerity" ? 1000 : diet === "maintenance" ? 3000 : diet === "heavy_bulk" ? 6000 : 10000;
+    const costPerRikishi = costMap[diet as string] ?? 3000;
     const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * costPerRikishi;
     heya.funds -= dailyFoodCost;
   }
