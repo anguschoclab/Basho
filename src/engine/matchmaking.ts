@@ -267,61 +267,45 @@ export function scorePairing(args: {
 /** Defines the structure for candidate build options. */
 interface CandidateBuildOptions {
   seed: string;
-  rules?: Partial<MatchmakingRules>;
-  /** If provided, candidates are built within this division only */
   division?: Division;
 }
 
 /**
- * Build all candidate pairs for a given set of rikishi, scored.
- * schedule.ts will choose a non-overlapping maximum set.
+ * Build candidate pairs.
  */
 export function buildCandidatePairs(
   basho: BashoState,
   rikishi: Rikishi[],
   options: CandidateBuildOptions
 ): MatchPairing[] {
-  const rules = { ...DEFAULT_MATCHMAKING_RULES, ...(options.rules ?? {}) };
-  const rng = rngFromSeed(options.seed, "matchmaking", "root");
+  const pool = rikishi.filter(r => {
+    if (r.isRetired || r.injured) return false;
+    if (options.division && r.division !== options.division) return false;
+    return true;
+  });
 
-  const pool = stableSort(
-    options.division ? rikishi.filter(r => r.division === options.division) : [...rikishi],
-    r => r.id
-  ).filter(r => !r.injured);
-
-  const out: MatchPairing[] = [];
-
-  // Precompute O(1) lookup set for O(N^2) loop to avoid O(N^2 * M) explosion
+  const candidates: MatchPairing[] = [];
   const facedPairs = new Set<string>();
   for (const m of basho.matches) {
-    const key = m.eastRikishiId < m.westRikishiId
-      ? `${m.eastRikishiId}-${m.westRikishiId}`
+    const key = m.eastRikishiId < m.westRikishiId 
+      ? `${m.eastRikishiId}-${m.westRikishiId}` 
       : `${m.westRikishiId}-${m.eastRikishiId}`;
     facedPairs.add(key);
   }
 
-  // O(n^2) candidate build; divisions are limited in size (<= ~70 typically).
   for (let i = 0; i < pool.length; i++) {
     for (let j = i + 1; j < pool.length; j++) {
       const a = pool[i];
       const b = pool[j];
-
-      const pairing = scorePairing({ basho, a, b, rules, facedPairs });
-      if (pairing) {
-        // Add tiny deterministic jitter for stable tie-breaks, without changing relative magnitudes much
-        const jitter = (rng.next() - 0.5) * 0.0001;
-        out.push({ ...pairing, score: pairing.score + jitter });
-      }
+      const result = scorePairing({ basho, a, b, facedPairs });
+      if (result) candidates.push(result);
     }
   }
 
-  // Higher score first; stable tie by ids
-  out.sort((p1, p2) => {
-    if (p2.score !== p1.score) return p2.score - p1.score;
-    const a1 = `${p1.eastId}-${p1.westId}`;
-    const a2 = `${p2.eastId}-${p2.westId}`;
-    return stableTieBreak(a1, a2);
+  // Deterministic sort: descending by score, then tie-break by ID
+  candidates.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return stableTieBreak(a.eastId + a.westId, b.eastId + b.westId);
   });
-
-  return out;
+  return candidates;
 }

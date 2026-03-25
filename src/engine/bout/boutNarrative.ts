@@ -19,11 +19,17 @@ export function generateBoutNarrative(
 ): void {
   // Map log entries to narrative context
   const pbpLines = result.log.map((entry, idx) => {
-    if (entry.phase === 'engagement' && entry.data?.tickResolutionEvent) {
-      const tickSeed = `${seed}-tick-${entry.data.tick}-${idx}`;
+    if ((entry.phase === 'engagement' || entry.phase === 'tachiai') && entry.data?.tickResolutionEvent) {
+      const tickSeed = `${seed}-tick-${entry.data.tick || 0}-${idx}`;
       return {
         text: synthesizeTickNarrative(entry.data.tickResolutionEvent, tickSeed),
-        id: `${result.boutId}-${entry.data.tick}`
+        id: `${result.boutId}-${entry.data.tick || 't'}`
+      };
+    }
+    if (entry.phase === 'tachiai' && entry.data?.event === 'henka_success') {
+      return {
+        text: "HENKA! The crowd roars as the opponent flys past!",
+        id: `${result.boutId}-henka`
       };
     }
     // Fallback for other phases or legacy entries

@@ -13,6 +13,8 @@ const mockRikishi = (overrides: any = {}): Rikishi => {
     weight: 150,
     stamina: 50,
     adaptability: 50,
+    experience: 50,
+    aggression: 50,
     ...(overrides.stats || {})
   };
 
@@ -24,29 +26,27 @@ const mockRikishi = (overrides: any = {}): Rikishi => {
     birthYear: 2000,
     height: 180,
     weight: 150,
-    power: 50,
-    speed: 50,
-    balance: 50,
-    technique: 50,
-    aggression: 50,
-    experience: 50,
-    adaptability: 50,
+    power: stats.strength,
+    speed: stats.speed,
+    balance: stats.balance,
+    technique: stats.technique,
+    aggression: stats.aggression,
+    experience: stats.experience,
+    adaptability: stats.adaptability,
     momentum: 50,
-    stamina: 50,
+    stamina: stats.stamina,
     fatigue: 0,
     injured: false,
     injuryWeeksRemaining: 0,
     style: "oshi",
-    combatProfile: {
-      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
-      preferredStyle: "oshi",
-      specialties: [],
-      ringSense: 50,
-      aggressiveness: 50
+    combatProfile: overrides.combatProfile || {
+      archetype: 'oshi',
+      familyPreferences: { push: 100, belt: 0, trick: 0, speed: 0 },
+      preferredGrip: 'none',
+      preferredGripDepth: 'standard',
+      statModifiers: {}
     },
-    archetype: "oshi_specialist",
-    tacticalArchetypePrimary: "All_Rounder",
-    derivedArchetype: "All_Rounder",
+    archetype: "oshi" as any,
     division: "makuuchi" as any,
     rank: "maegashira",
     side: "east",
@@ -61,7 +61,6 @@ const mockRikishi = (overrides: any = {}): Rikishi => {
     stats: stats as any,
     condition: 100,
     motivation: 100,
-    archetypeEvidence: [],
     ...overrides
   } as Rikishi;
 };

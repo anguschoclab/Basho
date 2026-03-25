@@ -10,7 +10,8 @@ import type { Division } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import { getActiveRikishi } from "./selectors";
-import { buildCandidatePairs, DEFAULT_MATCHMAKING_RULES, type MatchPairing, type MatchmakingRules } from "./matchmaking";
+import { StandardMatchmaking } from "./MatchmakingStrategy";
+import type { MatchPairing, MatchmakingRules } from "./matchmaking";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
@@ -122,14 +123,9 @@ export function scheduleDivisionDay(args: {
   const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
   if (boutsPerDay <= 0 || pool.length < 2) return [];
 
-  const mmRules: Partial<MatchmakingRules> = {
-    ...DEFAULT_MATCHMAKING_RULES,
-    ...(rules.matchmaking ?? {})
-  };
-
-  const candidates = buildCandidatePairs(basho, pool, {
+  const strategy = new StandardMatchmaking();
+  const candidates = strategy.generatePairs(basho, pool, {
     seed: `${args.seed}-cand-${division}-day${day}`,
-    rules: mmRules,
     division
   });
 
@@ -139,20 +135,14 @@ export function scheduleDivisionDay(args: {
 
   // If we couldn't fill the card, optionally allow forced repeats (same-heya still disallowed)
   if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
-    const looseRules: Partial<MatchmakingRules> = {
-      ...mmRules,
-      avoidRepeatOpponents: false,
-      allowRepeatsWhenForced: true
-    };
-    const looserCandidates = buildCandidatePairs(basho, pool, {
-      seed: `${args.seed}-cand2-${division}-day${day}`,
-      rules: looseRules,
-      division
-    });
-
-    // Add additional pairs not overlapping
-    const extra = greedySelectPairs(looserCandidates, boutsPerDay - selected.length, used);
-    selected = [...selected, ...extra];
+     const relaxedCandidates = strategy.generatePairs(basho, pool, {
+       seed: `${args.seed}-relaxed-${division}-day${day}`,
+       division,
+       rules: { avoidRepeatOpponents: false }
+     });
+     
+     const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
+     selected.push(...additional);
   }
 
   // Deterministic shuffle of final list so it doesn't always appear sorted by score

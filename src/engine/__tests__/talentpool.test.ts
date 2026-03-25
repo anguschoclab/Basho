@@ -124,7 +124,7 @@ describe("Talent Pool: Initialization", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const candidates = Object.values(world.talentPool.candidates);
+    const candidates = Object.values(world.talentPool!.candidates);
     expect(candidates.length).toBeGreaterThan(0);
   });
 
@@ -135,8 +135,8 @@ describe("Talent Pool: Initialization", () => {
     ensureTalentPools(world1);
     ensureTalentPools(world2);
 
-    const c1 = Object.keys(world1.talentPool.candidates).sort();
-    const c2 = Object.keys(world2.talentPool.candidates).sort();
+    const c1 = Object.keys(world1.talentPool!.candidates).sort();
+    const c2 = Object.keys(world2.talentPool!.candidates).sort();
 
     expect(c1).toEqual(c2);
   });
@@ -148,8 +148,8 @@ describe("Talent Pool: Initialization", () => {
     ensureTalentPools(world1);
     ensureTalentPools(world2);
 
-    const c1 = Object.keys(world1.talentPool.candidates);
-    const c2 = Object.keys(world2.talentPool.candidates);
+    const c1 = Object.keys(world1.talentPool!.candidates);
+    const c2 = Object.keys(world2.talentPool!.candidates);
 
     // Candidate IDs should differ
     expect(c1[0]).not.toBe(c2[0]);
@@ -165,10 +165,9 @@ describe("Talent Pool: Candidate Properties", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const candidates = Object.values(world.talentPool.candidates) as TalentCandidate[];
+    const candidates = Object.values(world.talentPool!.candidates) as TalentCandidate[];
     const validArchetypes = [
-      "oshi_specialist", "yotsu_specialist", "speedster", "trickster",
-      "all_rounder", "hybrid_oshi_yotsu", "counter_specialist"
+      "oshi", "yotsu", "speedster", "trickster", "giant", "hybrid"
     ];
 
     for (const c of candidates.slice(0, 10)) {
@@ -180,12 +179,11 @@ describe("Talent Pool: Candidate Properties", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const candidates = Object.values(world.talentPool.candidates) as TalentCandidate[];
+    const candidates = Object.values(world.talentPool!.candidates) as TalentCandidate[];
 
     for (const c of candidates.slice(0, 10)) {
-      if (c.archetype.includes("oshi")) expect(c.style).toBe("oshi");
-      else if (c.archetype.includes("yotsu")) expect(c.style).toBe("yotsu");
-      else expect(c.style).toBe("hybrid");
+      if (c.archetype === "oshi" || c.archetype === "speedster") expect(c.style).toBe("oshi");
+      else if (c.archetype === "yotsu" || c.archetype === "giant" || c.archetype === "trickster") expect(c.style).toBe("yotsu");
     }
   });
 
@@ -193,7 +191,7 @@ describe("Talent Pool: Candidate Properties", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const candidates = Object.values(world.talentPool.candidates) as TalentCandidate[];
+    const candidates = Object.values(world.talentPool!.candidates) as TalentCandidate[];
     for (const c of candidates) {
       expect(c.talentSeed).toBeGreaterThanOrEqual(10);
       expect(c.talentSeed).toBeLessThanOrEqual(100);
@@ -204,7 +202,7 @@ describe("Talent Pool: Candidate Properties", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const foreignPool = tp.pools.foreign;
     const foreignIds = [...foreignPool.candidatesVisible, ...foreignPool.candidatesHidden];
 
@@ -222,6 +220,7 @@ describe("Talent Pool: Candidate Properties", () => {
 describe("Talent Pool: Visibility", () => {
   it("should list visible candidates", () => {
     const world = makeWorld();
+    ensureTalentPools(world);
     const visible = listVisibleCandidates(world, "high_school");
 
     expect(Array.isArray(visible)).toBe(true);
@@ -232,7 +231,7 @@ describe("Talent Pool: Visibility", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const firstId = Object.keys(tp.candidates)[0];
     const candidate = getCandidate(world, firstId);
 
@@ -256,6 +255,7 @@ describe("Talent Pool: Visibility", () => {
 describe("Talent Pool: Scouting", () => {
   it("should reveal hidden candidates when scouting a pool", () => {
     const world = makeWorld({ funds: 10_000_000 });
+    ensureTalentPools(world);
 
     const result = scoutPool(world, "high_school", { revealCount: 2 });
 
@@ -265,6 +265,7 @@ describe("Talent Pool: Scouting", () => {
 
   it("should deduct scouting cost from heya funds", () => {
     const world = makeWorld();
+    ensureTalentPools(world);
     const initialFunds = world.heyas.get("player-heya")!.funds;
 
     scoutPool(world, "high_school", { cost: 100_000 });
@@ -274,6 +275,7 @@ describe("Talent Pool: Scouting", () => {
 
   it("should fail scouting if funds insufficient", () => {
     const world = makeWorld();
+    ensureTalentPools(world);
     world.heyas.get("player-heya")!.funds = 0;
 
     const result = scoutPool(world, "high_school", { cost: 100_000 });
@@ -286,7 +288,7 @@ describe("Talent Pool: Scouting", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const firstId = Object.keys(tp.candidates)[0];
 
     const result = scoutCandidate(world, firstId, { effort: 2, cost: 50_000 });
@@ -443,7 +445,7 @@ describe("Talent Pool: Signing Eligibility", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const cand = Object.values(tp.candidates)[0] as TalentCandidate;
     cand.availabilityState = "available";
 
@@ -455,7 +457,7 @@ describe("Talent Pool: Signing Eligibility", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const cand = Object.values(tp.candidates)[0] as TalentCandidate;
     cand.availabilityState = "signed";
 
@@ -470,8 +472,7 @@ describe("Talent Pool: Signing Eligibility", () => {
     r1.nationality = "Mongolia";
 
     ensureTalentPools(world);
-
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     // Find a foreign candidate
     const foreignCand = Object.values(tp.candidates).find(
       (c: any) => c.nationality !== "Japan"
@@ -507,7 +508,7 @@ describe("Talent Pool: Offer System", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const cand = Object.values(tp.candidates).find(
       (c: any) => c.availabilityState === "available" && c.nationality === "Japan"
     ) as TalentCandidate;
@@ -555,7 +556,7 @@ describe("Talent Pool: Reinjection & Retirement", () => {
 
     reinjectToTalentPool(world, domesticPro);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const cid = `cand-pro-1`;
 
     expect(tp.candidates[cid]).toBeDefined();
@@ -579,28 +580,70 @@ describe("Talent Pool: Reinjection & Retirement", () => {
     reinjectToTalentPool(world, foreignPro);
     const foreignCid = `cand-pro-2`;
 
-    expect(tp.candidates[foreignCid]).toBeDefined();
-    expect(tp.pools.foreign.candidatesVisible).toContain(foreignCid);
+    expect(tp!.candidates[foreignCid]).toBeDefined();
+    expect(tp!.pools.foreign.candidatesVisible).toContain(foreignCid);
   });
 
   it("should retire candidates sitting in the pool who are older than 25", () => {
     const world = makeWorld({ year: 2025 });
     ensureTalentPools(world);
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
 
     // Add a young candidate (20 years old)
     tp.candidates["young-1"] = {
       candidateId: "young-1",
+      personId: "p1",
+      name: "Young 1",
+      originRegion: "Tokyo",
+      nationality: "Japan",
       birthYear: 2005,
       availabilityState: "available",
+      visibilityBand: "public",
+      reputationSeed: 50,
+      tags: [],
+      competingSuitors: [],
+      archetype: "oshi",
+      style: "oshi",
+      heightPotentialCm: 180,
+      weightPotentialKg: 130,
+      talentSeed: 50,
+      combatProfile: {
+        archetype: "oshi",
+        familyPreferences: { push: 70, belt: 10, trick: 10, speed: 10 },
+        preferredGrip: "none",
+        preferredGripDepth: "standard",
+        statModifiers: {}
+      },
+      temperament: { discipline: 50, volatility: 50 }
     };
     tp.pools.high_school.candidatesVisible.push("young-1");
 
     // Add a stale candidate (26 years old)
     tp.candidates["stale-1"] = {
       candidateId: "stale-1",
+      personId: "p2",
+      name: "Stale 1",
+      originRegion: "Tokyo",
+      nationality: "Japan",
       birthYear: 1999,
       availabilityState: "available",
+      visibilityBand: "public",
+      reputationSeed: 50,
+      tags: [],
+      competingSuitors: [],
+      archetype: "oshi",
+      style: "oshi",
+      heightPotentialCm: 180,
+      weightPotentialKg: 130,
+      talentSeed: 50,
+      combatProfile: {
+        archetype: "oshi",
+        familyPreferences: { push: 70, belt: 10, trick: 10, speed: 10 },
+        preferredGrip: "none",
+        preferredGripDepth: "standard",
+        statModifiers: {}
+      },
+      temperament: { discipline: 50, volatility: 50 }
     };
     tp.pools.university.candidatesVisible.push("stale-1");
 
@@ -621,7 +664,7 @@ describe("Talent Pool: Yearly Refresh", () => {
     const world = makeWorld();
     ensureTalentPools(world);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     const initialCount = Object.keys(tp.candidates).length;
 
     // Simulate year advance
@@ -639,7 +682,7 @@ describe("Talent Pool: Yearly Refresh", () => {
     world.year = 2025;
     refreshYearlyCohort(world, 2025);
 
-    const tp = world.talentPool;
+    const tp = world.talentPool!;
     expect(tp.lastYearlyRefreshYear).toBe(2025);
   });
 });

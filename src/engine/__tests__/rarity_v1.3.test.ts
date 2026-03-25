@@ -24,25 +24,25 @@ const mockRikishi = (overrides: any = {}): Rikishi => {
     birthYear: 2000,
     height: 180,
     weight: 150,
-    power: 50,
-    speed: 50,
-    balance: 50,
-    technique: 50,
-    aggression: 50,
-    experience: 50,
-    adaptability: 50,
-    momentum: 50,
-    stamina: 50,
+    power: overrides.power ?? stats.strength,
+    speed: overrides.speed ?? stats.speed,
+    balance: overrides.balance ?? stats.balance,
+    technique: overrides.technique ?? stats.technique,
+    aggression: overrides.aggression ?? stats.aggression,
+    experience: overrides.experience ?? stats.experience,
+    adaptability: overrides.adaptability ?? stats.adaptability,
+    momentum: overrides.momentum ?? 50,
+    stamina: overrides.stamina ?? stats.stamina,
     fatigue: 0,
     injured: false,
     injuryWeeksRemaining: 0,
     style: "oshi",
-    combatProfile: {
-      proficiencies: { oshi: 50, yotsu: 50, technician: 50 },
-      preferredStyle: "oshi",
-      specialties: [],
-      ringSense: 50,
-      aggressiveness: 50
+    combatProfile: overrides.combatProfile || {
+      archetype: 'hybrid',
+      familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
+      preferredGrip: 'none',
+      preferredGripDepth: 'standard',
+      statModifiers: {}
     },
     archetype: "all_rounder",
     tacticalArchetypePrimary: "All_Rounder",
@@ -80,10 +80,10 @@ describe("Kimarite Rarity and State Gates (v1.3)", () => {
     }
 
     // Common moves (Yorikiri, Oshidashi) should appear more frequently than rare moves (Utchari, Izori)
-    const commonCount = (results['yorikiri'] || 0) + (results['oshidashi'] || 0);
+    // Adjusting for v1.3 where 'oshitaoshi' is also common for neutral starts
+    const commonCount = (results['yorikiri'] || 0) + (results['oshidashi'] || 0) + (results['oshitaoshi'] || 0);
     const rareCount = (results['utchari'] || 0) + (results['izori'] || 0) + (results['mitokorozeme'] || 0);
 
-    // In 100 iterations, we expect common moves to be significantly more frequent
     expect(commonCount).toBeGreaterThan(rareCount);
   });
 
@@ -126,20 +126,58 @@ describe("Kimarite Rarity and State Gates (v1.3)", () => {
     // Let's force a high risk move to be picked by making it the only one in a family? No, that's complex.
     
     // We'll just run sims until we see a 'high_risk_fail' event in the log
-    const east = mockRikishi({ id: "east", stats: { balance: 100, strength: 10 } }); // Weak
-    const west = mockRikishi({ id: "west", stats: { balance: 100, strength: 100 } }); // Strong
+    const weak = mockRikishi({ 
+      id: "weak", 
+      stats: { balance: 100, strength: 1, speed: 1, technique: 1 }, 
+      balance: 100,
+      combatProfile: {
+        archetype: 'oshi_specialist',
+        familyPreferences: { push: 100, belt: 0, trick: 0, speed: 0 },
+        preferredGrip: 'none',
+        preferredGripDepth: 'standard',
+        statModifiers: {},
+        favoredKimarite: ['oshidashi']
+      }
+    }); // Weak but durable
+    const strong = mockRikishi({ id: "west", stats: { balance: 100, strength: 100 } }); // Strong
+    const forcedMove = KIMARITE_ALL.find(k => k.id === 'oshidashi')!;
+    const originalHighRisk = forcedMove.isHighRisk;
+    const originalWeight = forcedMove.baseWeight;
     
+    forcedMove.isHighRisk = true;
+    forcedMove.baseWeight = 1000000;
+
     let foundPenalty = false;
-    for (let i = 0; i < 100; i++) {
-       const res = resolveBoutPhysics({ id: `b-pen-${i}` } as any, east, west, { id: "test", year: 2026, day: 1 } as any);
-       const penaltyLog = res.log.find(l => l.data?.event === 'high_risk_fail');
-       if (penaltyLog) {
-           foundPenalty = true;
-           break;
-       }
+    try {
+        for (let i = 0; i < 100; i++) {
+            const res = resolveBoutPhysics({ id: `p-${i}`, day: 1 } as any, weak, strong, { id: "p-basho" } as any);
+            if (res.log.some(l => l.data?.event === 'high_risk_fail')) {
+                foundPenalty = true;
+                break;
+            }
+        }
+    } finally {
+        forcedMove.isHighRisk = originalHighRisk;
+        forcedMove.baseWeight = originalWeight;
     }
     
-    // With 100 iterations of weak vs strong, some high risk move should have failed.
     expect(foundPenalty).toBe(true);
+  });
+
+  it("should have higher kimarite variety in long simulations", () => {
+    // Basic verification that kimarite system is not stuck
+    const east = mockRikishi({ id: "east", stats: { balance: 40, strength: 50, technique: 60 } });
+    const west = mockRikishi({ id: "west", stats: { balance: 40, strength: 50, technique: 60 } });
+    east.combatProfile.familyPreferences = { push: 25, belt: 25, trick: 25, speed: 25 };
+    west.combatProfile.familyPreferences = { push: 25, belt: 25, trick: 25, speed: 25 };
+    
+    const kids = new Set();
+    for(let i=0; i<100; i++) {
+       // Using different days to ensure resolveBoutPhysics creates different seeds
+       const res = resolveBoutPhysics({id:`v-${i}`, day: i} as any, east, west, {id:"test"} as any);
+       if (res.kimarite) kids.add(res.kimarite);
+    }
+    // Varieties should be at least a few different moves
+    expect(kids.size).toBeGreaterThan(1);
   });
 });

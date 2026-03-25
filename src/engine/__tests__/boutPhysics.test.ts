@@ -5,6 +5,19 @@ import type { BashoState } from "../types/basho";
 
 // Quick mock helper
 function mockRikishi(overrides: Partial<Rikishi>): Rikishi {
+  const stats = {
+    power: 60,
+    technique: 60,
+    speed: 60,
+    balance: 60,
+    mental: 60,
+    stamina: 60,
+    aggression: 60,
+    strength: 60,
+    experience: 60,
+    ...(overrides.stats || {})
+  };
+
   return {
     id: "rikishi_1",
     shikona: "Test Mountain",
@@ -13,22 +26,25 @@ function mockRikishi(overrides: Partial<Rikishi>): Rikishi {
     weight: 150,
     height: 185,
     style: "oshi",
-    archetype: "oshi_specialist",
-    bloodType: "A",
-    origin: "Tokyo",
-    stats: {
-      power: 60,
-      technique: 60,
-      speed: 60,
-      balance: 60,
-      mental: 60,
-      stamina: 60,
-      aggression: 60,
-      strength: 60,
-      endurance: 60,
-      resilience: 60,
-      experience: 60,
-      charisma: 60
+    archetype: "oshi" as any,
+    power: stats.strength || stats.power,
+    speed: stats.speed,
+    balance: stats.balance,
+    technique: stats.technique,
+    aggression: stats.aggression,
+    experience: stats.experience,
+    stamina: stats.stamina,
+    fatigue: 0,
+    injured: false,
+    injuryWeeksRemaining: 0,
+    momentum: 50,
+    stats: stats as any,
+    combatProfile: {
+      archetype: 'oshi',
+      familyPreferences: { push: 100, belt: 0, trick: 0, speed: 0 },
+      preferredGrip: 'none',
+      preferredGripDepth: 'standard',
+      statModifiers: {}
     },
     ...overrides
   } as unknown as Rikishi;
@@ -41,16 +57,16 @@ describe("boutPhysics deterministic engine", () => {
         id: "east_1", 
         weight: 160, 
         style: "oshi",
-        archetype: "oshi_specialist",
-        stats: { power: 90, speed: 60, technique: 40, balance: 50, strength: 80 } as any 
+        archetype: "oshi" as any,
+        stats: { strength: 90, speed: 60, technique: 40, balance: 50 } as any 
     });
     // West represents a lighter technician
     const west = mockRikishi({ 
         id: "west_1", 
         weight: 130, 
         style: "yotsu",
-        archetype: "yotsu_specialist",
-        stats: { power: 40, speed: 70, technique: 90, balance: 70, strength: 50 } as any 
+        archetype: "yotsu" as any,
+        stats: { strength: 40, speed: 70, technique: 90, balance: 70 } as any 
     });
     
     const basho: BashoState = {

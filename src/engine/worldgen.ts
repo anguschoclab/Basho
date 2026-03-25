@@ -19,7 +19,7 @@ import { Rank, Division, Side } from "./types/banzuke";
 import { TacticalArchetype } from "./types/combat";
 import { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./types/narrative";
 import { BashoName, BashoState } from "./types/basho";
-import { generateRikishiName } from "./shikona";
+import { generateShikona, generateOyakataName } from "./shikona";
 import { generateStaff } from "./staff";
 import { Staff } from "./types/staff";
 import { rollArchetype, buildCombatProfile } from "./archetype";
@@ -254,7 +254,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     const oyakata: Oyakata = {
       id: oyakataId,
       heyaId: heyaId,
-      name: `${name} Oyakata`,
+      name: generateOyakataName(`${actualSeed}::worldgen::oyakata::${oyakataId}`),
       age: 45 + hRng.int(0, 19),
       archetype: oyArchetype,
       traits: {
@@ -432,7 +432,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
 
     const newRikishi: Rikishi = {
       id: rid,
-      shikona: generateRikishiName(`${actualSeed}::worldgen::rikishi::${rid}`),
+      shikona: generateShikona(`${actualSeed}::worldgen::rikishi::${rid}`, { rank: slot.rank }),
       name: `Rikishi ${rid}`,
       heyaId: heya.id,
       nationality: origin === "Mongolia" ? "Mongolia" : "Japan",

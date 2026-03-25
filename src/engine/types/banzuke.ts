@@ -95,3 +95,148 @@ interface RikishiBashoPerformance {
   fusenLosses?: number;
   sos?: number;
 }
+/** Defines the structure for rank info. */
+export interface RankInfo {
+  rank: Rank;
+  division: Division;
+  nameJa: string;
+  tier: number; // Lower = higher rank (1 = yokozuna)
+  salary: number;
+  isSanyaku: boolean;
+  isSekitori: boolean;
+  fightsPerBasho: number;
+}
+
+/** r a n k_ h i e r a r c h y. */
+export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
+  yokozuna: {
+    rank: "yokozuna",
+    division: "makuuchi",
+    nameJa: "横綱",
+    tier: 1,
+    salary: 3_000_000,
+    isSanyaku: true,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  ozeki: {
+    rank: "ozeki",
+    division: "makuuchi",
+    nameJa: "大関",
+    tier: 2,
+    salary: 2_500_000,
+    isSanyaku: true,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  sekiwake: {
+    rank: "sekiwake",
+    division: "makuuchi",
+    nameJa: "関脇",
+    tier: 3,
+    salary: 1_800_000,
+    isSanyaku: true,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  komusubi: {
+    rank: "komusubi",
+    division: "makuuchi",
+    nameJa: "小結",
+    tier: 4,
+    salary: 1_800_000,
+    isSanyaku: true,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  maegashira: {
+    rank: "maegashira",
+    division: "makuuchi",
+    nameJa: "前頭",
+    tier: 5,
+    salary: 1_400_000,
+    isSanyaku: false,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  juryo: {
+    rank: "juryo",
+    division: "juryo",
+    nameJa: "十両",
+    tier: 6,
+    salary: 1_100_000,
+    isSanyaku: false,
+    isSekitori: true,
+    fightsPerBasho: 15
+  },
+  makushita: {
+    rank: "makushita",
+    division: "makushita",
+    nameJa: "幕下",
+    tier: 7,
+    salary: 0,
+    isSanyaku: false,
+    isSekitori: false,
+    fightsPerBasho: 7
+  },
+  sandanme: {
+    rank: "sandanme",
+    division: "sandanme",
+    nameJa: "三段目",
+    tier: 8,
+    salary: 0,
+    isSanyaku: false,
+    isSekitori: false,
+    fightsPerBasho: 7
+  },
+  jonidan: {
+    rank: "jonidan",
+    division: "jonidan",
+    nameJa: "序二段",
+    tier: 9,
+    salary: 0,
+    isSanyaku: false,
+    isSekitori: false,
+    fightsPerBasho: 7
+  },
+  jonokuchi: {
+    rank: "jonokuchi",
+    division: "jonokuchi",
+    nameJa: "序ノ口",
+    tier: 10,
+    salary: 0,
+    isSanyaku: false,
+    isSekitori: false,
+    fightsPerBasho: 7
+  }
+};
+
+/** Defines the structure for banzuke entry. */
+export interface BanzukeEntry {
+  rikishiId: string;
+  position: RankPosition;
+  division: Division;
+}
+
+/** Defines the structure for basho performance. */
+export interface BashoPerformance {
+  rikishiId: string;
+  wins: number;
+  losses: number;
+  absences?: number;
+  yusho?: boolean;
+  junYusho?: boolean;
+  specialPrizes?: number;
+  kinboshi?: number;
+  opponentAvgTier?: number;
+  promoteToYokozuna?: boolean;
+}
+
+/** Defines the structure for movement event. */
+export interface MovementEvent {
+  rikishiId: string;
+  from: string;
+  to: string;
+  description: string;
+  kind: "promotion" | "demotion" | "lateral" | "status";
+}
