@@ -21,7 +21,8 @@ import type { RikishiArchetype } from "../engine/types/combat";
 import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
-import { RANK_HIERARCHY } from "../engine/banzuke";
+import { RANK_HIERARCHY } from "../engine/types/banzuke";
+import { selectRikishiByHeya } from "./selectors";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -143,7 +144,7 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
   const [topKimarite, count] = sorted[0];
   
   // Return with count for UI flavor as requested
-  return [`${topKimarite} (${count})` || "Unknown"];
+  return [`${topKimarite} (${count})`];
 }
 
 /**
@@ -232,7 +233,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
-    descriptor: toRikishiDescriptor(r),
+    descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
@@ -255,8 +256,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
 
     // Salary
     salaryBreakdown: getSalaryBreakdown(
-      RANK_HIERARCHY[r.rank].salary,
-      r.division,
+      (typeof RANK_HIERARCHY !== 'undefined' && RANK_HIERARCHY ? (RANK_HIERARCHY[(r.rank || "jonokuchi").toLowerCase() as Rank] || RANK_HIERARCHY["jonokuchi"]).salary : 0),
+      r.division || "jonokuchi",
       r.stats?.achievements?.kinboshiEarned ?? 0
     ),
   };
@@ -494,23 +495,12 @@ export interface UIHeya {
  */
 export function projectHeya(heya: Heya, world: WorldState): UIHeya {
   const oyakata = world.oyakata?.get(heya.oyakataId);
-  // ⚡ Bolt Performance Optimization:
-  // Replaced chained .map().filter().reduce() with a single pass for-loop
-  // This eliminates temporary array allocations for 'roster' intermediate states
-  // and avoids creating a new Set(["makuuchi", "juryo"]) on every projectHeya call.
-  // Benchmark: 319.71ms -> 31.45ms (10x faster)
-  const roster: Rikishi[] = [];
+  const roster = selectRikishiByHeya(world).get(heya.id) || [];
   let sekitoriCount = 0;
 
-  if (heya.rikishiIds) {
-    for (const id of heya.rikishiIds) {
-      const r = world.rikishi.get(id);
-      if (r) {
-        roster.push(r);
-        if (r.division === "makuuchi" || r.division === "juryo") {
-          sekitoriCount++;
-        }
-      }
+  for (const r of roster) {
+    if (r.division === "makuuchi" || r.division === "juryo") {
+      sekitoriCount++;
     }
   }
 

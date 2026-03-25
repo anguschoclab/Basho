@@ -11,9 +11,22 @@ import { rngFromSeed, SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BoutLogEntry, BashoState, BashoName } from "../types/basho";
 import type { Side } from "../types/banzuke";
-import { Stance, TacticalArchetype, RikishiArchetype, TacticalFamily, TACTICAL_MATRIX, CombatAction, CombatProfile, NarrativeContext, TickResolutionEvent, GrappleState, HandPosition } from "../types/combat";
+import {
+  Stance,
+  TacticalArchetype,
+  RikishiArchetype,
+  TacticalFamily,
+  TACTICAL_MATRIX,
+  CombatAction,
+  CombatProfile,
+  NarrativeContext,
+  TickResolutionEvent,
+  GrappleState,
+  HandPosition,
+  ARCHETYPE_PROFILES
+} from "../types/combat";
 
-import { RANK_HIERARCHY } from "../banzuke";
+import { RANK_HIERARCHY } from "../types/banzuke";
 import { KIMARITE_ALL, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
 import { resolveTacticalClash, determineCPUTactic } from "../h2h";
 
@@ -164,44 +177,52 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
 /**
  * Helper to pick a specific Kimarite from a class for the finish
  */
-function pickMoveFromClass(rng: SeededRNG, kimariteClass: KimariteClass | undefined, family?: TacticalFamily, moveId?: string): Kimarite {
+function pickMoveFromClass(rng: SeededRNG, moveClass: KimariteClass | undefined, attacker: Rikishi, defender: Rikishi, st: EngineState, family?: TacticalFamily, moveId?: string): Kimarite {
   if (moveId) {
     const m = KIMARITE_ALL.find(k => k.id === moveId);
     if (m) return m;
   }
 
-  let matches = getKimariteByClass(kimariteClass || 'force_out');
-  if (family) {
-    matches = matches.filter(k => k.tacticalFamily === family);
+  // 1. Filter valid moves for this state
+  let possible = KIMARITE_ALL.filter(k => checkKimariteRequirements(k, attacker, defender, st));
+  
+  // 2. Filter by requested Class or Family if provided
+  if (moveClass) {
+    possible = possible.filter(k => (k as any).kimariteClass === moveClass);
+  } else if (family) {
+    possible = possible.filter(k => k.tacticalFamily === family);
   }
   
-  if (matches.length === 0) {
-    if (family) {
-      matches = KIMARITE_ALL.filter(k => k.tacticalFamily === family);
-    }
-    if (matches.length === 0) return KIMARITE_ALL[0];
+  if (possible.length === 0) {
+    possible = KIMARITE_ALL.filter(k => checkKimariteRequirements(k, attacker, defender, st));
+    if (possible.length === 0) return KIMARITE_ALL[0]; // Absolute fallback (yorikiri)
   }
 
-  // Weighted Selection
-  const totalWeight = matches.reduce((s, m) => {
+  const arch = ARCHETYPE_PROFILES[attacker.combatProfile.archetype as TacticalArchetype] || ARCHETYPE_PROFILES.all_rounder;
+  const favored = attacker.combatProfile.favoredKimarite || [];
+
+  // 3. Weighted selection
+  const weights = possible.map(m => {
     let w = m.baseWeight || 1;
     if (m.rarity === 'uncommon') w *= 0.55;
     else if (m.rarity === 'rare') w *= 0.20;
     else if (m.rarity === 'legendary') w *= 0.05;
-    return s + w;
-  }, 0);
+
+    if (arch.preferredClasses.includes((m as any).kimariteClass)) w *= 1.5;
+    if (favored.includes(m.id)) w *= 3.0;
+    return w;
+  });
+
+  const totalWeight = weights.reduce((s, val) => s + val, 0);
   const roll = rng.next() * totalWeight;
   let cumulative = 0;
-  for (const m of matches) {
-    let w = m.baseWeight || 1;
-    if (m.rarity === 'uncommon') w *= 0.55;
-    else if (m.rarity === 'rare') w *= 0.20;
-    else if (m.rarity === 'legendary') w *= 0.05;
-    cumulative += w;
-    if (roll < cumulative) return m;
+
+  for (let i = 0; i < possible.length; i++) {
+    cumulative += weights[i];
+    if (roll < cumulative) return possible[i];
   }
-  
-  return matches[0];
+
+  return possible[0];
 }
 
 /**
@@ -232,6 +253,12 @@ function calculateHeightLeverage(attacker: Rikishi, defender: Rikishi, targetFam
  * REQUIREMENTS HELPER: Check if a move's state gates are met
  */
 export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rikishi, st: EngineState): boolean {
+  const isGrappling = st.grappleState.gripAdvantage !== 'neutral' || 
+                      st.stance === 'belt-dominant' || 
+                      st.stance === 'migi-yotsu' || 
+                      st.stance === 'hidari-yotsu';
+
+  if (k.requiresBeltGrip && !isGrappling) return false;
   if (!k.requirements) return true;
   const req = k.requirements;
 
@@ -281,7 +308,8 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
  * AI Action Selection Logic
  */
 function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
-  const prefs = { ...r.combatProfile.familyPreferences };
+  const profile = r.combatProfile || { familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 } };
+  const prefs = { ...profile.familyPreferences };
   
   // v1.3.1 Dynamic Tactical Shifts
   // 1. Trickster Edge Case: If in a belt state, prioritize belt moves for survival
@@ -314,6 +342,8 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
     cumulative += weight;
     if (normalizedRoll < cumulative) {
       family = fam as TacticalFamily;
+      // Safety: Only pick 'belt' if we have a grip, otherwise preferred 'push'
+      if (family === 'belt' && st.stance !== 'belt-dominant') family = 'push';
       break;
     }
   }
@@ -321,50 +351,17 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
   // 2. Pick an Intent
   const intentRoll = rng.next();
   const intent: CombatAction['intent'] = intentRoll < 0.7 ? 'attack' : intentRoll < 0.9 ? 'defend' : 'counter';
-
-  // 3. Filter available moves by family and requirements
-  const familyMoves = getKimariteForFamily(family).filter(m => checkKimariteRequirements(m, r, opponent, st));
-  
-  // 4. Fallback if no moves meet requirements (use a basic move from the family)
-  let move: Kimarite;
-  if (familyMoves.length === 0) {
-    const safeMoves = getKimariteForFamily(family).filter(m => !m.requirements);
-    move = safeMoves[rng.int(0, safeMoves.length - 1)] || KIMARITE_ALL[0];
-  } else {
-    // 5. Weighted Selection
-    const totalMoveWeight = familyMoves.reduce((s, m) => {
-      let weight = m.baseWeight || 1;
-      if (m.rarity === 'uncommon') weight *= 0.55;
-      else if (m.rarity === 'rare') weight *= 0.20;
-      else if (m.rarity === 'legendary') weight *= 0.05;
       
-      if (r.favoredKimarite?.includes(m.id)) weight *= 2.0; // Archetype/Favorite bonus
-      return s + weight;
-    }, 0);
-    const moveRoll = rng.next() * totalMoveWeight;
-    let moveCumulative = 0;
-    move = familyMoves[0];
-    for (const m of familyMoves) {
-      let weight = m.baseWeight || 1;
-      if (m.rarity === 'uncommon') weight *= 0.55;
-      else if (m.rarity === 'rare') weight *= 0.20;
-      else if (m.rarity === 'legendary') weight *= 0.05;
-
-      if (r.favoredKimarite?.includes(m.id)) weight *= 2.0;
-      moveCumulative += weight;
-      if (moveRoll < moveCumulative) {
-        move = m;
-        break;
-      }
-    }
-  }
+  // 3. Pick a Move from the selected family
+  const move = pickMoveFromClass(rng, undefined, r, opponent, st, family);
 
   return {
     family,
     intent,
     targetKimariteClass: (move as any).kimariteClass || 'special',
     statWeighting: move.statWeights,
-    moveId: move.id // Add moveId to CombatAction for penalty tracking
+    moveId: move.id, // Add moveId to CombatAction for penalty tracking
+    isHighRisk: move.isHighRisk
   };
 }
 
@@ -586,6 +583,7 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
               leverage: 2.0 
             }
           });
+          st.timeSeconds += 0.5 + jitter(rng, 0.2); // Add minimal charge time even for Henka
           return { earlyWinner: trickSide, earlyKimarite: 'hatakikomi' };
        }
     }
@@ -593,9 +591,21 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
   };
 
   const eastHenka = resolveHenka(east, west, "east", eastAction, westAction);
-  if (eastHenka) return eastHenka;
+  if (eastHenka) {
+    st.log.push({
+      phase: 'tachiai',
+      data: { event: 'henka_success', winner: 'east', trick: 'henka' }
+    });
+    return eastHenka;
+  }
   const westHenka = resolveHenka(west, east, "west", westAction, eastAction);
-  if (westHenka) return westHenka;
+  if (westHenka) {
+    st.log.push({
+      phase: 'tachiai',
+      data: { event: 'henka_success', winner: 'west', trick: 'henka' }
+    });
+    return westHenka;
+  }
 
   // 3. Normal Tachiai Clash logic with Leverage
   let eastLeverage = 1.0;
@@ -633,7 +643,24 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
       eastPower: Math.round(finalEast),
       westPower: Math.round(finalWest),
       margin: Math.round(margin * 10) / 10,
-      advantage: st.advantage
+      advantage: st.advantage,
+      // Pass narrative payload for early wins or variety
+      tickResolutionEvent: {
+        tickNumber: 0,
+        attacker: winner === 'east' ? east : west,
+        defender: winner === 'east' ? west : east,
+        action: winner === 'east' ? eastAction : westAction,
+        powerDifferential: margin,
+        context: {
+          attackerFatigueLevel: 'fresh',
+          defenderBalanceLevel: 'planted',
+          isEdgeOfRing: false,
+          isRepeatedAction: false,
+          isReversal: false,
+          isRivalry: false,
+          isChampionshipBout: false
+        }
+      }
     }
   });
 }
@@ -680,20 +707,49 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   let westDamage = Math.max(0, eastPower - westPower - westSoak);
 
   // v1.3 Execution Penalty: High Risk failure
-  const eastMove = eastAction.moveId ? KIMARITE_ALL.find(k => k.id === eastAction.moveId) : null;
-  const westMove = westAction.moveId ? KIMARITE_ALL.find(k => k.id === westAction.moveId) : null;
-
-  if (eastMove?.isHighRisk && eastPower < westPower) {
+  if (eastAction.isHighRisk && eastPower < westPower) {
     eastDamage += (westPower - eastPower) * 0.5; // 50% extra penalty for high risk fail
-    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'east', moveId: eastMove.id } });
+    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'east', moveId: eastAction.moveId } });
   }
-  if (westMove?.isHighRisk && westPower < eastPower) {
+  if (westAction.isHighRisk && westPower < eastPower) {
     westDamage += (eastPower - westPower) * 0.5;
-    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'west', moveId: westMove.id } });
+    st.log.push({ phase: 'engagement', data: { event: 'high_risk_fail', side: 'west', moveId: westAction.moveId } });
   }
 
   st.balanceEast -= eastDamage;
   st.balanceWest -= westDamage;
+
+  // v1.6 Narrative Payloads
+  const buildEvent = (side: Side): TickResolutionEvent => ({
+    tickNumber: st.tick,
+    attacker: side === 'east' ? east : west,
+    defender: side === 'east' ? west : east,
+    action: side === 'east' ? eastAction : westAction,
+    powerDifferential: side === 'east' ? eastPower - westPower : westPower - eastPower,
+    context: {
+      attackerFatigueLevel: (side === 'east' ? st.fatigueEast : st.fatigueWest) > 80 ? 'exhausted' : 'fresh',
+      defenderBalanceLevel: (side === 'east' ? st.balanceWest : st.balanceEast) < 20 ? 'critical' : 'planted',
+      isEdgeOfRing: false,
+      isRepeatedAction: false,
+      isReversal: false,
+      isRivalry: false,
+      isChampionshipBout: false
+    }
+  });
+
+  // Final Log for the Tick (Consumable by boutNarrative.ts)
+  st.log.push({
+    phase: 'engagement',
+    data: {
+      event: 'tick_end',
+      tick: st.tick,
+      balanceEast: st.balanceEast,
+      balanceWest: st.balanceWest,
+      eastAction,
+      westAction,
+      tickResolutionEvent: buildEvent(eastPower > westPower ? 'east' : 'west')
+    }
+  });
 
   // 5. Update Fatigue & Momentum
   st.fatigueEast += 0.5 + (westPower / 200);
@@ -714,9 +770,15 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
 
   // 7. Victory Check (Balance hits 0)
   if (st.balanceWest <= 0) {
-    return { winner: "east", kimarite: pickMoveFromClass(rng, eastAction.targetKimariteClass, eastAction.family, eastAction.moveId) };
+    // 2. Determine victory move (kimarite)
+    const move = pickMoveFromClass(rng, eastAction.targetKimariteClass, east, west, st, eastAction.family, eastAction.moveId);
+    st.advantage = "east";
+    return { winner: "east", kimarite: move };
   } else if (st.balanceEast <= 0) {
-    return { winner: "west", kimarite: pickMoveFromClass(rng, westAction.targetKimariteClass, westAction.family, westAction.moveId) };
+    // 2. Determine victory move (kimarite)
+    const move = pickMoveFromClass(rng, westAction.targetKimariteClass, west, east, st, westAction.family, westAction.moveId);
+    st.advantage = "west";
+    return { winner: "west", kimarite: move };
   }
 
   // 8. Construct Narrative Context
@@ -829,7 +891,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
   } else {
     // 2. Engagement Phase (Action Loop)
     // No more arbitrary target ticks; we loop until victory or max time
-    const MAX_TICKS = 40;
+    const MAX_TICKS = 120;
     for (let i = 0; i < MAX_TICKS; i++) {
       const tickResult = resolveActionTick(rng, east, west, st);
       if (tickResult && tickResult.winner) {
@@ -842,7 +904,9 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
       if (st.timeSeconds > 240) {
           // Force a resolution if mizu-iri reached
           finalWinner = st.advantage === "none" ? (st.tachiaiWinner as Side) : (st.advantage as Side);
-          finalKimarite = pickMoveFromClass(rng, "force_out");
+          const attacker = finalWinner === 'east' ? east : west;
+          const defender = finalWinner === 'east' ? west : east;
+          finalKimarite = pickMoveFromClass(rng, "force_out", attacker, defender, st);
           break;
       }
     }
@@ -850,7 +914,9 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     // Safety fallback
     if (!finalWinner) {
         finalWinner = st.advantage === "none" ? "east" : (st.advantage as Side);
-        finalKimarite = pickMoveFromClass(rng, "force_out");
+        const attacker = finalWinner === 'east' ? east : west;
+        const defender = finalWinner === 'east' ? west : east;
+        finalKimarite = pickMoveFromClass(rng, "force_out", attacker, defender, st);
     }
   }
 
@@ -880,7 +946,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     kimariteName: finalKimarite?.name || "Yorikiri",
     stance: st.stance,
     tachiaiWinner: st.tachiaiWinner,
-    duration: Math.round(st.timeSeconds),
+    duration: Math.max(1, Math.ceil(st.timeSeconds)),
     upset,
     isKinboshi,
     log: st.log

@@ -1,34 +1,34 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { simulateBout } from "../bout/boutResolver";
+import { buildCombatProfile } from "../archetype";
 import type { Rikishi } from "../types/rikishi";
-import type { TacticalArchetype, Style } from "../types/combat";
+import type { CombatArchetype, Style } from "../types/combat";
+import { RANK_HIERARCHY } from "../types/banzuke";
 import type { Division, Rank, Side } from "../types/banzuke";
+import { getSalaryBreakdown } from "../economics_awards";
 
 // ─── Helpers ───
 
-const ARCHETYPES: TacticalArchetype[] = [
-  "oshi_specialist", "yotsu_specialist", "speedster",
-  "trickster", "all_rounder", "hybrid_oshi_yotsu", "counter_specialist",
+const ARCHETYPES: CombatArchetype[] = [
+  "oshi", "yotsu", "speedster", "trickster", "hybrid", "giant"
 ];
 
-const STYLE_FOR: Record<TacticalArchetype, Style> = {
-  oshi_specialist: "oshi",
-  yotsu_specialist: "yotsu",
-  speedster: "hybrid",
-  trickster: "hybrid",
-  all_rounder: "hybrid",
-  hybrid_oshi_yotsu: "hybrid",
-  counter_specialist: "yotsu",
+const STYLE_FOR: Record<CombatArchetype, Style> = {
+  oshi: "oshi",
+  yotsu: "yotsu",
+  speedster: "oshi",
+  trickster: "yotsu",
+  hybrid: "hybrid",
+  giant: "yotsu"
 };
 
-const STAT_PROFILES: Record<TacticalArchetype, Pick<Rikishi, "power"|"speed"|"balance"|"technique"|"aggression"|"experience"|"weight">> = {
-  oshi_specialist:    { power: 70, speed: 55, balance: 44, technique: 40, aggression: 65, experience: 50, weight: 148 },
-  yotsu_specialist:   { power: 55, speed: 38, balance: 62, technique: 65, aggression: 45, experience: 55, weight: 155 },
-  speedster:          { power: 40, speed: 72, balance: 50, technique: 52, aggression: 55, experience: 45, weight: 115 },
-  trickster:          { power: 38, speed: 60, balance: 48, technique: 58, aggression: 50, experience: 50, weight: 120 },
-  all_rounder:        { power: 52, speed: 52, balance: 55, technique: 55, aggression: 50, experience: 55, weight: 140 },
-  hybrid_oshi_yotsu:  { power: 58, speed: 48, balance: 55, technique: 55, aggression: 52, experience: 50, weight: 145 },
-  counter_specialist: { power: 45, speed: 50, balance: 58, technique: 60, aggression: 40, experience: 55, weight: 135 },
+const STAT_PROFILES: Record<CombatArchetype, Pick<Rikishi, "power"|"speed"|"balance"|"technique"|"aggression"|"experience"|"weight">> = {
+  oshi:      { power: 70, speed: 55, balance: 44, technique: 40, aggression: 65, experience: 50, weight: 148 },
+  yotsu:     { power: 55, speed: 38, balance: 62, technique: 65, aggression: 45, experience: 55, weight: 155 },
+  speedster: { power: 40, speed: 72, balance: 50, technique: 52, aggression: 55, experience: 45, weight: 115 },
+  trickster: { power: 38, speed: 60, balance: 48, technique: 58, aggression: 50, experience: 50, weight: 120 },
+  hybrid:    { power: 52, speed: 52, balance: 55, technique: 55, aggression: 50, experience: 55, weight: 140 },
+  giant:     { power: 65, speed: 30, balance: 58, technique: 45, aggression: 50, experience: 55, weight: 190 },
 };
 
 /** Build 3 rikishi per archetype = 21 total "field" */
@@ -38,6 +38,8 @@ function buildField(): Rikishi[] {
   for (const arch of ARCHETYPES) {
     for (let copy = 0; copy < 3; copy++) {
       const stats = STAT_PROFILES[arch];
+      const currentDivision = "makuuchi" as Division;
+      const currentRank = "maegashira" as Rank;
       // Add slight variance per copy so they're not clones
       const variance = (copy - 1) * 3;
       field.push({
@@ -60,10 +62,32 @@ function buildField(): Rikishi[] {
         fatigue: 0,
         injured: false,
         injuryWeeksRemaining: 0,
+        combatProfile: buildCombatProfile(arch as CombatArchetype),
+        stats: {
+          power: stats.power + variance,
+          speed: stats.speed + variance,
+          balance: stats.balance + variance,
+          technique: stats.technique + variance,
+          aggression: stats.aggression + variance,
+          experience: stats.experience + variance,
+          achievements: {
+            kinboshiEarned: 0,
+            ginboshiEarned: 0,
+            kinboshiConceded: 0,
+            ginboshiConceded: 0,
+            specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+          }
+        },
+        // Salary
+        salaryBreakdown: getSalaryBreakdown(
+          (RANK_HIERARCHY ? (RANK_HIERARCHY[(currentRank || "jonokuchi").toLowerCase() as Rank] || RANK_HIERARCHY["jonokuchi"]).salary : 0),
+          currentDivision,
+          0 // No achievements in this test setup
+        ),
         style: STYLE_FOR[arch],
         archetype: arch,
-        division: "makuuchi" as Division,
-        rank: "maegashira" as Rank,
+        division: currentDivision,
+        rank: currentRank,
         rankNumber: idx + 1,
         side: "east" as Side,
         isRetired: false,
@@ -108,9 +132,11 @@ function simulateBasho(field: Rikishi[], bashoIdx: number): Map<string, { wins: 
 }
 
 function hashCode(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return h;
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+        h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+    }
+    return h;
 }
 
 // ─── Test ───
@@ -118,29 +144,30 @@ function hashCode(s: string): number {
 describe("10-Basho Meta Shift Simulation", () => {
   const NUM_BASHOS = 10;
   const field = buildField();
-  const yushoLog: { basho: number; winnerId: string; archetype: TacticalArchetype; wins: number }[] = [];
+  const yushoLog: { basho: number; winnerId: string; archetype: CombatArchetype; wins: number }[] = [];
   const archetypeYushos: Record<string, number> = {};
 
-  for (const arch of ARCHETYPES) archetypeYushos[arch] = 0;
+  beforeAll(() => {
+    for (const arch of ARCHETYPES) archetypeYushos[arch] = 0;
+    const fieldMap = new Map();
+    for (const r of field) fieldMap.set(r.id, r);
 
-  const fieldMap = new Map();
-  for (const r of field) fieldMap.set(r.id, r);
-
-  for (let b = 0; b < NUM_BASHOS; b++) {
-    const standings = simulateBasho(field, b);
-    // Find yusho winner (resolve ties randomly but deterministically)
-    let bestIds: string[] = [];
-    let bestWins = -1;
-    for (const [id, rec] of standings) {
-      if (rec.wins > bestWins) { bestWins = rec.wins; bestIds = [id]; }
-      else if (rec.wins === bestWins) { bestIds.push(id); }
+    for (let b = 0; b < NUM_BASHOS; b++) {
+      const standings = simulateBasho(field, b);
+      // Find yusho winner (resolve ties randomly but deterministically)
+      let bestIds: string[] = [];
+      let bestWins = -1;
+      for (const [id, rec] of standings) {
+        if (rec.wins > bestWins) { bestWins = rec.wins; bestIds = [id]; }
+        else if (rec.wins === bestWins) { bestIds.push(id); }
+      }
+      const ha = hashCode(`${b}-tiebreaker`);
+      const bestId = bestIds[Math.abs(ha) % bestIds.length];
+      const winner = fieldMap.get(bestId)!;
+      yushoLog.push({ basho: b + 1, winnerId: bestId, archetype: winner.archetype as CombatArchetype, wins: bestWins });
+      archetypeYushos[winner.archetype]++;
     }
-    const ha = hashCode(`${b}-tiebreaker`);
-    const bestId = bestIds[Math.abs(ha) % bestIds.length];
-    const winner = fieldMap.get(bestId)!;
-    yushoLog.push({ basho: b + 1, winnerId: bestId, archetype: winner.archetype as TacticalArchetype, wins: bestWins });
-    archetypeYushos[winner.archetype]++;
-  }
+  });
 
   it("should produce 10 yusho results", () => {
     expect(yushoLog).toHaveLength(NUM_BASHOS);

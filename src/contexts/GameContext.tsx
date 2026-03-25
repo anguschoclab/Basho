@@ -21,6 +21,8 @@ import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
 
+import * as actions from "./gameActions";
+
 // === CONTEXT VALUE ===
 
 /** Defines the structure for game context value. */
@@ -52,6 +54,8 @@ interface GameContextValue {
   getCurrentDayMatches: () => ReturnType<typeof getMatchesForDay>;
   getStandings: () => Array<{ rikishi: Rikishi; wins: number; losses: number }>;
   updateWorld: (world: WorldState) => void;
+  issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
+  handleMediaEvent: (eventId: string, choice: string) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -66,43 +70,51 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
   const createWorld = useCallback((seed: string, playerHeyaId?: string) => {
-    dispatch({ type: "CREATE_WORLD", seed, playerHeyaId });
+    dispatch(actions.createWorld(seed, playerHeyaId));
   }, []);
 
   const setPhase = useCallback((phase: GamePhase) => {
-    dispatch({ type: "SET_PHASE", phase });
+    dispatch(actions.setPhase(phase));
   }, []);
 
   const selectRikishi = useCallback((id: string | null) => {
-    dispatch({ type: "SELECT_RIKISHI", id });
+    dispatch(actions.selectRikishi(id));
   }, []);
 
   const selectHeya = useCallback((id: string | null) => {
-    dispatch({ type: "SELECT_HEYA", id });
+    dispatch(actions.selectHeya(id));
   }, []);
 
-  const startBasho = useCallback(() => dispatch({ type: "START_BASHO" }), []);
-  const advanceDay = useCallback(() => dispatch({ type: "ADVANCE_DAY" }), []);
-  const simulateBoutAction = useCallback((index: number) => dispatch({ type: "SIMULATE_BOUT", boutIndex: index }), []);
-  const simulateAllBouts = useCallback(() => dispatch({ type: "SIMULATE_ALL_BOUTS" }), []);
-  const endDay = useCallback(() => dispatch({ type: "END_DAY" }), []);
-  const endBasho = useCallback(() => dispatch({ type: "END_BASHO" }), []);
-  const simFullBasho = useCallback(() => dispatch({ type: "SIM_FULL_BASHO" }), []);
-  const advanceInterim = useCallback((weeks: number = 1) => dispatch({ type: "ADVANCE_INTERIM", weeks }), []);
-  const advanceOneDayAction = useCallback(() => dispatch({ type: "ADVANCE_ONE_DAY" }), []);
-  const updateWorld = useCallback((world: WorldState) => dispatch({ type: "UPDATE_WORLD", world }), []);
+  const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
+  const advanceDay = useCallback(() => dispatch(actions.advanceDay()), []);
+  const simulateBoutAction = useCallback((index: number) => dispatch(actions.simulateBout(index)), []);
+  const simulateAllBouts = useCallback(() => dispatch(actions.simulateAllBouts()), []);
+  const endDay = useCallback(() => dispatch(actions.endDay()), []);
+  const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
+  const simFullBasho = useCallback(() => dispatch(actions.simFullBasho()), []);
+  const advanceInterim = useCallback((weeks: number = 1) => dispatch(actions.advanceInterim(weeks)), []);
+  const advanceOneDayAction = useCallback(() => dispatch(actions.advanceOneDay()), []);
+  const updateWorld = useCallback((world: WorldState) => dispatch(actions.updateWorld(world)), []);
+
+  const issueRuling = useCallback((rulingId: string, severity: "lenient" | "standard" | "harsh") => {
+    dispatch(actions.issueRuling(rulingId, severity));
+  }, []);
+
+  const handleMediaEvent = useCallback((eventId: string, choice: string) => {
+    dispatch(actions.handleMediaEvent(eventId, choice));
+  }, []);
 
   const goOnHoliday = useCallback((config: HolidayConfig): HolidayResult | null => {
     if (!state.world) return null;
     const result = runHoliday(state.world, config);
-    dispatch({ type: "RUN_HOLIDAY", result });
+    dispatch(actions.runHoliday(result));
     return result;
   }, [state.world]);
 
   const runAutoSimAction = useCallback(async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
     if (!state.world) return null;
     const result = runAutoSim(state.world, config);
-    dispatch({ type: "RUN_AUTO_SIM", result });
+    dispatch(actions.runAutoSim(result));
     return result;
   }, [state.world]);
 
@@ -130,7 +142,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const loadFromSlot = useCallback((slotName: string) => {
     const world = loadGame(slotName);
-    if (world) { dispatch({ type: "LOAD_WORLD", world }); return true; }
+    if (world) { dispatch(actions.loadWorld(world)); return true; }
     return false;
   }, []);
 
@@ -142,7 +154,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const loadFromAutosaveAction = useCallback(() => {
     const world = loadAutosave();
-    if (world) { dispatch({ type: "LOAD_WORLD", world }); return true; }
+    if (world) { dispatch(actions.loadWorld(world)); return true; }
     return false;
   }, []);
 
@@ -158,6 +170,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     loadFromAutosave: loadFromAutosaveAction, hasAutosave: hasAutosaveCheck, getSaveSlots,
     getRikishi, getHeya, getCurrentDayMatches, getStandings,
     updateWorld, goOnHoliday, runAutoSimAction,
+    issueRuling, handleMediaEvent
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

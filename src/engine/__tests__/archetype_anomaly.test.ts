@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { generateWorld } from "../worldgen";
 import { rollArchetype, buildCombatProfile } from "../archetype";
-import { SeededRNG } from "../rng";
+import { SeededRNG, rngFromSeed } from "../rng";
 import { Rikishi } from "../types/rikishi";
 
 describe("v1.3.1 Archetype Inversion & Anomaly Verification", () => {
@@ -45,7 +45,7 @@ describe("v1.3.1 Archetype Inversion & Anomaly Verification", () => {
   });
 
   it("should ensure CombatProfile is correctly linked to Archetype", () => {
-    const rng = new SeededRNG("profile-test");
+    const rng = rngFromSeed("test", "test", "profile-test");
     const archetype = 'trickster';
     const profile = buildCombatProfile(archetype);
     

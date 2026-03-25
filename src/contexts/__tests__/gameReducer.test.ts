@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { gameReducer } from "../gameReducer";
 import { initialGameState, type GameState } from "../gameTypes";
 import type { WorldState } from "../../engine/types/world";
+import { mockRikishi } from "../../engine/__tests__/utils";
 
 // Mock heavy engine modules to keep tests fast and isolated
 
@@ -17,8 +18,8 @@ function stateWithWorld(overrides: Partial<WorldState> = {}): GameState {
   const heyas = new Map();
   heyas.set("heya-1", { id: "heya-1", name: "Test Heya", isPlayerOwned: true });
   const rikishi = new Map();
-  rikishi.set("r-1", { id: "r-1", shikona: "Taro", division: "makuuchi" });
-  rikishi.set("r-2", { id: "r-2", shikona: "Jiro", division: "makuuchi" });
+  rikishi.set("r-1", mockRikishi("r-1", { shikona: "Taro", division: "makuuchi" }));
+  rikishi.set("r-2", mockRikishi("r-2", { shikona: "Jiro", division: "makuuchi" }));
   const standings = new Map();
   standings.set("r-1", { wins: 5, losses: 2 });
 

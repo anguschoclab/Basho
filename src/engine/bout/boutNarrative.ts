@@ -19,11 +19,17 @@ export function generateBoutNarrative(
 ): void {
   // Map log entries to narrative context
   const pbpLines = result.log.map((entry, idx) => {
-    if (entry.phase === 'engagement' && entry.data?.tickResolutionEvent) {
-      const tickSeed = `${seed}-tick-${entry.data.tick}-${idx}`;
+    if ((entry.phase === 'engagement' || entry.phase === 'tachiai') && entry.data?.tickResolutionEvent) {
+      const tickSeed = `${seed}-tick-${entry.data.tick || 0}-${idx}`;
       return {
         text: synthesizeTickNarrative(entry.data.tickResolutionEvent, tickSeed),
-        id: `${result.boutId}-${entry.data.tick}`
+        id: `${result.boutId}-${entry.data.tick || 't'}`
+      };
+    }
+    if (entry.phase === 'tachiai' && entry.data?.event === 'henka_success') {
+      return {
+        text: "HENKA! The crowd roars as the opponent flys past!",
+        id: `${result.boutId}-henka`
       };
     }
     // Fallback for other phases or legacy entries
@@ -52,7 +58,7 @@ export function generateBoutNarrative(
 
 export function synthesizeTickNarrative(event: TickResolutionEvent, tickSeed?: string): string {
     const { action, context } = event;
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tick") : { next: () => Math.random() };
+    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tick") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tick");
 
     const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
 
@@ -72,7 +78,7 @@ export function synthesizeTickNarrative(event: TickResolutionEvent, tickSeed?: s
 }
 
 function resolveTokens(template: string, event: TickResolutionEvent, tickSeed?: string): string {
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tokens") : { next: () => Math.random() };
+    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tokens") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tokens");
     const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
 
     // Replace [Attacker] with Shikona

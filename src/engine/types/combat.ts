@@ -23,6 +23,7 @@ export interface CombatProfile {
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
   statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height', number>>;
+  favoredKimarite?: string[];
 }
 
 // Define the base tactical families
@@ -58,6 +59,7 @@ export interface CombatAction {
     balance: number;
   };
   moveId?: string;
+  isHighRisk?: boolean;
 }
 
 export type ActionPreference = Record<TacticalFamily, number>;

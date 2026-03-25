@@ -56,7 +56,9 @@ export type GameAction =
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "UPGRADE_HEYA"; heyaId: string; axis: "training" | "recovery" | "nutrition"; points?: number }
-  | { type: "RECRUIT_STAFF"; heyaId: string; role: any };
+  | { type: "RECRUIT_STAFF"; heyaId: string; role: any }
+  | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
+  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" };
 
 /** Initial game state. */
 export const initialGameState: GameState = {

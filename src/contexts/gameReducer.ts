@@ -7,6 +7,8 @@ import { timeSlice } from "./timeSlice";
 import { heyaSlice } from "./heyaSlice";
 import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
+import { bashoSlice } from "./bashoSlice";
+import { mediaSlice } from "./mediaSlice";
 
 /** 
  * Core generic actions that don't fit cleanly into a domain slice 
@@ -61,4 +63,6 @@ export const gameReducer = combineReducers<GameState, GameAction>([
   heyaSlice,
   rosterSlice,
   financeSlice,
+  bashoSlice,
+  mediaSlice,
 ]);

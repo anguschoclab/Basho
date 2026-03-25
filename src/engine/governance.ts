@@ -8,6 +8,7 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { GovernanceStatus, GovernanceRuling } from "./types/economy";
 import { logEngineEvent } from "./events";
+import { rngForWorld } from "./rng";
 import { generateScandalHeadline } from "./media";
 
 // === CONSTANTS ===
@@ -167,7 +168,7 @@ export function reportScandal(
 
   // Log Ruling
   const ruling: GovernanceRuling = {
-    id: `scandal-${world.year}-${world.week}-${heya.id}-${world.dayIndexGlobal}-${Math.floor(Math.random() * 1000)}`,
+    id: `scandal-${world.year}-${world.week}-${heya.id}-${world.dayIndexGlobal}-${Math.floor(rngForWorld(world, "governance", "scandal").next() * 1000)}`,
     date: `${world.year}-W${world.week}`,
     heyaId: heya.id,
     type: "fine",

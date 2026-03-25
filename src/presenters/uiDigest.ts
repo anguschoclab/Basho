@@ -12,6 +12,13 @@ import type { OzekiKadobanMap } from "../engine/banzuke";
 import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";
 import { generateH2HCommentary } from "../engine/h2h";
+import { 
+  selectInjuredRikishi, 
+  selectRecentEvents, 
+  selectPromotionCandidates, 
+  selectYokozunaCandidates, 
+  selectKadobanRikishi 
+} from "./selectors";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -80,20 +87,16 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const sections: DigestSection[] = [];
 
   // --- Injuries ---
-  const injuryItems: DigestItem[] = [];
-  // ⚡ Bolt: iterate directly over IterableIterator instead of Array.from() to avoid large array allocation
-  for (const r of world.rikishi.values()) {
+  const injuryItems: DigestItem[] = selectInjuredRikishi(world).map(r => {
     const injury = r.injury;
-    if (injury?.isInjured) {
-      injuryItems.push({
-        id: `injury::${r.id}`,
-        kind: "injury",
-        title: `${r.shikona ?? r.name ?? r.id} injured`,
-        detail: `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? "?"}w remaining`,
-        rikishiId: r.id,
-      });
-    }
-  }
+    return {
+      id: `injury::${r.id}`,
+      kind: "injury",
+      title: `${r.shikona ?? r.name ?? r.id} injured`,
+      detail: `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? "?"}w remaining`,
+      rikishiId: r.id,
+    };
+  });
   if (injuryItems.length) {
     sections.push({ id: "injuries", title: "Injuries", items: injuryItems });
   }
@@ -101,8 +104,6 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Key matchup (during basho) ---
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
-  // In this codebase, the authoritative indicator of basho activity is world.cyclePhase.
-  // The schedule is a flat array of MatchSchedule items with a day field.
   if (basho && world.cyclePhase === "active_basho") {
     const day = basho.day ?? basho.currentDay ?? 1;
     let matchupCount = 0;
@@ -131,39 +132,26 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
     }
   }
 
-  // --- Engine Events (Event Bus) ---
-  const recentEvents = world.events?.log ? queryEvents(world, { limit: 120 }) : [];
-  const thisWeek = (world.week ?? 0);
-  // Show events from current week and previous week (accounts for tick timing)
-  const econItems: DigestItem[] = [];
-  const scoutItems: DigestItem[] = [];
-  const govItems: DigestItem[] = [];
-  const welfareItems: DigestItem[] = [];
-  const trainingItems: DigestItem[] = [];
-  const careerItems: DigestItem[] = [];
-  const rivalryItems: DigestItem[] = [];
-  const mediaItems: DigestItem[] = [];
+  // --- Engine Events (using memoized selectors) ---
+  const eventBuckets = selectRecentEvents(world);
 
-  for (const e of recentEvents) {
-    if (e.week < thisWeek - 1 || e.week > thisWeek) continue;
-    const item: DigestItem = {
-      id: e.id,
-      kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
-      title: e.title,
-      detail: e.summary,
-      rikishiId: e.rikishiId,
-      heyaId: e.heyaId
-    };
+  const mapEventToItem = (e: any) => ({
+    id: e.id,
+    kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
+    title: e.title,
+    detail: e.summary,
+    rikishiId: e.rikishiId,
+    heyaId: e.heyaId
+  });
 
-    if (e.category === "media" || e.type.includes("SCANDAL")) mediaItems.push(item);
-    else if (e.category === "economy" || e.category === "sponsor") econItems.push({ ...item, kind: "economy" });
-    else if (e.category === "scouting") scoutItems.push({ ...item, kind: "scouting" });
-    else if (e.category === "training") trainingItems.push({ ...item, kind: "training" });
-    else if (e.category === "career") careerItems.push(item);
-    else if (e.category === "rivalry") rivalryItems.push(item);
-    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline") govItems.push(item);
-    else if (e.category === "welfare" || e.type.startsWith("COMPLIANCE") || e.type.startsWith("WELFARE")) welfareItems.push(item);
-  }
+  const mediaItems = eventBuckets.media.map(mapEventToItem);
+  const trainingItems = eventBuckets.training.map(mapEventToItem);
+  const careerItems = eventBuckets.career.map(mapEventToItem);
+  const rivalryItems = eventBuckets.rivalry.map(mapEventToItem);
+  const welfareItems = eventBuckets.welfare.map(mapEventToItem);
+  const govItems = eventBuckets.governance.map(mapEventToItem);
+  const scoutItems = eventBuckets.scouting.map(mapEventToItem);
+  const econItems = eventBuckets.economy.map(mapEventToItem);
 
   if (mediaItems.length) sections.push({ id: "media", title: "Media & Scandals", items: mediaItems });
   if (trainingItems.length) sections.push({ id: "training", title: "Training", items: trainingItems });
@@ -221,11 +209,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
   if (!world.historyIndex?.rikishi) return candidates;
   const playerHeyaId = world.playerHeyaId;
 
-  for (const r of world.rikishi.values()) {
-    // Ozeki run: sekiwake or komusubi with strong recent results
-    if (r.rank !== "sekiwake" && r.rank !== "komusubi") continue;
-    if (r.isRetired) continue;
-
+  for (const r of selectPromotionCandidates(world)) {
     // Get last 3 basho results from history
     const history = world.historyIndex.rikishi[r.id] || [];
     const len = history.length;
@@ -270,10 +254,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
   if (!world.historyIndex?.rikishi) return candidates;
 
-  for (const r of world.rikishi.values()) {
-    if (r.rank !== "ozeki") continue;
-    if (r.isRetired) continue;
-
+  for (const r of selectYokozunaCandidates(world)) {
     const history = world.historyIndex.rikishi[r.id] || [];
     // Only check the last two history items without slice allocating a new array
     let yushos = 0;
@@ -307,14 +288,14 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
 }
 
 export function getKadobanDrama(world: WorldState): Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> {
-  const kadobanMap: OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
+  const kadobanMap: import("../engine/banzuke").OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
   const entries: Array<{ rikishi: Rikishi; narrative: string; isDemoted: boolean }> = [];
 
-  for (const [rid, status] of Object.entries(kadobanMap)) {
+  for (const r of selectKadobanRikishi(world)) {
+    const rid = r.id;
+    const status = kadobanMap[rid];
+    if (!status) continue;
     if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
-
-    const r = world.rikishi.get(rid);
-    if (!r) continue;
 
     let wins = 0;
     let losses = 0;
