@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  KIMARITE_ALL,
+  KIMARITE_REGISTRY,
   getKimarite,
   getKimariteByClass,
   getKimariteCount,
@@ -10,7 +10,7 @@ import {
 describe("Kimarite Registry (v1.3)", () => {
   it("should contain all official 82 kimarite plus non-techniques", () => {
     // 82 official + 7 non-standard (fusensho, hansoku, 5 results)
-    expect(KIMARITE_ALL.length).toBe(89);
+    expect(KIMARITE_REGISTRY.length).toBe(89);
     expect(getKimariteCount()).toBe(82);
   });
 
@@ -56,6 +56,6 @@ describe("Kimarite Registry (v1.3)", () => {
 
   it("should not contain any placeholder guards", () => {
     expect(getKimarite("sototasukizori_dummy")).toBeUndefined();
-    expect(KIMARITE_ALL.some(k => k.name === "REMOVE_ME")).toBe(false);
+    expect(KIMARITE_REGISTRY.some(k => k.name === "REMOVE_ME")).toBe(false);
   });
 });

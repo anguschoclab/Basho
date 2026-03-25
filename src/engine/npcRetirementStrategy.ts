@@ -4,7 +4,7 @@ import type { Oyakata } from "./types/oyakata";
 import { EventBus } from "./events";
 import { checkRetirement } from "./lifecycle";
 
-export interface RetirementStrategy {
+interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
 }
 

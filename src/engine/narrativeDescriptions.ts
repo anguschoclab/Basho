@@ -12,13 +12,13 @@
 /** Type representing attribute key. */
 export type AttributeKey = "power" | "speed" | "balance" | "technique";
 /** Type representing facility type. */
-export type FacilityType = "training" | "recovery" | "nutrition";
+type FacilityType = "training" | "recovery" | "nutrition";
 /** Type representing career phase. */
-export type CareerPhase = "youth" | "rising" | "prime" | "declining" | "twilight";
+type CareerPhase = "youth" | "rising" | "prime" | "declining" | "twilight";
 /** Type representing style key. */
-export type StyleKey = "oshi" | "yotsu" | "hybrid";
+type StyleKey = "oshi" | "yotsu" | "hybrid";
 /** Type representing archetype key. */
-export type ArchetypeKey =
+type ArchetypeKey =
   | "oshi_specialist"
   | "yotsu_specialist"
   | "speedster"
@@ -28,7 +28,7 @@ export type ArchetypeKey =
   | "counter_specialist";
 
 /** Type representing oyakata archetype key. */
-export type OyakataArchetypeKey =
+type OyakataArchetypeKey =
   | "traditionalist"
   | "scientist"
   | "gambler"
@@ -57,7 +57,7 @@ export function describeAttribute(value: number): string {
 }
 
 /** Verbose attribute prose (0–100) keyed by attribute name. */
-export function describeAttributeVerbose(attribute: AttributeKey | string, value: number): string {
+function describeAttributeVerbose(attribute: AttributeKey | string, value: number): string {
   const level = describeAttribute(value);
 
   const descriptors: Record<AttributeKey, Record<string, string>> = {
@@ -127,7 +127,7 @@ export function describeAggression(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeAggressionVerbose(value: number): string {
+function describeAggressionVerbose(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Fights with overwhelming forward pressure—never retreats.";
   if (v >= 70) return "Prefers to attack, constantly pushing the action.";
@@ -161,7 +161,7 @@ export function describeExperience(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeExperienceVerbose(value: number): string {
+function describeExperienceVerbose(value: number): string {
   const v = Math.max(0, Math.floor(safe(value, 0)));
   if (v >= 80) return "A seasoned veteran who has seen everything the dohyo offers.";
   if (v >= 60) return "Years of experience inform his every move.";
@@ -180,7 +180,7 @@ export function describeExperienceVerbose(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeStamina(value: number): string {
+function describeStamina(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Tireless";
   if (v >= 70) return "Enduring";
@@ -195,7 +195,7 @@ export function describeStamina(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeStaminaVerbose(value: number): string {
+function describeStaminaVerbose(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "Can go the distance no matter how long the bout.";
   if (v >= 70) return "Rarely tires; maintains intensity throughout.";
@@ -214,7 +214,7 @@ export function describeStaminaVerbose(value: number): string {
  * - If your engine stores 0–100, we map it to a rough -5..+5 scale.
  * - If it already stores -5..+5-ish, we use it directly.
  */
-export function describeMomentum(value: number): string {
+function describeMomentum(value: number): string {
   const vRaw = safe(value, 0);
   const v = Math.abs(vRaw) > 10 ? (_clamp(vRaw, 0, 100) - 50) / 10 : _clamp(vRaw, -5, 5);
 
@@ -230,7 +230,7 @@ export function describeMomentum(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeMomentumVerbose(value: number): string {
+function describeMomentumVerbose(value: number): string {
   const vRaw = safe(value, 0);
   const v = Math.abs(vRaw) > 10 ? (_clamp(vRaw, 0, 100) - 50) / 10 : _clamp(vRaw, -5, 5);
 
@@ -250,7 +250,7 @@ export function describeMomentumVerbose(value: number): string {
  *  * @param phase - The Phase.
  *  * @returns The result.
  */
-export function describeCareerPhaseVerbose(phase: CareerPhase | string): string {
+function describeCareerPhaseVerbose(phase: CareerPhase | string): string {
   const descriptions: Record<CareerPhase, string> = {
     youth: "Young and raw, with enormous potential still untapped.",
     rising: "Growing rapidly, improving with each tournament.",
@@ -265,8 +265,8 @@ export function describeCareerPhaseVerbose(phase: CareerPhase | string): string 
 // Record (wins/losses/absences)
 // =======================
 
-export function describeRecord(wins: number, losses: number): { record: string; assessment: string };
-export function describeRecord(
+function describeRecord(wins: number, losses: number): { record: string; assessment: string };
+function describeRecord(
   wins: number,
   losses: number,
   absences: number
@@ -278,7 +278,7 @@ export function describeRecord(
  *  * @param absences - The Absences.
  *  * @returns The result.
  */
-export function describeRecord(wins: number, losses: number, absences = 0): { record: string; assessment: string } {
+function describeRecord(wins: number, losses: number, absences = 0): { record: string; assessment: string } {
   const w = Math.max(0, Math.floor(safe(wins, 0)));
   const l = Math.max(0, Math.floor(safe(losses, 0)));
   const a = Math.max(0, Math.floor(safe(absences, 0)));
@@ -310,7 +310,7 @@ export function describeRecord(wins: number, losses: number, absences = 0): { re
  *  * @param weeksRemaining - The Weeks remaining.
  *  * @returns The result.
  */
-export function describeInjuryVerbose(weeksRemaining: number): string {
+function describeInjuryVerbose(weeksRemaining: number): string {
   const w = Math.max(0, Math.floor(safe(weeksRemaining, 0)));
   if (w >= 8) return "Facing a long road to recovery.";
   if (w >= 4) return "Healing, but still weeks away.";
@@ -327,7 +327,7 @@ export function describeInjuryVerbose(weeksRemaining: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeFatigue(value: number): string {
+function describeFatigue(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Fresh";
   if (v <= 30) return "Lightly worn";
@@ -341,7 +341,7 @@ export function describeFatigue(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeFatigueVerbose(value: number): string {
+function describeFatigueVerbose(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v <= 10) return "Looks fresh, moving freely without reservation.";
   if (v <= 30) return "Minor signs of wear, but nothing concerning.";
@@ -379,7 +379,7 @@ export function describeTrainingEffect(multiplier: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeReputation(value: number): string {
+function describeReputation(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "Legendary";
   if (v >= 75) return "Prestigious";
@@ -395,7 +395,7 @@ export function describeReputation(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeReputationVerbose(value: number): string {
+function describeReputationVerbose(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 90) return "One of the great institutions of sumo.";
   if (v >= 75) return "A stable of considerable prestige and history.";
@@ -415,7 +415,7 @@ export function describeReputationVerbose(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeFacilityQuality(value: number): string {
+function describeFacilityQuality(value: number): string {
   const v = _clamp(safe(value, 0), 0, 100);
   if (v >= 85) return "State-of-the-art";
   if (v >= 70) return "Excellent";
@@ -431,7 +431,7 @@ export function describeFacilityQuality(value: number): string {
  *  * @param value - The Value.
  *  * @returns The result.
  */
-export function describeFacilityVerbose(type: FacilityType | string, value: number): string {
+function describeFacilityVerbose(type: FacilityType | string, value: number): string {
   const level = describeFacilityQuality(value);
 
   const descriptions: Record<FacilityType, Record<string, string>> = {
@@ -474,7 +474,7 @@ export function describeFacilityVerbose(type: FacilityType | string, value: numb
  *  * @param archetype - The Archetype.
  *  * @returns The result.
  */
-export function describeArchetypeVerbose(archetype: ArchetypeKey | string): string {
+function describeArchetypeVerbose(archetype: ArchetypeKey | string): string {
   const descriptions: Record<ArchetypeKey, string> = {
     oshi_specialist: "A pure pusher-thruster who overwhelms with forward pressure.",
     yotsu_specialist: "A belt fighter who excels once grips are secured.",
@@ -492,7 +492,7 @@ export function describeArchetypeVerbose(archetype: ArchetypeKey | string): stri
  *  * @param style - The Style.
  *  * @returns The result.
  */
-export function describeStyleVerbose(style: StyleKey | string): string {
+function describeStyleVerbose(style: StyleKey | string): string {
   const descriptions: Record<StyleKey, string> = {
     oshi: "Prefers pushing and thrusting, keeping opponents at arm’s length.",
     yotsu: "Seeks the belt, using grips to control and throw.",
@@ -506,7 +506,7 @@ export function describeStyleVerbose(style: StyleKey | string): string {
  *  * @param archetype - The Archetype.
  *  * @returns The result.
  */
-export function describeOyakataPersonality(archetype: OyakataArchetypeKey | string): string {
+function describeOyakataPersonality(archetype: OyakataArchetypeKey | string): string {
   const descriptions: Record<OyakataArchetypeKey, string> = {
     traditionalist: "Values discipline and kihon above all else. Training is grueling but builds strong character.",
     scientist: "Analyses data and biomechanics to optimize performance. Open to new methods.",

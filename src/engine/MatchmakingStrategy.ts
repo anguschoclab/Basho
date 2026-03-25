@@ -6,7 +6,7 @@ import { rngFromSeed } from "./rng";
 import { stableSort } from "./utils";
 import { stableTieBreak } from "./utils/sort";
 
-export interface IMatchmakingStrategy {
+interface IMatchmakingStrategy {
   generatePairs(basho: BashoState, rikishi: Rikishi[], options: { seed: string; division: Division; rules?: Partial<MatchmakingRules> }): MatchPairing[];
 }
 
@@ -59,7 +59,7 @@ export class StandardMatchmaking implements IMatchmakingStrategy {
   }
 }
 
-export class PlayoffMatchmaking implements IMatchmakingStrategy {
+class PlayoffMatchmaking implements IMatchmakingStrategy {
   public generatePairs(basho: BashoState, rikishi: Rikishi[], options: { seed: string; division: Division; rules?: Partial<MatchmakingRules> }): MatchPairing[] {
     // Playoff rules: same-heya IS allowed, same-opponent IS allowed if needed.
     // Usually playoffs are single elimination or round robin for the yusho.
@@ -85,7 +85,7 @@ export class PlayoffMatchmaking implements IMatchmakingStrategy {
   }
 }
 
-export class ExhibitionMatchmaking implements IMatchmakingStrategy {
+class ExhibitionMatchmaking implements IMatchmakingStrategy {
   public generatePairs(basho: BashoState, rikishi: Rikishi[], options: { seed: string; division: Division; rules?: Partial<MatchmakingRules> }): MatchPairing[] {
      // Exhibition: Just random pairings for hype
      const rng = rngFromSeed(options.seed, "matchmaking", "exhibition");

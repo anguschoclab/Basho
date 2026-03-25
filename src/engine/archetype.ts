@@ -13,7 +13,7 @@ export function deriveArchetype(stats: RikishiStats, physicals: { height: number
   return "All_Rounder";
 }
 
-export const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, 'archetype'>> = {
+const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, 'archetype'>> = {
   trickster: {
     familyPreferences: { push: 10, belt: 15, trick: 55, speed: 20 },
     preferredGrip: 'none',
@@ -79,7 +79,7 @@ export function buildCombatProfile(archetype: CombatArchetype): CombatProfile {
  * Legacy support for label generation.
  * Maps the new archetypes to the old descriptive labels for UI consistency if needed.
  */
-export function getArchetypeLabel(archetype: CombatArchetype): string {
+function getArchetypeLabel(archetype: CombatArchetype): string {
   switch (archetype) {
     case 'oshi': return "Explosive_Blitzer";
     case 'yotsu': return "Defensive_Stalwart";

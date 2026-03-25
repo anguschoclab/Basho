@@ -42,7 +42,7 @@ export interface HoFInductee {
 }
 
 /** Defines the structure for hall of fame state. */
-export interface HallOfFameState {
+interface HallOfFameState {
   version: "1.0.0";
   inductees: HoFInductee[];
   /** Set of rikishiId+category to prevent re-induction */
@@ -257,7 +257,7 @@ export function getHallOfFame(world: WorldState): HallOfFameState {
  *  * @param category - The Category.
  *  * @returns The result.
  */
-export function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {
+function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {
   const hof = getHallOfFame(world);
   return hof.inductees.filter((i) => i.category === category);
 }
@@ -269,7 +269,7 @@ export function getInducteesByCategory(world: WorldState, category: HoFCategory)
  *  * @param category - The Category.
  *  * @returns The result.
  */
-export function isInducted(world: WorldState, rikishiId: Id, category: HoFCategory): boolean {
+function isInducted(world: WorldState, rikishiId: Id, category: HoFCategory): boolean {
   const hof = getHallOfFame(world);
   return !!hof.inducted[`${rikishiId}::${category}`];
 }

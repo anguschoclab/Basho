@@ -53,7 +53,7 @@ export interface DigestSection {
 }
 
 /** Defines the structure for u i digest. */
-export interface UIDigest {
+interface UIDigest {
   time: { label: string };
   headline: string;
   counts: {

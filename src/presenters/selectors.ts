@@ -29,7 +29,7 @@ function createSelector<T>(fn: (world: WorldState) => T) {
 /**
  * Memoized selector for all Rikishi as an array.
  */
-export const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
+const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
   return Array.from(world.rikishi.values());
 });
 
@@ -110,7 +110,7 @@ export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[
 /**
  * Select all Sekitori (Makuuchi + Juryo).
  */
-export const selectSekitori = createSelector((world: WorldState): Rikishi[] => {
+const selectSekitori = createSelector((world: WorldState): Rikishi[] => {
   return selectAllRikishi(world).filter(r => r.division === "makuuchi" || r.division === "juryo");
 });
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics } from "../bout/boutPhysics";
 import { Rikishi } from "../types/rikishi";
-import { KIMARITE_ALL } from "../kimarite";
+import { KIMARITE_REGISTRY } from "../kimarite";
 
 import { rngFromSeed } from "../rng";
 const rngForTests = rngFromSeed("test", "test", "rarity");
@@ -143,7 +143,7 @@ describe("Kimarite Rarity and State Gates (v1.3)", () => {
       }
     }); // Weak but durable
     const strong = mockRikishi({ id: "west", stats: { balance: 100, strength: 100 } }); // Strong
-    const forcedMove = KIMARITE_ALL.find(k => k.id === 'oshidashi')!;
+    const forcedMove = KIMARITE_REGISTRY.find(k => k.id === 'oshidashi')!;
     const originalHighRisk = forcedMove.isHighRisk;
     const originalWeight = forcedMove.baseWeight;
     

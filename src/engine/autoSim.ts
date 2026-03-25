@@ -159,7 +159,7 @@ interface DemotionEvent {
  *  * @param opts - The Opts.
  *  * @returns The result.
  */
-export function simulateEntireBasho(
+function simulateEntireBasho(
   world: WorldState,
   bashoName: BashoName,
   seed: string,

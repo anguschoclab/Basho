@@ -261,7 +261,7 @@ export function getEstimatedValue(
  *  * @param confidence - The Confidence.
  *  * @returns The result.
  */
-export function getAttributeNarrative(
+function getAttributeNarrative(
   _attribute: string,
   estimatedValue: number,
   confidence: ConfidenceLevel
@@ -291,7 +291,7 @@ export function getAttributeNarrative(
  *  * @param confidence - The Confidence.
  *  * @returns The result.
  */
-export function getConfidenceText(confidence: ConfidenceLevel): string {
+function getConfidenceText(confidence: ConfidenceLevel): string {
   switch (confidence) {
     case "certain": return "Full knowledge";
     case "high": return "Well-observed";
@@ -308,7 +308,7 @@ export function getConfidenceText(confidence: ConfidenceLevel): string {
  *  * @param r - The R.
  *  * @returns The result.
  */
-export function createPublicInfo(r: Rikishi): PublicRikishiInfo {
+function createPublicInfo(r: Rikishi): PublicRikishiInfo {
   return {
     id: r.id,
     shikona: r.shikona,
@@ -331,7 +331,7 @@ export function createPublicInfo(r: Rikishi): PublicRikishiInfo {
  *  * @param r - The R.
  *  * @returns The result.
  */
-export function buildTruthSnapshot(r: Rikishi): ScoutedAttributeTruthSnapshot {
+function buildTruthSnapshot(r: Rikishi): ScoutedAttributeTruthSnapshot {
   // Uses flattened properties from new Rikishi types
   return {
     power: safeNum(r.power, 0),

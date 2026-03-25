@@ -4,7 +4,7 @@ import { SeededRNG, rngFromSeed } from "../rng";
 import { buildCombatProfile } from "../archetype";
 import { Rikishi } from "../types/rikishi";
 import { CombatAction } from "../types/combat";
-import { KIMARITE_ALL, Kimarite } from "../kimarite";
+import { KIMARITE_REGISTRY, Kimarite } from "../kimarite";
 import { projectRikishi } from "../../presenters/uiModels";
 
 describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
@@ -84,7 +84,7 @@ describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
     // Uwatenage requires rightHand: 'outside'
     // In moro_zashi_east, east has rightHand: 'inside'
     
-    const uwatenage = KIMARITE_ALL.find(k => k.id === 'uwatenage')!;
+    const uwatenage = KIMARITE_REGISTRY.find(k => k.id === 'uwatenage')!;
     const east = mockRikishi("east", "migi");
     const west = mockRikishi("west", "hidari");
     const st = mockState("east", "west");
@@ -99,7 +99,7 @@ describe("v1.6 Advanced Grip Physics (Kumi-te)", () => {
 
   it("Constraint Test: Should allow Shitatenage when in moro_zashi", () => {
     // Shitatenage requires rightHand: 'inside'
-    const shitatenage = KIMARITE_ALL.find(k => k.id === 'shitatenage')!;
+    const shitatenage = KIMARITE_REGISTRY.find(k => k.id === 'shitatenage')!;
     const east = mockRikishi("east", "migi");
     const west = mockRikishi("west", "hidari");
     const st = mockState("east", "west");

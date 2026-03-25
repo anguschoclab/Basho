@@ -2,7 +2,7 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 
-export interface RecruitmentStrategy {
+interface RecruitmentStrategy {
   evaluateVacancies: (world: WorldState, heya: Heya, oyakata: Oyakata) => number;
 }
 

@@ -469,7 +469,7 @@ export function generateOyakataName(seed: string): string {
     const idx = Math.floor(rng() * names.length);
     return names[Math.max(0, Math.min(names.length - 1, idx))];
 }
-export const IdentityService = {
+const IdentityService = {
   generateShikona,
   generateOyakataName
 };

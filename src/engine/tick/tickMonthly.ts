@@ -108,7 +108,7 @@ export function tickMonthlyEconomics(world: WorldState): void {
  * Synchronize achievement counters from the most recent basho results.
  * This ensures that earned/conceded stats are persistent and audit-ready.
  */
-export function syncAchievementCounters(world: WorldState): void {
+function syncAchievementCounters(world: WorldState): void {
   const lastBasho = world.history?.[world.history.length - 1];
   if (!lastBasho) return;
 

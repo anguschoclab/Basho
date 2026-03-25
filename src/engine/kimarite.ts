@@ -134,7 +134,7 @@ function K(entry: KBase): Kimarite & { kimariteClass?: KimariteClass } {
 }
 
 /** COMPLETE OFFICIAL 82 KIMARITE (v1.3 taxonomy) */
-export const KIMARITE_ALL: (Kimarite & { kimariteClass?: KimariteClass })[] = [
+export const KIMARITE_REGISTRY: (Kimarite & { kimariteClass?: KimariteClass })[] = [
   // === Kihonwaza (Basic Techniques - 7 moves) ===
   K({ id: 'yorikiri', name: 'Yorikiri', nameJa: '寄り切り', jsaCategory: 'Kihonwaza', baseWeight: 1000, description: 'Force out', tacticalFamily: 'belt', requiresBeltGrip: true }),
   K({ id: 'oshidashi', name: 'Oshidashi', nameJa: '押し出し', jsaCategory: 'Kihonwaza', baseWeight: 850, description: 'Frontal push out' }),
@@ -244,27 +244,27 @@ export const KIMARITE_ALL: (Kimarite & { kimariteClass?: KimariteClass })[] = [
 ];
 
 /** Legacy alias for compatibility */
-export const KIMARITE_REGISTRY = KIMARITE_ALL;
+
 
 // --- Lookup helpers ---
 
 /** Get kimarite by ID */
 export function getKimarite(id: string): (Kimarite & { kimariteClass?: KimariteClass }) | undefined {
-  return KIMARITE_ALL.find(k => k.id === id);
+  return KIMARITE_REGISTRY.find(k => k.id === id);
 }
 
 /** Get kimarite by JSA category */
 export function getKimariteByJsaCategory(category: JsaCategory): Kimarite[] {
-  return KIMARITE_ALL.filter(k => k.jsaCategory === category);
+  return KIMARITE_REGISTRY.filter(k => k.jsaCategory === category);
 }
 
 /** Get kimarite by legacy KimariteClass */
 export function getKimariteByClass(kimariteClass: KimariteClass): (Kimarite & { kimariteClass?: KimariteClass })[] {
-  return KIMARITE_ALL.filter(k => k.kimariteClass === kimariteClass);
+  return KIMARITE_REGISTRY.filter(k => k.kimariteClass === kimariteClass);
 }
 
 export function getKimariteCount(): number {
-  return KIMARITE_ALL.filter(k => 
+  return KIMARITE_REGISTRY.filter(k =>
     k.id !== 'fusensho' && 
     k.id !== 'hansoku' && 
     k.jsaCategory !== 'Hiwaza'
@@ -273,5 +273,5 @@ export function getKimariteCount(): number {
 
 /** Get kimarite for tactical family */
 export function getKimariteForFamily(family: TacticalFamily): Kimarite[] {
-  return KIMARITE_ALL.filter(k => k.tacticalFamily === family);
+  return KIMARITE_REGISTRY.filter(k => k.tacticalFamily === family);
 }
