@@ -21,13 +21,58 @@ import type { RikishiArchetype } from './types/combat';
  *   const band = toBand(value, POWER_BANDS, previousBand);
  */
 
+// [CONSTITUTION C5.3]
 export const HYSTERESIS_DELTA = 5;
 
 /** Defines the structure for band def. */
-interface BandDef<T extends string> {
+export interface BandDef<T extends string> {
   band: T;
   min: number; // inclusive
   max: number; // exclusive (use Infinity for top band)
+}
+
+/** Defines the structure for descriptor band params. */
+export interface DescriptorBandParams<T extends string> {
+  statId?: string;
+  truthValue0to100: number;
+  lastDescriptorToken?: T;
+  lastTruthValuePrivate?: number;
+  ladder: BandDef<T>[];
+  hysteresisDelta?: number;
+}
+
+// [CONSTITUTION C5.5]
+/**
+ * Resolve a raw value to a qualitative band with hysteresis returning descriptor tokens and modifiers.
+ */
+export function toDescriptorBand<T extends string>({
+  truthValue0to100,
+  lastDescriptorToken,
+  ladder,
+  hysteresisDelta = 5
+}: DescriptorBandParams<T>): { descriptorToken: T; modifierTokens: string[] } {
+  const v = clamp(truthValue0to100, 0, 100);
+  const resolved = ladder.find(b => v >= b.min && v < b.max) ?? ladder[ladder.length - 1];
+
+  let finalBand = resolved.band;
+
+  if (lastDescriptorToken && lastDescriptorToken !== resolved.band) {
+    const prevDef = ladder.find(b => b.band === lastDescriptorToken);
+    if (prevDef) {
+      if (v >= prevDef.max) {
+        // Upward Transition: A rikishi enters a higher band immediately
+        finalBand = resolved.band;
+      } else if (v <= prevDef.min - hysteresisDelta) {
+        // Downward Transition: A rikishi only leaves a band if their truthValue drops below threshold - hysteresisDelta
+        finalBand = resolved.band;
+      } else {
+        // Stick with previous band due to hysteresis buffer
+        finalBand = lastDescriptorToken;
+      }
+    }
+  }
+
+  return { descriptorToken: finalBand, modifierTokens: [] };
 }
 
 /**
@@ -40,28 +85,12 @@ export function toBand<T extends string>(
   bands: BandDef<T>[],
   previousBand?: T
 ): T {
-  const v = clamp(value, 0, 100);
-
-  // Find the band this value falls into
-  const resolved = bands.find(b => v >= b.min && v < b.max) ?? bands[bands.length - 1];
-
-  if (!previousBand || previousBand === resolved.band) return resolved.band;
-
-  // Hysteresis: if we're within delta of the boundary between previous and new band,
-  // stick with previous
-  const prevDef = bands.find(b => b.band === previousBand);
-  if (!prevDef) return resolved.band;
-
-  // Check if value is near the boundary between prev and resolved
-  if (prevDef.min > resolved.min) {
-    // Moving down: check if within delta of prevDef.min
-    if (v >= prevDef.min - HYSTERESIS_DELTA) return previousBand;
-  } else {
-    // Moving up: check if within delta of prevDef.max
-    if (v < prevDef.max + HYSTERESIS_DELTA) return previousBand;
-  }
-
-  return resolved.band;
+  return toDescriptorBand({
+    truthValue0to100: value,
+    lastDescriptorToken: previousBand,
+    ladder: bands,
+    hysteresisDelta: HYSTERESIS_DELTA
+  }).descriptorToken;
 }
 
 

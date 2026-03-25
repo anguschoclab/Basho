@@ -210,7 +210,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
-    descriptor: toRikishiDescriptor(r),
+    descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
