@@ -19,7 +19,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
   };
 
   return (
-    <Card className="w-full max-w-md bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all">
+    <Card data-testid="rikishi-card" className="w-full max-w-md bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>

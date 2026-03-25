@@ -13,17 +13,8 @@ import { clampInt } from '../../engine/utils';
 // - Result rendering is null-safe (chronicle fields optional)
 // - Year elapsed is clamped (avoid NaN if missing)
 
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { RikishiName } from "@/components/ClickableName";
-import { Play, Eye, Clock, Trophy, AlertTriangle, Star, TrendingUp } from "lucide-react";
+import { Play, Eye, Clock, Trophy, AlertTriangle, Star, TrendingUp, Loader2 } from "lucide-react";
+import { useGame } from "@/contexts/GameContext";
 
 import type { SimDuration, StopCondition, VerbosityLevel, AutoSimConfig, AutoSimResult } from "@/engine/autoSim";
 
@@ -54,7 +45,9 @@ function safeNumber(n: any, fallback: number) {
  *  * @param { onStartSim, isSimulating, playerHeyaId } - The { on start sim, is simulating, player heya id }.
  */
 export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: AutoSimControlsProps) {
+  const { tickMultipleDays } = useGame();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSyncSimulating, setIsSyncSimulating] = useState(false);
 
   const [durationType, setDurationType] = useState<DurationType>("basho");
   const [durationCount, setDurationCount] = useState<number>(1);
@@ -106,6 +99,22 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
     } as AutoSimConfig;
 
     try {
+      // P1.1: Auto-Sim Render Throttling & Interrupt Safety
+      // For short daily/weekly simulations without complex stop conditions, 
+      // use the synchronous batch processor for 60fps-equivalent UX and interrupt safety.
+      const totalDays = durationType === "days" ? durationCount : durationType === "weeks" ? durationCount * 7 : 0;
+      
+      if (totalDays > 0 && totalDays <= 30 && stopConditions.length === 1 && stopConditions[0] === "never") {
+        setIsSyncSimulating(true);
+        // Delay to allow loading UI to mount
+        setTimeout(() => {
+          tickMultipleDays(totalDays);
+          setIsSyncSimulating(false);
+          setIsOpen(false);
+        }, 10);
+        return;
+      }
+
       const simResult = await onStartSim(config);
       setResult(simResult);
       setShowResult(true);
@@ -134,7 +143,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="gap-2">
+          <Button data-testid="watch-the-world" variant="outline" className="gap-2">
             <Eye className="h-4 w-4" />
             Watch the World
           </Button>
@@ -257,6 +266,14 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
             {error && (
               <div className="p-3 rounded-lg border border-destructive/30 bg-destructive/10 text-sm text-destructive">
                 {error}
+              </div>
+            )}
+
+            {isSyncSimulating && (
+              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                <p className="text-sm font-medium">Batch Processing...</p>
+                <p className="text-xs text-muted-foreground">Computing world state updates</p>
               </div>
             )}
           </div>
