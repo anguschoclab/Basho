@@ -224,22 +224,22 @@ describe("Phase 1: Henka Check", () => {
   it("allows Tricksters to win instantly with Henka", () => {
     const trickster = mockRikishi("e1", { shikona: "Ura", archetype: "trickster", style: "technician" });
     trickster.combatProfile = {
-      proficiencies: { oshi: 10, yotsu: 10, technician: 100 },
-      preferredStyle: "technician",
-      specialties: ["henka"],
-      ringSense: 100,
-      aggressiveness: 10
+      archetype: "trickster",
+      familyPreferences: { push: 0.1, belt: 0.1, trick: 0.7, speed: 0.1 },
+      preferredGrip: "none",
+      preferredGripDepth: "standard",
+      statModifiers: {}
     };
     trickster.speed = 100;
     trickster.stats.speed = 100;
 
     const dummy = mockRikishi("w1", { shikona: "Dummy", archetype: "oshi_specialist", style: "oshi" });
     dummy.combatProfile = {
-      proficiencies: { oshi: 100, yotsu: 10, technician: 10 },
-      preferredStyle: "oshi",
-      specialties: [],
-      ringSense: 0,
-      aggressiveness: 100
+      archetype: "oshi",
+      familyPreferences: { push: 0.7, belt: 0.1, trick: 0.1, speed: 0.1 },
+      preferredGrip: "none",
+      preferredGripDepth: "standard",
+      statModifiers: {}
     };
     dummy.speed = 1;
     dummy.stats.speed = 1;
@@ -259,12 +259,12 @@ describe("Yokozuna Meta Balance", () => {
   it("ensures Yokozunas win ~85% of matches despite tricksters", () => {
      const yokozuna = mockRikishi("e1", { shikona: "Hakuho", archetype: "yotsu_specialist", style: "yotsu", rank: "yokozuna", rankNumber: 1 });
      yokozuna.combatProfile = {
-       proficiencies: { oshi: 80, yotsu: 100, technician: 80 },
-       preferredStyle: "yotsu",
-       specialties: [],
-       ringSense: 200,
-       aggressiveness: 80
-     };
+      archetype: "hybrid",
+      familyPreferences: { push: 0.4, belt: 0.4, trick: 0.1, speed: 0.1 },
+      preferredGrip: "migi",
+      preferredGripDepth: "standard",
+      statModifiers: {}
+    };
      yokozuna.power = 200;
      yokozuna.stats.power = 200;
      yokozuna.speed = 150;
@@ -276,12 +276,12 @@ describe("Yokozuna Meta Balance", () => {
 
      const maegashira = mockRikishi("w1", { shikona: "Ura", archetype: "trickster", style: "technician", rank: "maegashira", rankNumber: 4 });
      maegashira.combatProfile = {
-       proficiencies: { oshi: 30, yotsu: 30, technician: 90 },
-       preferredStyle: "technician",
-       specialties: ["henka"],
-       ringSense: 80,
-       aggressiveness: 40
-     };
+      archetype: "hybrid",
+      familyPreferences: { push: 0.4, belt: 0.4, trick: 0.1, speed: 0.1 },
+      preferredGrip: "migi",
+      preferredGripDepth: "standard",
+      statModifiers: {}
+    };
      maegashira.power = 10;
      maegashira.stats.power = 10;
      maegashira.speed = 85;

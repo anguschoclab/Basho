@@ -113,8 +113,53 @@ function resolveTokens(template: string, event: TickResolutionEvent, tickSeed?: 
         output = output.replace(/\[decorator_exhausted\?\]/g, replacement);
     }
 
-    if (template.includes('[decorator_wobbling]')) {
-        output = output.replace(/\[decorator_wobbling\]/g, pick(VOCABULARY.decorator_wobbling));
+    if (template.includes('[decorator_gasping?]')) {
+        const replacement = event.context.attackerFatigueLevel === 'gasping'
+            ? `, ${pick(VOCABULARY.decorator_gasping)},`
+            : '';
+        output = output.replace(/\[decorator_gasping\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_wobbling?]')) {
+        const replacement = event.context.defenderBalanceLevel === 'wobbling'
+            ? `, ${pick(VOCABULARY.decorator_wobbling)},`
+            : '';
+        output = output.replace(/\[decorator_wobbling\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_critical?]')) {
+        const replacement = event.context.defenderBalanceLevel === 'critical'
+            ? `, ${pick(VOCABULARY.decorator_critical)},`
+            : '';
+        output = output.replace(/\[decorator_critical\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_reversal?]')) {
+        const replacement = event.context.isReversal
+            ? `${pick(VOCABULARY.decorator_reversal)} `
+            : '';
+        output = output.replace(/\[decorator_reversal\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_edge?]')) {
+        const replacement = event.context.isEdgeOfRing
+            ? `, ${pick(VOCABULARY.decorator_edge)},`
+            : '';
+        output = output.replace(/\[decorator_edge\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_rivalry?]')) {
+        const replacement = event.context.isRivalry
+            ? `${pick(VOCABULARY.decorator_rivalry)} `
+            : '';
+        output = output.replace(/\[decorator_rivalry\?\]/g, replacement);
+    }
+
+    if (template.includes('[decorator_championship?]')) {
+        const replacement = event.context.isChampionshipBout
+            ? `${pick(VOCABULARY.decorator_championship)} `
+            : '';
+        output = output.replace(/\[decorator_championship\?\]/g, replacement);
     }
     
     // Clean up double spaces or bad punctuation from empty conditionals
