@@ -6,13 +6,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult } from "@/engine/types/basho";
 import type { RankPosition } from "@/engine/types/banzuke";
 import { getRivalry, type RivalryHeatBand, type RivalriesState } from "@/engine/rivalries";
 import { generateH2HCommentary } from "@/engine/h2h";
 import { compareRanks } from "@/engine/banzuke";
+import { projectRikishi } from "@/presenters/uiModels";
 import {
   Flame,
   Thermometer,
@@ -89,8 +90,8 @@ const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: strin
  *  * @param r1 - The R1.
  *  * @param r2 - The R2.
  */
-function getH2HRecord(r1: Rikishi, r2: Rikishi) {
-  const record = r1.h2h?.[r2.id];
+function getH2HRecord(r1: UIRikishi, r2: UIRikishi) {
+  const record = (r1 as any).h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
 }
 
@@ -116,7 +117,7 @@ function RikishiSide({
   isWinner,
   onClick,
 }: {
-  rikishi: Rikishi;
+  rikishi: UIRikishi;
   side: "east" | "west";
   isWinner: boolean;
   onClick: () => void;
@@ -243,8 +244,8 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
 
   const resolvedMatches = useMemo(() => {
     return matches.reduce<Array<MatchLike & {
-      east: Rikishi;
-      west: Rikishi;
+      east: UIRikishi;
+      west: UIRikishi;
       h2h: { wins: number; losses: number };
       rivalry: any;
       heatBand: RivalryHeatBand | null;
@@ -255,14 +256,23 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
       const west = world.rikishi.get(match.westRikishiId);
       if (!east || !west) return acc;
 
-      const h2h = getH2HRecord(east, west);
+      const h2h = getH2HRecord(projectRikishi(east, world), projectRikishi(west, world));
       const rivalriesState = (world as any).rivalriesState as RivalriesState | undefined;
       const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
       const heatBand = rivalry ? getHeatBand(rivalry.heat) : null;
       const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
-      const h2hCommentary = generateH2HCommentary(east, west);
+      const h2hCommentary = generateH2HCommentary(east as any, west as any);
 
-      acc.push({ ...match, east, west, h2h, rivalry, heatBand, isPlayerBout, h2hCommentary });
+      acc.push({ 
+        ...match, 
+        east: projectRikishi(east, world), 
+        west: projectRikishi(west, world), 
+        h2h, 
+        rivalry, 
+        heatBand, 
+        isPlayerBout, 
+        h2hCommentary 
+      });
       return acc;
     }, []);
   }, [matches, world, playerRikishiIds]);

@@ -16,7 +16,7 @@ import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
 import type { Style, TacticalArchetype } from "../engine/types/combat";
 import type { BoutResult, BashoResult } from "../engine/types/basho";
-import { toRikishiDescriptor, toPotentialBand, ARCHETYPE_LABELS, type RikishiDescriptor, type PotentialBand } from "../engine/descriptorBands";
+import { toRikishiDescriptor, toPotentialBand, ARCHETYPE_LABELS, toStatBand, type RikishiDescriptor, type PotentialBand } from "../engine/descriptorBands";
 import type { RikishiArchetype } from "../engine/types/combat";
 import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
@@ -83,6 +83,17 @@ export interface UIRikishi {
   careerRecord: string;
   careerYusho: number;
 
+  // Perceived stats (narrative-safe strings)
+  perceivedStats: {
+    strength: string;
+    technique: string;
+    speed: string;
+    stamina: string;
+    mental: string;
+    adaptability: string;
+    balance: string;
+  };
+
   // Descriptor bands (narrative-safe stat proxies)
   descriptor: RikishiDescriptor;
   potentialBand: PotentialBand;
@@ -110,6 +121,10 @@ export interface UIRikishi {
 
   // Economics
   salaryBreakdown: SalaryBreakdown;
+
+  // History & Milestones
+  careerHistory: any[];
+  milestones: any[];
 }
 
 /** Defines the structure for u i rival entry. */
@@ -156,6 +171,9 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
 export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const heya = world.heyas.get(r.heyaId);
   const age = world.year - r.birthYear;
+
+  const careerHistory = r.careerHistory || [];
+  const milestones = r.milestones || [];
 
   // Injury summary
   let injurySummary = "Healthy";
@@ -233,6 +251,15 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
+    perceivedStats: {
+      strength: toStatBand(r.stats?.strength ?? r.power ?? 50),
+      technique: toStatBand(r.stats?.technique ?? r.technique ?? 50),
+      speed: toStatBand(r.stats?.speed ?? r.speed ?? 50),
+      stamina: toStatBand(r.stats?.stamina ?? r.stamina ?? 50),
+      mental: toStatBand(r.stats?.mental ?? r.aggression ?? 50),
+      adaptability: toStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
+      balance: toStatBand(r.stats?.balance ?? r.balance ?? 50),
+    },
     descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     topRivals,
@@ -260,6 +287,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
       r.division || "jonokuchi",
       r.stats?.achievements?.kinboshiEarned ?? 0
     ),
+    careerHistory,
+    milestones,
   };
 }
 

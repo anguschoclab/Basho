@@ -8,7 +8,8 @@ import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
 import type { WorldState } from "@/engine/types/world";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
+import { projectRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
   champion: "text-amber-400 border-amber-500/40",
@@ -43,7 +44,7 @@ function TimelinePortrait({
   rikishi,
 }: {
   inductee: HoFInductee;
-  rikishi: Rikishi | undefined;
+  rikishi: UIRikishi | undefined;
 }) {
   const accent = CATEGORY_ACCENT[inductee.category];
   const bg = CATEGORY_BG[inductee.category];
@@ -112,7 +113,10 @@ export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
                   <TimelinePortrait
                     key={`${ind.rikishiId}-${i}`}
                     inductee={ind}
-                    rikishi={world.rikishi.get(ind.rikishiId)}
+                    rikishi={(() => {
+                      const raw = world.rikishi.get(ind.rikishiId);
+                      return raw ? projectRikishi(raw, world) : undefined;
+                    })()}
                   />
                 ))}
               </div>

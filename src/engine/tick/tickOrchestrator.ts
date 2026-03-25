@@ -14,6 +14,7 @@
 
 import type { WorldState } from "../types/world";
 import { autosave } from "../saveload";
+import { advanceOneDay } from "./tickDaily";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,4 +70,18 @@ export function runTickPipeline(
   if (options.autosave !== false) {
     safeCall(() => autosave(world));
   }
+}
+
+/**
+ * Convenience entry point for a single daily tick.
+ * Returns a NEW world state to ensure immutability / purity.
+ */
+export function tickOrchestrator(world: WorldState): WorldState {
+  // Deep clone to ensure purity for the reducer
+  const nextWorld = structuredClone(world);
+  
+  // Advance the world by one day
+  advanceOneDay(nextWorld);
+  
+  return nextWorld;
 }

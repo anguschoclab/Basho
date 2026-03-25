@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { BoutReplayViewer } from "./BoutReplayViewer";
 import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import { generateNarrative } from "@/engine/narrative";
 import { buildPbpFromBoutResult, type PbpLine, type PbpContext } from "@/engine/pbp";
@@ -41,8 +41,8 @@ const TAG_ICONS: Record<string, string> = {
 interface BoutNarrativeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  east: Rikishi;
-  west: Rikishi;
+  east: UIRikishi;
+  west: UIRikishi;
   result: BoutResult;
   bashoName: BashoName;
   day: number;
@@ -77,18 +77,18 @@ export function BoutNarrativeModal({
   bashoName,
   day,
 }: BoutNarrativeModalProps) {
-  const narrative = generateNarrative(east, west, result, bashoName, day);
+  const narrative = generateNarrative(east as any, west as any, result, bashoName, day);
 
   const pbpLines = useMemo<PbpLine[]>(() => {
     try {
-      const ctx: PbpContext = {
-        seed: `${bashoName}-${day}-${east.id}-${west.id}`,
-        day,
-        bashoName,
-        east: { id: east.id, shikona: east.shikona, style: east.style, archetype: east.archetype, rankLabel: east.rank },
-        west: { id: west.id, shikona: west.shikona, style: west.style, archetype: west.archetype, rankLabel: west.rank },
-      };
-      return buildPbpFromBoutResult(result, ctx);
+      return buildPbpFromBoutResult({ 
+        result, 
+        east: east as any, 
+        west: west as any, 
+        bashoName, 
+        day, 
+        seed: `${bashoName}-${day}-${east.id}-${west.id}` 
+      }) as any;
     } catch {
       return [];
     }
@@ -131,8 +131,8 @@ export function BoutNarrativeModal({
           <BoutReplayViewer
             key={replayKey}
             result={result}
-            eastRikishi={east}
-            westRikishi={west}
+            eastRikishi={east as any}
+            westRikishi={west as any}
             autoPlay
             className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
           />
@@ -149,8 +149,8 @@ export function BoutNarrativeModal({
             {/* Result card */}
             <BoutResultDisplay
               result={result}
-              eastRikishi={east}
-              westRikishi={west}
+              eastRikishi={east as any}
+              westRikishi={west as any}
               className="border shadow-none"
             />
 

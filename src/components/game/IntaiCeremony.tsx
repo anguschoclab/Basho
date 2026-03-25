@@ -13,13 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 
 /** Defines the structure for intai ceremony props. */
 interface IntaiCeremonyProps {
-  rikishi: Rikishi;
+  rikishi: UIRikishi;
   reason: string;
   world: WorldState;
   open: boolean;
@@ -32,7 +32,7 @@ interface IntaiCeremonyProps {
  *  * @param reason - The Reason.
  *  * @returns The result.
  */
-function getCareerNarrative(r: Rikishi, reason: string): string[] {
+function getCareerNarrative(r: UIRikishi, reason: string): string[] {
   const lines: string[] = [];
   const rankInfo = RANK_HIERARCHY[r.rank];
   const rankJa = rankInfo?.nameJa ?? r.rank;
@@ -48,16 +48,16 @@ function getCareerNarrative(r: Rikishi, reason: string): string[] {
   const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
   if (totalBouts > 0) {
     lines.push(
-      `Career record: ${r.careerWins || 0} wins, ${r.careerLosses || 0} losses across an estimated ${Math.ceil(totalBouts / 15)} tournaments.`
+      `Career record: ${r.careerRecord} across an estimated ${Math.ceil(totalBouts / 15)} tournaments.`
     );
   }
 
-  if (r.careerRecord?.yusho && r.careerRecord.yusho > 0) {
-    lines.push(`Championship titles: ${r.careerRecord.yusho} yūshō — a remarkable achievement.`);
+  if (r.careerYusho && r.careerYusho > 0) {
+    lines.push(`Championship titles: ${r.careerYusho} yūshō — a remarkable achievement.`);
   }
 
-  if (r.economics?.kinboshiCount && r.economics.kinboshiCount > 0) {
-    lines.push(`Earned ${r.economics.kinboshiCount} kinboshi (gold star) victories over yokozuna.`);
+  if (r.achievements?.kinboshiEarned && r.achievements.kinboshiEarned > 0) {
+    lines.push(`Earned ${r.achievements.kinboshiEarned} kinboshi (gold star) victories over yokozuna.`);
   }
 
   lines.push(
@@ -117,11 +117,11 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
                 <div className="text-[10px] text-muted-foreground uppercase">Career Wins</div>
               </div>
               <div className="text-center p-2 rounded bg-muted/50">
-                <div className="text-lg font-bold font-mono">{rikishi.careerRecord?.yusho || 0}</div>
+                <div className="text-lg font-bold font-mono">{rikishi.careerYusho || 0}</div>
                 <div className="text-[10px] text-muted-foreground uppercase">Yūshō</div>
               </div>
               <div className="text-center p-2 rounded bg-muted/50">
-                <div className="text-lg font-bold font-mono">{rikishi.economics?.kinboshiCount || 0}</div>
+                <div className="text-lg font-bold font-mono">{rikishi.achievements?.kinboshiEarned || 0}</div>
                 <div className="text-[10px] text-muted-foreground uppercase">Kinboshi</div>
               </div>
             </div>

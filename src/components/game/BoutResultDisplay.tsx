@@ -3,7 +3,7 @@
 
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import { Badge } from "@/components/ui/badge";
 import { getKimarite } from "@/engine/kimarite";
 import { RikishiName } from "@/components/ClickableName";
@@ -12,8 +12,8 @@ import { Trophy, Zap, Timer, Shield } from "lucide-react";
 /** Defines the structure for bout result display props. */
 interface BoutResultDisplayProps {
   result: BoutResult;
-  eastRikishi: Rikishi;
-  westRikishi: Rikishi;
+  eastRikishi: UIRikishi;
+  westRikishi: UIRikishi;
   className?: string;
 }
 

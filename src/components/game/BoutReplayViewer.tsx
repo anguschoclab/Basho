@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { BoutResult } from "@/engine/types/basho";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import { Play, Pause, RotateCcw, SkipForward, Volume2, VolumeX } from "lucide-react";
 
 /** Defines the structure for bout replay viewer props. */
 interface BoutReplayViewerProps {
   result: BoutResult;
-  eastRikishi: Rikishi;
-  westRikishi: Rikishi;
+  eastRikishi: UIRikishi;
+  westRikishi: UIRikishi;
   className?: string;
   autoPlay?: boolean;
   onComplete?: () => void;
@@ -721,7 +721,7 @@ function drawRikishi(
   W: number,
   H: number,
   side: "east" | "west",
-  rikishi: Rikishi,
+  rikishi: UIRikishi,
   isDark: boolean,
   isWinner: boolean
 ) {
@@ -739,7 +739,7 @@ function drawRikishi(
   ctx.globalAlpha = state.opacity;
 
   // Body sizing based on weight
-  const weightFactor = Math.min(1.4, Math.max(0.8, (rikishi.weight || 130) / 150));
+  const weightFactor = Math.min(1.4, Math.max(0.8, ((rikishi as any).weight || 130) / 150));
   const bodyW = 28 * weightFactor;
   const bodyH = 32 * weightFactor;
 
@@ -872,7 +872,7 @@ function getPhaseLabel(phase: ReplayPhase): string {
  *  * @param west - The West.
  *  * @returns The result.
  */
-function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, east: Rikishi, west: Rikishi): string {
+function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, east: UIRikishi, west: UIRikishi): string {
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 

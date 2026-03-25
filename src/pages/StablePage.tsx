@@ -8,8 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "@/engine/types/narrative";
-import type { Rikishi } from "@/engine/types/rikishi";
-import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
+import { projectRosterEntry, projectRikishi, type UIRosterEntry, type UIRikishi } from "@/presenters/uiModels";
 import {
   Activity,
   AlertTriangle,
@@ -49,8 +48,11 @@ export default function StablePage() {
 
   const rikishiList = useMemo(() => {
     return heya.rikishiIds
-      .map((id) => world.rikishi.get(id))
-      .filter(Boolean) as Rikishi[];
+      .map((id) => {
+        const r = world.rikishi.get(id);
+        return r ? projectRikishi(r, world) : null;
+      })
+      .filter(Boolean) as UIRikishi[];
   }, [heya, world]);
 
   const lineage = heya.lineage || [];

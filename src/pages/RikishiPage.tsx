@@ -28,7 +28,7 @@ import {
   User
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { formatRank } from "@/engine/banzuke";
+import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -39,12 +39,14 @@ export default function RikishiPage() {
 
   if (!world || !rikishiId) return null;
 
-  const rikishi = world.rikishi.get(rikishiId);
-  if (!rikishi) return <div>Rikishi not found</div>;
+  const rawRikishi = world.rikishi.get(rikishiId);
+  if (!rawRikishi) return <div>Rikishi not found</div>;
+
+  const rikishi = projectRikishi(rawRikishi, world);
 
   const isOwned = rikishi.heyaId === playerHeyaId;
-  const history = rikishi.careerHistory || [];
-  const milestones = rikishi.milestones || [];
+  const history = rikishi.careerHistory;
+  const milestones = rikishi.milestones;
 
   return (
     <AppLayout pageTitle={`${rikishi.shikona} - Profile`}>
@@ -64,14 +66,14 @@ export default function RikishiPage() {
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge className={`rank-${rikishi.rank}`}>
-                    {formatRank({ rank: rikishi.rank, rankNumber: rikishi.rankNumber, side: rikishi.side } as any)}
+                    {rikishi.rankLabel}
                   </Badge>
                   {isOwned && <Badge variant="secondary">My Stable</Badge>}
                 </div>
                 <h1 className="text-4xl font-display font-bold">{rikishi.shikona}</h1>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {rikishi.origin || rikishi.nationality}</span>
-                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Age {world.year - rikishi.birthYear}</span>
+                  <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {rikishi.origin}</span>
+                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Age {rikishi.age}</span>
                   <span className="flex items-center gap-1"><Ruler className="h-3.5 w-3.5" /> {rikishi.height}cm</span>
                   <span className="flex items-center gap-1"><Scale className="h-3.5 w-3.5" /> {rikishi.weight}kg</span>
                 </div>
@@ -85,9 +87,9 @@ export default function RikishiPage() {
                    <div className="text-3xl font-mono font-bold">{rikishi.careerWins}-{rikishi.careerLosses}</div>
                    <div className="text-[10px] uppercase text-muted-foreground font-semibold">Career Record</div>
                  </div>
-                 {rikishi.careerRecord?.yusho > 0 && (
+                 {rikishi.careerYusho > 0 && (
                    <div>
-                     <div className="text-3xl font-mono font-bold text-amber-500">{rikishi.careerRecord.yusho}</div>
+                     <div className="text-3xl font-mono font-bold text-amber-500">{rikishi.careerYusho}</div>
                      <div className="text-[10px] uppercase text-muted-foreground font-semibold">Yūshō</div>
                    </div>
                  )}

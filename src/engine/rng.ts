@@ -72,3 +72,12 @@ export function rngFromSeed(seed: string, subsystem: string, label: string): See
 export function rngForWorld(world: WorldState, subsystem: string, label: string): SeededRNG {
   return rngFromSeed(world.seed, subsystem, label);
 }
+
+let _globalSeed = "default";
+export function setSeed(seed: string) {
+  _globalSeed = seed;
+}
+
+export function random(): number {
+  return new SeededRNG(_globalSeed).next();
+}

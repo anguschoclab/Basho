@@ -9,7 +9,7 @@ import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-rea
 import { RikishiName } from "@/components/ClickableName";
 import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { getOzekiRunCandidates, getYokozunaCandidates, getKadobanDrama, OzekiRunCandidate, YokozunaCandidate } from "@/presenters/uiDigest";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Scale, Users, Star, Scroll } from "lucide-react";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 
 /** Defines the structure for deliberation props. */
 interface DeliberationProps {
-  rikishi: Rikishi;
+  rikishi: UIRikishi;
   world: WorldState;
   open: boolean;
   onClose: () => void;
@@ -94,9 +94,9 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
                 {heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"} • Ōzeki
               </p>
               <div className="flex items-center gap-2 mt-1 text-xs">
-                <span>Career: {rikishi.careerWins}-{rikishi.careerLosses}</span>
+                <span>Record: {rikishi.careerRecord}</span>
                 <span>•</span>
-                <span>Yūshō: {rikishi.careerRecord?.yusho ?? 0}</span>
+                <span>Yūshō: {rikishi.careerYusho}</span>
               </div>
             </div>
           </div>

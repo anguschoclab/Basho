@@ -7,13 +7,14 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import { toInjuryEvent, clearInjury } from "@/engine/injuries";
+import { projectRikishi } from "@/presenters/uiModels";
 
 /** Defines the structure for injured rikishi info. */
 interface InjuredRikishiInfo {
-  rikishi: Rikishi;
+  rikishi: UIRikishi;
   severity: string;
   location: string;
   weeksRemaining: number;
@@ -74,7 +75,7 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
       const facilityBonus = Math.round((recoveryFacility - 50) / 10); // -5 to +5 weeks effect
 
       result.push({
-        rikishi: r,
+        rikishi: projectRikishi(r, world),
         severity: typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
         location: injuryStatus?.location || "unknown",
         weeksRemaining,

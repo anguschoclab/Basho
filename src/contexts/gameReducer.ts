@@ -9,6 +9,7 @@ import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { mediaSlice } from "./mediaSlice";
+import { tickOrchestrator } from "@/engine/tick/tickOrchestrator";
 
 /** 
  * Core generic actions that don't fit cleanly into a domain slice 
@@ -19,13 +20,21 @@ function coreSlice(state: GameState, action: GameAction): GameState {
     case "CREATE_WORLD": {
       const world = generateWorld({ seed: action.seed });
       const playerHeyaId = action.playerHeyaId || null;
+      
+      const nextWorld = { ...world, playerHeyaId: playerHeyaId || undefined };
+      
       if (playerHeyaId) {
         const heya = world.heyas.get(playerHeyaId);
-        if (heya) heya.isPlayerOwned = true;
+        if (heya) {
+          const updatedHeya = { ...heya, isPlayerOwned: true };
+          nextWorld.heyas = new Map(world.heyas);
+          nextWorld.heyas.set(playerHeyaId, updatedHeya);
+        }
       }
+      
       return {
         ...state,
-        world: { ...world, playerHeyaId: playerHeyaId || undefined },
+        world: nextWorld,
         playerHeyaId,
         phase: playerHeyaId ? "interim" : "menu",
       };
@@ -46,6 +55,13 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         world: action.world,
         playerHeyaId: action.world.playerHeyaId || null,
         phase: action.world.playerHeyaId ? "interim" : "menu",
+      };
+
+    case "TICK_DAY":
+      if (!state.world) return state;
+      return {
+        ...state,
+        world: tickOrchestrator(state.world),
       };
 
     default:
