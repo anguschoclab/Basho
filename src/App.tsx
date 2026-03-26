@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { GameProvider } from "./contexts/GameContext";
+import { OpfsQuotaListener } from "./components/OpfsQuotaListener";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { router } from "./routes";
 
@@ -15,6 +16,7 @@ const App = () => (
       <TooltipProvider>
         <GameProvider>
           <Toaster />
+          <OpfsQuotaListener />
           <Sonner />
           <RouterProvider router={router} />
         </GameProvider>
