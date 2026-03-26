@@ -77,3 +77,18 @@ describe("UI Models Projections", () => {
     });
   });
 });
+import { getLocalizedArchetype } from "../uiModels";
+
+describe("Narrative Leakage - Archetype Localizer", () => {
+  it("Test A: Translation Selector", () => {
+    // Should map the enum string to a nice string
+    expect(getLocalizedArchetype("trickster")).toBe("Acrobatic Trickster");
+    expect(getLocalizedArchetype("oshi")).toBe("Explosive Blitzer");
+  });
+
+  it("Test B: Fallback Handling", () => {
+    // undefined or unknown should return "All-Rounder" or safe fallback
+    expect(getLocalizedArchetype(undefined as any)).toBe("All-Rounder");
+    expect(getLocalizedArchetype("unknown_enum" as any)).toBe("Unknown");
+  });
+});

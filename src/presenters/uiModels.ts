@@ -212,7 +212,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const styleInfo = STYLE_NAMES[r.style];
   const styleName = styleInfo?.label ?? r.style;
   const archInfo = ARCHETYPE_NAMES[r.archetype];
-  const archetypeName = archInfo?.label ?? r.archetype;
+  // Prevent narrative leakage: Use localized string instead of raw enum fallback
+  const archetypeName = archInfo?.label ?? getLocalizedArchetype(r.tacticalArchetypePrimary);
 
   const derivedArchetype = r.derivedArchetype || "All_Rounder";
   const derivedArchetypeName = ARCHETYPE_LABELS[derivedArchetype]?.label ?? "All-Rounder";
@@ -390,6 +391,19 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     archetypeLabel: r.derivedArchetype ? ARCHETYPE_LABELS[r.derivedArchetype]?.label : undefined,
     rankDelta,
   };
+}
+
+export function getLocalizedArchetype(archetype?: import("../engine/types/combat").CombatArchetype): string {
+    if (!archetype) return "All-Rounder";
+    const map: Record<string, string> = {
+        oshi: "Explosive Blitzer",
+        giant: "Immovable Mountain",
+        trickster: "Acrobatic Trickster",
+        yotsu: "Defensive Stalwart",
+        hybrid: "Dynamic Tactician",
+        speedster: "Lightning Specialist",
+    };
+    return map[archetype] || "Unknown";
 }
 
 // ─────────────────────────────────────────

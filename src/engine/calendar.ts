@@ -262,3 +262,7 @@ export function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
   };
   return numbers[name];
 }
+
+export function isBashoMonth(month: number): boolean {
+  return month % 2 !== 0;
+}
