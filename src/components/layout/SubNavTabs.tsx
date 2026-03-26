@@ -2,6 +2,7 @@
 // Sits between the top nav bar and the main content area
 
 import { useNavigate, useLocation } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 /** Defines the structure for sub nav tab. */
 export interface SubNavTab {
@@ -14,33 +15,38 @@ export interface SubNavTab {
 /** Defines the structure for sub nav tabs props. */
 interface SubNavTabsProps {
   tabs: SubNavTab[];
-  activeTab: string;
+  activeTab?: string;
   onTabChange?: (tabId: string) => void;
   /** Page title shown left of tabs */
   pageTitle?: string;
+  className?: string;
 }
 
 /**
  * sub nav tabs.
- *  * @param { tabs, activeTab, onTabChange, pageTitle } - The { tabs, active tab, on tab change, page title }.
+ * FM-inspired sub-navigation for deep-dives.
  */
-export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle }: SubNavTabsProps) {
+export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className }: SubNavTabsProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <div className="border-b border-border bg-card/60 backdrop-blur">
-      <div className="flex items-center gap-4 px-4 md:px-6 max-w-[1400px] mx-auto">
+    <div className={cn("border-b border-border/50 bg-card/30 backdrop-blur-md sticky top-0 z-30", className)}>
+      <div className="flex items-center h-12 px-6 max-w-[1600px] mx-auto gap-8">
         {/* Page title */}
         {pageTitle && (
-          <h1 className="font-display font-bold text-sm md:text-base py-2 shrink-0 mr-2">
-            {pageTitle}
-          </h1>
+          <div className="flex items-center gap-3 shrink-0 py-1">
+            <h1 className="font-bold text-sm uppercase tracking-tight text-foreground">
+              {pageTitle}
+            </h1>
+            <div className="h-4 w-[1px] bg-border/60" />
+          </div>
         )}
         
         {/* Tabs */}
-        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none -mb-px">
+        <nav className="flex items-center h-full gap-1 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
+            const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
             return (
               <button
                 key={tab.id}
@@ -49,19 +55,25 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle }: SubNavTa
                     navigate({ to: tab.href as any });
                   } else {
                     onTabChange?.(tab.id);
-                  }}
-                className={`
-                  relative px-3 py-2.5 text-xs font-medium whitespace-nowrap transition-colors
-                  ${isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
                   }
-                `}
+                }}
+                className={cn(
+                  "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                {tab.label}
+                <span className="relative z-10">{tab.label.toUpperCase()}</span>
+                
+                {/* Hover effect background */}
+                {!isActive && (
+                  <div className="absolute inset-x-1 inset-y-2 rounded-md bg-muted/0 group-hover:bg-muted/50 transition-colors duration-200" />
+                )}
+
                 {/* Active indicator bar */}
                 {isActive && (
-                  <span className="absolute bottom-0 left-1 right-1 h-0.5 bg-primary rounded-t-full" />
+                  <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary animate-in fade-in slide-in-from-bottom-1 duration-300 shadow-[0_-2px_10px_rgba(var(--primary),0.3)]" />
                 )}
               </button>
             );

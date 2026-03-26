@@ -2,6 +2,8 @@ import React from 'react';
 import { UIRikishi } from "../../presenters/uiModels";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { Progress } from "../ui/progress";
+import { UserPlus } from "lucide-react";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;
@@ -57,6 +59,26 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
               <p className="font-medium">{rikishi.weight} kg</p>
             </div>
           </div>
+
+          {rikishi.nationality !== 'Japan' && (
+            <div className="pt-2 border-t border-primary/5 bg-amber-500/5 -mx-6 px-6 py-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-[10px] uppercase tracking-widest text-amber-600 font-bold flex items-center gap-1">
+                  <UserPlus className="h-3 w-3" /> Residency Tracker
+                </h4>
+                <span className="text-[10px] font-mono font-bold text-amber-600">
+                  {Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100))}%
+                </span>
+              </div>
+              <Progress 
+                value={Math.min(100, (rikishi.careerHistory.length / 60) * 100)} 
+                className="h-1 bg-amber-200/50" 
+              />
+              <p className="text-[8px] text-amber-700/70 mt-1 uppercase font-bold tracking-tighter">
+                Progress towards Japanese Citizenship (10yr target)
+              </p>
+            </div>
+          )}
 
           <div className="pt-2 border-t border-primary/5">
             <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Career Prestige</h4>

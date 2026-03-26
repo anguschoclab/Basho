@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router'
+import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router'
 import App from './App'
 import MainMenu from './pages/MainMenu'
 import NewGameWizard from './pages/NewGameWizard'
@@ -22,180 +22,72 @@ import HistoryPage from './pages/HistoryPage'
 import AlmanacPage from './pages/AlmanacPage'
 import MediaPage from './pages/MediaPage'
 import HallOfFamePage from './pages/HallOfFamePage'
-// MyosekiMarketPage already imported above
 import InjuryRecoveryPage from './pages/InjuryRecoveryPage'
 import SponsorManagementPage from './pages/SponsorManagementPage'
 import SettingsPage from './pages/SettingsPage'
+import StaffPage from './pages/StaffPage'
+import TrendsPage from './pages/TrendsPage'
 import NotFound from './pages/NotFound'
-import { Outlet } from '@tanstack/react-router'
 
+// Root route
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
 })
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: Dashboard,
-})
+// Auth/Main Menu routes
+const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: Dashboard })
+const mainMenuRoute = createRoute({ getParentRoute: () => rootRoute, path: '/main-menu', component: MainMenu })
+const newGameRoute = createRoute({ getParentRoute: () => rootRoute, path: '/new-game', component: NewGameWizard })
+const dashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: '/dashboard', component: Dashboard })
+const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/settings', component: SettingsPage })
+const recapRoute = createRoute({ getParentRoute: () => rootRoute, path: '/recap', component: RecapPage })
 
-const mainMenuRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/main-menu',
-  component: MainMenu,
-})
+// --- STABLE SECTION ---
+const stableBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/stable' })
+const stableIndexRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/', component: StablePage })
+const stableIdRoute = createRoute({ getParentRoute: () => rootRoute, path: '/stable/$id', component: StablePage })
+const stableRosterRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/roster', component: RikishiPage })
+const stableTrainingRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/training', component: TrainingPage })
+const stableMedicalRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/medical', component: InjuryRecoveryPage })
+const stableStaffRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/staff', component: StaffPage })
+const stableOyakataRoute = createRoute({ getParentRoute: () => stableBaseRoute, path: '/oyakata', component: OyakataPage })
 
-const dashboardRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/dashboard',
-  component: Dashboard,
-})
+// --- OFFICE SECTION ---
+const officeBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/office' })
+const officeFinanceRoute = createRoute({ getParentRoute: () => rootRoute, path: '/economy', component: EconomyPage }) // Keep for legacy compat
+const officeFinancesNestedRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/finances', component: EconomyPage })
+const officeScoutingRoute = createRoute({ getParentRoute: () => rootRoute, path: '/scouting', component: ScoutingPage })
+const officeScoutingNestedRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/scouting', component: ScoutingPage })
+const officeSponsorsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/sponsors', component: SponsorManagementPage })
+const officeSponsorsNestedRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/sponsors', component: SponsorManagementPage })
+const officeFacilitiesRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/facilities', component: () => <div>Facilities Page (TBD)</div> })
 
-const stableRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/stable',
-  component: StablePage,
-})
+// --- ASSOCIATION (JSA) SECTION ---
+const jsaBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/jsa' })
+const jsaGovernanceRoute = createRoute({ getParentRoute: () => rootRoute, path: '/governance', component: GovernancePage })
+const jsaGovernanceNestedRoute = createRoute({ getParentRoute: () => jsaBaseRoute, path: '/governance', component: GovernancePage })
+const jsaTrendsRoute = createRoute({ getParentRoute: () => jsaBaseRoute, path: '/trends', component: TrendsPage })
+const jsaTalentRoute = createRoute({ getParentRoute: () => rootRoute, path: '/talent', component: TalentPoolPage })
+const jsaTalentNestedRoute = createRoute({ getParentRoute: () => jsaBaseRoute, path: '/talent', component: TalentPoolPage })
+const jsaMyosekiRoute = createRoute({ getParentRoute: () => rootRoute, path: '/myoseki', component: MyosekiMarketPage })
 
-const stableIdRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/stable/$id',
-  component: StablePage,
-})
+// --- TOURNAMENT SECTION ---
+const tournamentBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/tournament' })
+const bashoRoute = createRoute({ getParentRoute: () => rootRoute, path: '/basho', component: BashoPage })
+const banzukeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/banzuke', component: BanzukePage })
+const scheduleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/schedule', component: SchedulePage })
+const rivalriesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/rivalries', component: RivalriesPage })
 
-const trainingRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/training',
-  component: TrainingPage,
-})
+// --- ARCHIVES SECTION ---
+const historyRoute = createRoute({ getParentRoute: () => rootRoute, path: '/history', component: HistoryPage })
+const almanacRoute = createRoute({ getParentRoute: () => rootRoute, path: '/almanac', component: AlmanacPage })
+const mediaRoute = createRoute({ getParentRoute: () => rootRoute, path: '/media', component: MediaPage })
+const hallOfFameRoute = createRoute({ getParentRoute: () => rootRoute, path: '/hall-of-fame', component: HallOfFamePage })
 
-const oyakataRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/oyakata',
-  component: OyakataPage,
-})
+// Rikishi specific (Deep Dive)
+const rikishiRoute = createRoute({ getParentRoute: () => rootRoute, path: '/rikishi', component: RikishiPage })
+const rikishiIdRoute = createRoute({ getParentRoute: () => rootRoute, path: '/rikishi/$rikishiId', component: RikishiPage })
 
-const rikishiRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/rikishi',
-  component: RikishiPage,
-})
-
-const rikishiIdRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/rikishi/$rikishiId',
-  component: RikishiPage,
-})
-
-const bashoRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/basho',
-  component: BashoPage,
-})
-
-const scheduleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/schedule',
-  component: SchedulePage,
-})
-
-const banzukeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/banzuke',
-  component: BanzukePage,
-})
-
-const rivalriesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/rivalries',
-  component: RivalriesPage,
-})
-
-const economyRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/economy',
-  component: EconomyPage,
-})
-
-const talentRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/talent',
-  component: TalentPoolPage,
-})
-
-const scoutingRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/scouting',
-  component: ScoutingPage,
-})
-
-const governanceRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/governance',
-  component: GovernancePage,
-})
-
-const recapRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/recap',
-  component: RecapPage,
-})
-
-const historyRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/history',
-  component: HistoryPage,
-})
-
-const almanacRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/almanac',
-  component: AlmanacPage,
-})
-
-const mediaRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/media',
-  component: MediaPage,
-})
-
-const hallOfFameRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/hall-of-fame',
-  component: HallOfFamePage,
-})
-
-const myosekiRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/myoseki',
-  component: MyosekiMarketPage,
-})
-
-const injuriesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/injuries',
-  component: InjuryRecoveryPage,
-})
-
-const sponsorsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/sponsors',
-  component: SponsorManagementPage,
-})
-
-const settingsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/settings',
-  component: SettingsPage,
-})
-
-// Add catch-all route correctly in Tanstack Router v1
-
-const newGameRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/new-game',
-  component: NewGameWizard,
-})
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '$',
@@ -207,29 +99,57 @@ const routeTree = rootRoute.addChildren([
   mainMenuRoute,
   newGameRoute,
   dashboardRoute,
-  stableRoute,
-  stableIdRoute,
-  trainingRoute,
-  oyakataRoute,
-  rikishiRoute,
-  rikishiIdRoute,
-  bashoRoute,
-  scheduleRoute,
-  banzukeRoute,
-  rivalriesRoute,
-  economyRoute,
-  talentRoute,
-  scoutingRoute,
-  governanceRoute,
-  myosekiRoute,
+  settingsRoute,
   recapRoute,
+  
+  // Stable
+  stableBaseRoute.addChildren([
+    stableIndexRoute,
+    stableRosterRoute,
+    stableTrainingRoute,
+    stableMedicalRoute,
+    stableStaffRoute,
+    stableOyakataRoute,
+  ]),
+  stableIdRoute,
+
+  // Office
+  officeBaseRoute.addChildren([
+    officeFinancesNestedRoute,
+    officeScoutingNestedRoute,
+    officeSponsorsNestedRoute,
+    officeFacilitiesRoute,
+  ]),
+  officeFinanceRoute,
+  officeScoutingRoute,
+  officeSponsorsRoute,
+
+  // Association
+  jsaBaseRoute.addChildren([
+    jsaGovernanceNestedRoute,
+    jsaTrendsRoute,
+    jsaTalentNestedRoute,
+  ]),
+  jsaGovernanceRoute,
+  jsaTalentRoute,
+  jsaMyosekiRoute,
+
+  // Tournament (legacy top-level for now)
+  bashoRoute,
+  banzukeRoute,
+  scheduleRoute,
+  rivalriesRoute,
+
+  // Archives
   historyRoute,
   almanacRoute,
   mediaRoute,
   hallOfFameRoute,
-  injuriesRoute,
-  sponsorsRoute,
-  settingsRoute,
+
+  // Rikishi
+  rikishiRoute,
+  rikishiIdRoute,
+
   notFoundRoute,
 ])
 

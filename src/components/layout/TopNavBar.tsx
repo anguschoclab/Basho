@@ -1,168 +1,34 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import {
-  LayoutDashboard,
-  Home,
-  Users,
-  Trophy,
-  ScrollText,
-  Swords,
-  Coins,
-  History,
-  BookOpen,
-  Scale,
-  Search,
-  UserSearch,
-  Newspaper,
-  Dumbbell,
-  Crown,
-  ChevronDown,
   Sun,
   Moon,
-  Settings,
-  Play,
-  FastForward,
   ChevronRight,
-  PanelLeftClose,
-  PanelLeftOpen,
+  TrendingUp,
+  Wallet,
+  Calendar,
+  Settings,
+  Menu,
 } from "lucide-react";
-import type { ReactNode } from "react";
-
-/** Defines the structure for nav group. */
-interface NavGroup {
-  label: string;
-  items: { title: string; url: string; icon: any }[];
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: "Stable",
-    items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "My Stable", url: "/stable", icon: Home },
-      { title: "Training", url: "/training", icon: Dumbbell },
-      { title: "Oyakata", url: "/oyakata", icon: Crown },
-      { title: "Rikishi", url: "/rikishi", icon: Users },
-    ],
-  },
-  {
-    label: "Competition",
-    items: [
-      { title: "Basho", url: "/basho", icon: Trophy },
-      { title: "Banzuke", url: "/banzuke", icon: ScrollText },
-      { title: "Rivalries", url: "/rivalries", icon: Swords },
-    ],
-  },
-  {
-    label: "Management",
-    items: [
-      { title: "Economy", url: "/economy", icon: Coins },
-      { title: "Scouting", url: "/scouting", icon: Search },
-      { title: "Talent Pools", url: "/talent", icon: UserSearch },
-      { title: "Governance", url: "/governance", icon: Scale },
-    ],
-  },
-  {
-    label: "Records",
-    items: [
-      { title: "Recap", url: "/recap", icon: Newspaper },
-      { title: "History", url: "/history", icon: History },
-      { title: "Almanac", url: "/almanac", icon: BookOpen },
-      { title: "Media", url: "/media", icon: Newspaper },
-      { title: "Hall of Fame", url: "/hall-of-fame", icon: History },
-    ],
-  },
-];
-
-/**
- * nav dropdown.
- *  * @param { group } - The { group }.
- */
-function NavDropdown({ group }: { group: NavGroup }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isGroupActive = group.items.some((i) => location.pathname === i.url);
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className={`gap-1 text-xs font-medium uppercase tracking-wider ${
-            isGroupActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {group.label}
-          <ChevronDown className="h-3 w-3" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-[180px]">
-        {group.items.map((item) => {
-          const active = location.pathname === item.url;
-          return (
-            <DropdownMenuItem
-              key={item.url}
-              onClick={() => navigate({ to: item.url as any })}
-              className={active ? "bg-primary/10 text-primary" : ""}
-            >
-              <item.icon className="h-4 w-4 mr-2" />
-              {item.title}
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-// Quick nav links visible directly (not in dropdown) for common pages
-/**
- * quick nav link.
- *  * @param { url, label, icon: Icon } - The { url, label, icon:  icon }.
- */
-function QuickNavLink({ url, label, icon: Icon }: { url: string; label: string; icon: any }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const active = location.pathname === url;
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => navigate({ to: url as any })}
-      className={`text-xs ${active ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
-    >
-      <Icon className="h-3.5 w-3.5 mr-1" />
-      {label}
-    </Button>
-  );
-}
-
-/** Defines the structure for top nav bar props. */
-interface TopNavBarProps {
-  eventLogOpen: boolean;
-  onToggleEventLog: () => void;
-}
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
  * top nav bar.
- *  * @param { eventLogOpen, onToggleEventLog } - The { event log open, on toggle event log }.
+ * FM-inspired global context bar.
  */
-export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
-  const { state, advanceInterim, advanceOneDay, startBasho } = useGame();
-  const { theme, setTheme, resolvedTheme } = useTheme();
+export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: boolean; onToggleEventLog: () => void }) {
+  const { state, advanceOneDay } = useGame();
+  const { setTheme, resolvedTheme } = useTheme();
   const autosaveStatus = useAutosaveIndicator();
   const navigate = useNavigate();
   const world = state.world;
@@ -173,165 +39,114 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
 
   // Format date display
   const dateLabel = world
-    ? `${world.calendar?.year ?? world.year} · W${world.calendar?.currentWeek ?? world.week}`
-    : "";
+    ? `Year ${world.calendar?.year ?? world.year} · Week ${world.calendar?.currentWeek ?? world.week}`
+    : "Initializing...";
 
   const phaseLabel = world?.cyclePhase === "active_basho"
-    ? (bashoDay != null ? `Day ${bashoDay}日目` : "Active Basho")
+    ? `Day ${bashoDay ?? 1} (Tournament)`
     : world?.cyclePhase === "pre_basho"
-      ? "Pre-Basho"
+      ? "Pre-Basho Prep"
       : world?.cyclePhase === "post_basho"
-        ? "Post-Basho"
-        : "Interim";
+        ? "Post-Basho Review"
+        : "Interim Training";
 
   const handleContinue = () => {
     if (!world) return;
-    if (world.cyclePhase === "interim" || world.cyclePhase === "pre_basho") {
-      advanceOneDay();
-    } else if (world.cyclePhase === "post_basho") {
-      advanceOneDay();
-    };
+    advanceOneDay();
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      {/* Primary row - brand + nav groups + date/controls */}
-      <div className="flex items-center h-11 px-2 gap-1">
-        {/* Event log toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0"
-          onClick={onToggleEventLog}
-          title={eventLogOpen ? "Hide event log" : "Show event log"}
-          aria-label={eventLogOpen ? "Hide event log" : "Show event log"}
-        >
-          {eventLogOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-        </Button>
-
-        {/* Brand */}
-        <button
-          onClick={() => navigate({ to: "/dashboard" })}
-          className="flex items-center gap-2 px-2 shrink-0"
-          aria-label="Dashboard"
-        >
-          <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-display text-xs font-bold">力</span>
-          </div>
-          <span className="font-display font-bold text-sm hidden sm:inline">Sumo Manager</span>
-        </button>
-
-        {/* Stable name */}
-        {playerHeya && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate({ to: "/stable" })}
-            className="text-xs text-muted-foreground hover:text-foreground hidden md:flex"
-          >
-            {playerHeya.name}
-          </Button>
-        )}
-
-        {/* Nav groups - hidden on mobile, shown on md+ */}
-        <nav className="hidden lg:flex items-center gap-0.5 ml-2">
-          {navGroups.map((g) => (
-            <NavDropdown key={g.label} group={g} />
-          ))}
-        </nav>
-
-        {/* Mobile nav - single dropdown */}
-        <div className="lg:hidden ml-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-xs gap-1">
-                Navigate <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-[200px] max-h-[70vh] overflow-y-auto">
-              {navGroups.map((g) => (
-                <div key={g.label}>
-                  <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {g.label}
-                  </div>
-                  {g.items.map((item) => (
-                    <DropdownMenuItem key={item.url} onClick={() => navigate({ to: item.url as any })}>
-                      <item.icon className="h-4 w-4 mr-2" />
-                      {item.title}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                </div>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <header className="sticky top-0 z-50 w-full h-14 border-b border-border/50 bg-card/80 backdrop-blur-xl supports-[backdrop-filter]:bg-card/50 flex items-center justify-between px-4">
+      {/* Left section: Sidebar trigger + Global Context */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger />
+          <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
         </div>
 
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Autosave indicator + Save/Load + Theme toggle */}
-        {world && autosaveStatus !== "idle" && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground animate-in fade-in-0 duration-300">
-            {autosaveStatus === "saving" ? (
-              <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="10" className="opacity-25" />
-                <path d="M4 12a8 8 0 018-8" className="opacity-75" />
-              </svg>
-            ) : (
-              <svg className="h-3.5 w-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            )}
-            <span className="hidden sm:inline">{autosaveStatus === "saving" ? "Saving…" : "Saved"}</span>
-          </div>
-        )}
-        {world && <SaveLoadDialog />}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          aria-label={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-        >
-          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
-
-        {/* Date / Phase display */}
-        {world && (
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="text-right hidden sm:block">
-              <div className="text-[10px] text-muted-foreground leading-tight">{dateLabel}</div>
-              <div className="text-xs font-medium leading-tight">{phaseLabel}</div>
+        <div className="flex items-center gap-8 hidden lg:flex">
+          {/* Calendar Context */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Calendar className="h-3 w-3" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">{dateLabel}</span>
             </div>
-
-            {/* Continue button */}
-            {!inBasho && (
-              <Button
-                size="sm"
-                className="h-8 gap-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                onClick={handleContinue}
-              >
-                Continue
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
-            )}
+            <span className="text-sm font-bold leading-tight">{phaseLabel}</span>
           </div>
-        )}
+
+          {/* Economic Context */}
+          {playerHeya && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex flex-col cursor-help">
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Wallet className="h-3 w-3" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Stable Funds</span>
+                  </div>
+                  <span className={`text-sm font-bold leading-tight ${playerHeya.funds < 0 ? "text-destructive" : "text-foreground"}`}>
+                    ¥{playerHeya.funds.toLocaleString()}
+                  </span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Current balance for {playerHeya.name}</p>
+                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">
+                  Runway: {playerHeya.runwayBand}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+
+          {/* JSA Status Context */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <TrendingUp className="h-3 w-3" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">JSA Standing</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold leading-tight">Elite Stability</span>
+              <Badge variant="outline" className="h-4 text-[9px] uppercase tracking-tighter px-1">Meta: Oshi</Badge>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Secondary row - quick links (visible on md+) */}
-      <div className="hidden md:flex items-center h-8 px-2 gap-0.5 border-t border-border/50 bg-muted/30">
-        <QuickNavLink url="/dashboard" label="Overview" icon={LayoutDashboard} />
-        <QuickNavLink url="/basho" label="Basho" icon={Trophy} />
-        <QuickNavLink url="/banzuke" label="Banzuke" icon={ScrollText} />
-        <QuickNavLink url="/rikishi" label="Rikishi" icon={Users} />
-        <QuickNavLink url="/stable" label="Stable" icon={Home} />
-        <QuickNavLink url="/training" label="Training" icon={Dumbbell} />
-        <QuickNavLink url="/economy" label="Economy" icon={Coins} />
-        <QuickNavLink url="/scouting" label="Scouting" icon={Search} />
-        <div className="flex-1" />
-        <QuickNavLink url="/settings" label="Settings" icon={Settings} />
+      {/* Right section: System controls + Primary Action */}
+      <div className="flex items-center gap-3">
+        {/* Autosave & System stuff */}
+        <div className="flex items-center gap-1 mr-2 px-3 border-r border-border/50 h-6 hidden sm:flex">
+          {world && autosaveStatus !== "idle" && (
+            <div className={`h-2 w-2 rounded-full mr-2 ${autosaveStatus === "saving" ? "bg-primary animate-pulse" : "bg-emerald-500"}`} />
+          )}
+          <SaveLoadDialog />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          >
+            {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => navigate({ to: "/settings" as any })}>
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* The "Big Green Button" */}
+        {world && (
+          <Button
+            size="lg"
+            className={`
+              h-10 px-6 gap-2 font-bold shadow-lg shadow-primary/20 
+              transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
+              ${inBasho ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"}
+            `}
+            onClick={handleContinue}
+          >
+            <span>{inBasho ? "Advance Day" : "Continue"}</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </header>
   );

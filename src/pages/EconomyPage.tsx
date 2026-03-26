@@ -1,21 +1,3 @@
-// EconomyPage.tsx
-// Economy Page - Financial overview with narrative language
-// Economy Canon: minimize raw numbers in player-facing UI (use bands + descriptions)
-//
-// DROP-IN FIXES (runtime + canon):
-// - Canon rename: Basho (remove “Stable Lords” from titles)
-// - Fix playerHeya lookup: use state.playerHeyaId (not state.world.playerHeyaId)
-// - Guard optional fields (riskIndicators, bands, economics)
-// - Remove raw salary amounts section (replaced with narrative rank-based description)
-// - Avoid raw kenshō counts in UI (convert to banded labels + “rising/strong/legendary” tiers)
-// - Keep Progress bar as a narrative meter (no currency numbers shown)
-// - Add safe fallbacks when bands are missing in older saves
-//
-// ADDITIONAL HARDENING:
-// - Works even if RunwayBand / KoenkaiBandType types are missing/changed (safe string fallbacks)
-// - Never assumes playerHeya.rikishiIds exists
-// - No hook usage outside component scope
-
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -31,7 +13,6 @@ import {
   TrendingUp,
   TrendingDown,
   Users,
-  CircleDollarSign,
   Award,
   Shield,
   AlertTriangle,
@@ -84,7 +65,8 @@ const RUNWAY_CONFIG: Record<
     color: "text-red-400",
     icon: AlertTriangle,
     progressValue: 10
-  };
+  }
+};
 
 // Koenkai (supporter) descriptions
 const KOENKAI_CONFIG: Record<
@@ -125,7 +107,8 @@ const KOENKAI_CONFIG: Record<
     description: "No organized supporter group yet. You’re operating without a safety net.",
     color: "text-red-400",
     monthlySupport: "None"
-  };
+  }
+};
 
 // Expense categories (narrative)
 const EXPENSE_CATEGORIES = [
@@ -133,7 +116,7 @@ const EXPENSE_CATEGORIES = [
   { name: "Heya Operations", description: "Utilities, maintenance, and administration." },
   { name: "Training & Equipment", description: "Dohyo upkeep, supplies, and coaching costs." },
   { name: "Medical & Recovery", description: "Treatment, rehab, and injury prevention." },
-  { name: "Travel & Appearances", description: "Tours, events, and official obligations." }
+  { name: "Travel & Appearances", description: "Exhibitions, tours, and sanctioned events." }
 ];
 
 // Income sources (narrative)
@@ -146,11 +129,6 @@ const INCOME_SOURCES = [
 ];
 
 // Kensho tiering (narrative). This function uses counts internally but never shows them.
-/**
- * Kensho tier label.
- *  * @param total - The Total.
- *  * @returns The result.
- */
 function kenshoTierLabel(total: number): { label: string; detail: string } {
   if (total >= 200) return { label: "Legendary", detail: "A magnet for banners and sponsors." };
   if (total >= 80) return { label: "Star Earner", detail: "Frequently featured in sponsor bouts." };
@@ -160,22 +138,12 @@ function kenshoTierLabel(total: number): { label: string; detail: string } {
 }
 
 // Safe access helpers for older saves
-/**
- * Safe runway band.
- *  * @param v - The V.
- *  * @returns The result.
- */
 function safeRunwayBand(v: unknown): RunwayBand {
   const s = typeof v === "string" ? v : "";
   if (s === "secure" || s === "comfortable" || s === "tight" || s === "critical" || s === "desperate") return s;
   return "tight";
 }
 
-/**
- * Safe koenkai band.
- *  * @param v - The V.
- *  * @returns The result.
- */
 function safeKoenkaiBand(v: unknown): KoenkaiBandType {
   const s = typeof v === "string" ? v : "";
   if (s === "powerful" || s === "strong" || s === "moderate" || s === "weak" || s === "none") return s;
@@ -185,7 +153,6 @@ function safeKoenkaiBand(v: unknown): KoenkaiBandType {
 /** economy page. */
 export default function EconomyPage() {
   const { state } = useGame();
-
   const world = state.world;
 
   const playerHeya = useMemo(() => {
@@ -201,25 +168,25 @@ export default function EconomyPage() {
       .filter(Boolean) as Array<NonNullable<ReturnType<typeof world.rikishi.get>>>;
   }, [playerHeya, world]);
 
-  // Sekitori count (broad indicator; count is acceptable here)
+  // Sekitori count
   const sekitoriCount = useMemo(() => {
     if (!playerRikishi) return 0;
     let count = 0;
-    for (let i = 0; i < playerRikishi.length; i++) {
-      const r: any = playerRikishi[i];
+    for (const r of playerRikishi as any[]) {
       if (r?.division === "makuuchi" || r?.division === "juryo") {
         count++;
       }
+    }
     return count;
   }, [playerRikishi]);
 
-  // Top “sponsor draw” wrestlers (computed, displayed narratively)
+  // Top earnes
   const topEarners = useMemo(() => {
-    return playerRikishi
-      .filter((r: any) => r && typeof r === "object")
-      .sort((a: any, b: any) => {
-        const av = Number((a as any)?.economics?.careerKenshoWon ?? 0) || 0;
-        const bv = Number((b as any)?.economics?.careerKenshoWon ?? 0) || 0;
+    return (playerRikishi as any[])
+      .filter((r) => r && typeof r === "object")
+      .sort((a, b) => {
+        const av = Number(a?.economics?.careerKenshoWon ?? 0) || 0;
+        const bv = Number(b?.economics?.careerKenshoWon ?? 0) || 0;
         return bv - av;
       })
       .slice(0, 5);
@@ -232,8 +199,8 @@ export default function EconomyPage() {
   const runwayBand = safeRunwayBand((playerHeya as any).runwayBand);
   const koenkaiBand = safeKoenkaiBand((playerHeya as any).koenkaiBand);
 
-  const runwayConfig = RUNWAY_CONFIG[runwayBand];
-  const koenkaiConfig = KOENKAI_CONFIG[koenkaiBand];
+  const runwayConfig = RUNWAY_CONFIG[runwayBand] || RUNWAY_CONFIG.tight;
+  const koenkaiConfig = KOENKAI_CONFIG[koenkaiBand] || KOENKAI_CONFIG.none;
   const RunwayIcon = runwayConfig.icon;
 
   const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
@@ -247,17 +214,12 @@ export default function EconomyPage() {
   ];
 
   return (
-    <AppLayout
-      pageTitle="Economy"
-      subNavTabs={managementTabs}
-      activeSubTab="economy"
-    >
+    <AppLayout subNavTabs={managementTabs} activeSubTab="economy">
       <Helmet>
         <title>Economy — {playerHeya.name} | Basho</title>
       </Helmet>
 
       <div className="space-y-6">
-
         {/* Financial Health Overview */}
         <Card className="paper">
           <CardHeader>
@@ -289,6 +251,62 @@ export default function EconomyPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Debt & Obligations (FM v2.0) */}
+        {((playerHeya as any).activeLoans?.length > 0) && (
+          <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
+            <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <span className="text-xs font-bold text-destructive uppercase tracking-widest">Active Institutional Debt</span>
+            </div>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                {(playerHeya as any).activeLoans.map((loan: any) => (
+                  <div key={loan.id} className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive" className="uppercase text-[10px]">{loan.type} Loan</Badge>
+                        <span className="font-bold">{loan.providerName}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Remaining</div>
+                        <div className="text-lg font-bold">¥{loan.remainingBalance.toLocaleString()}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4 text-center py-2 border-y border-border/30">
+                      <div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Principal</div>
+                        <div className="text-sm font-medium">¥{loan.principal.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Interest</div>
+                        <div className="text-sm font-medium">{(loan.interestRate * 100).toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Monthly</div>
+                        <div className="text-sm font-bold text-destructive">¥{loan.monthlyPayment.toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    {loan.stringsAttached?.length > 0 && (
+                      <div className="space-y-1.5">
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Institutional Stipulations:</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {loan.stringsAttached.map((s: string) => (
+                            <Badge key={s} variant="outline" className="text-[9px] border-destructive/30 text-destructive bg-destructive/5 py-0">
+                              {s.replace(/_/g, " ").toUpperCase()}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Grid: Koenkai & Sekitori */}
         <div className="grid gap-6 md:grid-cols-2">
@@ -344,6 +362,8 @@ export default function EconomyPage() {
           </Card>
         </div>
 
+        <SponsorsPanel />
+
         {/* Income Sources */}
         <Card className="paper">
           <CardHeader>
@@ -392,7 +412,7 @@ export default function EconomyPage() {
           </CardContent>
         </Card>
 
-        {/* Sponsor Draw (Narrative; no raw kensho counts) */}
+        {/* Sponsor Draw */}
         {topEarners.length > 0 && (
           <Card className="paper">
             <CardHeader>
@@ -404,7 +424,7 @@ export default function EconomyPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {topEarners.map((r: any, i: number) => {
+                {topEarners.map((r, i) => {
                   const total = Number(r?.economics?.careerKenshoWon ?? 0) || 0;
                   const tier = kenshoTierLabel(total);
 
@@ -432,9 +452,6 @@ export default function EconomyPage() {
             </CardContent>
           </Card>
         )}
-
-        {/* Sponsors Panel */}
-        <SponsorsPanel />
 
         {/* Info Note */}
         <Card className="bg-muted/30 paper">

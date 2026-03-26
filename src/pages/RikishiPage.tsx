@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import { 
   ArrowLeft, 
   History, 
@@ -25,7 +26,10 @@ import {
   Scale,
   MapPin,
   Calendar,
-  User
+  User,
+  Globe,
+  UserPlus,
+  Info
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
@@ -69,6 +73,11 @@ export default function RikishiPage() {
                     {rikishi.rankLabel}
                   </Badge>
                   {isOwned && <Badge variant="secondary">My Stable</Badge>}
+                  {rikishi.nationality !== "Japan" && (
+                    <Badge variant="outline" className="border-amber-500/50 text-amber-500 flex items-center gap-1">
+                      <Globe className="h-3 w-3" /> Foreign Slot
+                    </Badge>
+                  )}
                 </div>
                 <h1 className="text-4xl font-display font-bold">{rikishi.shikona}</h1>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -97,6 +106,63 @@ export default function RikishiPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Naturalization Progress (v2.0) */}
+        {rikishi.nationality !== "Japan" && (
+          <Card className="paper border-l-4 border-l-amber-500 bg-amber-500/5">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <UserPlus className="h-4 w-4 text-amber-600" />
+                    Naturalization Timeline
+                  </CardTitle>
+                  <CardDescription className="text-[10px] uppercase font-bold tracking-widest text-amber-600/70">Institutional Residency Tracker</CardDescription>
+                </div>
+                {rikishi.careerWins >= 400 || (rikishi.rank === "yokozuna" && rikishi.age >= 28) ? (
+                  <Badge className="bg-emerald-500 text-white border-0">ELIGIBLE</Badge>
+                ) : (
+                  <Badge variant="outline" className="border-amber-500/30 text-amber-600">IN PROGRESS</Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                   <div className="flex justify-between text-[9px] font-bold uppercase tracking-wider">
+                     <span>Residency (Bout Tenure)</span>
+                     <span>{Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100))}%</span>
+                   </div>
+                   <Progress value={Math.min(100, (rikishi.careerHistory.length / 60) * 100)} className="h-1 bg-amber-200/50" />
+                   <p className="text-[9px] text-muted-foreground italic">Target: 10 Years (60 Basho)</p>
+                </div>
+                <div className="space-y-1.5">
+                   <div className="flex justify-between text-[9px] font-bold uppercase tracking-wider">
+                     <span>Career Win Target</span>
+                     <span>{Math.min(100, Math.floor((rikishi.careerWins / 400) * 100))}%</span>
+                   </div>
+                   <Progress value={Math.min(100, (rikishi.careerWins / 400) * 100)} className="h-1 bg-amber-200/50" />
+                   <p className="text-[9px] text-muted-foreground italic">Target: 400 Professional Wins</p>
+                </div>
+                <div className="space-y-1.5">
+                   <div className="flex justify-between text-[9px] font-bold uppercase tracking-wider">
+                     <span>Institutional Stature</span>
+                     <span>{rikishi.rank === "yokozuna" || rikishi.rank === "ozeki" ? "100%" : "30%"}</span>
+                   </div>
+                   <Progress value={rikishi.rank === "yokozuna" || rikishi.rank === "ozeki" ? 100 : 30} className="h-1 bg-amber-200/50" />
+                   <p className="text-[9px] text-muted-foreground italic">Target: Sanyaku/Elite Ranks</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-amber-500/10">
+                <Info className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Upon completion of criteria, the Association may grant citizenship during the New Year review. Naturalized citizens no longer count towards your foreign roster limit (1 per stable).
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-80 grid-cols-2">

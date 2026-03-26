@@ -32,7 +32,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { deleteSave, exportSave, formatSaveDate, importSave } from "@/presenters/uiDigest";
+import { deleteSave, exportSave, importSave } from "@/engine/saveload";
+import { formatSaveDate } from "@/engine/utils/formatters";
+import {
   Save,
   FolderOpen,
   Trash2,
@@ -41,10 +43,6 @@ import { deleteSave, exportSave, formatSaveDate, importSave } from "@/presenters
   Clock,
   HardDrive,
 } from "lucide-react";
-
-/**
- * Format save date.
- *  * @param iso - The Iso.
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {
@@ -118,7 +116,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       setOpen(false);
     } else {
       toast({ title: "Load Failed", description: "Could not load save.", variant: "destructive" });
-    };
+    }
+  };
 
   const handleDelete = (slotName: string) => {
     setConfirmDelete(slotName);
@@ -133,7 +132,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   const handleExport = () => {
     if (state.world) {
-      const { json, filename } = exportSave(state.world, undefined, new Date().toISOString());
+      const { json, filename } = exportSave(state.world, "Manual Save", new Date().toISOString());
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -144,7 +143,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       toast({ title: "Save Exported", description: "File downloaded." });
-    };
+    }
+  };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

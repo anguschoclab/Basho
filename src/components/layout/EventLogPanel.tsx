@@ -75,13 +75,12 @@ function getEventRoute(e: EngineEvent): string | null {
   }
 
   // Rikishi-specific events → rikishi profile
-  if (e.rikishiId) {
-    // Training, injury, career, promotion for a specific rikishi
-    if (["training", "injury", "career", "promotion"].includes(cat)) {
-      return `/rikishi/${e.rikishiId}`;
+    if (e.rikishiId) {
+      // Training, injury, career, promotion for a specific rikishi
+      if (["training", "injury", "career", "promotion"].includes(cat)) {
+        return `/rikishi/${e.rikishiId}`;
+      }
     }
-
-  // Scouting → talent pool
   if (cat === "scouting") return "/talent-pool";
 
   // Economy/sponsor → economy page
@@ -172,8 +171,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
           );
           // Mark both as seen so they're not duplicated
           seen.add(winnerId);
-          seen.add(loserId);
         }
+      }
     }
 
     if (e.heyaId) {
@@ -210,14 +209,15 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       } else {
         groups[groups.length - 1].events.push(e);
       }
+    }
     return groups;
   }, [filteredEvents]);
 
   const handleEventClick = useCallback((e: EngineEvent) => {
     const route = getEventRoute(e);
     if (route) {
-      navigate({ to: route as any });
-    }, [navigate]);
+    }
+  }, [navigate]);
 
   const filterOptions = [
     { value: "all", label: "All" },
@@ -344,7 +344,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                             onClick={(ev) => {
                               ev.stopPropagation();
                               handleEventClick(e);
-                            }
+                            }}
                             className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
                           >
                             <ExternalLink className="h-2.5 w-2.5" />

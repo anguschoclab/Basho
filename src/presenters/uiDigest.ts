@@ -182,10 +182,46 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   return {
     time: { label: labelForWorld(world) },
-    headline,
-    counts,
     sections,
   };
+}
+
+/**
+ * FM v2.0: Formats Rikishi attribute data for Radar Charts (C5 compliant).
+ * Maps 0-100 internal truths into 5 banded tiers (1-5) for visual shape only.
+ */
+export function formatRadarData(rikishi: any) {
+  const mapValue = (val: number) => {
+    if (val >= 85) return 5;
+    if (val >= 65) return 4;
+    if (val >= 45) return 3;
+    if (val >= 25) return 2;
+    return 1;
+  };
+
+  return [
+    { subject: "Power", A: mapValue(rikishi.power || 50), fullMark: 5 },
+    { subject: "Speed", A: mapValue(rikishi.speed || 50), fullMark: 5 },
+    { subject: "Technique", A: mapValue(rikishi.technique || 50), fullMark: 5 },
+    { subject: "Spirit", A: mapValue(rikishi.momentum || 50), fullMark: 5 },
+    { subject: "Ring Sense", A: mapValue(rikishi.condition || 50), fullMark: 5 },
+  ];
+}
+
+/**
+ * FM v2.0: Formats Meta-State history for Streamgraph (Stacked Area Chart).
+ */
+export function formatMetaTrends(world: WorldState) {
+  // Mocking history for now as per world._postBashoMeta
+  // In a real scenario, this would iterate through previous basho results
+  if (!world.history) return [];
+
+  return world.history.slice(-6).map((h, i) => ({
+    basho: `B${h.bashoNumber}`,
+    oshi: (h.metaBias === "oshi" ? 60 : 20) + (Math.random() * 10),
+    yotsu: (h.metaBias === "yotsu" ? 60 : 20) + (Math.random() * 10),
+    hybrid: 20 + (Math.random() * 10),
+  }));
 }
 
 /** Defines the structure for ozeki run candidate. */

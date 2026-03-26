@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 
@@ -19,26 +20,25 @@ import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
+import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
-  { id: "calendar",   column: 0, order: 0, component: CalendarWidget,   label: "Calendar" },
-  { id: "stable",     column: 0, order: 1, component: StableWidget,     label: "Stable" },
-  { id: "training",   column: 0, order: 2, component: TrainingWidget,   label: "Training" },
-  { id: "finances",   column: 0, order: 3, component: FinancesWidget,   label: "Finances" },
-  { id: "facilities", column: 0, order: 4, component: FacilitiesWidget, label: "Facilities" },
-  { id: "basho",      column: 1, order: 0, component: BashoWidget,      label: "Basho" },
-  { id: "banzuke",    column: 1, order: 1, component: BanzukeWidget,    label: "Banzuke" },
-  { id: "digest",     column: 1, order: 2, component: DigestWidget,     label: "Weekly Digest" },
-  { id: "roster",     column: 2, order: 0, component: RosterWidget,     label: "Roster" },
-  { id: "scouting",   column: 2, order: 1, component: ScoutingWidget,   label: "Scouting" },
-  { id: "news",       column: 2, order: 2, component: NewsWidget,       label: "News" },
-  { id: "rivals",     column: 2, order: 3, component: RivalsWidget,     label: "Rivals" },
+  { id: "calendar",   order: 0, span: 4, component: CalendarWidget,   label: "Calendar" },
+  { id: "stable",     order: 1, span: 4, component: StableWidget,     label: "Stable" },
+  { id: "basho",      order: 2, span: 4, component: BashoWidget,      label: "Basho" },
+  { id: "training",   order: 3, span: 6, component: TrainingWidget,   label: "Training" },
+  { id: "finances",   order: 4, span: 6, component: FinancesWidget,   label: "Finances" },
+  { id: "digest",     order: 5, span: 8, component: DigestWidget,     label: "Weekly Digest" },
+  { id: "trends",     order: 6, span: 4, component: TrendsWidget,     label: "JSA Trends" },
+  { id: "banzuke",    order: 7, span: 4, component: BanzukeWidget,    label: "Banzuke" },
+  { id: "roster",     order: 8, span: 8, component: RosterWidget,     label: "Roster" },
+  { id: "news",       order: 9, span: 4, component: NewsWidget,       label: "News" },
+  { id: "rivals",     order: 10, span: 4, component: RivalsWidget,     label: "Rivals" },
+  { id: "scouting",   order: 11, span: 4, component: ScoutingWidget,   label: "Scouting" },
 ];
-
-const COLUMN_COUNT = 3;
 
 const PHASE_ACCENT: Record<string, string> = {
   active_basho: "from-accent/20 via-accent/5 to-transparent",
@@ -55,8 +55,8 @@ export default function Dashboard() {
   const isLoaded = !!world;
   const [editMode, setEditMode] = useState(false);
 
-  const { getColumns, onDragStart, onDragOver, onDragEnd, resetLayout } =
-    useDashboardLayout(WIDGET_REGISTRY, COLUMN_COUNT);
+  const { getOrderedPlacements, onDragStart, onDragOver, onDragEnd, resetLayout } =
+    useDashboardLayout(WIDGET_REGISTRY);
 
   const widgetMap = useMemo(
     () => new Map(WIDGET_REGISTRY.map(w => [w.id, w])),
@@ -72,10 +72,10 @@ export default function Dashboard() {
       loadFromAutosave();
     } else if (!isLoaded && !hasAutosave()) {
       navigate({ to: "/main-menu", replace: true });
-    }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
+    }
+  }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
   const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
-  const columns = getColumns();
 
   const alerts = useMemo(() => {
     if (!playerHeya) return [];
@@ -110,7 +110,7 @@ export default function Dashboard() {
   const gradientClass = PHASE_ACCENT[phase] ?? PHASE_ACCENT.interim;
 
   return (
-    <AppLayout pageTitle="Dashboard">
+    <AppLayout>
       <div className="space-y-5">
         {/* ═══════════ HEADER ═══════════ */}
         <div className={`relative -mx-4 -mt-2 px-4 pt-4 pb-5 bg-gradient-to-b ${gradientClass} rounded-b-xl`}>
@@ -184,42 +184,39 @@ export default function Dashboard() {
         {/* ═══════════ PROGRESSION ARCS ═══════════ */}
         {world && <ProgressionTracker world={world} />}
 
-        {/* ═══════════ WIDGET GRID ═══════════ */}
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {columns.map((col, colIdx) => (
-            <div key={colIdx} className="space-y-4">
-              {col.map((placement) => {
-                const def = widgetMap.get(placement.id);
-                if (!def) return null;
-                const Comp = def.component;
-                return (
-                  <DraggableWidget
-                    key={placement.id}
-                    widgetId={placement.id}
-                    column={colIdx}
-                    label={def.label}
-                    isEditMode={editMode}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
-                    onDragEnd={onDragEnd}
-                  >
-                    <Comp />
-                  </DraggableWidget>
-                );
-              })}
-              {editMode && (
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    const lastId = col.length > 0 ? col[col.length - 1].id : `__col_${colIdx}`;
-                    onDragOver(lastId, colIdx);
-                  }
-                  onDrop={(e) => e.preventDefault()}
-                  className="min-h-[48px] rounded-lg border-2 border-dashed border-border/30 transition-colors hover:border-primary/40 hover:bg-primary/5"
-                />
-              )}
-            </div>
-          ))}
+        {/* ═══════════ WIDGET GRID (12-COLUMN) ═══════════ */}
+        <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-12 gap-4">
+          {getOrderedPlacements().map((placement) => {
+            const def = widgetMap.get(placement.id);
+            if (!def) return null;
+            const Comp = def.component;
+            const span = def.span || 4; // Default to 1/3 on XL
+
+            return (
+              <div 
+                key={placement.id} 
+                className={cn(
+                  "flex flex-col",
+                  span === 12 ? "col-span-full" : 
+                  span === 8 ? "xl:col-span-8 md:col-span-2 col-span-1" :
+                  span === 6 ? "xl:col-span-6 md:col-span-2 col-span-1" :
+                  "xl:col-span-4 md:col-span-2 col-span-1"
+                )}
+              >
+                <DraggableWidget
+                  widgetId={placement.id}
+                  column={placement.column}
+                  label={def.label}
+                  isEditMode={editMode}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  onDragEnd={onDragEnd}
+                >
+                  <Comp />
+                </DraggableWidget>
+              </div>
+            );
+          })}
         </div>
       </div>
     </AppLayout>
