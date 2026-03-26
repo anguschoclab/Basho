@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import * as facilities from "../facilities";
 import { RANK_HIERARCHY } from "../banzuke";
+import { stableSort } from "../utils/sort";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 
 /**
@@ -37,7 +38,7 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Loans/interest
  */
 export function tickMonthlyEconomics(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => x.id)) {
     let totalSalaries = 0;
     for (const rId of heya.rikishiIds) {
       const r = world.rikishi.get(rId);

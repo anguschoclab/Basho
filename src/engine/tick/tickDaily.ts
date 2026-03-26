@@ -216,14 +216,12 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 function tickDailyCommon(world: WorldState, subs: string[]): void {
   // Pre-calculate heya diet states to avoid repeated lookups per rikishi (O(H) instead of O(R))
   const heyaDietCache = new Map<string, "austerity" | "maintenance" | "heavy_bulk" | "premium">();
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(Array.from(world.heyas.values()), x => x.id)) {
     heyaDietCache.set(heya.id, ensureHeyaWelfareState(heya).activeDiet || "maintenance");
   }
 
-  const rikishiArr = Array.from(world.rikishi.values());
-  for (const r of stableSort(rikishiArr, x => x.id)) {
-    if (r.isRetired) continue;
-
+  const activeRikishi = Array.from(world.rikishi.values()).filter(r => !r.isRetired);
+  for (const r of stableSort(activeRikishi, x => x.id)) {
     // Persist descriptor for UI hysteresis buffer
     r.descriptor = toRikishiDescriptor(r, r.descriptor);
 
