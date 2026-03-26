@@ -3,8 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { getMonthlyMaintenanceCost } from "@/engine/facilities";
-import { getFacilityLevelLabel, getFacilityLevelColor } from "@/presenters/uiDigest";
+import { getFacilityLevelColor, getFacilityLevelLabel, getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
 
 const AXIS_ICONS = {
   training: Building,
@@ -60,7 +59,7 @@ export function FacilitiesWidget() {
           )}
         </>
       }
-      headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
+      headerAction={ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }
     >
       <div className="space-y-2.5">
         {axes.map((axis) => {

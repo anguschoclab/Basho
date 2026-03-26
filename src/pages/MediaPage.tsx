@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import type { MediaHeadline, MediaDigest, MediaState, MediaBeat } from "@/engine/media";
-import { buildMediaDigest, createDefaultMediaState } from "@/engine/media";
+import { buildMediaDigest, createDefaultMediaState } from "@/presenters/uiDigest";
 
 /* ── Style maps ── */
 
@@ -152,7 +152,7 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
         <LineChart data={data}>
           <YAxis domain={[0, 100]} hide />
           <Tooltip
-            contentStyle={{ fontSize: 10, padding: "2px 6px" }}
+            contentStyle={ fontSize: 10, padding: "2px 6px" }
             formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
             labelFormatter={(l: string) => l.toUpperCase()}
           />
@@ -295,7 +295,7 @@ export default function MediaPage() {
                       <div className="w-20 h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className="h-full rounded-full bg-primary transition-all"
-                          style={{ width: `${Math.min(100, heat)}%` }}
+                          style={ width: `${Math.min(100, heat)}%` }
                         />
                       </div>
                       <span className="text-xs font-mono w-8 text-right">{Math.round(heat)}</span>
@@ -327,7 +327,7 @@ export default function MediaPage() {
                       <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className="h-full rounded-full bg-destructive/70 transition-all"
-                          style={{ width: `${Math.min(100, pressure)}%` }}
+                          style={ width: `${Math.min(100, pressure)}%` }
                         />
                       </div>
                       <span className="text-xs font-mono w-8 text-right">{Math.round(pressure)}</span>

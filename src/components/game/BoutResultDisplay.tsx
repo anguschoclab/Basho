@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { Badge } from "@/components/ui/badge";
-import { getKimarite } from "@/engine/kimarite";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Zap, Timer, Shield } from "lucide-react";
+import { formatStance, getKimarite } from "@/presenters/uiDigest";
 
 /** Defines the structure for bout result display props. */
 interface BoutResultDisplayProps {
@@ -42,7 +42,6 @@ function safeNumber(v: unknown, fallback = 0): number {
  *  * @param raw - The Raw.
  *  * @returns The result.
  */
-import { formatStance } from "@/engine/utils/formatters";
 
 /**
  * bout result display.

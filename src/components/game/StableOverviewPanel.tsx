@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
-import {
+import type { PerceptionSnapshot  } from "@/engine/perception";
+import { getCachedPerception } from "@/presenters/uiDigest";
   Shield, Heart, Flame, Swords, Users,
   TrendingUp, Building2, HandCoins, AlertTriangle
 } from "lucide-react";

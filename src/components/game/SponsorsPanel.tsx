@@ -68,11 +68,9 @@ export function SponsorsPanel() {
             if (!r.endsAtTick) {
               if (!activeBest || r.strength > activeBest.strength) {
                 activeBest = r;
-              }
-            } else {
+              } else {
               hasEnded = true;
             }
-          }
         }
 
         if (activeBest) {

@@ -43,4 +43,3 @@ export function RankChangeIndicator({ delta }: Props) {
       </span>
     );
   }
-}

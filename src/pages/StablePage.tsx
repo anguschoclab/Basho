@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { FacilitiesBand, KoenkaiBandType, PrestigeBand, RunwayBand, StatureBand } from "@/engine/types/narrative";
 import { projectRosterEntry, projectRikishi, type UIRosterEntry, type UIRikishi } from "@/presenters/uiModels";
 import {
@@ -33,6 +32,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
+import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 
 export default function StablePage() {
   const navigate = useNavigate();

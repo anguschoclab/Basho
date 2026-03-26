@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarDays, Swords } from "lucide-react";
 import { Division } from "@/engine/types/banzuke";
-import { needsScheduleForDay, getTotalBashodays } from "@/engine/schedule";
+import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 
 const DIVISIONS: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 const DIVISION_NAMES: Record<Division, string> = {

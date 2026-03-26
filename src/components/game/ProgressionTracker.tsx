@@ -7,11 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
-import { getOzekiRunCandidates, getYokozunaCandidates, getKadobanDrama, OzekiRunCandidate, YokozunaCandidate } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
+import { OzekiRunCandidate, RANK_HIERARCHY, YokozunaCandidate, getKadobanDrama, getOzekiRunCandidates, getYokozunaCandidates } from "@/presenters/uiDigest";
 
 /** Defines the structure for progression tracker props. */
 interface ProgressionTrackerProps {

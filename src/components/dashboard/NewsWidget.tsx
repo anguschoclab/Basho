@@ -71,7 +71,6 @@ export function NewsWidget() {
                   color = "text-foreground font-mono uppercase border-b border-foreground/20";
                   Icon = Scale;
                 }
-              }
 
               return (
                 <div

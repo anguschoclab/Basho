@@ -61,24 +61,23 @@ export function DraggableWidget({
         e.dataTransfer.effectAllowed = "move";
         if (ref.current) {
           e.dataTransfer.setDragImage(ref.current, 20, 20);
-        }
-      }}
+        }}
       onDragEnd={() => {
         setIsDragging(false);
         onDragEnd();
-      }}
+      }
       onDragOver={(e) => {
         if (!isEditMode) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
         setIsDragOver(true);
         onDragOver(widgetId, column);
-      }}
+      }
       onDragLeave={() => setIsDragOver(false)}
       onDrop={(e) => {
         e.preventDefault();
         setIsDragOver(false);
-      }}
+      }
       className={cn(
         "widget-enter relative",
         isEditMode && "cursor-grab active:cursor-grabbing",
@@ -131,12 +130,12 @@ export function ColumnDropZone({
         e.preventDefault();
         setIsDragOver(true);
         onDragOver(`__col_end_${column}`, column);
-      }}
+      }
       onDragLeave={() => setIsDragOver(false)}
       onDrop={(e) => {
         e.preventDefault();
         setIsDragOver(false);
-      }}
+      }
       className={cn(
         "min-h-[48px] rounded-lg border-2 border-dashed transition-colors",
         isDragOver ? "border-primary/50 bg-primary/5" : "border-border/30",

@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Banknote, FileText } from "lucide-react";
-import { buyMyoseki, leaseMyoseki } from "@/engine/myosekiMarket";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types";
+import { buyMyoseki, leaseMyoseki } from "@/presenters/uiDigest";
 
 export default function MyosekiMarketPage() {
   const { state, setWorld } = useGame();
@@ -53,8 +53,7 @@ export default function MyosekiMarketPage() {
       toast.success(`Successfully acquired ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Insufficient funds to acquire ${stock.name}.`);
-    }
-  };
+    };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
@@ -64,8 +63,7 @@ export default function MyosekiMarketPage() {
       toast.success(`Successfully leased ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Could not lease ${stock.name}.`);
-    }
-  };
+    };
 
   return (
     <AppLayout

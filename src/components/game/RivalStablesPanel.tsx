@@ -4,9 +4,10 @@
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot  } from "@/engine/perception";
 import { Swords, Search, Shield, Flame, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useMemo } from "react";
+import { getCachedPerception } from "@/presenters/uiDigest";
 
 const INTENSITY_DISPLAY: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   conservative: { label: "Light", variant: "secondary" },

@@ -1,4 +1,3 @@
-import { clampInt } from '../../engine/utils';
 // AutoSimControls.tsx
 // Auto-Sim Controls - UI for auto-simulation and observer modes
 // Per Constitution §7: Auto-Sim "Watch the World" Mode
@@ -17,6 +16,7 @@ import { Play, Eye, Clock, Trophy, AlertTriangle, Star, TrendingUp, Loader2 } fr
 import { useGame } from "@/contexts/GameContext";
 
 import type { SimDuration, StopCondition, VerbosityLevel, AutoSimConfig, AutoSimResult } from "@/engine/autoSim";
+import { clampInt } from "@/presenters/uiDigest";
 
 /** Defines the structure for auto sim controls props. */
 interface AutoSimControlsProps {
@@ -125,8 +125,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
           ? e.message
           : "Auto-simulation failed. Check console for details.";
       setError(msg);
-    }
-  };
+    };
 
   const yearsElapsed = result
     ? clampInt(safeNumber(result.endYear, 0) - safeNumber(result.startYear, 0), 0, 10_000)

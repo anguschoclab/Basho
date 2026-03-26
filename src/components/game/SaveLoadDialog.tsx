@@ -2,8 +2,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
-import { deleteSave, exportSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
-import { formatSaveDate } from "@/engine/utils/formatters";
+import type { SaveSlotInfo  } from "@/engine/saveload";
 
 // Global open signal for keyboard shortcut integration
 const openListeners = new Set<() => void>();
@@ -33,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
+import { deleteSave, exportSave, formatSaveDate, importSave } from "@/presenters/uiDigest";
   Save,
   FolderOpen,
   Trash2,
@@ -119,8 +118,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       setOpen(false);
     } else {
       toast({ title: "Load Failed", description: "Could not load save.", variant: "destructive" });
-    }
-  };
+    };
 
   const handleDelete = (slotName: string) => {
     setConfirmDelete(slotName);
@@ -146,8 +144,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       toast({ title: "Save Exported", description: "File downloaded." });
-    }
-  };
+    };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

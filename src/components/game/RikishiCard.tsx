@@ -1,7 +1,7 @@
 import React from 'react';
-import { UIRikishi } from '../../presenters/uiModels';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
+import { UIRikishi } from "../../presenters/uiModels";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;

@@ -39,29 +39,15 @@ import {
   Flame,
   AlertTriangle,
 } from "lucide-react";
-import {
-  RANK_NAMES,
-  STYLE_NAMES,
-  ARCHETYPE_NAMES,
-  createScoutedView,
-  getScoutedAttributes,
-  describeScoutingLevel,
-  type ScoutingInvestment,
-} from "@/engine/scouting";
-import { getOrCreateScouted, setScoutingInvestment, getScoutingLevel, warmScoutingForRikishiList } from "@/engine/scoutingStore";
+import type { ScoutingInvestment } from "@/engine/scouting";
 import * as talentpool from "@/engine/talentpool";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Rank } from "@/engine/types/banzuke";
 import type { TacticalArchetype } from "@/engine/types/combat";
-import {
-  describeAttribute,
-  describeAggression,
-  describeExperience,
-} from "@/engine/narrativeDescriptions";
+import { ARCHETYPE_NAMES, STYLE_NAMES, createScoutedView, describeAggression, describeExperience, describeScoutingLevel, getScoutedAttributes, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "@/presenters/uiDigest";
 
 // ==============================
 // OPPONENT SCOUTING TAB
@@ -91,12 +77,12 @@ function OpponentScoutingTab({
 
   const opponents = useMemo(() => {
     if (!world) return [];
-    const list: Rikishi[] = [];
+    const list: UIRikishi[] = [];
     for (const r of world.rikishi.values()) {
       if (r.isRetired) continue;
       if (r.heyaId === playerHeyaId) continue;
       if (filterDivision && r.division !== filterDivision) continue;
-      list.push(r);
+      list.push(projectRikishi(r, world));
     }
     // Sort by rank tier
     list.sort((a, b) => {
@@ -152,7 +138,7 @@ function OpponentScoutingTab({
               <Card
                 key={r.id}
                 className="paper cursor-pointer hover:border-primary/50 transition-all"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -206,7 +192,7 @@ function OpponentScoutingTab({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleInvestScouting(r.id, inv);
-                              }}
+                              }
                             >
                               {inv === "none" ? "—" : inv.charAt(0).toUpperCase()}
                             </Button>
@@ -292,10 +278,10 @@ function StableIntelTab({
 
   const roster = useMemo(() => {
     if (!world || !playerHeyaId) return [];
-    const list: Rikishi[] = [];
+    const list: UIRikishi[] = [];
     for (const r of world.rikishi.values()) {
       if (r.heyaId !== playerHeyaId || r.isRetired) continue;
-      list.push(r);
+      list.push(projectRikishi(r, world));
     }
     list.sort((a, b) => {
       const ta = (RANK_HIERARCHY as any)?.[a.rank]?.tier ?? 99;
@@ -322,15 +308,15 @@ function StableIntelTab({
               <div
                 key={r.id}
                 className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id })}
               >
                 <div className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`} />
                 <div className="flex-1 min-w-0">
                   <div className="font-display font-medium truncate">{r.shikona}</div>
                   <div className="text-xs text-muted-foreground">
                     {rankNames.ja}
-                    {r.rankNumber ? ` ${r.rankNumber}` : ""} • {describeAttribute(r.power)} power •{" "}
-                    {describeAttribute(r.technique)} technique
+                    {r.rankNumber ? ` ${r.rankNumber}` : ""} • {r.powerBand} power •{" "}
+                    {r.techniqueBand} technique
                   </div>
                 </div>
                 <div className="text-right text-sm">
@@ -387,8 +373,7 @@ function RecruitingTab({
       return talentpool.listVisibleCandidates(world, activePool);
     } catch {
       return [];
-    }
-  }, [world, activePool]);
+    }, [world, activePool]);
 
   const handleScoutPool = () => {
     if (!world) return;
@@ -405,11 +390,9 @@ function RecruitingTab({
           title: "No new prospects",
           description: "No more hidden prospects in this pool right now.",
         });
-      }
-    } catch {
+      } catch {
       toast({ title: "Scouting failed", description: "Could not scout this pool." });
-    }
-  };
+    };
 
   const handleScoutCandidate = (candidateId: string) => {
     if (!world) return;
@@ -421,11 +404,9 @@ function RecruitingTab({
           title: "Intel gathered",
           description: `Scouting level: ${describeScoutingLevel(result.scoutingLevel).label}`,
         });
-      }
-    } catch {
+      } catch {
       toast({ title: "Scout failed" });
-    }
-  };
+    };
 
   const handleOfferClick = (candidate: any) => {
     setSigningCandidate(candidate);
@@ -448,8 +429,7 @@ function RecruitingTab({
           title: "Offer blocked",
           description: (result as any).reason ?? "Cannot make this offer.",
         });
-      }
-    } catch {
+      } catch {
       toast({ title: "Offer failed" });
     }
     setSigningCandidate(null);
@@ -557,7 +537,7 @@ function RecruitingTab({
                           onClick={(e) => {
                             e.stopPropagation();
                             handleScoutCandidate(c.candidateId);
-                          }}
+                          }
                         >
                           <Eye className="h-3 w-3" />
                           Scout
@@ -570,7 +550,7 @@ function RecruitingTab({
                             onClick={(e) => {
                               e.stopPropagation();
                               handleOfferClick(c);
-                            }}
+                            }
                           >
                             <UserPlus className="h-3 w-3" />
                             Offer

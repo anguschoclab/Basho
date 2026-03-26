@@ -57,8 +57,7 @@ export default function NewGameWizard() {
   useEffect(() => {
     if (!state.world) {
       createWorld(makeDeterministicSeed("world"));
-    }
-  }, [state.world, createWorld]);
+    }, [state.world, createWorld]);
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");

@@ -10,12 +10,12 @@ import { PressConference } from "@/components/game/PressConference";
 import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
-import { getHallOfFame, type HoFInductee } from "@/engine/hallOfFame";
+import type { HoFInductee  } from "@/engine/hallOfFame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import {Link, useNavigate} from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { 
   Trophy, 
@@ -41,7 +41,8 @@ import type { EngineEvent } from "@/engine/types/events";
 import type { BashoResult } from "@/engine/types/basho";
 import type { Heya } from "@/engine/types/heya";
 import type { Rank } from "@/engine/types/banzuke";
-import { isKachiKoshi, isMakeKoshi, type OzekiKadobanMap, type MovementEvent } from "@/engine/banzuke";
+import type { OzekiKadobanMap, MovementEvent  } from "@/engine/banzuke";
+import { getHallOfFame, isKachiKoshi, isMakeKoshi } from "@/presenters/uiDigest";
 
 // Narrative band descriptors for prestige changes
 /**
@@ -62,7 +63,6 @@ function describePrestigeShift(oldBand: string | undefined, newBand: string | un
   } else {
     return `fell to ${newBand.toUpperCase()} status`;
   }
-}
 
 // Extract recent basho-relevant events
 /**
@@ -110,7 +110,6 @@ function groupEventsByNarrative(events: EngineEvent[]) {
     } else {
       groups.other.push(e);
     }
-  }
   
   return groups;
 }
@@ -137,7 +136,6 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
       if (heya) {
         changes.push({ heya, change: e.summary });
       }
-    }
   }
   
   return changes;
@@ -166,8 +164,7 @@ export default function RecapPage() {
         heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
       }
       updateWorld({ ...world });
-    }
-  };
+    };
 
   // Detect yokozuna deliberation candidates
   const yokozunaCandidate = useMemo(() => {
@@ -736,10 +733,10 @@ export default function RecapPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Financial Health</p>
                   <p className="font-medium">
-                    {playerHeya.funds >= 50_000_000 ? "Secure" :
-                     playerHeya.funds >= 20_000_000 ? "Comfortable" :
-                     playerHeya.funds >= 5_000_000 ? "Tight" :
-                     playerHeya.funds >= 1_000_000 ? "Critical" : "Desperate"}
+                    {playerHeya.runwayBand === "secure" ? "Secure" :
+                     playerHeya.runwayBand === "comfortable" ? "Comfortable" :
+                     playerHeya.runwayBand === "tight" ? "Tight" :
+                     playerHeya.runwayBand === "critical" ? "Critical" : "Desperate"}
                   </p>
                 </div>
               </div>

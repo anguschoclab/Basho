@@ -24,7 +24,6 @@ export function RosterWidget() {
       if (r && !r.isRetired) {
         entries.push(projectRosterEntry(r));
       }
-    }
     return entries.sort((a, b) => b.momentum - a.momentum);
   }, [world]);
 
@@ -37,7 +36,7 @@ export function RosterWidget() {
     <BaseWidget
       title="My Roster"
       icon={Users}
-      headerAction={{ label: "All Rikishi", onClick: () => navigate({ to: "/rikishi" }) }}
+      headerAction={ label: "All Rikishi", onClick: () => navigate({ to: "/rikishi" }) }
     >
       {/* Summary row with visual indicators */}
       <div className="flex gap-3 text-xs">
@@ -65,7 +64,7 @@ export function RosterWidget() {
           className={`h-full rounded-full transition-all duration-500 ${
             avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
           }`}
-          style={{ width: `${avgFatigue}%` }}
+          style={ width: `${avgFatigue}%` }
         />
       </div>
 
@@ -85,7 +84,7 @@ export function RosterWidget() {
                 className={`h-full rounded-full transition-all duration-300 ${
                   entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
                 }`}
-                style={{ width: `${entry.fatigue}%` }}
+                style={ width: `${entry.fatigue}%` }
               />
             </div>
           </div>

@@ -7,8 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import {
   FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward,
 } from "lucide-react";
-import { BASHO_CALENDAR, getSeasonalFlavor } from "@/engine/calendar";
 import type { BashoName } from "@/engine/types/basho";
+import { BASHO_CALENDAR, getSeasonalFlavor } from "@/presenters/uiDigest";
 
 const BASHO_NAMES: Record<string, string> = {
   hatsu: "January", haru: "March", natsu: "May",
@@ -81,7 +81,7 @@ export function CalendarWidget() {
           <div className="h-1.5 rounded-full bg-muted overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
-              style={{ width: `${dayProgress}%` }}
+              style={ width: `${dayProgress}%` }
             />
           </div>
         </div>
