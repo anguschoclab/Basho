@@ -14,6 +14,7 @@ import * as talentpool from "../talentpool";
 import { processWeeklyMediaBoundary, createDefaultMediaState, evaluateScandals } from "../media";
 import { stableSort } from "../utils/sort";
 import { runTickPipeline, safeCall, type TickStep } from "./tickOrchestrator";
+import { opfsArchiveService } from "../storage/opfsArchive";
 
 /**
  * Weekly subsystem tick — called once every 7 daily ticks.
@@ -45,6 +46,22 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
     { label: "events", run: (w) => { events.tickWeek(w); } },
     { label: "scouting", run: (w) => { scoutingStore.tickWeek(w); } },
     { label: "talentpool", run: (w) => { talentpool.tickWeek(w); } },
+    {
+      label: "gazette_archive",
+      run: (w) => {
+        // Fire-and-forget background archiving of the weekly gazette
+        safeCall(() => {
+          if (w.mediaState?.weeklyGazette) {
+             // We use a fire-and-forget promise to not block the tick pipeline
+             opfsArchiveService.archiveGazette(
+               w.year,
+               w.week,
+               w.mediaState.weeklyGazette
+             ).catch(e => console.error("Failed to background archive gazette", e));
+          }
+        });
+      }
+    },
     {
       label: "media",
       run: (w) => {
