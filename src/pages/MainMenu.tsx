@@ -59,9 +59,8 @@ import {
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
 import type { BashoName } from "@/engine/types/basho";
-import { BASHO_CALENDAR } from "@/engine/calendar";
-import { deleteSave, importSave, type SaveSlotInfo } from "@/engine/saveload";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import type { SaveSlotInfo  } from "@/engine/saveload";
+import { BASHO_CALENDAR, RANK_HIERARCHY, deleteSave, importSave } from "@/presenters/uiDigest";
 
 const STATURE_CONFIG: Record<
   StatureBand,
@@ -114,8 +113,7 @@ const STATURE_CONFIG: Record<
     difficulty: "Extreme",
     color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     icon: Plus
-  }
-};
+  };
 
 const HEYA_NAMES_COUNT = 45;
 
@@ -151,7 +149,7 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
         e.preventDefault();
         e.stopPropagation();
         onPreview?.();
-      }}
+      }
       title="Click to select • Double-click to preview roster"
     >
       <CardHeader className="pb-2">
@@ -216,7 +214,7 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
               onClick={(e) => {
                 e.stopPropagation();
                 onPreview();
-              }}
+              }
             >
               Preview roster
             </Button>
@@ -292,8 +290,7 @@ export default function MainMenu() {
       else setSaveSlots([]);
     } catch {
       setSaveSlots([]);
-    }
-  }, [getSaveSlots]);
+    }, [getSaveSlots]);
 
   const canContinue = (typeof hasAutosave === "function" && hasAutosave()) || saveSlots.length > 0;
 
@@ -403,8 +400,7 @@ export default function MainMenu() {
     if (typeof loadFromSlot === "function" && loadFromSlot(slotName)) {
       setShowLoadDialog(false);
       navigate({ to: "/" });
-    }
-  };
+    };
 
   const handleDeleteSlot = (slotName: string) => {
     try {
@@ -416,7 +412,6 @@ export default function MainMenu() {
       } catch {
         setSaveSlots([]);
       }
-    }
   };
 
   const applyImportedWorld = useCallback(
@@ -434,8 +429,7 @@ export default function MainMenu() {
           "[MainMenu] No loadWorldDirect/loadImportedWorld/setWorld API found. Falling back to createWorld(seed, playerHeyaId). Imported data may not be preserved."
         );
         createWorld(importedWorld.seed, importedWorld.playerHeyaId);
-      }
-    },
+      },
     [createWorld, loadWorldDirect]
   );
 
@@ -450,12 +444,10 @@ export default function MainMenu() {
         applyImportedWorld(importedWorld);
         setSeed(importedWorld.seed || "");
         navigate({ to: "/" });
-      }
-    } finally {
+      } finally {
       setIsImporting(false);
       e.target.value = "";
-    }
-  };
+    };
 
   const formatSaveDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -604,7 +596,7 @@ export default function MainMenu() {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleDeleteSlot(slot.slotName);
-                                  }}
+                                  }
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -659,7 +651,7 @@ export default function MainMenu() {
                   const random = stables[Math.floor(Math.random() * stables.length)];
                   setSelectedHeyaId(random.id);
                   setPreviewHeya(random);
-                }}
+                }
               >
                 <Dices className="w-3 h-3" />
                 Random Stable
@@ -892,7 +884,7 @@ export default function MainMenu() {
                         setSelectedHeyaId(previewHeya.id);
                         setPreviewHeya(null);
                         beginWithHeya(previewHeya.id);
-                      }}
+                      }
                     >
                       Begin Journey
                       <ArrowRight className="w-4 h-4" />

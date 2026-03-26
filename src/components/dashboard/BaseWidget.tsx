@@ -59,7 +59,7 @@ export function BaseWidget({
               onClick={(e) => {
                 e.stopPropagation();
                 headerAction.onClick();
-              }} 
+              }
               className="h-6 text-xs gap-1 text-muted-foreground"
             >
               {headerAction.label} <ChevronRight className="h-3 w-3" />
@@ -84,7 +84,7 @@ export function BaseWidget({
           onClick={(e) => {
             e.stopPropagation();
             footerAction.onClick();
-          }} 
+          }
           className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors mt-1"
         >
           {footerAction.label} <ChevronRight className="h-3 w-3" />

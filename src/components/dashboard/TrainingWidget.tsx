@@ -4,15 +4,9 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-react";
-import {
-  ensureHeyaTrainingState,
-  INTENSITY_MULTIPLIERS,
-  RECOVERY_MULTIPLIERS,
-  type TrainingIntensity,
-  type TrainingFocus,
-  type RecoveryEmphasis,
-} from "@/engine/training";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/training";
 import type { TrainingProfile } from "@/engine/types/training";
+import { INTENSITY_MULTIPLIERS, RECOVERY_MULTIPLIERS, {   ensureHeyaTrainingState } from "@/presenters/uiDigest";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
 const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];
@@ -93,7 +87,7 @@ export function TrainingWidget() {
     <BaseWidget
       title="Training"
       icon={Dumbbell}
-      headerAction={{ label: "Full Plan", onClick: () => navigate({ to: "/training" }) }}
+      headerAction={ label: "Full Plan", onClick: () => navigate({ to: "/training" }) }
     >
       {/* Current profile */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -121,7 +115,7 @@ export function TrainingWidget() {
               <span>{m.label}</span>
             </div>
             <div className="h-1 rounded-full bg-muted overflow-hidden">
-              <div className={`h-full rounded-full ${m.color} transition-all`} style={{ width: `${Math.min(100, m.value * 60)}%` }} />
+              <div className={`h-full rounded-full ${m.color} transition-all`} style={ width: `${Math.min(100, m.value * 60)}%` } />
             </div>
             <span className="font-medium text-foreground">{(m.value * 100).toFixed(0)}%</span>
           </div>

@@ -3,9 +3,9 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
-import { buildWeeklyDigest, type DigestSection, type DigestItem } from "@/presenters/uiDigest";
 import { BaseWidget } from "./BaseWidget";
 import {
+import { buildWeeklyDigest, type DigestItem, type DigestSection } from "@/presenters/uiDigest";
   AlertTriangle, TrendingUp, Activity, Coins, FileText, Sparkles,
   Users, Building2, Newspaper,
 } from "lucide-react";

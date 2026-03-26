@@ -5,7 +5,6 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight } from "lucide-react";
-import { getMonthlyMaintenanceCost } from "@/engine/facilities";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
@@ -22,6 +21,7 @@ import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
+import { getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "calendar",   column: 0, order: 0, component: CalendarWidget,   label: "Calendar" },
@@ -72,8 +72,7 @@ export default function Dashboard() {
       loadFromAutosave();
     } else if (!isLoaded && !hasAutosave()) {
       navigate({ to: "/main-menu", replace: true });
-    }
-  }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
+    }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
   const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
   const columns = getColumns();
@@ -214,7 +213,7 @@ export default function Dashboard() {
                     e.preventDefault();
                     const lastId = col.length > 0 ? col[col.length - 1].id : `__col_${colIdx}`;
                     onDragOver(lastId, colIdx);
-                  }}
+                  }
                   onDrop={(e) => e.preventDefault()}
                   className="min-h-[48px] rounded-lg border-2 border-dashed border-border/30 transition-colors hover:border-primary/40 hover:bg-primary/5"
                 />

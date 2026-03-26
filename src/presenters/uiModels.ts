@@ -68,7 +68,11 @@ export interface UIRikishi {
   injurySummary: string; // "Healthy", "Minor knee (2w)", etc.
   condition: number; // 0-100 (allowed to show)
   motivation: number; // 0-100 (allowed to show)
-  fatigue: number; // 0-100 (allowed to show)
+  fatigue: number;
+  powerBand: string;
+  techniqueBand: string;
+  speedBand: string;
+  balanceBand: string; // 0-100 (allowed to show)
   momentum: number; // 0-100 (allowed to show)
 
   // Career Phase
@@ -242,6 +246,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
+    powerBand: toStatBand(r.power ?? 50),
+    techniqueBand: toStatBand(r.technique ?? 50),
+    speedBand: toStatBand(r.speed ?? 50),
+    balanceBand: toStatBand(r.balance ?? 50),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.experience),
     currentBashoWins: r.currentBashoWins,
@@ -322,6 +330,10 @@ export interface UIRosterEntry {
   isInjured: boolean;
   condition: number;
   fatigue: number;
+  powerBand: string;
+  techniqueBand: string;
+  speedBand: string;
+  balanceBand: string;
   momentum: number;
   potentialBand: PotentialBand;
   archetypeLabel?: string;
@@ -369,6 +381,10 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     isInjured: r.injured,
     condition: r.condition,
     fatigue: r.fatigue,
+    powerBand: toStatBand(r.power ?? 50),
+    techniqueBand: toStatBand(r.technique ?? 50),
+    speedBand: toStatBand(r.speed ?? 50),
+    balanceBand: toStatBand(r.balance ?? 50),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     archetypeLabel: r.derivedArchetype ? ARCHETYPE_LABELS[r.derivedArchetype]?.label : undefined,

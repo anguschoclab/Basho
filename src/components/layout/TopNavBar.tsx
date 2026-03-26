@@ -190,8 +190,7 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: TopNavBarProps) {
       advanceOneDay();
     } else if (world.cyclePhase === "post_basho") {
       advanceOneDay();
-    }
-  };
+    };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">

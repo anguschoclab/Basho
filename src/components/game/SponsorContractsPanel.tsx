@@ -61,7 +61,6 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
 
         result.push({ sponsor, relationship: rel, monthlyIncome, satisfactionEstimate, expiryWeek, isExpiringSoon });
       }
-    }
 
     result.sort((a, b) => {
       const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
@@ -92,8 +91,7 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
       sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
       updateWorld({ ...world });
       toast({ title: "Contract renewed", description: `${sponsor.displayName} has extended their partnership.` });
-    }
-  };
+    };
 
   return (
     <div className="space-y-4">

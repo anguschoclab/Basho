@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { getCachedPerception } from "@/engine/perception";
 import { StableName } from "@/components/ClickableName";
 import { Swords, Flame } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { getCachedPerception } from "@/presenters/uiDigest";
 
 /** rivals widget. */
 export function RivalsWidget() {
@@ -39,7 +39,7 @@ export function RivalsWidget() {
     <BaseWidget
       title="Rival Stables"
       icon={Swords}
-      headerAction={{ label: "All", onClick: () => navigate({ to: "/rivalries" }) }}
+      headerAction={ label: "All", onClick: () => navigate({ to: "/rivalries" }) }
     >
       <div className="space-y-0.5">
         {rivals.map((r) => (

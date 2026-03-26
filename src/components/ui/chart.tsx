@@ -40,7 +40,7 @@ const ChartContainer = React.forwardRef<
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={ config }>
       <div
         data-chart={chartId}
         ref={ref}
@@ -67,7 +67,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
-      dangerouslySetInnerHTML={{
+      dangerouslySetInnerHTML={
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
@@ -78,11 +78,10 @@ ${colorConfig
     return color ? `  --color-${key}: ${color};` : null;
   })
   .join("\n")}
-}
 `,
           )
           .join("\n"),
-      }}
+      }
     />
   );
 };
@@ -189,7 +188,6 @@ const ChartTooltipContent = React.forwardRef<
                             "my-0.5": nestLabel && indicator === "dashed",
                           })}
                           style={
-                            {
                               "--color-bg": indicatorColor,
                               "--color-border": indicatorColor,
                             } as React.CSSProperties
@@ -260,9 +258,9 @@ const ChartLegendContent = React.forwardRef<
             ) : (
               <div
                 className="h-2 w-2 shrink-0 rounded-[2px]"
-                style={{
+                style={
                   backgroundColor: item.color,
-                }}
+                }
               />
             )}
             {itemConfig?.label}

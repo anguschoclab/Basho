@@ -99,7 +99,6 @@ function getCrowdMood(phase: ReplayPhase, progress: number): { text: string; int
     case "ceremony": return { text: "The crowd erupts!", intensity: 0.8 };
     case "complete": return { text: "", intensity: 0 };
   }
-}
 
 /**
  * bout replay viewer.
@@ -159,7 +158,6 @@ export function BoutReplayViewer({
       if (entry.data?.tacticalEntry && entry.data?.strategy) {
         strategies.push({ side: entry.data.side as "east" | "west", strategy: entry.data.strategy });
       }
-    }
     return strategies;
   }, [safeLog]);
 
@@ -199,7 +197,6 @@ export function BoutReplayViewer({
             west: { pos: { x: lerp(0.56, 0.45, p), y: 0.5 - wobble }, rotation: lerp(-5, -12, p), scale: lerp(1.05, 1.1, p), phase: "pushing", opacity: 1 },
           };
         }
-      }
       case "finish": {
         if (winner === "east") {
           return {
@@ -212,7 +209,6 @@ export function BoutReplayViewer({
             west: { pos: { x: lerp(0.45, 0.4, p), y: 0.5 }, rotation: lerp(-12, -5, p), scale: lerp(1.1, 1.15, p), phase: "throwing", opacity: 1 },
           };
         }
-      }
       case "ceremony": {
         if (winner === "east") {
           return {
@@ -225,12 +221,10 @@ export function BoutReplayViewer({
             west: { pos: { x: 0.5, y: 0.48 }, rotation: 0, scale: lerp(1.15, 1.2, p), phase: "victory", opacity: 1 },
           };
         }
-      }
       case "complete":
       default:
         return getTargetState("ceremony", 1);
-    }
-  }, [result.winner]);
+    }, [result.winner]);
 
   // Current rikishi states
   const [eastState, setEastState] = useState<RikishiState>(() => getTargetState("ritual", 0).east);
@@ -383,8 +377,7 @@ export function BoutReplayViewer({
         ctx.beginPath();
         ctx.arc(p.x * W, p.y * H, p.size * alpha, 0, Math.PI * 2);
         ctx.fill();
-      }
-    });
+      });
     ctx.globalAlpha = 1;
 
     // Draw rikishi
@@ -465,7 +458,6 @@ export function BoutReplayViewer({
             spawnParticles("salt", 0.35, 0.45, 6);
             spawnParticles("salt", 0.65, 0.45, 6);
           }
-        }
 
         // Phase transitions during clinch/momentum — occasional sweat
         if ((phase === "clinch" || phase === "momentum") && Math.random() < 0.02) {
@@ -483,7 +475,6 @@ export function BoutReplayViewer({
             onComplete?.();
             return 100;
           }
-        }
         return next;
       });
 
@@ -502,8 +493,7 @@ export function BoutReplayViewer({
     handleReset();
     if (autoPlay) {
       setTimeout(() => setIsPlaying(true), 100);
-    }
-      }, [result.winner, (result as any).kimarite]);
+    }, [result.winner, (result as any).kimarite]);
 
   const handlePlayPause = () => {
     setIsPlaying(p => !p);
@@ -541,7 +531,7 @@ export function BoutReplayViewer({
         <canvas
           ref={canvasRef}
           className="w-full h-full"
-          style={{ imageRendering: "auto" }}
+          style={ imageRendering: "auto" }
         />
 
         {/* Overlay: Phase Label */}
@@ -577,7 +567,7 @@ export function BoutReplayViewer({
                       ? "bg-blue-500/10 border border-blue-500/20 text-blue-300 self-start"
                       : "bg-red-500/10 border border-red-500/20 text-red-300 self-end"
                   )}
-                  style={{ opacity }}
+                  style={ opacity }
                 >
                   <span className="font-display font-semibold shrink-0">
                     {tac.side === "east" ? eastRikishi.shikona : westRikishi.shikona}:
@@ -620,7 +610,7 @@ export function BoutReplayViewer({
                       ? "bg-amber-400"
                       : "bg-muted-foreground/20"
                   )}
-                  style={{ height: `${8 + (i < Math.ceil(crowd.intensity * 5) ? crowd.intensity * 12 : 4)}px` }}
+                  style={ height: `${8 + (i < Math.ceil(crowd.intensity * 5) ? crowd.intensity * 12 : 4)}px` }
                 />
               ))}
             </div>
@@ -897,7 +887,6 @@ function getPhaseNarration(phase: ReplayPhase, p01: number, result: BoutResult, 
     case "complete":
       return `${winner.shikona} wins by ${result.kimariteName}.`;
   }
-}
 
 /**
  * Get overall progress.

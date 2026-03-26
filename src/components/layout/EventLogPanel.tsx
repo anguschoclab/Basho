@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
 import type { WorldState } from "@/engine/types/world";
+import { formatEventTime } from "@/presenters/uiDigest";
 
 const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -53,7 +54,6 @@ function getCategoryMeta(cat: string) {
  *  * @param e - The E.
  *  * @returns The result.
  */
-import { formatEventTime } from "@/engine/utils/formatters";
 
 
 /**
@@ -80,7 +80,6 @@ function getEventRoute(e: EngineEvent): string | null {
     if (["training", "injury", "career", "promotion"].includes(cat)) {
       return `/rikishi/${e.rikishiId}`;
     }
-  }
 
   // Scouting → talent pool
   if (cat === "scouting") return "/talent-pool";
@@ -175,7 +174,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
           seen.add(winnerId);
           seen.add(loserId);
         }
-      }
     }
 
     if (e.heyaId) {
@@ -212,7 +210,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       } else {
         groups[groups.length - 1].events.push(e);
       }
-    }
     return groups;
   }, [filteredEvents]);
 
@@ -220,8 +217,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     const route = getEventRoute(e);
     if (route) {
       navigate({ to: route as any });
-    }
-  }, [navigate]);
+    }, [navigate]);
 
   const filterOptions = [
     { value: "all", label: "All" },
@@ -348,7 +344,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                             onClick={(ev) => {
                               ev.stopPropagation();
                               handleEventClick(e);
-                            }}
+                            }
                             className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
                           >
                             <ExternalLink className="h-2.5 w-2.5" />

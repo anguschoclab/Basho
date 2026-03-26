@@ -9,8 +9,8 @@ import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
-import { toInjuryEvent, clearInjury } from "@/engine/injuries";
 import { projectRikishi } from "@/presenters/uiModels";
+import { clearInjury, toInjuryEvent } from "@/presenters/uiDigest";
 
 /** Defines the structure for injured rikishi info. */
 interface InjuredRikishiInfo {
@@ -35,7 +35,6 @@ function getSeverityColor(severity: string): string {
     case "minor": return "text-yellow-500";
     default: return "text-muted-foreground";
   }
-}
 
 /**
  * Get severity badge.
@@ -48,7 +47,6 @@ function getSeverityBadge(severity: string) {
     case "minor": return <Badge variant="secondary">Minor</Badge>;
     default: return <Badge variant="outline">Unknown</Badge>;
   }
-}
 
 /**
  * injury recovery panel.

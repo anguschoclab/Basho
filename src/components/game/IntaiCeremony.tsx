@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 
 /** Defines the structure for intai ceremony props. */
 interface IntaiCeremonyProps {

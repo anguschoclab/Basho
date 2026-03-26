@@ -13,10 +13,11 @@ import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Trophy, Shield, Target, Award, Swords, Crown, TrendingUp, Star, Calendar } from "lucide-react";
 import { HoFTimeline } from "@/components/game/HoFTimeline";
-import { getHallOfFame, HOF_CATEGORY_LABELS, type HoFInductee, type HoFCategory } from "@/engine/hallOfFame";
+import type { HoFInductee, HoFCategory  } from "@/engine/hallOfFame";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoResult } from "@/engine/types/basho";
+import { HOF_CATEGORY_LABELS, getHallOfFame } from "@/presenters/uiDigest";
 
 const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {
   champion: Trophy,

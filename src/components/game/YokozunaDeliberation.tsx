@@ -66,8 +66,7 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
       setDialogueStep(dialogueStep + 1);
     } else {
       onClose();
-    }
-  };
+    };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>

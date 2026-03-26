@@ -38,7 +38,7 @@ export function ThemeProvider({ children, defaultTheme = "dark" }: { children: R
   }, [theme, resolvedTheme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={ theme, setTheme, resolvedTheme }>
       {children}
     </ThemeContext.Provider>
   );

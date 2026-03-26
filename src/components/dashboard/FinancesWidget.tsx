@@ -29,7 +29,7 @@ export function FinancesWidget() {
     <BaseWidget
       title="Finances"
       icon={Coins}
-      headerAction={{ label: "Details", onClick: () => navigate({ to: "/economy" }) }}
+      headerAction={ label: "Details", onClick: () => navigate({ to: "/economy" }) }
     >
       <div className="flex items-center gap-3">
         <div className={`p-2.5 rounded-xl ${config.bgAccent}`}>

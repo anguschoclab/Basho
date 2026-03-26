@@ -21,8 +21,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BASHO_CALENDAR, getDayName, getSeasonalFlavor, isKeyDay } from "@/engine/calendar";
-import { getTotalBashodays, needsScheduleForDay, DEFAULT_DIVISION_DAYS } from "@/engine/schedule";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -30,6 +28,7 @@ import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, Chevron
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
 import type { Division } from "@/engine/types/banzuke";
+import { BASHO_CALENDAR, DEFAULT_DIVISION_DAYS, getDayName, getSeasonalFlavor, getTotalBashodays, isKeyDay, needsScheduleForDay } from "@/presenters/uiDigest";
 
 /** Type representing match like. */
 type MatchLike = {
@@ -195,8 +194,7 @@ export default function BashoPage() {
     if (east && west) {
       setAutoShowPlayerBout({ east, west, result: last, isPlayerBout: true });
       lastAutoShownKeyRef.current = lastBoutKey;
-    }
-  }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
+    }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
 
   const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
   const handleSimulateAll = () => { simulateAllBouts(); };
@@ -324,7 +322,7 @@ export default function BashoPage() {
                 const west = resolveRikishi(match.westRikishiId);
                 if (!east || !west) return;
                 setSelectedBout({ east, west, result: match.result, isPlayerBout: isPlayerBout(match) });
-              }}
+              }
             />
           </div>
         </div>
