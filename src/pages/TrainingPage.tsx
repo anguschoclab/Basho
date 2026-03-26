@@ -197,6 +197,7 @@ export default function TrainingPage() {
                   <button
                     key={intensity}
                     onClick={() => handleIntensityChange(intensity)}
+                    aria-pressed={isActive}
                     className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
@@ -239,6 +240,7 @@ export default function TrainingPage() {
                   <button
                     key={focus}
                     onClick={() => handleFocusChange(focus)}
+                    aria-pressed={isActive}
                     className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
@@ -277,6 +279,7 @@ export default function TrainingPage() {
                   <button
                     key={recovery}
                     onClick={() => handleRecoveryChange(recovery)}
+                    aria-pressed={isActive}
                     className={`w-full p-3 rounded-lg text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive 
                         ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background" 
@@ -307,8 +310,10 @@ export default function TrainingPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {rikishiList.map((rikishi) => {
-                const focus = focusMap.get(rikishi.id);
+              {(() => {
+                const focusMap = new Map(trainingState.focusSlots?.map(f => [f.rikishiId, f]) || []);
+                return rikishiList.map((rikishi) => {
+                  const focus = focusMap.get(rikishi.id);
                 const phase = getCareerPhase(rikishi.experience);
                 const phaseEffect = PHASE_EFFECTS[phase];
                 const rankInfo = RANK_HIERARCHY[rikishi.rank];
@@ -377,6 +382,7 @@ export default function TrainingPage() {
                             key={option.value}
                             onClick={() => handleIndividualFocusChange(rikishi.id, isActive ? null : option.value)}
                             title={option.description}
+                            aria-pressed={isActive}
                             className={`p-2 rounded-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                               isActive
                                 ? "bg-primary text-primary-foreground"
@@ -390,7 +396,8 @@ export default function TrainingPage() {
                     </div>
                   </div>
                 );
-              })}
+              });
+            })()}
 
               {rikishiList.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-8">
