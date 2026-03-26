@@ -81,7 +81,10 @@ class PlayoffMatchmaking implements IMatchmakingStrategy {
           if (pairing) out.push(pairing);
         }
     }
-    return out.sort((a,b) => b.score - a.score);
+    return out.sort((a,b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return stableTieBreak(`${a.eastId}-${a.westId}`, `${b.eastId}-${b.westId}`);
+    });
   }
 }
 
@@ -102,6 +105,9 @@ class ExhibitionMatchmaking implements IMatchmakingStrategy {
              });
          }
      }
-     return out.sort((a,b) => b.score - a.score);
+     return out.sort((a,b) => {
+         if (b.score !== a.score) return b.score - a.score;
+         return stableTieBreak(`${a.eastId}-${a.westId}`, `${b.eastId}-${b.westId}`);
+     });
   }
 }
