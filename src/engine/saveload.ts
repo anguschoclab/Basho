@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { stableTieBreak } from "./utils/sort";
+import { destr } from "destr";
 // saveload.ts
 // Save/Load System — Persistence Canon Implementation
 //
@@ -410,7 +411,7 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
       const raw = storage.getItem(key);
       if (!raw) continue;
 
-      const parsed = JSON.parse(raw);
+      const parsed = destr(raw);
       if (!isSerializedSaveGame(parsed)) continue;
 
       const save = parsed as SaveGame;
@@ -466,7 +467,7 @@ export function saveGame(world: WorldState, slotName: string, timestampISO?: str
     const key = toSlotKey(slotName);
 
     const existingRaw = storage.getItem(key);
-    const existingParsed = existingRaw ? JSON.parse(existingRaw) : null;
+    const existingParsed = existingRaw ? destr(existingRaw) : null;
     const existing = isSerializedSaveGame(existingParsed) ? (existingParsed as SaveGame) : undefined;
 
     const save = createSaveGame(world, slotName, existing, timestampISO);
@@ -501,7 +502,7 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
     const raw = storage.getItem(key);
     if (!raw) return null;
 
-    const parsed = JSON.parse(raw);
+    const parsed = destr(raw);
     if (!isSerializedSaveGame(parsed)) return null;
 
     let save = parsed as SaveGame;
@@ -579,7 +580,7 @@ export function exportSave(world: WorldState, filename?: string, timestampISO?: 
 export async function importSave(file: File): Promise<WorldState | null> {
   try {
     const text = await file.text();
-    const parsed = JSON.parse(text);
+    const parsed = destr(text);
 
     if (!isSerializedSaveGame(parsed)) {
       throw new Error("Invalid save file structure");
