@@ -220,10 +220,13 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
     heyaDietCache.set(heya.id, ensureHeyaWelfareState(heya).activeDiet || "maintenance");
   }
 
-  const rikishiArr = Array.from(world.rikishi.values());
-  for (const r of stableSort(rikishiArr, x => x.id)) {
-    if (r.isRetired) continue;
+  // ⚡ Bolt: filter retired rikishi BEFORE O(N log N) stableSort to drastically reduce sorting overhead
+  const activeRikishi = [];
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired) activeRikishi.push(r);
+  }
 
+  for (const r of stableSort(activeRikishi, x => x.id)) {
     // Persist descriptor for UI hysteresis buffer
     r.descriptor = toRikishiDescriptor(r, r.descriptor);
 
