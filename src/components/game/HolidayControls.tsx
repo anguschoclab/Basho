@@ -39,13 +39,13 @@ import {
 } from "lucide-react";
 
 import type {
+import { DEFAULT_CRITICAL_GATES } from "@/presenters/uiDigest";
   HolidayConfig,
   HolidayResult,
   HolidayTarget,
   SafetyGate,
   DelegationPolicy,
 } from "@/engine/holiday";
-import { DEFAULT_CRITICAL_GATES } from "@/engine/holiday";
 
 /** Defines the structure for holiday controls props. */
 interface HolidayControlsProps {
@@ -115,8 +115,7 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
       setResult(holidayResult);
       setIsOpen(false);
       setShowResult(true);
-    }
-  };
+    };
 
   // Filter targets based on current phase
   const availableTargets = useMemo(() => {

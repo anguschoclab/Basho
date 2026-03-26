@@ -14,9 +14,9 @@ import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import { generateNarrative } from "@/engine/narrative";
-import { buildPbpFromBoutResult, type PbpLine, type PbpContext } from "@/engine/pbp";
+import type { PbpLine, PbpContext  } from "@/engine/pbp";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
+import { buildPbpFromBoutResult, generateNarrative } from "@/presenters/uiDigest";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   tactical: { label: "策略", color: "text-primary",        bg: "bg-primary/10 border-primary/20" },
@@ -91,8 +91,7 @@ export function BoutNarrativeModal({
       }) as any;
     } catch {
       return [];
-    }
-  }, [east, west, result, bashoName, day]);
+    }, [east, west, result, bashoName, day]);
 
   const [replayKey, setReplayKey] = useState(0);
 
@@ -185,7 +184,7 @@ export function BoutNarrativeModal({
                         <div
                           key={i}
                           className="flex items-start gap-2 animate-slide-up"
-                          style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+                          style={ animationDelay: `${i * 60}ms`, animationFillMode: "both" }
                         >
                           <Badge
                             variant="outline"
@@ -219,7 +218,7 @@ export function BoutNarrativeModal({
                     <p
                       key={i}
                       className={`animate-fade-in ${i === narrative.length - 1 ? "font-medium text-foreground italic" : ""}`}
-                      style={{ animationDelay: `${i * 120}ms`, animationFillMode: "both" }}
+                      style={ animationDelay: `${i * 120}ms`, animationFillMode: "both" }
                     >
                       {line}
                     </p>

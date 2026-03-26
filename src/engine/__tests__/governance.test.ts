@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 
+
 // Mock rng.ts entirely
 vi.mock("../rng", () => ({
   rngFromSeed: () => ({

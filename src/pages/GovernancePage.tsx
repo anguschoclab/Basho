@@ -7,19 +7,16 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldAlert, Scale, Gavel, FileWarning, Landmark, Users } from "lucide-react";
-import { spendPoliticalCapital } from "@/engine/governance";
 import { Button } from "@/components/ui/button";
 import type { GovernanceStatus, GovernanceRuling } from "@/engine/types/economy";
 import type { Heya } from "@/engine/types/heya";
-import { getStatusColor, getStatusLabel } from "@/engine/governance";
-import { toScandalBand, SCANDAL_LABELS, toPrizeBand, PRIZE_LABELS } from "@/engine/descriptorBands";
+import { PRIZE_LABELS, SCANDAL_LABELS, formatFinePenalty, getStatusColor, getStatusLabel, spendPoliticalCapital, toPrizeBand, toScandalBand } from "@/presenters/uiDigest";
 
 /**
  * Format fine penalty.
  *  * @param amount - The Amount.
  *  * @returns The result.
  */
-import { formatFinePenalty } from "@/engine/utils/formatters";
 
 
 /** governance page. */
@@ -31,8 +28,7 @@ export default function GovernancePage() {
   useEffect(() => {
     if (world && world.playerHeyaId) {
       setHeya(world.heyas.get(world.playerHeyaId) || null);
-    }
-  }, [world]);
+    }, [world]);
 
   if (!world || !heya) {
     return (
@@ -268,8 +264,7 @@ export default function GovernancePage() {
                             setHeya({ ...heya, politicalCapital: heya.politicalCapital - 100 });
                           } else {
                             alert("Not enough Political Capital (need 100).");
-                          }
-                        }}
+                          }}
                         disabled={(heya.politicalCapital || 0) < 100}
                       >
                         Spend 100 Capital

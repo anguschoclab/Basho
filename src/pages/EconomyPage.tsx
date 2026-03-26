@@ -84,8 +84,7 @@ const RUNWAY_CONFIG: Record<
     color: "text-red-400",
     icon: AlertTriangle,
     progressValue: 10
-  }
-};
+  };
 
 // Koenkai (supporter) descriptions
 const KOENKAI_CONFIG: Record<
@@ -126,8 +125,7 @@ const KOENKAI_CONFIG: Record<
     description: "No organized supporter group yet. You’re operating without a safety net.",
     color: "text-red-400",
     monthlySupport: "None"
-  }
-};
+  };
 
 // Expense categories (narrative)
 const EXPENSE_CATEGORIES = [
@@ -212,7 +210,6 @@ export default function EconomyPage() {
       if (r?.division === "makuuchi" || r?.division === "juryo") {
         count++;
       }
-    }
     return count;
   }, [playerRikishi]);
 

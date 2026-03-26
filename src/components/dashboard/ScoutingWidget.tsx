@@ -4,9 +4,10 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { toPotentialBand, POTENTIAL_LABELS, type PotentialBand } from "@/engine/descriptorBands";
+import type { PotentialBand  } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/talentpool";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
+import { POTENTIAL_LABELS, toPotentialBand } from "@/presenters/uiDigest";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",
@@ -36,7 +37,6 @@ export function ScoutingWidget() {
       for (const c of talentpool.listVisibleCandidates(world, pool)) {
         all.push({ ...c, pool });
       }
-    }
     return all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
   }, [world]);
 
@@ -47,7 +47,6 @@ export function ScoutingWidget() {
     if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
       poolCounts[p.pool]++;
     }
-  }
 
   const topProspects = prospects.slice(0, 6);
 
@@ -55,7 +54,7 @@ export function ScoutingWidget() {
     <BaseWidget
       title="Scouting"
       icon={Search}
-      headerAction={{ label: "Full Board", onClick: () => navigate({ to: "/talent-pool" }) }}
+      headerAction={ label: "Full Board", onClick: () => navigate({ to: "/talent-pool" }) }
     >
       {/* Pool summary with icons */}
       <div className="flex gap-2 text-xs">

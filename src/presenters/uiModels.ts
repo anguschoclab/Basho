@@ -68,7 +68,11 @@ export interface UIRikishi {
   injurySummary: string; // "Healthy", "Minor knee (2w)", etc.
   condition: number; // 0-100 (allowed to show)
   motivation: number; // 0-100 (allowed to show)
-  fatigue: number; // 0-100 (allowed to show)
+  fatigue: number;
+  powerBand: string;
+  techniqueBand: string;
+  speedBand: string;
+  balanceBand: string; // 0-100 (allowed to show)
   momentum: number; // 0-100 (allowed to show)
 
   // Career Phase
@@ -242,6 +246,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
+    powerBand: toStatBand(r.power ?? 50),
+    techniqueBand: toStatBand(r.technique ?? 50),
+    speedBand: toStatBand(r.speed ?? 50),
+    balanceBand: toStatBand(r.balance ?? 50),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.experience),
     currentBashoWins: r.currentBashoWins,
@@ -322,6 +330,10 @@ export interface UIRosterEntry {
   isInjured: boolean;
   condition: number;
   fatigue: number;
+  powerBand: string;
+  techniqueBand: string;
+  speedBand: string;
+  balanceBand: string;
   momentum: number;
   potentialBand: PotentialBand;
   archetypeLabel?: string;
@@ -369,6 +381,10 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     isInjured: r.injured,
     condition: r.condition,
     fatigue: r.fatigue,
+    powerBand: toStatBand(r.power ?? 50),
+    techniqueBand: toStatBand(r.technique ?? 50),
+    speedBand: toStatBand(r.speed ?? 50),
+    balanceBand: toStatBand(r.balance ?? 50),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     archetypeLabel: r.derivedArchetype ? ARCHETYPE_LABELS[r.derivedArchetype]?.label : undefined,
@@ -380,7 +396,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
 //  Banzuke Grid Projections
 // ─────────────────────────────────────────
 
-export interface UIRankRow {
+interface UIRankRow {
   rankLabel: string;
   rankKey: string;
   rankTierClass: string;
@@ -477,7 +493,7 @@ export function buildBanzukeRows(entries: UIRosterEntry[], division: string, sea
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i heya. */
-export interface UIHeya {
+interface UIHeya {
   id: Id;
   name: string;
   nameJa: string;
@@ -564,7 +580,7 @@ export function projectHeya(heya: Heya, world: WorldState): UIHeya {
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i bout row. */
-export interface UIBoutRow {
+interface UIBoutRow {
   eastId: Id;
   eastShikona: string;
   eastRank: string;
@@ -584,7 +600,7 @@ export interface UIBoutRow {
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
+function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
   const east = world.rikishi.get(bout.winnerRikishiId);
   const west = world.rikishi.get(bout.loserRikishiId);
   // Determine actual east/west from bout log or use winner=east, loser=west as approximation
@@ -611,7 +627,7 @@ export function projectBoutRow(bout: BoutResult, world: WorldState): UIBoutRow {
 // ─────────────────────────────────────────
 
 /** Defines the structure for u i basho summary. */
-export interface UIBashoSummary {
+interface UIBashoSummary {
   year: number;
   bashoNumber: number;
   bashoName: string;
@@ -629,7 +645,7 @@ export interface UIBashoSummary {
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function projectBashoSummary(result: BashoResult, world: WorldState): UIBashoSummary {
+function projectBashoSummary(result: BashoResult, world: WorldState): UIBashoSummary {
   const lookup = (id?: Id) => {
     if (!id) return undefined;
     const r = world.rikishi.get(id);
@@ -655,6 +671,6 @@ export function projectBashoSummary(result: BashoResult, world: WorldState): UIB
 //  Legacy compat: RikishiUIModel alias
 // ─────────────────────────────────────────
 /** @deprecated Use UIRikishi + projectRikishi instead */
-export type RikishiUIModel = UIRikishi;
+type RikishiUIModel = UIRikishi;
 /** @deprecated Use projectRikishi instead */
-export const toRikishiUIModel = projectRikishi;
+const toRikishiUIModel = projectRikishi;

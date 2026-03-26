@@ -4,7 +4,7 @@ import type { Oyakata } from "./types/oyakata";
 import { stableSort } from "./utils/sort";
 import { buyMyoseki } from "./myosekiMarket";
 
-export interface FinanceStrategy {
+interface FinanceStrategy {
   evaluateFinances: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
 }
 

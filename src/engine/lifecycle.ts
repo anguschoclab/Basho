@@ -79,7 +79,7 @@ const ARCHETYPES: CombatArchetype[] = [
  *  * @param targetRank - The Target rank.
  *  * @returns The result.
  */
-export function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
+function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
   const count = Object.keys(world.rikishi).length;
   const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
   const rookieId = `rk_${currentYear}_${tmpRng.int(1000000, 9999999)}`;

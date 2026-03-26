@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
-import { getCachedPerception, type PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot  } from "@/engine/perception";
 import { BaseWidget } from "./BaseWidget";
-import {
+import { getCachedPerception } from "@/presenters/uiDigest";
   Building2, ChevronRight, Heart, Shield, Users, Flame, TrendingUp, HandCoins,
 } from "lucide-react";
 
@@ -72,7 +72,7 @@ export function StableWidget() {
           <Badge variant="secondary" className="text-[10px] capitalize">{p.prestigeBand}</Badge>
         </>
       }
-      footerAction={{ label: "Manage Stable", onClick: () => navigate({ to: "/stable" }) }}
+      footerAction={ label: "Manage Stable", onClick: () => navigate({ to: "/stable" }) }
     >
       <div className="divide-y divide-border/30">
         <Row icon={<Heart className="h-3.5 w-3.5" />} label="Morale" value={p.moraleBand} />

@@ -12,9 +12,8 @@ import { Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-reac
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { ComplianceState } from "@/engine/types/economy";
-import { ensureHeyaWelfareState } from "@/engine/welfare";
-import { buildPerceptionSnapshot } from "@/engine/perception";
 import type { WelfareRiskBand, MoraleBand, RosterStrengthBand } from "@/engine/perception";
+import { buildPerceptionSnapshot, ensureHeyaWelfareState } from "@/presenters/uiDigest";
 
 const COMPLIANCE_DISPLAY: Record<ComplianceState, { label: string; color: string; description: string; icon: React.ElementType }> = {
   compliant: { label: "Compliant", color: "text-emerald-400", description: "No concerns from the JSA. Your stable operates within regulations.", icon: CheckCircle },
@@ -43,8 +42,7 @@ const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: str
   austerity: { label: "Austerity", cost: "¥1,000/day", desc: "Minimal portions. High morale penalty, weight loss." },
   maintenance: { label: "Maintenance", cost: "¥3,000/day", desc: "Standard stew. Balanced weight and morale." },
   heavy_bulk: { label: "Heavy Bulk", cost: "¥6,000/day", desc: "Force-feeding. Fast weight gain, minor morale drop." },
-  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." }
-};
+  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." };
 
 const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string }> = {
   dominant: { label: "Dominant", color: "text-amber-400" },

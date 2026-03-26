@@ -148,11 +148,11 @@ export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
         {yearGroups.length > 1 && (
           <div
             className="absolute h-px bg-border"
-            style={{
+            style={
               bottom: 38,
               left: 24,
               right: 24,
-            }}
+            }
           />
         )}
         <ScrollBar orientation="horizontal" />

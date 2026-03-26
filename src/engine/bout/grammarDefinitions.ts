@@ -116,7 +116,7 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
   ]
 };
 
-export const MEDIA_TEMPLATES = {
+const MEDIA_TEMPLATES = {
   TABLOID_SCANDAL: [
     "EXCLUSIVE: [Rikishi] Spotted in Roppongi at 3 AM Following Brutal Loss!",
     "Rumbling in the Heya: Is [Rikishi] Hiding a Devastating Knee Injury?",
@@ -149,7 +149,7 @@ export const MEDIA_TEMPLATES = {
   ]
 };
 
-export const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
+const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
   event_scout_traditionalist: [
     "Oyakata demands the recruit demonstrate pure fighting spirit.",
     "The stablemaster observes in stoic silence, looking for grit and traditional sumo fundamentals.",
@@ -194,7 +194,7 @@ export const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
   ]
 };
 
-export const GRIP_TEMPLATES = {
+const GRIP_TEMPLATES = {
   moro_zashi: [
     "Brilliant maneuver! [Attacker] slips both arms in for a deep moro-zashi grip!",
     "[Attacker] secures the double-inside grip! [Defender] is in serious trouble."

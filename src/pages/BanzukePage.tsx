@@ -4,7 +4,6 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { OzekiKadobanMap, RankInfo } from "@/engine/banzuke";
-import { RANK_HIERARCHY, getRankTitleJa, formatRank } from "@/engine/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react";
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import type { Division, RankPosition } from "@/engine/types/banzuke";
 import { projectRosterEntry, buildPrevRankScores, buildBanzukeRows } from "@/presenters/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
+import { RANK_HIERARCHY, formatRank, getRankTitleJa } from "@/presenters/uiDigest";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -163,7 +163,7 @@ export default function BanzukePage() {
                             <tr
                               key={row.rankKey}
                               className={`border-b hover:bg-muted/50 transition-colors bout-enter ${row.rankTierClass}`}
-                              style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
+                              style={ animationDelay: `${Math.min(i * 30, 300)}ms` }
                             >
                               <RikishiCell
                                 entry={row.east}

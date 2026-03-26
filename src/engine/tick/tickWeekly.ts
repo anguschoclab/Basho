@@ -12,6 +12,7 @@ import * as npcAI from "../npcAI";
 import * as scoutingStore from "../scoutingStore";
 import * as talentpool from "../talentpool";
 import { processWeeklyMediaBoundary, createDefaultMediaState, evaluateScandals } from "../media";
+import { stableSort } from "../utils/sort";
 import { runTickPipeline, safeCall, type TickStep } from "./tickOrchestrator";
 
 /**
@@ -61,7 +62,8 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
         evaluateScandals(w);
 
         // 3. Status Decay (Motivation Caps, etc)
-        for (const rikishi of w.rikishi.values()) {
+        const activeRikishi = Array.from(w.rikishi.values()).filter(r => !r.isRetired);
+        for (const rikishi of stableSort(activeRikishi, x => x.id)) {
           if (rikishi.motivationCapWeeks && rikishi.motivationCapWeeks > 0) {
             rikishi.motivationCapWeeks -= 1;
             if (rikishi.motivationCapWeeks === 0) {
@@ -156,7 +158,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
   // NPC opportunistic recruitment during mid-interim
   safeCall(() => {
     const smallStables: Record<string, number> = {};
-    for (const heya of world.heyas.values()) {
+    for (const heya of stableSort(Array.from(world.heyas.values()), x => x.id)) {
       if (heya.id === world.playerHeyaId) continue;
       if (heya.rikishiIds.length < 6) {
         smallStables[heya.id] = Math.max(1, 6 - heya.rikishiIds.length);

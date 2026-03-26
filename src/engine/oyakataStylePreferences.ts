@@ -18,7 +18,7 @@ export type RecruitmentPhilosophy =
   | "underdog_hunter";  // Seeks hidden gems and overlooked talent
 
 /** Defines the structure for oyakata style profile. */
-export interface OyakataStyleProfile {
+interface OyakataStyleProfile {
   philosophy: RecruitmentPhilosophy;
   preferredArchetypes: CombatArchetype[];
   preferredStyle: Style | "any";
@@ -165,7 +165,7 @@ export function scoreRecruitForOyakata(
 }
 
 /** Get a narrative label for the philosophy */
-export function getPhilosophyLabel(philosophy: RecruitmentPhilosophy): string {
+function getPhilosophyLabel(philosophy: RecruitmentPhilosophy): string {
   const labels: Record<RecruitmentPhilosophy, string> = {
     style_purist: "Style Purist",
     meta_chaser: "Meta Chaser",

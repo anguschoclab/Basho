@@ -94,8 +94,7 @@ export function TimeControls() {
       return result;
     } finally {
       setIsSimulating(false);
-    }
-  };
+    };
 
   return (
     <>

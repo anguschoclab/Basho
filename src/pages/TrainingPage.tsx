@@ -10,27 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { IndividualFocusType } from "@/engine/types/training";
-import {
-  INTENSITY_MULTIPLIERS as INTENSITY_EFFECTS,
-  FOCUS_BIAS_MATRIX as FOCUS_EFFECTS,
-  RECOVERY_MULTIPLIERS as RECOVERY_EFFECTS,
-  getIntensityLabel,
-  getFocusLabel,
-  getRecoveryLabel,
-  getFocusModeLabel,
-  getCareerPhase,
-  PHASE_EFFECTS,
-  type TrainingIntensity,
-  type TrainingFocus,
-  type RecoveryEmphasis,
-  type BeyaTrainingState,
-  createDefaultTrainingState
-} from "@/engine/training";
-import { describeTrainingEffect } from "@/engine/narrativeDescriptions";
-import { toFatigueBand, toPotentialBand, FATIGUE_LABELS, POTENTIAL_LABELS } from "@/engine/descriptorBands";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState } from "@/engine/training";
 import {
   Activity,
   Dumbbell,
@@ -49,6 +31,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { RikishiName } from "@/components/ClickableName";
+import { FATIGUE_LABELS, FOCUS_BIAS_MATRIX as FOCUS_EFFECTS, PHASE_EFFECTS, POTENTIAL_LABELS } from "@/presenters/uiDigest";
 
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode }[] = [
   { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" /> },
@@ -96,7 +79,7 @@ export default function TrainingPage() {
 
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity };
       persistTrainingState(next);
       return next;
     });
@@ -104,7 +87,7 @@ export default function TrainingPage() {
 
   const handleFocusChange = (focus: TrainingFocus) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus };
       persistTrainingState(next);
       return next;
     });
@@ -112,7 +95,7 @@ export default function TrainingPage() {
 
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery };
       persistTrainingState(next);
       return next;
     });
@@ -321,7 +304,7 @@ export default function TrainingPage() {
                     {/* Rikishi Info */}
                     <div 
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id } })}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id })}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>

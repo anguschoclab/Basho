@@ -22,17 +22,17 @@ import type { RikishiArchetype } from './types/combat';
  */
 
 // [CONSTITUTION C5.3]
-export const HYSTERESIS_DELTA = 5;
+const HYSTERESIS_DELTA = 5;
 
 /** Defines the structure for band def. */
-export interface BandDef<T extends string> {
+interface BandDef<T extends string> {
   band: T;
   min: number; // inclusive
   max: number; // exclusive (use Infinity for top band)
 }
 
 /** Defines the structure for descriptor band params. */
-export interface DescriptorBandParams<T extends string> {
+interface DescriptorBandParams<T extends string> {
   statId?: string;
   truthValue0to100: number;
   lastDescriptorToken?: T;
@@ -45,7 +45,7 @@ export interface DescriptorBandParams<T extends string> {
 /**
  * Resolve a raw value to a qualitative band with hysteresis returning descriptor tokens and modifiers.
  */
-export function toDescriptorBand<T extends string>({
+function toDescriptorBand<T extends string>({
   truthValue0to100,
   lastDescriptorToken,
   ladder,
@@ -80,7 +80,7 @@ export function toDescriptorBand<T extends string>({
  * If `previousBand` is provided and the value is within HYSTERESIS_DELTA
  * of the boundary, we stick with the previous band.
  */
-export function toBand<T extends string>(
+function toBand<T extends string>(
   value: number,
   bands: BandDef<T>[],
   previousBand?: T
@@ -101,7 +101,7 @@ export function toBand<T extends string>(
 export type StatBand = "exceptional" | "outstanding" | "strong" | "capable" | "developing" | "limited" | "struggling";
 
 /** s t a t_ b a n d s. */
-export const STAT_BANDS: BandDef<StatBand>[] = [
+const STAT_BANDS: BandDef<StatBand>[] = [
   { band: "struggling", min: 0, max: 15 },
   { band: "limited", min: 15, max: 30 },
   { band: "developing", min: 30, max: 45 },
@@ -122,7 +122,7 @@ export function toStatBand(value: number, prev?: StatBand): StatBand {
 }
 
 /** s t a t_ b a n d_ l a b e l s. */
-export const STAT_BAND_LABELS: Record<StatBand, string> = {
+const STAT_BAND_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
   outstanding: "Outstanding",
   strong: "Strong",
@@ -138,7 +138,7 @@ export const STAT_BAND_LABELS: Record<StatBand, string> = {
 export type ConditionBand = "peak" | "good" | "fair" | "worn" | "fragile";
 
 /** c o n d i t i o n_ b a n d s. */
-export const CONDITION_BANDS: BandDef<ConditionBand>[] = [
+const CONDITION_BANDS: BandDef<ConditionBand>[] = [
   { band: "fragile", min: 0, max: 30 },
   { band: "worn", min: 30, max: 50 },
   { band: "fair", min: 50, max: 70 },
@@ -152,12 +152,12 @@ export const CONDITION_BANDS: BandDef<ConditionBand>[] = [
  *  * @param prev - The Prev.
  *  * @returns The result.
  */
-export function toConditionBand(value: number, prev?: ConditionBand): ConditionBand {
+function toConditionBand(value: number, prev?: ConditionBand): ConditionBand {
   return toBand(value, CONDITION_BANDS, prev);
 }
 
 /** c o n d i t i o n_ l a b e l s. */
-export const CONDITION_LABELS: Record<ConditionBand, { label: string; description: string }> = {
+const CONDITION_LABELS: Record<ConditionBand, { label: string; description: string }> = {
   peak: { label: "Peak", description: "In supreme physical condition." },
   good: { label: "Good", description: "Moving well, no visible concerns." },
   fair: { label: "Fair", description: "Showing some wear; managing carefully." },
@@ -171,7 +171,7 @@ export const CONDITION_LABELS: Record<ConditionBand, { label: string; descriptio
 export type FatigueBand = "fresh" | "light" | "tired" | "exhausted" | "spent";
 
 /** f a t i g u e_ b a n d s. */
-export const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
+const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
   { band: "fresh", min: 0, max: 15 },
   { band: "light", min: 15, max: 35 },
   { band: "tired", min: 35, max: 55 },
@@ -208,7 +208,7 @@ export type MomentumBand = "on_fire" | "rising" | "steady" | "struggling" | "in_
  *  * @param momentum - The Momentum.
  *  * @returns The result.
  */
-export function toMomentumBand(momentum: number): MomentumBand {
+function toMomentumBand(momentum: number): MomentumBand {
   // Momentum typically stored as -5..+5 or 0..100
   const v = Math.abs(momentum) > 10
     ? (clamp(momentum, 0, 100) - 50) / 10
@@ -221,7 +221,7 @@ export function toMomentumBand(momentum: number): MomentumBand {
 }
 
 /** m o m e n t u m_ l a b e l s. */
-export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
+const MOMENTUM_LABELS: Record<MomentumBand, string> = {
   on_fire: "On Fire",
   rising: "Rising",
   steady: "Steady",
@@ -240,7 +240,7 @@ type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "desperat
  *  * @param weeklyBurn - The Weekly burn.
  *  * @returns The result.
  */
-export function toFinancialBand(funds: number, weeklyBurn: number): FinancialBand {
+function toFinancialBand(funds: number, weeklyBurn: number): FinancialBand {
   if (weeklyBurn <= 0) return "secure";
   const runwayWeeks = funds / weeklyBurn;
   if (runwayWeeks >= 52) return "secure";
@@ -256,7 +256,7 @@ export function toFinancialBand(funds: number, weeklyBurn: number): FinancialBan
 type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary";
 
 /** r i v a l r y_ h e a t_ b a n d s. */
-export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
+const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
   { band: "dormant", min: 0, max: 20 },
   { band: "simmering", min: 20, max: 40 },
   { band: "heated", min: 40, max: 65 },
@@ -289,7 +289,7 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
 type TraitBand = "extreme" | "high" | "moderate" | "low" | "minimal";
 
 /** t r a i t_ b a n d s. */
-export const TRAIT_BANDS: BandDef<TraitBand>[] = [
+const TRAIT_BANDS: BandDef<TraitBand>[] = [
   { band: "minimal", min: 0, max: 20 },
   { band: "low", min: 20, max: 40 },
   { band: "moderate", min: 40, max: 60 },
@@ -327,7 +327,7 @@ type WinRateAssessment = "dominant" | "strong" | "competitive" | "struggling" | 
  *  * @param losses - The Losses.
  *  * @returns The result.
  */
-export function toWinRateAssessment(wins: number, losses: number): WinRateAssessment {
+function toWinRateAssessment(wins: number, losses: number): WinRateAssessment {
   const total = wins + losses;
   if (total === 0) return "competitive";
   const rate = wins / total;
@@ -339,7 +339,7 @@ export function toWinRateAssessment(wins: number, losses: number): WinRateAssess
 }
 
 /** w i n_ r a t e_ l a b e l s. */
-export const WIN_RATE_LABELS: Record<WinRateAssessment, string> = {
+const WIN_RATE_LABELS: Record<WinRateAssessment, string> = {
   dominant: "Dominant",
   strong: "Strong",
   competitive: "Competitive",
@@ -380,7 +380,7 @@ export const PRIZE_LABELS: Record<PrizeBand, string> = {
 type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
 
 /** s c a n d a l_ b a n d s. */
-export const SCANDAL_BANDS: BandDef<ScandalBand>[] = [
+const SCANDAL_BANDS: BandDef<ScandalBand>[] = [
   { band: "clean", min: 0, max: 10 },
   { band: "whispers", min: 10, max: 30 },
   { band: "scrutiny", min: 30, max: 55 },
@@ -413,7 +413,7 @@ export const SCANDAL_LABELS: Record<ScandalBand, string> = {
 export type PotentialBand = "generational" | "star" | "solid" | "average" | "limited" | "unknown";
 
 /** p o t e n t i a l_ b a n d s. */
-export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
+const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
   { band: "generational", min: 88, max: 100 },
   { band: "star",         min: 72, max: 87 },
   { band: "solid",        min: 55, max: 71 },
@@ -471,7 +471,7 @@ export const ARCHETYPE_LABELS: Record<RikishiArchetype, { label: string; descrip
 
 // === Injury Modifiers (C5.4) ===
 
-export function getInjuryModifiers(
+function getInjuryModifiers(
   isInjured: boolean,
   injuryStatus?: { type: string; severity: string | number; location?: string; weeksRemaining: number; }
 ): string[] {

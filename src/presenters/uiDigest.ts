@@ -53,7 +53,7 @@ export interface DigestSection {
 }
 
 /** Defines the structure for u i digest. */
-export interface UIDigest {
+interface UIDigest {
   time: { label: string };
   headline: string;
   counts: {
@@ -361,3 +361,34 @@ export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
     rikishi: new Map(),
   } as any);
 }
+
+// ─────────────────────────────────────────
+// Re-exports of safe engine constants/utilities for UI
+// The UI layer MUST NOT import from @/engine directly.
+// ─────────────────────────────────────────
+export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
+export { describeAggression, describeAttribute, describeExperience, describeTrainingEffect } from "../engine/narrativeDescriptions";
+export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
+export { ARCHETYPE_NAMES, RANK_NAMES, STYLE_NAMES, createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+export { FOCUS_BIAS_MATRIX, INTENSITY_MULTIPLIERS, PHASE_EFFECTS, RECOVERY_MULTIPLIERS, createDefaultTrainingState, ensureHeyaTrainingState, getCareerPhase, getFocusLabel, getFocusModeLabel, getIntensityLabel, getRecoveryLabel } from "../engine/training";
+export { BASHO_CALENDAR, getBashoByNumber, getBashoIndex, getDayName, getSeasonalFlavor, isKeyDay } from "../engine/calendar";
+export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
+export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
+export { FATIGUE_LABELS, POTENTIAL_LABELS, PRIZE_LABELS, RIVALRY_HEAT_LABELS, SCANDAL_LABELS, TRAIT_LABELS, toFatigueBand, toPotentialBand, toPrizeBand, toRivalryHeatBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
+export { HOF_CATEGORY_LABELS, getHallOfFame } from "../engine/hallOfFame";
+export { RANK_HIERARCHY, compareRanks, formatRank, getRankTitleJa, isKachiKoshi, isMakeKoshi } from "../engine/banzuke";
+export { buildMediaDigest, createDefaultMediaState } from "../engine/media";
+export { buildPbpFromBoutResult } from "../engine/pbp";
+export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
+export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
+export { clamp, clampInt } from "../engine/utils";
+export { clearInjury, toInjuryEvent } from "../engine/injuries";
+export { deleteSave, exportSave, importSave } from "../engine/saveload";
+export { ensureHeyaWelfareState } from "../engine/welfare";
+export { formatEventTime, formatFinePenalty, formatSaveDate, formatStance } from "../engine/utils/formatters";
+export { generateH2HCommentary } from "../engine/h2h";
+export { generateNarrative } from "../engine/narrative";
+export { getArchetypeDescription } from "../engine/oyakataPersonalities";
+export { getKimarite } from "../engine/kimarite";
+export { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "../engine/scoutingStore";
+export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine/governance";

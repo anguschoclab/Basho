@@ -7,10 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import type { UIDigest, DigestSection, DigestItem } from "@/presenters/uiDigest";
-import { buildWeeklyDigest } from "@/presenters/uiDigest";
 import { useGame } from "@/contexts/GameContext";
 import {
+import { DigestItem, DigestSection, UIDigest, buildWeeklyDigest } from "@/presenters/uiDigest";
   Activity,
   AlertTriangle,
   Coins,

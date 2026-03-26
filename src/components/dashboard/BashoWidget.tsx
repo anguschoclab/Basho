@@ -28,7 +28,6 @@ export function BashoWidget() {
         if ((m.result as any)?.isKinboshi) kinboshi++;
         if (m.result?.upset) upsets++;
       }
-    }
 
     for (const r of world.rikishi.values()) {
       if (r.injured) injuries++;
@@ -69,7 +68,7 @@ export function BashoWidget() {
       title={`${world.currentBasho.bashoName?.toUpperCase()} — Day ${stats.day}`}
       icon={Trophy}
       className="border-primary/20 relative overflow-hidden"
-      headerAction={{ label: "View", onClick: () => navigate({ to: "/basho" }) }}
+      headerAction={ label: "View", onClick: () => navigate({ to: "/basho" }) }
     >
       {/* Subtle shimmer accent for active tournament */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/50 to-transparent shimmer-bar" />

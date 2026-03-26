@@ -131,7 +131,7 @@ export function scheduleDivisionDay(args: {
 
   // First pass: strict (no repeats)
   const used = new Set<string>();
-  let selected = greedySelectPairs(candidates, boutsPerDay, used);
+  const selected = greedySelectPairs(candidates, boutsPerDay, used);
 
   // If we couldn't fill the card, optionally allow forced repeats (same-heya still disallowed)
   if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
@@ -173,7 +173,7 @@ export function scheduleDivisionDay(args: {
 /**
  * Schedule all divisions for a single day.
  */
-export function scheduleAllDivisionsDay(args: {
+function scheduleAllDivisionsDay(args: {
   world: WorldState;
   basho: BashoState;
   day: number;
