@@ -15,6 +15,7 @@ import {
 import { FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
+import { toDurationBand, DURATION_LABELS } from "@/engine/descriptorBands";
 import { HolidayControls } from "./HolidayControls";
 import { AutoSimControls } from "./AutoSimControls";
 
@@ -78,12 +79,12 @@ export function TimeControls() {
 
   const handleAdvanceWeek = () => {
     advanceInterim(1);
-    toast({ title: "Week advanced", description: "Training, economy, and governance have progressed." });
+    toast({ title: "Time advanced", description: `${DURATION_LABELS[toDurationBand(7)]} passed.` });
   };
 
   const handleAdvanceOneDay = () => {
     advanceOneDay();
-    toast({ title: "Day advanced", description: `Day ${(world.dayIndexGlobal || 0) + 1} complete.` });
+    toast({ title: "Time advanced", description: `${DURATION_LABELS[toDurationBand(1)]} passed.` });
   };
 
   const handleAutoSim = async (config: any) => {
@@ -94,7 +95,8 @@ export function TimeControls() {
       return result;
     } finally {
       setIsSimulating(false);
-    };
+    }
+  };
 
   return (
     <>

@@ -38,8 +38,9 @@ import {
   Newspaper,
 } from "lucide-react";
 
-import type {
 import { DEFAULT_CRITICAL_GATES } from "@/presenters/uiDigest";
+import { toDurationBand, DURATION_LABELS } from "@/engine/descriptorBands";
+import type {
   HolidayConfig,
   HolidayResult,
   HolidayTarget,
@@ -242,8 +243,8 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
               {/* Summary Bar */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-secondary/50 text-center">
-                  <div className="text-2xl font-bold">{result.daysAdvanced}</div>
-                  <div className="text-xs text-muted-foreground">Days Passed</div>
+                  <div className="text-2xl font-bold">{DURATION_LABELS[toDurationBand(result.daysAdvanced)]}</div>
+                  <div className="text-xs text-muted-foreground">Time Passed</div>
                 </div>
                 <div className="p-3 rounded-lg bg-secondary/50 text-center">
                   <div className="text-2xl font-bold capitalize">{result.phaseOnExit.replace("_", " ")}</div>
