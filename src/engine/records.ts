@@ -36,7 +36,7 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
   }
 
   // Find insertion point (descending order)
-  let insertAt = list.findIndex(e => value > e.value);
+  const insertAt = list.findIndex(e => value > e.value);
   
   if (insertAt === -1) {
     // If list not full, add to end

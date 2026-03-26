@@ -155,7 +155,7 @@ export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): Ri
  *  * @param bId - The B id.
  *  * @returns The result.
  */
-export function removeRivalry(state: RivalriesState, aId: Id, bId: Id): RivalriesState {
+function removeRivalry(state: RivalriesState, aId: Id, bId: Id): RivalriesState {
   const key = makeRivalryKey(aId, bId);
   if (!state.pairs[key]) return state;
   const next = { ...state.pairs };

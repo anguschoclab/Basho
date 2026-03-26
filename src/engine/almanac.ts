@@ -14,7 +14,7 @@ import { RANK_HIERARCHY } from "./banzuke";
 // === CAREER RECORD TYPES ===
 
 /** Defines the structure for basho performance. */
-export interface BashoPerformance {
+interface BashoPerformance {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
@@ -33,7 +33,7 @@ export interface BashoPerformance {
 }
 
 /** Defines the structure for rikishi career record. */
-export interface RikishiCareerRecord {
+interface RikishiCareerRecord {
   rikishiId: Id;
   shikona: string;
   debutYear: number;
@@ -70,7 +70,7 @@ export interface RikishiCareerRecord {
 }
 
 /** Defines the structure for heya record. */
-export interface HeyaRecord {
+interface HeyaRecord {
   heyaId: Id;
   name: string;
 
@@ -124,7 +124,7 @@ export interface OyakataRecord {
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-export function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
+function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
   // Realistic basho counts calibrated from real wrestlers:
@@ -458,7 +458,7 @@ function getRankValue(rank: Rank): number {
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
+function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
   for (const r of world.rikishi.values()) {
     if (r.heyaId === heya.id) {
@@ -497,7 +497,7 @@ export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => num
 // === ALMANAC SNAPSHOT ===
 
 /** Defines the structure for almanac snapshot. */
-export interface AlmanacSnapshot {
+interface AlmanacSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
@@ -573,7 +573,7 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
  *  * @param record - The Record.
  *  * @returns The result.
  */
-export function getRikishiCareerSummary(record: RikishiCareerRecord): string {
+function getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];
 
   if (record.yushoCount > 0) parts.push(`${record.yushoCount} Yusho`);

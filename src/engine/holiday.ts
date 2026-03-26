@@ -487,7 +487,7 @@ function isTargetReached(
 // ============================================================================
 
 /** d e f a u l t_ c r i t i c a l_ g a t e s. */
-export const DEFAULT_CRITICAL_GATES: SafetyGate[] = [
+const DEFAULT_CRITICAL_GATES: SafetyGate[] = [
   "topRikishiInjury",
   "insolvencyWarning",
   "scandalSeverity",

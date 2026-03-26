@@ -11,7 +11,7 @@ export type FacilitiesBand = "world_class" | "excellent" | "adequate" | "basic" 
 /** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 /** Type representing koenkai band. */
-export type KoenkaiBand = KoenkaiBandType;
+type KoenkaiBand = KoenkaiBandType;
 /** Type representing runway band. */
 export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 

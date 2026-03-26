@@ -34,7 +34,7 @@ import { getStorageProvider, hasStorageProvider, type IStorageProvider } from ".
 
 // === SAVE VERSION ===
 /** c u r r e n t_ s a v e_ v e r s i o n_ l o c a l. */
-export const CURRENT_SAVE_VERSION_LOCAL: SaveVersion = CURRENT_SAVE_VERSION;
+const CURRENT_SAVE_VERSION_LOCAL: SaveVersion = CURRENT_SAVE_VERSION;
 
 // Canon: project is Basho
 const SAVE_KEY_PREFIX = "basho_save_";
@@ -338,7 +338,7 @@ function migrateToCurrent(save: SaveGame): SaveGame {
  *  * @param existing - The Existing.
  *  * @returns The result.
  */
-export function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame, timestampISO?: string): SaveGame {
+function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame, timestampISO?: string): SaveGame {
   const now = timestampISO ?? existing?.lastSavedAtISO ?? (new (globalThis as any).Date()).toISOString();
   return {
     version: CURRENT_SAVE_VERSION_LOCAL,
@@ -369,7 +369,7 @@ function toSlotKey(slotNameOrKey: string): string {
  * Get save slot keys.
  *  * @returns The result.
  */
-export function getSaveSlotKeys(): string[] {
+function getSaveSlotKeys(): string[] {
   const storage = getStorage();
   if (!storage) return [];
   const keys: string[] = [];
@@ -601,7 +601,7 @@ export async function importSave(file: File): Promise<WorldState | null> {
  * Get available slot names.
  *  * @returns The result.
  */
-export function getAvailableSlotNames(): string[] {
+function getAvailableSlotNames(): string[] {
   return Array.from({ length: SAVE_SLOT_COUNT }, (_, i) => `slot_${i + 1}`);
 }
 

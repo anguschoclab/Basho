@@ -42,6 +42,17 @@ export default tseslint.config(
           "property": "random",
           "message": "Do not use Math.random() in engine code. Use rngFromSeed/rngForWorld (src/engine/rng.ts)."
         }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": ["../components/*", "../pages/*", "../hooks/*", "../contexts/*", "../presenters/*", "@/components/*", "@/pages/*", "@/hooks/*", "@/contexts/*", "@/presenters/*"],
+              "message": "Engine code must not import from UI or React layers to maintain architectural boundaries."
+            }
+          ]
+        }
       ]
     }
   }

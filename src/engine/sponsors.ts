@@ -133,7 +133,7 @@ const FINISHING_SUFFIXES = ["Corp", "Ltd", "Group", "Holdings", "Global", "Enter
  * Procedural Sponsor Name Generator V2
  * Based on Tier: Local, Regional, National, Global
  */
-export function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
+function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
   const rollIndex = (arr: string[]) => Math.floor(rng.next() * arr.length);
   
   // Tier 1 (Local): [Family Name] [Small Industry (Sake/Textiles)]

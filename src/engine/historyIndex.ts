@@ -150,7 +150,7 @@ function sortKeyFor(year: number, bashoNumber: number): string {
  * (e.g., from almanac). If omitted, rikishi entries will include only prize/yusho flags
  * when derivable from BashoResult.
  */
-export function buildHistoryIndex(args: {
+function buildHistoryIndex(args: {
   world: WorldState;
   /** Optional richer per-rikishi performance input */
   performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>;
@@ -302,7 +302,7 @@ export function getBashoSummary(index: HistoryIndex, year: number, bashoNumber: 
  *  * @param bashoNumber - The Basho number.
  *  * @returns The result.
  */
-export function getBanzukeSnapshotFor(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BanzukeSnapshot | null {
+function getBanzukeSnapshotFor(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BanzukeSnapshot | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.banzukeByBasho[k] || null;
 }
@@ -323,7 +323,7 @@ export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHi
  *  * @param rikishiId - The Rikishi id.
  *  * @returns The result.
  */
-export function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey | undefined {
+function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey | undefined {
   return index.lastSeenBashoForRikishi[rikishiId];
 }
 
@@ -339,7 +339,7 @@ interface WorldWithHistoryIndex extends WorldState {
  * Rebuild index and attach it onto world (non-canonical helper).
  * Useful if you want world.historyIndex available for UI without recomputation.
  */
-export function rebuildHistoryIndexIntoWorld(world: WorldWithHistoryIndex, performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>): HistoryIndex {
+function rebuildHistoryIndexIntoWorld(world: WorldWithHistoryIndex, performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>): HistoryIndex {
   const idx = buildHistoryIndex({ world, performanceByBasho });
   world.historyIndex = idx;
   return idx;

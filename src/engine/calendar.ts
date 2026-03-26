@@ -150,7 +150,7 @@ export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
 // === Seasonal flavor text ===
 
 /** s e a s o n a l_ f l a v o r. */
-export const SEASONAL_FLAVOR: Record<BashoInfo["season"], string[]> = {
+const SEASONAL_FLAVOR: Record<BashoInfo["season"], string[]> = {
   winter: [
     "Cold winds blow across the kokugikan as the new year begins.",
     "Steam rises from the chanko pots as rikishi prepare for the first basho.",

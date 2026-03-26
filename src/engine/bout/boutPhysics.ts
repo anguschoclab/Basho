@@ -27,7 +27,7 @@ import {
 } from "../types/combat";
 
 import { RANK_HIERARCHY } from "../types/banzuke";
-import { KIMARITE_ALL, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
+import { KIMARITE_REGISTRY, getKimariteCount, type Kimarite, type KimariteClass, getKimariteByClass, getKimariteForFamily } from "../kimarite";
 import { resolveTacticalClash, determineCPUTactic } from "../h2h";
 
 /** Engine position vocabulary (IMPORTANT) — canonical source, re-exported by pbp.ts */
@@ -179,12 +179,12 @@ function calculateMoveCompatibility(r: Rikishi, k: Kimarite): number {
  */
 function pickMoveFromClass(rng: SeededRNG, moveClass: KimariteClass | undefined, attacker: Rikishi, defender: Rikishi, st: EngineState, family?: TacticalFamily, moveId?: string): Kimarite {
   if (moveId) {
-    const m = KIMARITE_ALL.find(k => k.id === moveId);
+    const m = KIMARITE_REGISTRY.find(k => k.id === moveId);
     if (m) return m;
   }
 
   // 1. Filter valid moves for this state
-  let possible = KIMARITE_ALL.filter(k => checkKimariteRequirements(k, attacker, defender, st));
+  let possible = KIMARITE_REGISTRY.filter(k => checkKimariteRequirements(k, attacker, defender, st));
   
   // 2. Filter by requested Class or Family if provided
   if (moveClass) {
@@ -194,8 +194,8 @@ function pickMoveFromClass(rng: SeededRNG, moveClass: KimariteClass | undefined,
   }
   
   if (possible.length === 0) {
-    possible = KIMARITE_ALL.filter(k => checkKimariteRequirements(k, attacker, defender, st));
-    if (possible.length === 0) return KIMARITE_ALL[0]; // Absolute fallback (yorikiri)
+    possible = KIMARITE_REGISTRY.filter(k => checkKimariteRequirements(k, attacker, defender, st));
+    if (possible.length === 0) return KIMARITE_REGISTRY[0]; // Absolute fallback (yorikiri)
   }
 
   const arch = ARCHETYPE_PROFILES[attacker.combatProfile.archetype as TacticalArchetype] || ARCHETYPE_PROFILES.all_rounder;
@@ -765,7 +765,7 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   // Edge Reversal Check (Mental Stat)
   if (st.advantage === 'west' && stat(east, 'mental') > 70 && st.balanceEast < 20 && rng.next() < 0.2) {
     // Utchari trigger!
-    return { winner: "east", kimarite: KIMARITE_ALL.find(k => k.id === 'utchari') as Kimarite };
+    return { winner: "east", kimarite: KIMARITE_REGISTRY.find(k => k.id === 'utchari') as Kimarite };
   }
 
   // 7. Victory Check (Balance hits 0)
@@ -887,7 +887,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
 
   if (tachiaiResult && tachiaiResult.earlyWinner) {
     finalWinner = tachiaiResult.earlyWinner;
-    finalKimarite = (KIMARITE_ALL.find(k => k.id === tachiaiResult.earlyKimarite) as Kimarite) || KIMARITE_ALL[0];
+    finalKimarite = (KIMARITE_REGISTRY.find(k => k.id === tachiaiResult.earlyKimarite) as Kimarite) || KIMARITE_REGISTRY[0];
   } else {
     // 2. Engagement Phase (Action Loop)
     // No more arbitrary target ticks; we loop until victory or max time
@@ -954,7 +954,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
 }
 
 /** Convenience helper for tests/sim screens */
-export function simulateBoutPhysics(east: Rikishi, west: Rikishi, seed: string): BoutResult {
+function simulateBoutPhysics(east: Rikishi, west: Rikishi, seed: string): BoutResult {
   const rng = rngFromSeed(seed, "bout", "root");
   const bashoName: BashoName = "hatsu" ;
 

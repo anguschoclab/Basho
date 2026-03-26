@@ -5,8 +5,8 @@
  */
 
 // Assumptions based on canonical world logic
-export const KINBOSHI_STIPEND_PER_BOSHI = 40000; // Persistent monthly bonus
-export const SANSHO_PRIZE_MONEY = 2000000;       // One-time cash injection to stable
+const KINBOSHI_STIPEND_PER_BOSHI = 40000; // Persistent monthly bonus
+const SANSHO_PRIZE_MONEY = 2000000;       // One-time cash injection to stable
 
 export interface SalaryBreakdown {
   base: number;
@@ -45,7 +45,7 @@ export function getSalaryBreakdown(
 /**
  * Generates the financial transaction ledger entry for a Sansho prize.
  */
-export function generateSanshoLedgerEntry(
+function generateSanshoLedgerEntry(
   rikishiName: string, 
   prizeType: 'Shukun' | 'Kanto' | 'Gino'
 ) {

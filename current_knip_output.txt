@@ -1,0 +1,236 @@
+Unused files (70)
+check_sorts.mjs
+find_nested.mjs
+fix-sorts.js
+get_types.mjs
+get_types2.mjs
+get_types3.mjs
+patch_descriptor.cjs
+patch_sort.cjs
+patch_tests.cjs
+plan_check.mjs
+run_sim.mjs
+scripts/add-comments.ts
+scripts/bench-filter-vs-reduce.ts
+scripts/bench-naturalization-filter.ts
+scripts/bench-uidigest.ts
+scripts/benchmark-almanac.ts
+scripts/benchmark-economypage.ts
+scripts/determinism-test.mjs
+scripts/test_tactics.ts
+src/components/banzuke/index.ts
+src/components/dashboard/index.ts
+src/components/game/AutoSimControls.tsx
+src/components/game/FacilitiesManagementPanel.tsx
+src/components/game/HolidayControls.tsx
+src/components/game/index.ts
+src/components/game/InstitutionPanel.tsx
+src/components/game/RikishiCard.tsx
+src/components/game/RivalStablesPanel.tsx
+src/components/game/StableOverviewPanel.tsx
+src/components/game/TimeControls.tsx
+src/components/game/WeeklyDigest.tsx
+src/components/game/WelfarePanel.tsx
+src/components/index.ts
+src/components/layout/AppSidebar.tsx
+src/components/layout/index.ts
+src/components/ui/accordion.tsx
+src/components/ui/alert.tsx
+src/components/ui/aspect-ratio.tsx
+src/components/ui/breadcrumb.tsx
+src/components/ui/calendar.tsx
+src/components/ui/carousel.tsx
+src/components/ui/chart.tsx
+src/components/ui/checkbox.tsx
+src/components/ui/command.tsx
+src/components/ui/context-menu.tsx
+src/components/ui/drawer.tsx
+src/components/ui/form.tsx
+src/components/ui/hover-card.tsx
+src/components/ui/index.ts
+src/components/ui/input-otp.tsx
+src/components/ui/menubar.tsx
+src/components/ui/navigation-menu.tsx
+src/components/ui/pagination.tsx
+src/components/ui/popover.tsx
+src/components/ui/radio-group.tsx
+src/components/ui/resizable.tsx
+src/components/ui/sheet.tsx
+src/components/ui/sidebar.tsx
+src/components/ui/skeleton.tsx
+src/components/ui/slider.tsx
+src/components/ui/table.tsx
+src/components/ui/textarea.tsx
+src/components/ui/toggle-group.tsx
+src/components/ui/toggle.tsx
+src/engine/index.ts
+src/engine/tick/index.ts
+src/engine/uiModels.ts
+src/hooks/use-mobile.tsx
+src/pages/index.ts
+test-hash.mjs
+Unused dependencies (1)
+mitata  package.json:40:6
+Unused devDependencies (1)
+mitata  package.json:64:6
+Unused exports (114)
+ClickableName                               function  src/components/ClickableName.tsx:39:17
+ColumnDropZone                              function  src/components/dashboard/DraggableWidget.tsx:113:17
+AlertDialogPortal                                     src/components/ui/alert-dialog.tsx:94:3
+AlertDialogOverlay                                    src/components/ui/alert-dialog.tsx:95:3
+AlertDialogTrigger                                    src/components/ui/alert-dialog.tsx:96:3
+AvatarImage                                           src/components/ui/avatar.tsx:38:18
+badgeVariants                                         src/components/ui/badge.tsx:29:17
+DialogPortal                                          src/components/ui/dialog.tsx:86:3
+DialogOverlay                                         src/components/ui/dialog.tsx:87:3
+DialogClose                                           src/components/ui/dialog.tsx:88:3
+DropdownMenuRadioItem                                 src/components/ui/dropdown-menu.tsx:169:3
+DropdownMenuShortcut                                  src/components/ui/dropdown-menu.tsx:172:3
+DropdownMenuGroup                                     src/components/ui/dropdown-menu.tsx:173:3
+DropdownMenuPortal                                    src/components/ui/dropdown-menu.tsx:174:3
+DropdownMenuSub                                       src/components/ui/dropdown-menu.tsx:175:3
+DropdownMenuSubContent                                src/components/ui/dropdown-menu.tsx:176:3
+DropdownMenuSubTrigger                                src/components/ui/dropdown-menu.tsx:177:3
+DropdownMenuRadioGroup                                src/components/ui/dropdown-menu.tsx:178:3
+SelectGroup                                           src/components/ui/select.tsx:134:3
+SelectLabel                                           src/components/ui/select.tsx:138:3
+SelectSeparator                                       src/components/ui/select.tsx:140:3
+SelectScrollUpButton                                  src/components/ui/select.tsx:141:3
+SelectScrollDownButton                                src/components/ui/select.tsx:142:3
+toast                                                 src/components/ui/sonner.tsx:27:19
+ToastAction                                           src/components/ui/toast.tsx:110:3
+setPlayerHeya                 actions                 src/contexts/gameActions.ts:12:14
+setAutoPlay                   actions                 src/contexts/gameActions.ts:85:14
+upgradeHeya                   actions                 src/contexts/gameActions.ts:100:14
+recruitStaff                  actions                 src/contexts/gameActions.ts:107:14
+LocalStorageProvider                        class     src/contexts/localStorageProvider.ts:14:14
+generateCareerRecord                        function  src/engine/almanac.ts:127:17
+generateHeyaRecord                          function  src/engine/almanac.ts:461:17
+getRikishiCareerSummary                     function  src/engine/almanac.ts:576:17
+ARCHETYPE_DEFINITIONS                                 src/engine/archetype.ts:16:14
+getArchetypeLabel                           function  src/engine/archetype.ts:82:17
+simulateEntireBasho                         function  src/engine/autoSim.ts:162:17
+simulateBoutPhysics                         function  src/engine/bout/boutPhysics.ts:957:17
+MEDIA_TEMPLATES                                       src/engine/bout/grammarDefinitions.ts:119:14
+INSTITUTIONAL_TEMPLATES                               src/engine/bout/grammarDefinitions.ts:152:14
+GRIP_TEMPLATES                                        src/engine/bout/grammarDefinitions.ts:197:14
+SEASONAL_FLAVOR                                       src/engine/calendar.ts:153:14
+HYSTERESIS_DELTA                                      src/engine/descriptorBands.ts:25:14
+toDescriptorBand                            function  src/engine/descriptorBands.ts:48:17
+toBand                                      function  src/engine/descriptorBands.ts:83:17
+STAT_BANDS                                            src/engine/descriptorBands.ts:104:14
+STAT_BAND_LABELS                                      src/engine/descriptorBands.ts:125:14
+CONDITION_BANDS                                       src/engine/descriptorBands.ts:141:14
+toConditionBand                             function  src/engine/descriptorBands.ts:155:17
+CONDITION_LABELS                                      src/engine/descriptorBands.ts:160:14
+FATIGUE_BANDS                                         src/engine/descriptorBands.ts:174:14
+toMomentumBand                              function  src/engine/descriptorBands.ts:211:17
+MOMENTUM_LABELS                                       src/engine/descriptorBands.ts:224:14
+toFinancialBand                             function  src/engine/descriptorBands.ts:243:17
+RIVALRY_HEAT_BANDS                                    src/engine/descriptorBands.ts:259:14
+TRAIT_BANDS                                           src/engine/descriptorBands.ts:292:14
+toWinRateAssessment                         function  src/engine/descriptorBands.ts:330:17
+WIN_RATE_LABELS                                       src/engine/descriptorBands.ts:342:14
+SCANDAL_BANDS                                         src/engine/descriptorBands.ts:383:14
+POTENTIAL_BANDS                                       src/engine/descriptorBands.ts:416:14
+getInjuryModifiers                          function  src/engine/descriptorBands.ts:474:17
+KINBOSHI_STIPEND_PER_BOSHI                            src/engine/economics_awards.ts:8:14
+SANSHO_PRIZE_MONEY                                    src/engine/economics_awards.ts:9:14
+generateSanshoLedgerEntry                   function  src/engine/economics_awards.ts:48:17
+stableHash                    events        function  src/engine/events.ts:19:17
+getInducteesByCategory                      function  src/engine/hallOfFame.ts:260:17
+isInducted                                  function  src/engine/hallOfFame.ts:272:17
+buildHistoryIndex             historyIndex  function  src/engine/historyIndex.ts:153:17
+getBanzukeSnapshotFor         historyIndex  function  src/engine/historyIndex.ts:305:17
+getLastSeenBasho              historyIndex  function  src/engine/historyIndex.ts:326:17
+rebuildHistoryIndexIntoWorld  historyIndex  function  src/engine/historyIndex.ts:342:17
+DEFAULT_CRITICAL_GATES                                src/engine/holiday.ts:490:14
+generateRookie                lifeCycle     function  src/engine/lifecycle.ts:82:17
+PlayoffMatchmaking                          class     src/engine/MatchmakingStrategy.ts:62:14
+ExhibitionMatchmaking                       class     src/engine/MatchmakingStrategy.ts:88:14
+describeAttributeVerbose                    function  src/engine/narrativeDescriptions.ts:60:17
+describeAggressionVerbose                   function  src/engine/narrativeDescriptions.ts:130:17
+describeExperienceVerbose                   function  src/engine/narrativeDescriptions.ts:164:17
+describeStamina                             function  src/engine/narrativeDescriptions.ts:183:17
+describeStaminaVerbose                      function  src/engine/narrativeDescriptions.ts:198:17
+describeMomentum                            function  src/engine/narrativeDescriptions.ts:217:17
+describeMomentumVerbose                     function  src/engine/narrativeDescriptions.ts:233:17
+describeCareerPhaseVerbose                  function  src/engine/narrativeDescriptions.ts:253:17
+describeRecord                              function  src/engine/narrativeDescriptions.ts:268:17
+describeInjuryVerbose                       function  src/engine/narrativeDescriptions.ts:313:17
+describeFatigue                             function  src/engine/narrativeDescriptions.ts:330:17
+describeFatigueVerbose                      function  src/engine/narrativeDescriptions.ts:344:17
+describeReputation                          function  src/engine/narrativeDescriptions.ts:382:17
+describeReputationVerbose                   function  src/engine/narrativeDescriptions.ts:398:17
+describeFacilityQuality                     function  src/engine/narrativeDescriptions.ts:418:17
+describeFacilityVerbose                     function  src/engine/narrativeDescriptions.ts:434:17
+describeArchetypeVerbose                    function  src/engine/narrativeDescriptions.ts:477:17
+describeStyleVerbose                        function  src/engine/narrativeDescriptions.ts:495:17
+describeOyakataPersonality                  function  src/engine/narrativeDescriptions.ts:509:17
+getPhilosophyLabel                          function  src/engine/oyakataStylePreferences.ts:168:17
+renderFact                                  function  src/engine/pbp.ts:255:17
+removeRivalry                 rivalries     function  src/engine/rivalries.ts:158:17
+random                                      function  src/engine/rng.ts:81:17
+CURRENT_SAVE_VERSION_LOCAL                            src/engine/saveload.ts:37:14
+createSaveGame                              function  src/engine/saveload.ts:341:17
+getSaveSlotKeys                             function  src/engine/saveload.ts:372:17
+getAvailableSlotNames                       function  src/engine/saveload.ts:604:17
+scheduleAllDivisionsDay       schedule      function  src/engine/schedule.ts:176:17
+getAttributeNarrative                       function  src/engine/scouting.ts:264:17
+getConfidenceText                           function  src/engine/scouting.ts:294:17
+createPublicInfo                            function  src/engine/scouting.ts:311:17
+buildTruthSnapshot                          function  src/engine/scouting.ts:334:17
+IdentityService                                       src/engine/shikona.ts:472:14
+generateSponsorNameV2                       function  src/engine/sponsors.ts:136:17
+syncAchievementCounters                     function  src/engine/tick/tickMonthly.ts:111:17
+selectAllRikishi                                      src/presenters/selectors.ts:32:14
+selectSekitori                                        src/presenters/selectors.ts:113:14
+projectBoutRow                              function  src/presenters/uiModels.ts:587:17
+projectBashoSummary                         function  src/presenters/uiModels.ts:632:17
+toRikishiUIModel                                      src/presenters/uiModels.ts:660:14
+Unused exported types (41)
+BaseWidgetAction                  interface  src/components/dashboard/BaseWidget.tsx:5:18
+BaseWidgetProps                   interface  src/components/dashboard/BaseWidget.tsx:10:18
+GamePhase                         type       src/contexts/GameContext.tsx:22:15
+GameState                         type       src/contexts/GameContext.tsx:22:26
+Reducer                           type       src/contexts/gameHelpers.ts:32:13
+BashoPerformance                  interface  src/engine/almanac.ts:17:18
+RikishiCareerRecord               interface  src/engine/almanac.ts:36:18
+HeyaRecord                        interface  src/engine/almanac.ts:73:18
+AlmanacSnapshot                   interface  src/engine/almanac.ts:500:18
+BandDef                           interface  src/engine/descriptorBands.ts:28:18
+DescriptorBandParams              interface  src/engine/descriptorBands.ts:35:18
+UpgradeResult         facilities  interface  src/engine/facilities.ts:80:18
+HallOfFameState                   interface  src/engine/hallOfFame.ts:45:18
+IMatchmakingStrategy              interface  src/engine/MatchmakingStrategy.ts:9:18
+FacilityType                      type       src/engine/narrativeDescriptions.ts:15:13
+CareerPhase                       type       src/engine/narrativeDescriptions.ts:17:13
+StyleKey                          type       src/engine/narrativeDescriptions.ts:19:13
+ArchetypeKey                      type       src/engine/narrativeDescriptions.ts:21:13
+OyakataArchetypeKey               type       src/engine/narrativeDescriptions.ts:31:13
+FinanceStrategy                   interface  src/engine/npcFinanceStrategy.ts:7:18
+RecruitmentStrategy               interface  src/engine/npcRecruitmentStrategy.ts:5:18
+RetirementStrategy                interface  src/engine/npcRetirementStrategy.ts:7:18
+OyakataStyleProfile               interface  src/engine/oyakataStylePreferences.ts:21:18
+PbpFactBase                       interface  src/engine/pbp.ts:37:18
+TachiaiFact                       interface  src/engine/pbp.ts:43:18
+ClinchFact                        interface  src/engine/pbp.ts:53:18
+MomentumFact                      interface  src/engine/pbp.ts:61:18
+EngagementFact                    interface  src/engine/pbp.ts:69:18
+FinishFact                        interface  src/engine/pbp.ts:80:18
+TacticalFact                      interface  src/engine/pbp.ts:89:18
+InjuryFact                        interface  src/engine/pbp.ts:97:18
+InstitutionalFact                 interface  src/engine/pbp.ts:102:18
+PbpFact                           type       src/engine/pbp.ts:108:13
+ActionPreference                  type       src/engine/types/combat.ts:65:13
+KoenkaiBand                       type       src/engine/types/narrative.ts:14:13
+UIDigest                          interface  src/presenters/uiDigest.ts:56:18
+UIRankRow                         interface  src/presenters/uiModels.ts:383:18
+UIHeya                            interface  src/presenters/uiModels.ts:480:18
+UIBoutRow                         interface  src/presenters/uiModels.ts:567:18
+UIBashoSummary                    interface  src/presenters/uiModels.ts:614:18
+RikishiUIModel                    type       src/presenters/uiModels.ts:658:13
+Duplicate exports (2)
+KIMARITE_ALL|KIMARITE_REGISTRY   src/engine/kimarite.ts
+projectRikishi|toRikishiUIModel  src/presenters/uiModels.ts
+Configuration hints (1)

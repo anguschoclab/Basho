@@ -7,7 +7,7 @@ import { rngFromSeed, SeededRNG } from "./rng";
 import type { Side } from "./types/banzuke";
 import type { Stance, Style, TacticalArchetype } from "./types/combat";
 import type { Advantage, Position } from "./bout/boutPhysics";
-import { KIMARITE_ALL } from "./kimarite";
+import { KIMARITE_REGISTRY } from "./kimarite";
 import { DEFAULT_PBP_LIBRARY } from "./pbpPhrases";
 import { generateBoutNarrative } from "./bout/boutNarrative";
 
@@ -34,13 +34,13 @@ export type PbpTag =
   | "close_call";
 
 /** Defines the structure for pbp fact base. */
-export interface PbpFactBase {
+interface PbpFactBase {
   phase: BoutPhase;
   beat: number;
   leader: Advantage;
 }
 
-export interface TachiaiFact extends PbpFactBase {
+interface TachiaiFact extends PbpFactBase {
   phase: "tachiai";
   tachiaiWinner: Side;
   tachiaiQuality: number;
@@ -50,7 +50,7 @@ export interface TachiaiFact extends PbpFactBase {
   westAction?: any;
 }
 
-export interface ClinchFact extends PbpFactBase {
+interface ClinchFact extends PbpFactBase {
   phase: "clinch";
   position: Position;
   advantage: Advantage;
@@ -58,7 +58,7 @@ export interface ClinchFact extends PbpFactBase {
   strikeEvent?: string;
 }
 
-export interface MomentumFact extends PbpFactBase {
+interface MomentumFact extends PbpFactBase {
   phase: "momentum";
   advantage: Advantage;
   reason: string;
@@ -66,7 +66,7 @@ export interface MomentumFact extends PbpFactBase {
   position?: Position;
 }
 
-export interface EngagementFact extends PbpFactBase {
+interface EngagementFact extends PbpFactBase {
   phase: "engagement";
   eastAction: any;
   westAction: any;
@@ -77,7 +77,7 @@ export interface EngagementFact extends PbpFactBase {
   moveId?: string;
 }
 
-export interface FinishFact extends PbpFactBase {
+interface FinishFact extends PbpFactBase {
   phase: "finish";
   winner: Side;
   kimariteId?: string;
@@ -86,7 +86,7 @@ export interface FinishFact extends PbpFactBase {
   closeCall?: boolean;
 }
 
-export interface TacticalFact extends PbpFactBase {
+interface TacticalFact extends PbpFactBase {
   phase: "tactical";
   side: Side;
   archetype?: TacticalArchetype;
@@ -94,18 +94,18 @@ export interface TacticalFact extends PbpFactBase {
   tacticalResult?: import("./types/combat").TacticalResult;
 }
 
-export interface InjuryFact extends PbpFactBase {
+interface InjuryFact extends PbpFactBase {
   phase: "injury";
   injuryType: string;
 }
 
-export interface InstitutionalFact extends PbpFactBase {
+interface InstitutionalFact extends PbpFactBase {
   phase: "institutional";
   eventType: "GOVERNANCE_STATUS_CHANGED" | "GOVERNANCE_RULING" | "WELFARE_ALERT";
   oyakataPersonality?: string;
 }
 
-export type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact | EngagementFact;
+type PbpFact = TachiaiFact | ClinchFact | MomentumFact | FinishFact | TacticalFact | InjuryFact | InstitutionalFact | EngagementFact;
 
 /** Defines the structure for pbp context. */
 export interface PbpContext {
@@ -252,7 +252,7 @@ export function buildPbpFromBoutResult(args: {
 /**
  * Orchestrator for rendering a single fact (primarily non-bout events).
  */
-export function renderFact(fact: PbpFact, ctx: PbpContext, lib: PbpLibrary = DEFAULT_PBP_LIBRARY): PbpLine {
+function renderFact(fact: PbpFact, ctx: PbpContext, lib: PbpLibrary = DEFAULT_PBP_LIBRARY): PbpLine {
   const rng = rngFromSeed(ctx.seed, fact.phase, String(fact.beat));
   
   let bucket: PhraseBucket = lib.connective.short;

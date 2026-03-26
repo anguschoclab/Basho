@@ -62,7 +62,7 @@ export interface CombatAction {
   isHighRisk?: boolean;
 }
 
-export type ActionPreference = Record<TacticalFamily, number>;
+type ActionPreference = Record<TacticalFamily, number>;
 
 export type Style = "oshi" | "yotsu" | "hybrid";
 
