@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { HQ_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -125,19 +126,15 @@ export default function StaffPage() {
     }
   }, [world, heya, updateWorld]);
 
-  const managementTabs = [
-    { id: "stable", label: "Overview", href: "/stable" },
-    { id: "roster", label: "Roster", href: "/stable/roster" },
-    { id: "training", label: "Training", href: "/stable/training" },
-    { id: "health", label: "Health & Welfare", href: "/stable/medical" },
-    { id: "staff", label: "Staff" },
-  ];
-
   if (!heya) return null;
 
   return (
-    <AppLayout subNavTabs={managementTabs} activeSubTab="staff">
-      <div className="space-y-6">
+    <AppLayout 
+      subNavTabs={HQ_TABS} 
+      activeSubTab="staff" 
+      pageTitle="Support Staff"
+    >
+      <div className="space-y-8">
         {/* Header Summary */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

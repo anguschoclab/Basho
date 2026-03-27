@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { HQ_TABS } from "@/constants/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
@@ -58,12 +59,12 @@ export default function StablePage() {
   const lineage = heya.lineage || [];
 
   return (
-    <AppLayout pageTitle={heya.name}>
+    <AppLayout pageTitle="Stable Operations" subNavTabs={HQ_TABS} activeSubTab="stable">
       <Helmet>
         <title>{heya.name} — Stable Profile</title>
       </Helmet>
 
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div className="space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
           <div>

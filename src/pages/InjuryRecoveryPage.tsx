@@ -2,6 +2,7 @@
 import { useCallback, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { HQ_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";
@@ -23,14 +24,6 @@ export default function InjuryRecoveryPage() {
     updateWorld(world);
   }, [world, state.playerHeyaId, updateWorld]);
 
-  const stableTabs = [
-    { id: "stable", label: "Overview", href: "/stable" },
-    { id: "roster", label: "Roster", href: "/stable/roster" },
-    { id: "training", label: "Training", href: "/stable/training" },
-    { id: "health", label: "Health & Welfare" },
-    { id: "staff", label: "Staff", href: "/stable/staff" },
-  ];
-
   if (!world || !heya) {
     return (
       <AppLayout>
@@ -40,10 +33,16 @@ export default function InjuryRecoveryPage() {
   }
 
   return (
-    <AppLayout pageTitle="Health & Welfare" subNavTabs={stableTabs} activeSubTab="health">
-      <Helmet><title>Health & Welfare — {heya.name}</title></Helmet>
+    <AppLayout 
+      pageTitle="Performance Center" 
+      subNavTabs={HQ_TABS} 
+      activeSubTab="medical"
+    >
+      <Helmet>
+        <title>Performance Center — {heya.name} | Basho</title>
+      </Helmet>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="space-y-8">
         <div className="lg:col-span-2 space-y-6">
           <div>
             <h1 className="font-display text-2xl font-bold">Rehabilitation Center</h1>

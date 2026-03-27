@@ -79,7 +79,7 @@ export default function TrainingPage() {
 
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
       persistTrainingState(next);
       return next;
     });
@@ -87,7 +87,7 @@ export default function TrainingPage() {
 
   const handleFocusChange = (focus: TrainingFocus) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
       persistTrainingState(next);
       return next;
     });
@@ -95,7 +95,7 @@ export default function TrainingPage() {
 
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
       persistTrainingState(next);
       return next;
     });
@@ -117,16 +117,10 @@ export default function TrainingPage() {
   const focusEffect = FOCUS_EFFECTS[trainingState.activeProfile.focus];
   const recoveryEffect = RECOVERY_EFFECTS[trainingState.activeProfile.recovery];
 
-  const stableTabs = [
-    { id: "stable", label: "Overview", href: "/stable" },
-    { id: "training", label: "Training" },
-    { id: "rikishi", label: "Roster", href: "/rikishi" },
-  ];
-
   return (
     <AppLayout
-      pageTitle="Training"
-      subNavTabs={stableTabs}
+      pageTitle="Training Ground"
+      subNavTabs={HQ_TABS}
       activeSubTab="training"
     >
       <Helmet>
@@ -309,7 +303,7 @@ export default function TrainingPage() {
                     {/* Rikishi Info */}
                     <div 
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id })}
+                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id } })}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>

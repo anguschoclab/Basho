@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
 import { investInFacility } from "@/engine/facilities";
@@ -28,38 +29,27 @@ export default function FacilitiesPage() {
     return result;
   }, [world, state.playerHeyaId, updateWorld]);
 
-  const officeTabs = [
-    { id: "economy", label: "Economy", href: "/office/finances" },
-    { id: "scouting", label: "Scouting", href: "/office/scouting" },
-    { id: "sponsors", label: "Sponsors", href: "/office/sponsors" },
-    { id: "facilities", label: "Facilities" },
-    { id: "governance", label: "Governance", href: "/governance" },
-  ];
-
   if (!heya || !world) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center h-full text-muted-foreground">
-          Loading stable data...
+        <div className="flex items-center justify-center h-full text-muted-foreground italic">
+          Fetching institutional infrastructure records...
         </div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout subNavTabs={officeTabs} activeSubTab="facilities">
+    <AppLayout 
+      subNavTabs={OFFICE_TABS} 
+      activeSubTab="facilities" 
+      pageTitle="Infrastructure"
+    >
       <Helmet>
-        <title>Facilities — {heya.name} | Basho</title>
+        <title>Infrastructure — {heya.name} | Basho</title>
       </Helmet>
 
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-display font-bold">Facilities Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Maintain and upgrade your heya's infrastructure to improve training results and wrestler welfare.
-          </p>
-        </div>
-
+      <div className="space-y-8">
         <FacilitiesManagementPanel 
           heya={heya} 
           world={world} 

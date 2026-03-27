@@ -12,6 +12,7 @@ import { useMemo, useState } from "react";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { OFFICE_TABS } from "@/constants/navigation";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -138,7 +139,7 @@ function OpponentScoutingTab({
               <Card
                 key={r.id}
                 className="paper cursor-pointer hover:border-primary/50 transition-all"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -192,7 +193,7 @@ function OpponentScoutingTab({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleInvestScouting(r.id, inv);
-                              }
+                              }}
                             >
                               {inv === "none" ? "—" : inv.charAt(0).toUpperCase()}
                             </Button>
@@ -308,7 +309,7 @@ function StableIntelTab({
               <div
                 key={r.id}
                 className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
               >
                 <div className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`} />
                 <div className="flex-1 min-w-0">
@@ -373,7 +374,8 @@ function RecruitingTab({
       return talentpool.listVisibleCandidates(world, activePool);
     } catch {
       return [];
-    }, [world, activePool]);
+    }
+  }, [world, activePool]);
 
   const handleScoutPool = () => {
     if (!world) return;
@@ -390,9 +392,11 @@ function RecruitingTab({
           title: "No new prospects",
           description: "No more hidden prospects in this pool right now.",
         });
-      } catch {
+      }
+    } catch {
       toast({ title: "Scouting failed", description: "Could not scout this pool." });
-    };
+    }
+  };
 
   const handleScoutCandidate = (candidateId: string) => {
     if (!world) return;
@@ -404,9 +408,11 @@ function RecruitingTab({
           title: "Intel gathered",
           description: `Scouting level: ${describeScoutingLevel(result.scoutingLevel).label}`,
         });
-      } catch {
+      }
+    } catch {
       toast({ title: "Scout failed" });
-    };
+    }
+  };
 
   const handleOfferClick = (candidate: any) => {
     setSigningCandidate(candidate);
@@ -429,7 +435,8 @@ function RecruitingTab({
           title: "Offer blocked",
           description: (result as any).reason ?? "Cannot make this offer.",
         });
-      } catch {
+      }
+    } catch {
       toast({ title: "Offer failed" });
     }
     setSigningCandidate(null);
@@ -537,7 +544,7 @@ function RecruitingTab({
                           onClick={(e) => {
                             e.stopPropagation();
                             handleScoutCandidate(c.candidateId);
-                          }
+                          }}
                         >
                           <Eye className="h-3 w-3" />
                           Scout
@@ -550,7 +557,7 @@ function RecruitingTab({
                             onClick={(e) => {
                               e.stopPropagation();
                               handleOfferClick(c);
-                            }
+                            }}
                           >
                             <UserPlus className="h-3 w-3" />
                             Offer
@@ -601,18 +608,10 @@ export default function ScoutingPage() {
     return <div className="p-6 text-center text-muted-foreground">No world loaded.</div>;
   }
 
-  const managementTabs = [
-    { id: "economy", label: "Economy", href: "/economy" },
-    { id: "scouting", label: "Scouting" },
-    { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "governance", label: "Governance", href: "/governance" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-  ];
-
   return (
     <AppLayout
-      pageTitle="Scouting & Recruitment"
-      subNavTabs={managementTabs}
+      pageTitle="Scouting Network"
+      subNavTabs={OFFICE_TABS}
       activeSubTab="scouting"
     >
       <Helmet>

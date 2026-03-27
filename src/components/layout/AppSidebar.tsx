@@ -36,6 +36,9 @@ import {
   Star,
   Settings,
   ChevronRight,
+  ShieldAlert,
+  Landmark,
+  TrendingUp,
 } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -50,48 +53,49 @@ const menuGroups = [
     ]
   },
   {
-    label: "Stable",
+    label: "Heya HQ",
     items: [
-      { title: "Overview", url: "/stable", icon: Home },
-      { title: "Roster", url: "/rikishi", icon: Users },
-      { title: "Training", url: "/training", icon: Dumbbell },
-      { title: "Staff", url: "/stable/staff", icon: Briefcase },
-      { title: "Medical", url: "/injuries", icon: Heart },
+      { title: "Stable Overview", url: "/stable", icon: Home },
+      { title: "Roster Management", url: "/stable/roster", icon: Users },
+      { title: "Training Ground", url: "/stable/training", icon: Dumbbell },
+      { title: "Performance Center", url: "/stable/medical", icon: Heart },
+      { title: "Staff & Coaches", url: "/stable/staff", icon: Briefcase },
     ]
   },
   {
     label: "Office",
     items: [
-      { title: "Finances", url: "/economy", icon: Coins },
-      { title: "Scouting", url: "/scouting", icon: Search },
-      { title: "Sponsors", url: "/sponsors", icon: HandshakeIcon },
-      { title: "Facilities", url: "/stable/facilities", icon: Building2 },
+      { title: "Finances & Loans", url: "/office/finances", icon: Coins },
+      { title: "Infrastructure", url: "/office/facilities", icon: Building2 },
+      { title: "Sponsor Portfolio", url: "/office/sponsors", icon: HandshakeIcon },
+      { title: "Scouting Network", url: "/office/scouting", icon: Search },
     ]
   },
   {
     label: "Association",
     items: [
-      { title: "JSA Trends", url: "/jsa/trends", icon: Globe },
-      { title: "Governance", url: "/governance", icon: Crown },
-      { title: "Talent Pools", url: "/talent", icon: UserSearch },
+      { title: "Council & Politics", url: "/jsa/governance", icon: ShieldAlert },
+      { title: "Elder Stock Market", url: "/jsa/myoseki", icon: Landmark },
+      { title: "Press & Reputation", url: "/jsa/media", icon: Newspaper },
+      { title: "Sector Trends", url: "/jsa/trends", icon: TrendingUp },
     ]
   },
   {
     label: "Tournament",
     items: [
       { title: "Current Basho", url: "/basho", icon: Trophy },
-      { title: "Banzuke", url: "/banzuke", icon: ScrollText },
-      { title: "Schedule", url: "/schedule", icon: History },
-      { title: "Rivalries", url: "/rivalries", icon: Swords },
+      { title: "Banzuke Records", url: "/banzuke", icon: ScrollText },
+      { title: "Tournament Schedule", url: "/schedule", icon: History },
+      { title: "Stable Rivalries", url: "/rivalries", icon: Swords },
     ]
   },
   {
     label: "Archives",
     items: [
-      { title: "History", url: "/history", icon: Archive },
-      { title: "Almanac", url: "/almanac", icon: BookOpen },
+      { title: "Stable History", url: "/history", icon: Archive },
+      { title: "Sumo Almanac", url: "/almanac", icon: BookOpen },
       { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
-      { title: "Media", url: "/media", icon: Newspaper },
+      { title: "Media Archives", url: "/media", icon: Newspaper },
     ]
   }
 ];

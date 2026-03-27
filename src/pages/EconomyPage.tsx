@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -238,16 +239,13 @@ export default function EconomyPage() {
   const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
   const canRequestBailout = playerHeya.funds < 0;
 
-  const managementTabs = [
-    { id: "economy", label: "Economy" },
-    { id: "scouting", label: "Scouting", href: "/scouting" },
-    { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "governance", label: "Governance", href: "/governance" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-  ];
 
   return (
-    <AppLayout subNavTabs={managementTabs} activeSubTab="economy">
+    <AppLayout 
+      subNavTabs={OFFICE_TABS} 
+      activeSubTab="economy" 
+      pageTitle="Financial Management"
+    >
       <Helmet>
         <title>Economy — {playerHeya.name} | Basho</title>
       </Helmet>

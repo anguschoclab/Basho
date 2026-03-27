@@ -31,7 +31,9 @@ import {
   UserPlus,
   Info
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { HQ_TABS } from "@/constants/navigation";
 import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
 
 export default function RikishiPage() {
@@ -41,7 +43,56 @@ export default function RikishiPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
 
-  if (!world || !rikishiId) return null;
+  if (!world) return null;
+
+  // Handle Roster List View
+  if (!rikishiId) {
+     const playerHeya = world.heyas.get(playerHeyaId || "");
+     const rikishiList = Array.from(world.rikishi.values())
+        .filter(r => r.heyaId === playerHeyaId)
+        .map(r => projectRikishi(r, world));
+
+     return (
+        <AppLayout pageTitle="Roster Management" subNavTabs={HQ_TABS} activeSubTab="roster">
+           <Helmet><title>Roster Management | Basho</title></Helmet>
+           <div className="space-y-8">
+              <div className="flex justify-between items-end">
+                 <div>
+                    <h1 className="text-3xl font-display font-bold text-foreground">Stable Roster</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Manage your active wrestlers and track their current tournament status.</p>
+                 </div>
+                 <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="h-8 text-xs font-bold uppercase tracking-widest">Filter</Button>
+                    <Button variant="outline" size="sm" className="h-8 text-xs font-bold uppercase tracking-widest">Sort</Button>
+                 </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                 {rikishiList.map(r => (
+                    <Card key={r.id} className="paper hover:scale-[1.02] transition-transform cursor-pointer" onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })}>
+                       <CardContent className="p-5">
+                          <div className="flex justify-between items-start mb-4">
+                             <div className="space-y-1">
+                                <Badge className={cn("rank-badge text-[10px]", `rank-${r.rank}`)}>{r.rankLabel}</Badge>
+                                <div className="font-display font-bold text-lg">{r.shikona}</div>
+                             </div>
+                             <div className="text-right">
+                                <div className="text-lg font-mono font-bold leading-none">{r.currentBashoWins}-{r.currentBashoLosses}</div>
+                                <div className="text-[9px] uppercase font-bold text-muted-foreground">Current Basho</div>
+                             </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 mt-4 text-[10px] uppercase font-bold tracking-wider text-muted-foreground/80">
+                             <div className="flex items-center gap-1.5"><Zap className="h-3 w-3" /> Power: {r.perceivedStats?.strength || '??'}</div>
+                             <div className="flex items-center gap-1.5"><Activity className="h-3 w-3" /> Speed: {r.perceivedStats?.speed || '??'}</div>
+                          </div>
+                       </CardContent>
+                    </Card>
+                 ))}
+              </div>
+           </div>
+        </AppLayout>
+     );
+  }
 
   const rawRikishi = world.rikishi.get(rikishiId);
   if (!rawRikishi) return <div>Rikishi not found</div>;
@@ -53,14 +104,18 @@ export default function RikishiPage() {
   const milestones = rikishi.milestones;
 
   return (
-    <AppLayout pageTitle={`${rikishi.shikona} - Profile`}>
+    <AppLayout 
+        pageTitle="Rikishi Profile" 
+        subNavTabs={HQ_TABS} 
+        activeSubTab="roster"
+    >
       <Helmet>
-        <title>{rikishi.shikona} - Rikishi Profile</title>
+        <title>{rikishi.shikona} — Rikishi Profile | Basho</title>
       </Helmet>
 
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <Button variant="ghost" onClick={() => navigate({ to: ".." })} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Directory
+      <div className="space-y-8">
+        <Button variant="ghost" onClick={() => navigate({ to: "/stable/roster" })} className="gap-2 h-8 text-xs font-bold uppercase tracking-widest">
+          <ArrowLeft className="h-3 w-3" /> Back to Roster
         </Button>
 
         {/* Hero Header */}
