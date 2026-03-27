@@ -216,7 +216,7 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 function tickDailyCommon(world: WorldState, subs: string[]): void {
   // Pre-calculate heya diet states to avoid repeated lookups per rikishi (O(H) instead of O(R))
   const heyaDietCache = new Map<string, "austerity" | "maintenance" | "heavy_bulk" | "premium">();
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => x.id)) {
+  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     heyaDietCache.set(heya.id, ensureHeyaWelfareState(heya).activeDiet || "maintenance");
   }
 
