@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -25,17 +26,10 @@ export default function TrendsPage() {
     return formatMetaTrends(world);
   }, [world]);
 
-  const jsaTabs = [
-    { id: "governance", label: "Governance", href: "/governance" },
-    { id: "trends", label: "Meta Trends", href: "/jsa/trends" },
-    { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-  ];
-
   if (!world) return null;
 
   return (
-    <AppLayout subNavTabs={jsaTabs} activeSubTab="trends">
+    <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="trends">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-display font-bold">JSA Meta Trends</h1>

@@ -42,7 +42,8 @@ const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: str
   austerity: { label: "Austerity", cost: "¥1,000/day", desc: "Minimal portions. High morale penalty, weight loss." },
   maintenance: { label: "Maintenance", cost: "¥3,000/day", desc: "Standard stew. Balanced weight and morale." },
   heavy_bulk: { label: "Heavy Bulk", cost: "¥6,000/day", desc: "Force-feeding. Fast weight gain, minor morale drop." },
-  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." };
+  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." }
+};
 
 const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string }> = {
   dominant: { label: "Dominant", color: "text-amber-400" },

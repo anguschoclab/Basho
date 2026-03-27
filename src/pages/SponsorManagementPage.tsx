@@ -1,6 +1,7 @@
 // SponsorManagementPage.tsx — Sponsor contract management
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
 
@@ -8,12 +9,6 @@ import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
 export default function SponsorManagementPage() {
   const { state } = useGame();
   const world = state.world;
-
-  const econTabs = [
-    { id: "economy", label: "Finances", href: "/economy" },
-    { id: "sponsors", label: "Sponsors" },
-    { id: "governance", label: "Governance", href: "/governance" },
-  ];
 
   if (!world) {
     return (
@@ -24,9 +19,13 @@ export default function SponsorManagementPage() {
   }
 
   return (
-    <AppLayout pageTitle="Sponsors" subNavTabs={econTabs} activeSubTab="sponsors">
-      <Helmet><title>Sponsor Management</title></Helmet>
-      <div className="space-y-4">
+    <AppLayout 
+      subNavTabs={OFFICE_TABS} 
+      activeSubTab="sponsors" 
+      pageTitle="Sponsor Relations"
+    >
+      <Helmet><title>Sponsor Relations | Basho</title></Helmet>
+      <div className="space-y-8">
         <div>
           <h1 className="font-display text-2xl font-bold">Sponsor Contracts</h1>
           <p className="text-sm text-muted-foreground mt-1">

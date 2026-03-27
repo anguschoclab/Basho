@@ -124,10 +124,11 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
             size="icon"
             className="h-8 w-8 rounded-full"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
           >
             {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => navigate({ to: "/settings" as any })}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => navigate({ to: "/settings" as any })} aria-label="Open settings">
             <Settings className="h-4 w-4" />
           </Button>
         </div>

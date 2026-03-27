@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,7 @@ export default function MyosekiMarketPage() {
 
   if (!world || !world.myosekiMarket) {
     return (
-      <AppLayout pageTitle="Elder Stock Market (Myoseki)">
+      <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="myoseki" pageTitle="Elder Stock Market (Myoseki)">
         <div className="flex items-center justify-center h-full">Loading Market Records...</div>
       </AppLayout>
     );
@@ -37,14 +38,6 @@ export default function MyosekiMarketPage() {
 
   const myStocks = stocks.filter(s => s.ownerId === playerHeya?.oyakataId || s.holderId === playerHeya?.oyakataId);
 
-  const managementTabs = [
-    { id: "economy", label: "Economy", href: "/economy" },
-    { id: "scouting", label: "Scouting", href: "/scouting" },
-    { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "governance", label: "Governance", href: "/governance" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-  ];
-
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
@@ -53,7 +46,8 @@ export default function MyosekiMarketPage() {
       toast.success(`Successfully acquired ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Insufficient funds to acquire ${stock.name}.`);
-    };
+    }
+  };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
@@ -63,7 +57,8 @@ export default function MyosekiMarketPage() {
       toast.success(`Successfully leased ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Could not lease ${stock.name}.`);
-    };
+    }
+  };
 
   return (
     <AppLayout

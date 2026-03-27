@@ -14,8 +14,9 @@ import type { Heya } from "@/engine/types/heya";
 
 // Function borrowed from MainMenu
 function makeDeterministicSeed(prefix = "world"): string {
-  const hash = Math.random().toString(36).substring(2, 8);
-  return `${prefix}-${hash}`;
+  // Use timestamp for unique but reproducible-ish seed generation
+  const timestamp = Date.now().toString(36);
+  return `${prefix}-${timestamp}`;
 }
 
 const OYAKATA_BACKGROUNDS = [
@@ -57,7 +58,8 @@ export default function NewGameWizard() {
   useEffect(() => {
     if (!state.world) {
       createWorld(makeDeterministicSeed("world"));
-    }, [state.world, createWorld]);
+    }
+  }, [state.world, createWorld]);
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");

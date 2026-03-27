@@ -17,7 +17,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
-import { getFacilityLevelColor as getLevelColor, getFacilityLevelLabel as getLevelBand, getMonthlyMaintenanceCost, {   getUpgradeCostEstimate } from "@/presenters/uiDigest";
+import { getFacilityLevelColor as getLevelColor, getFacilityLevelLabel as getLevelBand, getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "@/presenters/uiDigest";
 
 const AXIS_META: Record<FacilityAxis, { label: string; icon: typeof Building; description: string; effectLabel: string }> = {
   training: {

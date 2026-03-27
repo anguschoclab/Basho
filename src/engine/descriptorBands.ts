@@ -7,13 +7,13 @@ import type { RikishiArchetype } from './types/combat';
 // UI components MUST use these bands—never raw values.
 //
 // Hysteresis: hysteresisDelta = 5 prevents band flickering
-// when a stat sits on a boundary.
+// when a stat sits on a boundary. See Constitution C5.3.
 // =======================================================
 
-// === Hysteresis Engine ===
+// === Hysteresis Engine (Constitution C5.3) ===
 
 /**
- * Generic banded descriptor with hysteresis.
+ * Generic banded descriptor with hysteresis (Constitution C5.3).
  * Each band has a [min, max) range. The hysteresis delta prevents
  * flicker when a value oscillates near a boundary.
  *
@@ -41,9 +41,9 @@ interface DescriptorBandParams<T extends string> {
   hysteresisDelta?: number;
 }
 
-// [CONSTITUTION C5.5]
+// [CONSTITUTION C5.3 & C5.5]
 /**
- * Resolve a raw value to a qualitative band with hysteresis returning descriptor tokens and modifiers.
+ * Resolve a raw value to a qualitative band with hysteresis returning descriptor tokens and modifiers (Constitution C5.3).
  */
 function toDescriptorBand<T extends string>({
   truthValue0to100,
@@ -66,7 +66,7 @@ function toDescriptorBand<T extends string>({
         // Downward Transition: A rikishi only leaves a band if their truthValue drops below threshold - hysteresisDelta
         finalBand = resolved.band;
       } else {
-        // Stick with previous band due to hysteresis buffer
+        // Stick with previous band due to hysteresis buffer (Constitution C5.3)
         finalBand = lastDescriptorToken;
       }
     }
@@ -76,7 +76,7 @@ function toDescriptorBand<T extends string>({
 }
 
 /**
- * Resolve a raw value to a qualitative band with hysteresis.
+ * Resolve a raw value to a qualitative band with hysteresis (Constitution C5.3).
  * If `previousBand` is provided and the value is within HYSTERESIS_DELTA
  * of the boundary, we stick with the previous band.
  */

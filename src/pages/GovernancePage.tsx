@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +29,8 @@ export default function GovernancePage() {
   useEffect(() => {
     if (world && world.playerHeyaId) {
       setHeya(world.heyas.get(world.playerHeyaId) || null);
-    }, [world]);
+    }
+  }, [world]);
 
   if (!world || !heya) {
     return (
@@ -42,19 +44,10 @@ export default function GovernancePage() {
   const scandal = heya.scandalScore || 0;
   const history = heya.governanceHistory || [];
 
-  const managementTabs = [
-    { id: "economy", label: "Economy", href: "/economy" },
-    { id: "scouting", label: "Scouting", href: "/scouting" },
-    { id: "talent", label: "Talent Pools", href: "/talent" },
-    { id: "governance", label: "Governance", href: "/governance" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-    { id: "myoseki", label: "Myoseki", href: "/myoseki" },
-  ];
-
   return (
     <AppLayout
       pageTitle="Governance & Compliance"
-      subNavTabs={managementTabs}
+      subNavTabs={ASSOCIATION_TABS}
       activeSubTab="governance"
     >
       <div className="space-y-6">
@@ -261,10 +254,11 @@ export default function GovernancePage() {
                         onClick={() => {
                           if (heya && heya.politicalCapital && heya.politicalCapital >= 100) {
                             spendPoliticalCapital(world, heya.id, 100);
-                            setHeya({ ...heya, politicalCapital: heya.politicalCapital - 100 });
+                            setHeya({ ...heya, politicalCapital: (heya.politicalCapital || 0) - 100 });
                           } else {
                             alert("Not enough Political Capital (need 100).");
-                          }}
+                          }
+                        }}
                         disabled={(heya.politicalCapital || 0) < 100}
                       >
                         Spend 100 Capital

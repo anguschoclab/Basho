@@ -1,4 +1,3 @@
-// @ts-nocheck
 // TrainingPage.tsx - Dedicated stable training management
 // FM-style layout for beya-wide training controls and individual rikishi focus slots
 
@@ -8,11 +7,9 @@ import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { IndividualFocusType } from "@/engine/types/training";
-import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState } from "@/engine/training";
+import type { IndividualFocusType, TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState } from "@/engine/types/training";
 import {
   Activity,
   Dumbbell,
@@ -31,7 +28,25 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { RikishiName } from "@/components/ClickableName";
-import { FATIGUE_LABELS, FOCUS_BIAS_MATRIX as FOCUS_EFFECTS, PHASE_EFFECTS, POTENTIAL_LABELS } from "@/presenters/uiDigest";
+import { 
+  FATIGUE_LABELS, 
+  FOCUS_BIAS_MATRIX as FOCUS_EFFECTS, 
+  PHASE_EFFECTS, 
+  POTENTIAL_LABELS,
+  INTENSITY_MULTIPLIERS as INTENSITY_EFFECTS,
+  RECOVERY_MULTIPLIERS as RECOVERY_EFFECTS,
+  describeTrainingEffect,
+  toFatigueBand,
+  toPotentialBand,
+  getCareerPhase,
+  getIntensityLabel,
+  getFocusLabel,
+  getRecoveryLabel,
+  createDefaultTrainingState,
+  RANK_HIERARCHY
+} from "@/presenters/uiDigest";
+import { HQ_TABS } from "@/constants/navigation";
+import { Link } from "@tanstack/react-router";
 
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode }[] = [
   { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" /> },
@@ -48,11 +63,17 @@ export default function TrainingPage() {
 
   const heya = world?.heyas.get(playerHeyaId || "") ?? null;
 
-  // Training state: prefer persisted heya trainingState if present
+  // Training state: prefer persisted world.trainingState over heya objects (canonical alignment)
   const [trainingState, setTrainingState] = useState<BeyaTrainingState>(() => {
-    if (!heya) return createDefaultTrainingState(playerHeyaId || "");
-    const existing = (heya as any).trainingState as BeyaTrainingState | undefined;
-    return existing ?? createDefaultTrainingState(heya.id);
+    if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
+    
+    // Canonical location: world.trainingState[heyaId]
+    const existing = world.trainingState?.[playerHeyaId];
+    if (existing) return existing;
+
+    // Fallback/Legacy: check if it was on heya (for backward compat during migration)
+    const legacy = (heya as any)?.trainingState as BeyaTrainingState | undefined;
+    return legacy ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
   const rikishiList = useMemo(() => {
@@ -61,8 +82,8 @@ export default function TrainingPage() {
       .map((id) => world.rikishi.get(id))
       .filter(Boolean)
       .sort((a, b) => {
-        const tierA = RANK_HIERARCHY[a!.rank].tier;
-        const tierB = RANK_HIERARCHY[b!.rank].tier;
+        const tierA = RANK_HIERARCHY[a!.rank]?.tier ?? 99;
+        const tierB = RANK_HIERARCHY[b!.rank]?.tier ?? 99;
         if (tierA !== tierB) return tierA - tierB;
         return a!.id.localeCompare(b!.id);
       }) as Rikishi[];
@@ -73,13 +94,19 @@ export default function TrainingPage() {
   }
 
   const persistTrainingState = (next: BeyaTrainingState) => {
-    (heya as any).trainingState = next;
+    // Write to canonical engine location
+    if (!world.trainingState) world.trainingState = {};
+    world.trainingState[playerHeyaId] = next;
+    
+    // Also clean up legacy location if it exists
+    if ((heya as any).trainingState) delete (heya as any).trainingState;
+    
     updateWorld({ ...world });
   };
 
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
       persistTrainingState(next);
       return next;
     });
@@ -87,7 +114,7 @@ export default function TrainingPage() {
 
   const handleFocusChange = (focus: TrainingFocus) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
       persistTrainingState(next);
       return next;
     });
@@ -95,7 +122,7 @@ export default function TrainingPage() {
 
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     setTrainingState((prev) => {
-      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery };
+      const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
       persistTrainingState(next);
       return next;
     });
@@ -113,20 +140,18 @@ export default function TrainingPage() {
     });
   };
 
-  const intensityEffect = INTENSITY_EFFECTS[trainingState.activeProfile.intensity];
-  const focusEffect = FOCUS_EFFECTS[trainingState.activeProfile.focus];
-  const recoveryEffect = RECOVERY_EFFECTS[trainingState.activeProfile.recovery];
+  const currentIntensity = trainingState.activeProfile.intensity as TrainingIntensity;
+  const currentFocus = trainingState.activeProfile.focus as TrainingFocus;
+  const currentRecovery = trainingState.activeProfile.recovery as RecoveryEmphasis;
 
-  const stableTabs = [
-    { id: "stable", label: "Overview", href: "/stable" },
-    { id: "training", label: "Training" },
-    { id: "rikishi", label: "Roster", href: "/rikishi" },
-  ];
+  const intensityEffect = INTENSITY_EFFECTS[currentIntensity];
+  const focusEffect = FOCUS_EFFECTS[currentFocus];
+  const recoveryEffect = RECOVERY_EFFECTS[currentRecovery];
 
   return (
     <AppLayout
-      pageTitle="Training"
-      subNavTabs={stableTabs}
+      pageTitle="Training Ground"
+      subNavTabs={HQ_TABS}
       activeSubTab="training"
     >
       <Helmet>
@@ -307,14 +332,15 @@ export default function TrainingPage() {
                     className="flex items-center gap-4 p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors"
                   >
                     {/* Rikishi Info */}
-                    <div 
-                      className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: rikishi.id })}
+                    <Link 
+                      to="/rikishi/$rikishiId"
+                      params={{ rikishiId: rikishi.id } as any}
+                      className="flex-1 min-w-0"
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-medium truncate"><RikishiName id={rikishi.id} name={rikishi.shikona} /></span>
                         <Badge variant="outline" className="text-xs shrink-0">
-                          {rankInfo.nameJa}
+                          {rankInfo?.nameJa}
                         </Badge>
                         {rikishi.injured && (
                           <Badge variant="destructive" className="text-xs shrink-0">
@@ -326,7 +352,7 @@ export default function TrainingPage() {
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="capitalize">{phase} phase</span>
                         <span>•</span>
-                        <span>Injury sensitivity: {phaseEffect.injurySensitivity > 1.1 ? "High" : phaseEffect.injurySensitivity < 0.9 ? "Low" : "Normal"}</span>
+                        <span>Injury sensitivity: {phaseEffect?.injurySensitivity > 1.1 ? "High" : (phaseEffect?.injurySensitivity < 0.9 ? "Low" : "Normal")}</span>
                         {(() => {
                           const potBand = toPotentialBand((rikishi as any).talentSeed);
                           if (potBand === "unknown") return null;
@@ -354,7 +380,7 @@ export default function TrainingPage() {
                           );
                         })()}
                       </div>
-                    </div>
+                    </Link>
 
                     {/* Focus Mode Selector */}
                     <div className="flex gap-2 shrink-0">

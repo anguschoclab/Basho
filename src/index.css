@@ -194,27 +194,59 @@
     background: linear-gradient(135deg, hsl(var(--bronze)), hsl(25 50% 40%));
   }
 
-  /* Paper/card effect */
+  /* Paper/card effect - Dossier style */
   .paper {
-    box-shadow: var(--shadow-paper);
-    @apply bg-card rounded-lg;
+    @apply bg-card rounded-lg border border-border/50;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
   }
 
-  /* Bout phase indicator */
-  .phase-tachiai {
-    @apply bg-accent text-accent-foreground;
+  .paper:hover {
+    @apply border-border;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   }
 
-  .phase-clinch {
-    @apply bg-primary text-primary-foreground;
+  /* Glassmorphism */
+  .glass {
+    @apply bg-background/60 backdrop-blur-md border border-white/10;
+  }
+  
+  .dark .glass {
+    @apply bg-black/40 backdrop-blur-md border-white/5;
   }
 
-  .phase-momentum {
-    @apply bg-secondary text-secondary-foreground;
+  /* Sub-navigation pill active state */
+  .subnav-active {
+    @apply bg-primary text-primary-foreground shadow-sm;
   }
 
-  .phase-finish {
-    @apply bg-success text-success-foreground;
+  /* Phase indicator dot */
+  .phase-dot {
+    @apply h-2 w-2 rounded-full;
+  }
+  .phase-dot--active { background: hsl(var(--accent)); box-shadow: 0 0 6px hsl(var(--accent) / 0.5); }
+  .phase-dot--pre { background: hsl(var(--primary)); }
+  .phase-dot--post { background: hsl(var(--primary) / 0.5); }
+  .phase-dot--interim { background: hsl(var(--muted-foreground) / 0.3); }
+
+  /* ═══ Pro Management Accents ═══ */
+  .stat-label {
+    @apply text-[10px] font-bold uppercase tracking-widest text-muted-foreground leading-none;
+  }
+
+  .stat-value {
+    @apply font-display text-lg font-bold;
+  }
+
+  .dossier-header {
+    @apply border-b border-border/40 pb-4 mb-6;
+  }
+
+  /* Grid layout for management dashboards */
+  .management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
   }
 }
 
@@ -309,15 +341,6 @@
     background-size: 200% 100%;
     animation: shimmer 2s ease-in-out infinite;
   }
-
-  /* Phase indicator dot */
-  .phase-dot {
-    @apply h-2 w-2 rounded-full;
-  }
-  .phase-dot--active { background: hsl(var(--accent)); box-shadow: 0 0 6px hsl(var(--accent) / 0.5); }
-  .phase-dot--pre { background: hsl(var(--primary)); }
-  .phase-dot--post { background: hsl(var(--primary) / 0.5); }
-  .phase-dot--interim { background: hsl(var(--muted-foreground) / 0.3); }
 
   /* Sumo rank shimmer for yokozuna/ozeki */
   .rank-shimmer {
@@ -425,5 +448,53 @@
   .kimarite-rare {
     background: linear-gradient(135deg, hsl(var(--gold) / 0.15), hsl(var(--accent) / 0.1));
     border-color: hsl(var(--gold) / 0.3);
+  }
+
+  /* Phase indicators */
+  .phase-dot {
+    @apply h-1.5 w-1.5 rounded-full transition-all duration-300;
+  }
+  .phase-dot--active {
+    @apply bg-primary scale-125 shadow-[0_0_8px_hsl(var(--primary))];
+  }
+  .phase-dot--interim {
+    @apply bg-muted-foreground/30;
+  }
+  .phase-dot--pre {
+    @apply bg-blue-500/30;
+  }
+  .phase-dot--post {
+    @apply bg-emerald-500/30;
+  }
+
+  /* Widget staggered entrance */
+  .widget-enter {
+    animation: widgetEnter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes widgetEnter {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Rank shimmers */
+  .rank-shimmer {
+    background: linear-gradient(
+      45deg,
+      transparent 25%,
+      hsl(var(--primary-foreground) / 0.1) 50%,
+      transparent 75%
+    );
+    background-size: 200% 200%;
+    animation: rankShimmer 3s infinite linear;
+  }
+  @keyframes rankShimmer {
+    from { background-position: -100% -100%; }
+    to { background-position: 100% 100%; }
   }
 }

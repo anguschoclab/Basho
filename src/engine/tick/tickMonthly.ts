@@ -4,6 +4,8 @@ import * as facilities from "../facilities";
 import { RANK_HIERARCHY } from "../banzuke";
 import { stableSort } from "../utils/sort";
 import { isBashoMonth } from "../calendar";
+import * as npcAI from "../npcAI";
+import * as loans from "../loans";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 
 /**
@@ -13,6 +15,8 @@ import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
   const steps: TickStep[] = [
     { label: "economics_monthly", run: (w) => { tickMonthlyEconomics(w); } },
+    { label: "npcAI_monthly", run: (w) => { npcAI.tickMonthly(w); } },
+    { label: "loan_repayments", run: (w) => { loans.processMonthlyLoanRepayments(w); } },
     { label: "archetype_drift", run: (w) => { tickArchetypeDrift(w); } },
     { label: "achievements_sync", run: (w) => { syncAchievementCounters(w); } },
     { label: "facilities", run: (w) => { facilities.tickMonthly(w); } },
@@ -141,7 +145,8 @@ function syncAchievementCounters(world: WorldState): void {
  * Evaluate drift only post-Basho (odd-numbered months).
  */
 export function tickArchetypeDrift(world: WorldState): void {
-  if (isBashoMonth(world.calendar.month)) {
+  const month = world.calendar?.month;
+  if (month && isBashoMonth(month)) {
     for (const r of world.rikishi.values()) {
       const evidence = r.archetypeEvidence;
       if (!evidence || Array.isArray(evidence)) continue;
@@ -151,13 +156,13 @@ export function tickArchetypeDrift(world: WorldState): void {
       const evadeSuccess = evidence.evade.success;
 
       // Determine the most successful tactical family during this basho
-      let newArchetype = r.tacticalArchetypePrimary;
+      let newArchetype: typeof r.tacticalArchetypePrimary = r.tacticalArchetypePrimary;
 
-      if (pushSuccess > grappleSuccess && pushSuccess > evadeSuccess && pushSuccess >= 5) {
+      if (pushSuccess > beltSuccess && pushSuccess > trickSuccess && pushSuccess >= 5) {
         newArchetype = 'oshi';
-      } else if (grappleSuccess > pushSuccess && grappleSuccess > evadeSuccess && grappleSuccess >= 5) {
+      } else if (beltSuccess > pushSuccess && beltSuccess > trickSuccess && beltSuccess >= 5) {
         newArchetype = 'yotsu';
-      } else if (evadeSuccess > pushSuccess && evadeSuccess > grappleSuccess && evadeSuccess >= 5) {
+      } else if (trickSuccess > pushSuccess && trickSuccess > beltSuccess && trickSuccess >= 5) {
         newArchetype = 'trickster';
       }
 
@@ -165,7 +170,7 @@ export function tickArchetypeDrift(world: WorldState): void {
       if (newArchetype !== r.tacticalArchetypePrimary) {
         logEngineEvent(world, {
           type: "ARCHETYPE_DRIFT",
-          category: "combat",
+          category: "training",
           importance: "minor",
           scope: "rikishi",
           rikishiId: r.id,
@@ -177,10 +182,10 @@ export function tickArchetypeDrift(world: WorldState): void {
         r.tacticalArchetypePrimary = newArchetype;
       }
 
-      // Reset accumulator to zeros
-      evidence.push = { success: 0, fail: 0 };
-      evidence.grapple = { success: 0, fail: 0 };
-      evidence.evade = { success: 0, fail: 0 };
+      // Cleanup: Remove evidence older than the basho we just processed
+      r.archetypeEvidence = r.archetypeEvidence.filter(e => 
+        (e as any).year === lastBasho.year && (e as any).bashoName === lastBasho.bashoName
+      );
     }
   }
 }
