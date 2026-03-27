@@ -77,7 +77,7 @@ export function updateFacilitiesBand(heya: Heya): void {
 export type FacilityAxis = "training" | "recovery" | "nutrition";
 
 /** Defines the structure for upgrade result. */
-interface UpgradeResult {
+export interface UpgradeResult {
   success: boolean;
   axis: FacilityAxis;
   oldLevel: number;

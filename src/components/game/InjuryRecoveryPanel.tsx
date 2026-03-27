@@ -35,6 +35,7 @@ function getSeverityColor(severity: string): string {
     case "minor": return "text-yellow-500";
     default: return "text-muted-foreground";
   }
+}
 
 /**
  * Get severity badge.
@@ -47,6 +48,7 @@ function getSeverityBadge(severity: string) {
     case "minor": return <Badge variant="secondary">Minor</Badge>;
     default: return <Badge variant="outline">Unknown</Badge>;
   }
+}
 
 /**
  * injury recovery panel.

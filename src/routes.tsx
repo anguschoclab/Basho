@@ -14,9 +14,7 @@ import BanzukePage from './pages/BanzukePage'
 import RivalriesPage from './pages/RivalriesPage'
 import EconomyPage from './pages/EconomyPage'
 import TalentPoolPage from './pages/TalentPoolPage'
-import ScoutingPage from './pages/ScoutingPage'
-import GovernancePage from './pages/GovernancePage'
-import MyosekiMarketPage from './pages/MyosekiMarketPage'
+import FacilitiesPage from './pages/FacilitiesPage'
 import RecapPage from './pages/RecapPage'
 import HistoryPage from './pages/HistoryPage'
 import AlmanacPage from './pages/AlmanacPage'
@@ -60,7 +58,7 @@ const officeScoutingRoute = createRoute({ getParentRoute: () => rootRoute, path:
 const officeScoutingNestedRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/scouting', component: ScoutingPage })
 const officeSponsorsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/sponsors', component: SponsorManagementPage })
 const officeSponsorsNestedRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/sponsors', component: SponsorManagementPage })
-const officeFacilitiesRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/facilities', component: () => <div>Facilities Page (TBD)</div> })
+const officeFacilitiesRoute = createRoute({ getParentRoute: () => officeBaseRoute, path: '/facilities', component: FacilitiesPage })
 
 // --- ASSOCIATION (JSA) SECTION ---
 const jsaBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/jsa' })

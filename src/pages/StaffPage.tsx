@@ -1,10 +1,27 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { 
   Users, 
@@ -14,9 +31,12 @@ import {
   Heart, 
   Award, 
   AlertCircle,
-  Briefcase
+  Briefcase,
+  Trash2
 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
+import { hireStaff, fireStaff } from "@/engine/staff";
+import { toast } from "sonner";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -27,6 +47,17 @@ const ROLE_LABELS: Record<StaffRole, string> = {
   medical_staff: "Chief Physio",
   scout: "Recruitment Scout",
   administrator: "Stable Secretary",
+};
+
+const ROLE_DESCRIPTIONS: Record<StaffRole, string> = {
+  oyakata: "The head of the stable, overseeing all operations.",
+  assistant_oyakata: "Focuses on general training and stable discipline.",
+  technique_coach: "Improves technical skill gains during practice.",
+  conditioning_coach: "Enhances physical attribute growth and stamina.",
+  nutritionist: "Optimizes chanko-nabe for weight and health.",
+  medical_staff: "Reduces injury severity and speeds up recovery.",
+  scout: "Finds and assesses better prospects in the talent pool.",
+  administrator: "Reduces costs and manages institutional relationships.",
 };
 
 const BAND_COLORS: Record<string, string> = {
@@ -46,7 +77,10 @@ const BAND_COLORS: Record<string, string> = {
 };
 
 export default function StaffPage() {
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
+  const [isRecruitOpen, setIsRecruitOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<StaffRole>("assistant_oyakata");
+  
   const world = state.world;
   const heya = world?.heyas.get(state.playerHeyaId || "");
 
@@ -57,12 +91,46 @@ export default function StaffPage() {
       .filter(Boolean) as Staff[];
   }, [world, heya]);
 
+  const handleHire = useCallback(() => {
+    if (!world || !heya) return;
+    
+    if (staffList.length >= 12) {
+      toast.error("Staff capacity reached (12/12). Fire someone first.");
+      return;
+    }
+
+    const staff = hireStaff(world, heya.id, selectedRole);
+    if (staff) {
+      updateWorld(world);
+      setIsRecruitOpen(false);
+      toast.success(`Hired new ${ROLE_LABELS[selectedRole]}: ${staff.name}`);
+    } else {
+      toast.error("Insufficient funds or recruitment error.");
+    }
+  }, [world, heya, selectedRole, staffList.length, updateWorld]);
+
+  const handleFire = useCallback((staffId: string) => {
+    if (!world || !heya) return;
+    
+    const staff = world.staff.get(staffId);
+    if (staff?.role === 'oyakata') {
+      toast.error("You cannot fire the Oyakata.");
+      return;
+    }
+
+    const success = fireStaff(world, heya.id, staffId);
+    if (success) {
+      updateWorld(world);
+      toast.success("Staff member released.");
+    }
+  }, [world, heya, updateWorld]);
+
   const managementTabs = [
     { id: "stable", label: "Overview", href: "/stable" },
     { id: "roster", label: "Roster", href: "/stable/roster" },
     { id: "training", label: "Training", href: "/stable/training" },
-    { id: "medical", label: "Medical", href: "/stable/medical" },
-    { id: "staff", label: "Staff", href: "/stable/staff" },
+    { id: "health", label: "Health & Welfare", href: "/stable/medical" },
+    { id: "staff", label: "Staff" },
   ];
 
   if (!heya) return null;
@@ -78,8 +146,8 @@ export default function StaffPage() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">Total Maintenance</div>
-              <div className="text-lg font-bold leading-none">¥1,450,000 / mo</div>
+              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">Monthly Cost</div>
+              <div className="text-lg font-bold leading-none">¥{(staffList.length * 150000).toLocaleString()}</div>
             </div>
             <div className="h-10 w-px bg-border/50 mx-2" />
             <div className="text-right">
@@ -92,24 +160,66 @@ export default function StaffPage() {
         {/* Staff Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {staffList.map((staff) => (
-            <StaffCard key={staff.id} staff={staff} />
+            <StaffCard key={staff.id} staff={staff} onFire={handleFire} />
           ))}
 
           {/* Recruit Slot */}
-          <button className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-              <UserPlus className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-bold text-lg">Recruit Specialist</h3>
-            <p className="text-xs text-muted-foreground text-center max-w-[200px] mt-1">Available vacancies based on Stable Stature.</p>
-          </button>
+          {staffList.length < 12 && (
+            <Dialog open={isRecruitOpen} onOpenChange={setIsRecruitOpen}>
+              <DialogTrigger asChild>
+                <button className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                    <UserPlus className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-lg">Recruit Specialist</h3>
+                  <p className="text-xs text-muted-foreground text-center max-w-[200px] mt-1">Hire a new specialist to improve your stable's performance.</p>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Recruit Staff Member</DialogTitle>
+                  <DialogDescription>
+                    Hiring a specialist costs ¥500,000 upfront. Choose the role that fits your current needs.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Select Specialty Role</label>
+                    <Select value={selectedRole} onValueChange={(v) => setSelectedRole(v as StaffRole)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.keys(ROLE_LABELS) as StaffRole[]).filter(r => r !== 'oyakata').map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {ROLE_LABELS[role]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/50 border border-border/50">
+                    <p className="text-sm font-medium text-foreground mb-1">{ROLE_LABELS[selectedRole]}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {ROLE_DESCRIPTIONS[selectedRole]}
+                    </p>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" onClick={handleHire} className="w-full">
+                    Confirm Hire (¥500,000)
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
     </AppLayout>
   );
 }
 
-function StaffCard({ staff }: { staff: Staff }) {
+function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => void }) {
   const primaryColor = BAND_COLORS[staff.competenceBands.primary.toLowerCase()] || "text-muted-foreground";
   
   return (
@@ -128,7 +238,19 @@ function StaffCard({ staff }: { staff: Staff }) {
               </CardDescription>
             </div>
           </div>
-          <Badge variant="secondary" className="text-[10px] capitalize">{staff.careerPhase}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-[10px] capitalize">{staff.careerPhase}</Badge>
+            {staff.role !== 'oyakata' && (
+               <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onFire(staff.id)}
+               >
+                 <Trash2 className="h-4 w-4" />
+               </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -194,4 +316,5 @@ function StaffCard({ staff }: { staff: Staff }) {
     </Card>
   );
 }
+
 

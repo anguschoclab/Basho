@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { RikishiName } from "@/components/ClickableName";
 import {
   Wallet,
@@ -16,9 +17,13 @@ import {
   Award,
   Shield,
   AlertTriangle,
-  Info
+  Info,
+  HandCoins
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
+import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { toast } from "sonner";
 
 // Runway narrative descriptions
 const RUNWAY_CONFIG: Record<
@@ -152,13 +157,40 @@ function safeKoenkaiBand(v: unknown): KoenkaiBandType {
 
 /** economy page. */
 export default function EconomyPage() {
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
   const world = state.world;
 
   const playerHeya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
     return world.heyas.get(state.playerHeyaId) || null;
   }, [world, state.playerHeyaId]);
+
+  const handleBailoutRequest = useCallback(() => {
+    if (!world || !state.playerHeyaId || !playerHeya) return;
+    
+    if (playerHeya.funds >= 0) {
+      toast.error("Emergency funding is only available when in significant debt.");
+      return;
+    }
+
+    if (playerHeya.funds > -5_000_000) {
+        toast.info("The Association only considers bailouts for stables with debts exceeding ¥5,000,000.");
+        return;
+    }
+
+    // Capture loan count before
+    const beforeCount = playerHeya.activeLoans?.length || 0;
+    
+    issueBailoutLoanIfNeeded(world, state.playerHeyaId);
+    
+    const afterCount = playerHeya.activeLoans?.length || 0;
+    if (afterCount > beforeCount) {
+      toast.success("Emergency bailout approved. Funds have been credited.");
+      updateWorld(world);
+    } else {
+      toast.error("Bailout request denied or already processed.");
+    }
+  }, [world, state.playerHeyaId, playerHeya, updateWorld]);
 
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];
@@ -204,6 +236,7 @@ export default function EconomyPage() {
   const RunwayIcon = runwayConfig.icon;
 
   const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
+  const canRequestBailout = playerHeya.funds < 0;
 
   const managementTabs = [
     { id: "economy", label: "Economy" },
@@ -221,36 +254,72 @@ export default function EconomyPage() {
 
       <div className="space-y-6">
         {/* Financial Health Overview */}
-        <Card className="paper">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <RunwayIcon className={`h-5 w-5 ${runwayConfig.color}`} />
-              <span className={runwayConfig.color}>{runwayConfig.label}</span>
-            </CardTitle>
-            <CardDescription>{runwayConfig.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card className="paper md:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Financial Runway</span>
+                <CardTitle className="flex items-center gap-2">
+                  <RunwayIcon className={`h-5 w-5 ${runwayConfig.color}`} />
                   <span className={runwayConfig.color}>{runwayConfig.label}</span>
-                </div>
-                <Progress value={runwayConfig.progressValue} className="h-3" />
+                </CardTitle>
+                <CardDescription>{runwayConfig.description}</CardDescription>
               </div>
-
-              {hasFinancialRisk && (
-                <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                  <AlertTriangle className="h-4 w-4 text-red-400" />
-                  <span className="text-sm text-red-400">
-                    Financial pressure is rising. Consider cost control, sponsor growth, or safer training loads to
-                    reduce injury costs.
-                  </span>
+              <div className="text-right">
+                <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">Current Balance</div>
+                <div className={cn("text-2xl font-display font-bold tabular-nums", playerHeya.funds < 0 ? "text-destructive" : "text-foreground")}>
+                  ¥{playerHeya.funds.toLocaleString()}
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">Financial Runway</span>
+                    <span className={runwayConfig.color}>{runwayConfig.label}</span>
+                  </div>
+                  <Progress value={runwayConfig.progressValue} className="h-3" />
+                </div>
+
+                {hasFinancialRisk && (
+                  <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-red-400" />
+                    <span className="text-sm text-red-400">
+                      Financial pressure is rising. Consider cost control, sponsor growth, or safer training loads to
+                      reduce injury costs.
+                    </span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={cn("paper flex flex-col justify-center", canRequestBailout ? "border-destructive/30" : "bg-muted/10")}>
+             <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <HandCoins className="h-4 w-4" /> Association Support
+                </CardTitle>
+             </CardHeader>
+             <CardContent className="space-y-4">
+                <p className="text-xs text-muted-foreground">
+                  Stables in severe financial distress may request emergency bailout loans from the Sumo Association.
+                </p>
+                <Button 
+                  variant={canRequestBailout ? "destructive" : "outline"} 
+                  className="w-full text-xs font-bold uppercase tracking-widest h-10"
+                  disabled={!canRequestBailout}
+                  onClick={handleBailoutRequest}
+                >
+                  Request Emergency Funding
+                </Button>
+                {canRequestBailout && (
+                  <p className="text-[10px] text-destructive/80 italic text-center">
+                    Requires funds below -¥5,000,000. Carries heavy stipulations.
+                  </p>
+                )}
+             </CardContent>
+          </Card>
+        </div>
 
         {/* Debt & Obligations (FM v2.0) */}
         {((playerHeya as any).activeLoans?.length > 0) && (

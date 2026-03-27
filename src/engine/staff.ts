@@ -92,3 +92,24 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): Staff
 
   return staff;
 }
+
+/**
+ * Fire a staff member.
+ */
+export function fireStaff(world: WorldState, heyaId: Id, staffId: string): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return false;
+
+  // Remove from heya list
+  if (heya.staffIds) {
+    heya.staffIds = heya.staffIds.filter(id => id !== staffId);
+  }
+
+  // Remove from world map
+  if (world.staff) {
+    world.staff.delete(staffId);
+  }
+
+  return true;
+}
+
