@@ -31781,108 +31781,33 @@ PBP consumes **resolved outputs only**.
 ## C1. PBP Corpus Problem: Strictly Typed Phrase Library Contract
 
 ### C1.1 Constitutional statement of need
-The PBP system already defines deterministic selection between **Fact Layer** and **Flavor Layer**, but it requires a versioned corpus file to:
+The PBP system already defines deterministic selection between **Fact Layer** and **Flavor Layer**, but it requires a structured, version-controlled repository to:
 - prevent repetition fatigue,
 - enable coverage testing,
 - keep all text deterministic and toolable.
 
-### C1.2 Required file: `pbp_voice_matrix.json`
-**Mandatory at build time.** PBP strings must not be hardcoded in codepaths except testing stubs.
+### C1.2 Required file: `src/engine/bout/grammarDefinitions.ts`
+**Mandatory at build time.** PBP strings must not be hardcoded in codepaths except testing stubs. The PBP system uses a dynamic, context-aware grammar synthesizer. Sentences are assembled using templates and modular vocabulary defined in `src/engine/bout/grammarDefinitions.ts`.
 
-#### C1.2.1 Core JSON schema (authoritative)
-```json
-{
-  "schema_version": "1.0",
-  "project": "Basho",
-  "created_at": "2026-01-12",
-  "voices": ["neutral", "dramatic", "clinical", "folk", "tabloid"],
-  "intensity_levels": ["T0","T1","T2","T3","T4","T5","T6"],
+#### C1.2.1 Core Structure (authoritative)
+The file must contain structural arrays for dynamic text generation, specifically:
+- `VOCABULARY`: Defines adverbs, verbs, and situational decorators.
+- `SENTENCE_TEMPLATES`: Defines structural templates using bracketed interpolation tokens.
+- `MEDIA_TEMPLATES`: (Optional) For specialized media handling.
 
-  "dimensions": {
-    "context": [
-      "ritual_open","tachiai","center_control","edge_pressure",
-      "grip_battle","stance_broken","recovery","turning_point",
-      "throw_attempt","trip_attempt","slap_pull_attempt",
-      "counter_window","ring_escape","finish","ceremony_close"
-    ],
-    "stance": ["square","bladed","twisted","broken","unknown"],
-    "ring_state": ["center","near_edge","at_edge","outside","unknown"],
-    "moment": ["setup","contact","surge","stall","swing","resolve"]
-  },
-
-  "entries": [
-    {
-      "id": "edge_pressure_T4_dramatic_001",
-      "context": "edge_pressure",
-      "intensity": "T4",
-      "voice": "dramatic",
-
-      "filters": {
-        "stance": ["broken","twisted","unknown"],
-        "ring_state": ["near_edge","at_edge"],
-        "moment": ["swing","resolve"]
-      },
-
-      "cooldown": {
-        "scope": "basho",
-        "min_days": 3
-      },
-
-      "phrases": [
-        "He's flirting with the line!",
-        "Toes on the tawara!",
-        "Nowhere left to retreat!"
-      ],
-
-      "tags": {
-        "allowed_metaphor": true,
-        "allowed_crowd_beat": true,
-        "requires_fact_anchor": true
-      }
-    }
-  ]
-}
-```
-
-#### C1.2.2 Corpus coverage rule (build-invalid if violated)
-Define **Cell** = `(context × intensity × voice)`.
-
-- **Minimum coverage:** every Cell MUST have **≥ 50** phrases.
-- **High-intensity priority:** Cells with `intensity ∈ {T3,T4,T5,T6}` and `context ∈ {tachiai, edge_pressure, turning_point, finish}` SHOULD have **≥ 100** phrases.
-
-**Build gate:**
-- If any required Cell < 50 phrases ⇒ **BUILD INVALID**.
-- If any high-intensity priority Cell < 100 phrases ⇒ build allowed, but emits **SEV-1 content warning**.
+#### C1.2.2 Syntax and Interpolation
+- Use bracketed tokens (e.g., `[Attacker]`, `[Defender]`, `[adverbs_heavy]`) to inject entities and randomized vocabulary into sentences.
+- Use situational decorators (e.g., `[decorator_exhausted?]`) that validate against the `NarrativeContext` and `TickResolutionEvent` payloads in `src/engine/types/combat.ts`.
+- The generator must strictly validate decorators to avoid hallucinating unsupported states.
 
 #### C1.2.3 Phrase lint rules (hard)
 - Flavor MUST NOT assert facts not present in the Fact Layer / BNP (injuries, rulings, grips, etc.).
 - No numeric leakage: probabilities, hidden values, or internal weights must never appear in text.
-- “Rare” phrases must be tagged and rate-limited by cooldown.
+- Every event trigger must contain at least 5 fundamentally different semantic variations (both for `SENTENCE_TEMPLATES` and associated `VOCABULARY` entries) to prevent commentator fatigue.
+- Generate distinct template buckets for out-of-ring events respecting the archetypes defined in `src/engine/oyakataPersonalities.ts`.
 
 ### C1.3 Deterministic selection interface (required)
-Implement a single corpus selector:
-
-```ts
-selectPbpPhrase({
-  context,
-  intensity,       // T0..T6
-  voice,           // from corpus voices
-  filters,         // stance/ring_state/moment derived from BNP
-  ledgerState,     // cooldown ledger (basho scope)
-  seed             // EventSeed
-}) -> phraseString
-```
-
-**Fallback order (deterministic):**
-1. Same Cell, ignore `moment`
-2. Same Cell, ignore `stance`
-3. Same Cell, ignore `ring_state`
-4. Same context + intensity + neutral voice
-5. Neutral global fallback pool (corpus-defined)
-
-No ad-hoc text is permitted.
-
----
+Implement a single deterministic phrase synthesizer. All text randomization must resolve via a seeded random number generator (e.g., `rngFromSeed`), incorporating a unique contextual identifier (e.g., `event.action.moveId`) to prevent identical RNG streams.
 
 ## C2. Insolvency Trap: Starting-Stable Survival Floor (Economic Balancing)
 

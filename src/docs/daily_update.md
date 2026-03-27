@@ -12,13 +12,11 @@ Current Focus: Refining the simulation loops (Daily, Weekly, Monthly boundaries)
 - Tick boundaries (Daily, Weekly, Monthly, Yearly) are distinctly separated and ordered properly in `src/engine/tick/`.
 
 ⚠️ Missing/Deviations:
-- The Play-By-Play (PBP) corpus file `src/engine/pbp_voice_matrix.json` mandated by Constitutional Clarification C1.2 does not exist, which currently violates the build-invalid gate for deterministic phrase library selection.
 - In `descriptorBands.ts`, while hysteresis logic is active, explicit constitution references to `C5.3` are missing.
 
 📄 Proposed Documentation Updates:
-src/engine/pbp_voice_matrix.json: Needs to be created with the required schema and ≥50 phrase minimums per cell to satisfy C1.2.
 src/engine/descriptorBands.ts: Add explicit reference comments for hysteresis buffer mapping to constitution section C5.3.
 
 Code Paths Covered: `src/engine/tick/tickDaily.ts`, `src/engine/tick/tickWeekly.ts`, `src/engine/economics.ts`, `src/engine/overflow.ts`, `src/engine/descriptorBands.ts`, `src/engine/uiModels.ts`.
 
-Key Knowledge Gaps Addressed: Validates that the engine state properly transitions through chronological boundaries and that UI safely translates raw state to descriptors using hysteresis, while flagging the critical missing PBP corpus requirement.
+Key Knowledge Gaps Addressed: Validates that the engine state properly transitions through chronological boundaries and that UI safely translates raw state to descriptors using hysteresis.
