@@ -15,6 +15,7 @@
 import type { WorldState } from "../types/world";
 import { autosave } from "../saveload";
 import { advanceOneDay } from "./tickDaily";
+import { processDramaTick } from "../narrative/dramaGenerator";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -85,7 +86,13 @@ export function cloneWorldForTick(world: WorldState): WorldState {
 
   // Create a new array reference for top-level arrays that are appended to
   nextWorld.history = Array.isArray(world.history) ? [...world.history] : [];
-  nextWorld.events = Array.isArray(world.events) ? [...world.events] : [];
+  if (world.events) {
+    nextWorld.events = {
+      ...world.events,
+      log: Array.isArray(world.events.log) ? [...world.events.log] : [],
+      dedupe: world.events.dedupe ? { ...world.events.dedupe } : {}
+    };
+  }
 
   // Create new Maps and selectively structuredClone entities
   nextWorld.heyas = new Map();

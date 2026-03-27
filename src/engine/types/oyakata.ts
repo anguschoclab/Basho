@@ -42,6 +42,11 @@ export interface Oyakata {
 
   mood?: OyakataMood;
   quirks?: string[];
+  
+  /** Drama Pass (Initiative 4) */
+  grudges?: Id[]; // Heya or Oyakata IDs this person hates
+  temperament?: 'Stoic' | 'Volatile' | 'Vindictive';
+
   managerFlags?: {
     welfareHawk?: boolean;
     disciplineHawk?: boolean;

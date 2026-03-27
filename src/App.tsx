@@ -10,11 +10,18 @@ import { router } from "./routes";
 
 const queryClient = new QueryClient();
 
+import { WorkerInitializer } from "./components/worker/WorkerInitializer";
+import { InboxNewsTicker } from "./components/game/InboxNewsTicker";
+import { CrisisModal } from "./components/game/CrisisModal";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark">
       <TooltipProvider>
         <GameProvider>
+          <WorkerInitializer />
+          <InboxNewsTicker />
+          <CrisisModal />
           <Toaster />
           <OpfsQuotaListener />
           <Sonner />

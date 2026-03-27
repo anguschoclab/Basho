@@ -1,0 +1,88 @@
+/**
+ * gameStore.ts
+ * ============
+ * Zustand store for Basho Engine Phase 2.
+ * Manages the Web Worker lifecycle and the UI-visible state (UIDigest).
+ */
+
+import { create } from "zustand";
+import type { UIDigest } from "../presenters/uiDigest";
+import type { EngineCommand, EngineEvent } from "../engine/worker/types";
+
+interface GameStoreState {
+  digest: UIDigest | null;
+  isSimulating: boolean;
+  progress: { message: string; current: number; total: number } | null;
+  error: string | null;
+
+  // Worker reference
+  worker: Worker | null;
+
+  // Actions
+  initWorker: () => void;
+  sendCommand: (command: EngineCommand) => void;
+  setDigest: (digest: UIDigest) => void;
+  setSimulating: (isSimulating: boolean) => void;
+  setProgress: (progress: { message: string; current: number; total: number } | null) => void;
+  setError: (error: string | null) => void;
+}
+
+export const useGameStore = create<GameStoreState>((set, get) => ({
+  digest: null,
+  isSimulating: false,
+  progress: null,
+  error: null,
+  worker: null,
+
+  initWorker: () => {
+    if (get().worker) return;
+
+    // Vite-native worker initialization
+    const worker = new Worker(new URL("../engine/worker/engine.worker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    worker.onmessage = (event: MessageEvent<EngineEvent>) => {
+      const data = event.data;
+
+      switch (data.type) {
+        case "READY":
+          console.log("[Store] Engine Worker Ready");
+          break;
+        case "TICK_COMPLETED":
+          set({ digest: data.digest, isSimulating: false, progress: null });
+          break;
+        case "DIGEST_UPDATED":
+          set({ digest: data.digest });
+          break;
+        case "PROGRESS":
+          set({ progress: { message: data.message, current: data.current, total: data.total } });
+          break;
+        case "ERROR":
+          set({ error: data.message, isSimulating: false });
+          break;
+      }
+    };
+
+    set({ worker });
+  },
+
+  sendCommand: (command: EngineCommand) => {
+    const { worker, initWorker } = get();
+    if (!worker) {
+      initWorker();
+    }
+    
+    // Some commands imply simulation start
+    if (command.type === "AUTO_SIM_DAYS" || command.type === "TICK_MULTIPLE_DAYS") {
+      set({ isSimulating: true, error: null });
+    }
+
+    get().worker?.postMessage(command);
+  },
+
+  setDigest: (digest) => set({ digest }),
+  setSimulating: (isSimulating) => set({ isSimulating }),
+  setProgress: (progress) => set({ progress }),
+  setError: (error) => set({ error }),
+}));

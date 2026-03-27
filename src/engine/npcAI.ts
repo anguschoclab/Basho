@@ -165,6 +165,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
     archetype: oyakata.archetype,
     traits,
     quirks: oyakata.quirks ?? [],
+    grudges: oyakata.grudges ?? [],
+    temperament: oyakata.temperament ?? 'Stoic',
     flags,
     styleBias: determineNPCStyleBias(world, heyaId),
     welfareDiscipline,
@@ -242,6 +244,11 @@ function decideTrainingIntensity(
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
     reason = "Extremely ambitious manager — punishing regimen";
+  }
+  // Drama Pass (Initiative 4): Grudges increase intensity (irrational pressure)
+  else if (persona && (persona as any).grudges?.length > 0 && ((persona as any).temperament === 'Volatile' || (persona as any).temperament === 'Vindictive')) {
+    intensity = "punishing";
+    reason = "Oyakata is obsessed with rivalries — demanding punishing training to humiliate rivals.";
   }
   else {
     intensity = "balanced";
