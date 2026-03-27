@@ -1,12 +1,6 @@
-// @ts-nocheck
 // ScoutingPage.tsx
 // Dedicated Scouting & Recruitment page per Basho Constitution A8/System 4
 // Between-basho player actions: scout opponents, evaluate prospects, invest in intel
-//
-// Constitution compliance:
-// - No raw stats shown — all narrative bands
-// - Scouting uses fog-of-war from scouting.ts
-// - Talent pool integration from talentpool.ts
 
 import { useMemo, useState } from "react";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
@@ -20,35 +14,31 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import {
   Search,
   Eye,
-  EyeOff,
   UserPlus,
-  Users,
   Target,
   Binoculars,
   Globe,
   GraduationCap,
   School,
   ChevronRight,
-  Sparkles,
   Shield,
-  Zap,
-  Flame,
-  AlertTriangle,
 } from "lucide-react";
 import type { ScoutingInvestment } from "@/engine/scouting";
+import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES, describeScoutingLevel, getScoutedAttributes } from "@/engine/scouting";
+import { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "@/engine/scoutingStore";
 import * as talentpool from "@/engine/talentpool";
-import { RikishiName, StableName } from "@/components/ClickableName";
+import { RikishiName } from "@/components/ClickableName";
 import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { Rank } from "@/engine/types/banzuke";
 import type { TacticalArchetype } from "@/engine/types/combat";
-import { ARCHETYPE_NAMES, STYLE_NAMES, createScoutedView, describeAggression, describeExperience, describeScoutingLevel, getScoutedAttributes, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "@/presenters/uiDigest";
+import type { WorldState } from "@/engine/types/world";
+import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
+import { RANK_HIERARCHY } from "@/engine/banzuke";
 
 // ==============================
 // OPPONENT SCOUTING TAB
@@ -87,8 +77,8 @@ function OpponentScoutingTab({
     }
     // Sort by rank tier
     list.sort((a, b) => {
-      const ta = (RANK_HIERARCHY as any)?.[a.rank]?.tier ?? 99;
-      const tb = (RANK_HIERARCHY as any)?.[b.rank]?.tier ?? 99;
+      const ta = RANK_HIERARCHY[a.rank]?.tier ?? 99;
+      const tb = RANK_HIERARCHY[b.rank]?.tier ?? 99;
       if (ta !== tb) return ta - tb;
       return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
     });
@@ -106,7 +96,6 @@ function OpponentScoutingTab({
   };
 
   const seed = world?.seed || "default";
-  const currentWeek = (world as any)?.week ?? 0;
 
   return (
     <div className="space-y-4">
@@ -128,9 +117,12 @@ function OpponentScoutingTab({
       <ScrollArea className="h-[600px]">
         <div className="space-y-3 pr-2">
           {opponents.map((r) => {
+            const originalRikishi = world.rikishi.get(r.id);
+            if (!originalRikishi) return null;
+
             const scouted = getOrCreateScouted(world, r.id, 1);
             const scoutLevel = getScoutingLevel(world, r.id, 1);
-            const attrs = getScoutedAttributes(scouted, r, seed);
+            const attrs = getScoutedAttributes(scouted, originalRikishi, seed);
             const scoutInfo = describeScoutingLevel(scoutLevel);
             const rankNames = RANK_NAMES[r.rank] || { ja: r.rank, en: r.rank };
             const heya = world.heyas.get(r.heyaId);
@@ -139,7 +131,7 @@ function OpponentScoutingTab({
               <Card
                 key={r.id}
                 className="paper cursor-pointer hover:border-primary/50 transition-all"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -309,7 +301,7 @@ function StableIntelTab({
               <div
                 key={r.id}
                 className="flex items-center gap-4 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer"
-                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })}
+                onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })}
               >
                 <div className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`} />
                 <div className="flex-1 min-w-0">
@@ -324,7 +316,7 @@ function StableIntelTab({
                   <div className="font-mono">
                     {r.currentBashoWins}-{r.currentBashoLosses}
                   </div>
-                  {r.injured && (
+                  {r.isInjured && (
                     <Badge variant="destructive" className="text-[10px]">
                       Injured
                     </Badge>

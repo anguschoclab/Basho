@@ -113,7 +113,8 @@ const STATURE_CONFIG: Record<
     difficulty: "Extreme",
     color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     icon: Plus
-  };
+  }
+};
 
 const HEYA_NAMES_COUNT = 45;
 
@@ -149,7 +150,7 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
         e.preventDefault();
         e.stopPropagation();
         onPreview?.();
-      }
+      }}
       title="Click to select • Double-click to preview roster"
     >
       <CardHeader className="pb-2">
@@ -214,7 +215,7 @@ function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, seki
               onClick={(e) => {
                 e.stopPropagation();
                 onPreview();
-              }
+              }}
             >
               Preview roster
             </Button>
@@ -288,9 +289,10 @@ export default function MainMenu() {
     try {
       if (typeof getSaveSlots === "function") setSaveSlots(getSaveSlots());
       else setSaveSlots([]);
-    } catch {
+    } catch (e) {
       setSaveSlots([]);
-    }, [getSaveSlots]);
+    }
+  }, [getSaveSlots]);
 
   const canContinue = (typeof hasAutosave === "function" && hasAutosave()) || saveSlots.length > 0;
 
@@ -303,8 +305,10 @@ export default function MainMenu() {
       return;
     }
     // Sync local seed display to active world seed (once available)
-    if (state.world?.seed && seed !== state.world.seed) setSeed(state.world.seed);
-      }, [state?.world]);
+    if (state.world?.seed && seed !== state.world.seed) {
+        setSeed(state.world.seed);
+    }
+  }, [state?.world]);
 
   const stables = useMemo((): Heya[] => {
     if (!state?.world) return [];
@@ -400,7 +404,8 @@ export default function MainMenu() {
     if (typeof loadFromSlot === "function" && loadFromSlot(slotName)) {
       setShowLoadDialog(false);
       navigate({ to: "/" });
-    };
+    }
+  };
 
   const handleDeleteSlot = (slotName: string) => {
     try {
@@ -412,6 +417,7 @@ export default function MainMenu() {
       } catch {
         setSaveSlots([]);
       }
+    }
   };
 
   const applyImportedWorld = useCallback(
@@ -424,12 +430,12 @@ export default function MainMenu() {
       }
 
       if (typeof createWorld === "function") {
-
         console.warn(
           "[MainMenu] No loadWorldDirect/loadImportedWorld/setWorld API found. Falling back to createWorld(seed, playerHeyaId). Imported data may not be preserved."
         );
         createWorld(importedWorld.seed, importedWorld.playerHeyaId);
-      },
+      }
+    },
     [createWorld, loadWorldDirect]
   );
 
@@ -444,10 +450,12 @@ export default function MainMenu() {
         applyImportedWorld(importedWorld);
         setSeed(importedWorld.seed || "");
         navigate({ to: "/" });
-      } finally {
+      }
+    } finally {
       setIsImporting(false);
       e.target.value = "";
-    };
+    }
+  };
 
   const formatSaveDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -596,7 +604,7 @@ export default function MainMenu() {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleDeleteSlot(slot.slotName);
-                                  }
+                                  }}
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -648,10 +656,11 @@ export default function MainMenu() {
                 className="h-7 text-xs gap-1"
                 onClick={() => {
                   if (stables.length === 0) return;
-                  const random = stables[Math.floor(Math.random() * stables.length)];
+                  const randomIdx = Math.abs(parseInt(state.world.seed.split("-")[1] || "0")) % stables.length;
+                  const random = stables[randomIdx];
                   setSelectedHeyaId(random.id);
                   setPreviewHeya(random);
-                }
+                }}
               >
                 <Dices className="w-3 h-3" />
                 Random Stable
@@ -884,7 +893,7 @@ export default function MainMenu() {
                         setSelectedHeyaId(previewHeya.id);
                         setPreviewHeya(null);
                         beginWithHeya(previewHeya.id);
-                      }
+                      }}
                     >
                       Begin Journey
                       <ArrowRight className="w-4 h-4" />

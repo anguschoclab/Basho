@@ -212,16 +212,20 @@ export function formatRadarData(rikishi: any) {
  * FM v2.0: Formats Meta-State history for Streamgraph (Stacked Area Chart).
  */
 export function formatMetaTrends(world: WorldState) {
-  // Mocking history for now as per world._postBashoMeta
-  // In a real scenario, this would iterate through previous basho results
-  if (!world.history) return [];
+  if (!world.history || world.history.length === 0) return [];
 
-  return world.history.slice(-6).map((h, i) => ({
-    basho: `B${h.bashoNumber}`,
-    oshi: (h.metaBias === "oshi" ? 60 : 20) + (Math.random() * 10),
-    yotsu: (h.metaBias === "yotsu" ? 60 : 20) + (Math.random() * 10),
-    hybrid: 20 + (Math.random() * 10),
-  }));
+  return world.history.slice(-6).map((h, i) => {
+    // Determine meta bias values based on actual historical data if available
+    // Otherwise fallback to balanced defaults
+    const bias = (h as any).metaBias || 'neutral';
+    
+    return {
+      basho: `${h.bashoName.charAt(0).toUpperCase()}${h.year % 100}`,
+      oshi: bias === 'oshi' ? 50 : (bias === 'neutral' ? 33 : 17),
+      yotsu: bias === 'yotsu' ? 50 : (bias === 'neutral' ? 33 : 17),
+      hybrid: bias === 'hybrid' ? 50 : (bias === 'neutral' ? 34 : 17),
+    };
+  });
 }
 
 /** Defines the structure for ozeki run candidate. */
