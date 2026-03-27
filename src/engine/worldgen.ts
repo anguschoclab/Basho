@@ -278,7 +278,7 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       id: heyaId,
       name: name,
       oyakataId: oyakataId,
-      rikishiIds: [],
+
       
       statureBand: STATURE_BANDS[statureIdx],
       prestigeBand: PRESTIGE_BANDS[prestigeIdx],
@@ -455,8 +455,6 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       momentum: 50,
       stamina: stats.stamina,
       
-      currentBashoWins: 0,
-      currentBashoLosses: 0,
       makuuchiWins: 0,
       consecutiveYusho: 0,
       careerHistory: [],
@@ -490,10 +488,6 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
       side: slot.side,
       
       ...generateSyntheticCareer(rrng, slot.rank, slot.division, birthYear, currentYear),
-      currentBashoWins: 0,
-      currentBashoLosses: 0,
-      currentBashoRecord: { wins: 0, losses: 0 },
-      
       history: [],
       h2h: {},
       
@@ -503,8 +497,8 @@ export function generateWorld(seed: any = "initial-seed"): WorldState {
     };
 
     rikishiMap.set(rid, newRikishi);
-    if (!heya.rikishiIds) heya.rikishiIds = [];
-    heya.rikishiIds.push(rid);
+
+
   });
 
   const initialBashoName: BashoName = "hatsu";
