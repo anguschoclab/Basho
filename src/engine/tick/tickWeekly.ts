@@ -79,9 +79,9 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
         evaluateScandals(w);
 
         // 3. Status Decay (Motivation Caps, etc)
-        // ⚡ Bolt: filter retired rikishi before applying O(N log N) stableSort to drastically reduce sorting overhead
-        const activeRikishi = Array.from(w.rikishi.values()).filter(r => !r.isRetired);
-        for (const rikishi of stableSort(activeRikishi, x => x.id)) {
+        // ⚡ Bolt: iterate directly over world.rikishi.values() to avoid intermediate array allocation
+        for (const rikishi of w.rikishi.values()) {
+          if (rikishi.isRetired) continue;
           if (rikishi.motivationCapWeeks && rikishi.motivationCapWeeks > 0) {
             rikishi.motivationCapWeeks -= 1;
             if (rikishi.motivationCapWeeks === 0) {
