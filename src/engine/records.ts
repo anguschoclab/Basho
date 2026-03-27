@@ -25,42 +25,58 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
 
   const existingIndex = list.findIndex(e => e.rikishiId === rikishi.id);
   
-  // If already in list
   if (existingIndex !== -1) {
-    // Only update if current value is strictly better
-    if (value > list[existingIndex].value) {
-      list.splice(existingIndex, 1); // remove and re-insert to maintain sort
-    } else {
-      return; // No improvement, do nothing
+    if (value <= list[existingIndex].value) {
+      return;
     }
+    // Update existing item in place
+    const item = list[existingIndex];
+    item.value = value;
+    item.achievedDate.year = year;
+    item.achievedDate.month = month;
+
+    // Bubble up to maintain sorted order
+    let curr = existingIndex;
+    while (curr > 0 && list[curr - 1].value < value) {
+      const temp = list[curr - 1];
+      list[curr - 1] = list[curr];
+      list[curr] = temp;
+      curr--;
+    }
+    return;
   }
 
-  // Find insertion point (descending order)
-  const insertAt = list.findIndex(e => value > e.value);
+  // Not in list.
+  if (list.length >= 10 && value <= list[list.length - 1].value) {
+    return;
+  }
+
+  // Find insertion point
+  let insertAt = 0;
+  while (insertAt < list.length && value <= list[insertAt].value) {
+    insertAt++;
+  }
   
-  if (insertAt === -1) {
-    // If list not full, add to end
-    if (list.length < 10) {
-      list.push({
-        rikishiId: rikishi.id,
-        shikona: rikishi.shikona,
-        value,
-        achievedDate: { year, month }
-      });
+  const newItem = {
+    rikishiId: rikishi.id,
+    shikona: rikishi.shikona,
+    value,
+    achievedDate: { year, month }
+  };
+
+  if (list.length < 10) {
+    list.push(newItem);
+    // Shift elements down to make room
+    for (let i = list.length - 1; i > insertAt; i--) {
+      list[i] = list[i - 1];
     }
+    list[insertAt] = newItem;
   } else {
-    // Insert at specific position
-    list.splice(insertAt, 0, {
-      rikishiId: rikishi.id,
-      shikona: rikishi.shikona,
-      value,
-      achievedDate: { year, month }
-    });
-    
-    // Trim if over capacity
-    if (list.length > 10) {
-      list.pop();
+    // Shift elements down, dropping the last one
+    for (let i = 9; i > insertAt; i--) {
+      list[i] = list[i - 1];
     }
+    list[insertAt] = newItem;
   }
 }
 
