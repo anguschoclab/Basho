@@ -266,3 +266,29 @@ export function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
 export function isBashoMonth(month: number): boolean {
   return month % 2 !== 0;
 }
+
+// --- PHASE 4: LIFECYCLE & ARCHIVAL ---
+
+
+export function endBasho(world: import('./types').WorldState) {
+    if (!world.basho) return;
+
+    world.history.push({
+        type: 'BASHO_CONCLUDED',
+        bashoId: world.basho.id,
+        year: world.basho.year,
+        month: world.basho.month,
+        leaderboard: JSON.parse(JSON.stringify(world.basho.leaderboard))
+    } as any);
+
+    for (const [rikishiId, stats] of Object.entries(world.basho.leaderboard)) {
+        const r = world.rikishi.get(rikishiId);
+        if (r) {
+            r.stats.wins = (r.stats.wins || 0) + ((stats as any).wins || 0);
+            r.stats.losses = (r.stats.losses || 0) + ((stats as any).losses || 0);
+            r.stats.absences = (r.stats.absences || 0) + ((stats as any).absences || 0);
+        }
+    }
+
+    world.basho = undefined;
+}

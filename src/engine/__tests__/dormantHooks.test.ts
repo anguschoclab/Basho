@@ -1,3 +1,4 @@
+import { getStableRikishi } from "../world";
 import { describe, it, expect } from "vitest";
 import { generateWorld } from "../worldgen";
 import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "../loans";
@@ -44,7 +45,7 @@ describe("Dormant Hooks Integration Tests", () => {
 
     const sourceHeyaId = heyaIds[0];
     const sourceHeya = world.heyas.get(sourceHeyaId)!;
-    const initialRikishiCount = sourceHeya.rikishiIds.length;
+    const initialRikishiCount = getStableRikishi(world, sourceHeyaId).length;
 
     // Find target
     const targetHeyaId = findMergerTarget(world, sourceHeyaId);
@@ -52,7 +53,7 @@ describe("Dormant Hooks Integration Tests", () => {
     expect(targetHeyaId).not.toBeNull();
 
     const targetHeya = world.heyas.get(targetHeyaId!)!;
-    const targetInitialRikishiCount = targetHeya.rikishiIds.length;
+    const targetInitialRikishiCount = getStableRikishi(world, targetHeya.id).length;
 
     // Execute merger
     executeMerger(world, sourceHeyaId, targetHeyaId!, "Test Merger");
@@ -62,9 +63,9 @@ describe("Dormant Hooks Integration Tests", () => {
     expect(world.closedHeyas?.has(sourceHeyaId)).toBe(true);
 
     // Verify rikishi transferred
-    expect(targetHeya.rikishiIds.length).toBe(initialRikishiCount + targetInitialRikishiCount);
+    expect(getStableRikishi(world, targetHeya.id).length).toBe(initialRikishiCount + targetInitialRikishiCount);
 
-    for (const rId of world.closedHeyas!.get(sourceHeyaId)!.rikishiIds) {
+    for (const rId of getStableRikishi(world, sourceHeyaId)) {
         expect(world.rikishi.get(rId)!.heyaId).toBe(targetHeyaId);
     }
   });

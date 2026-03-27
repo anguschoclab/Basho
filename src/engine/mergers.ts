@@ -1,3 +1,4 @@
+import { getStableRikishi } from "@/engine/world";
 // @ts-nocheck
 // mergers.ts
 // Resolves forced closures and mergers for underperforming or insolvent stables.
@@ -25,11 +26,11 @@ export function executeMerger(world: WorldState, sourceHeyaId: string, targetHey
   if (!source || !target) return;
 
   // 1. Transfer rikishi
-  for (const rId of source.rikishiIds) {
+  for (const rId of getStableRikishi(world, source.id).map(r => r.id)) {
     const rikishi = world.rikishi.get(rId);
     if (rikishi) {
       rikishi.heyaId = target.id;
-      target.rikishiIds.push(rId);
+
 
       logEngineEvent(world, {
         type: "RIKISHI_TRANSFERRED",
@@ -110,7 +111,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
   // has room in roster (< 25 rikishi), and prestige >= modest.
   const candidates: Heya[] = [];
   for (const h of world.heyas.values()) {
-    if (h.id !== sourceHeyaId && h.rikishiIds.length < 25 &&
+    if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 25 &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")) {
       candidates.push(h);
     }
@@ -120,7 +121,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
     // Fallback: any stable with room
     const fallback: Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== sourceHeyaId && h.rikishiIds.length < 30) fallback.push(h);
+      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 30) fallback.push(h);
     }
     if (fallback.length === 0) return null;
     return fallback[rng.int(0, fallback.length - 1)].id;

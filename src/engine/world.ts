@@ -561,7 +561,7 @@ function runPrestigeDecay(world: WorldState): void {
     }
 
     // === Small stable fragility ===
-    if (heya.rikishiIds.length < 5 && heya.prestigeBand !== "unknown") {
+    if (getStableRikishi(world, heya.id).length < 5 && heya.prestigeBand !== "unknown") {
       shift -= 1; // tiny stables slowly lose prestige
     }
 
@@ -613,13 +613,13 @@ function updateStatureBand(world: WorldState, heya: import("./types").Heya): voi
     if (w > maxRankWeight) maxRankWeight = w;
   }
 
-  const avgScore = heya.rikishiIds.length > 0 ? rosterScore / heya.rikishiIds.length : 0;
+  const avgScore = getStableRikishi(world, heya.id).length > 0 ? rosterScore / getStableRikishi(world, heya.id).length : 0;
 
   if (maxRankWeight >= 100 && avgScore >= 40) heya.statureBand = "legendary";
   else if (maxRankWeight >= 60 && avgScore >= 30) heya.statureBand = "powerful";
   else if (avgScore >= 20) heya.statureBand = "established";
   else if (avgScore >= 10) heya.statureBand = "rebuilding";
-  else if (heya.rikishiIds.length >= 3) heya.statureBand = "fragile";
+  else if (getStableRikishi(world, heya.id).length >= 3) heya.statureBand = "fragile";
   else heya.statureBand = "new";
 }
 
@@ -722,7 +722,7 @@ function runGovernanceReview(world: WorldState): void {
     }
 
     // === Merger/closure pressure for extremely small stables ===
-    if (heya.rikishiIds.length < 3) {
+    if (getStableRikishi(world, heya.id).length < 3) {
       if (heya.id !== world.playerHeyaId) {
         logEngineEvent(world, {
           type: "CLOSURE_PRESSURE",
@@ -732,7 +732,7 @@ function runGovernanceReview(world: WorldState): void {
           heyaId: heya.id,
           title: `${heya.name} under closure pressure`,
           summary: `${heya.name} has fewer than 3 wrestlers — the Association is reviewing viability.`,
-          data: { rosterSize: heya.rikishiIds.length }
+          data: { rosterSize: getStableRikishi(world, heya.id).length }
         });
 
         generateGovernanceHeadline({
@@ -744,7 +744,7 @@ function runGovernanceReview(world: WorldState): void {
         });
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
-        if (heya.rikishiIds.length <= 1) {
+        if (getStableRikishi(world, heya.id).length <= 1) {
           logEngineEvent(world, {
             type: "FORCED_MERGER_CANDIDATE",
             category: "discipline",
@@ -752,8 +752,8 @@ function runGovernanceReview(world: WorldState): void {
             scope: "heya",
             heyaId: heya.id,
             title: `${heya.name} merger imminent`,
-            summary: `With only ${heya.rikishiIds.length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
-            data: { rosterSize: heya.rikishiIds.length }
+            summary: `With only ${getStableRikishi(world, heya.id).length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
+            data: { rosterSize: getStableRikishi(world, heya.id).length }
           });
 
           generateGovernanceHeadline({
@@ -761,7 +761,7 @@ function runGovernanceReview(world: WorldState): void {
             heyaId: heya.id,
             type: "forced_merger",
             severity: "critical",
-            description: `Due to critically low recruitment (${heya.rikishiIds.length} active wrestlers), ${heya.name} faces a forced merger.`
+            description: `Due to critically low recruitment (${getStableRikishi(world, heya.id).length} active wrestlers), ${heya.name} faces a forced merger.`
           });
 
           // Execute actual merger
@@ -780,7 +780,7 @@ function runGovernanceReview(world: WorldState): void {
           heyaId: heya.id,
           title: "Roster critically low",
           summary: `Your stable has fewer than 3 wrestlers. Recruit urgently or face Association review.`,
-          data: { rosterSize: heya.rikishiIds.length }
+          data: { rosterSize: getStableRikishi(world, heya.id).length }
         });
       }
     }
@@ -923,7 +923,7 @@ function runRetirements(world: WorldState): Record<string, number> {
       world.rikishi.delete(id);
       const heya = world.heyas.get(r.heyaId);
       if (heya) {
-        heya.rikishiIds = heya.rikishiIds.filter(rid => rid !== id);
+
       }
     }
   }
@@ -972,7 +972,7 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
         : "The post-basho recruitment window is open for 4 weeks. Scout and sign new talent.",
       data: {
         vacancies: playerVacancies,
-        rosterSize: playerHeya.rikishiIds.length,
+        rosterSize: getStableRikishi(world, playerHeya.id).length,
         windowDuration: 4,
         closesAtWeek: world.week + 4
       }
@@ -1173,4 +1173,36 @@ function safeCall(fn: () => void) {
   } catch {
     // Intentionally swallow
   }
+}
+// --- CANONICAL SELECTORS ---
+
+export function getPlayerOyakata(world: WorldState) {
+    if (!world.playerHeyaId) return undefined;
+    const heya = world.heyas.get(world.playerHeyaId);
+    if (!heya) return undefined;
+    return world.oyakata.get(heya.oyakataId);
+}
+
+export function getPlayerStable(world: WorldState) {
+    if (!world.playerHeyaId) return undefined;
+    return world.heyas.get(world.playerHeyaId);
+}
+
+export function getStableRikishi(world: WorldState, heyaId: string) {
+    return Array.from(world.rikishi.values()).filter((r) => r.heyaId === heyaId);
+}
+
+export function getRikishiBashoStats(world: WorldState, rikishiId: string) {
+    if (!world.basho?.leaderboard) {
+        return { wins: 0, losses: 0, absences: 0 };
+    }
+    const stats = world.basho.leaderboard[rikishiId];
+    if (!stats) {
+        return { wins: 0, losses: 0, absences: 0 };
+    }
+    return {
+        wins: stats.wins || 0,
+        losses: stats.losses || 0,
+        absences: stats.absences || 0
+    };
 }

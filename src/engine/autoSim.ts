@@ -648,3 +648,34 @@ function titleCase(name: string): string {
  *  * @param name - The Name.
  *  * @returns The result.
  */
+
+
+export function simulateBashoDay(world: WorldState) {
+    if (!world.basho) return;
+
+    world.basho.day = (world.basho.day || 0) + 1;
+
+    const rikishiArray = Array.from(world.rikishi.values());
+    for (const r of rikishiArray) {
+        if (!world.basho.leaderboard[r.id]) {
+            world.basho.leaderboard[r.id] = { wins: 0, losses: 0, absences: 0 };
+        }
+    }
+
+    const rikishiIds = Object.keys(world.basho.leaderboard);
+    for (let i = 0; i < rikishiIds.length; i += 2) {
+        if (i + 1 < rikishiIds.length) {
+            const winnerId = rikishiIds[i];
+            const loserId = rikishiIds[i+1];
+
+            world.basho.bouts.push({
+                winnerId,
+                loserId,
+                kimarite: "yorikiri"
+            });
+
+            world.basho.leaderboard[winnerId].wins += 1;
+            world.basho.leaderboard[loserId].losses += 1;
+        }
+    }
+}
