@@ -24,6 +24,7 @@ export function getAutosaveEnabled(): boolean {
   } catch {
     return true;
   }
+}
 
 /**
  * Set autosave enabled.
@@ -33,6 +34,7 @@ function setAutosaveEnabled(enabled: boolean) {
   try {
     localStorage.setItem(AUTOSAVE_ENABLED_KEY, String(enabled));
   } catch { /* silent */ }
+}
 
 /** settings page. */
 export default function SettingsPage() {

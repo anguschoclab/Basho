@@ -148,24 +148,12 @@ export function tickArchetypeDrift(world: WorldState): void {
   const month = world.calendar?.month;
   if (month && isBashoMonth(month)) {
     for (const r of world.rikishi.values()) {
-      if (!r.archetypeEvidence || !Array.isArray(r.archetypeEvidence)) continue;
-
       const evidence = r.archetypeEvidence;
-      // Get the last basho in history
-      const lastBasho = world.history?.[world.history.length - 1];
-      if (!lastBasho) continue;
+      if (!evidence || Array.isArray(evidence)) continue;
 
-      // Aggregate successes from the last basho across specific tactical families
-      // Evidence entries are tagged with the basho name and year they occurred in
-      const currentEvidence = evidence.filter(e => 
-        (e as any).year === lastBasho.year && (e as any).bashoName === lastBasho.bashoName
-      );
-      
-      if (currentEvidence.length === 0) continue;
-
-      const pushSuccess = currentEvidence.filter(e => (e.tactic as string) === "OSHI_THRUST" && e.success).length;
-      const beltSuccess = currentEvidence.filter(e => (e.tactic as string) === "YOTSU_BELT" && e.success).length;
-      const trickSuccess = currentEvidence.filter(e => (e.tactic as string) === "HENKA" && e.success).length;
+      const pushSuccess = evidence.push.success;
+      const grappleSuccess = evidence.grapple.success;
+      const evadeSuccess = evidence.evade.success;
 
       // Determine the most successful tactical family during this basho
       let newArchetype: typeof r.tacticalArchetypePrimary = r.tacticalArchetypePrimary;

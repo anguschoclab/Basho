@@ -81,7 +81,8 @@ const SidebarProvider = React.forwardRef<
       if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         toggleSidebar();
-      };
+      }
+    };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -109,6 +110,7 @@ const SidebarProvider = React.forwardRef<
       <TooltipProvider delayDuration={0}>
         <div
           style={
+            {
               "--sidebar-width": SIDEBAR_WIDTH,
               "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
               ...style,
@@ -156,6 +158,7 @@ const Sidebar = React.forwardRef<
           data-mobile="true"
           className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
           style={
+            {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
@@ -228,7 +231,7 @@ const SidebarTrigger = React.forwardRef<React.ElementRef<typeof Button>, React.C
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
-        }
+        }}
         {...props}
       >
         <PanelLeft />
@@ -550,6 +553,7 @@ const width = React.useMemo(() => {
         className="h-4 max-w-[--skeleton-width] flex-1"
         data-sidebar="menu-skeleton-text"
         style={
+          {
             "--skeleton-width": width,
           } as React.CSSProperties
         }

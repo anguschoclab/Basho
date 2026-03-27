@@ -73,15 +73,53 @@ export function runTickPipeline(
 }
 
 /**
+ * Perform a fast shallow clone with specific deep structural sharing for the
+ * parts of the world state that update on every tick, avoiding O(N) memory
+ * bloat from deep cloning the massive entire historical database.
+ */
+export function cloneWorldForTick(world: WorldState): WorldState {
+  const nextWorld: WorldState = { ...world };
+
+  // Deep clone basic mutable nested properties
+  nextWorld.calendar = { ...world.calendar };
+
+  // Create a new array reference for top-level arrays that are appended to
+  nextWorld.history = Array.isArray(world.history) ? [...world.history] : [];
+  nextWorld.events = Array.isArray(world.events) ? [...world.events] : [];
+
+  // Create new Maps and selectively structuredClone entities
+  nextWorld.heyas = new Map();
+  for (const [id, heya] of world.heyas.entries()) {
+    nextWorld.heyas.set(id, structuredClone(heya));
+  }
+
+  nextWorld.rikishi = new Map();
+  for (const [id, r] of world.rikishi.entries()) {
+    // Retired rikishi never change state on daily ticks, map by reference!
+    if (r.isRetired) {
+      nextWorld.rikishi.set(id, r);
+    } else {
+      nextWorld.rikishi.set(id, structuredClone(r));
+    }
+  }
+
+  // Same for staff
+  if (world.staff) {
+    nextWorld.staff = new Map();
+    for (const [id, st] of world.staff.entries()) {
+      nextWorld.staff.set(id, structuredClone(st));
+    }
+  }
+
+  return nextWorld;
+}
+
+/**
  * Convenience entry point for a single daily tick.
  * Returns a NEW world state to ensure immutability / purity.
  */
 export function tickOrchestrator(world: WorldState): WorldState {
-  // Deep clone to ensure purity for the reducer
-  const nextWorld = structuredClone(world);
-  
-  // Advance the world by one day
+  const nextWorld = cloneWorldForTick(world);
   advanceOneDay(nextWorld);
-  
   return nextWorld;
 }
