@@ -621,11 +621,10 @@ export function tickWeek(world: WorldState): number {
 export function tickMonthly(world: WorldState): void {
   // 1. Myoseki Bidding via Finance Strategy
   if (world.myosekiMarket) {
-    for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
-      if (heya.id === world.playerHeyaId) continue;
-      const oyakata = world.oyakata.get(heya.oyakataId);
-      if (!oyakata) continue;
-
+    // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
+    const candidateHeyas = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
+    for (const heya of stableSort(candidateHeyas, x => (x as any).id || String(x))) {
+      const oyakata = world.oyakata.get(heya.oyakataId)!;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
       financeStrat.evaluateFinances(world, heya as import("./types/heya").Heya, oyakata);
     }
@@ -634,10 +633,10 @@ export function tickMonthly(world: WorldState): void {
   // 2. Roster Management (Retirement & Scouting Strategy)
   const vacanciesByHeyaId: Record<Id, number> = {};
 
-  for (const heya of stableSort(getAvailableStables(world), x => (x as any).id || String(x))) {
-    if (heya.id === world.playerHeyaId) continue;
-    const oyakata = world.oyakata.get(heya.oyakataId);
-    if (!oyakata) continue;
+  // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
+  const candidateHeyas2 = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
+  for (const heya of stableSort(candidateHeyas2, x => (x as any).id || String(x))) {
+    const oyakata = world.oyakata.get(heya.oyakataId)!;
 
     // Evaluate retirements
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
