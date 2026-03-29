@@ -1,6 +1,7 @@
-## 2024-05-18 - Optimized Array Filtering Before `stableSort`
-**Learning:** In the engine simulation loop (`tickDaily`), iterating over `world.rikishi.values()` and applying `stableSort` *before* filtering out retired entities causes a significant O(N log N) performance degradation, as the number of retired `Rikishi` grows exponentially over simulated years. `stableSort` handles the entire historical dataset when it only needed the active roster.
-**Action:** When working with large engine collections (like `world.rikishi` or `world.heyas`) that require deterministic iteration, always filter the array manually (e.g., using a plain `for...of` loop) to extract the active subset *before* applying `stableSort`. This simple operation reduced the benchmarked latency of the daily fatigue loop from ~534µs to ~136µs (for 5000 items).
-## 2024-05-30 - Array Splice Optimization in Leaderboards
-**Learning:** `Array.splice` inside loop hot paths triggers underlying V8 array allocations and memory moving, causing GC pressure and performance drops, even for arrays of size 10.
-**Action:** Replaced `list.splice(index, 1)` with a manual swap/shift implementation, bubbling elements down by index (`for (let i = length - 1; i > insertAt; i--) list[i] = list[i - 1]`). This yielded ~20% execution speed gains in leaderboard array management.
+## 2025-03-05 - Avoid O(N) memory allocations when iterating Sets and Maps
+**Learning:** `stableSort` was implemented to only accept arrays. Many places in the codebase were passing `Array.from(map.values())`, causing an unnecessary O(N) memory allocation just for `stableSort` to immediately clone it via `[...arr]`.
+**Action:** Updated `stableSort` signature to accept `Iterable<T> | ArrayLike<T>` and internal implementation to use `Array.from(iterable).sort(...)`. We then updated redundant caller sites to avoid creating intermediate arrays.
+
+## 2025-03-05 - Avoid O(N) memory allocations when iterating Sets and Maps
+**Learning:** `stableSort` was implemented to only accept arrays. Many places in the codebase were passing `Array.from(map.values())`, causing an unnecessary O(N) memory allocation just for `stableSort` to immediately clone it via `[...arr]`.
+**Action:** Updated `stableSort` signature to accept `Iterable<T> | ArrayLike<T>` and internal implementation to use `Array.from(iterable).sort(...)`. We then updated redundant caller sites to avoid creating intermediate arrays.
