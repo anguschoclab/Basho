@@ -179,6 +179,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
   // NPC opportunistic recruitment during mid-interim
   safeCall(() => {
     const smallStables: Record<string, number> = {};
+    let hasSmallStables = false;
     // ⚡ Bolt: filter out large and player-owned stables before applying O(N log N) stableSort
     const npcStables = [];
     for (const h of world.heyas.values()) {
@@ -186,8 +187,9 @@ function tickMidInterimRecruitment(world: WorldState): void {
     }
     for (const heya of stableSort(npcStables, x => x.id)) {
       smallStables[heya.id] = Math.max(1, 6 - heya.rikishiIds.length);
+      hasSmallStables = true;
     }
-    if (Object.keys(smallStables).length > 0) {
+    if (hasSmallStables) {
       talentpool.fillVacanciesForNPC(world, smallStables);
     }
   });
