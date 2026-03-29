@@ -221,9 +221,9 @@ export function formatMetaTrends(world: WorldState) {
     
     return {
       basho: `${h.bashoName.charAt(0).toUpperCase()}${h.year % 100}`,
-      oshi: bias === 'oshi' ? 50 : (bias === 'neutral' ? 33 : 17),
-      yotsu: bias === 'yotsu' ? 50 : (bias === 'neutral' ? 33 : 17),
-      hybrid: bias === 'hybrid' ? 50 : (bias === 'neutral' ? 34 : 17),
+      oshi: bias === 'oshi' ? 50 : (bias === 'neutral' ? 33 : 25),
+      yotsu: bias === 'yotsu' ? 50 : (bias === 'neutral' ? 33 : 25),
+      hybrid: bias === 'hybrid' ? 50 : (bias === 'neutral' ? 34 : 25),
     };
   });
 }

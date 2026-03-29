@@ -224,7 +224,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
     availabilityState: "available",
     competingSuitors: [],
     archetype,
-    style: profile.familyPreferences.push > profile.familyPreferences.belt ? 'oshi' : profile.familyPreferences.belt > profile.familyPreferences.push ? 'yotsu' : 'hybrid',
+    style: archetype === "oshi" || archetype === "speedster" ? "oshi" : archetype === "yotsu" || archetype === "giant" || archetype === "trickster" ? "yotsu" : "hybrid",
     heightPotentialCm,
     weightPotentialKg,
     talentSeed,
