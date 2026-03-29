@@ -1,22 +1,17 @@
 📝 Daily Progress & Docs Update
 🏗️ Codebase Status:
-Recently pushed the "econ update" (1dc3c6c), which brought massive changes across the `src/engine` and `src/components` layers. A significant portion of the work focused on bringing the engine into compliance with the Master Design Bible (`Basho_Constitution_v1.2_HARMONIZED_NONLOSSY.md`). This includes integrating `enforceHardCapRosterOverflow` (C4.3), restructuring the daily and weekly subsystem tick loops (e.g. `economics.ts`, `welfare.ts`, `tickDaily.ts`, `tickWeekly.ts`), implementing `toBand` hysteresis (C5.3/C5.4) for observability-safe UI translation, and creating various UI pages using Tanstack Router v1.
+Recently pushed updates to `src/engine/world.ts` to implement the retirement transition logic for accomplished rikishi. When an accomplished rikishi (Sanyaku level or 200+ career wins) retires at age 28 or older, they automatically attempt to acquire an available Elder Stock (Myoseki) using their retirement funds to become an Oyakata, transitioning seamlessly from the active roster to institutional leadership.
 
-Current Focus: Refining the simulation loops (Daily, Weekly, Monthly boundaries), connecting economic and welfare engines (e.g. Kōenkai base funding floors), and aligning the observability boundaries so that the UI does not leak engine numbers.
+Current focus: Finalizing the rikishi retirement pipeline and ensuring seamless integration with the Myoseki market and Oyakata candidate pool.
 
 📖 Basho Constitution Alignment:
-✅ Aligned:
-- Hard-cap roster overflow logic correctly enforces the 30 rikishi limit and prioritizes release candidates (C4.3).
-- Economy correctly applies the Kōenkai Tier-1 Survival Floor (¥28,000) to prevent instant insolvency for new stables (C2.4 / A6).
-- UI Models (`uiModels.ts`, `descriptorBands.ts`) correctly implement the qualitative band system with hysteresis (HYSTERESIS_DELTA = 5) to prevent stat flickering (C5.3) and use modifier tags (`taped_up`, `hampered`) for injuries without exposing numbers (C5.4).
-- Tick boundaries (Daily, Weekly, Monthly, Yearly) are distinctly separated and ordered properly in `src/engine/tick/`.
+✅ Aligned: The implementation correctly routes accomplished retiring rikishi into the Oyakata candidate pool and assigns available Elder Stock, satisfying the "Retirement Outcomes" pipeline (Section 61 / R4), which mandates that retired rikishi feed the institutional pipelines deterministically.
 
-⚠️ Missing/Deviations:
-- In `descriptorBands.ts`, while hysteresis logic is active, explicit constitution references to `C5.3` are missing.
+⚠️ Missing/Deviations: The implementation currently assigns Elder Stock directly during the retirement loop (skipping the formal `buyMyoseki` validation checks). It also assumes a fallback of 150,000,000 JPY for the transaction if `economics.retirementFund` is not populated. This is a slight deviation from a strictly separated economy ledger update.
 
 📄 Proposed Documentation Updates:
-src/engine/descriptorBands.ts: Add explicit reference comments for hysteresis buffer mapping to constitution section C5.3.
+src/engine/world.ts: Added automatic Oyakata generation and Myoseki stock assignment for retiring accomplished rikishi.
 
-Code Paths Covered: `src/engine/tick/tickDaily.ts`, `src/engine/tick/tickWeekly.ts`, `src/engine/economics.ts`, `src/engine/overflow.ts`, `src/engine/descriptorBands.ts`, `src/engine/uiModels.ts`.
+Code Paths Covered: `src/engine/world.ts` (runRetirements), `src/engine/oyakataPersonalities.ts` (generateOyakata).
 
-Key Knowledge Gaps Addressed: Validates that the engine state properly transitions through chronological boundaries and that UI safely translates raw state to descriptors using hysteresis.
+Key Knowledge Gaps Addressed: Clarifies the exact threshold and mechanism by which a retiring rikishi transitions into the Oyakata pool and acquires Elder Stock within the simulation loop.

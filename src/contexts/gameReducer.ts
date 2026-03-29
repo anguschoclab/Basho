@@ -9,7 +9,7 @@ import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { mediaSlice } from "./mediaSlice";
-import { tickOrchestrator } from "@/engine/tick/tickOrchestrator";
+import { tickOrchestrator, cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
 
 /** 
@@ -68,7 +68,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
     case "TICK_MULTIPLE_DAYS": {
       if (!state.world) return state;
       // Deep clone ONCE to enforce pure state transitions without massive memory bloat
-      const nextWorld = structuredClone(state.world);
+      const nextWorld = cloneWorldForTick(state.world);
       for (let i = 0; i < action.payload.days; i++) {
         advanceOneDay(nextWorld);
       }
