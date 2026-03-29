@@ -79,9 +79,9 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
         evaluateScandals(w);
 
         // 3. Status Decay (Motivation Caps, etc)
-        // ⚡ Bolt: filter retired rikishi before applying O(N log N) stableSort to drastically reduce sorting overhead
-        const activeRikishi = Array.from(w.rikishi.values()).filter(r => !r.isRetired);
-        for (const rikishi of stableSort(activeRikishi, x => x.id)) {
+        // ⚡ Bolt: iterate directly over world.rikishi.values() to avoid intermediate array allocation
+        for (const rikishi of w.rikishi.values()) {
+          if (rikishi.isRetired) continue;
           if (rikishi.motivationCapWeeks && rikishi.motivationCapWeeks > 0) {
             rikishi.motivationCapWeeks -= 1;
             if (rikishi.motivationCapWeeks === 0) {
@@ -176,12 +176,14 @@ function tickMidInterimRecruitment(world: WorldState): void {
   // NPC opportunistic recruitment during mid-interim
   safeCall(() => {
     const smallStables: Record<string, number> = {};
+    let hasSmallStables = false;
     // ⚡ Bolt: filter out large and player-owned stables before applying O(N log N) stableSort
     const npcStables = Array.from(world.heyas.values()).filter(h => h.id !== world.playerHeyaId && h.rikishiIds.length < 6);
     for (const heya of stableSort(npcStables, x => x.id)) {
       smallStables[heya.id] = Math.max(1, 6 - heya.rikishiIds.length);
+      hasSmallStables = true;
     }
-    if (Object.keys(smallStables).length > 0) {
+    if (hasSmallStables) {
       talentpool.fillVacanciesForNPC(world, smallStables);
     }
   });
