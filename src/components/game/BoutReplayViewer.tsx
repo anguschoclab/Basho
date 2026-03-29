@@ -307,7 +307,12 @@ export function BoutReplayViewer({
         <p className="text-sm text-center font-medium">{currentNarration}</p>
       </div>
       <div className="px-4 py-3 flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={() => setIsPlaying(!isPlaying)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsPlaying(!isPlaying)}
+          aria-label={isPlaying ? "Pause replay" : "Play replay"}
+        >
           {isPlaying ? <Pause /> : <Play />}
         </Button>
         <Progress value={getOverallProgress(currentPhase, phaseProgress)} className="flex-1 mx-4 h-1.5" />

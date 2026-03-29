@@ -334,8 +334,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     premium: 10000
   };
 
-  const heyaArr = Array.from(world.heyas.values());
-  for (const heya of stableSort(heyaArr, x => x.id)) {
+  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     const welfare = ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = costMap[diet as string] ?? 3000;
