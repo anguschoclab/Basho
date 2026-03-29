@@ -639,7 +639,7 @@ export function tickMonthly(world: WorldState): void {
 
   // 2. Roster Management (Retirement & Scouting Strategy)
   const vacanciesByHeyaId: Record<Id, number> = {};
-  let hasVacancies = false; // ⚡ Bolt: Track emptiness to avoid Object.keys(obj).length allocation
+  let hasVacancies = false;
 
   // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
   const candidateHeyas2 = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
