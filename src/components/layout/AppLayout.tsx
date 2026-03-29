@@ -107,6 +107,7 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
                 className="h-9 w-9 bg-card shadow-sm border-border/50 hover:bg-accent"
                 onClick={() => setEventLogOpen(true)}
                 title="Open Event Log"
+                aria-label="Open Event Log"
               >
                 <PanelRightOpen className="h-4 w-4 text-muted-foreground" />
               </Button>
