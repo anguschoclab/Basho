@@ -1,3 +1,3 @@
-## 2024-05-18 - Optimized Array Filtering Before `stableSort`
-**Learning:** In the engine simulation loop (`tickDaily`), iterating over `world.rikishi.values()` and applying `stableSort` *before* filtering out retired entities causes a significant O(N log N) performance degradation, as the number of retired `Rikishi` grows exponentially over simulated years. `stableSort` handles the entire historical dataset when it only needed the active roster.
-**Action:** When working with large engine collections (like `world.rikishi` or `world.heyas`) that require deterministic iteration, always filter the array manually (e.g., using a plain `for...of` loop) to extract the active subset *before* applying `stableSort`. This simple operation reduced the benchmarked latency of the daily fatigue loop from ~534µs to ~136µs (for 5000 items).
+## 2025-03-09 - Avoid Redundant Array Creation on sort
+**Learning:** `stableSort` destructures its input with `[...arr]`. When passing `Array.from(map.values())`, an unnecessary intermediate array is created. We can update `stableSort` to accept `Iterable<T>` to avoid this.
+**Action:** Changed `stableSort` type to `Iterable<T> | T[]` and removed `Array.from` calls when calling `stableSort(map.values(), ...)`.
