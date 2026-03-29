@@ -980,9 +980,12 @@ function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<strin
   }
 
   // Log total NPC recruitment activity
-  const totalNPCVacancies = Object.entries(vacanciesByHeyaId)
-    .filter(([id]) => id !== playerHeyaId)
-    .reduce((sum, [, v]) => sum + v, 0);
+  let totalNPCVacancies = 0;
+  for (const id in vacanciesByHeyaId) {
+    if (id !== playerHeyaId) {
+      totalNPCVacancies += vacanciesByHeyaId[id];
+    }
+  }
 
   if (totalNPCVacancies > 0) {
     logEngineEvent(world, {
