@@ -10,6 +10,9 @@ import { Progress } from "@/components/ui/progress";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { Play, Pause, RotateCcw, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { getReplayPhaseDurations } from "@/engine/systems/bout/ReplayMetadata";
+import { getHealthBadge } from "@/presenters/PerceptionPresenter";
+
 
 /** Defines the structure for bout replay viewer props. */
 interface BoutReplayViewerProps {
@@ -50,37 +53,8 @@ interface Particle {
   type: "impact" | "salt" | "sweat" | "dust" | "spark";
 }
 
-/**
- * Get dynamic phase durations based on result.
- */
-function getDynamicDurations(result: BoutResult): Record<ReplayPhase, number> {
-  const base = {
-    ritual: 2500,
-    tachiai: 1200,
-    clinch: 2200,
-    momentum: 2800,
-    finish: 1800,
-    ceremony: 2200,
-    complete: 0,
-  };
+// Phase durations moved to @/engine/systems/bout/ReplayMetadata
 
-  // Heavyweight kimarite (throws/slams) take longer to animate
-  const isHeavy = ["uwatenage", "shitanage", "kotenage", "tsuridashi", "ipponzeoi"].includes(result.kimarite || "");
-  if (isHeavy) {
-    base.finish = 2800;
-    base.momentum = 3200;
-  }
-
-  // Quick wins (slaps/thrusts) are faster
-  const isQuick = ["hatakikomi", "hikitoshi", "okuridashi"].includes(result.kimarite || "");
-  if (isQuick) {
-    base.finish = 1200;
-    base.momentum = 1500;
-    base.clinch = 1000;
-  }
-
-  return base;
-}
 
 const PHASES: ReplayPhase[] = ["ritual", "tachiai", "clinch", "momentum", "finish", "ceremony", "complete"];
 
@@ -137,7 +111,7 @@ export function BoutReplayViewer({
   useEffect(() => { particlesRef.current = particles; }, [particles]);
 
   const safeLog = useMemo(() => (Array.isArray((result as any)?.log) ? (result as any).log : []), [result]);
-  const phaseDurations = useMemo(() => getDynamicDurations(result), [result]);
+  const phaseDurations = useMemo(() => getReplayPhaseDurations(result), [result]);
 
   const tacticalStrategies = useMemo(() => {
     const strategies: { side: "east" | "west"; strategy: string }[] = [];

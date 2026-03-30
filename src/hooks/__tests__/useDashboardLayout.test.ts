@@ -1,4 +1,8 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loadSavedOrder } from "../useDashboardLayout";
 
 // Mock localStorage

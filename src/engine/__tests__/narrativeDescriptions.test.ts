@@ -1,46 +1,71 @@
 import { describe, it, expect } from "vitest";
-import { describeAggression } from "../narrativeDescriptions";
+import { describeAttribute } from "../narrativeDescriptions";
 
-describe("narrativeDescriptions", () => {
-  describe("describeAggression", () => {
-    it("should return 'Relentless' for values >= 85", () => {
-      expect(describeAggression(85)).toBe("Relentless");
-      expect(describeAggression(100)).toBe("Relentless");
-      expect(describeAggression(200)).toBe("Relentless"); // Tests clamping
-    });
+describe("describeAttribute", () => {
+  it("returns 'Exceptional' for values >= 90", () => {
+    expect(describeAttribute(90)).toBe("Exceptional");
+    expect(describeAttribute(95)).toBe("Exceptional");
+    expect(describeAttribute(100)).toBe("Exceptional");
+  });
 
-    it("should return 'Aggressive' for values between 70 and 84", () => {
-      expect(describeAggression(70)).toBe("Aggressive");
-      expect(describeAggression(84)).toBe("Aggressive");
-    });
+  it("returns 'Outstanding' for values >= 75 and < 90", () => {
+    expect(describeAttribute(75)).toBe("Outstanding");
+    expect(describeAttribute(85)).toBe("Outstanding");
+    expect(describeAttribute(89.9)).toBe("Outstanding");
+  });
 
-    it("should return 'Forward-moving' for values between 55 and 69", () => {
-      expect(describeAggression(55)).toBe("Forward-moving");
-      expect(describeAggression(69)).toBe("Forward-moving");
-    });
+  it("returns 'Strong' for values >= 60 and < 75", () => {
+    expect(describeAttribute(60)).toBe("Strong");
+    expect(describeAttribute(70)).toBe("Strong");
+    expect(describeAttribute(74.9)).toBe("Strong");
+  });
 
-    it("should return 'Patient' for values between 40 and 54", () => {
-      expect(describeAggression(40)).toBe("Patient");
-      expect(describeAggression(54)).toBe("Patient");
-    });
+  it("returns 'Capable' for values >= 45 and < 60", () => {
+    expect(describeAttribute(45)).toBe("Capable");
+    expect(describeAttribute(50)).toBe("Capable");
+    expect(describeAttribute(59.9)).toBe("Capable");
+  });
 
-    it("should return 'Defensive' for values between 25 and 39", () => {
-      expect(describeAggression(25)).toBe("Defensive");
-      expect(describeAggression(39)).toBe("Defensive");
-    });
+  it("returns 'Developing' for values >= 30 and < 45", () => {
+    expect(describeAttribute(30)).toBe("Developing");
+    expect(describeAttribute(40)).toBe("Developing");
+    expect(describeAttribute(44.9)).toBe("Developing");
+  });
 
-    it("should return 'Passive' for values < 25", () => {
-      expect(describeAggression(24)).toBe("Passive");
-      expect(describeAggression(0)).toBe("Passive");
-      expect(describeAggression(-10)).toBe("Passive"); // Tests clamping
-    });
+  it("returns 'Limited' for values >= 15 and < 30", () => {
+    expect(describeAttribute(15)).toBe("Limited");
+    expect(describeAttribute(20)).toBe("Limited");
+    expect(describeAttribute(29.9)).toBe("Limited");
+  });
 
-    it("should handle NaN/undefined/invalid values gracefully", () => {
-      // safe(value, 0) falls back to 0, clamping to 0 -> "Passive"
-      expect(describeAggression(NaN)).toBe("Passive");
-      expect(describeAggression(undefined as unknown as number)).toBe("Passive");
-      expect(describeAggression(null as unknown as number)).toBe("Passive");
-      expect(describeAggression("invalid" as unknown as number)).toBe("Passive");
-    });
+  it("returns 'Struggling' for values < 15", () => {
+    expect(describeAttribute(14.9)).toBe("Struggling");
+    expect(describeAttribute(10)).toBe("Struggling");
+    expect(describeAttribute(0)).toBe("Struggling");
+  });
+
+  it("handles out of bounds cleanly (clamps to 0-100)", () => {
+    expect(describeAttribute(101)).toBe("Exceptional"); // Clamps to 100
+    expect(describeAttribute(150)).toBe("Exceptional"); // Clamps to 100
+    expect(describeAttribute(-1)).toBe("Struggling");  // Clamps to 0
+    expect(describeAttribute(-50)).toBe("Struggling"); // Clamps to 0
+  });
+
+  it("handles NaN and non-finite values safely", () => {
+    // Number.isFinite(NaN) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(NaN)).toBe("Struggling");
+    // Number.isFinite(Infinity) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(Infinity)).toBe("Struggling");
+    // Number.isFinite(-Infinity) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(-Infinity)).toBe("Struggling");
+  });
+
+  it("handles string numbers cleanly", () => {
+    // Number("95") is 95 -> safe returns 95 -> "Exceptional"
+    // @ts-expect-error Testing bad input
+    expect(describeAttribute("95")).toBe("Exceptional");
+    // Number("invalid") is NaN -> safe returns 0 -> "Struggling"
+    // @ts-expect-error Testing bad input
+    expect(describeAttribute("invalid")).toBe("Struggling");
   });
 });
