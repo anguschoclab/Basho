@@ -14,8 +14,8 @@ export interface Heya {
   name: string;
   nameJa?: string;
   oyakataId: Id;
-  rikishiIds: Id[];
   staffIds?: Id[];
+  rikishiIds?: Id[];
 
   statureBand: StatureBand;
   prestigeBand: PrestigeBand;

@@ -44,7 +44,7 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
  * - Loans/interest
  */
 export function tickMonthlyEconomics(world: WorldState): void {
-  for (const heya of stableSort(Array.from(world.heyas.values()), x => x.id)) {
+  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     let totalSalaries = 0;
     for (const rId of heya.rikishiIds) {
       const r = world.rikishi.get(rId);
@@ -158,15 +158,16 @@ export function tickArchetypeDrift(world: WorldState): void {
       // Determine the most successful tactical family during this basho
       let newArchetype: typeof r.tacticalArchetypePrimary = r.tacticalArchetypePrimary;
 
-      if (pushSuccess > beltSuccess && pushSuccess > trickSuccess && pushSuccess >= 5) {
+      if (pushSuccess > grappleSuccess && pushSuccess > evadeSuccess && pushSuccess >= 5) {
         newArchetype = 'oshi';
-      } else if (beltSuccess > pushSuccess && beltSuccess > trickSuccess && beltSuccess >= 5) {
+      } else if (grappleSuccess > pushSuccess && grappleSuccess > evadeSuccess && grappleSuccess >= 5) {
         newArchetype = 'yotsu';
-      } else if (trickSuccess > pushSuccess && trickSuccess > beltSuccess && trickSuccess >= 5) {
+      } else if (evadeSuccess > pushSuccess && evadeSuccess > grappleSuccess && evadeSuccess >= 5) {
         newArchetype = 'trickster';
       }
 
       // If a drift occurred, dispatch event and update
+
       if (newArchetype !== r.tacticalArchetypePrimary) {
         logEngineEvent(world, {
           type: "ARCHETYPE_DRIFT",
@@ -182,10 +183,14 @@ export function tickArchetypeDrift(world: WorldState): void {
         r.tacticalArchetypePrimary = newArchetype;
       }
 
-      // Cleanup: Remove evidence older than the basho we just processed
-      r.archetypeEvidence = r.archetypeEvidence.filter(e => 
-        (e as any).year === lastBasho.year && (e as any).bashoName === lastBasho.bashoName
-      );
+      // Cleanup: Reset evidence
+
+      r.archetypeEvidence = {
+        push: { success: 0, fail: 0 },
+        grapple: { success: 0, fail: 0 },
+        evade: { success: 0, fail: 0 }
+      };
+
     }
   }
 }

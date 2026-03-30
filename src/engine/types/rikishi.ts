@@ -101,8 +101,6 @@ export interface Rikishi {
 
   careerWins: number;
   careerLosses: number;
-  currentBashoWins: number;
-  currentBashoLosses: number;
   makuuchiWins: number;
   consecutiveYusho: number;
 
@@ -120,7 +118,6 @@ export interface Rikishi {
   name?: string;
   stats: RikishiStats;
   careerRecord?: { wins: number; losses: number; yusho: number };
-  currentBashoRecord?: { wins: number; losses: number };
 
   faceAvatarUrl?: string;
   personalityTraits: string[];

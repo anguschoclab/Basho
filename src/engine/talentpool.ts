@@ -224,7 +224,7 @@ function createCandidate(world: WorldState, poolType: TalentPoolType, year: numb
     availabilityState: "available",
     competingSuitors: [],
     archetype,
-    style: profile.familyPreferences.push > profile.familyPreferences.belt ? 'oshi' : profile.familyPreferences.belt > profile.familyPreferences.push ? 'yotsu' : 'hybrid',
+    style: archetype === "oshi" || archetype === "speedster" ? "oshi" : archetype === "yotsu" || archetype === "giant" || archetype === "trickster" ? "yotsu" : "hybrid",
     heightPotentialCm,
     weightPotentialKg,
     talentSeed,
@@ -253,7 +253,8 @@ export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
 function getForeignCommitmentsInTalksEarly(world: WorldState, heyaId: Id): number {
   const tp = ensureWorldPool(world);
   let n = 0;
-  for (const c of Object.values(tp.candidates)) {
+  for (const key in tp.candidates) {
+    const c = tp.candidates[key];
     if (!c) continue;
     if (c.availabilityState !== "in_talks") continue;
     if (!countsAsForeignEarly(c)) continue;
@@ -545,7 +546,8 @@ function countsAsForeign(candidate: TalentCandidate): boolean {
 function getForeignCommitmentsInTalks(world: WorldState, heyaId: Id): number {
   const tp = ensureWorldPool(world);
   let count = 0;
-  for (const c of Object.values(tp.candidates)) {
+  for (const key in tp.candidates) {
+    const c = tp.candidates[key];
     if (!c) continue;
     if (c.availabilityState !== "in_talks") continue;
     if (!countsAsForeign(c)) continue;
@@ -658,10 +660,7 @@ function candidateToRikishi(world: WorldState, candidate: TalentCandidate, targe
     combatProfile: candidate.combatProfile,
     careerWins: 0,
     careerLosses: 0,
-    currentBashoWins: 0,
-    currentBashoLosses: 0,
     careerRecord: { wins: 0, losses: 0, yusho: 0 },
-    currentBashoRecord: { wins: 0, losses: 0 },
     history: [],
     h2h: {},
     injuryStatus: { type: "none", isInjured: false, severity: 0, location: "", weeksRemaining: 0, weeksToHeal: 0 },

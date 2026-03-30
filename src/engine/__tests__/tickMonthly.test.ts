@@ -43,6 +43,6 @@ describe("Archetype Drift & Hysteresis Logic Timing", () => {
     // Assert: Drift IS evaluated and shifted
     expect(r.tacticalArchetypePrimary).toBe("oshi");
     // Assert: Evidence is cleared to zeros
-    expect(evidence.push.success).toBe(0);
+    expect(r.archetypeEvidence.push.success).toBe(0);
   });
 });
