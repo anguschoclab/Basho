@@ -1,17 +1,17 @@
 📝 Daily Progress & Docs Update
 🏗️ Codebase Status:
-Recently pushed updates to `src/engine/world.ts` to implement the retirement transition logic for accomplished rikishi. When an accomplished rikishi (Sanyaku level or 200+ career wins) retires at age 28 or older, they automatically attempt to acquire an available Elder Stock (Myoseki) using their retirement funds to become an Oyakata, transitioning seamlessly from the active roster to institutional leadership.
+Recent updates implemented strict OPFS payload validation in `src/engine/storage/opfsArchive.ts` to ensure type safety, preventing arbitrary object injection. Additionally, we optimized `src/engine/records.ts` leaderboard updates by manually shifting array elements instead of allocating via `.splice`. Most importantly, the `src/engine/pbp.ts` generator for non-bout events (injuries and institutional facts) has been fully migrated to use the strict `src/engine/bout/grammarDefinitions.ts` synthesizer.
 
-Current focus: Finalizing the rikishi retirement pipeline and ensuring seamless integration with the Myoseki market and Oyakata candidate pool.
+Current focus: Hardening the PBP grammar synthesizer and OPFS storage layer to comply completely with the new constitution structures.
 
 📖 Basho Constitution Alignment:
-✅ Aligned: The implementation correctly routes accomplished retiring rikishi into the Oyakata candidate pool and assigns available Elder Stock, satisfying the "Retirement Outcomes" pipeline (Section 61 / R4), which mandates that retired rikishi feed the institutional pipelines deterministically.
+✅ Aligned: The PBP system migration to `grammarDefinitions.ts` strictly aligns with C1.2 (Strictly Typed Phrase Library Contract), avoiding hardcoded strings and enforcing dynamic variation using contextual tokens.
 
-⚠️ Missing/Deviations: The implementation currently assigns Elder Stock directly during the retirement loop (skipping the formal `buyMyoseki` validation checks). It also assumes a fallback of 150,000,000 JPY for the transaction if `economics.retirementFund` is not populated. This is a slight deviation from a strictly separated economy ledger update.
+⚠️ Missing/Deviations: While injury and institutional texts now pull from the vocabulary definition matrix, out-of-ring events could further diversify using oyakata personality constraints as outlined in C1.2.3. The OPFS validation uses manual type guards, which works, but doesn't yet enforce deeply nested validation.
 
 📄 Proposed Documentation Updates:
-src/engine/world.ts: Added automatic Oyakata generation and Myoseki stock assignment for retiring accomplished rikishi.
+src/engine/bout/grammarDefinitions.ts: Added explicit vocabulary and sentence templates for injury event types to support deterministic synthesizer logic.
 
-Code Paths Covered: `src/engine/world.ts` (runRetirements), `src/engine/oyakataPersonalities.ts` (generateOyakata).
+Code Paths Covered: `src/engine/storage/opfsArchive.ts` (validateBoutLog, OPFSArchiveService.getBoutLog), `src/engine/records.ts` (updateLeaderboard), `src/engine/pbp.ts` (renderFact).
 
-Key Knowledge Gaps Addressed: Clarifies the exact threshold and mechanism by which a retiring rikishi transitions into the Oyakata pool and acquires Elder Stock within the simulation loop.
+Key Knowledge Gaps Addressed: Clarifies how dynamic institutional and injury text generation should be routed through the canonical syntax engine to prevent repetitive strings, and introduces strict parsing boundaries for archived play-by-play payloads.
