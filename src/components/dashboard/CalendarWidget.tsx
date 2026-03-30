@@ -81,7 +81,7 @@ export function CalendarWidget() {
           <div className="h-1.5 rounded-full bg-muted overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
-              style={ width: `${dayProgress}%` }
+              style={{ width: `${dayProgress}%` }}
             />
           </div>
         </div>

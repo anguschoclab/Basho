@@ -61,6 +61,13 @@ import { recordOyakataHandover } from "./lineage";
 import { runArchivalPruning } from "./archival";
 import { safeCall } from "./utils/safe";
 
+export { 
+  getActiveRikishi, 
+  getStableRikishi, 
+  applyBoutResult 
+};
+
+
 // Type guard or helper to access current basho
 /**
  * Get current basho.
