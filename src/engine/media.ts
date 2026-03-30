@@ -25,6 +25,7 @@ import type { RikishiBehavior, OutletType, NewsItem, ScandalType } from "./types
 import type { Rikishi } from "./types/rikishi";
 import { logEngineEvent } from "./events";
 import { reportScandal } from "./governance";
+import { MEDIA_TEMPLATES } from "./bout/grammarDefinitions";
 
 /** =========================
  *  Types
@@ -488,33 +489,27 @@ function calculateScandalImpact(severity: 'minor' | 'major' | 'critical', outlet
 }
 
 function generateScandalHeadlineText(rikishi: Rikishi, type: ScandalType, outlet: OutletType, rng: SeededRNG): string {
-  // We'll hook this into grammarDefinitions later, for now a basic picker
-  const name = rikishi.shikona;
-  const templates: Record<string, string[]> = {
-    LATE_NIGHT_BRAWL: [
-      `${name} involved in Roppongi altercations!`,
-      `${name} seen in midnight scuffle after heavy drinking.`,
-    ],
-    SECRET_INJURY_LEAK: [
-      `Is ${name} hiding a knee injury? Insiders speak.`,
-      `Rumors of ${name}'s training absence confirmed?`,
-    ],
-    ILLEGAL_GAMBLING: [
-      `SHOCKING: ${name} linked to illegal betting ring!`,
-      `${name} faces investigation over "dark" associations.`,
-    ],
-    TRAINING_ABUSE_ALLEGATION: [
-      `Crisis at the heya: ${name} accused of harsh behavior.`,
-      `Stablemate speaks out against ${name}'s training methods.`,
-    ],
-    COACH_DISPUTE: [
-      `${name} and Coach at odds! Tensions boiling over.`,
-      `Public fallout: ${name} seen arguing with Oyakata.`,
-    ]
-  };
+  // First, check if there's a specific template for the scandal type
+  let pool = MEDIA_TEMPLATES[type];
 
-  const pool = templates[type] || [`Scandal involving ${name} surfaces.`];
-  return pool[Math.floor(rng.next() * pool.length)];
+  if (!pool || pool.length === 0) {
+    // Fallback to generic outlet-based pool if specific type is missing
+    if (outlet === 'TABLOID') {
+      pool = MEDIA_TEMPLATES.TABLOID_SCANDAL;
+    } else if (outlet === 'SPORTS_DAILY') {
+      pool = MEDIA_TEMPLATES.SPORTS_DAILY_SCANDAL;
+    } else {
+      pool = MEDIA_TEMPLATES.JSA_OFFICIAL_RESPONSE;
+    }
+  }
+
+  if (!pool || pool.length === 0) {
+    pool = [`Scandal involving ${rikishi.shikona} surfaces.`];
+  }
+
+  const template = pool[Math.floor(rng.next() * pool.length)];
+
+  return template.replace(/\[Rikishi\]/g, rikishi.shikona);
 }
 
 /** =========================
