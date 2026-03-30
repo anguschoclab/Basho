@@ -639,6 +639,7 @@ export function tickMonthly(world: WorldState): void {
 
   // 2. Roster Management (Retirement & Scouting Strategy)
   const vacanciesByHeyaId: Record<Id, number> = {};
+  let hasVacancies = false;
 
   // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
   const candidateHeyas2 = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
@@ -655,11 +656,12 @@ export function tickMonthly(world: WorldState): void {
     
     if (vacancies > 0) {
       vacanciesByHeyaId[heya.id] = vacancies;
+      hasVacancies = true;
     }
   }
 
   // Execute recruiting if under global capacity
-  if (Object.keys(vacanciesByHeyaId).length > 0) {
+  if (hasVacancies) {
     // Note: HARD_CAP_ROSTER_SIZE is exported from overflow, or we just trust talentpool
     const globalCap = world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === 'number' ? HARD_CAP_ROSTER_SIZE : 30);
     if (world.rikishi.size < globalCap) {

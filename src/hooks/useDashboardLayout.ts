@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { destr } from "destr";
 
 const STORAGE_KEY = "dashboard-widget-order";
 
@@ -22,14 +23,23 @@ interface WidgetPlacement {
 
 /**
  * Load saved order.
+ * @internal - exported for testing
  */
-function loadSavedOrder(): WidgetPlacement[] | null {
+export function loadSavedOrder(): WidgetPlacement[] | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.every((p: any) => p.id && typeof p.order === "number")) {
-      return parsed;
+    const parsed = destr(raw);
+    if (Array.isArray(parsed)) {
+      const valid = parsed.every((p: any) =>
+        p &&
+        typeof p.id === "string" &&
+        typeof p.order === "number" &&
+        typeof p.column === "number"
+      );
+      if (valid) {
+        return parsed as WidgetPlacement[];
+      }
     }
   } catch { /* ignore */ }
   return null;

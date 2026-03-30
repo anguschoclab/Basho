@@ -267,15 +267,19 @@ function simulateEntireBasho(
   }
 
   // Determine yusho winner
-  const sortedStandings = Array.from(standings.entries())
-    .map(([id, record]) => ({
-      id,
-      rikishi: world.rikishi.get(id) || null,
-      wins: record.wins,
-      losses: record.losses
-    }))
-    .filter((s) => !!s.rikishi)
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
+  const unsortedStandings: Array<{id: string, rikishi: Rikishi | null, wins: number, losses: number}> = [];
+  for (const [id, record] of standings.entries()) {
+    const rikishi = world.rikishi.get(id) || null;
+    if (rikishi) {
+      unsortedStandings.push({
+        id,
+        rikishi,
+        wins: record.wins,
+        losses: record.losses
+      });
+    }
+  }
+  const sortedStandings = unsortedStandings.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const yushoEntry = sortedStandings[0];
   const yushoWinner = {
@@ -436,17 +440,18 @@ export function runAutoSim(
   }
 
   // Build chronicle top champions
-  chronicle.topChampions = Array.from(championCounts.entries())
-    .map(([id, count]) => {
-      const rikishi = world.rikishi.get(id);
-      return {
-        rikishiId: id,
-        shikona: rikishi?.shikona || "Unknown",
-        yushoCount: count,
-        bestRank: rikishi?.rank || "unknown"
-      };
-    })
-    .sort((a, b) => b.yushoCount - a.yushoCount || stableTieBreak(a.id, b.id))
+  const championsList: Array<{rikishiId: string, shikona: string, yushoCount: number, bestRank: string}> = [];
+  for (const [id, count] of championCounts.entries()) {
+    const rikishi = world.rikishi.get(id);
+    championsList.push({
+      rikishiId: id,
+      shikona: rikishi?.shikona || "Unknown",
+      yushoCount: count,
+      bestRank: rikishi?.rank || "unknown"
+    });
+  }
+  chronicle.topChampions = championsList
+    .sort((a, b) => b.yushoCount - a.yushoCount || stableTieBreak(a.rikishiId, b.rikishiId))
     .slice(0, 10);
 
   // Era labels (simple heuristic; deterministic)

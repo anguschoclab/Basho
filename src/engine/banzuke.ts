@@ -9,6 +9,7 @@ function localClampInt(val: number, min: number, max: number): number {
 // Banzuke (Ranking) System — Canon-aligned, deterministic, FULL SYSTEM
 
 import type { Rank, Division, RankPosition, BanzukeEntry, BashoPerformance, MovementEvent } from "./types/banzuke";
+export type { Rank, Division, RankPosition, BanzukeEntry, BashoPerformance, MovementEvent };
 import { RANK_HIERARCHY } from "./types/banzuke";
 export { RANK_HIERARCHY };
 import type { Rikishi } from "./types/rikishi";
