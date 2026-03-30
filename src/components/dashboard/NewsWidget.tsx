@@ -89,6 +89,12 @@ export function NewsWidget() {
                   </span>
                 </div>
               );
+              }
+              return (
+                <div key={e.id} className="flex">
+                  <span>News</span>
+                </div>
+              );
             })}
           </div>
         )}

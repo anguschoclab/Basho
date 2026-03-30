@@ -27,6 +27,7 @@ function poolLabel(pool: TalentPoolType): string {
     case "foreign":
       return "Foreign";
   }
+}
 
 /**
  * Pool icon.
@@ -41,6 +42,7 @@ function poolIcon(pool: TalentPoolType) {
     case "foreign":
       return Globe;
   }
+}
 
 /**
  * Visibility label.
@@ -58,6 +60,7 @@ function visibilityLabel(v: TalentCandidate["visibilityBand"]): string {
     case "hidden":
       return "Hidden";
   }
+}
 
 /** talent pool page. */
 export default function TalentPoolPage() {

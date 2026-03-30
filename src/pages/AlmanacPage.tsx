@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { RecordEntry } from "@/engine/types/records";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import {
   Building2,
   ChevronRight,
   Crown,
@@ -18,9 +19,6 @@ import { RANK_HIERARCHY } from "@/presenters/uiDigest";
   Star,
   TrendingUp,
   Trophy,
-  Users,
-  History,
-  Award
 } from "lucide-react";
 
 /** Leaderboard widget for record book displays. */
@@ -88,7 +86,8 @@ export default function AlmanacPage() {
 
   const records = world.records || { 
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] };
+    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+  };
 
   const giantSlayers = useMemo(() => {
     return Array.from(world.rikishi.values())

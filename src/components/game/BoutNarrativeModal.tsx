@@ -91,7 +91,8 @@ export function BoutNarrativeModal({
       }) as any;
     } catch {
       return [];
-    }, [east, west, result, bashoName, day]);
+    }
+  }, [east, west, result, bashoName, day]);
 
   const [replayKey, setReplayKey] = useState(0);
 
@@ -184,7 +185,7 @@ export function BoutNarrativeModal({
                         <div
                           key={i}
                           className="flex items-start gap-2 animate-slide-up"
-                          style={ animationDelay: `${i * 60}ms`, animationFillMode: "both" }
+                          style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                         >
                           <Badge
                             variant="outline"
@@ -218,7 +219,7 @@ export function BoutNarrativeModal({
                     <p
                       key={i}
                       className={`animate-fade-in ${i === narrative.length - 1 ? "font-medium text-foreground italic" : ""}`}
-                      style={ animationDelay: `${i * 120}ms`, animationFillMode: "both" }
+                      style={{ animationDelay: `${i * 120}ms`, animationFillMode: "both" }}
                     >
                       {line}
                     </p>

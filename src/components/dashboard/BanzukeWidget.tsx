@@ -64,7 +64,7 @@ export function BanzukeWidget() {
     <BaseWidget
       title="Banzuke"
       icon={ScrollText}
-      headerAction={ label: "Full Rankings", onClick: () => navigate({ to: "/banzuke" }) }
+      headerAction={{ label: "Full Rankings", onClick: () => navigate({ to: "/banzuke" }) }}
     >
       <div className="space-y-0.5">
         {topRanked.map(({ entry, isPlayer }, i) => (

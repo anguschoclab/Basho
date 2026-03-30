@@ -39,7 +39,7 @@ export function RivalsWidget() {
     <BaseWidget
       title="Rival Stables"
       icon={Swords}
-      headerAction={ label: "All", onClick: () => navigate({ to: "/rivalries" }) }
+      headerAction={{ label: "All", onClick: () => navigate({ to: "/rivalries" }) }}
     >
       <div className="space-y-0.5">
         {rivals.map((r) => (
