@@ -10,6 +10,9 @@ import { Oyakata } from "../../types/oyakata";
 import { Rikishi } from "../../types/rikishi";
 import { generateShikona, generateOyakataName } from "../../shikona";
 import { seededPick } from "../../utils/random";
+import { generateFullRikishi } from "./CandidateGenerator";
+import { Division, Rank, Side } from "../../types/banzuke";
+import * as talentpool from "./TalentPoolService";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -77,15 +80,71 @@ export function generateInitialWorld(seed: string): WorldState {
   const oyakataMap = new Map<string, Oyakata>();
   const rikishiMap = new Map<string, Rikishi>();
 
-  // Pipeline execution:
-  // 1. Stables (Heya/Oyakata)
-  // 2. Initial Roster (Rikishi)
-  // 3. Economy/Factions
-  // 4. Persistence
-  
-  // (Simplified for architectural demonstration; full logic to be ported from worldgen.ts)
-  
-  return {
+  // 1. Create Stables (45 traditional stables)
+  const HEYA_NAMES = [
+    "Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama",
+    "Sakaigawa", "Kasugano", "Kokonoe", "Kise", "Musashigawa",
+    "Kataonami", "Onoe", "Tatsunami", "Minezaki", "Tamanoi",
+    "Isenoumi", "Ajigawa", "Sadogatake", "Hakkaku", "Shibatayama",
+    "Michinoku", "Miyagino", "Oigami", "Tagonoura", "Naruto",
+    "Arashio", "Asakayama", "Nakagawa", "Shikihide", "Yamahibiki",
+    "Irumagawa", "Hanahago", "Shirane", "Futagoyama", "Fujishima",
+    "Takadagawa", "Magaki", "Katsushika", "Oshogatsu", "Chiganoura",
+    "Minato", "Shikoroyama", "Kagamiyama", "Hanakago", "Oguruma"
+  ];
+
+  HEYA_NAMES.forEach((name, i) => {
+    const id = `heya_${i + 1}`;
+    const tier = i / HEYA_NAMES.length;
+    const { heya, oyakata } = createHeyaWithOyakata({ id, name, rng: worldRng, tier, currentYear: 2025 });
+    heyaMap.set(id, heya);
+    oyakataMap.set(oyakata.id, oyakata);
+    heya.rikishiIds = [];
+  });
+
+  // 2. Initial Roster Generation (Rank Distribution)
+  const rankConfigs: { rank: Rank; division: Division; count: number }[] = [
+    { rank: "yokozuna", division: "makuuchi", count: 1 },
+    { rank: "ozeki", division: "makuuchi", count: 2 },
+    { rank: "sekiwake", division: "makuuchi", count: 2 },
+    { rank: "komusubi", division: "makuuchi", count: 2 },
+    { rank: "maegashira", division: "makuuchi", count: 34 },
+    { rank: "juryo", division: "juryo", count: 28 },
+    { rank: "makushita", division: "makushita", count: 120 },
+    { rank: "sandanme", division: "sandanme", count: 200 },
+    { rank: "jonidan", division: "jonidan", count: 200 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 110 }
+  ];
+
+  let totalGenerated = 0;
+  rankConfigs.forEach(config => {
+    for (let i = 0; i < config.count; i++) {
+      const side: Side = i % 2 === 0 ? "east" : "west";
+      const rankNumber = config.rank === "maegashira" || config.rank === "juryo" || config.rank === "makushita" || config.rank === "sandanme" || config.rank === "jonidan" || config.rank === "jonokuchi" 
+        ? Math.floor(i / 2) + 1 
+        : 1;
+
+      const rikishiId = `rk_${totalGenerated + 1}`;
+      const r = generateFullRikishi({
+        id: rikishiId,
+        rng: worldRng,
+        currentYear: 2025,
+        rank: config.rank,
+        division: config.division,
+        side,
+        rankNumber
+      });
+
+      // Randomly assign to a stable
+      const heyaId = `heya_${worldRng.int(1, HEYA_NAMES.length)}`;
+      r.heyaId = heyaId;
+      heyaMap.get(heyaId)?.rikishiIds?.push(r.id);
+      rikishiMap.set(r.id, r);
+      totalGenerated++;
+    }
+  });
+
+  const world: WorldState = {
     id: `world_${seed}`,
     seed,
     year: 2025,
@@ -101,11 +160,21 @@ export function generateInitialWorld(seed: string): WorldState {
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
-    playerHeyaId: "",
+    playerHeyaId: "heya_1", // Default to stable 1
     almanacSnapshots: [],
     factions: {},
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-    records: { allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }, active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] } },
-    settings: { archiveMode: "standard" }
+    records: { 
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }, 
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] } 
+    },
+    settings: { archiveMode: "standard" },
+    planetRating: 50,
+    isInitialSeed: true
   } as any;
+
+  // Initialize and populate talent pools
+  talentpool.tickWeek(world);
+
+  return world;
 }

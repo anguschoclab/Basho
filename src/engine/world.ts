@@ -16,7 +16,7 @@ import type { BashoName, BoutResult, MatchSchedule, BashoState } from "./types/b
 import type { Id } from "./types/common";
 import { toRankPosition } from "./types";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
-import { initializeBasho } from "./worldgen";
+import { initializeBasho } from "./systems/generation/WorldFactory";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout/boutResolver";
 import { stableTieBreak } from "./utils/sort";
@@ -37,7 +37,7 @@ import {
   snapshotMediaHeatForBasho
 } from "./systems/media/MediaService";
 import * as economics from "./economics";
-import * as governance from "./governance";
+import * as governance from "./governance/GovernanceService";
 import { executeMerger, findMergerTarget } from "./mergers";
 import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "./loans";
 import { checkNaturalizations } from "./naturalization";
@@ -46,7 +46,7 @@ import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as historyIndex from "./historyIndex";
 import * as training from "./training"; 
-import * as talentpool from "./talentpool";
+import { } from "./systems/generation/CandidateGenerator";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { checkRetirement } from "./lifecycle";

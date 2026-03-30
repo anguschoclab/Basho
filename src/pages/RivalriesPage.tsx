@@ -66,13 +66,13 @@ function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; 
       <div className="flex h-6 rounded-md overflow-hidden border border-border/50">
         <div
           className="bg-primary/80 flex items-center justify-center text-[11px] font-bold text-primary-foreground transition-all"
-          style={ width: `${Math.max(aPct, 8)}%` }
+          style={{ width: `${Math.max(aPct, 8)}%` }}
         >
           {aWins}
         </div>
         <div
           className="bg-muted flex items-center justify-center text-[11px] font-bold text-muted-foreground transition-all"
-          style={ width: `${Math.max(bPct, 8)}%` }
+          style={{ width: `${Math.max(bPct, 8)}%` }}
         >
           {bWins}
         </div>
@@ -95,7 +95,7 @@ function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
         <span className={`text-[10px] font-semibold ${config.color}`}>{Math.round(heat)}%</span>
       </div>
       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-500 ${config.barColor}`} style={ width: `${heat}%` } />
+        <div className={`h-full rounded-full transition-all duration-500 ${config.barColor}`} style={{ width: `${heat}%` }} />
       </div>
     </div>
   );
@@ -136,7 +136,7 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 
   return (
     <Card className={`overflow-hidden bout-enter ${isPlayerRivalry ? "ring-1 ring-primary/30" : ""} ${heatConfig.glowClass}`}
-      style={ animationDelay: `${index * 60}ms` }>
+      style={{ animationDelay: `${index * 60}ms` }}>
       {/* Heat intensity bar at top */}
       <div className={`h-1 ${heatConfig.barColor}`} />
 
@@ -260,7 +260,7 @@ export default function RivalriesPage() {
       return acc;
     }, { infernoCount: 0, hotCount: 0 });
 
-    return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount };
+    return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);
 
   if (!world) {

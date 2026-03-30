@@ -1,12 +1,10 @@
-/**
- * CandidateGenerator.ts — Logic for generating new rikishi candidates.
- */
-
 import { SeededRNG } from "../../rng";
-import { RikishiStats } from "../../types/rikishi";
-import { Rank, Division } from "../../types/banzuke";
-import { CombatProfile } from "../../types/combat";
+import { RikishiStats, Rikishi } from "../../types/rikishi";
+import { Rank, Division, Side } from "../../types/banzuke";
+import { CombatProfile, Style } from "../../types/combat";
 import { clamp, clampInt } from "../../utils/math";
+import { generateRikishiName } from "../../shikona";
+import { rollArchetype, buildCombatProfile } from "../../archetype";
 
 /**
  * Generates rikishi stats using Gaussian distribution and archetype modifiers.
@@ -15,7 +13,7 @@ export function generateRikishiStats(args: {
   rng: SeededRNG;
   rank: Rank;
   profile: CombatProfile;
-}): RikishiStats {
+}): any {
   const { rng, rank, profile } = args;
   
   const baseMean = rank === "yokozuna" ? 85 :
@@ -87,4 +85,157 @@ export function generateSyntheticCareer(args: {
   }
 
   return { careerWins: wins, careerLosses: losses, yushoCount };
+}
+
+/**
+ * Generates a complete Rikishi object for world orchestration.
+ */
+export function generateFullRikishi(args: {
+  id: string;
+  rng: SeededRNG;
+  currentYear: number;
+  rank: Rank;
+  division: Division;
+  side: Side;
+  rankNumber: number;
+}): Rikishi {
+  const { id, rng, currentYear, rank, division, side, rankNumber } = args;
+
+  const archetype = rollArchetype(rng);
+  const profile = buildCombatProfile(archetype);
+  const statsBase = generateRikishiStats({ rng, rank, profile });
+  const records = generateSyntheticCareer({ rng, rank, division, birthYear: currentYear - (18 + rng.int(0, 15)), currentYear });
+
+  const name = generateRikishiName(`${rng.seed}::${id}`);
+
+  const rikishiStats: RikishiStats = {
+    ...statsBase,
+    achievements: {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+    }
+  };
+
+  return {
+    id,
+    shikona: name,
+    name: name,
+    heyaId: "", // Assigned by factory
+    nationality: "Japan",
+    birthYear: currentYear - (18 + rng.int(0, 15)),
+    rank,
+    rankNumber,
+    division,
+    side,
+    
+    height: statsBase.height,
+    weight: statsBase.weight,
+
+    stats: rikishiStats,
+    
+    // Flattened accessors for performance/legacy compatibility
+    power: rikishiStats.strength,
+    speed: rikishiStats.speed,
+    balance: rikishiStats.balance,
+    technique: rikishiStats.technique,
+    aggression: rikishiStats.mental,
+    stamina: rikishiStats.stamina,
+    adaptability: rikishiStats.adaptability,
+    experience: division === "makuuchi" ? 40 : 10,
+    
+    momentum: 50,
+    fatigue: 0,
+    condition: 100,
+    motivation: 70,
+    
+    injured: false,
+    injuryWeeksRemaining: 0,
+    injuryStatus: { type: "none", isInjured: false, severity: 0, location: "", weeksRemaining: 0, weeksToHeal: 0 },
+    
+    style: (archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid") as Style,
+    combatProfile: profile,
+    archetype,
+    derivedArchetype: archetype,
+    tacticalArchetypePrimary: archetype as any, // Mapping needed?
+    archetypeEvidence: [],
+    
+    careerWins: records.careerWins,
+    careerLosses: records.careerLosses,
+    makuuchiWins: division === "makuuchi" ? records.careerWins : 0,
+    consecutiveYusho: 0,
+    
+    careerRecord: { wins: records.careerWins, losses: records.careerLosses, yusho: records.yushoCount },
+    currentBashoWins: 0,
+    currentBashoLosses: 0,
+    currentBashoRecord: { wins: 0, losses: 0 },
+    
+    careerHistory: [],
+    milestones: [],
+    history: [],
+    h2h: {},
+    
+    favoredKimarite: [],
+    weakAgainstStyles: [],
+    
+    behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
+    personalityTraits: [],
+    
+    faceAvatarUrl: "",
+    talentSeed: rng.int(0, 1000000)
+  } as Rikishi;
+}
+
+/**
+ * Generates a single TalentCandidate for the recruitment pools.
+ */
+export function generateCandidate(args: {
+  id: string;
+  rng: SeededRNG;
+  currentYear: number;
+  poolType: any; // TalentPoolType
+}): any {
+  const { id, rng, currentYear, poolType } = args;
+
+  const archetype = rollArchetype(rng);
+  const profile = buildCombatProfile(archetype);
+  const statsBase = generateRikishiStats({ rng, rank: "jonokuchi", profile });
+
+  const name = generateRikishiName(`${rng.seed}::candidate::${id}`);
+
+  // Determine origin based on pool
+  const origin = poolType === "foreign" 
+    ? seededPick(rng, ["Mongolia", "Georgia", "Russia", "Brazil", "USA"])
+    : seededPick(rng, ["Aomori", "Osaka", "Tokyo", "Fukuoka", "Hokkaido", "Ishikawa"]);
+
+  return {
+    candidateId: id,
+    personId: `p_${id}`,
+    name,
+    nationality: poolType === "foreign" ? origin : "Japan",
+    birthYear: currentYear - (15 + rng.int(0, (poolType === "university" ? 7 : 3))),
+    originRegion: origin,
+    
+    visibilityBand: "hidden",
+    availabilityState: "available",
+    
+    scoutingStatus: "unscouted",
+    
+    // Core combat stats (masked by visibility in UI)
+    archetype,
+    style: (archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid"),
+    combatProfile: profile,
+    
+    // Potentials
+    potentialGrade: seededPick(rng, ["S", "A", "B", "C", "D"]),
+    
+    competingSuitors: [],
+    tags: rng.next() > 0.8 ? ["amateur_star"] : []
+  };
+}
+
+function seededPick<T>(rng: SeededRNG, items: T[]): T {
+  return items[rng.int(0, items.length - 1)];
 }

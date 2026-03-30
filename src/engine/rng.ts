@@ -75,11 +75,23 @@ export function rngForWorld(world: WorldState, subsystem: string, label: string)
   return rngFromSeed(world.seed, subsystem, label);
 }
 
+let _globalRNG: SeededRNG | null = null;
 let _globalSeed = "default";
+
+/**
+ * Sets the global seed for the engine-wide random() helper.
+ * Call this once at engine startup or world load.
+ */
 export function setSeed(seed: string) {
   _globalSeed = seed;
+  _globalRNG = new SeededRNG(seed);
 }
 
+/**
+ * Returns a deterministic pseudo-random float in [0, 1) using the global seed.
+ * Note: Prefer world-specific sub-streams (rngForWorld) for parallel systems.
+ */
 export function random(): number {
-  return new SeededRNG(_globalSeed).next();
+  if (!_globalRNG) _globalRNG = new SeededRNG(_globalSeed);
+  return _globalRNG.next();
 }

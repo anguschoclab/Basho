@@ -3,7 +3,7 @@ export function clamp(n: number, lo: number, hi: number): number {
 }
 
 export function clampInt(n: number, lo: number, hi: number): number { 
-  return Math.max(lo, Math.min(hi, Math.round(n))); 
+  return Math.max(lo, Math.min(hi, Math.trunc(n))); 
 }
 
 export function clamp01(n: number): number { 

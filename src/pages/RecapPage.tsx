@@ -43,6 +43,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Rank } from "@/engine/types/banzuke";
 import type { OzekiKadobanMap, MovementEvent  } from "@/engine/banzuke";
 import { getHallOfFame, isKachiKoshi, isMakeKoshi } from "@/presenters/uiDigest";
+import { projectRikishi } from "@/presenters/uiModels";
 
 // Narrative band descriptors for prestige changes
 /**
@@ -63,6 +64,7 @@ function describePrestigeShift(oldBand: string | undefined, newBand: string | un
   } else {
     return `fell to ${newBand.toUpperCase()} status`;
   }
+}
 
 // Extract recent basho-relevant events
 /**
@@ -110,6 +112,7 @@ function groupEventsByNarrative(events: EngineEvent[]) {
     } else {
       groups.other.push(e);
     }
+  }
   
   return groups;
 }
@@ -136,6 +139,7 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
       if (heya) {
         changes.push({ heya, change: e.summary });
       }
+    }
   }
   
   return changes;
@@ -164,7 +168,8 @@ export default function RecapPage() {
         heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
       }
       updateWorld({ ...world });
-    };
+    }
+  };
 
   // Detect yokozuna deliberation candidates
   const yokozunaCandidate = useMemo(() => {
@@ -820,7 +825,7 @@ export default function RecapPage() {
         )}
         {showYokozunaDelib && yokozunaCandidate && world && (
           <YokozunaDeliberation
-            rikishi={yokozunaCandidate}
+            rikishi={projectRikishi(yokozunaCandidate, world)}
             world={world}
             open={showYokozunaDelib}
             onClose={() => setShowYokozunaDelib(false)}

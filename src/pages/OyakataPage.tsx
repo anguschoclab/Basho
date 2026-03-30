@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
 import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
-import { TRAIT_LABELS, getArchetypeDescription, toTraitBand, type OyakataRecord } from "@/presenters/uiDigest";
+import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -23,6 +23,7 @@ export default function OyakataPage() {
         const o = world.oyakata.get(playerHeya.oyakataId);
         if (o) setSelectedOyakata(o);
       }
+    }
   }, [world]);
 
   if (!world || !selectedOyakata) {

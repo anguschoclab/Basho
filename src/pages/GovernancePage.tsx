@@ -111,7 +111,7 @@ export default function GovernancePage() {
             </CardHeader>
             <CardContent>
               {(() => {
-                const welfare = (heya as any).welfareState;
+                const welfare = heya.welfareState;
                 const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
                 const compState = String(welfare?.complianceState ?? "compliant");
                 const { bandWelfareLabel } = (() => {
@@ -254,7 +254,7 @@ export default function GovernancePage() {
                         onClick={() => {
                           if (heya && heya.politicalCapital && heya.politicalCapital >= 100) {
                             spendPoliticalCapital(world, heya.id, 100);
-                            setHeya({ ...heya, politicalCapital: (heya.politicalCapital || 0) - 100 });
+                            // handle local state update if needed, but Context usually handles this
                           } else {
                             alert("Not enough Political Capital (need 100).");
                           }

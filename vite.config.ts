@@ -11,9 +11,11 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true,
-    environment: "node",
-    exclude: ["node_modules", "dist", ".git", ".cache", "e2e"],
+    environment: "jsdom",
+    server: {
+      deps: {
+        inline: ["seedrandom"],
+      },
+    },
   },
 });
-

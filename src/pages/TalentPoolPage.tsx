@@ -10,54 +10,37 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 
-import type { TalentPoolType, TalentCandidate } from "@/engine/types/talent";
-import * as talentpool from "@/engine/talentpool";
+import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/types/talent";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
 
-/**
- * Pool label.
- *  * @param pool - The Pool.
- *  * @returns The result.
- */
-function poolLabel(pool: TalentPoolType): string {
+function poolLabel(pool: TalentPoolType) {
   switch (pool) {
-    case "high_school":
-      return "High School";
-    case "university":
-      return "University";
-    case "foreign":
-      return "Foreign";
+    case "high_school": return "High School";
+    case "university": return "University";
+    case "foreign": return "Foreign";
+    default: return pool;
   }
+}
 
-/**
- * Pool icon.
- *  * @param pool - The Pool.
- */
 function poolIcon(pool: TalentPoolType) {
   switch (pool) {
-    case "high_school":
-      return School;
-    case "university":
-      return GraduationCap;
-    case "foreign":
-      return Globe;
+    case "high_school": return School;
+    case "university": return GraduationCap;
+    case "foreign": return Globe;
+    default: return School;
   }
+}
 
-/**
- * Visibility label.
- *  * @param v - The V.
- *  * @returns The result.
- */
-function visibilityLabel(v: TalentCandidate["visibilityBand"]): string {
+function visibilityLabel(v: VisibilityBand) {
   switch (v) {
-    case "public":
-      return "Public";
-    case "rumored":
-      return "Rumored";
-    case "obscure":
-      return "Obscure";
-    case "hidden":
-      return "Hidden";
+    case "public": return "Public Record";
+    case "rumored": return "Rumored Talent";
+    case "obscure": return "Deep Prospect";
+    case "hidden": return "Hidden Potential";
+    default: return v;
   }
+}
 
 /** talent pool page. */
 export default function TalentPoolPage() {
@@ -145,7 +128,7 @@ export default function TalentPoolPage() {
               </div>
               <div className="text-sm text-muted-foreground flex flex-col items-end">
                 <div>Runway: <span className="font-medium capitalize">{playerHeya.runwayBand ?? "unknown"}</span></div>
-                <div className="text-xs">Foreigners: {foreignCount}/{talentpool.FOREIGN_RIKISHI_LIMIT_PER_HEYA}</div>
+                <div className="text-xs">Foreigners: {foreignCount}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}</div>
               </div>
             </div>
           )}

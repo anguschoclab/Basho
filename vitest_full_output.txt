@@ -1,0 +1,121 @@
+
+[1m[46m RUN [49m[22m [36mv4.1.2 [39m[90m/Users/amauricia/Documents/GitHub/sumo-manager-pro[39m
+
+ [31m❯[39m src/engine/__tests__/archetype_anomaly.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/01_domainState.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/autoSim.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/03_simulation.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/bout.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/boutPhysics_v1.3.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/boutPhysics.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/boutResolver.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/MatchmakingStrategy.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/determinism.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/economics_awards.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/gripPhysics.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/economics.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/facilities.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/dailyTick.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/h2h.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/02_selectors.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/holiday.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/metaShift.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/lineage.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/myosekiMarket.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/npcAI.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/npcAI_full.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/rarity_v1.3.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/npcRetirementStrategy.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/rivalries.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/pbpDiversity.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/schedule.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/sponsors.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/staff_hire.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/staff.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/tickMonthly.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/welfare.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m src/engine/__tests__/world.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/engine/__tests__/banzuke.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/calendar.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/events.test.ts [2m([22m[2m58 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould initially be empty and miss cache
+[22m[39m[HistoryCache] Cache miss for year 2000, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould attempt OPFS load on cache miss
+[22m[39m[HistoryCache] Cache miss for year 2000, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould not throw or cache when OPFS throws error
+[22m[39m[HistoryCache] Cache miss for year 2000, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould evict oldest entry when capacity is reached
+[22m[39m[HistoryCache] Evicting year 2001 from RAM.
+[HistoryCache] Cache miss for year 2001, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould update LRU order when getting an existing year
+[22m[39m[HistoryCache] Evicting year 2002 from RAM.
+[HistoryCache] Cache miss for year 2002, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould handle OPFS disabled/unsupported
+[22m[39m[HistoryCache] Cache miss for year 2000, attempting OPFS load...
+
+[90mstdout[2m | src/engine/__tests__/historyCache.test.ts[2m > [22m[2mHistoryLRUCache[2m > [22m[2mshould clear the cache
+[22m[39m[HistoryCache] Cache miss for year 2001, attempting OPFS load...
+
+ [32m✓[39m src/engine/__tests__/historyCache.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/queries.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/saveload.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/matchmaking.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/selectors.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/npcStrategy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/math.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/shikona.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/records.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/narrativeDescriptions.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | src/engine/__tests__/balance.test.ts[2m > [22m[2mBout Balance — 1000 fights per matchup[2m > [22m[2mprints full balance report
+[22m[39m
+📊 MATCHUP RESULTS:
+----------------------------------------------------------------------
+  oshi_specialist        41.8% vs yotsu_specialist       58.2% ⚠️
+  oshi_specialist        49.8% vs speedster              50.2% ✅
+  oshi_specialist        43.0% vs trickster              57.0% ✅
+  oshi_specialist        49.1% vs all_rounder            50.9% ✅
+  oshi_specialist        48.8% vs hybrid_oshi_yotsu      51.2% ✅
+  oshi_specialist        43.4% vs counter_specialist     56.6% ✅
+  yotsu_specialist       54.8% vs speedster              45.2% ✅
+  yotsu_specialist       47.9% vs trickster              52.1% ✅
+  yotsu_specialist       53.0% vs all_rounder            47.0% ✅
+  yotsu_specialist       55.3% vs hybrid_oshi_yotsu      44.7% ✅
+  yotsu_specialist       51.1% vs counter_specialist     48.9% ✅
+  speedster              46.3% vs trickster              53.7% ✅
+  speedster              53.0% vs all_rounder            47.0% ✅
+  speedster              53.0% vs hybrid_oshi_yotsu      47.0% ✅
+  speedster              43.0% vs counter_specialist     57.0% ✅
+  trickster              53.4% vs all_rounder            46.6% ✅
+  trickster              53.3% vs hybrid_oshi_yotsu      46.7% ✅
+  trickster              50.5% vs counter_specialist     49.5% ✅
+  all_rounder            50.8% vs hybrid_oshi_yotsu      49.2% ✅
+  all_rounder            44.7% vs counter_specialist     55.3% ✅
+  hybrid_oshi_yotsu      46.2% vs counter_specialist     53.8% ✅
+
+📊 FIELD WIN RATES:
+--------------------------------------------------
+  oshi_specialist        46.0% ✅
+  yotsu_specialist       53.4% ✅
+  speedster              48.4% ✅
+  trickster              53.3% ✅
+  all_rounder            47.8% ✅
+  hybrid_oshi_yotsu      47.5% ✅
+  counter_specialist     53.5% ✅
+
+ [32m✓[39m src/engine/__tests__/balance.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/04_calendar.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/history.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/kimarite.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/archetype_evidence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/engine/__tests__/hallOfFame.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m34 failed[39m[22m[2m | [22m[1m[32m19 passed[39m[22m[90m (53)[39m
+[2m      Tests [22m [1m[32m216 passed[39m[22m[90m (216)[39m
+[2m   Start at [22m 15:05:46
+[2m   Duration [22m 1.55s[2m (transform 3.23s, setup 0ms, import 1.45s, tests 226ms, environment 4ms)[22m
+

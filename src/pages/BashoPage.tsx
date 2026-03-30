@@ -29,6 +29,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
 import type { Division } from "@/engine/types/banzuke";
 import { BASHO_CALENDAR, DEFAULT_DIVISION_DAYS, getDayName, getSeasonalFlavor, getTotalBashodays, isKeyDay, needsScheduleForDay } from "@/presenters/uiDigest";
+import { projectRikishi } from "@/presenters/uiModels";
 
 /** Type representing match like. */
 type MatchLike = {
@@ -194,7 +195,8 @@ export default function BashoPage() {
     if (east && west) {
       setAutoShowPlayerBout({ east, west, result: last, isPlayerBout: true });
       lastAutoShownKeyRef.current = lastBoutKey;
-    }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
+    }
+  }, [matches, playerRikishiIds, resolveRikishi, selectedBout, (state as any).lastBoutResult, lastBoutKey]);
 
   const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
   const handleSimulateAll = () => { simulateAllBouts(); };
@@ -322,7 +324,7 @@ export default function BashoPage() {
                 const west = resolveRikishi(match.westRikishiId);
                 if (!east || !west) return;
                 setSelectedBout({ east, west, result: match.result, isPlayerBout: isPlayerBout(match) });
-              }
+              }}
             />
           </div>
         </div>
@@ -333,7 +335,7 @@ export default function BashoPage() {
         <BoutNarrativeModal
           open={!!selectedBout}
           onOpenChange={(open) => !open && setSelectedBout(null)}
-          east={selectedBout.east} west={selectedBout.west}
+          east={projectRikishi(selectedBout.east, world)} west={projectRikishi(selectedBout.west, world)}
           result={selectedBout.result} bashoName={basho.bashoName} day={basho.day}
         />
       )}
@@ -341,7 +343,7 @@ export default function BashoPage() {
         <BoutNarrativeModal
           open={!!autoShowPlayerBout}
           onOpenChange={(open) => !open && setAutoShowPlayerBout(null)}
-          east={autoShowPlayerBout.east} west={autoShowPlayerBout.west}
+          east={projectRikishi(autoShowPlayerBout.east, world)} west={projectRikishi(autoShowPlayerBout.west, world)}
           result={autoShowPlayerBout.result} bashoName={basho.bashoName} day={basho.day}
         />
       )}
