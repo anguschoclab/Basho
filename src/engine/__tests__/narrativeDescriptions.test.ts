@@ -1,60 +1,71 @@
-import { describe, it, expect } from 'vitest';
-import { describeExperience } from '../narrativeDescriptions';
+import { describe, it, expect } from "vitest";
+import { describeAttribute } from "../narrativeDescriptions";
 
-describe('narrativeDescriptions', () => {
-  describe('describeExperience', () => {
-    it('returns "Veteran" for values >= 80', () => {
-      expect(describeExperience(80)).toBe('Veteran');
-      expect(describeExperience(100)).toBe('Veteran');
-      expect(describeExperience(999)).toBe('Veteran');
-    });
+describe("describeAttribute", () => {
+  it("returns 'Exceptional' for values >= 90", () => {
+    expect(describeAttribute(90)).toBe("Exceptional");
+    expect(describeAttribute(95)).toBe("Exceptional");
+    expect(describeAttribute(100)).toBe("Exceptional");
+  });
 
-    it('returns "Experienced" for values 60-79', () => {
-      expect(describeExperience(60)).toBe('Experienced');
-      expect(describeExperience(79)).toBe('Experienced');
-      expect(describeExperience(79.9)).toBe('Experienced');
-    });
+  it("returns 'Outstanding' for values >= 75 and < 90", () => {
+    expect(describeAttribute(75)).toBe("Outstanding");
+    expect(describeAttribute(85)).toBe("Outstanding");
+    expect(describeAttribute(89.9)).toBe("Outstanding");
+  });
 
-    it('returns "Established" for values 40-59', () => {
-      expect(describeExperience(40)).toBe('Established');
-      expect(describeExperience(59)).toBe('Established');
-    });
+  it("returns 'Strong' for values >= 60 and < 75", () => {
+    expect(describeAttribute(60)).toBe("Strong");
+    expect(describeAttribute(70)).toBe("Strong");
+    expect(describeAttribute(74.9)).toBe("Strong");
+  });
 
-    it('returns "Developing" for values 20-39', () => {
-      expect(describeExperience(20)).toBe('Developing');
-      expect(describeExperience(39)).toBe('Developing');
-    });
+  it("returns 'Capable' for values >= 45 and < 60", () => {
+    expect(describeAttribute(45)).toBe("Capable");
+    expect(describeAttribute(50)).toBe("Capable");
+    expect(describeAttribute(59.9)).toBe("Capable");
+  });
 
-    it('returns "Green" for values 10-19', () => {
-      expect(describeExperience(10)).toBe('Green');
-      expect(describeExperience(19)).toBe('Green');
-    });
+  it("returns 'Developing' for values >= 30 and < 45", () => {
+    expect(describeAttribute(30)).toBe("Developing");
+    expect(describeAttribute(40)).toBe("Developing");
+    expect(describeAttribute(44.9)).toBe("Developing");
+  });
 
-    it('returns "Novice" for values < 10', () => {
-      expect(describeExperience(9)).toBe('Novice');
-      expect(describeExperience(0)).toBe('Novice');
-      expect(describeExperience(-10)).toBe('Novice'); // Negative values are clamped to 0
-    });
+  it("returns 'Limited' for values >= 15 and < 30", () => {
+    expect(describeAttribute(15)).toBe("Limited");
+    expect(describeAttribute(20)).toBe("Limited");
+    expect(describeAttribute(29.9)).toBe("Limited");
+  });
 
-    it('handles floating point numbers gracefully by flooring them', () => {
-      expect(describeExperience(79.9)).toBe('Experienced'); // floors to 79
-      expect(describeExperience(19.9)).toBe('Green'); // floors to 19
-      expect(describeExperience(9.9)).toBe('Novice'); // floors to 9
-    });
+  it("returns 'Struggling' for values < 15", () => {
+    expect(describeAttribute(14.9)).toBe("Struggling");
+    expect(describeAttribute(10)).toBe("Struggling");
+    expect(describeAttribute(0)).toBe("Struggling");
+  });
 
-    it('handles invalid inputs gracefully by falling back to 0', () => {
-      // @ts-expect-error Testing invalid input types
-      expect(describeExperience(NaN)).toBe('Novice');
-      // @ts-expect-error Testing invalid input types
-      expect(describeExperience(undefined)).toBe('Novice');
-      // @ts-expect-error Testing invalid input types
-      expect(describeExperience(null)).toBe('Novice');
-      // @ts-expect-error Testing invalid input types
-      expect(describeExperience('invalid')).toBe('Novice');
+  it("handles out of bounds cleanly (clamps to 0-100)", () => {
+    expect(describeAttribute(101)).toBe("Exceptional"); // Clamps to 100
+    expect(describeAttribute(150)).toBe("Exceptional"); // Clamps to 100
+    expect(describeAttribute(-1)).toBe("Struggling");  // Clamps to 0
+    expect(describeAttribute(-50)).toBe("Struggling"); // Clamps to 0
+  });
 
-      // valid string numbers are converted correctly
-      // @ts-expect-error Testing string numbers
-      expect(describeExperience('85')).toBe('Veteran');
-    });
+  it("handles NaN and non-finite values safely", () => {
+    // Number.isFinite(NaN) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(NaN)).toBe("Struggling");
+    // Number.isFinite(Infinity) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(Infinity)).toBe("Struggling");
+    // Number.isFinite(-Infinity) is false -> safe returns 0 -> "Struggling"
+    expect(describeAttribute(-Infinity)).toBe("Struggling");
+  });
+
+  it("handles string numbers cleanly", () => {
+    // Number("95") is 95 -> safe returns 95 -> "Exceptional"
+    // @ts-expect-error Testing bad input
+    expect(describeAttribute("95")).toBe("Exceptional");
+    // Number("invalid") is NaN -> safe returns 0 -> "Struggling"
+    // @ts-expect-error Testing bad input
+    expect(describeAttribute("invalid")).toBe("Struggling");
   });
 });
