@@ -10,6 +10,7 @@ import type { Advantage, Position } from "./bout/boutPhysics";
 import { KIMARITE_REGISTRY } from "./kimarite";
 import { DEFAULT_PBP_LIBRARY } from "./pbpPhrases";
 import { generateBoutNarrative } from "./bout/boutNarrative";
+import { SENTENCE_TEMPLATES, VOCABULARY, INSTITUTIONAL_TEMPLATES } from "./bout/grammarDefinitions";
 
 /** =========================
  *  Fact Layer Types
@@ -249,44 +250,90 @@ export function buildPbpFromBoutResult(args: {
   return result.pbp || [];
 }
 
+
 /**
  * Orchestrator for rendering a single fact (primarily non-bout events).
  */
 function renderFact(fact: PbpFact, ctx: PbpContext, lib: PbpLibrary = DEFAULT_PBP_LIBRARY): PbpLine {
   const rng = rngFromSeed(ctx.seed, fact.phase, String(fact.beat));
-  
-  let bucket: PhraseBucket = lib.connective.short;
 
-  switch (fact.phase) {
-    case "injury": {
+  if (fact.phase === "injury" || fact.phase === "institutional") {
+    let templateBucket: string[] = [];
+
+    if (fact.phase === "injury") {
       const inj = fact as InjuryFact;
-      bucket = lib.injury[inj.injuryType as keyof typeof lib.injury] || lib.injury.unknown;
-      break;
-    }
-    case "institutional": {
+      const key = `injury_${inj.injuryType}`;
+      // Use the SENTENCE_TEMPLATES from grammarDefinitions directly
+      templateBucket = SENTENCE_TEMPLATES[key] || SENTENCE_TEMPLATES['injury_unknown'] || [];
+    } else if (fact.phase === "institutional") {
       const inst = fact as InstitutionalFact;
-      const group = lib.institutional[inst.eventType];
       const personality = inst.oyakataPersonality || "default";
-      bucket = group[personality as keyof typeof group] || group.default || [];
-      break;
+
+      let prefix = "";
+      if (inst.eventType === "GOVERNANCE_STATUS_CHANGED" || inst.eventType === "GOVERNANCE_RULING") {
+        prefix = "event_governance";
+      } else if (inst.eventType === "WELFARE_ALERT") {
+        prefix = "event_welfare";
+      } else {
+        prefix = "event_scout"; // fallback or other
+      }
+
+      let key = `${prefix}_${personality}`;
+      templateBucket = INSTITUTIONAL_TEMPLATES[key];
+
+      if (!templateBucket || templateBucket.length === 0) {
+        // Fallback to strict or indulgent if not found, or generic if default
+        key = `${prefix}_strict`;
+        templateBucket = INSTITUTIONAL_TEMPLATES[key] || [];
+      }
     }
-    default:
-      return { phase: fact.phase, text: "" };
+
+    if (!templateBucket || templateBucket.length === 0) {
+      return { phase: fact.phase, text: "..." };
+    }
+
+    const template = templateBucket[Math.floor(rng.next() * templateBucket.length)];
+
+    const vars = {
+      Defender: ctx.east.shikona, // or loser, just mapping generic tokens
+      Attacker: ctx.west.shikona
+    };
+
+    let text = template.replace(/\[(.*?)\]/g, (match, token) => {
+      // Identity tokens
+      if (token === "Defender" || token === "loser") return vars.Defender;
+      if (token === "Attacker" || token === "winner") return vars.Attacker;
+
+      // Vocabulary tokens
+      const baseToken = token.endsWith("?") ? token.slice(0, -1) : token;
+
+      if (token.endsWith("?")) {
+        if (VOCABULARY[baseToken as keyof typeof VOCABULARY] && rng.next() > 0.5) {
+          const words = VOCABULARY[baseToken as keyof typeof VOCABULARY];
+          return words[Math.floor(rng.next() * words.length)];
+        }
+        return "";
+      }
+
+      if (VOCABULARY[baseToken as keyof typeof VOCABULARY]) {
+        const words = VOCABULARY[baseToken as keyof typeof VOCABULARY];
+        return words[Math.floor(rng.next() * words.length)];
+      }
+
+      return match;
+    });
+
+    // Clean up double spaces and trailing punctuation
+    text = text.replace(/\s+/g, ' ').replace(/ \!/g, '!').replace(/ \?/g, '?').replace(/ \./g, '.').replace(/ ,/g, ',').trim();
+
+    return {
+      phase: fact.phase,
+      text: text,
+      tags: ["institutional_or_injury"] as PbpTag[]
+    };
   }
 
-  const chosen = weightedPick(bucket, rng);
-  const vars = {
-    east: ctx.east.shikona,
-    west: ctx.west.shikona,
-    leader: advantageName(ctx, fact.leader),
-    trailer: trailerFromLeader(ctx, fact.leader)
-  };
-
-  return {
-    phase: fact.phase,
-    text: renderTemplate(chosen.text, vars),
-    tags: mergeTags(chosen.tags)
-  };
+  return { phase: fact.phase, text: "" };
 }
 
 /** =========================

@@ -155,3 +155,9 @@ export function getRikishiByDivision(world: WorldState, division: Division): Rik
 export function getCurrentBasho(world: WorldState) {
   return world.currentBasho;
 }
+/**
+ * Get all rikishi associated with a specific heyaId.
+ */
+export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
+    return Array.from(world.rikishi.values()).filter((r) => r.heyaId === heyaId);
+}

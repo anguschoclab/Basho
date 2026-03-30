@@ -240,6 +240,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
+              aria-pressed={filter === f.value}
+              aria-label={`Filter by ${f.label}`}
               className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${
                 filter === f.value
                   ? "bg-primary text-primary-foreground"
