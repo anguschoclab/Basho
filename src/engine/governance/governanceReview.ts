@@ -9,8 +9,8 @@
 import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { EventBus } from "../events";
-import * as governance from "../governance";
-import { generateGovernanceHeadline } from "../media";
+import * as governance from "./GovernanceService";
+import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import { issueBailoutLoanIfNeeded } from "../loans";
 import { getStableRikishi, getActiveRikishi } from "../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../prestige/prestigeSystem";
@@ -68,13 +68,13 @@ export function runGovernanceReview(world: WorldState): void {
         data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
       });
 
-      generateGovernanceHeadline({
+      generateGovernanceHeadline(
         world,
-        heyaId: heya.id,
-        type: "welfare_review",
-        severity: "major",
-        description: `${heya.name} remains under sanctions for ongoing welfare violations following post-basho review.`
-      });
+        heya.id,
+        "major",
+        `${heya.name} remains under sanctions for ongoing welfare violations following post-basho review.`
+      );
+
 
       // Sanctioned stables face additional prestige erosion
       const currentIdx = bandIndex(heya.prestigeBand);
@@ -108,13 +108,13 @@ export function runGovernanceReview(world: WorldState): void {
         data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
       });
 
-      generateGovernanceHeadline({
+      generateGovernanceHeadline(
         world,
-        heyaId: heya.id,
-        type: "council_review",
-        severity: scandalScore >= 60 ? "major" : "minor",
-        description: `The Sumo Association council formally noted concerns regarding conduct at ${heya.name}.`
-      });
+        heya.id,
+        scandalScore >= 60 ? "major" : "minor",
+        `The Sumo Association council formally noted concerns regarding conduct at ${heya.name}.`
+      );
+
     }
 
     // === Merger/closure pressure for extremely small stables ===
@@ -132,13 +132,13 @@ export function runGovernanceReview(world: WorldState): void {
           data: { rosterSize }
         });
 
-        generateGovernanceHeadline({
+        generateGovernanceHeadline(
           world,
-          heyaId: heya.id,
-          type: "merger_threat",
-          severity: "major",
-          description: `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
-        });
+          heya.id,
+          "major",
+          `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
+        );
+
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (rosterSize <= 1) {
@@ -153,13 +153,13 @@ export function runGovernanceReview(world: WorldState): void {
             data: { rosterSize }
           });
 
-          generateGovernanceHeadline({
+          generateGovernanceHeadline(
             world,
-            heyaId: heya.id,
-            type: "forced_merger",
-            severity: "critical",
-            description: `Due to critically low recruitment (${rosterSize} active wrestlers), ${heya.name} faces a forced merger.`
-          });
+            heya.id,
+            "critical",
+            `Due to critically low recruitment (${rosterSize} active wrestlers), ${heya.name} faces a forced merger.`
+          );
+
 
           // Execute actual merger
           const targetId = findMergerTarget(world, heya.id);

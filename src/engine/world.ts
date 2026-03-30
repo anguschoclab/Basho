@@ -28,15 +28,14 @@ import { autosave } from "./saveload";
 import { runSponsorChurn } from "./economics";
 import * as schedule from "./schedule";
 import * as events from "./events";
-import * as injuries from "./injuries";
+import * as injuries from "./systems/health/InjuryService";
 import * as rivalries from "./rivalries";
 import { 
   updateMediaFromBout, 
-  createDefaultMediaState, 
-  resetBashoMediaTracking, 
-  snapshotMediaHeatForBasho, 
-  generateGovernanceHeadline 
-} from "./media";
+  processWeeklyMediaBoundary,
+  resetBashoMediaTracking,
+  snapshotMediaHeatForBasho
+} from "./systems/media/MediaService";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import { executeMerger, findMergerTarget } from "./mergers";

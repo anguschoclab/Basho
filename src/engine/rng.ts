@@ -19,9 +19,11 @@ import type { WorldState } from "./types/world";
  * A lightweight seeded RNG wrapper with a common interface.
  */
 export class SeededRNG {
+  public readonly seed: string;
   private rng: seedrandom.PRNG;
   
   constructor(seed: string) {
+    this.seed = seed;
     this.rng = seedrandom(seed);
   }
   

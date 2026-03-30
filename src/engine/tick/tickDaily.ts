@@ -27,11 +27,11 @@ import { stableSort } from "../utils/sort";
 import type { WorldState, CyclePhase } from "../types/world";
 import { EventBus, logEngineEvent } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
-import { initializeBasho } from "../worldgen";
+import { initializeBasho } from "../systems/generation/WorldFactory";
 import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
 import { ensureHeyaWelfareState } from "../welfare";
-import { resetBashoMediaTracking } from "../media";
+import { resetBashoMediaTracking } from "../systems/media/MediaService";
 
 import { toRikishiDescriptor } from "../descriptorBands";
 

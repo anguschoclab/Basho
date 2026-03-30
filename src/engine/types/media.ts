@@ -36,3 +36,45 @@ export type ScandalType =
   | 'ILLEGAL_GAMBLING' 
   | 'TRAINING_ABUSE_ALLEGATION'
   | 'COACH_DISPUTE';
+
+/** Media tones and beats for narrative generation. */
+export type MediaTone = "neutral" | "praise" | "concern" | "controversy" | "hype" | "disrespect";
+export type MediaBeat = "daily_bout" | "streak" | "upset" | "title_race" | "rivalry" | "injury" | "promotion_watch" | "heya_story" | "feature" | "retirement_watch" | "discipline";
+export type HeadlineTier = "local" | "national" | "main_event";
+
+export interface MediaHeadline {
+  id: string;
+  week: number;
+  bashoName?: string;
+  tier: HeadlineTier;
+  beat: MediaBeat;
+  tone: MediaTone;
+  rikishiIds: string[];
+  heyaIds: string[];
+  title: string;
+  subtitle?: string;
+  impact: number;
+  tags: string[];
+  bout?: {
+    winnerId: string;
+    loserId: string;
+    kimarite?: string;
+    upset?: boolean;
+    day?: number;
+    division?: string;
+  };
+}
+
+export interface MediaState {
+  version: string;
+  headlines: MediaHeadline[];
+  mediaHeat: Record<string, number>;
+  heyaPressure: Record<string, number>;
+  bashoStreaks: Record<string, number>;
+  streakHeadlinesFired: Record<string, number[]>;
+  promoWatchFired: Record<string, boolean>;
+  retirementWatchFired: Record<string, boolean>;
+  titleRaceDayFired: Record<number, boolean>;
+  injuryWithdrawalFired: Record<string, boolean>;
+}
+
