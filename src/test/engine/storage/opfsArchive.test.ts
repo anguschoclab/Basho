@@ -64,7 +64,21 @@ describe('Stable Lords: OPFS Archival System', () => {
 
   describe('Suite 3: Retrieval & Hydration', () => {
     it('Test 3.1: retrieveBoutLog() returns parsed JSON', async () => {
-      const originalLog = [{ event: 'thrust' }];
+      const originalLog = {
+        boutId: "b-fetch-me",
+        winner: "east",
+        winnerRikishiId: "r-1",
+        loserRikishiId: "r-2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "hidari-yotsu",
+        tachiaiWinner: "east",
+        duration: 12,
+        upset: false,
+        narrative: ["They clash.", "East pushes out West."],
+        pbpLines: [],
+        pbp: []
+      };
       await opfsArchiveService.archiveBoutLog(2, 'b-fetch-me', originalLog);
 
       const retrieved = await opfsArchiveService.retrieveBoutLog(2, 'b-fetch-me');
