@@ -1,3 +1,50 @@
+
+import { type BoutResult } from "../types/basho";
+
+// Type guard to ensure parsed JSON matches the expected structure.
+// This prevents injection of arbitrary primitive types or malicious objects.
+function validateBoutLog(data: any): BoutResult | null {
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const requiredStringProps = ["boutId", "winner", "winnerRikishiId", "loserRikishiId", "kimarite", "kimariteName", "stance", "tachiaiWinner"];
+  for (const prop of requiredStringProps) {
+    if (typeof data[prop] !== "string") {
+      console.warn(`[OPFS Validation] Invalid BoutResult: missing or invalid string property '${prop}'`);
+      return null;
+    }
+  }
+
+  if (typeof data.duration !== "number") {
+    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid number property 'duration'");
+    return null;
+  }
+
+  if (typeof data.upset !== "boolean") {
+    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid boolean property 'upset'");
+    return null;
+  }
+
+  // Arrays are optional but if present must be arrays
+  if (data.narrative !== undefined && !Array.isArray(data.narrative)) {
+    console.warn("[OPFS Validation] Invalid BoutResult: narrative must be an array of strings");
+    return null;
+  }
+
+  if (data.pbpLines !== undefined && !Array.isArray(data.pbpLines)) {
+    console.warn("[OPFS Validation] Invalid BoutResult: pbpLines must be an array");
+    return null;
+  }
+
+  if (data.pbp !== undefined && !Array.isArray(data.pbp)) {
+    console.warn("[OPFS Validation] Invalid BoutResult: pbp must be an array");
+    return null;
+  }
+
+  return data as BoutResult;
+}
+
 /**
  * OPFS Archival System
  * * Handles the "Cold Storage" of the engine. Huge payloads like Play-By-Play arrays
@@ -98,7 +145,8 @@ class OPFSArchiveService implements ArchiveService {
       const fileHandle = await dir.getFileHandle(`${boutId}.json`, { create: false });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      return JSON.parse(contents);
+      const parsed = JSON.parse(contents);
+      return validateBoutLog(parsed);
     } catch (e: any) {
       if (e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
       console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
