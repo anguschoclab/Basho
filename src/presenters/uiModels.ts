@@ -292,7 +292,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
 
     // Salary
     salaryBreakdown: getSalaryBreakdown(
-      (typeof RANK_HIERARCHY !== 'undefined' && RANK_HIERARCHY ? (RANK_HIERARCHY[(r.rank || "jonokuchi").toLowerCase() as Rank] || RANK_HIERARCHY["jonokuchi"]).salary : 0),
+      RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary || 0,
       r.division || "jonokuchi",
       r.stats?.achievements?.kinboshiEarned ?? 0
     ),
