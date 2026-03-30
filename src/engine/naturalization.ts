@@ -6,6 +6,7 @@
 import type { WorldState } from "./types/world";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./media";
+import { stableSort } from "./utils/sort";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -21,7 +22,8 @@ export function checkNaturalizations(world: WorldState): void {
     }
   }
 
-  for (const r of foreignRikishi) {
+  // Ensure deterministic tie-break before iteration
+  for (const r of stableSort(foreignRikishi, x => x.id)) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).
     const age = world.year - r.birthYear;
 

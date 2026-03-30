@@ -23,7 +23,18 @@ export function ensureRecordsState(world: WorldState): WorldRecords {
 function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number, year: number, month: number) {
   if (value <= 0) return;
 
-  const existingIndex = list.findIndex(e => e.rikishiId === rikishi.id);
+  const len = list.length;
+  if (len >= 10 && value <= list[len - 1].value) {
+    return;
+  }
+
+  let existingIndex = -1;
+  for (let i = 0; i < len; i++) {
+    if (list[i].rikishiId === rikishi.id) {
+      existingIndex = i;
+      break;
+    }
+  }
   
   if (existingIndex !== -1) {
     if (value <= list[existingIndex].value) {
@@ -47,13 +58,13 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
   }
 
   // Not in list.
-  if (list.length >= 10 && value <= list[list.length - 1].value) {
+  if (len >= 10 && value <= list[len - 1].value) {
     return;
   }
 
   // Find insertion point
   let insertAt = 0;
-  while (insertAt < list.length && value <= list[insertAt].value) {
+  while (insertAt < len && value <= list[insertAt].value) {
     insertAt++;
   }
   
@@ -64,10 +75,10 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
     achievedDate: { year, month }
   };
 
-  if (list.length < 10) {
+  if (len < 10) {
     list.push(newItem);
     // Shift elements down to make room
-    for (let i = list.length - 1; i > insertAt; i--) {
+    for (let i = len; i > insertAt; i--) {
       list[i] = list[i - 1];
     }
     list[insertAt] = newItem;

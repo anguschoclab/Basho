@@ -198,9 +198,11 @@ export function endBasho(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
 
-  const table = Array.from(basho.standings.entries())
-    .map(([id, rec]) => ({ id, wins: rec.wins, losses: rec.losses }))
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
+  const table: Array<{id: string, wins: number, losses: number}> = [];
+  for (const [id, rec] of basho.standings.entries()) {
+    table.push({ id, wins: rec.wins, losses: rec.losses });
+  }
+  table.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   if (table.length === 0) return world;
 
