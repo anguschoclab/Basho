@@ -30,7 +30,13 @@ import * as schedule from "./schedule";
 import * as events from "./events";
 import * as injuries from "./injuries";
 import * as rivalries from "./rivalries";
-import { updateMediaFromBout, createDefaultMediaState, resetBashoMediaTracking, snapshotMediaHeatForBasho, generateGovernanceHeadline } from "./media";
+import { 
+  updateMediaFromBout, 
+  createDefaultMediaState, 
+  resetBashoMediaTracking, 
+  snapshotMediaHeatForBasho, 
+  generateGovernanceHeadline 
+} from "./media";
 import * as economics from "./economics";
 import * as governance from "./governance";
 import { executeMerger, findMergerTarget } from "./mergers";
@@ -43,13 +49,17 @@ import * as historyIndex from "./historyIndex";
 import * as training from "./training"; 
 import * as talentpool from "./talentpool";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
+import { applyBoutResult } from "./bout/boutResultApplier";
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
-import { getHeyaRoster, getRikishi, getActiveRikishi } from "./queries";
+import { getHeyaRoster, getRikishi, getActiveRikishi, getStableRikishi } from "./queries";
+import { runPrestigeDecay, updateStatureBand } from "./prestige/prestigeSystem";
+import { runGovernanceReview, runRetirements, runAIMetaDrift } from "./governance/governanceReview";
 import { onBashoEnded, onRikishiRetired } from "./records";
 import { runHistoryUpdates } from "./history";
 import { recordOyakataHandover } from "./lineage";
 import { runArchivalPruning } from "./archival";
+import { safeCall } from "./utils/safe";
 
 // Type guard or helper to access current basho
 /**
@@ -177,92 +187,7 @@ export function simulateBoutForToday(
   return { world, result };
 }
 
-/**
- * Apply bout result.
- *  * @param world - The World.
- *  * @param match - The Match.
- *  * @param result - The Result.
- *  * @param _opts - The _opts.
- *  * @returns The result.
- */
-export function applyBoutResult(
-  world: WorldState,
-  match: MatchSchedule,
-  result: BoutResult,
-  _opts?: { boutSeed?: string }
-): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
-
-  match.result = result;
-
-  const east = world.rikishi.get(match.eastRikishiId);
-  const west = world.rikishi.get(match.westRikishiId);
-  if (!east || !west) return world;
-
-  const winner = result.winner === "east" ? east : west;
-  const loser = result.winner === "east" ? west : east;
-
-  // Safe increments handled in resolveBout mostly, but ensures world consistency here
-  // Standings update
-  const standings = basho.standings;
-  const wRec = standings.get(winner.id) || { wins: 0, losses: 0 };
-  const lRec = standings.get(loser.id) || { wins: 0, losses: 0 };
-  standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
-  standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
-
-  // Track achievement counters on winner
-  if (result.awardFact) {
-    if (!winner.stats.achievements) {
-      winner.stats.achievements = { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 };
-    }
-    if (result.awardFact === 'kinboshi') {
-      winner.stats.achievements.kinboshiEarned++;
-    } else if (result.awardFact === 'ginboshi') {
-      winner.stats.achievements.ginboshiEarned++;
-    }
-  }
-
-  // Update legacy kinboshiCount if it exists on economics for backward compat (optional but safe)
-  if (result.awardFact === 'kinboshi') {
-    if (!winner.economics) {
-      winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
-    }
-    winner.economics.kinboshiCount = (winner.economics.kinboshiCount || 0) + 1;
-  }
-
-  // Update head-to-head records
-  safeCall(() => {
-    const bashoId = world.currentBasho?.id ?? "unknown";
-    const year = world.year ?? 0;
-    updateH2H(winner, loser, result, bashoId, year, match.day);
-  });
-
-  safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => scoutingStore.onBoutResolved(world, { match, result, east, west }));
-
-  // Update media from bout (generates headlines, media heat, heya pressure)
-  safeCall(() => {
-    if (!world.mediaState) world.mediaState = createDefaultMediaState();
-    const { state } = updateMediaFromBout({
-      state: world.mediaState,
-      world,
-      result,
-      day: match.day,
-      bashoName: world.currentBashoName,
-      division: east.division,
-      rivalries: world.rivalriesState,
-    });
-    world.mediaState = state;
-  });
-
-  // Emit canonical bout result event
-  EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
-
-  return world;
-}
+// applyBoutResult - removed and moved to src/engine/bout/boutResultApplier.ts
 
 /**
  * End basho.
@@ -374,18 +299,36 @@ export function endBasho(world: WorldState): WorldState {
     const r = world.rikishi.get(rikishiId);
     if (!r) return;
     
-    // Ensure stats.specialPrizes exists
+    // Ensure achievements.specialPrizes exists
     if (!r.stats) {
-      r.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 } };
+      r.stats = { 
+        strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, 
+        achievements: { 
+          kinboshiEarned: 0, 
+          ginboshiEarned: 0, 
+          kinboshiConceded: 0, 
+          ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+        }
+      };
     }
-    if (!r.stats.specialPrizes) {
-      r.stats.specialPrizes = { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
+    if (!r.stats.achievements) {
+      r.stats.achievements = { 
+        kinboshiEarned: 0, 
+        ginboshiEarned: 0, 
+        kinboshiConceded: 0, 
+        ginboshiConceded: 0,
+        specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+      };
+    }
+    if (!r.stats.achievements.specialPrizes) {
+      r.stats.achievements.specialPrizes = { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
     }
 
     // Increment stat
-    if (type === 'Shukun') r.stats.specialPrizes.shukunSho++;
-    else if (type === 'Kanto') r.stats.specialPrizes.kantoSho++;
-    else if (type === 'Gino') r.stats.specialPrizes.ginoSho++;
+    if (type === 'Shukun') r.stats.achievements.specialPrizes.shukunSho++;
+    else if (type === 'Kanto') r.stats.achievements.specialPrizes.kantoSho++;
+    else if (type === 'Gino') r.stats.achievements.specialPrizes.ginoSho++;
 
     // Emit event
     EventBus.specialPrizesAwarded(world, r.id, r.heyaId, type, SANSHO_PRIZE_AMOUNT);
@@ -502,434 +445,18 @@ const bandIndex = (b: import("./types").PrestigeBand) => PRESTIGE_ORDER.indexOf(
  * - Yūshō/sanshō provide upward shifts
  * - Small stables face extra fragility
  */
-function runPrestigeDecay(world: WorldState): void {
-  const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
-
-  for (const heya of world.heyas.values()) {
-    let totalWins = 0;
-    let totalLosses = 0;
-    let hasYusho = false;
-    let hasJunYusho = false;
-    let sanshoPrizeCount = 0;
-    let sekitoriCount = 0;
-
-    for (const r of getHeyaRoster(world, heya.id)) {
-      totalWins += r.currentBashoWins ?? 0;
-      totalLosses += r.currentBashoLosses ?? 0;
-
-      if (lastBasho.yusho === r.id) hasYusho = true;
-      if (lastBasho.junYusho.includes(r.id)) hasJunYusho = true;
-      if (lastBasho.ginoSho === r.id) sanshoPrizeCount++;
-      if (lastBasho.kantosho === r.id) sanshoPrizeCount++;
-      if (lastBasho.shukunsho === r.id) sanshoPrizeCount++;
-
-      if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
-    }
-
-    const totalBouts = totalWins + totalLosses;
-    const winRate = totalBouts > 0 ? totalWins / totalBouts : 0.5;
-
-    const currentIdx = bandIndex(heya.prestigeBand);
-    let shift = 0;
-
-    // === Positive prestige gains ===
-    if (hasYusho) shift += 2;
-    else if (hasJunYusho) shift += 1;
-    if (sanshoPrizeCount >= 2) shift += 1;
-    else if (sanshoPrizeCount === 1) shift += (winRate >= 0.55 ? 1 : 0);
-    if (winRate >= 0.65 && totalBouts >= 10) shift += 1;
-
-    // === Prestige decay — passive erosion for average/poor performance ===
-    if (winRate < 0.4 && totalBouts >= 10) shift -= 1;
-    if (winRate < 0.3 && totalBouts >= 10) shift -= 1; // double penalty for terrible basho
-
-    // === Elite erosion — must maintain excellence ===
-    if (heya.prestigeBand === "elite") {
-      if (!hasYusho && !hasJunYusho && winRate < 0.55) shift -= 1;
-      if (sekitoriCount === 0) shift -= 1; // no sekitori = severe erosion
-    }
-
-    // === Multi-basho stagnation check ===
-    // If a stable has been "struggling" or "unknown" for multiple consecutive basho,
-    // recovery becomes harder (no free climb without results)
-    if (heya.prestigeBand === "unknown" && winRate < 0.5 && !hasYusho) {
-      shift = Math.min(shift, 0); // can't climb from "unknown" without a strong result
-    }
-    if (heya.prestigeBand === "struggling" && winRate < 0.45 && !hasJunYusho && !hasYusho) {
-      shift = Math.min(shift, 0); // gate recovery behind results
-    }
-
-    // === Small stable fragility ===
-    if (getStableRikishi(world, heya.id).length < 5 && heya.prestigeBand !== "unknown") {
-      shift -= 1; // tiny stables slowly lose prestige
-    }
-
-    // Apply clamped shift
-    const newIdx = Math.max(0, Math.min(PRESTIGE_ORDER.length - 1, currentIdx + shift));
-    const newBand = PRESTIGE_ORDER[newIdx];
-
-    if (newBand !== heya.prestigeBand) {
-      const direction = newIdx > currentIdx ? "rose" : "fell";
-      logEngineEvent(world, {
-        type: "PRESTIGE_SHIFT",
-        category: "milestone",
-        importance: Math.abs(shift) >= 2 ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} prestige ${direction}`,
-        summary: `${heya.name}'s prestige ${direction} to "${newBand}" after the basho.${
-          shift <= -2 ? " A sharp decline — the sumo world takes notice." : ""
-        }`,
-        data: { from: heya.prestigeBand, to: newBand, winRate: Math.round(winRate * 100), shift }
-      });
-      heya.prestigeBand = newBand;
-    }
-
-    // Also update stature band based on roster composition
-    updateStatureBand(world, heya);
-
-    // Reputation drift aligned with prestige
-    const reputationDelta = shift * 5;
-    heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + reputationDelta));
-  }
-}
+// runPrestigeDecay moved to prestigeSystem.ts
 
 /**
  * Update stature band based on roster rank composition.
  */
-function updateStatureBand(world: WorldState, heya: import("./types").Heya): void {
-  let maxRankWeight = 0;
-  let rosterScore = 0;
-  const RANK_WEIGHT: Record<string, number> = {
-    yokozuna: 100, ozeki: 80, sekiwake: 60, komusubi: 50,
-    maegashira: 30, juryo: 15, makushita: 8, sandanme: 4,
-    jonidan: 2, jonokuchi: 1
-  };
+// updateStatureBand moved to prestigeSystem.ts
 
-  for (const r of getHeyaRoster(world, heya.id)) {
-    const w = RANK_WEIGHT[r.rank] ?? 5;
-    rosterScore += w;
-    if (w > maxRankWeight) maxRankWeight = w;
-  }
+// runGovernanceReview, runRetirements, runAIMetaDrift moved to governanceReview.ts
 
-  const avgScore = getStableRikishi(world, heya.id).length > 0 ? rosterScore / getStableRikishi(world, heya.id).length : 0;
+// runAIMetaDrift moved to governanceReview.ts
 
-  if (maxRankWeight >= 100 && avgScore >= 40) heya.statureBand = "legendary";
-  else if (maxRankWeight >= 60 && avgScore >= 30) heya.statureBand = "powerful";
-  else if (avgScore >= 20) heya.statureBand = "established";
-  else if (avgScore >= 10) heya.statureBand = "rebuilding";
-  else if (getStableRikishi(world, heya.id).length >= 3) heya.statureBand = "fragile";
-  else heya.statureBand = "new";
-}
-
-// ─── 2. GOVERNANCE INSTITUTIONAL REVIEW (§6.3 step 6) ──────────
-
-/**
- * Post-basho governance: institutional sanctions, council reactions,
- * loans/benefactors escalation, succession checks, merger/closure pressure.
- */
-function runGovernanceReview(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
-    const welfareState = heya.welfareState;
-    const scandalScore = heya.scandalScore ?? 0;
-
-    // === Financial insolvency check ===
-    if (heya.funds < 0 && heya.runwayBand === "desperate") {
-      heya.riskIndicators.financial = true;
-      governance.reportScandal(world, heya.id, "minor", "Financial insolvency at basho end");
-
-      logEngineEvent(world, {
-        type: "INSOLVENCY_WARNING",
-        category: "economy",
-        importance: "headline",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} facing insolvency`,
-        summary: `${heya.name} ended the basho with negative funds and desperate runway. The Association may intervene.`,
-        data: { funds: heya.funds, runway: heya.runwayBand }
-      });
-
-      // === Loans/benefactors escalation (Constitution §4.4) ===
-      if (heya.funds < -5_000_000) {
-        issueBailoutLoanIfNeeded(world, heya.id);
-      }
-    } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
-      // Clear financial risk indicator when no longer desperate
-      heya.riskIndicators.financial = false;
-    }
-
-    // === Welfare review escalation ===
-    if (welfareState && welfareState.complianceState === "sanctioned") {
-      logEngineEvent(world, {
-        type: "POST_BASHO_WELFARE_REVIEW",
-        category: "welfare",
-        importance: "major",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} welfare review`,
-        summary: `Post-basho institutional review: ${heya.name} remains under sanctions for welfare violations.`,
-        data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
-      });
-
-      generateGovernanceHeadline({
-        world,
-        heyaId: heya.id,
-        type: "welfare_review",
-        severity: "major",
-        description: `${heya.name} remains under sanctions for ongoing welfare violations following post-basho review.`
-      });
-
-      // Sanctioned stables face additional prestige erosion
-      const currentIdx = bandIndex(heya.prestigeBand);
-      if (currentIdx > 0) {
-        const newBand = PRESTIGE_ORDER[currentIdx - 1];
-        heya.prestigeBand = newBand;
-        logEngineEvent(world, {
-          type: "PRESTIGE_SHIFT",
-          category: "discipline",
-          importance: "notable",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `${heya.name} prestige damaged by sanctions`,
-          summary: `Ongoing sanctions erode ${heya.name}'s standing in the sumo world.`,
-          data: { from: PRESTIGE_ORDER[currentIdx], to: newBand, reason: "sanctions" }
-        });
-      }
-    }
-
-    // === Council scandal reaction ===
-    if (scandalScore >= 40) {
-      const severityLabel = scandalScore >= 80 ? "severe" : scandalScore >= 60 ? "significant" : "concerning";
-      logEngineEvent(world, {
-        type: "COUNCIL_SCANDAL_REVIEW",
-        category: "discipline",
-        importance: scandalScore >= 60 ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `Council reviews ${heya.name}`,
-        summary: `The Sumo Association council notes ${severityLabel} conduct issues at ${heya.name}. Score: ${Math.floor(scandalScore)}.`,
-        data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
-      });
-
-      generateGovernanceHeadline({
-        world,
-        heyaId: heya.id,
-        type: "council_review",
-        severity: scandalScore >= 60 ? "major" : "minor",
-        description: `The Sumo Association council formally noted concerns regarding conduct at ${heya.name}.`
-      });
-    }
-
-    // === Merger/closure pressure for extremely small stables ===
-    if (getStableRikishi(world, heya.id).length < 3) {
-      if (heya.id !== world.playerHeyaId) {
-        logEngineEvent(world, {
-          type: "CLOSURE_PRESSURE",
-          category: "discipline",
-          importance: "major",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `${heya.name} under closure pressure`,
-          summary: `${heya.name} has fewer than 3 wrestlers — the Association is reviewing viability.`,
-          data: { rosterSize: getStableRikishi(world, heya.id).length }
-        });
-
-        generateGovernanceHeadline({
-          world,
-          heyaId: heya.id,
-          type: "merger_threat",
-          severity: "major",
-          description: `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
-        });
-
-        // If roster is 0 or 1, mark for eventual closure (NPC only)
-        if (getStableRikishi(world, heya.id).length <= 1) {
-          logEngineEvent(world, {
-            type: "FORCED_MERGER_CANDIDATE",
-            category: "discipline",
-            importance: "headline",
-            scope: "heya",
-            heyaId: heya.id,
-            title: `${heya.name} merger imminent`,
-            summary: `With only ${getStableRikishi(world, heya.id).length} wrestler(s), ${heya.name} faces forced merger into another stable.`,
-            data: { rosterSize: getStableRikishi(world, heya.id).length }
-          });
-
-          generateGovernanceHeadline({
-            world,
-            heyaId: heya.id,
-            type: "forced_merger",
-            severity: "critical",
-            description: `Due to critically low recruitment (${getStableRikishi(world, heya.id).length} active wrestlers), ${heya.name} faces a forced merger.`
-          });
-
-          // Execute actual merger
-          const targetId = findMergerTarget(world, heya.id);
-          if (targetId) {
-             executeMerger(world, heya.id, targetId, "Critically low recruitment / Roster size");
-          }
-        }
-      } else {
-        // Player stable — warn but don't force closure
-        logEngineEvent(world, {
-          type: "ROSTER_WARNING",
-          category: "career",
-          importance: "major",
-          scope: "heya",
-          heyaId: heya.id,
-          title: "Roster critically low",
-          summary: `Your stable has fewer than 3 wrestlers. Recruit urgently or face Association review.`,
-          data: { rosterSize: getStableRikishi(world, heya.id).length }
-        });
-      }
-    }
-
-    // === Succession check — aging oyakata ===
-    const oyakata = world.oyakata.get(heya.oyakataId);
-    if (oyakata && oyakata.age >= 63) {
-      logEngineEvent(world, {
-        type: "SUCCESSION_UPCOMING",
-        category: "career",
-        importance: oyakata.age >= 65 ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} succession looming`,
-        summary: `Oyakata ${oyakata.name} (age ${oyakata.age}) ${
-          oyakata.age >= 65 ? "must retire soon — succession is urgent." : "is approaching mandatory retirement age."
-        }`,
-        data: { oyakataAge: oyakata.age, oyakataName: oyakata.name }
-      });
-    }
-
-    // === Post-basho scandal score decay reward for clean basho ===
-    if (scandalScore > 0 && heya.governanceStatus === "good_standing") {
-      heya.scandalScore = Math.max(0, scandalScore - 2);
-    }
-  }
-}
-
-// ─── 3. AI META DRIFT (A6.1) ───────────────────────────────────
-
-/**
- * AI Meta Drift recognition delays per A6.1:
- * NPC managers observe public outcomes and can adjust strategy,
- * but only after a recognition delay based on manager profile.
- * We seed the eligibility here; actual changes happen in future weekly ticks.
- */
-function runAIMetaDrift(world: WorldState): void {
-  const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
-
-  // Compute basho meta: dominant style this basho
-  let oshiWins = 0, yotsuWins = 0;
-  for (const r of getActiveRikishi(world)) {
-    if ((r.currentBashoWins ?? 0) > (r.currentBashoLosses ?? 0)) {
-      if (r.style === "oshi") oshiWins++;
-      else if (r.style === "yotsu") yotsuWins++;
-    }
-  }
-  const metaBias: "oshi" | "yotsu" | "neutral" = 
-    oshiWins > yotsuWins * 1.3 ? "oshi" : 
-    yotsuWins > oshiWins * 1.3 ? "yotsu" : "neutral";
-
-  // Write meta state for NPC AI to consume in future weeks
-  world._postBashoMeta = {
-    bashoNumber: lastBasho.bashoNumber,
-    metaBias,
-    yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
-    recognitionEligibleWeek: world.week + 2 // 2-week recognition delay baseline
-  };
-
-  if (metaBias !== "neutral") {
-    logEngineEvent(world, {
-      type: "META_SHIFT_OBSERVED",
-      category: "basho",
-      importance: "minor",
-      scope: "world",
-      title: `Meta trend: ${metaBias} style dominance`,
-      summary: `${metaBias === "oshi" ? "Pushing" : "Belt"} specialists dominated this basho. NPC managers may adjust.`,
-      data: { metaBias, oshiWins, yotsuWins }
-    });
-  }
-}
-
-// ─── 4. RETIREMENTS ────────────────────────────────────────────
-
-/**
- * Process retirements and return vacancy counts per heya.
- */
-function runRetirements(world: WorldState): Record<string, number> {
-  const vacanciesByHeyaId: Record<string, number> = {};
-
-  for (const [id, r] of world.rikishi) {
-    const reason = checkRetirement(r, world.year, world.seed);
-    if (reason) {
-      EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);
-      vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
-
-      // Constitution 2.3 & 61: Oyakata candidate eligibility (peak rank <= Sekiwake, age >= 28)
-      const age = world.year - r.birthYear;
-      // We check if the rikishi is Sanyaku-level (Yokozuna, Ozeki, Sekiwake) or has 200+ career wins as a fallback for accomplished
-      const isAccomplished = r.rank === "yokozuna" || r.rank === "ozeki" || r.rank === "sekiwake" || (r.careerWins >= 200);
-
-      if (age >= 28 && isAccomplished) {
-        // Attempt to find an available Myoseki stock
-        if (world.myosekiMarket) {
-          const availableStock = Object.values(world.myosekiMarket.stocks).find(s => s.status === "available");
-          if (availableStock) {
-            // Become an Oyakata
-            const newOyakataId = `oyakata_${id}`;
-            const newOyakata = generateOyakata(newOyakataId, r.heyaId, r.shikona ?? r.name ?? id, age);
-
-            // Assign the stock directly to this new Oyakata (skipping the buyMyoseki cost check as they use their retirement fund)
-            availableStock.ownerId = newOyakataId;
-            availableStock.holderId = newOyakataId;
-            availableStock.status = "held";
-            delete availableStock.askingPrice;
-
-            const tx = {
-              id: `tx_${world.year}_${world.week || 1}_${availableStock.id}`,
-              date: `${world.year}-W${world.week || 1}`,
-              myosekiId: availableStock.id,
-              type: "sale",
-              fromId: "JSA",
-              toId: newOyakataId,
-              amount: r.economics?.retirementFund || 150000000
-            };
-            world.myosekiMarket.history.unshift(tx as any);
-
-            world.oyakata.set(newOyakataId, newOyakata);
-
-            logEngineEvent(world, {
-              type: "NEW_OYAKATA",
-              category: "career",
-              importance: "major",
-              scope: "heya",
-              heyaId: r.heyaId,
-              title: `${r.shikona ?? r.name} acquires Elder Stock`,
-              summary: `Retired accomplished rikishi ${r.shikona ?? r.name} has acquired the ${availableStock.name} elder stock and become an Oyakata.`,
-              data: { rikishiId: id, oyakataId: newOyakataId, myosekiName: availableStock.name }
-            });
-
-            // ARCHIVAL: Record lineage transition
-            recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name);
-          }
-        }
-      }
-
-      onRikishiRetired(world, id);
-      world.historicalRikishi.set(id, r);
-      world.rikishi.delete(id);
-      const heya = world.heyas.get(r.heyaId);
-      if (heya) {
-
-      }
-    }
-  }
-
-  return vacanciesByHeyaId;
-}
+// runRetirements moved to governanceReview.ts
 
 // ─── 5. RECRUITMENT WINDOWS (Constitution A3.4) ────────────────
 
@@ -1166,17 +693,7 @@ export function advanceDay(world: WorldState): DailyTickReport | null {
   return advanceOneDay(world);
 }
 
-/**
- * Safe call.
- *  * @param fn - The Fn.
- */
-function safeCall(fn: () => void) {
-  try {
-    fn();
-  } catch {
-    // Intentionally swallow
-  }
-}
+// redundant safeCall removed
 // --- CANONICAL SELECTORS ---
 
 export function getPlayerOyakata(world: WorldState) {
@@ -1191,9 +708,7 @@ export function getPlayerStable(world: WorldState) {
     return world.heyas.get(world.playerHeyaId);
 }
 
-export function getStableRikishi(world: WorldState, heyaId: string) {
-    return Array.from(world.rikishi.values()).filter((r) => r.heyaId === heyaId);
-}
+// getStableRikishi moved to queries.ts
 
 export function getRikishiBashoStats(world: WorldState, rikishiId: string) {
     if (!world.basho?.leaderboard) {
