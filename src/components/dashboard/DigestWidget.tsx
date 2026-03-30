@@ -4,8 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { BaseWidget } from "./BaseWidget";
-import {
 import { buildWeeklyDigest, type DigestItem, type DigestSection } from "@/presenters/uiDigest";
+import {
   AlertTriangle, TrendingUp, Activity, Coins, FileText, Sparkles,
   Users, Building2, Newspaper,
 } from "lucide-react";

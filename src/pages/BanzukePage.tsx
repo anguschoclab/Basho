@@ -163,7 +163,7 @@ export default function BanzukePage() {
                             <tr
                               key={row.rankKey}
                               className={`border-b hover:bg-muted/50 transition-colors bout-enter ${row.rankTierClass}`}
-                              style={ animationDelay: `${Math.min(i * 30, 300)}ms` }
+                              style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
                             >
                               <RikishiCell
                                 entry={row.east}

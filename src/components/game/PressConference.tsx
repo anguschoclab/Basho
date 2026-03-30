@@ -154,7 +154,8 @@ export function PressConference({ world, open, onClose }: PressConferenceProps) 
       setCurrentQ(currentQ + 1);
     } else {
       onClose(totalEffects);
-    };
+    }
+  };
 
   if (questions.length === 0) return null;
 

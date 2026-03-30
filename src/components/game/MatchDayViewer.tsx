@@ -13,6 +13,7 @@ import type { RankPosition } from "@/engine/types/banzuke";
 import type { RivalryHeatBand, RivalriesState  } from "@/engine/rivalries";
 import { projectRikishi } from "@/presenters/uiModels";
 import { compareRanks, generateH2HCommentary, getRivalry } from "@/presenters/uiDigest";
+import {
   Flame,
   Thermometer,
   Snowflake,
@@ -127,7 +128,7 @@ function RikishiSide({
         onClick={(e) => {
           e.stopPropagation();
           onClick();
-        }
+        }}
         className={`
           font-display text-sm truncate max-w-full
           transition-colors hover:text-primary cursor-pointer
@@ -137,7 +138,7 @@ function RikishiSide({
         {rikishi.shikona}
       </button>
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
-        style={ justifyContent: isEast ? "flex-end" : "flex-start" }
+        style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
       >
         <span className="font-mono">
           {rikishi.currentBashoWins ?? 0}-{rikishi.currentBashoLosses ?? 0}
@@ -237,7 +238,7 @@ function useResolvedMatch() {
  * match day viewer.
  *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
  */
-export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {}: MatchDayViewerProps) {
+export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
   const resolvedMatches = useMemo(() => {

@@ -194,7 +194,8 @@ export default function BashoPage() {
     if (east && west) {
       setAutoShowPlayerBout({ east, west, result: last, isPlayerBout: true });
       lastAutoShownKeyRef.current = lastBoutKey;
-    }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
+    }
+  }, [matches, playerRikishiIds, resolveRikishi, selectedBout, state, lastBoutKey]);
 
   const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
   const handleSimulateAll = () => { simulateAllBouts(); };
@@ -322,7 +323,7 @@ export default function BashoPage() {
                 const west = resolveRikishi(match.westRikishiId);
                 if (!east || !west) return;
                 setSelectedBout({ east, west, result: match.result, isPlayerBout: isPlayerBout(match) });
-              }
+              }}
             />
           </div>
         </div>

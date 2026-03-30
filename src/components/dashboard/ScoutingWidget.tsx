@@ -37,6 +37,7 @@ export function ScoutingWidget() {
       for (const c of talentpool.listVisibleCandidates(world, pool)) {
         all.push({ ...c, pool });
       }
+    }
     return all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
   }, [world]);
 
@@ -54,7 +55,7 @@ export function ScoutingWidget() {
     <BaseWidget
       title="Scouting"
       icon={Search}
-      headerAction={ label: "Full Board", onClick: () => navigate({ to: "/talent-pool" }) }
+      headerAction={{ label: "Full Board", onClick: () => navigate({ to: "/talent-pool" }) }}
     >
       {/* Pool summary with icons */}
       <div className="flex gap-2 text-xs">
@@ -107,7 +108,7 @@ export function ScoutingWidget() {
             );
           })
         )}
-        {prospects.length > 6 && (
+      {prospects.length > 6 && (
           <button
             onClick={() => navigate({ to: "/talent-pool" })}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"

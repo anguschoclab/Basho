@@ -23,6 +23,7 @@ export default function OyakataPage() {
         const o = world.oyakata.get(playerHeya.oyakataId);
         if (o) setSelectedOyakata(o);
       }
+    }
   }, [world]);
 
   if (!world || !selectedOyakata) {

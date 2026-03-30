@@ -10,10 +10,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  test: {
-    globals: true,
-    environment: "node",
-    exclude: ["node_modules", "dist", ".git", ".cache", "e2e"],
+  server: {
+    hmr: {
+      overlay: false,
+    },
   },
 });
 

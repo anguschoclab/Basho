@@ -63,6 +63,7 @@ function describePrestigeShift(oldBand: string | undefined, newBand: string | un
   } else {
     return `fell to ${newBand.toUpperCase()} status`;
   }
+}
 
 // Extract recent basho-relevant events
 /**
@@ -110,7 +111,7 @@ function groupEventsByNarrative(events: EngineEvent[]) {
     } else {
       groups.other.push(e);
     }
-  
+  }
   return groups;
 }
 
@@ -136,6 +137,7 @@ function getPrestigeChanges(world: any): Array<{ heya: Heya; change: string }> {
       if (heya) {
         changes.push({ heya, change: e.summary });
       }
+    }
   }
   
   return changes;
@@ -164,7 +166,8 @@ export default function RecapPage() {
         heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
       }
       updateWorld({ ...world });
-    };
+    }
+  };
 
   // Detect yokozuna deliberation candidates
   const yokozunaCandidate = useMemo(() => {
