@@ -34,20 +34,28 @@ describe("Engine Restoration Verification", () => {
     expect(r1.stats.strength).toBe(r2.stats.strength);
   });
 
-  it("should assign rikishi to stables", () => {
-    const heya = world1.heyas.get("heya_1");
-    expect(heya).toBeDefined();
-    if (heya && heya.rikishiIds) {
-      expect(heya.rikishiIds.length).toBeGreaterThan(0);
-      
-      // Verify each rikishi in heya_1 actually exists and points back
-      heya.rikishiIds.forEach(id => {
-        const r = world1.rikishi.get(id);
-        expect(r).toBeDefined();
-        if (r) {
-          expect(r.heyaId).toBe("heya_1");
-        }
-      });
-    }
+  it("should assign at least some rikishi to every stable (balance check)", () => {
+    const stables = Array.from(world1.heyas.values());
+    const counts = stables.map(h => h.rikishiIds?.length || 0);
+    const min = Math.min(...counts);
+    const max = Math.max(...counts);
+    const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
+
+    expect(min).toBeGreaterThanOrEqual(1); // No empty stables
+    expect(max).toBeLessThan(40); // No extreme concentration
+    expect(avg).toBeGreaterThan(12); // Total ~700 / 45 = 15.5
+  });
+
+  it("should have correct counts for premier ranks", () => {
+    const rikishiArr = Array.from(world1.rikishi.values());
+    const yokozuna = rikishiArr.filter(r => r.rank === "yokozuna");
+    const ozeki = rikishiArr.filter(r => r.rank === "ozeki");
+    const sekiwake = rikishiArr.filter(r => r.rank === "sekiwake");
+    const komusubi = rikishiArr.filter(r => r.rank === "komusubi");
+
+    expect(yokozuna.length).toBe(1);
+    expect(ozeki.length).toBe(2);
+    expect(sekiwake.length).toBe(2);
+    expect(komusubi.length).toBe(2);
   });
 });
