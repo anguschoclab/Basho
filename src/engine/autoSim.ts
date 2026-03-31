@@ -660,14 +660,16 @@ export function simulateBashoDay(world: WorldState) {
 
     world.basho.day = (world.basho.day || 0) + 1;
 
-    const rikishiArray = Array.from(world.rikishi.values());
-    for (const r of rikishiArray) {
+    for (const r of world.rikishi.values()) {
         if (!world.basho.leaderboard[r.id]) {
             world.basho.leaderboard[r.id] = { wins: 0, losses: 0, absences: 0 };
         }
     }
 
-    const rikishiIds = Object.keys(world.basho.leaderboard);
+    const rikishiIds: string[] = [];
+    for (const id in world.basho.leaderboard) {
+        rikishiIds.push(id);
+    }
     for (let i = 0; i < rikishiIds.length; i += 2) {
         if (i + 1 < rikishiIds.length) {
             const winnerId = rikishiIds[i];
