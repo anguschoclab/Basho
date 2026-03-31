@@ -147,7 +147,7 @@ function syncAchievementCounters(world: WorldState): void {
 export function tickArchetypeDrift(world: WorldState): void {
   const month = world.calendar?.month;
   if (month && isBashoMonth(month)) {
-    for (const r of world.rikishi.values()) {
+    for (const r of stableSort(world.rikishi.values(), x => x.id)) {
       const evidence = r.archetypeEvidence;
       if (!evidence || Array.isArray(evidence)) continue;
 

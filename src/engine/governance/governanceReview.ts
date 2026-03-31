@@ -26,7 +26,7 @@ import { rngForWorld } from "../rng";
  * loans/benefactors escalation, succession checks, merger/closure pressure.
  */
 export function runGovernanceReview(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
@@ -278,7 +278,8 @@ export function runAIMetaDrift(world: WorldState): void {
 export function runRetirements(world: WorldState): Record<string, number> {
   const vacanciesByHeyaId: Record<string, number> = {};
 
-  for (const [id, r] of world.rikishi) {
+  for (const r of stableSort(world.rikishi.values(), x => x.id)) {
+    const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
       EventBus.retirement(world, id, r.heyaId, r.shikona ?? r.name ?? id, reason);

@@ -8,6 +8,7 @@
 import type { WorldState } from "../types/world";
 import { EventBus } from "../events";
 import { rngForWorld } from "../rng";
+import { stableSort } from "../utils/sort";
 
 export interface DramaEvent {
   id: string;
@@ -41,14 +42,14 @@ function generateRandomDrama(world: WorldState): void {
 
   if (eventType === 0) {
     // Scandal
-    const rikishis = Array.from(world.rikishi.values());
+    const rikishis = stableSort(world.rikishi.values(), x => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
         EventBus.governance(world, target.heyaId, "Conduct Scandal", `${target.shikona} was spotted breaking curfew.`, { rikishiId: target.id }, "notable");
     }
   } else if (eventType === 1) {
     // Grudge formation
-    const oyakatas = Array.from(world.oyakata.values());
+    const oyakatas = stableSort(world.oyakata.values(), x => x.id);
     if (oyakatas.length < 2) return;
     const a = oyakatas[rng.int(0, oyakatas.length - 1)];
     const b = oyakatas[rng.int(0, oyakatas.length - 1)];
@@ -64,7 +65,7 @@ function generateRandomDrama(world: WorldState): void {
 
 function checkTriggeredDrama(world: WorldState): void {
   // Check for financial crisis
-  for (const heya of world.heyas.values()) {
+  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     if (heya.funds < 0 && !heya.riskIndicators?.financial) {
         EventBus.financialAlert(world, heya.id, "Financial Insolvency", `${heya.name} has run out of funds!`, { insolvency: true });
         if (heya.isPlayerOwned) {
