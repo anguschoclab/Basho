@@ -439,7 +439,7 @@ export function tickWeek(world: WorldState): number {
       // or simply periodically clear out the whole dedupe map for old years.
       // A safe approach is to clear any dedupe key that contains the old year and week.
       const prefix = `${ev.year}|${ev.week}|`;
-      for (const key of Object.keys(eventsState.dedupe)) {
+      for (const key in eventsState.dedupe) {
         if (key.startsWith(prefix)) {
           delete eventsState.dedupe[key];
         }

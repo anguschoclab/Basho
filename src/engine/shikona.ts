@@ -259,12 +259,14 @@ function getHouseStyle(heyaId?: string): HouseStyle {
 function mergePatternWeights(base: PatternWeights, ...biases: Array<Partial<PatternWeights>>): PatternWeights {
   const out: PatternWeights = { ...base };
   for (const b of biases) {
-    for (const k of Object.keys(b) as PatternId[]) {
-      out[k] = (out[k] ?? 0) + (b[k] ?? 0);
+    for (const k in b) {
+      const key = k as PatternId;
+      out[key] = (out[key] ?? 0) + (b[key] ?? 0);
     }
   }
-  for (const k of Object.keys(out) as PatternId[]) {
-    out[k] = clamp(out[k], 0.1, 100);
+  for (const k in out) {
+    const key = k as PatternId;
+    out[key] = clamp(out[key], 0.1, 100);
   }
   return out;
 }
@@ -276,10 +278,11 @@ function mergePatternWeights(base: PatternWeights, ...biases: Array<Partial<Patt
  *  * @returns The result.
  */
 function choosePattern(rng: () => number, weights: PatternWeights): PatternId {
-  return weightedPick(
-    (Object.keys(weights) as PatternId[]).map((p) => ({ item: p, w: weights[p] })),
-    rng
-  );
+  const items: {item: PatternId, w: number}[] = [];
+  for (const p in weights) {
+    items.push({ item: p as PatternId, w: weights[p as PatternId] });
+  }
+  return weightedPick(items, rng);
 }
 
 /**
@@ -299,8 +302,11 @@ function nationalityPool(config: ShikonaGenerationConfig): string[] {
  *  * @returns The result.
  */
 function pickPrefixByCategoryBias(rng: () => number, bias: HouseStyle["prefixCategoryBias"]): string {
-  const categories = Object.keys(SHIKONA_PREFIXES) as Array<keyof typeof SHIKONA_PREFIXES>;
-  const items = categories.map((cat) => ({ item: cat, w: clamp(10 + (bias[cat] ?? 0), 1, 50) }));
+  const items: {item: keyof typeof SHIKONA_PREFIXES, w: number}[] = [];
+  for (const cat in SHIKONA_PREFIXES) {
+    const category = cat as keyof typeof SHIKONA_PREFIXES;
+    items.push({ item: category, w: clamp(10 + (bias[category] ?? 0), 1, 50) });
+  }
   const chosen = weightedPick(items, rng);
   return pick(SHIKONA_PREFIXES[chosen], rng);
 }
@@ -312,8 +318,11 @@ function pickPrefixByCategoryBias(rng: () => number, bias: HouseStyle["prefixCat
  *  * @returns The result.
  */
 function pickSuffixByCategoryBias(rng: () => number, bias: HouseStyle["suffixCategoryBias"]): string {
-  const categories = Object.keys(SHIKONA_SUFFIXES) as Array<keyof typeof SHIKONA_SUFFIXES>;
-  const items = categories.map((cat) => ({ item: cat, w: clamp(10 + (bias[cat] ?? 0), 1, 50) }));
+  const items: {item: keyof typeof SHIKONA_SUFFIXES, w: number}[] = [];
+  for (const cat in SHIKONA_SUFFIXES) {
+    const category = cat as keyof typeof SHIKONA_SUFFIXES;
+    items.push({ item: category, w: clamp(10 + (bias[category] ?? 0), 1, 50) });
+  }
   const chosen = weightedPick(items, rng);
   return pick(SHIKONA_SUFFIXES[chosen], rng);
 }
@@ -327,7 +336,11 @@ function pickSuffixByCategoryBias(rng: () => number, bias: HouseStyle["suffixCat
 function pickConnectorToken(rng: () => number, house: HouseStyle): string {
   const base: Record<Connector, number> = { no: 10, ga: 7, shi: 5, kuni: 3, iwa: 3, yori: 2 };
   const b = house.connectorBias || {};
-  const items = (Object.keys(base) as Connector[]).map((c) => ({ item: c, w: clamp(base[c] + (b[c] ?? 0), 0.1, 50) }));
+  const items: {item: Connector, w: number}[] = [];
+  for (const c in base) {
+    const connector = c as Connector;
+    items.push({ item: connector, w: clamp(base[connector] + (b[connector] ?? 0), 0.1, 50) });
+  }
   const chosen = weightedPick(items, rng);
   return chosen === "no" ? "" : chosen;
 }

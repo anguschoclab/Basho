@@ -33,6 +33,7 @@ export type DigestKind =
   | "expense"
   | "economy"
   | "scouting"
+  | "narrative"
   | "generic";
 
 /** Defines the structure for digest item. */
@@ -155,8 +156,13 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const govItems = eventBuckets.governance.map(mapEventToItem);
   const scoutItems = eventBuckets.scouting.map(mapEventToItem);
   const econItems = eventBuckets.economy.map(mapEventToItem);
+  const narrativeItems = queryEvents(world, { category: "narrative" }).map(e => ({
+     ...mapEventToItem(e),
+     kind: "narrative"
+  }));
 
   if (mediaItems.length) sections.push({ id: "media", title: "Media & Scandals", items: mediaItems });
+  if (narrativeItems.length) sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
   if (trainingItems.length) sections.push({ id: "training", title: "Training", items: trainingItems });
   if (careerItems.length) sections.push({ id: "career", title: "Career Updates", items: careerItems });
   if (rivalryItems.length) sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });
@@ -182,6 +188,8 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   return {
     time: { label: labelForWorld(world) },
+    headline,
+    counts,
     sections,
   };
 }

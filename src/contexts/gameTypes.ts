@@ -32,6 +32,7 @@ export interface GameState {
   lastBoutResult: BoutResult | null;
   playerHeyaId: string | null;
   isAutoPlaying: boolean;
+  boutTactics: Record<string, import("@/engine/types/combat").BoutTactic>;
 }
 
 /** Type representing game action. */
@@ -53,6 +54,7 @@ export type GameAction =
   | { type: "SELECT_RIKISHI"; id: string | null }
   | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_AUTO_PLAY"; value: boolean }
+  | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "UPGRADE_HEYA"; heyaId: string; axis: "training" | "recovery" | "nutrition"; points?: number }
@@ -72,4 +74,5 @@ export const initialGameState: GameState = {
   lastBoutResult: null,
   playerHeyaId: null,
   isAutoPlaying: false,
+  boutTactics: {},
 };

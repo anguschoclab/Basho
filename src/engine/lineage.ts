@@ -106,11 +106,15 @@ export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataI
 
   if (!heya.lineage) heya.lineage = [];
 
+  const currentGen = heya.lineage.length + 1;
+
   // Close the current tenure if exists
   if (heya.lineage.length > 0) {
     const lastTenure = heya.lineage[heya.lineage.length - 1];
     if (!lastTenure.endYear) {
       lastTenure.endYear = world.year;
+      // Capture achievements for the outgoing master
+      lastTenure.achievements = calculateTenureAchievements(world, heya);
     }
   }
 
@@ -118,10 +122,72 @@ export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataI
   const newTenure: HistoricalOyakata = {
     oyakataId: newOyakataId,
     name: newOyakataName,
+    generation: currentGen,
     startYear: world.year,
-    achievements: []
+    achievements: {
+        titlesWon: 0,
+        rekishiProducedCount: 0,
+        sekitoriCount: 0,
+        specialAwards: []
+    }
   };
 
   heya.lineage.push(newTenure);
   heya.oyakataId = newOyakataId;
+}
+
+/**
+ * Calculates tenure achievements for the currently retiring Oyakata.
+ */
+function calculateTenureAchievements(world: WorldState, heya: Heya): any {
+    const rikishiIds = heya.rikishiIds || [];
+    let sekitoriCount = 0;
+    let maxRankIdx = 999;
+    let winners = 0;
+
+    const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
+
+    for (const rid of rikishiIds) {
+        const r = rikishiMap.get(rid);
+        if (!r) continue;
+        
+        const rank = r.rank.toLowerCase();
+        if (["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"].includes(rank)) {
+            sekitoriCount++;
+        }
+        
+        if (r.careerRecord?.yusho > 0) winners++;
+    }
+
+    return {
+        titlesWon: winners,
+        rekishiProducedCount: rikishiIds.length,
+        sekitoriCount: sekitoriCount,
+        specialAwards: []
+    };
+}
+
+/**
+ * Recursively traces the mentorship lineage of a rikishi.
+ */
+export function getLineageTree(world: WorldState, rikishiId: Id, depth: number = 0): any[] {
+    const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
+    const r = rikishiMap.get(rikishiId);
+    if (!r || depth > 5) return [];
+
+    const mentorId = r.mentorId;
+    if (!mentorId) return [];
+
+    const mentor = rikishiMap.get(mentorId);
+    if (!mentor) return [];
+
+    return [
+        { 
+            id: mentorId, 
+            shikona: mentor.shikona, 
+            rank: mentor.rank,
+            depth: depth 
+        },
+        ...getLineageTree(world, mentorId, depth + 1)
+    ];
 }

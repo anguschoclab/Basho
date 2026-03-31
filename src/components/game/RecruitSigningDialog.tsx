@@ -11,12 +11,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, GraduationCap, Globe, School } from "lucide-react";
+import { UserPlus, GraduationCap, Globe, School, Send } from "lucide-react";
+import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 /** Defines the structure for recruit signing dialog props. */
 interface RecruitSigningDialogProps {
   open: boolean;
-  onConfirm: () => void;
+  onConfirm: (offer: { offerType: "standard" | "aggressive", interest: "low" | "medium" | "high" | "all_in" }) => void;
   onCancel: () => void;
   candidate: {
     shikona?: string;
@@ -65,9 +68,12 @@ export function RecruitSigningDialog({
   playerHeyaName,
   rosterSize,
 }: RecruitSigningDialogProps) {
+  const [offerType, setOfferType] = useState<"standard" | "aggressive">("standard");
+  const [interest, setInterest] = useState<"low" | "medium" | "high" | "all_in">("medium");
+
   if (!candidate) return null;
 
-  const name = candidate.visibilityBand === "obscure"
+  const name = candidate.visibilityBand === "hidden"
     ? "Unknown Prospect"
     : candidate.shikona || candidate.candidateId.slice(0, 8);
 
@@ -75,16 +81,16 @@ export function RecruitSigningDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={(o) => !o && onCancel()}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />
-            Sign {name}?
+            Recruitment Offer: {name}
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
-            <div className="space-y-3">
-              <p>
-                You are about to submit an offer to recruit <strong>{name}</strong> to{" "}
+            <div className="space-y-4">
+              <p className="text-sm text-foreground/80">
+                Submit a formal offer to recruit <strong>{name}</strong> to{" "}
                 <strong>{playerHeyaName || "your stable"}</strong>.
               </p>
 
@@ -98,39 +104,55 @@ export function RecruitSigningDialog({
                 {candidate.nationality && (
                   <Badge variant="outline">{candidate.nationality}</Badge>
                 )}
-                {candidate.age && (
-                  <Badge variant="outline">Age {candidate.age}</Badge>
-                )}
-                {candidate.archetype && (
-                  <Badge variant="secondary" className="capitalize">
-                    {candidate.archetype.replace(/_/g, " ")}
-                  </Badge>
-                )}
               </div>
 
-              {candidate.height && candidate.weight && (
-                <p className="text-xs text-muted-foreground">
-                  Physical: {Math.round(candidate.height)}cm / {Math.round(candidate.weight)}kg
-                </p>
-              )}
+              {/* Offer Controls */}
+              <div className="space-y-4 pt-4 border-t border-border/50">
+                <div className="grid gap-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider">Offer Strategy</Label>
+                  <Select value={offerType} onValueChange={(v: any) => setOfferType(v)}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Select strategy" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Standard Offer</SelectItem>
+                      <SelectItem value="aggressive">Aggressive Pursuit (+Cost)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider">Interest Level</Label>
+                  <Select value={interest} onValueChange={(v: any) => setInterest(v)}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Select interest" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low (Testing waters)</SelectItem>
+                      <SelectItem value="medium">Medium (Standard)</SelectItem>
+                      <SelectItem value="high">High (Strong interest)</SelectItem>
+                      <SelectItem value="all_in">All In (Maximum commitment)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
               {rosterSize !== undefined && (
-                <p className="text-xs text-muted-foreground">
-                  Current roster: {rosterSize} rikishi. The recruit will start at the bottom of the banzuke.
+                <p className="text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
+                  Stable roster: {rosterSize} rikishi. Negotiation may take 1-2 weeks.
                 </p>
               )}
-
-              <p className="text-xs text-muted-foreground italic">
-                Once signed, the prospect will join your stable and begin training. 
-                Their development depends on your facilities and coaching.
-              </p>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
-            Sign to Stable
+        <AlertDialogFooter className="mt-6">
+          <AlertDialogCancel>Withdraw</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={() => onConfirm({ offerType, interest })}
+            className="gap-2"
+          >
+            <Send className="h-3.5 w-3.5" />
+            Submit Offer
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

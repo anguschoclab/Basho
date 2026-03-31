@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { stableTieBreak } from "./utils/sort";
 import { destr } from "destr";
+import { runArchivalPruning } from "./archival";
 // saveload.ts
 // Save/Load System — Persistence Canon Implementation
 //
@@ -152,27 +152,29 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     cyclePhase: world.cyclePhase,
     currentBashoName: world.currentBashoName,
     heyas: mapToObject(world.heyas),
-    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : undefined,
+    closedHeyas: world.closedHeyas ? mapToObject(world.closedHeyas) : {},
     rikishi: mapToObject(world.rikishi),
+    historicalRikishi: world.historicalRikishi ? mapToObject(world.historicalRikishi) : {},
     oyakata: mapToObject(world.oyakata),
+    staff: world.staff ? mapToObject(world.staff) : {},
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
     history: world.history,
+    historyIndex: world.historyIndex,
+    lineage: world.lineage || [],
+    records: world.records,
+    hallOfFame: world.hallOfFame,
     events: world.events,
+    rivalriesState: world.rivalriesState,
+    myosekiMarket: world.myosekiMarket,
     ftue: world.ftue,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
     talentPool: (world as any).talentPool,
-    // Extended fields
     dayIndexGlobal: world.dayIndexGlobal,
-    almanacSnapshots: (world as any).almanacSnapshots,
+    almanacSnapshots: world.almanacSnapshots || [],
     calendar: world.calendar,
-    // Sponsor pool (Constitution A6.4)
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
-    // Ozeki kadoban tracking
     ozekiKadoban: (world as any).ozekiKadoban,
-    // Hall of Fame
-    hallOfFame: (world as any).hallOfFame,
-    // Media state
     mediaState: (world as any).mediaState,
   } as any;
 }
@@ -231,40 +233,58 @@ function sanitizeHeya(h: Heya): Heya {
  *  * @returns The result.
  */
 export function deserializeWorld(serialized: SerializedWorldState): WorldState {
-  // Sanitize objects as we materialize them into Maps (non-lossy)
-  const heyasObj: Record<string, Heya> = (serialized as any).heyas || {};
-  const rikishiObj: Record<string, Rikishi> = (serialized as any).rikishi || {};
-  const oyakataObj: Record<string, Oyakata> = (serialized as any).oyakata || {};
+  const s = serialized as any;
+  const heyasObj: Record<string, Heya> = s.heyas || {};
+  const closedHeyasObj: Record<string, any> = s.closedHeyas || {};
+  const rikishiObj: Record<string, Rikishi> = s.rikishi || {};
+  const historicalRikishiObj: Record<string, Rikishi> = s.historicalRikishi || {};
+  const oyakataObj: Record<string, Oyakata> = s.oyakata || {};
+  const staffObj: Record<string, import("./types/staff").Staff> = s.staff || {};
 
   for (const k of Object.keys(heyasObj)) sanitizeHeya(heyasObj[k]);
   for (const k of Object.keys(rikishiObj)) sanitizeRikishi(rikishiObj[k]);
 
-  const savedCalendar = (serialized as any).calendar;
+  const savedCalendar = s.calendar;
 
   return {
-    id: `world_${serialized.seed}`, // deterministic
+    id: `world_${serialized.seed}`,
     seed: serialized.seed,
     year: serialized.year,
     week: serialized.week,
-    dayIndexGlobal: (serialized as any).dayIndexGlobal ?? 0,
+    dayIndexGlobal: serialized.dayIndexGlobal ?? 0,
     cyclePhase: serialized.cyclePhase || "interim",
     currentBashoName: serialized.currentBashoName,
+
     heyas: objectToMap(heyasObj),
-    closedHeyas: (serialized as any).closedHeyas ? objectToMap((serialized as any).closedHeyas) : new Map(),
+    closedHeyas: objectToMap(closedHeyasObj),
     rikishi: objectToMap(rikishiObj),
+    historicalRikishi: objectToMap(historicalRikishiObj),
     oyakata: objectToMap(oyakataObj),
+    staff: objectToMap(staffObj),
+
     currentBasho: serialized.currentBasho ? deserializeBashoState(serialized.currentBasho) : undefined,
-    history: serialized.history,
-    events: (serialized as any).events || { version: "1.0.0", log: [], dedupe: {} },
+    history: serialized.history || [],
+    historyIndex: s.historyIndex,
+    lineage: s.lineage || [],
+    records: s.records || { 
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+    },
+    hallOfFame: s.hallOfFame,
+    events: s.events || { version: "1.0.0", log: [], dedupe: {} },
+    rivalriesState: s.rivalriesState,
+    myosekiMarket: s.myosekiMarket,
+
     ftue: serialized.ftue,
     playerHeyaId: serialized.playerHeyaId,
     currentBanzuke: serialized.currentBanzuke,
-    talentPool: (serialized as any).talentPool,
-    almanacSnapshots: (serialized as any).almanacSnapshots || [],
-    sponsorPool: deserializeSponsorPool((serialized as any).sponsorPool),
-    ozekiKadoban: (serialized as any).ozekiKadoban ?? {},
-    ...(serialized as any).hallOfFame ? { hallOfFame: (serialized as any).hallOfFame } : {},
-    ...(serialized as any).mediaState ? { mediaState: (serialized as any).mediaState } : {},
+    talentPool: s.talentPool,
+    almanacSnapshots: s.almanacSnapshots || [],
+    sponsorPool: deserializeSponsorPool(s.sponsorPool),
+    ozekiKadoban: s.ozekiKadoban ?? {},
+    mediaState: s.mediaState,
+    trainingState: s.trainingState || {},
+    settings: s.settings || { archiveMode: "standard" },
     calendar: savedCalendar || {
       year: serialized.year,
       month: 1,
@@ -465,6 +485,9 @@ export function saveGame(world: WorldState, slotName: string, timestampISO?: str
 
   try {
     const key = toSlotKey(slotName);
+    
+    // Prune before serialization
+    runArchivalPruning(world);
 
     const existingRaw = storage.getItem(key);
     const existingParsed = existingRaw ? destr(existingRaw) : null;

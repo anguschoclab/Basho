@@ -43,8 +43,12 @@ interface MatchDayViewerProps {
   world: WorldState;
   playerRikishiIds: Set<string>;
   onBoutClick?: (match: MatchLike) => void;
-  onTacticChange?: (matchIndex: number, tactic: string) => void;
-  playerTactics?: Record<number, string>;
+  onTacticChange?: (boutId: string, tactic: string) => void;
+  playerTactics?: Record<string, string>;
+  onSimulateBout?: (index: number) => void;
+  onSimulateAll?: () => void;
+  onEndDay?: () => void;
+  highlightRikishiId?: string;
 }
 
 // ── Helpers ────────────────────────────────────────────
@@ -416,11 +420,11 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
                         { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
                         { id: "HENKA", label: "Henka", desc: "Counters Belt" }
                       ].map(t => {
-                        const isSelected = (playerTactics[idx] || "STANDARD") === t.id;
+                        const isSelected = (playerTactics[match.boutId || ""] || "STANDARD") === t.id;
                         return (
                           <button
                             key={t.id}
-                            onClick={() => onTacticChange(idx, t.id as any)}
+                            onClick={() => match.boutId && onTacticChange?.(match.boutId, t.id)}
                             className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
                           >
                             <div className="font-semibold text-xs">{t.label}</div>

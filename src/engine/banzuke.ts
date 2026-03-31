@@ -279,20 +279,22 @@ export function determineSpecialPrizes(
 
 // === MAIN UPDATE ===
 
+import type { Heya } from "./types/heya";
+
 /**
  * Update banzuke.
  *  * @param currentBanzuke - The Current banzuke.
- *  * @param performance - The Performance.
+ *  * @param perfById - The Performance map.
  *  * @param previousOzekiKadoban - The Previous ozeki kadoban.
+ *  * @param heyaMap - The Heya map for political bias.
  *  * @returns The result.
  */
 export function updateBanzuke(
   currentBanzuke: BanzukeEntry[],
-  performance: BashoPerformance[],
-  previousOzekiKadoban: OzekiKadobanMap = {}
+  perfById: Map<string, BashoPerformance>,
+  previousOzekiKadoban: OzekiKadobanMap = {},
+  heyaMap?: Map<string, Heya>
 ): BanzukeUpdateResult {
-  const perfById = new Map(performance.map((p) => [p.rikishiId, p]));
-
   // 1) Compute updated Ozeki kadoban states and mark Ozeki demotions.
   const updatedOzekiKadoban: OzekiKadobanMap = { ...previousOzekiKadoban };
   const demotedOzeki = new Set<string>();
@@ -328,14 +330,26 @@ export function updateBanzuke(
   // 4) Normalize roster to template size (crash-proofing).
   const roster = normalizeRosterToTemplate(currentBanzuke, fullTemplate.length);
 
-  // 5) Compute desired strength ordering using performance + absences + ceilings.
+  // 5) Compute desired strength ordering using performance + political bias (v1.7)
   const scored = roster.map((e) => {
     const p = perfById.get(e.rikishiId);
     const move = computeMovementUnits(e, p, demotedOzeki);
     const oldKey = positionKey(e);
-    const desiredKey = oldKey - move * 1_000; // bigger move => earlier
+    
+    // v1.7 Political Committee Bias (Real-Sumo Alignment)
+    let politicalWeight = 0;
+    if (heyaMap && e.rikishiId) {
+       // Find the rikishi's heya and checking its faction (Ichimon)
+       // This is a subtle tie-breaker (approx 0.5 wins worth of weight)
+       const heya = Array.from(heyaMap.values()).find(h => h.rikishiIds?.includes(e.rikishiId));
+       if (heya?.ichimon === "Dewanoumi") politicalWeight = 300; // Historical powerhouse bias
+       else if (heya?.ichimon === "Nishonoseki") politicalWeight = 250;
+       else if (heya?.ichimon) politicalWeight = 100; // Baseline faction benefit
+    }
+
+    const desiredKey = oldKey - (move * 1_000) - politicalWeight;
     const eligibleBestTier = bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki);
-    return { entry: e, oldKey, desiredKey, eligibleBestTier };
+    return { entry: e, oldKey, desiredKey, eligibleBestTier, politicalWeight };
   });
 
   scored.sort((a, b) => {

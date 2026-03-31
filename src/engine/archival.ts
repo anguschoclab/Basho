@@ -1,43 +1,105 @@
+/**
+ * archival.ts
+ * ============
+ * The 'Great Pruning' Engine.
+ * 
+ * Implements a tiered archival strategy to prevent save file bloat over decades of simulation.
+ * Legendaries (Sekiwake+) are preserved in full fidelity; others are summarized or minimalized.
+ */
+
 import type { WorldState } from "./types/world";
+import type { Rikishi } from "./types/rikishi";
+import type { Id } from "./types/common";
+
+/** Defines the structure for archived rikishi summary. */
+export interface ArchivedRikishiSummary {
+    id: Id;
+    shikona: string;
+    heyaId: Id;
+    highestRank: string;
+    debutYear: number;
+    retiredYear: number;
+    totalWins: number;
+    totalLosses: number;
+    yushoCount: number;
+    isLegendary: boolean;
+}
 
 /**
- * Prunes historical data based on world settings to preserve save-file health.
- * 
- * Logic:
- * - Aggressive: Keep only Makuuchi/Juryo logs for 2 years. Purge others.
- * - Standard: Keep all logs for 5 years. Purge lower division logs older than 5 years.
- * - Preserve Player: Never purge logs for player-owned Rikishi.
+ * Runs the archival process on a world state (usually before save).
+ * Mutates the world.historicalRikishi map to 'prune' non-legendary data.
  */
-export function runArchivalPruning(world: WorldState) {
-  const mode = world.settings?.archiveMode || "standard";
-  if (mode === "keep_all") return;
+export function runArchivalPruning(world: WorldState): void {
+    if (!world.historicalRikishi) return;
 
-  const currentYear = world.year;
-  const yearHorizon = mode === "aggressive" ? 2 : 5;
-  const cutOffYear = currentYear - yearHorizon;
+    for (const [id, r] of world.historicalRikishi) {
+        // If already pruned (is a summary object), skip
+        if ((r as any).isPruned) continue;
 
-  for (const rikishi of world.rikishi.values()) {
-    // Skip player-owned if setting allows
-    if (mode === "preserve_player" && rikishi.heyaId === world.playerHeyaId) continue;
+        const tier = determineArchivalTier(r);
 
-    // 1. Prune match logs (history)
-    if (rikishi.history) {
-      rikishi.history = rikishi.history.filter(log => {
-        if (log.year && log.year > cutOffYear) return true;
-        // Otherwise, if they are low-rank, prune it
-        if (rikishi.division !== "makuuchi" && rikishi.division !== "juryo") return false;
-        return (log.year || 0) > cutOffYear - 5; // Keep sekitori logs longer
-      });
+        if (tier === 1) {
+            // Tier 1: Legendary. Keep 100% data.
+            continue;
+        }
+
+        if (tier === 2) {
+            // Tier 2: Sekitori. Summarize career but keep milestones.
+            pruneToTier2(r);
+        } else {
+            // Tier 3: Clerical. Minimal record.
+            pruneToTier3(r);
+        }
+    }
+}
+
+/**
+ * Tier 1: Sekiwake or higher, OR any Top Division Yusho.
+ */
+function determineArchivalTier(r: Rikishi): 1 | 2 | 3 {
+    const sanyaku = ["yokozuna", "ozeki", "sekiwake"];
+    const highestRank = (r as any).highestRank || r.rank;
+    const yushoCount = (r.careerRecord?.yusho || 0);
+
+    if (sanyaku.includes(highestRank.toLowerCase()) || yushoCount > 0) {
+        return 1;
     }
 
-    // 2. Prune CareerSnapshots
-    if (rikishi.careerHistory) {
-      rikishi.careerHistory = rikishi.careerHistory.filter(snap => {
-        if (snap.isYusho) return true;
-        if (snap.year > cutOffYear) return true;
-        if (rikishi.division !== "makuuchi" && rikishi.division !== "juryo") return false;
-        return snap.year > cutOffYear - 10; // Keep sekitori snapshots for 10 years
-      });
+    const sekitori = ["komusubi", "maegashira", "juryo"];
+    if (sekitori.includes(highestRank.toLowerCase())) {
+        return 2;
     }
-  }
+
+    return 3;
+}
+
+function pruneToTier2(r: any): void {
+    r.isPruned = true;
+    r.pruningTier = 2;
+    
+    // Purge session-heavy data
+    delete r.bashoHistory;
+    delete r.pbpLogs;
+    delete r.trainingHistory;
+    delete r.perceptionHistory;
+
+    // Keep: Shikona, Career Stats, Milestones, Mentor
+}
+
+function pruneToTier3(r: any): void {
+    r.isPruned = true;
+    r.pruningTier = 3;
+
+    // Purge almost everything
+    delete r.bashoHistory;
+    delete r.pbpLogs;
+    delete r.trainingHistory;
+    delete r.perceptionHistory;
+    delete r.milestones;
+    delete r.economics;
+    delete r.baseStats;
+    delete r.currentStats;
+    delete r.skills;
+    
+    // Keep: Shikona, HeyaId, Debut/Retire Dates, Total Wins/Losses
 }

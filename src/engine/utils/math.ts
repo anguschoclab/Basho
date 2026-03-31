@@ -25,3 +25,14 @@ export function simpleHashToIndex(s: string, mod: number): number {
   }
   return (h >>> 0) % mod;
 }
+
+/**
+ * Formats a number as a Japanese Yen currency string.
+ */
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('ja-JP', {
+    style: 'currency',
+    currency: 'JPY',
+    maximumFractionDigits: 0
+  }).format(amount);
+}

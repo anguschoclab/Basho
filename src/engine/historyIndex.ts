@@ -93,7 +93,7 @@ interface BashoHistorySummary {
 }
 
 /** The full JSON-safe index */
-interface HistoryIndex {
+export interface HistoryIndex {
   version: "1.0.0";
 
   /** All basho keys in chronological order */

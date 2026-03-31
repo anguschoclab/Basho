@@ -6,6 +6,8 @@ import { RouterProvider } from "@tanstack/react-router";
 import { GameProvider } from "./contexts/GameContext";
 import { OpfsQuotaListener } from "./components/OpfsQuotaListener";
 import { ThemeProvider } from "./components/ThemeProvider";
+import ScoutingPage from './pages/ScoutingPage';
+import { HistoryDashboard } from './pages/HistoryDashboard';
 import { router } from "./routes";
 
 const queryClient = new QueryClient();

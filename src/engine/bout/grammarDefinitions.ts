@@ -3,31 +3,39 @@ import { TickResolutionEvent } from "../types/combat";
 export const VOCABULARY = {
   adverbs_heavy: [
     'brutally', 'massively', 'relentlessly', 'with crushing force', 'explosively', 'with daunting power',
-    'overwhelmingly', 'with sheer brute strength', 'ferociously', 'like a freight train', 'with devastating impact'
+    'overwhelmingly', 'with sheer brute strength', 'ferociously', 'like a freight train', 'with devastating impact',
+    'with bone-rattling force', 'savagely', 'with undeniable momentum', 'like an avalanche', 'with titanic pressure',
+    'unforgivingly'
   ],
   adverbs_fast: [
     'like lightning', 'swiftly', 'in a blur', 'with sharp precision', 'with cat-like speed', 'instantaneously',
-    'with blinding speed', 'rapidly', 'in a flash', 'with striking quickness', 'suddenly'
+    'with blinding speed', 'rapidly', 'in a flash', 'with striking quickness', 'suddenly',
+    'with supernatural agility', 'at breakneck speed', 'in the blink of an eye', 'with startling acceleration', 'like a phantom'
   ],
   adverbs_technical: [
     'methodically', 'with calculated precision', 'expertly', 'with master-class timing',
-    'tactically', 'with textbook form', 'flawlessly', 'with incredible savvy', 'astutely', 'with surgical precision', 'cleverly'
+    'tactically', 'with textbook form', 'flawlessly', 'with incredible savvy', 'astutely', 'with surgical precision', 'cleverly',
+    'with veteran guile', 'showing immense ring IQ', 'with geometric perfection', 'like a seasoned tactician', 'with profound situational awareness'
   ],
   verbs_push: [
     'shoves', 'drives into', 'blasts', 'rams', 'pummels', 'shunts',
-    'bulldozes', 'batters', 'thrusts into', 'steamrolls', 'smashes into'
+    'bulldozes', 'batters', 'thrusts into', 'steamrolls', 'smashes into',
+    'plows through', 'launches a barrage against', 'overpowers', 'forces back', 'hammers at'
   ],
   verbs_trick: [
     'sidesteps', 'redirects', 'pulls down on', 'feints against', 'parries', 'outmaneuvers',
-    'slips past', 'evades and redirects', 'deflects', 'baits', 'bamboozles'
+    'slips past', 'evades and redirects', 'deflects', 'baits', 'bamboozles',
+    'slips the charge of', 'uses the momentum of', 'expertly dodges', 'sends flying', 'creates a massive opening against'
   ],
   verbs_belt: [
     'locks onto', 'seizes', 'wrenches', 'hauls', 'grips', 'cinches',
-    'clutches', 'latches onto', 'snatches', 'hooks into', 'grapples'
+    'clutches', 'latches onto', 'snatches', 'hooks into', 'grapples',
+    'digs deep into the mawashi of', 'establishes iron control over', 'binds up', 'wraps up', 'anchors onto'
   ],
   verbs_speed: [
     'flanks', 'dashes past', 'circles', 'flickers around', 'evades', 'darts inside',
-    'slips inside', 'dances around', 'weaves past', 'maneuvers around', 'shoots past'
+    'slips inside', 'dances around', 'weaves past', 'maneuvers around', 'shoots past',
+    'bypasses the defense of', 'twirls around', 'finds the angle on', 'cuts the corner against', 'outpaces'
   ],
   
 
@@ -40,29 +48,37 @@ export const VOCABULARY = {
   // State-driven decorators
   decorator_exhausted: [
     'gasping for air', 'running on fumes', 'heaving', 'clearly spent',
-    'exhausted beyond measure', 'visibly drained', 'running on empty', 'completely out of breath', 'struggling for oxygen'
+    'exhausted beyond measure', 'visibly drained', 'running on empty', 'completely out of breath', 'struggling for oxygen',
+    'legs looking like jelly', 'chest heaving violently', 'barely able to stand', 'fighting through pure exhaustion', 'looking completely winded'
   ],
   decorator_gasping: [
-    'breathing heavily', 'showing signs of fatigue', 'laboring for breath', 'starting to tire', 'panting slightly'
+    'breathing heavily', 'showing signs of fatigue', 'laboring for breath', 'starting to tire', 'panting slightly',
+    'drawing deep breaths', 'mouth wide open', 'shoulders slumping', 'looking a bit flushed', 'sweating profusely'
   ],
   decorator_wobbling: [
     'teetering on the edge', 'scrambling for footing', 'visibly off-balance', 'struggling to stay upright',
-    'swaying unsteadily', 'losing their center', 'stumbling backward', 'trying to regain balance', 'on shaky legs'
+    'swaying unsteadily', 'losing their center', 'stumbling backward', 'trying to regain balance', 'on shaky legs',
+    'with compromised posture', 'awkwardly backpedaling', 'flailing for stability', 'with their center of gravity completely ruined', 'staggering'
   ],
   decorator_critical: [
-    'on the verge of collapse', 'dead to rights', 'completely unmoored', 'with no balance left', 'in a desperate spot'
+    'on the verge of collapse', 'dead to rights', 'completely unmoored', 'with no balance left', 'in a desperate spot',
+    'with nowhere left to go', 'absolutely helpless', 'at the mercy of the attacker', 'in a disastrous position', 'with their defense completely shattered'
   ],
   decorator_reversal: [
-    'What a turnaround!', 'The tables have turned!', 'A sudden shift in momentum!', 'Incredible reversal!', 'A shocking counterattack!'
+    'What a turnaround!', 'The tables have turned!', 'A sudden shift in momentum!', 'Incredible reversal!', 'A shocking counterattack!',
+    'Out of nowhere!', 'Just when it seemed over!', 'A dramatic shift in the tide!', 'Unbelievable defensive transition!', 'A spectacular counter!'
   ],
   decorator_edge: [
-    'right at the bales', 'dancing on the straw', 'perilously close to the edge', 'at the very brink of the ring', 'with heels on the tawara'
+    'right at the bales', 'dancing on the straw', 'perilously close to the edge', 'at the very brink of the ring', 'with heels on the tawara',
+    'with no real estate left', 'staring down the drop-off', 'balancing on the absolute boundary', 'with toes brushing the bales', 'cornered at the edge'
   ],
   decorator_rivalry: [
-    'in a bitter clash', 'with bad blood boiling', 'fueled by their intense rivalry', 'in a grudge match', 'with pride on the line'
+    'in a bitter clash', 'with bad blood boiling', 'fueled by their intense rivalry', 'in a grudge match', 'with pride on the line',
+    'fighting like they genuinely hate each other', 'with a history of fierce battles', 'in a deeply personal matchup', 'trading blows fueled by animosity', 'in the latest chapter of this epic rivalry'
   ],
   decorator_championship: [
-    'with the Emperor\'s Cup looming', 'in a bout with massive title implications', 'under the blinding lights of championship stakes', 'with the yusho at stake', 'in a title-defining moment'
+    'with the Emperor\'s Cup looming', 'in a bout with massive title implications', 'under the blinding lights of championship stakes', 'with the yusho at stake', 'in a title-defining moment',
+    'feeling the crushing pressure of the race', 'with the entire nation watching', 'in a crucial turning point for the tournament', 'chasing sumo immortality', 'with destiny calling'
   ],
 
   ZABUTON_RAIN: "A historic kinboshi! The arena erupts into chaos as a rain of purple zabuton floods the dohyo!",
@@ -137,7 +153,12 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
     "Using every ounce of power, [Attacker] [verbs_push] [Defender] backward [decorator_edge?]!",
     "[Attacker] unleashes a flurry of thrusts and [verbs_push] [Defender] [decorator_critical?]!",
     "[decorator_championship?] [Attacker] [verbs_push] [Defender] with unyielding force!",
-    "[decorator_rivalry?] [Attacker] [adverbs_heavy] [verbs_push] the staggering [Defender]!"
+    "[decorator_rivalry?] [Attacker] [adverbs_heavy] [verbs_push] the staggering [Defender]!",
+    "[decorator_reversal?] What raw power! [Attacker] [adverbs_heavy] [verbs_push] [Defender]!",
+    "No subtlety here, [Attacker] [adverbs_heavy] [verbs_push] directly into the chest of [Defender] [decorator_edge?]!",
+    "[decorator_championship?] A thunderous clash! [Attacker] [verbs_push] [Defender] [decorator_wobbling?]!",
+    "Relentless tsuppari! [Attacker] [verbs_push] the beleaguered [Defender] [decorator_critical?]!",
+    "[Attacker], [decorator_exhausted?], summons one last surge and [verbs_push] [Defender]!"
   ],
   trick_success: [
     "[decorator_reversal?] [Attacker] [adverbs_fast] [verbs_trick] [Defender]'s charge!",
@@ -147,7 +168,12 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
     "With a sudden burst of ingenuity, [Attacker] [verbs_trick] [Defender] [decorator_wobbling?]!",
     "[decorator_rivalry?] [Attacker] [verbs_trick] the onrushing [Defender] with a deft maneuver!",
     "[decorator_reversal?] [Attacker] [adverbs_technical] [verbs_trick] [Defender], leaving them grasping at air!",
-    "[Attacker], [decorator_gasping?], manages to [verbs_trick] [Defender] just in time!"
+    "[Attacker], [decorator_gasping?], manages to [verbs_trick] [Defender] just in time!",
+    "Like a matador! [Attacker] [adverbs_technical] [verbs_trick] the charging [Defender] [decorator_critical?]!",
+    "[decorator_reversal?] An astonishing sleight of hand! [Attacker] [verbs_trick] [Defender] [decorator_edge?]!",
+    "[Attacker] feints perfectly, and [verbs_trick] the overcommitted [Defender]!",
+    "A textbook pull-down attempt! [Attacker] [adverbs_fast] [verbs_trick] [Defender]!",
+    "[decorator_championship?] The wily [Attacker] [verbs_trick] [Defender] with a masterful display of judo!"
   ],
   belt_success: [
     "[decorator_reversal?] [Attacker] [adverbs_heavy] [verbs_belt] the mawashi of [Defender] [decorator_edge?]!",
@@ -157,7 +183,12 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
     "[decorator_rivalry?] [Attacker] [adverbs_heavy] [verbs_belt] [Defender] in a crushing embrace!",
     "Fighting through the fatigue, [Attacker], [decorator_exhausted?], [verbs_belt] [Defender]!",
     "[decorator_reversal?] [Attacker] secures an inside position and [verbs_belt] [Defender]!",
-    "[Attacker] [adverbs_technical] [verbs_belt] [Defender], forcing them into a defensive posture [decorator_wobbling?]!"
+    "[Attacker] [adverbs_technical] [verbs_belt] [Defender], forcing them into a defensive posture [decorator_wobbling?]!",
+    "A battle for the inside! [Attacker] [verbs_belt] the belt and anchors [Defender] [decorator_edge?]!",
+    "[decorator_championship?] [Attacker] [adverbs_heavy] [verbs_belt] the front mawashi of [Defender]!",
+    "[decorator_reversal?] A sudden shift in the grapple! [Attacker] [verbs_belt] [Defender] [decorator_critical?]!",
+    "With vice-like grip strength, [Attacker] [verbs_belt] [Defender] and halts their momentum completely!",
+    "The crowd hums as [Attacker] finally [verbs_belt] [Defender] into a stalemate!"
   ],
   speed_success: [
     "[decorator_reversal?] [Attacker] [adverbs_fast] [verbs_speed] the lunging [Defender] [decorator_edge?]!",
@@ -167,7 +198,12 @@ export const SENTENCE_TEMPLATES: Record<string, string[]> = {
     "[decorator_rivalry?] [Attacker] [verbs_speed] [Defender], creating a massive opening!",
     "[decorator_reversal?] [Attacker] [adverbs_fast] [verbs_speed] [Defender], flipping the script completely!",
     "Despite being [decorator_exhausted?], [Attacker] [verbs_speed] [Defender] in a flash!",
-    "[Attacker] deftly [verbs_speed] [Defender], exploiting their lack of balance [decorator_wobbling?]!"
+    "[Attacker] deftly [verbs_speed] [Defender], exploiting their lack of balance [decorator_wobbling?]!",
+    "A masterclass in footwork! [Attacker] [adverbs_fast] [verbs_speed] the much slower [Defender]!",
+    "[decorator_championship?] Lightning strikes! [Attacker] [verbs_speed] [Defender] before they can even set up!",
+    "[decorator_reversal?] Blistering pace! [Attacker] [verbs_speed] [Defender] [decorator_edge?]!",
+    "With a rapid shuffle, [Attacker] [verbs_speed] the incoming barrage from [Defender]!",
+    "[Attacker] uses the lateral movement perfectly and [verbs_speed] [Defender] [decorator_critical?]!"
   ],
   repeated_action: [
     "[Attacker] relentlessly goes back to the well! Another [action_name]!",
@@ -188,35 +224,60 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "[Rikishi] seen in midnight scuffle after heavy drinking.",
     "EXCLUSIVE: [Rikishi] Spotted in Roppongi at 3 AM Following Brutal Loss!",
     "FLASH: Midnight brawl at the bar! Was [Rikishi] involved?",
-    "TABLOID: [Rikishi] seen throwing punches outside an Osaka club."
+    "TABLOID: [Rikishi] seen throwing punches outside an Osaka club.",
+    "Police Called to Late-Night Dispute: Is [Rikishi] to Blame?",
+    "SCANDAL: Bloodied [Rikishi] spotted fleeing a Ginza nightclub!",
+    "The Dark Side of Sumo: [Rikishi] embroiled in violent street clash.",
+    "Eyewitness Report: [Rikishi] 'out of control' during drunken tirade.",
+    "Disgraceful! [Rikishi] caught on camera in alleyway brawl."
   ],
   SECRET_INJURY_LEAK: [
     "Is [Rikishi] hiding a knee injury? Insiders speak.",
     "Rumors of [Rikishi]'s training absence confirmed?",
     "Rumbling in the Heya: Is [Rikishi] Hiding a Devastating Knee Injury?",
     "Whispers in the Kokugikan: Has [Rikishi] lost the fighting spirit?",
-    "Medical Leak: The truth about [Rikishi]'s physical condition."
+    "Medical Leak: The truth about [Rikishi]'s physical condition.",
+    "Sources: [Rikishi] relying on heavy painkillers to survive the basho.",
+    "EXCLUSIVE X-RAYS LEAKED: Is [Rikishi]'s career effectively over?",
+    "The Silent Agony: [Rikishi] reportedly struggling to even walk after bouts.",
+    "Cover-up at the stable? Oyakata denies rumors of [Rikishi]'s severe tear.",
+    "Doctors Warn [Rikishi] That Further Bouts Risk Permanent Paralysis."
   ],
   ILLEGAL_GAMBLING: [
     "SHOCKING: [Rikishi] linked to illegal betting ring!",
     "[Rikishi] faces investigation over 'dark' associations.",
     "EXPOSED: The secret gambling debts of [Rikishi] threatening their career!",
     "TABLOID: [Rikishi] seen with questionable associates in Osaka.",
-    "JSA calls emergency meeting over [Rikishi]'s financial irregularities."
+    "JSA calls emergency meeting over [Rikishi]'s financial irregularities.",
+    "Yakuza Ties Alleged! [Rikishi] suspected of massive underground gambling debt.",
+    "Police Raid Uncovers Ledger Naming [Rikishi] in Illegal Baseball Betting.",
+    "Sponsors Flee as [Rikishi] Faces Blackmail Over Gambling Debts.",
+    "High-Stakes Poker Ring Busted: [Rikishi] named as frequent participant.",
+    "The Fall of a Hero: How gambling addiction might end [Rikishi]'s run."
   ],
   TRAINING_ABUSE_ALLEGATION: [
     "Crisis at the heya: [Rikishi] accused of harsh behavior.",
     "Stablemate speaks out against [Rikishi]'s training methods.",
     "SCANDAL: [Rikishi] allegedly goes too far during morning keiko!",
     "Questions Surround [Rikishi]'s aggressive approach to junior wrestlers.",
-    "JSA Insiders report growing concerns regarding [Rikishi]'s brutal training sessions."
+    "JSA Insiders report growing concerns regarding [Rikishi]'s brutal training sessions.",
+    "Tears in the Dojo: Young recruit hospitalized after beating by [Rikishi].",
+    "Whistleblower Exposes 'Torture' Keiko Sessions Led by [Rikishi].",
+    "Is it Tradition or Abuse? The shocking allegations against [Rikishi].",
+    "Oyakata Looks the Other Way as [Rikishi] terrorizes stablemates.",
+    "Anonymous Complaint Filed Against [Rikishi] For Hazing Violations."
   ],
   COACH_DISPUTE: [
     "[Rikishi] and Coach at odds! Tensions boiling over.",
     "Public fallout: [Rikishi] seen arguing with Oyakata.",
     "Sports Daily: [Rikishi] missed morning keiko; rumors of internal rift.",
     "Veteran Oyakata publicly reprimands [Rikishi] for a lack of professionalism.",
-    "Editorial: The decline of discipline? [Rikishi] clashes with stablemaster."
+    "Editorial: The decline of discipline? [Rikishi] clashes with stablemaster.",
+    "Mutiny in the Stable: [Rikishi] demands transfer after explosive argument.",
+    "Oyakata Threatens to Retire [Rikishi] Following Disrespectful Outburst.",
+    "The Silent Treatment: [Rikishi] and Stablemaster Haven't Spoken in Weeks.",
+    "Generational Divide: [Rikishi] openly defies Oyakata's traditional training orders.",
+    "Locker Room Divided as [Rikishi] Challenges Stablemaster's Authority."
   ],
 
   TABLOID_SCANDAL: [
@@ -227,7 +288,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "SCANDAL: [Rikishi] allegedly skips keiko to meet a mysterious companion!",
     "Busted! [Rikishi] caught indulging in late-night fast food before weigh-ins.",
     "Whispers in the Kokugikan: Has [Rikishi] lost the fighting spirit?",
-    "EXPOSED: The secret gambling debts of [Rikishi] threatening their career!"
+    "EXPOSED: The secret gambling debts of [Rikishi] threatening their career!",
+    "SHOCK PHOTOS: [Rikishi] breaking curfew with an unknown celebrity!",
+    "The Secret Double Life of [Rikishi] Finally Revealed!",
+    "Is [Rikishi] faking their recent poor form to cover up a wild lifestyle?",
+    "You Won't Believe What [Rikishi] Was Caught Doing Backstage!",
+    "Rumors swirling that [Rikishi] is planning to quit sumo for pro wrestling."
   ],
   SPORTS_DAILY_SCANDAL: [
     "Questions Surround [Rikishi]'s Focus Ahead of the Upcoming Basho.",
@@ -237,7 +303,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "JSA Insiders report growing concerns regarding [Rikishi]'s commitment.",
     "An analysis of [Rikishi]'s poor performance: Is off-dohyo drama to blame?",
     "Veteran Oyakata publicly reprimands [Rikishi] for a lack of professionalism.",
-    "[Rikishi]'s sponsors express dismay as rumors of misbehavior circulate."
+    "[Rikishi]'s sponsors express dismay as rumors of misbehavior circulate.",
+    "Column: [Rikishi] Must Address Off-Ring Issues Before They Derail Their Career.",
+    "Statistical Drop: Has the recent controversy permanently rattled [Rikishi]?",
+    "Stablemaster Promises Thorough Internal Investigation into [Rikishi]'s Actions.",
+    "Public Perception Plummets for [Rikishi] Following Weeks of Negative Headlines.",
+    "Is the Pressure Too Much? [Rikishi] Shows Visible Strain in Interviews."
   ],
   JSA_OFFICIAL_RESPONSE: [
     "JSA Issues Formal Warning to [Rikishi] Regarding Code of Conduct.",
@@ -247,52 +318,111 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "JSA Press Release: [Rikishi] mandated to undergo ethics retraining.",
     "The Japan Sumo Association formally reprimands [Rikishi] for conduct detrimental to the sport.",
     "Notice of Hearing: [Rikishi] summoned before the Compliance Committee.",
-    "JSA announces strict probationary measures for [Rikishi] following recent events."
+    "JSA announces strict probationary measures for [Rikishi] following recent events.",
+    "Official Ruling: [Rikishi] faces potential demotion if behavior does not improve.",
+    "JSA Chairman Expresses 'Deep Disappointment' over [Rikishi]'s Actions.",
+    "The Association Confirms Ongoing Surveillance of [Rikishi]'s Off-Ring Activities.",
+    "Strict Gag Order Imposed on [Rikishi]'s Stable Pending Board Review.",
+    "JSA Demands Public Apology from [Rikishi] Following Disgraceful Incident."
   ]
 };
 
 export const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
+  event_scout_strict: [
+    "Oyakata demands the recruit demonstrate absolute obedience and discipline from day one.",
+    "The stablemaster observes in stoic silence, looking for strict adherence to basic forms.",
+    "A rigorous test of physical endurance reveals the recruit's unyielding resolve.",
+    "Oyakata emphasizes that only endless repetition and strict adherence will lead to greatness.",
+    "The recruit is sternly reminded of the harsh realities and iron rules of disciplined stable life.",
+    "With a cold stare, Oyakata outlines the exact expectations required to survive the grueling keiko.",
+    "The evaluation is devoid of praise; Oyakata only points out flaws to test the recruit's humility.",
+    "A terse, uncompromising interview leaves the prospect fully aware of the strict hierarchy ahead.",
+    "Oyakata makes it clear that frivolity will not be tolerated under his roof.",
+    "The contract is offered with a grim warning: fail to follow instructions, and you will be expelled."
+  ],
+  event_scout_indulgent: [
+    "Oyakata warmly welcomes the recruit, promising a lenient environment to find their feet.",
+    "The stablemaster focuses on the recruit's character, humor, and relaxed well-being.",
+    "Oyakata patiently explains the path to a long, easy career in the sport, emphasizing rest.",
+    "Seeing potential for steady growth, the stablemaster offers the recruit a comfortable haven to develop.",
+    "The recruit is reassured by Oyakata's indulgent approach, promising frequent breaks and good food.",
+    "With a jovial laugh, Oyakata dismisses minor technical flaws, praising the prospect's natural spirit.",
+    "The stablemaster assures the recruit that the heya is like a family, and mistakes are easily forgiven.",
+    "An unusually relaxed scouting session ends with Oyakata taking the prospect out for a lavish chanko dinner.",
+    "Oyakata emphasizes that a happy rikishi is a strong rikishi, much to the prospect's relief.",
+    "The recruit signs eagerly, drawn to the stablemaster's famously easygoing and permissive reputation."
+  ],
   event_scout_traditionalist: [
     "Oyakata demands the recruit demonstrate pure fighting spirit.",
     "The stablemaster observes in stoic silence, looking for grit and traditional sumo fundamentals.",
     "A rigorous test of physical endurance reveals the recruit's unyielding resolve.",
     "Oyakata emphasizes that only endless repetition and yotsu-sumo will lead to greatness.",
-    "The recruit is sternly reminded of the harsh realities of traditional stable life."
+    "The recruit is sternly reminded of the harsh realities of traditional stable life.",
+    "The scouting session focuses entirely on the ancient customs and respect for the dohyo.",
+    "Oyakata dismisses modern athletic metrics, insisting that true strength comes from the heart.",
+    "The prospect is evaluated purely on their willingness to perform shiko until collapse.",
+    "A lecture on the history of the sport dominates the interview, testing the recruit's reverence.",
+    "Oyakata looks for a rikishi who embodies the stoic, uncomplaining samurai spirit of old."
   ],
   event_scout_scientist: [
     "Oyakata reviews the recruit's biometric data and physical testing metrics.",
     "A thorough analysis of the recruit's fast-twitch muscle fibers impresses the stablemaster.",
     "Oyakata discusses a structured nutritional and sport science regimen with the prospect.",
     "The scout values the recruit's anatomical leverage over their raw weight.",
-    "Data-driven projections suggest this recruit has a high ceiling if proper technique is applied."
+    "Data-driven projections suggest this recruit has a high ceiling if proper technique is applied.",
+    "The interview revolves around VO2 max, recovery rates, and optimal calorie intake.",
+    "Oyakata uses slow-motion video analysis to critique the prospect's tachiai mechanics.",
+    "A modern, clinical approach defines the scouting trip, leaving nothing to chance or 'gut feeling'.",
+    "The stablemaster believes this recruit's unique biomechanics can be optimized for peak performance.",
+    "Oyakata presents a spreadsheet outlining a three-year, data-backed development plan."
   ],
   event_scout_gambler: [
     "Oyakata makes a bold wager, taking a chance on the highly volatile prospect.",
     "Seeing a high-risk, high-reward potential, the stablemaster aggressively pursues the recruit.",
     "Oyakata trusts their gut feeling over conventional scouting reports, dreaming of glory.",
     "A massive gamble! Oyakata pushes all in to recruit this raw, unpolished talent.",
-    "The stablemaster envisions a quick, explosive rise to the top, ignoring obvious red flags."
+    "The stablemaster envisions a quick, explosive rise to the top, ignoring obvious red flags.",
+    "Dismissing the injury history, Oyakata bets everything on the prospect's undeniable raw power.",
+    "Oyakata loves the thrill of an unknown quantity, signing the unproven amateur on a whim.",
+    "It's a boom-or-bust acquisition, but the stablemaster is addicted to the high-stakes potential.",
+    "Against the advice of the elders, Oyakata rolls the dice on the controversial recruit.",
+    "The stablemaster believes they've found a hidden gem that will shock the entire sumo world."
   ],
   event_scout_nurturer: [
     "Oyakata warmly welcomes the recruit, promising a supportive and family-like environment.",
     "The stablemaster focuses on the recruit's character and long-term well-being.",
     "Oyakata patiently explains the path to a long, healthy career in the grueling sport.",
     "Seeing potential for steady growth, the stablemaster offers the recruit a safe haven to develop.",
-    "The recruit is reassured by Oyakata's compassionate approach and promises of mentorship."
+    "The recruit is reassured by Oyakata's compassionate approach and promises of mentorship.",
+    "The scouting trip feels more like an adoption, with Oyakata focusing on the prospect's emotional needs.",
+    "Oyakata promises the parents that their child will be cared for physically, mentally, and spiritually.",
+    "The stablemaster emphasizes injury prevention and holistic development over immediate results.",
+    "A gentle, encouraging evaluation leaves the prospect feeling valued and deeply understood.",
+    "Oyakata pledges to guide the young rikishi through both the triumphs and inevitable heartbreaks."
   ],
   event_scout_tyrant: [
     "Oyakata ruthlessly berates the recruit during tryouts, testing their psychological breaking point.",
     "The stablemaster demands absolute obedience and immediate results, striking fear into the prospect.",
     "A brutal, uncompromising evaluation leaves the recruit exhausted but contracted.",
     "Oyakata makes it clear: failure to perform will not be tolerated in this stable.",
-    "The recruit signs under immense pressure, terrified of the tyrant's notorious wrath."
+    "The recruit signs under immense pressure, terrified of the tyrant's notorious wrath.",
+    "The interview is an interrogation, with Oyakata seeking to crush any signs of weakness or ego.",
+    "Oyakata promises nothing but pain, suffering, and relentless demands.",
+    "The prospect is verbally battered until they submit completely to the stablemaster's absolute authority.",
+    "A terrifying aura surrounds Oyakata, who accepts the recruit only as a new tool to be broken and remade.",
+    "The scouting session is a display of pure dominance; the recruit is merely the latest subject."
   ],
   event_scout_strategist: [
     "Oyakata cunningly evaluates how the recruit fits into the current sumo meta.",
     "A calculated assessment of the recruit's tactical adaptability impresses the stablemaster.",
     "Oyakata plans a highly specialized development track for the unique prospect.",
     "The stablemaster analyzes the recruit's potential to exploit weaknesses in modern opponents.",
-    "A strategic acquisition! Oyakata believes this recruit is the missing piece for the stable."
+    "A strategic acquisition! Oyakata believes this recruit is the missing piece for the stable.",
+    "Oyakata sees the prospect not just as a wrestler, but as a specific counter-measure to a rival stable.",
+    "The interview focuses heavily on fight IQ, situational awareness, and adaptability.",
+    "A masterplan is already forming in Oyakata's mind; this recruit is the perfect chess piece.",
+    "The stablemaster outlines a clever, unorthodox path to the top divisions for the new signing.",
+    "Every strength and weakness is cataloged to maximize the prospect's tactical advantage."
   ],
 
   event_governance_strict: [

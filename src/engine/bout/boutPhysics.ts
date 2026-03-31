@@ -101,6 +101,7 @@ export interface EngineState {
   mizuiriDeclared: boolean; // NEW
   tacticalResult?: import("../types/combat").TacticalResult;
   playerSide?: import("../types/banzuke").Side;
+  playerTactic?: import("../types/combat").BoutTactic;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
   eastId: string;
   westId: string;
@@ -110,6 +111,8 @@ export interface EngineState {
   lastAdvantage?: Advantage;
   day: number;
   grappleState: GrappleState;
+  eastTacticalPivotTick?: number; // v1.7
+  westTacticalPivotTick?: number; // v1.7
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -308,8 +311,76 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
  * AI Action Selection Logic
  */
 function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
+  const isEast = r.id === st.eastId;
+  const isPlayer = st.playerSide && (st.playerSide === (isEast ? 'east' : 'west'));
+  
+  // v1.7 Mid-Bout Tactical Intelligence (CPU Only)
+  if (!isPlayer && st.tick > 5) {
+     const mental = stat(r, 'mental');
+     const balance = isEast ? st.balanceEast : st.balanceWest;
+     const lastPivot = isEast ? st.eastTacticalPivotTick : st.westTacticalPivotTick;
+     
+     // Smarter rikishi pivot when losing balance (A8.1 compliant)
+     if (mental > 60 && balance < 35 && (!lastPivot || st.tick - lastPivot > 20)) {
+        const currentTactic = st.cpuTacticOverride || 'STANDARD';
+        let newTactic: import("../types/combat").BoutTactic = currentTactic;
+
+        // Advantage check: if opponent has advantage, pivot to defensive/trick tactic
+        if (st.advantage === (isEast ? 'west' : 'east')) {
+           // If we're being pushed and have high technique, try to SLAP DOWN (OSHI -> TRICK)
+           if (st.stance === 'push-dominant' && stat(r, 'technique') > 60) {
+              newTactic = 'HENKA'; // Desperation slap-down
+           } else if (st.stance === 'push-dominant') {
+              newTactic = 'YOTSU_BELT'; // Try to grab and stabilize
+           } else if (st.stance === 'belt-dominant') {
+              newTactic = 'OSHI_THRUST'; // Try to break the grip with thrusts
+           }
+        }
+
+        if (newTactic !== currentTactic) {
+           st.cpuTacticOverride = newTactic;
+           if (isEast) st.eastTacticalPivotTick = st.tick;
+           else st.westTacticalPivotTick = st.tick;
+
+           st.log.push({
+              phase: 'engagement',
+              data: {
+                 event: 'tactical_adaptation',
+                 side: isEast ? 'east' : 'west',
+                 reason: 'balance_critical',
+                 newTactic
+              }
+           });
+        }
+     }
+  }
+
+  const tactic = isPlayer ? st.playerTactic : (st.cpuTacticOverride || 'STANDARD');
+
+  // Handle Henka (Force trick on Tachiai only)
+  if (st.tick === 0 && tactic === 'HENKA') {
+    const move = pickMoveFromClass(rng, undefined, r, opponent, st, 'trick', 'hatakikomi');
+    return {
+      family: 'trick',
+      intent: 'attack',
+      targetKimariteClass: 'slap_pull',
+      statWeighting: move.statWeights,
+      moveId: move.id,
+      isHighRisk: true
+    };
+  }
+
+  // Handle Tactic Biases
   const profile = r.combatProfile || { familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 } };
   const prefs = { ...profile.familyPreferences };
+
+  if (tactic === 'OSHI_THRUST') {
+    prefs.push *= 5.0;
+    prefs.belt *= 0.1;
+  } else if (tactic === 'YOTSU_BELT') {
+    prefs.belt *= 5.0;
+    prefs.push *= 0.1;
+  }
   
   // v1.3.1 Dynamic Tactical Shifts
   // 1. Trickster Edge Case: If in a belt state, prioritize belt moves for survival
@@ -869,6 +940,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     log: [],
     mizuiriDeclared: false,
     playerSide: bout.playerSide,
+    playerTactic: bout.playerTactic,
+    cpuTacticOverride: bout.cpuTacticOverride,
     eastId: east.id,
     westId: west.id,
     lastAdvantage: 'none',

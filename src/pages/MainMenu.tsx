@@ -1,23 +1,10 @@
-// MainMenu.tsx
-// Main Menu - Unified FTUE stable selection flow
-// Follows Foundations Canon v2.0: World Entry & Stable Selection
-//
-// DROP-IN FIXES (runtime + canon):
-// - Canon rename: Stable Lords -> Basho (titles + copy)
-// - Removed Math.random() from seed generation (deterministic-friendly)
-// - Fixed "Sekitori: Yes/None" to actual sekitori count
-// - Fixed createWorld usage on importSave: loads imported world directly when supported; safe fallback otherwise
-// - Improved recommended stables selection to avoid relying on reputation if missing
-// - Safer reroll seed + seed display (no substring crash)
-// - Stronger type alignment: selectionMode uses StableSelectionMode from engine types when available
-//
-// ADDITIONAL HARDENING / REFACTOR:
-// - Never calls hooks inside handlers
-// - Discovers optional direct world hydrate APIs safely (loadWorldDirect/loadImportedWorld/setWorld/hydrateWorld)
-// - Avoids double-worldgen loops by syncing local seed state with loaded world seed
-// - Guards optional heya.riskIndicators and heya.rikishiIds
-// - Adds heya preview dialog with roster + stats; selecting a heya uses a single confirm path
-// - Removes fragile use of RANK_HIERARCHY.order (uses tier when available)
+/**
+ * MainMenu.tsx
+ * 
+ * Unified Main Entry & Stable Selection Flow.
+ * Features a "Rich Aesthetics" Heroic design with Noto Serif JP overlays.
+ * Architecturally decomposed into modular sub-components for maintainability.
+ */
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
@@ -25,301 +12,61 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter
-} from "@/components/ui/dialog";
-import {
-  CircleDot,
-  Dices,
-  ArrowRight,
-  Building2,
-  Star,
-  Sparkles,
-  AlertTriangle,
-  TrendingDown,
+import { 
+  Building2, 
+  Star, 
+  Sparkles, 
+  RefreshCw, 
+  Dices, 
+  ChevronRight,
   Shield,
-  Plus,
-  RefreshCw,
-  Save,
-  FolderOpen,
-  Trash2,
-  Upload,
-  Clock
+  History,
+  TrendingDown,
+  AlertTriangle,
+  Plus
 } from "lucide-react";
+
+import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
+import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
+import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
+import { HeyaPreview } from "@/components/menu/HeyaPreview";
+import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
-import type { BashoName } from "@/engine/types/basho";
-import type { SaveSlotInfo  } from "@/engine/saveload";
-import { BASHO_CALENDAR, RANK_HIERARCHY, deleteSave, importSave } from "@/presenters/uiDigest";
 
-const STATURE_CONFIG: Record<
-  StatureBand,
-  {
-    label: string;
-    labelJa: string;
-    difficulty: string;
-    color: string;
-    icon: typeof Star;
-  }
-> = {
-  legendary: {
-    label: "Legendary",
-    labelJa: "伝説",
-    difficulty: "Very Easy",
-    color: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-    icon: Star
-  },
-  powerful: {
-    label: "Powerful",
-    labelJa: "強豪",
-    difficulty: "Easy",
-    color: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    icon: Sparkles
-  },
-  established: {
-    label: "Established",
-    labelJa: "安定",
-    difficulty: "Normal",
-    color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    icon: Building2
-  },
-  rebuilding: {
-    label: "Rebuilding",
-    labelJa: "再建中",
-    difficulty: "Hard",
-    color: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    icon: TrendingDown
-  },
-  fragile: {
-    label: "Fragile",
-    labelJa: "危機",
-    difficulty: "Very Hard",
-    color: "bg-red-500/20 text-red-400 border-red-500/30",
-    icon: AlertTriangle
-  },
-  new: {
-    label: "New",
-    labelJa: "新規",
-    difficulty: "Extreme",
-    color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    icon: Plus
-  }
-};
-
-const HEYA_NAMES_COUNT = 45;
-
-/** Defines the structure for stable card props. */
-interface StableCardProps {
-  heya: Heya;
-  isSelected: boolean;
-  onSelect: () => void;
-  onPreview?: () => void;
-  isRecommended?: boolean;
-  sekitoriCount: number;
-}
-
-/**
- * stable card.
- *  * @param { heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount } - The { heya, is selected, on select, on preview, is recommended, sekitori count }.
- */
-function StableCard({ heya, isSelected, onSelect, onPreview, isRecommended, sekitoriCount }: StableCardProps) {
-  const config = STATURE_CONFIG[heya.statureBand];
-  const Icon = config.icon;
-
-  const financial = !!(heya as any)?.riskIndicators?.financial;
-  const governance = !!(heya as any)?.riskIndicators?.governance;
-  const rivalry = !!(heya as any)?.riskIndicators?.rivalry;
-
-  return (
-    <Card
-      className={`cursor-pointer transition-all hover:border-primary/50 ${
-        isSelected ? "border-primary ring-2 ring-primary/30" : ""
-      }`}
-      onClick={onSelect}
-      onDoubleClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onPreview?.();
-      }}
-      title="Click to select • Double-click to preview roster"
-    >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <span className="truncate">{heya.name}</span>
-              {isRecommended && (
-                <Badge variant="secondary" className="text-xs">
-                  Recommended
-                </Badge>
-              )}
-            </CardTitle>
-            {heya.nameJa && <p className="text-sm text-muted-foreground font-display truncate">{heya.nameJa}</p>}
-          </div>
-          <Badge className={`${config.color} border shrink-0`}>
-            <Icon className="w-3 h-3 mr-1" />
-            {config.label}
-          </Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-2">
-        {heya.descriptor && <p className="text-sm text-muted-foreground italic">{heya.descriptor}</p>}
-
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className="text-muted-foreground">
-            Difficulty: <span className="text-foreground font-medium">{config.difficulty}</span>
-          </span>
-          <span className="text-muted-foreground">•</span>
-          <span className="text-muted-foreground">
-            Sekitori: <span className="text-foreground font-medium">{sekitoriCount}</span>
-          </span>
-        </div>
-
-        {(financial || governance || rivalry) && (
-          <div className="flex gap-1 pt-1 flex-wrap">
-            {financial && (
-              <Badge variant="outline" className="text-xs bg-red-500/10 text-red-400 border-red-500/30">
-                💴 Financial Risk
-              </Badge>
-            )}
-            {governance && (
-              <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
-                ⚖️ Governance Watch
-              </Badge>
-            )}
-            {rivalry && (
-              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30">
-                🔥 Active Rivalry
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {onPreview && (
-          <div className="pt-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                onPreview();
-              }}
-            >
-              Preview roster
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-/**
- * Safe short seed.
- *  * @param seed - The Seed.
- *  * @returns The result.
- */
-function safeShortSeed(seed: string | undefined | null): string {
-  if (!seed) return "unknown";
-  return seed.length <= 14 ? seed : `${seed.slice(0, 14)}…`;
-}
-
-/**
- * Make deterministic seed.
- *  * @param prefix - The Prefix.
- *  * @returns The result.
- */
-function makeDeterministicSeed(prefix = "world"): string {
-  // No Math.random() — deterministic-friendly, stable, adequate uniqueness for local worlds
-  return `${prefix}-${Date.now()}`;
-}
-
-/**
- * Safe rank sort key.
- *  * @param rank - The Rank.
- *  * @returns The result.
- */
-function safeRankSortKey(rank: any): number {
-  // Prefer tier from your rank hierarchy (lower tier => higher rank)
-  const tier = (RANK_HIERARCHY as any)?.[rank]?.tier;
-  return Number.isFinite(tier) ? tier : 999;
-}
-
-/** main menu. */
 export default function MainMenu() {
   const navigate = useNavigate();
-
-  // Pull everything we might need ONCE (no hooks inside handlers)
   const game = useGame() as any;
   const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } = game;
-
-  // Optional direct-load APIs (best effort, no assumptions)
-  const loadWorldDirect =
-    game?.loadWorldDirect ||
-    game?.loadImportedWorld ||
-    game?.setWorld ||
-    game?.hydrateWorld ||
-    null;
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);
   const [selectionMode, setSelectionMode] = useState<StableSelectionMode>("recommended");
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
-
-  const [showLoadDialog, setShowLoadDialog] = useState(false);
-  const [saveSlots, setSaveSlots] = useState<SaveSlotInfo[]>([]);
-  const [isImporting, setIsImporting] = useState(false);
-
   const [previewHeya, setPreviewHeya] = useState<Heya | null>(null);
 
-  // Read save slots (safe)
-  useEffect(() => {
-    try {
-      if (typeof getSaveSlots === "function") setSaveSlots(getSaveSlots());
-      else setSaveSlots([]);
-    } catch (e) {
-      setSaveSlots([]);
-    }
-  }, [getSaveSlots]);
-
-  const canContinue = (typeof hasAutosave === "function" && hasAutosave()) || saveSlots.length > 0;
-
-  // Ensure a world exists on first mount, but avoid regeneration loops.
+  // Sync world seed
   useEffect(() => {
     if (!state?.world) {
       const worldSeed = makeDeterministicSeed("world");
       setSeed(worldSeed);
       if (typeof createWorld === "function") createWorld(worldSeed);
-      return;
-    }
-    // Sync local seed display to active world seed (once available)
-    if (state.world?.seed && seed !== state.world.seed) {
-        setSeed(state.world.seed);
+    } else if (state.world?.seed && seed !== state.world.seed) {
+      setSeed(state.world.seed);
     }
   }, [state?.world]);
 
-  const stables = useMemo((): Heya[] => {
+  const stables = useMemo(() => {
     if (!state?.world) return [];
     return Array.from(state.world.heyas.values()) as Heya[];
   }, [state?.world]);
 
-  // Heya -> sekitori count
   const sekitoriCounts = useMemo(() => {
     const map = new Map<string, number>();
     if (!state?.world) return map;
-
     for (const h of state.world.heyas.values() as IterableIterator<Heya>) {
       let count = 0;
       for (const rid of (h.rikishiIds ?? []) as string[]) {
@@ -331,184 +78,45 @@ export default function MainMenu() {
     return map;
   }, [state?.world]);
 
-  const recommendedStables = useMemo((): Heya[] => {
+  const recommendedStables = useMemo(() => {
     return stables
       .filter((h) => h.statureBand === "established" || h.statureBand === "powerful")
-      .slice()
-      .sort((a, b) => {
-        const sa = sekitoriCounts.get(a.id) ?? 0;
-        const sb = sekitoriCounts.get(b.id) ?? 0;
-        if (sb !== sa) return sb - sa;
-
-        const fa = Number.isFinite(a.funds) ? a.funds : 0;
-        const fb = Number.isFinite(b.funds) ? b.funds : 0;
-        if (fb !== fa) return fb - fa;
-
-        return a.name.localeCompare(b.name);
-      })
+      .sort((a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0))
       .slice(0, 6);
   }, [stables, sekitoriCounts]);
 
   const stablesByStature = useMemo(() => {
     const groups: Record<StatureBand, Heya[]> = {
-      legendary: [],
-      powerful: [],
-      established: [],
-      rebuilding: [],
-      fragile: [],
-      new: []
+      legendary: [], powerful: [], established: [], rebuilding: [], fragile: [], new: []
     };
     stables.forEach((h) => groups[h.statureBand]?.push(h));
-    (Object.keys(groups) as StatureBand[]).forEach((k) => {
-      groups[k].sort((a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0));
-    });
     return groups;
-  }, [stables, sekitoriCounts]);
-
-  const getHeyaRoster = useCallback(
-    (heya: Heya) => {
-      if (!state?.world) return [];
-      const roster = (heya.rikishiIds ?? [])
-        .map((id: string) => state.world.rikishi.get(id))
-        .filter(Boolean) as any[];
-
-      roster.sort((a, b) => {
-        const ta = safeRankSortKey(a.rank);
-        const tb = safeRankSortKey(b.rank);
-        if (ta !== tb) return ta - tb;
-
-        const an = typeof a.rankNumber === "number" ? a.rankNumber : 0;
-        const bn = typeof b.rankNumber === "number" ? b.rankNumber : 0;
-        if (an !== bn) return an - bn;
-
-        // East before West if present
-        if (a.side !== b.side) return a.side === "east" ? -1 : 1;
-        return String(a.shikona ?? "").localeCompare(String(b.shikona ?? ""));
-      });
-
-      return roster;
-    },
-    [state?.world]
-  );
-
-  const handleContinue = () => {
-    if (typeof hasAutosave === "function" && hasAutosave()) {
-      if (typeof loadFromAutosave === "function") loadFromAutosave();
-      navigate({ to: "/" });
-      return;
-    }
-    if (saveSlots.length > 0) setShowLoadDialog(true);
-  };
-
-  const handleLoadSlot = (slotName: string) => {
-    if (typeof loadFromSlot === "function" && loadFromSlot(slotName)) {
-      setShowLoadDialog(false);
-      navigate({ to: "/" });
-    }
-  };
-
-  const handleDeleteSlot = (slotName: string) => {
-    try {
-      deleteSave(slotName);
-    } finally {
-      try {
-        if (typeof getSaveSlots === "function") setSaveSlots(getSaveSlots());
-        else setSaveSlots([]);
-      } catch {
-        setSaveSlots([]);
-      }
-    }
-  };
-
-  const applyImportedWorld = useCallback(
-    (importedWorld: any) => {
-      if (!importedWorld) return;
-
-      if (typeof loadWorldDirect === "function") {
-        loadWorldDirect(importedWorld);
-        return;
-      }
-
-      if (typeof createWorld === "function") {
-        console.warn(
-          "[MainMenu] No loadWorldDirect/loadImportedWorld/setWorld API found. Falling back to createWorld(seed, playerHeyaId). Imported data may not be preserved."
-        );
-        createWorld(importedWorld.seed, importedWorld.playerHeyaId);
-      }
-    },
-    [createWorld, loadWorldDirect]
-  );
-
-  const handleImportSave = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsImporting(true);
-    try {
-      const importedWorld = await importSave(file);
-      if (importedWorld) {
-        applyImportedWorld(importedWorld);
-        setSeed(importedWorld.seed || "");
-        navigate({ to: "/" });
-      }
-    } finally {
-      setIsImporting(false);
-      e.target.value = "";
-    }
-  };
-
-  const formatSaveDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
-  const getBashoDisplay = (bashoName?: BashoName) => {
-    if (!bashoName) return "";
-    const info = (BASHO_CALENDAR as any)?.[bashoName];
-    return info ? `${info.nameEn}` : String(bashoName);
-  };
+  }, [stables]);
 
   const handleRerollWorld = () => {
     const newSeed = makeDeterministicSeed("world");
     setSeed(newSeed);
     setSelectedHeyaId(null);
-    if (typeof createWorld === "function") createWorld(newSeed);
+    createWorld(newSeed);
   };
 
   const handleSetSeed = () => {
-    const s = seed.trim();
-    if (!s) return;
-    setSelectedHeyaId(null);
-    if (typeof createWorld === "function") createWorld(s);
+    if (!seed.trim()) return;
+    createWorld(seed.trim());
     setShowSeedInput(false);
   };
 
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
-    if (typeof createWorld === "function") createWorld(state.world.seed, heyaId);
+    createWorld(state.world.seed, heyaId);
     navigate({ to: "/" });
   };
 
-  const handleConfirmStable = () => {
-    if (!state?.world) return;
-
-    if (selectedHeyaId) beginWithHeya(selectedHeyaId);
-  };
-
-  const canConfirm = selectedHeyaId !== null;
-
   if (!state?.world) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary shadow-lg mb-6 animate-pulse">
-          <CircleDot className="h-10 w-10 text-primary-foreground" />
-        </div>
-        <p className="text-muted-foreground">Generating sumo world...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background">
+        <div className="h-16 w-16 bg-primary rounded-full animate-ping opacity-20 mb-6" />
+        <p className="text-sm font-display font-black uppercase tracking-widest opacity-50">Initializing Basho Engine...</p>
       </div>
     );
   }
@@ -516,209 +124,111 @@ export default function MainMenu() {
   return (
     <>
       <Helmet>
-        <title>Basho — Sumo Management Simulation</title>
-        <meta
-          name="description"
-          content="Take control of a heya. Train rikishi, compete in basho, and build a legacy in the world of professional sumo."
-        />
+        <title>BASHO — Sumo Management Simulator</title>
       </Helmet>
 
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg">
-                <CircleDot className="h-8 w-8 text-primary-foreground" />
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
+        
+        {/* ═══ HERO HEADER ═══ */}
+        <section className="w-full bg-primary relative pt-24 pb-20 px-6 overflow-hidden flex flex-col items-center text-center shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]">
+           <div className="absolute top-0 opacity-10 font-display text-[20vw] font-black pointer-events-none uppercase tracking-tighter -mt-20 leading-none">
+              SUMO BASHO
+           </div>
+           
+           <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-6">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
+                 <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+                    <History className="h-10 w-10 text-primary" />
+                 </div>
+                 <div className="text-left py-2 pr-6 border-r border-white/10">
+                    <h1 className="text-primary-foreground font-display text-5xl font-black tracking-tighter leading-none mb-1 uppercase">BASHO</h1>
+                    <p className="text-primary-foreground/60 font-display text-xl leading-none">相撲経営シミュレーション</p>
+                 </div>
+                 <div className="text-left opacity-80 max-w-[240px]">
+                    <p className="text-[10px] text-primary-foreground/70 font-black uppercase tracking-widest mb-1">Association Status</p>
+                    <p className="text-xs text-primary-foreground leading-snug">Become the Oyakata of your own heya. Recruit, train, and dominate the Kokugikan.</p>
+                 </div>
               </div>
-            </div>
 
-            <h1 className="font-display text-4xl font-bold tracking-tight mb-2">Basho</h1>
-            <p className="font-display text-xl text-muted-foreground mb-2">相撲経営シミュレーション</p>
-            <p className="text-muted-foreground max-w-md mx-auto mb-4">
-              Choose your heya. Train your rikishi. Compete for glory on the dohyo.
-            </p>
+              {/* Career Persistence */}
+              <SaveSlotManager 
+                getSaveSlots={getSaveSlots}
+                loadFromSlot={loadFromSlot}
+                loadFromAutosave={loadFromAutosave}
+                hasAutosave={hasAutosave}
+                onLoadSuccess={() => navigate({ to: "/" })}
+                loadWorldDirect={game.loadWorldDirect}
+                createWorld={createWorld}
+              />
+           </div>
 
-            {/* Continue / Load / Import buttons */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              {canContinue && (
-                <Button size="lg" variant="default" className="gap-2" onClick={handleContinue}>
-                  <ArrowRight className="w-4 h-4" />
-                  Continue
+           {/* Hero Decoration */}
+           <div className="absolute bottom-0 left-0 w-full flex justify-between px-20 translate-y-1/2 opacity-20 pointer-events-none">
+              <div className="h-64 w-64 border-8 border-white/20 rounded-full" />
+              <div className="h-64 w-64 border-8 border-white/20 rounded-full" />
+           </div>
+        </section>
+
+        <main className="max-w-6xl w-full px-6 -mt-12 relative z-20 pb-20">
+          
+          {/* World Settings Console */}
+          <div className="glass rounded-xl p-4 flex items-center justify-between gap-4 mb-8 shadow-2xl animate-in slide-in-from-bottom-5 duration-700 delay-300 fill-mode-both">
+             <div className="flex items-center gap-6 pl-4 border-l-4 border-primary">
+                <div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">World Generation</p>
+                   <p className="font-display font-black text-sm uppercase tracking-tighter">
+                      Deterministic Seed: <span className="text-primary">{safeShortSeed(state.world.seed)}</span>
+                   </p>
+                </div>
+                <div className="hidden md:block h-8 w-px bg-border/20" />
+                <div className="hidden md:block">
+                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Heya Directory</p>
+                   <p className="font-display font-black text-sm uppercase tracking-tighter">{stables.length} Professional Stables</p>
+                </div>
+             </div>
+             
+             <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="h-9 px-3 gap-2 font-bold uppercase tracking-widest text-[10px] border-2" onClick={handleRerollWorld}>
+                   <RefreshCw className="h-3 w-3" /> Reroll 
                 </Button>
-              )}
-
-              <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <FolderOpen className="w-4 h-4" />
-                    Load Game
-                  </Button>
-                </DialogTrigger>
-
-                <DialogContent className="max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <Save className="w-5 h-5" />
-                      Load Saved Game
-                    </DialogTitle>
-                    <DialogDescription>Choose a save slot to continue your journey.</DialogDescription>
-                  </DialogHeader>
-
-                  <ScrollArea className="max-h-[400px]">
-                    <div className="space-y-2">
-                      {saveSlots.length === 0 ? (
-                        <p className="text-sm text-muted-foreground text-center py-8">No saved games found.</p>
-                      ) : (
-                        saveSlots.map((slot) => (
-                          <Card key={slot.key} className="hover:bg-muted/50 transition-colors">
-                            <CardContent className="p-3 flex items-center justify-between">
-                              <div className="flex-1 cursor-pointer" onClick={() => handleLoadSlot(slot.slotName)}>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{slot.playerHeyaName || "Unknown Heya"}</span>
-                                  <Badge variant="secondary" className="text-xs">
-                                    {slot.slotName === "autosave" ? "Auto" : slot.slotName}
-                                  </Badge>
-                                </div>
-                                <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                  <span>Year {slot.year}</span>
-                                  {slot.bashoName && (
-                                    <>
-                                      <span>•</span>
-                                      <span>{getBashoDisplay(slot.bashoName)}</span>
-                                    </>
-                                  )}
-                                  <span>•</span>
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" />
-                                    {formatSaveDate(slot.savedAt)}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {slot.slotName !== "autosave" && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSlot(slot.slotName);
-                                  }}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              )}
-                            </CardContent>
-                          </Card>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-
-                  <DialogFooter className="flex-col sm:flex-row gap-2">
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept=".json"
-                        className="hidden"
-                        onChange={handleImportSave}
-                        disabled={isImporting}
-                      />
-                      <Button variant="outline" className="gap-2 w-full sm:w-auto" asChild>
-                        <span>
-                          <Upload className="w-4 h-4" />
-                          {isImporting ? "Importing..." : "Import Save"}
-                        </span>
-                      </Button>
-                    </label>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            {/* World info & reroll */}
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <span className="text-xs text-muted-foreground">
-                World: <code className="bg-muted px-2 py-0.5 rounded">{safeShortSeed(state.world.seed)}</code>
-              </span>
-              <span className="text-xs text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground">{stables.length} Heyas</span>
-
-              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleRerollWorld}>
-                <RefreshCw className="w-3 h-3" />
-                Reroll World
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
-                onClick={() => {
-                  if (stables.length === 0) return;
-                  const randomIdx = Math.abs(parseInt(state.world.seed.split("-")[1] || "0")) % stables.length;
-                  const random = stables[randomIdx];
-                  setSelectedHeyaId(random.id);
-                  setPreviewHeya(random);
-                }}
-              >
-                <Dices className="w-3 h-3" />
-                Random Stable
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
-                onClick={() => setShowSeedInput(!showSeedInput)}
-              >
-                <Dices className="w-3 h-3" />
-                {showSeedInput ? "Hide Seed" : "Enter Seed"}
-              </Button>
-            </div>
-
-            {showSeedInput && (
-              <div className="mt-4 flex items-center justify-center gap-2 max-w-md mx-auto">
-                <Input
-                  placeholder="Enter world seed..."
-                  value={seed}
-                  onChange={(e) => setSeed(e.target.value)}
-                  className="text-sm"
-                />
-                <Button size="sm" onClick={handleSetSeed}>
-                  Apply
+                <Button variant="outline" size="sm" className={`h-9 px-3 gap-2 font-bold uppercase tracking-widest text-[10px] border-2 ${showSeedInput ? 'bg-primary text-white border-primary' : ''}`} onClick={() => setShowSeedInput(!showSeedInput)}>
+                   <Dices className="h-3 w-3" /> {showSeedInput ? "Apply Seed" : "Manual Seed"}
                 </Button>
-              </div>
-            )}
+             </div>
           </div>
 
-          {/* Selection Mode Tabs */}
+          {showSeedInput && (
+             <div className="flex justify-center mb-10 -mt-6 animate-in slide-in-from-top-4 duration-300">
+                <div className="bg-muted p-2 rounded-xl border-2 flex items-center gap-2 w-full max-w-md shadow-lg">
+                   <Input 
+                      placeholder="Enter specific world seed..." 
+                      value={seed} 
+                      onChange={(e) => setSeed(e.target.value)}
+                      className="border-0 shadow-none bg-transparent font-mono text-sm h-10"
+                   />
+                   <Button size="sm" onClick={handleSetSeed} className="font-black uppercase tracking-widest px-6 h-10">Sync</Button>
+                </div>
+             </div>
+          )}
+
+          {/* Heya Selection Tabs */}
           <Tabs value={selectionMode} onValueChange={(v) => setSelectionMode(v as StableSelectionMode)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="recommended" className="gap-2">
-                <Star className="w-4 h-4" />
-                Recommended
-              </TabsTrigger>
-              <TabsTrigger value="take_over" className="gap-2">
-                <Building2 className="w-4 h-4" />
-                Take Over
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex items-center justify-between gap-4 mb-6">
+                <h2 className="font-display text-2xl font-black uppercase tracking-tight">Select your stable</h2>
+                <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50">
+                  <TabsTrigger value="recommended" className="rounded-full px-6 font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white">
+                    Recommended
+                  </TabsTrigger>
+                  <TabsTrigger value="take_over" className="rounded-full px-6 font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white">
+                    Professional Directory
+                  </TabsTrigger>
+                </TabsList>
+            </div>
 
-            {/* Recommended Start */}
-            <TabsContent value="recommended" className="space-y-4">
-              <Card className="bg-muted/30 paper">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground">
-                    <Shield className="inline w-4 h-4 mr-1" />
-                    These heyas offer a balanced start with room to grow. Good for learning the systems.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <TabsContent value="recommended" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {recommendedStables.map((heya) => (
-                  <StableCard
+                  <HeyaCard
                     key={heya.id}
                     heya={heya}
                     isSelected={selectedHeyaId === heya.id}
@@ -729,187 +239,80 @@ export default function MainMenu() {
                   />
                 ))}
               </div>
-
-              {selectedHeyaId && (
-                <div className="mt-6 flex justify-center">
-                  <Button data-testid="begin-journey" size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
-                    Begin Journey
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
             </TabsContent>
 
-            {/* Take Over Existing */}
-            <TabsContent value="take_over" className="space-y-4">
-              <Card className="bg-muted/30 paper">
-                <CardContent className="pt-4">
-                  <p className="text-sm text-muted-foreground">
-                    <Building2 className="inline w-4 h-4 mr-1" />
-                    Inherit an existing heya with its history, rivalries, and challenges. Difficulty varies by stature.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <ScrollArea className="h-[500px] pr-4">
-                <div className="space-y-6">
-                  {(Object.keys(stablesByStature) as StatureBand[]).map((stature) => {
-                    const stablesInGroup = stablesByStature[stature];
-                    if (stablesInGroup.length === 0 || stature === "new") return null;
-
-                    const config = STATURE_CONFIG[stature];
-                    const GroupIcon = config.icon;
-
-                    return (
-                      <div key={stature}>
-                        <h3 className="font-display text-lg font-semibold mb-3 flex items-center gap-2">
-                          <GroupIcon className="w-5 h-5" />
-                          {config.label} ({config.difficulty})
-                          <span className="text-muted-foreground font-normal text-sm">
-                            — {stablesInGroup.length} heyas
-                          </span>
-                        </h3>
-                        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                          {stablesInGroup.map((heya) => (
-                            <StableCard
-                              key={heya.id}
-                              heya={heya}
-                              isSelected={selectedHeyaId === heya.id}
-                              onSelect={() => setSelectedHeyaId(heya.id)}
-                              onPreview={() => setPreviewHeya(heya)}
-                              sekitoriCount={sekitoriCounts.get(heya.id) ?? 0}
-                            />
-                          ))}
+            <TabsContent value="take_over" className="space-y-8">
+              <ScrollArea className="h-[600px] pr-4">
+                <div className="space-y-12">
+                   {(Object.keys(stablesByStature) as StatureBand[]).map((stature) => {
+                      const group = stablesByStature[stature];
+                      if (group.length === 0 || stature === "new") return null;
+                      const config = STATURE_CONFIG[stature];
+                      const Icon = config.icon;
+                      
+                      return (
+                        <div key={stature} className="space-y-4">
+                           <div className="flex items-center gap-3 border-b-2 border-border/20 pb-2">
+                              <div className={`p-2 rounded-lg ${config.color} border-0`}>
+                                 <Icon className="h-5 w-5" />
+                              </div>
+                              <h3 className="font-display text-xl font-black uppercase tracking-tight">
+                                 {config.label} Stables <span className="text-muted-foreground font-bold opacity-30">— {group.length} Professional Stables</span>
+                              </h3>
+                           </div>
+                           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                              {group.sort((a,b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0)).map((heya) => (
+                                <HeyaCard
+                                  key={heya.id}
+                                  heya={heya}
+                                  isSelected={selectedHeyaId === heya.id}
+                                  onSelect={() => setSelectedHeyaId(heya.id)}
+                                  onPreview={() => setPreviewHeya(heya)}
+                                  sekitoriCount={sekitoriCounts.get(heya.id) ?? 0}
+                                />
+                              ))}
+                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                   })}
                 </div>
               </ScrollArea>
-
-              {selectedHeyaId && (
-                <div className="mt-6 flex justify-center">
-                  <Button data-testid="begin-journey" size="lg" className="gap-2 min-w-[220px]" onClick={() => beginWithHeya(selectedHeyaId)}>
-                    Begin Journey
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
             </TabsContent>
-
           </Tabs>
 
-          {/* Heya Preview Dialog */}
-          <Dialog open={!!previewHeya} onOpenChange={(open) => !open && setPreviewHeya(null)}>
-            <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-              {previewHeya && (
-                <>
-                  <DialogHeader>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <DialogTitle className="text-xl flex items-center gap-2">
-                          <span className="truncate">{previewHeya.name}</span>
-                          {previewHeya.nameJa && (
-                            <span className="text-muted-foreground font-display text-lg truncate">
-                              {previewHeya.nameJa}
-                            </span>
-                          )}
-                        </DialogTitle>
-                        <DialogDescription className="mt-1">
-                          {previewHeya.descriptor || "Review the roster before starting your journey."}
-                        </DialogDescription>
-                      </div>
-                      <Badge className={`${STATURE_CONFIG[previewHeya.statureBand].color} border shrink-0`}>
-                        {React.createElement(STATURE_CONFIG[previewHeya.statureBand].icon, {
-                          className: "w-3 h-3 mr-1"
-                        })}
-                        {STATURE_CONFIG[previewHeya.statureBand].label}
-                      </Badge>
-                    </div>
-                  </DialogHeader>
-
-                  <div className="flex flex-wrap gap-4 py-2 border-b text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Difficulty: </span>
-                      <span className="font-medium">{STATURE_CONFIG[previewHeya.statureBand].difficulty}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Sekitori: </span>
-                      <span className="font-medium">{sekitoriCounts.get(previewHeya.id) ?? 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Total Wrestlers: </span>
-                      <span className="font-medium">{previewHeya.rikishiIds?.length ?? 0}</span>
-                    </div>
+          {/* Footer Sticky Bar */}
+          {selectedHeyaId && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl px-6 z-50 animate-in slide-in-from-bottom-10 duration-500">
+               <div className="bg-primary p-2 pl-6 rounded-full shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] flex items-center justify-between border border-white/20 backdrop-blur-md">
+                  <div className="text-primary-foreground min-w-0 pr-4">
+                     <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Ready to begin</p>
+                     <p className="font-display text-xl font-black truncate">{stables.find(h => h.id === selectedHeyaId)?.name} Stable</p>
                   </div>
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-primary hover:bg-white/90 rounded-full h-14 px-10 gap-3 font-display font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform"
+                    onClick={() => beginWithHeya(selectedHeyaId)}
+                  >
+                     Inaugurate <ChevronRight className="h-6 w-6 stroke-[3]" />
+                  </Button>
+               </div>
+            </div>
+          )}
+        </main>
 
-                  <div className="flex-1 overflow-hidden">
-                    <h4 className="font-semibold text-sm mb-2 mt-2">Roster</h4>
-                    <ScrollArea className="h-[280px] pr-4">
-                      <div className="space-y-1">
-                        {getHeyaRoster(previewHeya).map((r: any) => {
-                          const rankInfo = (RANK_HIERARCHY as any)?.[r.rank];
-                          const isSekitori = !!rankInfo?.isSekitori;
-                          const rankJa = rankInfo?.nameJa ?? String(r.rank ?? "");
-                          return (
-                            <div
-                              key={r.id}
-                              className={`flex items-center justify-between py-1.5 px-2 rounded text-sm ${
-                                isSekitori ? "bg-primary/5" : "bg-muted/30"
-                              }`}
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className={`font-medium truncate ${isSekitori ? "text-primary" : ""}`}>
-                                  {r.shikona}
-                                </span>
-                                {isSekitori && (
-                                  <Badge variant="outline" className="text-xs py-0 shrink-0">
-                                    Sekitori
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="text-muted-foreground text-xs shrink-0">
-                                {rankJa}
-                                {typeof r.rankNumber === "number" && r.rankNumber > 0 ? ` ${r.rankNumber}` : ""}
-                                {r.side ? ` • ${String(r.side).toUpperCase()}` : ""}
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {getHeyaRoster(previewHeya).length === 0 && (
-                          <p className="text-sm text-muted-foreground text-center py-4">No wrestlers in roster.</p>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </div>
+        <HeyaPreview 
+          heya={previewHeya}
+          onClose={() => setPreviewHeya(null)}
+          onConfirm={beginWithHeya}
+          sekitoriCount={previewHeya ? (sekitoriCounts.get(previewHeya.id) ?? 0) : 0}
+          world={state.world}
+        />
 
-                  <DialogFooter className="mt-4">
-                    <Button variant="outline" onClick={() => setPreviewHeya(null)}>
-                      Back
-                    </Button>
-                    <Button
-                      className="gap-2"
-                      onClick={() => {
-                        setSelectedHeyaId(previewHeya.id);
-                        setPreviewHeya(null);
-                        beginWithHeya(previewHeya.id);
-                      }}
-                    >
-                      Begin Journey
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </DialogFooter>
-                </>
-              )}
-            </DialogContent>
-          </Dialog>
+        <footer className="w-full border-t border-border/20 py-12 px-6 flex flex-col items-center opacity-30 gap-1">
+           <p className="text-xs font-black uppercase tracking-[0.4em]">Reach the Summit — 頂点を目指せ</p>
+           <p className="text-[10px] text-muted-foreground uppercase tracking-widest">© 2026 Sumo Manager Pro | Professional Stable Management Simulator</p>
+        </footer>
 
-          {/* Footer */}
-          <div className="mt-12 text-center text-sm text-muted-foreground">
-            <p className="mb-2">82 authentic kimarite • 6 annual tournaments • {HEYA_NAMES_COUNT}+ stables</p>
-            <p className="font-display text-xs">頂点を目指せ — Reach for the summit</p>
-          </div>
-        </div>
       </div>
     </>
   );

@@ -1,273 +1,346 @@
-// @ts-nocheck
-import React, { useState, useMemo } from "react";
+/**
+ * NewGameWizard.tsx
+ * 
+ * Cinematic onboarding flow for new stable inaugurations.
+ * Features a "Rich Aesthetics" Heroic layout with Noto Serif JP overlays.
+ * Architecturally cleaned up to use centralized engine utilities.
+ */
+
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, CircleUser, Star, ArrowRight, ArrowLeft, Trophy, DollarSign, Building } from "lucide-react";
-import type { Heya } from "@/engine/types/heya";
-
-// Function borrowed from MainMenu
-function makeDeterministicSeed(prefix = "world"): string {
-  // Use timestamp for unique but reproducible-ish seed generation
-  const timestamp = Date.now().toString(36);
-  return `${prefix}-${timestamp}`;
-}
+import { 
+  Building2, 
+  CircleUser, 
+  Star, 
+  ArrowRight, 
+  ArrowLeft, 
+  Trophy, 
+  DollarSign, 
+  Building,
+  History,
+  Sparkles,
+  Shield,
+  Zap,
+  CheckCircle2
+} from "lucide-react";
+import { Helmet } from "react-helmet";
+import { makeDeterministicSeed, formatYenToMan } from "@/utils/engineUtils";
+import { cn } from "@/lib/utils";
 
 const OYAKATA_BACKGROUNDS = [
   {
     id: "yokozuna",
     label: "Former Yokozuna",
-    description: "High prestige and respect, but starting a stable is expensive.",
+    labelJa: "横綱出身",
+    description: "Maximum prestige and institutional respect. Your reputation precedes you, making recruitment of elite talent easier, though expectations are sky-high.",
     bonuses: { prestige: 2, funds: 5_000_000, scouting: 70, training: 80 },
     icon: Trophy,
+    color: "amber"
   },
   {
     id: "ozeki",
     label: "Former Ozeki",
-    description: "Well respected with decent financial backing from koenkai.",
+    labelJa: "大関出身",
+    description: "Highly respected with a strong network of supporters (koenkai). A balanced start with decent financial backing and solid training roots.",
     bonuses: { prestige: 1, funds: 15_000_000, scouting: 60, training: 70 },
     icon: Star,
+    color: "blue"
   },
   {
     id: "maegashira",
     label: "Former Maegashira",
-    description: "A journeyman with a massive business network and deep pockets.",
+    labelJa: "幕内出身",
+    description: "A seasoned journeyman with a massive business network. While you lack top-tier prestige, your deep pockets allow for rapid facility expansion.",
     bonuses: { prestige: 0, funds: 30_000_000, scouting: 50, training: 50 },
     icon: DollarSign,
+    color: "emerald"
   },
 ];
 
 const ICHIMON_FACTIONS = [
-  { id: "dewanoumi", name: "Dewanoumi", description: "The largest and most traditional faction." },
-  { id: "nishonoseki", name: "Nishonoseki", description: "A powerful and wealthy modern faction." },
-  { id: "takasago", name: "Takasago", description: "Known for fierce independence and strong rivalries." },
-  { id: "tokitsukaze", name: "Tokitsukaze", description: "A balanced faction with strong training roots." },
-  { id: "isegahama", name: "Isegahama", description: "Currently dominant with top-tier talent." },
+  { id: "dewanoumi", name: "Dewanoumi", ja: "出羽海", description: "The largest and most traditional faction with deep political roots." },
+  { id: "nishonoseki", name: "Nishonoseki", ja: "二所ノ関", description: "A powerful, modern faction known for wealth and influence." },
+  { id: "takasago", name: "Takasago", ja: "高砂", description: "Fierce independence and a storied history of elite champions." },
+  { id: "tokitsukaze", name: "Tokitsukaze", ja: "時津風", description: "A balanced bloc focused on fundamental training excellence." },
+  { id: "isegahama", name: "Isegahama", ja: "伊勢ヶ濱", description: "Currently dominant in the Makuuchi division with top-tier talent." },
 ];
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
-  const { createWorld, state } = useGame();
+  const { createWorld, state } = useGame() as any;
 
   useEffect(() => {
     if (!state.world) {
       createWorld(makeDeterministicSeed("world"));
     }
-  }, [state.world, createWorld]);
+  }, [state.world]);
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");
   const [background, setBackground] = useState(OYAKATA_BACKGROUNDS[0].id);
   const [ichimon, setIchimon] = useState(ICHIMON_FACTIONS[0].id);
-
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
 
   const world = state.world;
-
-  const stables = useMemo(() => {
-    if (!world) return [];
-    return Array.from(world.heyas.values());
-  }, [world]);
+  const stables = useMemo(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
 
   const handleNext = () => setStep((s) => s + 1);
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));
 
   const handleFinish = () => {
     if (!world || !selectedHeyaId) return;
-
-    // We pass the config to createWorld.
     createWorld(world.seed, selectedHeyaId, {
       name: oyakataName || "Player",
       background,
       ichimon,
       heyaId: selectedHeyaId,
     });
-
     navigate({ to: "/" });
   };
 
   if (!world) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-        <p className="text-muted-foreground">Initializing world state...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 hero-gradient">
+        <div className="h-16 w-16 bg-primary rounded-full animate-ping opacity-20 mb-6" />
+        <p className="text-sm font-display font-black uppercase tracking-widest opacity-50">Forging World Seed...</p>
       </div>
     );
   }
 
+  const currentBg = OYAKATA_BACKGROUNDS.find(b => b.id === background)!;
+
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header Progress */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-display font-bold">New Game Setup</h1>
-          <div className="flex gap-2">
-            {[1, 2, 3].map((s) => (
-              <div
-                key={s}
-                className={`h-2 w-16 rounded-full ${s <= step ? "bg-primary" : "bg-muted"}`}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center hero-gradient scroll-smooth">
+      <Helmet>
+        <title>New Career Setup | Basho</title>
+      </Helmet>
 
-        {/* Step 1: Oyakata Profile */}
+      {/* ═══ HERO HEADER ═══ */}
+      <section className="w-full bg-primary pt-16 pb-12 px-6 overflow-hidden flex flex-col items-center text-center shadow-2xl relative">
+         <div className="absolute top-0 opacity-5 font-display text-[15vw] font-black pointer-events-none uppercase tracking-tighter leading-none -mt-10">
+            INAUGURATION
+         </div>
+         
+         <div className="relative z-10 space-y-4">
+            <div className="h-14 w-14 bg-white/10 rounded-full mx-auto flex items-center justify-center backdrop-blur-md border border-white/20 animate-in zoom-in duration-500">
+               <History className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-4xl font-display font-black tracking-tight text-white uppercase sumi-e-ink">Begin Your Legacy</h1>
+            <div className="flex items-center gap-1 justify-center">
+               {[1, 2, 3].map((s) => (
+                 <div key={s} className={cn("h-1 rounded-full transition-all duration-500", s === step ? "w-12 bg-white" : "w-6 bg-white/20")} />
+               ))}
+            </div>
+         </div>
+      </section>
+
+      <main className="max-w-4xl w-full px-6 -mt-8 relative z-20 pb-32">
+        
+        {/* ── STEP 1: IDENTITY ── */}
         {step === 1 && (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <CircleUser className="w-6 h-6 text-primary" />
-              Establish Your Identity
-            </h2>
-
-            <Card>
-              <CardContent className="pt-6 space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="oyakataName">Oyakata Name</Label>
-                  <Input
-                    id="oyakataName"
-                    placeholder="e.g. Takanohana"
-                    value={oyakataName}
-                    onChange={(e) => setOyakataName(e.target.value)}
-                    className="max-w-md"
-                  />
-                  <p className="text-xs text-muted-foreground">This is your elder name (toshiyori-mei).</p>
-                </div>
-
-                <div className="space-y-3">
-                  <Label>Background & History</Label>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {OYAKATA_BACKGROUNDS.map((bg) => {
-                      const Icon = bg.icon;
-                      const isSelected = background === bg.id;
-                      return (
-                        <Card
-                          key={bg.id}
-                          className={`cursor-pointer transition-all ${
-                            isSelected ? "border-primary bg-primary/5 shadow-md" : "hover:border-primary/50"
-                          }`}
-                          onClick={() => setBackground(bg.id)}
-                        >
-                          <CardContent className="p-4 space-y-2">
-                            <div className="flex items-center gap-2 font-semibold">
-                              <Icon className="w-4 h-4 text-primary" />
-                              {bg.label}
-                            </div>
-                            <p className="text-xs text-muted-foreground">{bg.description}</p>
-                            <div className="text-[10px] uppercase tracking-wider text-primary pt-2 font-medium">
-                              Starting Funds: ¥{(bg.bonuses.funds / 10000).toLocaleString()} Man
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+               <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-primary/10 rounded-xl">
+                     <CircleUser className="w-6 h-6 text-primary" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <div>
+                     <h2 className="text-2xl font-display font-black uppercase tracking-tight">Establish Your Identity</h2>
+                     <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-60">Association Registry Phase 1</p>
+                  </div>
+               </div>
 
-            <div className="flex justify-end">
-              <Button onClick={handleNext} disabled={!oyakataName.trim()} className="gap-2">
-                Next <ArrowRight className="w-4 h-4" />
+               <div className="space-y-10">
+                  <div className="space-y-3">
+                    <Label htmlFor="oyakataName" className="pro-header">Official Elder Name (Toshiyori-mei)</Label>
+                    <Input
+                      id="oyakataName"
+                      placeholder="e.g. Takanohana"
+                      value={oyakataName}
+                      onChange={(e) => setOyakataName(e.target.value)}
+                      className="h-16 text-2xl font-display font-black border-2 focus:border-primary px-6 rounded-xl shadow-inner bg-muted/30"
+                    />
+                    <p className="text-xs text-muted-foreground italic font-medium opacity-60">This name will be inscribed in the Association's professional directory.</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label className="pro-header">Professional History & Background</Label>
+                    <div className="grid gap-4 md:grid-cols-3">
+                      {OYAKATA_BACKGROUNDS.map((bg) => {
+                        const Icon = bg.icon;
+                        const isSelected = background === bg.id;
+                        return (
+                          <div
+                            key={bg.id}
+                            className={cn(
+                              "relative dossier-paper p-5 rounded-2xl cursor-pointer transition-all hover:scale-[1.02] overflow-hidden",
+                              isSelected ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-70 hover:opacity-100"
+                            )}
+                            onClick={() => setBackground(bg.id)}
+                          >
+                             <div className="absolute -top-2 -right-2 opacity-5 font-display text-4xl font-black">{bg.labelJa}</div>
+                             <div className="h-10 w-10 bg-muted/50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                                <Icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-muted-foreground")} />
+                             </div>
+                             <div className="font-display font-black text-lg mb-1">{bg.label}</div>
+                             <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-3 mb-4">{bg.description}</p>
+                             <div className="pt-2 border-t border-dashed mt-auto">
+                                <div className="text-[8px] font-black uppercase tracking-widest text-primary">Initial Endowment</div>
+                                <div className="text-xs font-black">{formatYenToMan(bg.bonuses.funds)}</div>
+                             </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+               </div>
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <Button onClick={handleNext} disabled={!oyakataName.trim()} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-2xl hover:scale-105 transition-transform">
+                Next Submission <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
           </div>
         )}
 
-        {/* Step 2: Faction (Ichimon) */}
+        {/* ── STEP 2: FACTION ── */}
         {step === 2 && (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-primary" />
-              Choose Your Ichimon
-            </h2>
-            <p className="text-muted-foreground">
-              Factions determine your political allies, joint training partners, and governance voting bloc.
-            </p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
+            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+               <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-primary/10 rounded-xl">
+                     <Building2 className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                     <h2 className="text-2xl font-display font-black uppercase tracking-tight">Choose Your Ichimon</h2>
+                     <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-60">Faction Alignment Phase 2</p>
+                  </div>
+               </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {ICHIMON_FACTIONS.map((faction) => {
-                const isSelected = ichimon === faction.id;
-                return (
-                  <Card
-                    key={faction.id}
-                    className={`cursor-pointer transition-all ${
-                      isSelected ? "border-primary bg-primary/5 shadow-md" : "hover:border-primary/50"
-                    }`}
-                    onClick={() => setIchimon(faction.id)}
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">{faction.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{faction.description}</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+               <div className="grid gap-4 md:grid-cols-2">
+                 {ICHIMON_FACTIONS.map((faction) => {
+                   const isSelected = ichimon === faction.id;
+                   return (
+                     <div
+                       key={faction.id}
+                       className={cn(
+                         "dossier-paper p-6 rounded-2xl cursor-pointer transition-all group relative overflow-hidden",
+                         isSelected ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-70 hover:opacity-100"
+                       )}
+                       onClick={() => setIchimon(faction.id)}
+                     >
+                       <div className="absolute top-2 right-4 opacity-5 font-display text-4xl font-black">{faction.ja}</div>
+                       <div className="flex items-center gap-3 mb-2">
+                          <CheckCircle2 className={cn("h-5 w-5", isSelected ? "text-primary scale-125" : "opacity-20")} />
+                          <h3 className="font-display font-black text-xl tracking-tight">{faction.name}</h3>
+                       </div>
+                       <p className="text-xs text-muted-foreground leading-relaxed pl-8 italic">"{faction.description}"</p>
+                     </div>
+                   );
+                 })}
+               </div>
             </div>
 
             <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={handlePrev} className="gap-2">
-                <ArrowLeft className="w-4 h-4" /> Back
+              <Button variant="ghost" onClick={handlePrev} className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground">
+                <ArrowLeft className="w-5 h-5" /> Back
               </Button>
-              <Button onClick={handleNext} className="gap-2">
-                Next <ArrowRight className="w-4 h-4" />
+              <Button onClick={handleNext} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-2xl hover:scale-105 transition-transform">
+                Verify Allegiance <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
           </div>
         )}
 
-        {/* Step 3: Heya Selection */}
+        {/* ── STEP 3: STABLE ── */}
         {step === 3 && (
-          <div className="space-y-6 animate-fade-in">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Building className="w-6 h-6 text-primary" />
-              Acquire a Stable
-            </h2>
-            <p className="text-muted-foreground">
-              Select an existing stable to inherit its roster and history.
-              (Founding a new stable will be available in a future update).
-            </p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
+            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+               <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-primary/10 rounded-xl">
+                     <Building className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                     <h2 className="text-2xl font-display font-black uppercase tracking-tight">Acquire a Professional Stable</h2>
+                     <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-60">Property Acquisition Phase 3</p>
+                  </div>
+               </div>
 
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 max-h-[500px] overflow-y-auto p-1 pr-4">
-              {stables.map((heya) => (
-                <Card
-                  key={heya.id}
-                  className={`cursor-pointer transition-all ${
-                    selectedHeyaId === heya.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:border-primary/50"
-                  }`}
-                  onClick={() => setSelectedHeyaId(heya.id)}
-                >
-                  <CardContent className="p-4">
-                    <div className="font-bold text-lg mb-1">{heya.name}</div>
-                    <div className="text-xs text-muted-foreground mb-3">
-                      {heya.location || "Tokyo"} • {heya.rikishiIds?.length || 0} Wrestlers
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">{heya.statureBand}</span>
-                      <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">{heya.facilitiesBand}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+               <ScrollArea className="h-[500px] pr-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {stables.map((heya) => (
+                      <div
+                        key={heya.id}
+                        className={cn(
+                          "dossier-paper p-5 rounded-2xl cursor-pointer transition-all relative overflow-hidden group",
+                          selectedHeyaId === heya.id ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-80 hover:opacity-100"
+                        )}
+                        onClick={() => setSelectedHeyaId(heya.id)}
+                      >
+                         {selectedHeyaId === heya.id && (
+                           <div className="absolute top-0 right-0 bg-primary text-white p-2 rounded-bl-xl shadow-lg z-10">
+                              <CheckCircle2 className="h-4 w-4" />
+                           </div>
+                         )}
+                         <div className="space-y-3">
+                            <div>
+                               <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">{heya.name}</div>
+                               <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{heya.location || "Tokyo"} • {heya.rikishiIds?.length || 0} Professional Wrestlers</div>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                               <Badge variant="secondary" className="text-[8px] font-black uppercase tracking-widest h-5 bg-primary/10 border-primary/20 text-primary">{heya.statureBand}</Badge>
+                               <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest h-5 border-2">{heya.facilitiesBand}</Badge>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground line-clamp-2 italic italic">"{heya.descriptor || 'A stable with a long-standing history of training excellence.'}"</p>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+               </ScrollArea>
             </div>
 
             <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={handlePrev} className="gap-2">
-                <ArrowLeft className="w-4 h-4" /> Back
+              <Button variant="ghost" onClick={handlePrev} className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground">
+                <ArrowLeft className="w-5 h-5" /> Back
               </Button>
-              <Button onClick={handleFinish} disabled={!selectedHeyaId} className="gap-2" size="lg">
-                Begin Journey <ArrowRight className="w-4 h-4" />
+              <Button onClick={handleFinish} disabled={!selectedHeyaId} className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-2xl bg-primary text-white hover:scale-105 transition-transform">
+                Begin Journey <Sparkles className="w-6 h-6" />
               </Button>
             </div>
           </div>
         )}
-      </div>
+      </main>
+
+      {/* Persistence Info Console */}
+      <footer className="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
+         <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-10">
+               <div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">Oyakata</p>
+                  <p className="font-display font-black text-xs uppercase tracking-tighter">{oyakataName || "UNREGISTERED"}</p>
+               </div>
+               <div className="hidden md:block w-px h-6 bg-border/40" />
+               <div className="hidden md:block">
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">Endowment</p>
+                  <p className="font-display font-black text-xs uppercase tracking-tighter text-emerald-600">{formatYenToMan(currentBg.bonuses.funds)}</p>
+               </div>
+               <div className="hidden lg:block w-px h-6 bg-border/40" />
+               <div className="hidden lg:block">
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">Allegiance</p>
+                  <p className="font-display font-black text-xs uppercase tracking-tighter text-primary">{ICHIMON_FACTIONS.find(f => f.id === ichimon)?.name || "NONE"}</p>
+               </div>
+            </div>
+            <div className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 select-none hidden sm:block">
+               Association Record • Year {world.year}
+            </div>
+         </div>
+      </footer>
     </div>
   );
 }

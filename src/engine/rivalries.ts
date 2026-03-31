@@ -230,7 +230,9 @@ export function updateRivalriesFromBout(args: {
  */
 export function applyRivalryWeeklyDecay(state: RivalriesState, currentWeek: number): RivalriesState {
   const nextPairs: Record<RivalryKey, RivalryPairState> = {};
-  for (const [key, pair] of Object.entries(state.pairs)) {
+  for (const key in state.pairs) {
+    if (!Object.prototype.hasOwnProperty.call(state.pairs, key)) continue;
+    const pair = state.pairs[key];
     const weeksSince = Math.max(0, currentWeek - pair.lastMetWeek);
 
     // small passive decay, stronger if not met in a long time
@@ -257,7 +259,14 @@ export function applyRivalryWeeklyDecay(state: RivalriesState, currentWeek: numb
  * Get rivalries relevant to one rikishi, sorted by heat.
  */
 export function getRivalriesForRikishi(state: RivalriesState, rikishiId: Id): RivalryPairState[] {
-  const rows = Object.values(state.pairs).filter(p => p.aId === rikishiId || p.bId === rikishiId);
+  const rows: RivalryPairState[] = [];
+  for (const key in state.pairs) {
+    if (!Object.prototype.hasOwnProperty.call(state.pairs, key)) continue;
+    const p = state.pairs[key];
+    if (p.aId === rikishiId || p.bId === rikishiId) {
+      rows.push(p);
+    }
+  }
   return rows.sort((x, y) => y.heat - x.heat || (y.meetings - x.meetings) || stableTieBreak(x.aId + x.bId, y.aId + y.bId));
 }
 

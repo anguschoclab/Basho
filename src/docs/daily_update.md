@@ -1,17 +1,24 @@
 📝 Daily Progress & Docs Update
 🏗️ Codebase Status:
-Recent updates implemented strict OPFS payload validation in `src/engine/storage/opfsArchive.ts` to ensure type safety, preventing arbitrary object injection. Additionally, we optimized `src/engine/records.ts` leaderboard updates by manually shifting array elements instead of allocating via `.splice`. Most importantly, the `src/engine/pbp.ts` generator for non-bout events (injuries and institutional facts) has been fully migrated to use the strict `src/engine/bout/grammarDefinitions.ts` synthesizer.
+Recent updates successfully aligned several core engine behaviors with the Basho Constitution v1.2. The `src/engine/descriptorBands.ts` now incorporates the C5.3 hysteresis buffer (delta of 5) to prevent stat band flickering in the UI. In `src/engine/npcAI.ts`, the hard-cap roster overflow (C4.3) was implemented to ensure NPC stables do not persistently exceed 30 rikishi. Additionally, `src/engine/tick/tickDaily.ts` correctly enforces the C3.3 daily tick ordering boundary, ensuring training injuries are locked in before Day 1 Torikumi.
 
-Current focus: Hardening the PBP grammar synthesizer and OPFS storage layer to comply completely with the new constitution structures.
+Current focus: Ensuring the strict observability principles are respected across the presentation layer and hardening system boundaries between Engine Facts and UI projections.
 
 📖 Basho Constitution Alignment:
-✅ Aligned: The PBP system migration to `grammarDefinitions.ts` strictly aligns with C1.2 (Strictly Typed Phrase Library Contract), avoiding hardcoded strings and enforcing dynamic variation using contextual tokens.
+✅ Aligned:
+- C5.3 Hysteresis Buffer is correctly implemented in `descriptorBands.ts`.
+- C4.3 Hard-cap overflow handling (max 30 limit) is actively enforced in `npcAI.ts`.
+- C3.3 Daily tick ordering ensures training injuries are resolved before the active basho in `tickDaily.ts`.
 
-⚠️ Missing/Deviations: While injury and institutional texts now pull from the vocabulary definition matrix, out-of-ring events could further diversify using oyakata personality constraints as outlined in C1.2.3. The OPFS validation uses manual type guards, which works, but doesn't yet enforce deeply nested validation.
+⚠️ Missing/Deviations:
+- PBP string generation (C1.2) is partially migrated but needs further validation of dynamic templates.
+- Ensure that the UI strictly limits exposure to raw attributes (C5.1) across newly added React components.
 
 📄 Proposed Documentation Updates:
-src/engine/bout/grammarDefinitions.ts: Added explicit vocabulary and sentence templates for injury event types to support deterministic synthesizer logic.
+src/engine/descriptorBands.ts: Documented the hysteresis buffer threshold (5) mapped to C5.3.
+src/engine/npcAI.ts: Highlighted the hard-cap overflow cleanup logic for C4.3.
+src/engine/tick/tickDaily.ts: Added explicit comments regarding the C3.3 pre-basho timing lock.
 
-Code Paths Covered: `src/engine/storage/opfsArchive.ts` (validateBoutLog, OPFSArchiveService.getBoutLog), `src/engine/records.ts` (updateLeaderboard), `src/engine/pbp.ts` (renderFact).
+Code Paths Covered: `src/engine/descriptorBands.ts` (toDescriptorBand), `src/engine/npcAI.ts` (enforceHardCapRosterOverflow), `src/engine/tick/tickDaily.ts` (tickDaily)
 
-Key Knowledge Gaps Addressed: Clarifies how dynamic institutional and injury text generation should be routed through the canonical syntax engine to prevent repetitive strings, and introduces strict parsing boundaries for archived play-by-play payloads.
+Key Knowledge Gaps Addressed: Clarifies the precise engine hooks mapping to the Constitution rules C5.3, C4.3, and C3.3 for future game loop adjustments.
