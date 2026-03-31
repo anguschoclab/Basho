@@ -181,7 +181,7 @@ export default function Dashboard() {
               <button
                 key={i}
                 onClick={() => navigate({ to: alert.link as any })}
-                className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md"
+                className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
               >
                 <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
                     <AlertTriangle className={cn("h-4 w-4", alert.color)} />
