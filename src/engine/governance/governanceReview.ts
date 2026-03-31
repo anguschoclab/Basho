@@ -50,6 +50,30 @@ export function runGovernanceReview(world: WorldState): void {
       if (heya.funds < -5_000_000) {
         issueBailoutLoanIfNeeded(world, heya.id);
       }
+
+      // v1.7 Faction Solidarity (Traditional Bailouts)
+      if (heya.ichimon && heya.id !== world.playerHeyaId) {
+         // Find a wealthy faction-mate to provide a gift
+         const allies = Array.from(world.heyas.values()).filter(h => h.ichimon === heya.ichimon && h.id !== heya.id);
+         const benefactor = allies.find(h => h.funds > 60_000_000);
+         
+         if (benefactor) {
+            const giftAmount = 10_000_000;
+            benefactor.funds -= giftAmount;
+            heya.funds += giftAmount;
+
+            logEngineEvent(world, {
+               type: "GOVERNANCE_FACTION_BAILOUT",
+               category: "economy",
+               importance: "major",
+               scope: "world",
+               heyaId: heya.id,
+               title: `Faction solidarity at ${heya.name}`,
+               summary: `The ${heya.ichimon} Ichimon has provided a ¥${giftAmount.toLocaleString()} Traditional Gift to ${heya.name} to stabilize their accounts.`,
+               data: { benefactorId: benefactor.id, ichimon: heya.ichimon, amount: giftAmount }
+            });
+         }
+      }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Clear financial risk indicator when no longer desperate
       heya.riskIndicators.financial = false;

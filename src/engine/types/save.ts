@@ -33,13 +33,23 @@ export interface SerializedWorldState {
   currentBashoName?: BashoName;
 
   heyas: IdMap<Heya>;
+  closedHeyas: IdMap<any>;
   rikishi: IdMap<Rikishi>;
+  historicalRikishi: IdMap<Rikishi>;
   oyakata: IdMap<Oyakata>;
+  staff: IdMap<import("./staff").Staff>;
 
   currentBasho?: SerializedBashoState;
   history: BashoResult[];
+  historyIndex?: import("../historyIndex").HistoryIndex;
+  
+  lineage: import("../lineage").LineageEdge[];
+  records: import("./records").WorldRecords;
+  hallOfFame?: import("../hallOfFame").HallOfFameState;
 
   events: EventsState;
+  rivalriesState?: import("../rivalries").RivalriesState;
+  myosekiMarket?: import("./myoseki").MyosekiMarket;
 
   ftue: FTUEState;
   playerHeyaId?: Id;
@@ -48,6 +58,11 @@ export interface SerializedWorldState {
   ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
 
   talentPool?: TalentPoolWorldState;
+  sponsorPool?: import("../sponsors").SponsorPool;
+  mediaState?: import("./media").MediaState;
+
+  dayIndexGlobal: number;
+  almanacSnapshots: import("../almanac").AlmanacSnapshot[];
 }
 
 /** Type representing save version. */

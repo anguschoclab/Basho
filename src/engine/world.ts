@@ -129,6 +129,7 @@ function ensureDaySchedule(world: WorldState, day: number): WorldState {
       for(let i=0; i<rikishiIds.length; i+=2) {
           if (i+1 < rikishiIds.length) {
               basho.matches.push({
+                  boutId: `fallback-match-${day}-${i}`,
                   day,
                   eastRikishiId: rikishiIds[i],
                   westRikishiId: rikishiIds[i+1]
@@ -262,13 +263,14 @@ export function endBasho(world: WorldState): WorldState {
         };
         
         const result = resolveBout(boutCtx, east, west, basho);
-        const match: MatchSchedule = {
-          day: 16 + playoffRound - 1,
-          eastRikishiId: eastId,
-          westRikishiId: westId,
-          result,
+        const m: MatchSchedule = { 
+          boutId: `result-match-${world.week}-${i}`,
+          day: world.calendar?.currentDay ?? 1, 
+          eastRikishiId: eastId, 
+          westRikishiId: westId, 
+          result: result 
         };
-        playoffMatches.push(match);
+        playoffMatches.push(m);
         nextRound.push(result.winnerRikishiId);
       }
       
@@ -649,7 +651,8 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     });
   }
 
-  const result = updateBanzuke(currentBanzukeList, performanceList, world.ozekiKadoban ?? {});
+  const perfMap = new Map(performanceList.map(p => [p.rikishiId, p]));
+  const result = updateBanzuke(currentBanzukeList, perfMap, world.ozekiKadoban ?? {}, world.heyas);
   
   // Persist updated kadoban state
   world.ozekiKadoban = result.updatedOzekiKadoban;

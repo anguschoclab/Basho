@@ -248,6 +248,37 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
   }
+
+  /* ═══ Rich Aesthetics: Premium Tokens ═══ */
+  
+  /* Sumi-e Ink stroke effect */
+  .sumi-e-ink {
+    text-shadow: 2px 2px 0px hsl(var(--primary) / 0.1), 3px 3px 6px hsl(var(--primary) / 0.05);
+    position: relative;
+  }
+  
+  /* Dossier paper texture utility */
+  .dossier-paper {
+    background-color: hsl(var(--card));
+    background-image: 
+      radial-gradient(hsl(var(--foreground) / 0.03) 1px, transparent 1px),
+      linear-gradient(to right, hsl(var(--foreground) / 0.01) 1px, transparent 1px);
+    background-size: 20px 20px, 100% 100%;
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 4px 6px -1px hsl(0 0% 0% / 0.05), 0 2px 4px -2px hsl(0 0% 0% / 0.05), inset 0 0 20px hsl(0 0% 0% / 0.02);
+  }
+
+  /* Heroic multi-stop gradient overlay */
+  .hero-gradient {
+    background: radial-gradient(circle at 0% 0%, hsl(var(--primary) / 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, hsl(var(--accent) / 0.1) 0%, transparent 50%),
+                hsl(var(--background));
+  }
+  
+  /* Pro Management Header style */
+  .pro-header {
+    @apply uppercase tracking-[0.2em] font-black text-[10px] text-muted-foreground mb-1 block;
+  }
 }
 
 @layer utilities {

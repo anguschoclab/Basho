@@ -14,7 +14,7 @@ import { RANK_HIERARCHY } from "./banzuke";
 // === CAREER RECORD TYPES ===
 
 /** Defines the structure for basho performance. */
-interface BashoPerformance {
+export interface BashoPerformance {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
@@ -33,7 +33,7 @@ interface BashoPerformance {
 }
 
 /** Defines the structure for rikishi career record. */
-interface RikishiCareerRecord {
+export interface RikishiCareerRecord {
   rikishiId: Id;
   shikona: string;
   debutYear: number;
@@ -70,7 +70,7 @@ interface RikishiCareerRecord {
 }
 
 /** Defines the structure for heya record. */
-interface HeyaRecord {
+export interface HeyaRecord {
   heyaId: Id;
   name: string;
 
@@ -497,7 +497,7 @@ function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): H
 // === ALMANAC SNAPSHOT ===
 
 /** Defines the structure for almanac snapshot. */
-interface AlmanacSnapshot {
+export interface AlmanacSnapshot {
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;

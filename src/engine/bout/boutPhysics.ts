@@ -111,6 +111,8 @@ export interface EngineState {
   lastAdvantage?: Advantage;
   day: number;
   grappleState: GrappleState;
+  eastTacticalPivotTick?: number; // v1.7
+  westTacticalPivotTick?: number; // v1.7
 }
 
 const _clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
@@ -309,7 +311,50 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
  * AI Action Selection Logic
  */
 function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
-  const isPlayer = st.playerSide && (st.playerSide === (r.id === st.eastId ? 'east' : 'west'));
+  const isEast = r.id === st.eastId;
+  const isPlayer = st.playerSide && (st.playerSide === (isEast ? 'east' : 'west'));
+  
+  // v1.7 Mid-Bout Tactical Intelligence (CPU Only)
+  if (!isPlayer && st.tick > 5) {
+     const mental = stat(r, 'mental');
+     const balance = isEast ? st.balanceEast : st.balanceWest;
+     const lastPivot = isEast ? st.eastTacticalPivotTick : st.westTacticalPivotTick;
+     
+     // Smarter rikishi pivot when losing balance (A8.1 compliant)
+     if (mental > 60 && balance < 35 && (!lastPivot || st.tick - lastPivot > 20)) {
+        const currentTactic = st.cpuTacticOverride || 'STANDARD';
+        let newTactic: import("../types/combat").BoutTactic = currentTactic;
+
+        // Advantage check: if opponent has advantage, pivot to defensive/trick tactic
+        if (st.advantage === (isEast ? 'west' : 'east')) {
+           // If we're being pushed and have high technique, try to SLAP DOWN (OSHI -> TRICK)
+           if (st.stance === 'push-dominant' && stat(r, 'technique') > 60) {
+              newTactic = 'HENKA'; // Desperation slap-down
+           } else if (st.stance === 'push-dominant') {
+              newTactic = 'YOTSU_BELT'; // Try to grab and stabilize
+           } else if (st.stance === 'belt-dominant') {
+              newTactic = 'OSHI_THRUST'; // Try to break the grip with thrusts
+           }
+        }
+
+        if (newTactic !== currentTactic) {
+           st.cpuTacticOverride = newTactic;
+           if (isEast) st.eastTacticalPivotTick = st.tick;
+           else st.westTacticalPivotTick = st.tick;
+
+           st.log.push({
+              phase: 'engagement',
+              data: {
+                 event: 'tactical_adaptation',
+                 side: isEast ? 'east' : 'west',
+                 reason: 'balance_critical',
+                 newTactic
+              }
+           });
+        }
+     }
+  }
+
   const tactic = isPlayer ? st.playerTactic : (st.cpuTacticOverride || 'STANDARD');
 
   // Handle Henka (Force trick on Tachiai only)

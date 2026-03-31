@@ -214,45 +214,45 @@ function decideTrainingIntensity(
   // Critical welfare → conservative no matter what
   if (perception.welfareRiskBand === "critical") {
     intensity = "conservative";
-    reason = "Welfare risk critical — forced conservative training";
+    reason = "Focusing on stable survival — forced conservative training due to critical welfare risk.";
   }
   else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
     intensity = "conservative";
-    reason = "Elevated welfare risk — cautious approach";
+    reason = "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach.";
   }
   else if (fragileRatio >= 0.4) {
     intensity = "conservative";
-    reason = `${fragileCount} wrestlers worn/fragile — reducing intensity`;
+    reason = `Stabilizing the roster — ${fragileCount} wrestlers worn/fragile; reducing intensity to prevent injuries.`;
   }
   else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled") {
     intensity = "balanced";
-    reason = "Low morale — maintaining balanced training";
+    reason = "Managing stable friction — maintaining balanced training to avoid further morale decay.";
   }
   // Philosophy-driven intensity biases
   else if (philosophy === "size_matters" && perception.welfareRiskBand === "safe") {
     intensity = "intensive";
-    reason = "Size-obsessed philosophy — pushing hard to build mass";
+    reason = "Mass-building specialized regimen — pushing hard to build world-class physical presence.";
   }
-  else if (philosophy === "underdog_hunter" || philosophy === "balanced") {
+  else if (philosophy === "underdog_hunter" || philosophy === "balanced" || philosophy === "innovator") {
     intensity = "balanced";
-    reason = `${philosophy === "underdog_hunter" ? "Diamond Seeker" : "Open-Minded"} — steady development`;
-  }
-  else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
-    intensity = "intensive";
-    reason = "Strong roster + ambitious manager — intensive training";
+    reason = `${philosophy === "underdog_hunter" ? "Strategic development" : philosophy === "innovator" ? "Technical refinement" : "Standard cycle"} — maintaining steady upward trajectory.`;
   }
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
-    reason = "Extremely ambitious manager — punishing regimen";
+    reason = "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects.";
+  }
+  else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
+    intensity = "intensive";
+    reason = "Maximum performance output — intensive training to solidify top-tier standing.";
   }
   // Drama Pass (Initiative 4): Grudges increase intensity (irrational pressure)
-  else if (persona && (persona as any).grudges?.length > 0 && ((persona as any).temperament === 'Volatile' || (persona as any).temperament === 'Vindictive')) {
+  else if ((persona as any)?.grudges?.length > 0 && ((persona as any).temperament === 'Volatile' || (persona as any).temperament === 'Vindictive')) {
     intensity = "punishing";
     reason = "Oyakata is obsessed with rivalries — demanding punishing training to humiliate rivals.";
   }
   else {
     intensity = "balanced";
-    reason = "Standard balanced training";
+    reason = "Standard operational cycle — maintaining balanced development.";
   }
 
   if (complianceCap && rank(intensity) > rank(complianceCap)) {
@@ -592,10 +592,10 @@ export function tickWeek(world: WorldState): number {
     logEngineEvent(world, {
       type: "NPC_MANAGER_DECISION",
       category: "training",
-      importance: "minor",
+      importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor",
       scope: "heya",
       heyaId: heya.id,
-      title: `${heya.name} weekly plan`,
+      title: `${heya.name} Internal Strategy`,
       summary: decision.reasoning[0] || "Weekly training plan updated",
       data: {
         archetype: decision.archetype,
@@ -607,6 +607,31 @@ export function tickWeek(world: WorldState): number {
         reasoningLog: decision.reasoning.join(" | ")
       }
     });
+
+    // Strategy Pivot Headline (Advanced Narrative AI)
+    if (decision.trainingIntensity === "punishing") {
+       logEngineEvent(world, {
+          type: "NARRATIVE_STRATEGY_SHIFT",
+          category: "narrative",
+          importance: "major",
+          scope: "world",
+          heyaId: heya.id,
+          title: `Drastic measures at ${heya.name}`,
+          summary: `Reports suggest ${heya.name} has moved to an extremely punishing training cycle, seeking a breakthrough.`,
+          data: { intensity: "punishing", reasoning: decision.reasoning[0] }
+       });
+    } else if (decision.trainingIntensity === "conservative" && perception.welfareRiskBand === "critical") {
+        logEngineEvent(world, {
+          type: "NARRATIVE_STRATEGY_SHIFT",
+          category: "narrative",
+          importance: "major",
+          scope: "world",
+          heyaId: heya.id,
+          title: `Crisis management at ${heya.name}`,
+          summary: `The Association has forced a conservative training shift at ${heya.name} following ongoing welfare concerns.`,
+          data: { intensity: "conservative", reasoning: decision.reasoning[0] }
+       });
+    }
   }
 
   // Commit scouting priorities to world state for talentpool to read

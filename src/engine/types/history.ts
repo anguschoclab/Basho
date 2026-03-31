@@ -1,4 +1,5 @@
 import type { Rank, Division } from "./banzuke";
+import type { Id } from "./common";
 
 /**
  * Immutable snapshot of a Rikishi's performance in a single basho.
@@ -46,9 +47,35 @@ export interface Milestone {
  * Historical record of an Oyakata's tenure leading a stable.
  */
 export interface HistoricalOyakata {
-  oyakataId: string;
+  oyakataId: Id;
   name: string;
+  generation: number;
   startYear: number;
   endYear?: number;
-  achievements: string[];
+  
+  // Tenure Achievements
+  achievements: {
+    titlesWon: number;
+    rekishiProducedCount: number;
+    highestStudentRank?: Rank;
+    sekitoriCount: number;
+    specialAwards?: string[];
+  };
+
+  notes?: string;
+}
+
+/**
+ * Historical record of a closed/defunct Heya.
+ */
+export interface HistoricalHeya {
+  id: Id;
+  name: string;
+  foundationYear: number;
+  extinctYear: number;
+  lastMasterId: Id;
+  lineage: HistoricalOyakata[];
+  totalYusho: number;
+  ichimon?: string;
+  reasonForClosure: "merger" | "bankruptcy" | "scandal" | "retirement";
 }
