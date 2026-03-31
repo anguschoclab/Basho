@@ -9,7 +9,7 @@ interface Props {
 
 /**
  * rank change indicator.
- *  * @param { delta } - The rank delta token from the projection layer.
+ * @param { delta } - The rank delta token from the projection layer.
  */
 export function RankChangeIndicator({ delta }: Props) {
   if (delta.type === "new") {
@@ -43,3 +43,4 @@ export function RankChangeIndicator({ delta }: Props) {
       </span>
     );
   }
+}

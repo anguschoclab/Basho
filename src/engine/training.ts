@@ -50,7 +50,7 @@ export const RECOVERY_MULTIPLIERS: Record<RecoveryEmphasis, { fatigueDecay: numb
 
 // 3. FOCUS BIAS MATRIX (From Canon Table 4.3)
 /** f o c u s_ b i a s_ m a t r i x. */
-export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<keyof RikishiStats, number>> = {
+export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<Exclude<keyof RikishiStats, 'achievements'>, number>> = {
   power:     { strength: 1.30, speed: 0.85, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   speed:     { strength: 0.85, speed: 1.30, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   technique: { strength: 0.90, speed: 0.90, technique: 1.35, balance: 1.10, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
@@ -241,8 +241,9 @@ function calculateGrowthVector(
   profile: TrainingProfile,
   focus: IndividualFocus | undefined,
   rikishi: Rikishi,
-  heya?: Heya
-): Record<keyof RikishiStats, number> {
+  heya?: Heya,
+  world?: WorldState
+): Record<Exclude<keyof RikishiStats, 'achievements'>, number> {
   const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
   const bias = FOCUS_BIAS_MATRIX[profile.focus];
@@ -263,9 +264,9 @@ function calculateGrowthVector(
 
   // Ichimon / Degeiko Political Bonus
   let degeikoMult = 1.0;
-  if (heya && heya.ichimon && globalThis._worldForDegeiko) {
-    const factions = globalThis._worldForDegeiko.factions;
-    if (factions && factions[heya.ichimon]) {
+  if (heya && heya.ichimon && world?.factions) {
+    const factions = world.factions;
+    if (factions[heya.ichimon]) {
       // Find the chairman
       let maxInfluence = -1;
       let chairmanFactionId = "";
@@ -290,7 +291,7 @@ function calculateGrowthVector(
   const archetype = rikishi.derivedArchetype as RikishiArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
-  const growth: Record<keyof RikishiStats, number> = {
+  const growth: Record<Exclude<keyof RikishiStats, 'achievements'>, number> = {
     strength: 0, speed: 0, technique: 0, balance: 0,
     weight: 0, stamina: 0, mental: 0, adaptability: 0
   };
@@ -324,7 +325,6 @@ function calculateGrowthVector(
  *  * @returns The result.
  */
 function applyWeeklyTraining(world: WorldState): WorldState {
-  (globalThis as any)._worldForDegeiko = world;
 
   const rng = rngFromSeed(world.seed, "training", `week::${world.calendar.currentWeek}`);
 
@@ -379,7 +379,7 @@ function applyWeeklyTraining(world: WorldState): WorldState {
     }
   });
 
-  delete (globalThis as any)._worldForDegeiko;
+  // Cleanup is not needed — world is no longer stored globally
   return world;
 }
 

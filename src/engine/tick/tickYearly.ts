@@ -1,7 +1,7 @@
 import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { processYearEndInduction, HOF_CATEGORY_LABELS } from "../hallOfFame";
-import * as talentpool from "../talentpool";
+import * as talentpool from "../systems/generation/TalentPoolService";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 import * as npcAI from "../npcAI";
 

@@ -9,7 +9,7 @@ import type { Heya } from "./types/heya";
 import type { BoutResult, MatchSchedule } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
-import { reportScandal } from "./governance";
+import { reportScandal } from "./governance/GovernanceService";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
 

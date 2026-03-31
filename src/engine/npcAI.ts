@@ -1,4 +1,4 @@
-// @ts-nocheck
+// npcAI.ts
 // npcAI.ts
 // =======================================================
 // NPC Manager AI & Personas (Canon A7/A8/A11)
@@ -12,11 +12,12 @@ import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataSty
 import * as talentpool from "./systems/generation/TalentPoolService";
 import type { WorldState } from "./types/world";
 import type { Style } from "./types/combat";
-import type { OyakataArchetype, Oyakata } from "./types/oyakata";
+import type { OyakataArchetype, Oyakata, OyakataMood } from "./types/oyakata";
 import type { Id } from "./types/common";
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
 import { enforceHardCapRosterOverflow } from "./overflow";
+import { HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getHeyaStyleBias, getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
@@ -134,7 +135,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
       styleBias: "neutral",
       welfareDiscipline: 0.4,
       riskAppetite: 0.5,
-      perception
+      perception,
+      mood: "content" as OyakataMood
     };
   }
 
@@ -165,13 +167,12 @@ export function getManagerPersona(world: WorldState, heyaId: string): {
     archetype: oyakata.archetype,
     traits,
     quirks: oyakata.quirks ?? [],
-    grudges: oyakata.grudges ?? [],
-    temperament: oyakata.temperament ?? 'Stoic',
     flags,
     styleBias: determineNPCStyleBias(world, heyaId),
     welfareDiscipline,
     riskAppetite,
-    perception
+    perception,
+    mood: (oyakata.mood ?? "content") as OyakataMood
   };
 }
 
@@ -189,6 +190,7 @@ interface NPCWeeklyDecision {
   individualDevelops: Id[];  // rikishi to set to "develop" focus (philosophy-driven)
   individualPushes: Id[];    // rikishi to set to "push" focus (philosophy-driven)
   reasoning: string[];       // audit log entries (A7.3)
+  mood?: OyakataMood;        // current oyakata mood for narrative systems
 }
 
 /**
@@ -199,6 +201,7 @@ function decideTrainingIntensity(
   perception: PerceptionSnapshot,
   riskAppetite: number,
   welfareDiscipline: number,
+  mood: OyakataMood | undefined,
   complianceCap: TrainingIntensity | undefined,
   philosophy?: RecruitmentPhilosophy
 ): { intensity: TrainingIntensity; reason: string } {
@@ -246,9 +249,9 @@ function decideTrainingIntensity(
     reason = "Maximum performance output — intensive training to solidify top-tier standing.";
   }
   // Drama Pass (Initiative 4): Grudges increase intensity (irrational pressure)
-  else if ((persona as any)?.grudges?.length > 0 && ((persona as any).temperament === 'Volatile' || (persona as any).temperament === 'Vindictive')) {
+  else if (mood === "furious" || mood === "obsessed") {
     intensity = "punishing";
-    reason = "Oyakata is obsessed with rivalries — demanding punishing training to humiliate rivals.";
+    reason = "Oyakata's emotional state is driving punishing demands on the roster.";
   }
   else {
     intensity = "balanced";
@@ -620,7 +623,7 @@ export function tickWeek(world: WorldState): number {
           summary: `Reports suggest ${heya.name} has moved to an extremely punishing training cycle, seeking a breakthrough.`,
           data: { intensity: "punishing", reasoning: decision.reasoning[0] }
        });
-    } else if (decision.trainingIntensity === "conservative" && perception.welfareRiskBand === "critical") {
+    } else if (decision.trainingIntensity === "conservative" && decision.mood === "anxious") {
         logEngineEvent(world, {
           type: "NARRATIVE_STRATEGY_SHIFT",
           category: "narrative",

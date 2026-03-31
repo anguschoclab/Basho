@@ -18,6 +18,7 @@ import { generateRikishiName } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
 import { generateCandidate } from "./CandidateGenerator";
 import { clampInt } from "../../utils/math";
+import { logEngineEvent } from "../../events";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -297,4 +298,118 @@ function createEmptyPool(type: TalentPoolType) {
     scarcityBand: "normal" as const,
     qualityBand: "normal" as const
   };
+}
+
+// ============================================
+// MISSING FUNCTIONS (called by overflow.ts, npcAI.ts, tickYearly.ts)
+// ============================================
+
+/**
+ * Returns true if a rikishi counts against the foreign-slot limit.
+ */
+export function countsAsForeignFromRikishi(rikishi: Rikishi): boolean {
+  return (rikishi.nationality ?? 'Japan') !== 'Japan';
+}
+
+/**
+ * Re-injects a rikishi back into the talent pool after roster overflow.
+ * The rikishi becomes a free-agent candidate available to all stables.
+ */
+export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void {
+  const tp = ensureTalentPoolState(world);
+  // Convert the rikishi to a lightweight candidate object and mark it available
+  const id = `reinjected_${rikishi.id}`;
+  const isForeginer = countsAsForeignFromRikishi(rikishi);
+  const poolType: TalentPoolType = isForeginer ? "foreign" : "high_school";
+
+  if (!tp.candidates[id]) {
+    const birthYear = world.year - (rikishi.age ?? 20);
+    tp.candidates[id] = {
+      candidateId: id,
+      personId: rikishi.id,
+      name: rikishi.shikona ?? rikishi.name ?? id,
+      nationality: rikishi.nationality ?? 'Japan',
+      birthYear,
+      originRegion: 'Japan',
+      reputationSeed: 50,
+      tags: ['reinjected'],
+      combatProfile: {} as any,
+      archetype: 'balanced' as any,
+      style: 'neutral' as any,
+      heightPotentialCm: 175,
+      weightPotentialKg: 150,
+      talentSeed: 50,
+      temperament: { discipline: 50, volatility: 50 },
+      visibilityBand: "public" as VisibilityBand,
+      availabilityState: "available" as CandidateAvailabilityState,
+      competingSuitors: [],
+    };
+    tp.pools[poolType].candidatesVisible.push(id);
+  }
+
+  logEngineEvent(world, {
+    type: "TALENT_POOL_REINJECTION",
+    category: "career",
+    importance: "minor",
+    scope: "world",
+    rikishiId: rikishi.id,
+    title: `${rikishi.shikona ?? rikishi.name} re-enters the talent pool`,
+    summary: `${rikishi.shikona ?? rikishi.name} was released and is now available to all stables.`,
+    tags: ["talent_pool", "roster_overflow"],
+  });
+}
+
+/**
+ * Annual talent pool maintenance:
+ * - Age out stale candidates who have been available too long
+ * - Inject a fresh cohort of prospects for the new year
+ */
+export function tickYear(world: WorldState): void {
+  const tp = ensureTalentPoolState(world);
+  const currentYear = world.year ?? 2025;
+  const rng = rngForWorld(world, "scouting", `yearly_refresh_${currentYear}`);
+
+  const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
+
+  for (const poolType of poolTypes) {
+    const pool = tp.pools[poolType];
+
+    // 1. Age out stale candidates (estimate age from birthYear)
+    const toRemoveVisible: string[] = [];
+    const maxAge = poolType === "high_school" ? 20 : poolType === "university" ? 24 : 28;
+    for (const id of pool.candidatesVisible) {
+      const c = tp.candidates[id];
+      const estimatedAge = c ? (currentYear - (c.birthYear ?? currentYear - 20)) : 0;
+      if (estimatedAge > maxAge) {
+        toRemoveVisible.push(id);
+        delete tp.candidates[id];
+      }
+    }
+    pool.candidatesVisible = pool.candidatesVisible.filter(id => !toRemoveVisible.includes(id));
+
+    const toRemoveHidden: string[] = [];
+    for (const id of pool.candidatesHidden) {
+      const c = tp.candidates[id];
+      const estimatedAge = c ? (currentYear - (c.birthYear ?? currentYear - 20)) : 0;
+      if (estimatedAge > maxAge) {
+        toRemoveHidden.push(id);
+        delete tp.candidates[id];
+      }
+    }
+    pool.candidatesHidden = pool.candidatesHidden.filter(id => !toRemoveHidden.includes(id));
+
+    // 2. Inject fresh prospects for the new year
+    const targetFill = Math.floor(pool.hiddenReserveCap * 0.6);
+    const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
+    const toGenerate = Math.max(0, targetFill - currentTotal);
+
+    for (let i = 0; i < toGenerate; i++) {
+      const id = `cand_${poolType}_${currentYear}_${i}_${rng.int(1000, 9999)}`;
+      const candidate = generateCandidate({ id, rng, currentYear, poolType });
+      tp.candidates[id] = candidate;
+      pool.candidatesHidden.push(id);
+    }
+  }
+
+  tp.lastYearlyRefreshYear = currentYear;
 }

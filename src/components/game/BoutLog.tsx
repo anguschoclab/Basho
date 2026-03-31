@@ -75,7 +75,7 @@ export function BoutLog({ log, className }: BoutLogProps) {
               <div
                 key={key}
                 className="flex items-start gap-2 text-sm animate-slide-up"
-                style={ animationDelay: `${index * 100}ms` }
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <span
                   className={cn(

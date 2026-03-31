@@ -8,7 +8,13 @@
 import type { WorldState } from "../types/world";
 import { tickOrchestrator, cloneWorldForTick } from "../tick/tickOrchestrator";
 import { buildWeeklyDigest } from "../../presenters/uiDigest";
-import { generateWorld } from "../worldgen"; // Assuming generateWorld exists in worldgen.ts
+import { generateInitialWorld } from "../systems/generation/WorldFactory";
+/** Adapter matching the { seed, playerConfig? } call shape used in this worker */
+function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }) {
+  const world = generateInitialWorld(opts.seed);
+  if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId;
+  return world;
+}
 import { runAutoSim } from "../autoSim";
 import type { EngineCommand, EngineEvent } from "./types";
 

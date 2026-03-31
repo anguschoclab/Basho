@@ -537,20 +537,6 @@ export const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
     "The Oyakata is summoned following a serious cunning welfare violation notice.",
     "Welfare monitors issue a stern warning detailing unacceptable scheming conditions."
   ],
-  event_scout_strict: [
-    "Oyakata demands the recruit demonstrate absolute obedience.",
-    "The stablemaster observes in stoic silence, looking for strict discipline.",
-    "A rigorous test of physical endurance reveals the recruit's unyielding resolve.",
-    "Oyakata emphasizes that only endless repetition and strict adherence will lead to greatness.",
-    "The recruit is sternly reminded of the harsh realities of disciplined stable life."
-  ],
-  event_scout_indulgent: [
-    "Oyakata warmly welcomes the recruit, promising a lenient environment.",
-    "The stablemaster focuses on the recruit's character and relaxed well-being.",
-    "Oyakata patiently explains the path to a long, easy career in the sport.",
-    "Seeing potential for steady growth, the stablemaster offers the recruit a safe haven to develop.",
-    "The recruit is reassured by Oyakata's indulgent approach and promises of mentorship."
-  ],
 
 };
 

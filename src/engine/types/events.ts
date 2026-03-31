@@ -25,6 +25,7 @@ export type EventCategory =
   | "basho"
   | "career"
   | "welfare"
+  | "narrative"
   | "misc";
 
 /** Type representing event importance. */

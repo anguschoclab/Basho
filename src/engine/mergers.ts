@@ -7,7 +7,7 @@ import { getStableRikishi } from "@/engine/world";
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import { logEngineEvent } from "./events";
-import { generateGovernanceHeadline } from "./media";
+import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { updateFacilitiesBand } from "./facilities";
 import { rngForWorld } from "./rng";
 import { stableTieBreak } from "./utils/sort";
@@ -105,7 +105,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
   const source = world.heyas.get(sourceHeyaId);
   if (!source) return null;
 
-  const rng = rngForWorld(world, `merger_${sourceHeyaId}_${world.year}_${world.week}`);
+  const rng = rngForWorld(world, "merger", `merger_${sourceHeyaId}_${world.year}_${world.week}`);
 
   // Candidates: not the source, not player (unless forced, but usually NPC targets NPC),
   // has room in roster (< 25 rikishi), and prestige >= modest.

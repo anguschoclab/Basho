@@ -5,6 +5,18 @@
 
 import type { Id } from "./common";
 
+/** Mood state for an Oyakata — affects training intensity and decision risk. */
+export type OyakataMood =
+  | "content"
+  | "determined"
+  | "anxious"
+  | "frustrated"
+  | "furious"
+  | "obsessed"
+  | "defeated"
+  | "inspired";
+
+
 /** Type representing oyakata archetype. */
 export type OyakataArchetype =
   | "traditionalist"

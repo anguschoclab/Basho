@@ -7,7 +7,7 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Loan, LoanType } from "./types/economy";
 import { logEngineEvent } from "./events";
-import { generateGovernanceHeadline } from "./media";
+import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { rngForWorld } from "./rng";
 import { stableSort } from "./utils/sort";
 

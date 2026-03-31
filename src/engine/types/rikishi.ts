@@ -40,7 +40,7 @@ export interface RikishiStats {
   mental: number;
   adaptability: number;
   balance: number;
-  achievements: RikishiAchievements;
+  achievements?: RikishiAchievements; // Career milestone record, not a trainable stat
 }
 
 /** Defines the structure for rikishi. */

@@ -5,7 +5,7 @@
 
 import type { WorldState } from "./types/world";
 import { logEngineEvent } from "./events";
-import { generateGovernanceHeadline } from "./media";
+import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { stableSort } from "./utils/sort";
 
 /**

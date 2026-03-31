@@ -1,7 +1,12 @@
 // Game Reducer — pure state transitions using Slice Pattern
 import type { GameState, GameAction } from "./gameTypes";
-import { generateWorld } from "@/engine/worldgen";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { combineReducers } from "./gameHelpers";
+
+/** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
+function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }): ReturnType<typeof generateInitialWorld> {
+  return generateInitialWorld(opts.seed);
+}
 
 import { timeSlice } from "./timeSlice";
 import { heyaSlice } from "./heyaSlice";

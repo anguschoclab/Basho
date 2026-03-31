@@ -3,8 +3,8 @@ import { Id } from "./types/common";
 import { Rikishi } from "./types/rikishi";
 import { Heya } from "./types/heya";
 import { logEngineEvent } from "./events";
-import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./talentpool";
-import { stableTieBreak } from "./utils/sort";
+import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./systems/generation/TalentPoolService";
+import { stableTieBreak, stableSort } from "./utils/sort";
 
 // Hard cap constants
 /** h a r d_ c a p_ r o s t e r_ s i z e. */

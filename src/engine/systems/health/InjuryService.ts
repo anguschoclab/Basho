@@ -82,3 +82,94 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   }
   return "inflammation"; // Default minor
 }
+
+/**
+ * Weekly injury tick: rolls for injuries for all active, non-retired rikishi.
+ * Applies injury state directly to the rikishi.
+ */
+export function tickWeek(world: WorldState): void {
+  for (const rikishi of world.rikishi.values()) {
+    if (rikishi.isRetired || rikishi.injured) continue;
+
+    const rng = world.rng
+      ? world.rng
+      : { next: () => Math.random() } as any; // Fallback; world.rng should always be set
+    const seededRng = {
+      next: () => rng.next ? rng.next() : (rng as any)(),
+      int: (min: number, max: number) => min + Math.floor(seededRng.next() * (max - min + 1))
+    } as SeededRNG;
+
+    const fatigue = (rikishi as any).fatigue ?? 0;
+    const result = rollWeeklyInjury({ rng: seededRng, rikishi, fatigue });
+
+    if (result) {
+      rikishi.injured = true;
+      rikishi.injuryWeeksRemaining = result.weeksOut;
+      (rikishi as any).currentInjury = {
+        severity: result.severity,
+        area: result.area,
+        type: result.type,
+        weeksOut: result.weeksOut,
+        weekOccurred: world.week ?? 0,
+      };
+    }
+  }
+}
+
+/**
+ * Post-bout injury check: applies bout-induced injuries based on result severity.
+ */
+export function onBoutResolved(
+  world: WorldState,
+  ctx: { match: any; result: any; east: any; west: any }
+): void {
+  const { result, east, west } = ctx;
+  if (!result) return;
+
+  // Only applies to makuuchi/juryo bouts with high-intensity outcomes
+  const loser = result.winner === "east" ? west : east;
+  if (!loser || loser.injured) return;
+
+  // Bout-induced injury probability based on kimarite violence
+  const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
+  const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
+
+  const boutInjuryChance = isViolentFinish ? 0.04 : 0.02; // 2-4% per bout
+  const rng2 = world.rng ?? { next: () => Math.random() } as any;
+  const roll = rng2.next ? rng2.next() : (rng2 as any)();
+
+  if (roll < boutInjuryChance) {
+    loser.injured = true;
+    loser.injuryWeeksRemaining = 1 + Math.floor(Math.random() * 2); // 1-2 weeks
+    (loser as any).currentInjury = {
+      severity: "minor",
+      area: "other",
+      type: "inflammation",
+      weeksOut: loser.injuryWeeksRemaining,
+      weekOccurred: world.week ?? 0,
+    };
+  }
+}
+
+/**
+ * Clears an active injury from a rikishi (UI action: doctor clearance).
+ */
+export function clearInjury(rikishi: any): void {
+  rikishi.injured = false;
+  rikishi.injuryWeeksRemaining = 0;
+  delete (rikishi as any).currentInjury;
+}
+
+/**
+ * Converts a rikishi's current injury state to an engine event object for UI display.
+ */
+export function toInjuryEvent(rikishi: any): { type: string; rikishiId: string; severity: string; weeksOut: number } | null {
+  if (!rikishi.injured || !(rikishi as any).currentInjury) return null;
+  const inj = (rikishi as any).currentInjury;
+  return {
+    type: "INJURY",
+    rikishiId: rikishi.id,
+    severity: inj.severity ?? "minor",
+    weeksOut: inj.weeksOut ?? 0,
+  };
+}

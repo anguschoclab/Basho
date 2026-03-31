@@ -12,11 +12,13 @@
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
 import { simulateBout } from "./bout/boutResolver";
 import { getNextBasho, BASHO_CALENDAR, getBashoNumber } from "./calendar";
 import { advanceDays } from "./tick/tickDaily";
 import { RANK_HIERARCHY } from "./banzuke";
-import { initializeBasho, generateDaySchedule } from "./worldgen";
+import { initializeBasho } from "./systems/generation/WorldFactory";
+import { generateDaySchedule } from "./schedule";
 import { generateFullBashoSchedule, needsScheduleForDay, type ScheduleRules, type DivisionScheduleConfig } from "./schedule";
 import { stableTieBreak } from "./utils/sort";
 

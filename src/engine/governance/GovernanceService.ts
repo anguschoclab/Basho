@@ -30,3 +30,101 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
 
   generateGovernanceHeadline(world, heyaId, severity, reason);
 }
+
+/**
+ * Weekly governance tick: decay scandal scores, check compliance alerts.
+ */
+export function tickWeek(world: WorldState): void {
+  for (const heya of world.heyas.values()) {
+    // Natural scandal score decay — 1 point per week
+    if (heya.scandalScore && heya.scandalScore > 0) {
+      heya.scandalScore = Math.max(0, heya.scandalScore - 1);
+    }
+    // Alert if crossing critical threshold
+    if (heya.scandalScore && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
+      logEngineEvent(world, {
+        type: "GOVERNANCE_WARNING",
+        category: "discipline",
+        importance: "major",
+        scope: "heya",
+        heyaId: heya.id,
+        title: `JSA Warning: ${heya.name}`,
+        summary: `Your stable's scandal score has reached critical levels (${heya.scandalScore}). JSA review imminent.`,
+        data: { scandalScore: heya.scandalScore },
+        tags: ["governance", "warning"]
+      });
+    }
+  }
+}
+
+/**
+ * Bi-annual JSA Board Elections.
+ * Rotates ichimon political capital and emits election narrative events.
+ */
+export function runElections(world: WorldState): void {
+  const ichimonGroups: Record<string, string[]> = {};
+  for (const heya of world.heyas.values()) {
+    if (!heya.ichimon) continue;
+    if (!ichimonGroups[heya.ichimon]) ichimonGroups[heya.ichimon] = [];
+    ichimonGroups[heya.ichimon].push(heya.id);
+  }
+
+  for (const [ichimon, heyaIds] of Object.entries(ichimonGroups)) {
+    // Small political capital redistribution
+    for (const heyaId of heyaIds) {
+      const heya = world.heyas.get(heyaId);
+      if (heya && heya.politicalCapital !== undefined) {
+        heya.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
+      }
+    }
+    logEngineEvent(world, {
+      type: "JSA_ELECTION",
+      category: "discipline",
+      importance: "notable",
+      scope: "world",
+      title: `JSA Board Election: ${ichimon} faction`,
+      summary: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
+      data: { ichimon, heyaCount: heyaIds.length },
+      tags: ["governance", "elections"]
+    });
+  }
+}
+
+/**
+ * Returns a CSS color class for a governance status band.
+ */
+export function getStatusColor(status: string): string {
+  switch (status) {
+    case "clean": return "text-green-400";
+    case "warning": return "text-yellow-400";
+    case "probation": return "text-orange-400";
+    case "critical": return "text-red-400";
+    default: return "text-gray-400";
+  }
+}
+
+/**
+ * Returns a display label for a governance status band.
+ */
+export function getStatusLabel(status: string): string {
+  switch (status) {
+    case "clean": return "Clean Record";
+    case "warning": return "Under Review";
+    case "probation": return "On Probation";
+    case "critical": return "Critical Scrutiny";
+    default: return status;
+  }
+}
+
+/**
+ * Spends political capital from a heya's governance account.
+ * Returns false if insufficient capital.
+ */
+export function spendPoliticalCapital(world: WorldState, heyaId: string, amount: number): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return false;
+  const current = heya.politicalCapital ?? 50;
+  if (current < amount) return false;
+  heya.politicalCapital = current - amount;
+  return true;
+}

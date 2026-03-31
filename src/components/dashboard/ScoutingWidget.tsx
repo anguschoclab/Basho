@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import type { PotentialBand  } from "@/engine/descriptorBands";
-import * as talentpool from "@/engine/talentpool";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS, toPotentialBand } from "@/presenters/uiDigest";
 
@@ -43,11 +43,12 @@ export function ScoutingWidget() {
 
   if (!world) return null;
 
-  const poolCounts = { high_school: 0, university: 0, foreign: 0 };
+  const poolCounts: Record<TalentPoolType, number> = { high_school: 0, university: 0, foreign: 0 };
   for (const p of prospects) {
     if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
       poolCounts[p.pool]++;
     }
+  }
 
   const topProspects = prospects.slice(0, 6);
 
@@ -108,7 +109,7 @@ export function ScoutingWidget() {
             );
           })
         )}
-      {prospects.length > 6 && (
+        {prospects.length > 6 && (
           <button
             onClick={() => navigate({ to: "/talent-pool" })}
             className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"
@@ -120,3 +121,4 @@ export function ScoutingWidget() {
     </BaseWidget>
   );
 }
+

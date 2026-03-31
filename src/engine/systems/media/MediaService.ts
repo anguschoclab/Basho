@@ -111,8 +111,13 @@ export function updateMediaFromBout(args: {
 
 /**
  * Weekly decay and feature generation.
+ * Accepts either a plain MediaState (legacy) or an object with { state, world, rivalries }.
+ * Always returns { state: MediaState } for destructuring at call sites.
  */
-export function processWeeklyMediaBoundary(state: MediaState): MediaState {
+export function processWeeklyMediaBoundary(
+  input: MediaState | { state: MediaState; world?: WorldState; rivalries?: RivalriesState }
+): { state: MediaState } {
+  const state = 'state' in input ? input.state : input;
   const nextHeat: Record<string, number> = {};
   for (const [id, heat] of Object.entries(state.mediaHeat)) {
     const nv = decayHeat(heat as number);
@@ -125,7 +130,7 @@ export function processWeeklyMediaBoundary(state: MediaState): MediaState {
     if (nv > 0) nextPressure[id] = nv;
   }
 
-  return { ...state, mediaHeat: nextHeat, heyaPressure: nextPressure };
+  return { state: { ...state, mediaHeat: nextHeat, heyaPressure: nextPressure } };
 }
 
 /**
@@ -264,11 +269,95 @@ export function createDefaultMediaState(): MediaState {
 }
 
 /**
- * Generates a headline for a governance event (scandal, review, etc).
+ * Generates a headline for a governance event (scandal, review, merger, loan, etc).
+ * Accepts either positional args (world, heyaId, severity, reason) or a single options object.
  */
-export function generateGovernanceHeadline(world: WorldState, heyaId: string, severity: string, reason: string): void {
-  const heya = world.heyas.get(heyaId);
-  const shikona = heya?.name ?? "Heya";
-  console.log(`MediaService: Governance headline for ${shikona}: ${severity} - ${reason}`);
-  // Implementation will be expanded when headline templates are fully migrated.
+export function generateGovernanceHeadline(
+  worldOrOpts: WorldState | { world: WorldState; heyaId: string; type?: string; severity?: string; description?: string },
+  heyaId?: string,
+  severity?: string,
+  reason?: string
+): void {
+  let world: WorldState;
+  let resolvedHeyaId: string;
+  let resolvedSeverity: string;
+  let resolvedReason: string;
+
+  if (worldOrOpts && 'heyas' in worldOrOpts) {
+    // Positional form: (world, heyaId, severity, reason)
+    world = worldOrOpts as WorldState;
+    resolvedHeyaId = heyaId ?? '';
+    resolvedSeverity = severity ?? 'minor';
+    resolvedReason = reason ?? '';
+  } else {
+    // Object form: { world, heyaId, type, severity, description }
+    const opts = worldOrOpts as { world: WorldState; heyaId: string; type?: string; severity?: string; description?: string };
+    world = opts.world;
+    resolvedHeyaId = opts.heyaId;
+    resolvedSeverity = opts.severity ?? 'minor';
+    resolvedReason = opts.description ?? opts.type ?? '';
+  }
+
+  const heya = world.heyas.get(resolvedHeyaId);
+  const heyaName = heya?.name ?? 'Heya';
+  console.log(`MediaService: Governance headline for ${heyaName}: ${resolvedSeverity} - ${resolvedReason}`);
+  // Full headline generation will be implemented when headline templates are migrated.
+}
+
+/**
+ * Evaluates active scandals and applies ongoing pressure/heat effects.
+ * Called every week during the media tick to keep scandal dynamics alive.
+ */
+export function evaluateScandals(world: WorldState): void {
+  if (!world.mediaState) return;
+  // Scandal pressure: stables with high scandalScore get persistent heyaPressure bumps
+  for (const heya of world.heyas.values()) {
+    if (!heya.scandalScore || heya.scandalScore <= 0) continue;
+    const pressBump = Math.floor(heya.scandalScore / 10); // 0-3 per week
+    if (pressBump > 0) {
+      world.mediaState.heyaPressure[heya.id] = Math.min(
+        100,
+        (world.mediaState.heyaPressure[heya.id] ?? 0) + pressBump
+      );
+    }
+  }
+}
+
+/**
+ * Builds a summarized media digest object for display in the UI.
+ */
+export function buildMediaDigest(world: WorldState): {
+  topHeadlines: MediaHeadline[];
+  hotRikishi: Array<{ id: string; name: string; heat: number }>;
+  hotHeya: Array<{ id: string; name: string; pressure: number }>;
+  weeklyGazette: string[];
+} {
+  const mediaState = world.mediaState;
+  if (!mediaState) {
+    return { topHeadlines: [], hotRikishi: [], hotHeya: [], weeklyGazette: [] };
+  }
+
+  const topHeadlines = [...mediaState.headlines]
+    .sort((a, b) => (b.impact as number) - (a.impact as number))
+    .slice(0, 5);
+
+  const hotRikishi = Object.entries(mediaState.mediaHeat)
+    .map(([id, heat]) => {
+      const r = world.rikishi.get(id);
+      return { id, name: r?.shikona ?? r?.name ?? id, heat: heat as number };
+    })
+    .sort((a, b) => b.heat - a.heat)
+    .slice(0, 5);
+
+  const hotHeya = Object.entries(mediaState.heyaPressure)
+    .map(([id, pressure]) => {
+      const h = world.heyas.get(id);
+      return { id, name: h?.name ?? id, pressure: pressure as number };
+    })
+    .sort((a, b) => b.pressure - a.pressure)
+    .slice(0, 5);
+
+  const weeklyGazette = topHeadlines.map(h => h.title).filter(Boolean);
+
+  return { topHeadlines, hotRikishi, hotHeya, weeklyGazette };
 }

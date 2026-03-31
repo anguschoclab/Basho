@@ -9,14 +9,14 @@ import type { WorldState } from "../types/world";
 import type { BoutResult, MatchSchedule } from "../types/basho";
 import { updateH2H } from "../h2h";
 import { EventBus } from "../events";
-import * as injuries from "../injuries";
+import * as injuries from "../systems/health/InjuryService";
 import * as rivalries from "../rivalries";
 import * as economics from "../economics";
 import * as scoutingStore from "../scoutingStore";
 import { 
   updateMediaFromBout, 
   createDefaultMediaState 
-} from "../media";
+} from "../systems/media/MediaService";
 import { safeCall } from "../utils/safe";
 
 /**

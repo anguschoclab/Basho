@@ -3,7 +3,8 @@
 export * from './almanac';
 export * from './autoSim';
 export * from './banzuke';
-export * from './bout';
+export * from './bout/boutResolver';
+export * from './bout/boutResultApplier';
 export * from './calendar';
 export * from './tick/tickDaily';
 export * from './descriptorBands';
@@ -38,7 +39,6 @@ export * from './scoutingStore';
 export * from './shikona';
 export * from './sponsors';
 export * from './systems/generation/CandidateGenerator';
-export * from './timeBoundary';
 export * from './training';
 export * from './types';
 // uiDigest and uiModels relocated to src/presenters/

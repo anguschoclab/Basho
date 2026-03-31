@@ -80,7 +80,7 @@ const ARCHETYPES: CombatArchetype[] = [
  *  * @returns The result.
  */
 function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
-  const count = Object.keys(world.rikishi).length;
+  const count = world.rikishi.size;
   const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
   const rookieId = `rk_${currentYear}_${tmpRng.int(1000000, 9999999)}`;
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
@@ -186,6 +186,11 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
     },
     personalityTraits: [],
     favoredKimarite: [],
-    weakAgainstStyles: []
+    weakAgainstStyles: [],
+    // Required Rikishi fields for career tracking
+    makuuchiWins: 0,
+    consecutiveYusho: 0,
+    careerHistory: [],
+    milestones: [],
   };
 }
