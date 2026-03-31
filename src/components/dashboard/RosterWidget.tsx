@@ -93,7 +93,7 @@ export function RosterWidget() {
         {roster.length > 8 && (
           <button
             onClick={() => navigate({ to: "/rikishi" })}
-            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors"
+            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
           >
             +{roster.length - 8} more wrestlers →
           </button>
