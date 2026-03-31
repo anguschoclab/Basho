@@ -101,6 +101,7 @@ export interface EngineState {
   mizuiriDeclared: boolean; // NEW
   tacticalResult?: import("../types/combat").TacticalResult;
   playerSide?: import("../types/banzuke").Side;
+  playerTactic?: import("../types/combat").BoutTactic;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
   eastId: string;
   westId: string;
@@ -308,8 +309,33 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
  * AI Action Selection Logic
  */
 function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rikishi): CombatAction {
+  const isPlayer = st.playerSide && (st.playerSide === (r.id === st.eastId ? 'east' : 'west'));
+  const tactic = isPlayer ? st.playerTactic : (st.cpuTacticOverride || 'STANDARD');
+
+  // Handle Henka (Force trick on Tachiai only)
+  if (st.tick === 0 && tactic === 'HENKA') {
+    const move = pickMoveFromClass(rng, undefined, r, opponent, st, 'trick', 'hatakikomi');
+    return {
+      family: 'trick',
+      intent: 'attack',
+      targetKimariteClass: 'slap_pull',
+      statWeighting: move.statWeights,
+      moveId: move.id,
+      isHighRisk: true
+    };
+  }
+
+  // Handle Tactic Biases
   const profile = r.combatProfile || { familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 } };
   const prefs = { ...profile.familyPreferences };
+
+  if (tactic === 'OSHI_THRUST') {
+    prefs.push *= 5.0;
+    prefs.belt *= 0.1;
+  } else if (tactic === 'YOTSU_BELT') {
+    prefs.belt *= 5.0;
+    prefs.push *= 0.1;
+  }
   
   // v1.3.1 Dynamic Tactical Shifts
   // 1. Trickster Edge Case: If in a belt state, prioritize belt moves for survival
@@ -869,6 +895,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     log: [],
     mizuiriDeclared: false,
     playerSide: bout.playerSide,
+    playerTactic: bout.playerTactic,
+    cpuTacticOverride: bout.cpuTacticOverride,
     eastId: east.id,
     westId: west.id,
     lastAdvantage: 'none',

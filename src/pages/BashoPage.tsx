@@ -122,7 +122,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
 /** basho page. */
 export default function BashoPage() {
   const navigate = useNavigate();
-  const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings } = useGame();
+  const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings, setBoutTactic } = useGame();
   const { world, playerHeyaId } = state;
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
@@ -204,6 +204,7 @@ export default function BashoPage() {
     if (basho.day >= 15) setShowEndBashoConfirm(true);
     else advanceDay();
   };
+  const handleTacticChange = useCallback((id: string, tactic: string) => setBoutTactic(id, tactic as any), [setBoutTactic]);
   const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate({ to: "/" }); };
 
   if (!world || !basho) return null;
@@ -318,6 +319,12 @@ export default function BashoPage() {
               matches={matches}
               world={world}
               playerRikishiIds={playerRikishiIds}
+              onSimulateBout={simulateBout}
+              onSimulateAll={simulateAllBouts}
+              onTacticChange={handleTacticChange}
+              onEndDay={handleNextDay}
+              highlightRikishiId={(state as any).selectedRikishiId || undefined}
+              playerTactics={(state as any).boutTactics}
               onBoutClick={(match) => {
                 if (!match.result) return;
                 const east = resolveRikishi(match.eastRikishiId);

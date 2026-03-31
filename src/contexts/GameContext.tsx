@@ -34,7 +34,8 @@ interface GameContextValue {
   selectHeya: (id: string | null) => void;
   startBasho: () => void;
   advanceDay: () => void;
-  simulateBout: (index: number) => void;
+  simulateBout: (boutIndex: number) => void;
+  setBoutTactic: (boutId: string, tactic: import("@/engine/types/combat").BoutTactic) => void;
   simulateAllBouts: () => void;
   endDay: () => void;
   endBasho: () => void;
@@ -89,6 +90,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
   const advanceDay = useCallback(() => dispatch(actions.advanceDay()), []);
   const simulateBoutAction = useCallback((index: number) => dispatch(actions.simulateBout(index)), []);
+  const setBoutTacticAction = useCallback((id: string, tactic: import("@/engine/types/combat").BoutTactic) => dispatch(actions.setBoutTactic(id, tactic)), []);
   const simulateAllBouts = useCallback(() => dispatch(actions.simulateAllBouts()), []);
   const endDay = useCallback(() => dispatch(actions.endDay()), []);
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
@@ -166,7 +168,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value: GameContextValue = {
     state,
     createWorld, setPhase, selectRikishi, selectHeya,
-    startBasho, advanceDay, simulateBout: simulateBoutAction, simulateAllBouts,
+    startBasho,
+    advanceDay,
+    simulateBout: simulateBoutAction,
+    setBoutTactic: setBoutTacticAction,
+    simulateAllBouts,
     endDay, endBasho, simFullBasho, advanceInterim, advanceOneDay: advanceOneDayAction,
     saveToSlot, loadFromSlot, quickSave: quickSaveAction,
     loadFromAutosave: loadFromAutosaveAction, hasAutosave: hasAutosaveCheck, getSaveSlots,

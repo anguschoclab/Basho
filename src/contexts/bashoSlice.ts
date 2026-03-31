@@ -10,7 +10,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     case "START_BASHO": {
       const world = structuredClone(state.world);
       worldEngine.startBasho(world, world.currentBashoName);
-      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null };
+      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null, boutTactics: {} };
     }
 
     case "ADVANCE_DAY": {
@@ -23,15 +23,30 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         return { ...state, world, phase: "basho_results" };
       }
       try { autosaveWithSignal(world); } catch { /* silent */ }
-      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null };
+      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null, boutTactics: {} };
     }
 
     case "SIMULATE_BOUT": {
       if (!state.world.currentBasho) return state;
       const world = structuredClone(state.world);
-      const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex);
+      
+      const basho = world.currentBasho;
+      const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
+      const match = todays[action.boutIndex];
+      const tactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
+      
+      const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex, tactic);
       return { ...state, world, lastBoutResult: result ?? state.lastBoutResult, currentBoutIndex: action.boutIndex + 1 };
     }
+
+    case "SET_BOUT_TACTIC":
+      return {
+        ...state,
+        boutTactics: {
+          ...state.boutTactics,
+          [action.boutId]: action.tactic
+        }
+      };
 
     case "SIMULATE_ALL_BOUTS": {
       if (!state.world.currentBasho) return state;

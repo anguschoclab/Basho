@@ -14,8 +14,9 @@ import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult, MatchSchedule, BashoState } from "./types/basho";
 import type { Id } from "./types/common";
-import { toRankPosition } from "./types";
+import { toRankPosition, type Side } from "./types";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
+import * as talentpool from "./systems/generation/TalentPoolService";
 import { initializeBasho } from "./systems/generation/WorldFactory";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout/boutResolver";
@@ -166,7 +167,8 @@ export function advanceBashoDay(world: WorldState): WorldState {
  */
 export function simulateBoutForToday(
   world: WorldState,
-  unplayedIndex: number
+  unplayedIndex: number,
+  playerTactic?: import("./types/combat").BoutTactic
 ): { world: WorldState; result?: BoutResult } {
   const basho = getCurrentBasho(world);
   if (!basho) return { world };
@@ -179,15 +181,20 @@ export function simulateBoutForToday(
   const west = world.rikishi.get(match.westRikishiId);
   if (!east || !west) return { world };
 
+  const playerSide = world.playerHeyaId
+    ? (east.heyaId === world.playerHeyaId ? ("east" as Side) : west.heyaId === world.playerHeyaId ? ("west" as Side) : undefined)
+    : undefined;
+
   const boutContext = {
       id: `d${basho.day}-b${unplayedIndex}`,
       day: basho.day,
       rikishiEastId: east.id,
       rikishiWestId: west.id,
-      division: east.division
+      division: east.division,
+      playerSide
   };
 
-  const result = resolveBout(boutContext, east, west, basho);
+  const result = resolveBout(boutContext, east, west, basho, playerTactic);
 
   applyBoutResult(world, match, result);
   return { world, result };

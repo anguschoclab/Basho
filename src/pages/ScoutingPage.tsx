@@ -30,7 +30,7 @@ import {
 import type { ScoutingInvestment } from "@/engine/scouting";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES, describeScoutingLevel, getScoutedAttributes } from "@/engine/scouting";
 import { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "@/engine/scoutingStore";
-import * as talentpool from "@/engine/talentpool";
+import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { RikishiName } from "@/components/ClickableName";
 import { useToast } from "@/hooks/use-toast";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
@@ -410,22 +410,26 @@ function RecruitingTab({
     setSigningCandidate(candidate);
   };
 
-  const handleConfirmSigning = () => {
+  const handleConfirmSigning = (offer: any) => {
     if (!world || !playerHeyaId || !signingCandidate) return;
     try {
-      const result = talentpool.offerCandidate(world, signingCandidate.candidateId, playerHeyaId);
+      const result = talentpool.offerCandidate(
+        world, 
+        signingCandidate.candidateId, 
+        playerHeyaId,
+        offer.offerType,
+        offer.interest
+      );
       updateWorld({ ...world });
       if (result.ok) {
         toast({
-          title: (result as any).signed ? "🎉 Prospect signed!" : "Offer submitted",
-          description: (result as any).signed
-            ? `${signingCandidate.shikona || "The prospect"} has joined your stable!`
-            : "Decision pending — the prospect is considering offers.",
+          title: "Offer submitted",
+          description: "Decision pending — the prospect is considering offers.",
         });
       } else {
         toast({
           title: "Offer blocked",
-          description: (result as any).reason ?? "Cannot make this offer.",
+          description: result.reason ?? "Cannot make this offer.",
         });
       }
     } catch {
@@ -490,7 +494,7 @@ function RecruitingTab({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-display font-semibold">
-                          {c.visibilityBand === "obscure" ? "Unknown Prospect" : c.shikona || c.candidateId.slice(0, 8)}
+                          {c.visibilityBand === "hidden" ? "Unknown Prospect" : c.name || c.candidateId.slice(0, 8)}
                         </h3>
                         <Badge variant="outline" className="text-xs">
                           {visLabel}

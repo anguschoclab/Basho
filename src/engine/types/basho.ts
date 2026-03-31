@@ -55,6 +55,7 @@ export interface BoutResult {
 
 /** Defines the structure for match schedule. */
 export interface MatchSchedule {
+  boutId: string;
   day: number;
   eastRikishiId: Id;
   westRikishiId: Id;

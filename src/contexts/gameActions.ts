@@ -32,6 +32,12 @@ export const simulateBout = (boutIndex: number): GameAction => ({
   boutIndex,
 });
 
+export const setBoutTactic = (boutId: string, tactic: import("@/engine/types/combat").BoutTactic): GameAction => ({
+  type: "SET_BOUT_TACTIC",
+  boutId,
+  tactic,
+});
+
 export const simulateAllBouts = (): GameAction => ({
   type: "SIMULATE_ALL_BOUTS",
 });

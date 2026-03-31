@@ -13,10 +13,12 @@ export function resolveBout(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
-  basho: BashoState
+  basho: BashoState,
+  playerTactic?: import("../types/combat").BoutTactic
 ): BoutResult {
+  const ctxWithTactic = { ...bout, playerTactic };
   // 1. Run deterministic physics
-  const result = resolveBoutPhysics(bout, east, west, basho);
+  const result = resolveBoutPhysics(ctxWithTactic, east, west, basho);
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
     

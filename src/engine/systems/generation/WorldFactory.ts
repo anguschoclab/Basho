@@ -178,3 +178,20 @@ export function generateInitialWorld(seed: string): WorldState {
 
   return world;
 }
+
+/**
+ * Initialize a new Basho state.
+ */
+export function initializeBasho(world: WorldState, name: import("../../types/basho").BashoName): import("../../types/basho").BashoState {
+  return {
+    id: `basho_${world.year}_${name}`,
+    year: world.year,
+    bashoNumber: 1, // Simple increment or lookup needed for real logic
+    bashoName: name,
+    day: 1,
+    currentDay: 1,
+    matches: [],
+    standings: new Map(),
+    isActive: true
+  };
+}

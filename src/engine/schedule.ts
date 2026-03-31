@@ -155,6 +155,7 @@ export function scheduleDivisionDay(args: {
   const scheduled: MatchSchedule[] = [];
   for (const p of shuffled) {
     scheduled.push({
+      boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
       day,
       eastRikishiId: p.eastId,
       westRikishiId: p.westId
