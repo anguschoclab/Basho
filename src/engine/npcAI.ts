@@ -9,7 +9,7 @@
 
 import { rngForWorld } from "./rng";
 import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
-import * as talentpool from "./talentpool";
+import * as talentpool from "./systems/generation/TalentPoolService";
 import type { WorldState } from "./types/world";
 import type { Style } from "./types/combat";
 import type { OyakataArchetype, Oyakata } from "./types/oyakata";
