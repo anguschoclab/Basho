@@ -1,3 +1,4 @@
+import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
@@ -17,7 +18,7 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
 
     case "ADVANCE_INTERIM": {
       if (!state.world) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       worldEngine.advanceInterim(world, action.weeks);
       const newPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return { ...state, world, phase: newPhase };
@@ -25,7 +26,7 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
 
     case "ADVANCE_ONE_DAY": {
       if (!state.world) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       worldEngine.advanceDay(world);
       const dayPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return { ...state, world, phase: dayPhase };
@@ -33,7 +34,7 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
 
     case "RUN_HOLIDAY": {
       if (!state.world) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       const hPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return { ...state, world, phase: hPhase as any }; // Cast for strict phase typing if needed
     }

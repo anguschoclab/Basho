@@ -1,3 +1,4 @@
+import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
@@ -8,14 +9,14 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case "START_BASHO": {
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       worldEngine.startBasho(world, world.currentBashoName);
       return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null, boutTactics: {} };
     }
 
     case "ADVANCE_DAY": {
       if (!state.world.currentBasho) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       worldEngine.advanceBashoDay(world);
       const day = world.currentBasho!.day;
       if (day > 15) {
@@ -28,14 +29,8 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_BOUT": {
       if (!state.world.currentBasho) return state;
-      const world = structuredClone(state.world);
-      
-      const basho = world.currentBasho;
-      const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
-      const match = todays[action.boutIndex];
-      const tactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
-      
-      const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex, tactic);
+      const world = cloneWorldForTick(state.world);
+      const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex);
       return { ...state, world, lastBoutResult: result ?? state.lastBoutResult, currentBoutIndex: action.boutIndex + 1 };
     }
 
@@ -50,7 +45,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_ALL_BOUTS": {
       if (!state.world.currentBasho) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       let lastResult: BoutResult | null = state.lastBoutResult;
       for (let i = 0; i < 64; i++) {
         const { result } = worldEngine.simulateBoutForToday(world, 0);
@@ -66,7 +61,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "END_BASHO": {
       if (!state.world.currentBasho) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       worldEngine.endBasho(world);
       worldEngine.publishBanzukeUpdate(world);
       return { ...state, world, phase: "basho_recap", currentBoutIndex: 0, lastBoutResult: null };
@@ -74,7 +69,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIM_FULL_BASHO": {
       if (!state.world.currentBasho) return state;
-      const world = structuredClone(state.world);
+      const world = cloneWorldForTick(state.world);
       if (typeof (worldEngine as any).simulateBashoRest === 'function') {
         (worldEngine as any).simulateBashoRest(world);
       } else {
