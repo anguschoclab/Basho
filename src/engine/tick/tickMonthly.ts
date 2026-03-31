@@ -147,7 +147,12 @@ function syncAchievementCounters(world: WorldState): void {
 export function tickArchetypeDrift(world: WorldState): void {
   const month = world.calendar?.month;
   if (month && isBashoMonth(month)) {
-    for (const r of stableSort(world.rikishi.values(), x => x.id)) {
+        // ⚡ Bolt: filter retired rikishi before applying O(N log N) stableSort to drastically reduce sorting overhead
+    const activeRikishi = [];
+    for (const r of world.rikishi.values()) {
+      if (!r.isRetired) activeRikishi.push(r);
+    }
+    for (const r of stableSort(activeRikishi, x => x.id)) {
       const evidence = r.archetypeEvidence;
       if (!evidence || Array.isArray(evidence)) continue;
 
