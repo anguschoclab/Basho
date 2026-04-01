@@ -1,3 +1,6 @@
 ## 2025-03-31 - [Keyboard Focus Styles on Dashboard Custom Buttons]
 **Learning:** Some custom buttons mapped from arrays (e.g., alert buttons and the 'more wrestlers' buttons on the Dashboard widgets) were using standard hover effects but completely missing the `focus-visible` outline tailwind classes.
 **Action:** Always ensure that when replacing semantic buttons with custom div/button wrappers for styling, you append the standard focus ring pattern `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-1` so that keyboard users can track their focus state clearly.
+## 2026-04-01 - Added missing standard focus ring styles to component buttons
+**Learning:** Found several bare native `<button>` tags within complex custom UI elements (`TrainingWidget.tsx` and `ScoutingWidget.tsx`) lacking the standard `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1` accessible focus ring styles used by `Button` components in this app's UI toolkit, creating inconsistent keyboard navigation visual feedback.
+**Action:** Always ensure that manually created interactive elements mimicking or supplementing standard UI library components inherit the standard focus styles for keyboard users.
