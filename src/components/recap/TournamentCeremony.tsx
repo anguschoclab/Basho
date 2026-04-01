@@ -15,7 +15,8 @@ import {
   Crown,
   Award,
   Zap,
-  Quote
+  Quote,
+  Building
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RikishiName, StableName } from "@/components/ClickableName";
