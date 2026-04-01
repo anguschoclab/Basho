@@ -307,6 +307,8 @@ export default function EconomyPage() {
                   className="w-full text-xs font-bold uppercase tracking-widest h-10"
                   disabled={!canRequestBailout}
                   onClick={handleBailoutRequest}
+                  tooltip="Apply for an emergency bailout from the Association (Requires debt over ¥5M)"
+                  tooltipSide="top"
                 >
                   Request Emergency Funding
                 </Button>

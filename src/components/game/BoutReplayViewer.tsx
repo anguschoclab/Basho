@@ -12,6 +12,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { Play, Pause, RotateCcw, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { getReplayPhaseDurations } from "@/engine/systems/bout/ReplayMetadata";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 
 /** Defines the structure for bout replay viewer props. */
@@ -286,10 +287,14 @@ export function BoutReplayViewer({
           size="icon"
           onClick={() => setIsPlaying(!isPlaying)}
           aria-label={isPlaying ? "Pause replay" : "Play replay"}
+          tooltip={isPlaying ? "Pause the visual bout simulation" : "Resume the visual bout simulation"}
+          tooltipSide="top"
         >
           {isPlaying ? <Pause /> : <Play />}
         </Button>
-        <Progress value={getOverallProgress(currentPhase, phaseProgress)} className="flex-1 mx-4 h-1.5" />
+        <TooltipWrap content="Bout timeline: From ritual preparation to the closing ceremony" side="top">
+          <Progress value={getOverallProgress(currentPhase, phaseProgress)} className="flex-1 mx-4 h-1.5 cursor-help" />
+        </TooltipWrap>
       </div>
     </div>
   );

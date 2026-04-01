@@ -99,11 +99,15 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <TrendingUp className="h-3 w-3" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">JSA Standing</span>
+              <TooltipWrap content="Your institutional reputation and influence within the Sumo Association" side="bottom">
+                <span className="text-[10px] font-bold uppercase tracking-wider cursor-help">JSA Standing</span>
+              </TooltipWrap>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold leading-tight">Elite Stability</span>
-              <Badge variant="outline" className="h-4 text-[9px] uppercase tracking-tighter px-1">Meta: Oshi</Badge>
+              <TooltipWrap content="Prevailing Association meta-style: Influences bout outcome probabilities" side="bottom">
+                <Badge variant="outline" className="h-4 text-[9px] uppercase tracking-tighter px-1 cursor-help">Meta: Oshi</Badge>
+              </TooltipWrap>
             </div>
           </div>
         </div>

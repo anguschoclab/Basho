@@ -34,6 +34,7 @@ import {
 import { useMemo, useState } from "react";
 import { OyakataName, RikishiName } from "@/components/ClickableName";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 export default function StablePage() {
   const navigate = useNavigate();
@@ -78,9 +79,11 @@ export default function StablePage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Badge variant="outline" className="px-3 py-1 text-sm bg-secondary/50">
-              {heya.ichimon || "Independent"}
-            </Badge>
+            <TooltipWrap content="Ichimon: A group of affiliated stables within the Association" side="bottom">
+              <Badge variant="outline" className="px-3 py-1 text-sm bg-secondary/50 cursor-help">
+                {heya.ichimon || "Independent"}
+              </Badge>
+            </TooltipWrap>
           </div>
         </div>
 
@@ -93,15 +96,17 @@ export default function StablePage() {
           <TabsContent value="roster" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {rikishiList.map(r => (
-                <Card key={r.id} className="paper hover:border-primary transition-colors cursor-pointer" onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })}>
-                   <CardContent className="p-4 flex justify-between items-center">
-                      <div>
-                        <div className="font-bold">{r.shikona}</div>
-                        <div className="text-xs text-muted-foreground uppercase">{r.rank}</div>
-                      </div>
-                      <Badge variant="secondary">{r.currentBashoWins}-{r.currentBashoLosses}</Badge>
-                   </CardContent>
-                </Card>
+                <TooltipWrap key={r.id} content={`View detailed statistics and career history for ${r.shikona}`} side="top">
+                  <Card className="paper hover:border-primary transition-colors cursor-pointer" onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })}>
+                     <CardContent className="p-4 flex justify-between items-center">
+                        <div>
+                          <div className="font-bold">{r.shikona}</div>
+                          <div className="text-xs text-muted-foreground uppercase">{r.rank}</div>
+                        </div>
+                        <Badge variant="secondary">{r.currentBashoWins}-{r.currentBashoLosses}</Badge>
+                     </CardContent>
+                  </Card>
+                </TooltipWrap>
               ))}
             </div>
           </TabsContent>
@@ -131,13 +136,31 @@ export default function StablePage() {
                               </div>
                             </div>
                          </div>
-                         {tenure.achievements.length > 0 && (
-                           <div className="flex gap-1">
-                             {tenure.achievements.map((ach, j) => (
-                               <Badge key={j} variant="outline" className="text-[10px]">{ach}</Badge>
-                             ))}
-                           </div>
-                         )}
+                         <div className="flex flex-col items-end gap-1.5 ml-auto">
+                            <div className="flex gap-1 flex-wrap justify-end">
+                              {tenure.achievements.titlesWon > 0 && (
+                                <TooltipWrap content="Tournament victories under this master" side="top">
+                                  <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-600 cursor-help">
+                                    <Trophy className="h-2.5 w-2.5 mr-1" /> {tenure.achievements.titlesWon} Yusho
+                                  </Badge>
+                                </TooltipWrap>
+                              )}
+                              {tenure.achievements.sekitoriCount > 0 && (
+                                <TooltipWrap content="Salaried wrestlers produced during this tenure" side="top">
+                                  <Badge variant="outline" className="text-[10px] border-primary/30 text-primary cursor-help">
+                                    <Users2 className="h-2.5 w-2.5 mr-1" /> {tenure.achievements.sekitoriCount} Sekitori
+                                  </Badge>
+                                </TooltipWrap>
+                              )}
+                              {tenure.achievements.highestStudentRank && (
+                                <TooltipWrap content="Highest rank achieved by a student" side="top">
+                                  <Badge variant="outline" className="text-[10px] border-purple-500/30 text-purple-600 cursor-help">
+                                    <Star className="h-2.5 w-2.5 mr-1" /> {tenure.achievements.highestStudentRank}
+                                  </Badge>
+                                </TooltipWrap>
+                              )}
+                            </div>
+                         </div>
                        </CardContent>
                      </Card>
                    ))

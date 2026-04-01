@@ -541,6 +541,7 @@ function RecruitingTab({
                             e.stopPropagation();
                             handleScoutCandidate(c.candidateId);
                           }}
+                          tooltip="Gather more detailed intel on this specific prospect"
                         >
                           <Eye className="h-3 w-3" />
                           Scout
@@ -554,6 +555,7 @@ function RecruitingTab({
                               e.stopPropagation();
                               handleOfferClick(c);
                             }}
+                            tooltip="Initiate recruitment talks and make a signing offer"
                           >
                             <UserPlus className="h-3 w-3" />
                             Offer

@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { deleteSave, exportSave, importSave } from "@/engine/saveload";
 import { formatSaveDate } from "@/engine/utils/formatters";
 import {
@@ -167,7 +168,13 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       <Dialog open={open} onOpenChange={handleOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button variant="ghost" size="icon" className="h-8 w-8" title="Save / Load" aria-label="Open save and load dialog">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8" 
+              aria-label="Open save and load dialog"
+              tooltip="Save / Load Game"
+            >
               <HardDrive className="h-4 w-4" />
             </Button>
           )}
@@ -184,24 +191,28 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
           {/* Mode tabs */}
           <div className="flex gap-1 rounded-lg bg-muted p-1">
-            <button
-              className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                mode === "save" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-              onClick={() => setMode("save")}
-            >
-              <Save className="h-3.5 w-3.5 inline mr-1.5" />
-              Save
-            </button>
-            <button
-              className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                mode === "load" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-              onClick={() => setMode("load")}
-            >
-              <FolderOpen className="h-3.5 w-3.5 inline mr-1.5" />
-              Load
-            </button>
+            <TooltipWrap content="Switch to Save Mode: Create new save points" side="top">
+              <button
+                className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  mode === "save" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setMode("save")}
+              >
+                <Save className="h-3.5 w-3.5 inline mr-1.5" />
+                Save
+              </button>
+            </TooltipWrap>
+            <TooltipWrap content="Switch to Load Mode: Restore previous save points" side="top">
+              <button
+                className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  mode === "load" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setMode("load")}
+              >
+                <FolderOpen className="h-3.5 w-3.5 inline mr-1.5" />
+                Load
+              </button>
+            </TooltipWrap>
           </div>
 
           <ScrollArea className="max-h-[350px]">
@@ -212,27 +223,29 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                   key={slot.key}
                   className="flex items-center gap-2 p-2.5 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
                 >
-                  <div
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => mode === "load" ? handleLoad(slot.slotName) : handleSave(slot.slotName)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm truncate">
-                        {slot.playerHeyaName || "Unknown"}
-                      </span>
-                      <Badge variant={slot.isAutosave ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 shrink-0">
-                        {slot.isAutosave ? "Auto" : slot.slotName.replace("slot_", "Slot ")}
-                      </Badge>
+                  <TooltipWrap content={mode === "load" ? "Restore this game state" : "Overwrite this save slot"} side="left">
+                    <div
+                      className="flex-1 min-w-0 cursor-pointer"
+                      onClick={() => mode === "load" ? handleLoad(slot.slotName) : handleSave(slot.slotName)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm truncate">
+                          {slot.playerHeyaName || "Unknown"}
+                        </span>
+                        <Badge variant={slot.isAutosave ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 shrink-0">
+                          {slot.isAutosave ? "Auto" : slot.slotName.replace("slot_", "Slot ")}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                        <span>Y{slot.year}</span>
+                        {slot.bashoName && <span>• {slot.bashoName}</span>}
+                        <span className="flex items-center gap-0.5">
+                          <Clock className="h-2.5 w-2.5" />
+                          {formatSaveDate(slot.savedAt)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                      <span>Y{slot.year}</span>
-                      {slot.bashoName && <span>• {slot.bashoName}</span>}
-                      <span className="flex items-center gap-0.5">
-                        <Clock className="h-2.5 w-2.5" />
-                        {formatSaveDate(slot.savedAt)}
-                      </span>
-                    </div>
-                  </div>
+                  </TooltipWrap>
 
                   {!slot.isAutosave && (
                     <Button
@@ -241,7 +254,8 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                       className="h-7 w-7 opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive shrink-0"
                       onClick={() => handleDelete(slot.slotName)}
                       aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
-                      title={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
+                      tooltip={`Delete ${slot.slotName.replace("slot_", "Slot ")} permanently`}
+                      tooltipSide="left"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -251,16 +265,17 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
               {/* Empty slots (save mode only) */}
               {mode === "save" && hasWorld && emptySlots.map((slotName) => (
-                <div
-                  key={slotName}
-                  className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-                  onClick={() => doSave(slotName)}
-                >
-                  <Save className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {slotName.replace("slot_", "Slot ")} — Empty
-                  </span>
-                </div>
+                <TooltipWrap key={slotName} content="Save current progress to this empty slot" side="top">
+                  <div
+                    className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => doSave(slotName)}
+                  >
+                    <Save className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      {slotName.replace("slot_", "Slot ")} — Empty
+                    </span>
+                  </div>
+                </TooltipWrap>
               ))}
 
               {mode === "load" && slots.length === 0 && (
@@ -274,13 +289,25 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           {/* Export / Import */}
           <div className="flex gap-2">
             {hasWorld && (
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExport}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1.5" 
+                onClick={handleExport}
+                tooltip="Download current world state as a JSON file"
+              >
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
             )}
             <label>
               <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-              <Button variant="outline" size="sm" className="gap-1.5" asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1.5" 
+                asChild
+                tooltip="Upload a previously exported save file"
+              >
                 <span>
                   <Upload className="h-3.5 w-3.5" /> Import
                 </span>

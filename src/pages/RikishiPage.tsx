@@ -33,6 +33,8 @@ import {
   UserPlus,
   Info,
   Medal,
+  Shield,
+  Target,
   Award as AwardIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -40,6 +42,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { HQ_TABS } from "@/constants/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -131,17 +134,19 @@ export default function RikishiPage() {
 
                  <div className="flex gap-4 md:gap-8 shrink-0 bg-black/20 p-6 rounded-2xl backdrop-blur-md border border-white/10 shadow-inner">
                     {[
-                      { label: "Current Record", value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`, sub: "This Tournament", color: rikishi.currentBashoWins >= rikishi.currentBashoLosses ? "text-emerald-400" : "text-amber-400" },
-                      { label: "Career History", value: `${rikishi.careerWins}-${rikishi.careerLosses}`, sub: "Professional Record", color: "text-white" },
-                      { label: "Elite Titles", value: rikishi.careerYusho, sub: "Yūshō Count", color: "text-gold", condition: rikishi.careerYusho > 0 }
+                      { label: "Current Record", value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`, sub: "This Tournament", color: rikishi.currentBashoWins >= rikishi.currentBashoLosses ? "text-emerald-400" : "text-amber-400", tooltip: "Current tournament win-loss record" },
+                      { label: "Career History", value: `${rikishi.careerWins}-${rikishi.careerLosses}`, sub: "Professional Record", color: "text-white", tooltip: "Lifetime professional record across all tournaments" },
+                      { label: "Elite Titles", value: rikishi.careerYusho, sub: "Yūshō Count", color: "text-gold", condition: rikishi.careerYusho > 0, tooltip: "Total top-division championship victories" }
                     ].map((stat, i) => (
                       <React.Fragment key={i}>
                         {(!stat.condition || stat.condition === true) && (
-                           <div className="text-center group">
-                              <div className={cn("text-4xl font-display font-black leading-none mb-1 transition-transform group-hover:scale-110", stat.color)}>{stat.value}</div>
-                              <div className="text-[10px] uppercase font-black opacity-60 tracking-widest mb-0.5">{stat.label}</div>
-                              <div className="text-[8px] uppercase font-bold opacity-40">{stat.sub}</div>
-                           </div>
+                           <TooltipWrap content={stat.tooltip} side="bottom">
+                             <div className="text-center group cursor-help">
+                                <div className={cn("text-4xl font-display font-black leading-none mb-1 transition-transform group-hover:scale-110", stat.color)}>{stat.value}</div>
+                                <div className="text-[10px] uppercase font-black opacity-60 tracking-widest mb-0.5">{stat.label}</div>
+                                <div className="text-[8px] uppercase font-bold opacity-40">{stat.sub}</div>
+                             </div>
+                           </TooltipWrap>
                         )}
                         {i < 2 && <div className="w-px h-12 bg-white/10 hidden md:block" />}
                       </React.Fragment>
@@ -171,18 +176,20 @@ export default function RikishiPage() {
                    
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                       {[
-                        { label: "Tenure", val: Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100)), target: "60 Basho" },
-                        { label: "Wins", val: Math.min(100, Math.floor((rikishi.careerWins / 400) * 100)), target: "400 Wins" },
-                        { label: "Stature", val: (rikishi.rank === "yokozuna" || rikishi.rank === "ozeki" ? 100 : 30), target: "Sanyaku" }
+                        { label: "Tenure", val: Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100)), target: "60 Basho", tooltip: "Tenure progress: 60 basho required for naturalization eligibility" },
+                        { label: "Wins", val: Math.min(100, Math.floor((rikishi.careerWins / 400) * 100)), target: "400 Wins", tooltip: "Victory progress: 400 career wins required" },
+                        { label: "Stature", val: (rikishi.rank === "yokozuna" || rikishi.rank === "ozeki" ? 100 : 30), target: "Sanyaku", tooltip: "Rank requirement: Must reach Komusubi or higher" }
                       ].map((p, i) => (
-                        <div key={i} className="space-y-2">
-                           <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                             <span>{p.label}</span>
-                             <span>{p.val}%</span>
-                           </div>
-                           <Progress value={p.val} className="h-1.5 bg-amber-200/30" />
-                           <p className="text-[9px] font-bold text-amber-600/60 uppercase tracking-widest italic">{p.target} Target</p>
-                        </div>
+                        <TooltipWrap key={i} content={p.tooltip} side="top">
+                          <div className="space-y-2 cursor-help">
+                             <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                               <span>{p.label}</span>
+                               <span>{p.val}%</span>
+                             </div>
+                             <Progress value={p.val} className="h-1.5 bg-amber-200/30" />
+                             <p className="text-[9px] font-bold text-amber-600/60 uppercase tracking-widest italic">{p.target} Target</p>
+                          </div>
+                        </TooltipWrap>
                       ))}
                    </div>
                 </div>
@@ -202,20 +209,22 @@ export default function RikishiPage() {
                          </h3>
                          <div className="grid grid-cols-2 gap-4">
                             {[
-                              { label: "Forcefulness", val: rikishi.perceivedStats?.strength || 50, color: "bg-amber-500", icon: <Zap className="h-3.5 w-3.5" /> },
-                              { label: "Agility", val: rikishi.perceivedStats?.speed || 50, color: "bg-blue-500", icon: <TrendingUp className="h-3.5 w-3.5" /> },
-                              { label: "Resilience", val: 75, color: "bg-emerald-500", icon: <Shield className="h-3.5 w-3.5" /> },
-                              { label: "Precision", val: 65, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" /> }
+                              { label: "Forcefulness", val: Number(rikishi.perceivedStats?.strength || 50), color: "bg-amber-500", icon: <Zap className="h-3.5 w-3.5" />, tooltip: "Raw offensive power and pushing force" },
+                              { label: "Agility", val: Number(rikishi.perceivedStats?.speed || 50), color: "bg-blue-500", icon: <TrendingUp className="h-3.5 w-3.5" />, tooltip: "Movement speed and initial reaction at the tachiai" },
+                              { label: "Resilience", val: 75, color: "bg-emerald-500", icon: <Shield className="h-3.5 w-3.5" />, tooltip: "Endurance and ability to recover from momentum loss" },
+                              { label: "Precision", val: 65, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" />, tooltip: "Technical accuracy and belt-grip efficiency" }
                             ].map((stat, i) => (
-                              <div key={i} className="bg-muted/30 p-4 rounded-xl border border-border/50 space-y-3 hover:border-primary/20 transition-colors">
-                                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
-                                    {stat.icon} {stat.label}
-                                 </div>
-                                 <div className="flex items-center gap-3">
-                                    <div className="text-2xl font-display font-black">{stat.val}</div>
-                                    <Progress value={stat.val} className={cn("h-1 flex-1 opacity-40", stat.color)} />
-                                 </div>
-                              </div>
+                              <TooltipWrap key={i} content={stat.tooltip} side="top">
+                                <div className="bg-muted/30 p-4 rounded-xl border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
+                                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
+                                      {stat.icon} {stat.label}
+                                   </div>
+                                   <div className="flex items-center gap-3">
+                                      <div className="text-2xl font-display font-black">{stat.val}</div>
+                                      <Progress value={stat.val} className={cn("h-1 flex-1 opacity-40", stat.color)} />
+                                   </div>
+                                </div>
+                              </TooltipWrap>
                             ))}
                          </div>
                       </div>
@@ -285,11 +294,11 @@ export default function RikishiPage() {
                                 </td>
                                 <td className="py-4 px-6">
                                    <div className="flex items-center justify-center gap-2">
-                                     {snap.isYusho && <Trophy className="h-5 w-5 text-gold animate-pulse" />}
-                                     {snap.isJunYusho && <Star className="h-4 w-4 text-amber-300" title="Jun-Yūshō" />}
-                                     {snap.specialPrizes.shukunsho && <Medal className="h-4 w-4 text-purple-400" title="Outstanding Performance" />}
-                                     {snap.specialPrizes.kantosho && <Medal className="h-4 w-4 text-emerald-400" title="Fighting Spirit" />}
-                                     {snap.specialPrizes.ginosho && <Medal className="h-4 w-4 text-blue-400" title="Technique Prize" />}
+                                     {snap.isYusho && <TooltipWrap content="Basho Yusho: Tournament Champion"><Trophy className="h-5 w-5 text-gold animate-pulse cursor-help" /></TooltipWrap>}
+                                     {snap.isJunYusho && <TooltipWrap content="Jun-Yusho: Runner-up"><Star className="h-4 w-4 text-amber-300 cursor-help" /></TooltipWrap>}
+                                     {snap.specialPrizes.shukunsho && <TooltipWrap content="Shukun-sho: Outstanding Performance Prize"><Medal className="h-4 w-4 text-purple-400 cursor-help" /></TooltipWrap>}
+                                     {snap.specialPrizes.kantosho && <TooltipWrap content="Kanto-sho: Fighting Spirit Prize"><Medal className="h-4 w-4 text-emerald-400 cursor-help" /></TooltipWrap>}
+                                     {snap.specialPrizes.ginosho && <TooltipWrap content="Gino-sho: Technique Prize"><Medal className="h-4 w-4 text-blue-400 cursor-help" /></TooltipWrap>}
                                      {!snap.isYusho && !snap.isJunYusho && !Object.values(snap.specialPrizes).some(v => v) && (
                                        <span className="text-muted-foreground text-[10px] font-black opacity-30 tracking-widest">NONE</span>
                                      )}

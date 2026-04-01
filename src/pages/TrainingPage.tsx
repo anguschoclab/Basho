@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import {
   Activity,
   Dumbbell,
@@ -187,22 +188,23 @@ export default function TrainingPage() {
                   const isActive = trainingState.activeProfile.intensity === intensity;
                   const eff = INTENSITY_MULTIPLIERS[intensity];
                   return (
-                    <button
-                      key={intensity}
-                      onClick={() => handleIntensityChange(intensity)}
-                      className={cn(
-                        "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden group",
-                        isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
-                      )}
-                    >
-                       <div className="flex justify-between items-center relative z-10">
-                          <div className="font-display font-black text-sm uppercase truncate">{getIntensityLabel(intensity)}</div>
-                          <Badge variant="outline" className={cn("text-[8px] font-black tracking-[0.2em]", isActive ? "bg-primary text-white border-0" : "opacity-50")}>
-                             {describeTrainingEffect(eff.growth)}
-                          </Badge>
-                       </div>
-                       {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
-                    </button>
+                    <TooltipWrap key={intensity} content={`${describeTrainingEffect(eff.growth)} growth rate with ${eff.fatigue}x fatigue impact`} side="right">
+                      <button
+                        onClick={() => handleIntensityChange(intensity)}
+                        className={cn(
+                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden group w-full",
+                          isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
+                        )}
+                      >
+                         <div className="flex justify-between items-center relative z-10">
+                            <div className="font-display font-black text-sm uppercase truncate">{getIntensityLabel(intensity)}</div>
+                            <Badge variant="outline" className={cn("text-[8px] font-black tracking-[0.2em]", isActive ? "bg-primary text-white border-0" : "opacity-50")}>
+                               {describeTrainingEffect(eff.growth)}
+                            </Badge>
+                         </div>
+                         {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
+                      </button>
+                    </TooltipWrap>
                   );
                 })}
              </div>
@@ -218,18 +220,19 @@ export default function TrainingPage() {
                 {(Object.keys(FOCUS_BIAS_MATRIX) as TrainingFocus[]).map((focus) => {
                   const isActive = trainingState.activeProfile.focus === focus;
                   return (
-                    <button
-                      key={focus}
-                      onClick={() => handleFocusChange(focus)}
-                      className={cn(
-                        "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden",
-                        isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
-                      )}
-                    >
-                       <div className="font-display font-black text-sm uppercase mb-0.5">{getFocusLabel(focus)}</div>
-                       <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">Balanced Development</p>
-                       {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
-                    </button>
+                    <TooltipWrap key={focus} content={`Prioritize ${getFocusLabel(focus)} development for the entire stable`} side="right">
+                      <button
+                        onClick={() => handleFocusChange(focus)}
+                        className={cn(
+                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden w-full",
+                          isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
+                        )}
+                      >
+                         <div className="font-display font-black text-sm uppercase mb-0.5">{getFocusLabel(focus)}</div>
+                         <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">Balanced Development</p>
+                         {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
+                      </button>
+                    </TooltipWrap>
                   );
                 })}
              </div>
@@ -245,18 +248,19 @@ export default function TrainingPage() {
                 {(Object.keys(RECOVERY_MULTIPLIERS) as RecoveryEmphasis[]).map((recovery) => {
                   const isActive = trainingState.activeProfile.recovery === recovery;
                   return (
-                    <button
-                      key={recovery}
-                      onClick={() => handleRecoveryChange(recovery)}
-                      className={cn(
-                        "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden",
-                        isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
-                      )}
-                    >
-                       <div className="font-display font-black text-sm uppercase mb-0.5">{getRecoveryLabel(recovery)}</div>
-                       <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">Rest Cycle Emphasis</p>
-                       {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
-                    </button>
+                    <TooltipWrap key={recovery} content={`Shift emphasis to ${getRecoveryLabel(recovery)} within the rest cycle`} side="right">
+                      <button
+                        onClick={() => handleRecoveryChange(recovery)}
+                        className={cn(
+                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden w-full",
+                          isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
+                        )}
+                      >
+                         <div className="font-display font-black text-sm uppercase mb-0.5">{getRecoveryLabel(recovery)}</div>
+                         <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60">Rest Cycle Emphasis</p>
+                         {isActive && <div className="absolute top-0 right-0 h-1 w-full bg-primary" />}
+                      </button>
+                    </TooltipWrap>
                   );
                 })}
              </div>

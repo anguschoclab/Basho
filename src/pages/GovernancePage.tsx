@@ -260,6 +260,7 @@ export default function GovernancePage() {
                           }
                         }}
                         disabled={(heya.politicalCapital || 0) < 100}
+                        tooltip="Expend influence to boost your Ichimon's standing in the Association"
                       >
                         Spend 100 Capital
                       </Button>

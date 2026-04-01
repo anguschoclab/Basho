@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { 
   Dialog, 
   DialogContent, 
