@@ -75,7 +75,8 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
         } else if (event.key === "ArrowRight") {
           event.preventDefault();
           scrollNext();
-        },
+        }
+      },
       [scrollPrev, scrollNext],
     );
 
@@ -103,7 +104,7 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 
     return (
       <CarouselContext.Provider
-        value={
+        value={{
           carouselRef,
           api: api,
           opts,
@@ -112,7 +113,8 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
           scrollNext,
           canScrollPrev,
           canScrollNext,
-        }
+          ...props,
+        }}
       >
         <div
           ref={ref}

@@ -119,7 +119,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
           variant={comparing ? "default" : "outline"}
           size="sm"
           className="ml-auto gap-1.5 h-7 text-xs"
-          onClick={() => { setComparing(!comparing); if (comparing) { setCompareIds([null, null]); setCompareMode("stables"); }}
+          onClick={() => { setComparing(!comparing); if (comparing) { setCompareIds([null, null]); setCompareMode("stables"); } }}
         >
           <GitCompareArrows className="h-3.5 w-3.5" />
           {comparing ? "Exit Compare" : "Compare Stables"}
@@ -161,7 +161,8 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
                     handleToggleCompare(snap.heyaId);
                   } else {
                     navigate({ to: "/stable/$id", params: { id: snap.heyaId } as any });
-                  }}
+                  }
+                }}
               >
                 <CardContent className="p-3">
                   <div className="flex items-start justify-between gap-3">
@@ -522,6 +523,7 @@ function H2HPanel({
           lastWinner: record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
         });
       }
+    }
 
     matchups.sort((a, b) => (b.aWins + b.bWins) - (a.aWins + a.bWins));
 
@@ -563,11 +565,11 @@ function H2HPanel({
         <div className="flex h-2 rounded-full overflow-hidden bg-muted">
           <div
             className="bg-primary transition-all"
-            style={ width: `${(h2hData.winsA / h2hData.totalBouts) * 100}%` }
+            style={{ width: `${(h2hData.winsA / h2hData.totalBouts) * 100}%` }}
           />
           <div
             className="bg-destructive transition-all"
-            style={ width: `${(h2hData.winsB / h2hData.totalBouts) * 100}%` }
+            style={{ width: `${(h2hData.winsB / h2hData.totalBouts) * 100}%` }}
           />
         </div>
       )}

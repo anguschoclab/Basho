@@ -59,7 +59,7 @@ export function FacilitiesWidget() {
           )}
         </>
       }
-      headerAction={ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }
+      headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
     >
       <div className="space-y-2.5">
         {axes.map((axis) => {
