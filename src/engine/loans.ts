@@ -1,10 +1,5 @@
-// @ts-nocheck
-// loans.ts
-// Implementation of the Loans & Benefactors (Insolvency Rescue) system.
-// Aligned with Basho Constitution A13 (12. Loans & Benefactors).
-
+import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
 import type { Loan, LoanType } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
@@ -16,7 +11,7 @@ import { stableSort } from "./utils/sort";
  * Triggered when funds drop below a critical threshold (e.g. -5,000,000).
  * Escalate from Emergency -> Supporter -> Benefactor.
  */
-export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: string): void {
+export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
   const heya = world.heyas.get(heyaId);
   if (!heya) return;
 
@@ -36,7 +31,9 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: string): voi
 
   const existingLoans = heya.activeLoans?.length || 0;
   const scandalScore = heya.scandalScore || 0;
-  const rng = rngForWorld(world, `loan_${heyaId}_${world.year}_${world.week}`);
+  const rng = rngForWorld(world, "economy", `loan_${heyaId}_${world.year}_${world.week}`);
+
+  const TIER_MAP: Record<string, number> = { "T0": 0, "T1": 1, "T2": 2, "T3": 3, "T4": 4, "T5": 5 };
 
   // Escalate based on existing debt and scandal
   if (existingLoans === 0 && scandalScore < 30) {
@@ -57,15 +54,18 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: string): voi
 
     // Attempt to find a high-tier sponsor to be the benefactor
     const kōenkai = world.sponsorPool?.koenkais.get(heya.id);
-    let benefactorSponsor = null;
+    let benefactorSponsor: { displayName: string; tier: string } | null = null;
     if (kōenkai && kōenkai.members.length > 0) {
       // Find highest tier member
-      let bestTier = -1;
+      let bestTierVal = -1;
       for (const m of kōenkai.members) {
         const s = world.sponsorPool?.sponsors.get(m.sponsorId);
-        if (s && s.tier > bestTier) {
-          bestTier = s.tier;
-          benefactorSponsor = s;
+        if (s) {
+          const tVal = TIER_MAP[s.tier] ?? 0;
+          if (tVal > bestTierVal) {
+            bestTierVal = tVal;
+            benefactorSponsor = s;
+          }
         }
       }
     }
@@ -77,6 +77,7 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: string): voi
     }
     stringsAttached = ["foreign_slot_lock", "upgrade_lock", "merger_block"];
   }
+
 
   // Calculate loan amount (cover deficit + 2M buffer)
   const principal = deficit + 2_000_000;
@@ -173,3 +174,4 @@ export function processMonthlyLoanRepayments(world: WorldState): void {
     }
   }
 }
+

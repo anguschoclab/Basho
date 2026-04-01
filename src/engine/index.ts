@@ -1,5 +1,5 @@
-// @ts-nocheck
-// Barrel export — ts-nocheck due to intentional re-exports across modules
+// Barrel export — verifies type integrity across the modular engine.
+
 export * from './almanac';
 export * from './autoSim';
 export * from './banzuke';

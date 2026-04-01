@@ -10,7 +10,10 @@ import { stableTieBreak } from "./utils/sort";
 
 import type { WorldState } from "./types/world";
 import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
+export type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
 import type { Id } from "./types/common";
+
+
 
 /** Stable hash for deterministic IDs (FNV-1a-like) */
 import { simpleHashToIndex } from "./utils/math";
@@ -401,7 +404,8 @@ export const EventBus = {
 };
 
 /** Flavor tick & cleanup */
-export function tickWeek(world: WorldState): number {
+export function tickWeekEvents(world: WorldState): number {
+
   // Keep ambient generation lightweight; other systems emit their own events.
   // This file is the bus, not a simulation system.
 

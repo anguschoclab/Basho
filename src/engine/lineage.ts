@@ -1,16 +1,10 @@
-// @ts-nocheck
-/**
- * File Name: src/engine/lineage.ts
- * Mentorship and lineage tracking (Oyakata -> Rikishi or Senior Rikishi -> Junior Rikishi).
- * Re-implemented from legacy Sumo repo to fit the new game's strict deterministic state.
- */
-
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { getRivalry, upsertRivalry, makeRivalryKey } from "./rivalries";
 import type { Heya } from "./types/heya";
-import type { HistoricalOyakata } from "./history";
+import type { HistoricalOyakata, OyakataAchievements } from "./types/history";
+
 
 export interface LineageEdge {
   mentorId: Id;
@@ -27,18 +21,17 @@ export function ensureLineage(world: WorldState): LineageEdge[] {
 export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): string {
   if (menteeId === mentorId) return 'Cannot mentor self.';
   
-  const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
-  const mentee = rikishiMap.get(menteeId);
-  const mentor = rikishiMap.get(mentorId);
+  const mentee = world.rikishi.get(menteeId);
+  const mentor = world.rikishi.get(mentorId);
   if (!mentee || !mentor) return 'Invalid mentor or mentee.';
 
   ensureLineage(world);
 
   // remove previous mentor link if any
   if (mentee.mentorId) {
-    world.lineage = world.lineage.filter(e => e.menteeId !== menteeId);
+    world.lineage = world.lineage!.filter(e => e.menteeId !== menteeId);
     // Remove mentee from previous mentor's list
-    const prevMentor = rikishiMap.get(mentee.mentorId);
+    const prevMentor = world.rikishi.get(mentee.mentorId);
     if (prevMentor && prevMentor.menteeIds) {
       prevMentor.menteeIds = prevMentor.menteeIds.filter(id => id !== menteeId);
     }
@@ -50,7 +43,7 @@ export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): str
     mentor.menteeIds.push(menteeId);
   }
 
-  world.lineage.push({ 
+  world.lineage!.push({ 
     mentorId: mentorId, 
     menteeId: menteeId, 
     sinceYear: world.year, 
@@ -67,32 +60,38 @@ export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): str
         bId: menteeId < mentorId ? mentorId : menteeId,
         sameHeya: mentee.heyaId === mentor.heyaId,
         meetings: 0,
-        lastWeek: world.week,
+        lastMetWeek: world.week,
+        aWins: 0,
+        bWins: 0,
+        closeness: 0,
+        spite: 0,
         heat: 0,
         tone: "respect",
         triggers: {}
       };
     }
-    pair.tone = "mentor_student";
-    pair.heat = Math.max(pair.heat, 20);
-    upsertRivalry(world.rivalriesState, pair);
+    
+    if (pair) {
+      pair.tone = "mentor_student";
+      pair.heat = Math.max(pair.heat, 20);
+      upsertRivalry(world.rivalriesState, pair);
+    }
   }
 
-  return `${mentor.shikona} is now mentoring ${mentee.shikona}.`;
+  return `${mentor.shikona || mentor.name} is now mentoring ${mentee.shikona || mentee.name}.`;
 }
+
 
 export function getMentor(world: WorldState, r: Rikishi): Rikishi | undefined {
   if (!r.mentorId) return undefined;
-  const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
-  return rikishiMap.get(r.mentorId);
+  return world.rikishi.get(r.mentorId);
 }
 
 export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
   const ids = r.menteeIds || [];
-  const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
   return ids.reduce<Rikishi[]>((acc, id) => {
-    const r = rikishiMap.get(id);
-    if (r) acc.push(r);
+    const mentee = world.rikishi.get(id);
+    if (mentee) acc.push(mentee);
     return acc;
   }, []);
 }
@@ -139,16 +138,13 @@ export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataI
 /**
  * Calculates tenure achievements for the currently retiring Oyakata.
  */
-function calculateTenureAchievements(world: WorldState, heya: Heya): any {
+function calculateTenureAchievements(world: WorldState, heya: Heya): OyakataAchievements {
     const rikishiIds = heya.rikishiIds || [];
     let sekitoriCount = 0;
-    let maxRankIdx = 999;
     let winners = 0;
 
-    const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
-
     for (const rid of rikishiIds) {
-        const r = rikishiMap.get(rid);
+        const r = world.rikishi.get(rid);
         if (!r) continue;
         
         const rank = r.rank.toLowerCase();
@@ -156,7 +152,7 @@ function calculateTenureAchievements(world: WorldState, heya: Heya): any {
             sekitoriCount++;
         }
         
-        if (r.careerRecord?.yusho > 0) winners++;
+        if ((r.careerRecord?.yusho || 0) > 0) winners++;
     }
 
     return {
@@ -167,27 +163,34 @@ function calculateTenureAchievements(world: WorldState, heya: Heya): any {
     };
 }
 
+export interface LineageTreeNode {
+  id: Id;
+  shikona: string;
+  rank: string;
+  depth: number;
+}
+
 /**
  * Recursively traces the mentorship lineage of a rikishi.
  */
-export function getLineageTree(world: WorldState, rikishiId: Id, depth: number = 0): any[] {
-    const rikishiMap = world.rikishi instanceof Map ? world.rikishi : new Map(Object.entries(world.rikishi)) as Map<Id, Rikishi>;
-    const r = rikishiMap.get(rikishiId);
+export function getLineageTree(world: WorldState, rikishiId: Id, depth: number = 0): LineageTreeNode[] {
+    const r = world.rikishi.get(rikishiId);
     if (!r || depth > 5) return [];
 
     const mentorId = r.mentorId;
     if (!mentorId) return [];
 
-    const mentor = rikishiMap.get(mentorId);
+    const mentor = world.rikishi.get(mentorId);
     if (!mentor) return [];
 
     return [
         { 
             id: mentorId, 
-            shikona: mentor.shikona, 
+            shikona: mentor.shikona || mentor.name || "Unknown", 
             rank: mentor.rank,
             depth: depth 
         },
         ...getLineageTree(world, mentorId, depth + 1)
     ];
 }
+

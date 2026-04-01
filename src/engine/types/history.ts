@@ -43,6 +43,15 @@ export interface Milestone {
   data?: any;
 }
 
+/** Tenure achievements. */
+export interface OyakataAchievements {
+  titlesWon: number;
+  rekishiProducedCount: number;
+  highestStudentRank?: Rank;
+  sekitoriCount: number;
+  specialAwards?: string[];
+}
+
 /**
  * Historical record of an Oyakata's tenure leading a stable.
  */
@@ -54,16 +63,11 @@ export interface HistoricalOyakata {
   endYear?: number;
   
   // Tenure Achievements
-  achievements: {
-    titlesWon: number;
-    rekishiProducedCount: number;
-    highestStudentRank?: Rank;
-    sekitoriCount: number;
-    specialAwards?: string[];
-  };
+  achievements: OyakataAchievements;
 
   notes?: string;
 }
+
 
 /**
  * Historical record of a closed/defunct Heya.

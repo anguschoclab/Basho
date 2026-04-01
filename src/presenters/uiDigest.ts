@@ -1,14 +1,4 @@
-// @ts-nocheck
-import type { OzekiKadobanMap } from "../engine/banzuke";
-// uiDigest.ts
-// =======================================================
-// UI Digest — transforms engine/world state into a compact weekly report.
-//
-// IMPORTANT:
-// - World uses Maps at runtime (IdMapRuntime), so iterate with .values()
-//   and Array.from(...) to avoid Map iterator pitfalls in UI code.
-// =======================================================
-
+import type { Id } from "../engine/types/common";
 import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";
 import { generateH2HCommentary } from "../engine/h2h";
@@ -42,8 +32,8 @@ export interface DigestItem {
   kind: DigestKind;
   title: string;
   detail?: string;
-  rikishiId?: string;
-  heyaId?: string;
+  rikishiId?: Id;
+  heyaId?: Id;
 }
 
 /** Defines the structure for digest section. */
@@ -69,8 +59,6 @@ export interface UIDigest {
 
 /**
  * Label for world.
- *  * @param world - The World.
- *  * @returns The result.
  */
 function labelForWorld(world: WorldState): string {
   const year = world.year ?? 2025;
@@ -81,12 +69,9 @@ function labelForWorld(world: WorldState): string {
 
 /**
  * Build weekly digest.
- *  * @param world - The World.
- *  * @returns The result.
  */
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (!world) return null;
-
 
   const sections: DigestSection[] = [];
 
@@ -97,7 +82,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       id: `injury::${r.id}`,
       kind: "injury",
       title: `${r.shikona ?? r.name ?? r.id} injured`,
-      detail: `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? "?"}w remaining`,
+      detail: injury ? `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? "?"}w remaining` : "Unknown injury",
       rikishiId: r.id,
     };
   });
@@ -109,14 +94,14 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
   if (basho && world.cyclePhase === "active_basho") {
-    const day = basho.day ?? basho.currentDay ?? 1;
+    const day = basho.day ?? 1;
     let matchupCount = 0;
-    for (const match of basho.matches ?? []) {
-      if ((match as any)?.day !== day) continue;
+    for (const match of (basho.matches || [])) {
+      if (match.day !== day) continue;
       if (matchupCount >= 3) break;
       matchupCount++;
-      const eastId = match.eastRikishiId ?? match.rikishiEastId ?? match.eastId;
-      const westId = match.westRikishiId ?? match.rikishiWestId ?? match.westId;
+      const eastId = match.eastRikishiId;
+      const westId = match.westRikishiId;
       if (!eastId || !westId) continue;
 
       const east = world.rikishi.get(eastId);
@@ -139,7 +124,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Engine Events (using memoized selectors) ---
   const eventBuckets = selectRecentEvents(world);
 
-  const mapEventToItem = (e: any) => ({
+  const mapEventToItem = (e: import("../engine/events").EngineEvent): DigestItem => ({
     id: e.id,
     kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
     title: e.title,
@@ -158,7 +143,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const econItems = eventBuckets.economy.map(mapEventToItem);
   const narrativeItems = queryEvents(world, { category: "narrative" }).map(e => ({
      ...mapEventToItem(e),
-     kind: "narrative"
+     kind: "narrative" as const
   }));
 
   if (mediaItems.length) sections.push({ id: "media", title: "Media & Scandals", items: mediaItems });
@@ -181,7 +166,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const headline =
     basho && world.cyclePhase === "active_basho"
-      ? `Basho Day ${basho.day ?? basho.currentDay ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
+      ? `Basho Day ${basho.day ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
       : injuryItems.length
         ? `${injuryItems.length} injury update${injuryItems.length === 1 ? "" : "s"} this week.`
         : "No major events recorded this week.";
@@ -198,7 +183,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
  * FM v2.0: Formats Rikishi attribute data for Radar Charts (C5 compliant).
  * Maps 0-100 internal truths into 5 banded tiers (1-5) for visual shape only.
  */
-export function formatRadarData(rikishi: any) {
+export function formatRadarData(rikishi: Rikishi) {
   const mapValue = (val: number) => {
     if (val >= 85) return 5;
     if (val >= 65) return 4;
@@ -222,7 +207,7 @@ export function formatRadarData(rikishi: any) {
 export function formatMetaTrends(world: WorldState) {
   if (!world.history || world.history.length === 0) return [];
 
-  return world.history.slice(-6).map((h, i) => {
+  return world.history.slice(-6).map((h) => {
     // Determine meta bias values based on actual historical data if available
     // Otherwise fallback to balanced defaults
     const bias = (h as any).metaBias || 'neutral';
@@ -256,30 +241,33 @@ export interface YokozunaCandidate {
 }
 
 export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
+
   const candidates: OzekiRunCandidate[] = [];
-  if (!world.historyIndex?.rikishi) return candidates;
+  if (!world.historyIndex) return candidates;
   const playerHeyaId = world.playerHeyaId;
+
+  const historyIndex = world.historyIndex;
 
   for (const r of selectPromotionCandidates(world)) {
     // Get last 3 basho results from history
-    const history = world.historyIndex.rikishi[r.id] || [];
+    const history = historyIndex.rikishi[r.id] || [];
     const len = history.length;
 
     // ⚡ Bolt: Use for loop over last 3 items to avoid slice allocation
     let recentWins = 0;
     let recentCount = 0;
     for (let i = Math.max(0, len - 3); i < len; i++) {
-      recentWins += history[i].wins;
+      recentWins += history[i].wins || 0;
       recentCount++;
     }
 
     if (recentCount < 1) continue;
 
     // Add current basho wins if active
-    for (const e of (world.banzuke?.makuuchi ?? [])) {
-      if (e.id === r.id) {
-        recentWins += e.wins;
-        break;
+    if (world.currentBasho?.standings) {
+      const stats = world.currentBasho.standings.get(r.id);
+      if (stats) {
+        recentWins += stats.wins;
       }
     }
 
@@ -303,10 +291,12 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
 
 export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
   const candidates: YokozunaCandidate[] = [];
-  if (!world.historyIndex?.rikishi) return candidates;
+  if (!world.historyIndex) return candidates;
+
+  const historyIndex = world.historyIndex;
 
   for (const r of selectYokozunaCandidates(world)) {
-    const history = world.historyIndex.rikishi[r.id] || [];
+    const history = historyIndex.rikishi[r.id] || [];
     // Only check the last two history items without slice allocating a new array
     let yushos = 0;
     let junYushos = 0;
@@ -339,22 +329,22 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
 }
 
 export function getKadobanDrama(world: WorldState): Array<{ rikishi: UIRikishi; narrative: string; isDemoted: boolean }> {
-  const kadobanMap: import("../engine/banzuke").OzekiKadobanMap = (world as any).ozekiKadoban ?? {};
+  const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Array<{ rikishi: UIRikishi; narrative: string; isDemoted: boolean }> = [];
 
   for (const r of selectKadobanRikishi(world)) {
     const rid = r.id;
-    const status = kadobanMap[rid];
+    const status = (kadobanMap as any)[rid];
     if (!status) continue;
     if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
 
     let wins = 0;
     let losses = 0;
-    for (const e of (world.banzuke?.makuuchi ?? [])) {
-      if (e.id === rid) {
-        wins = e.wins;
-        losses = e.losses;
-        break;
+    if (world.currentBasho?.standings) {
+      const stats = world.currentBasho.standings.get(rid);
+      if (stats) {
+        wins = stats.wins;
+        losses = stats.losses;
       }
     }
     const isDemoted = status.isKadoban && losses >= 8;
@@ -371,6 +361,7 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: UIRikishi; 
 }
 
 export function getFacilityLevelLabel(level: number): string {
+
   if (level >= 85) return "World-Class";
   if (level >= 65) return "Excellent";
   if (level >= 45) return "Adequate";
@@ -391,18 +382,6 @@ export function getFacilityLevelColor(level: number): string {
  * Guaranteed to strip hidden numerical stats.
  */
 export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
-  // We use projectRikishi which we've just updated to strip raw stats
-  // We don't have world state here in the test mock usually, so we need a shim or update projectRikishi
-  // Wait, projectRikishi needs WorldState.
-  // I should probably make a simpler version or update projectRikishi to handle optional world.
-  
-  // Looking at projectRikishi:
-  // const heya = world.heyas.get(r.heyaId);
-  // const age = world.year - r.birthYear;
-  
-  // Let's create a minimal world state if not provided, or better, refactor projectRikishi.
-  // Actually, I'll just implement it directly here to be safe and match the test expectations.
-  
   return projectRikishi(rikishi, { 
     year: new Date().getFullYear(),
     heyas: new Map(),
@@ -440,3 +419,4 @@ export { getArchetypeDescription } from "../engine/oyakataPersonalities";
 export { getKimarite } from "../engine/kimarite";
 export { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "../engine/scoutingStore";
 export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine/governance/GovernanceService";
+

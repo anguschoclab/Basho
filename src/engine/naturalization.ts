@@ -1,8 +1,4 @@
-// @ts-nocheck
-// naturalization.ts
-// Implements the Future Naturalization system for foreign-born rikishi.
-// Aligned with Basho Constitution A13 (5.5 Future Naturalization).
-
+import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
@@ -15,7 +11,7 @@ import { stableSort } from "./utils/sort";
  */
 export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
-  const foreignRikishi = [];
+  const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
   for (const r of stableSort(world.rikishi.values(), x => x.id)) {
     if (r.nationality !== "Japan") {
       foreignRikishi.push(r);
@@ -25,13 +21,14 @@ export function checkNaturalizations(world: WorldState): void {
   // Ensure deterministic tie-break before iteration
   for (const r of foreignRikishi) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).
-    const age = world.year - r.birthYear;
+    const birthYear = r.birthYear || (world.year - 18);
+    const age = world.year - birthYear;
 
     // Check eligibility
     let isEligible = false;
-    if (r.careerWins >= 400) isEligible = true;
+    if ((r.careerWins || 0) >= 400) isEligible = true;
     if (r.rank === "yokozuna" && age >= 28) isEligible = true;
-    if (r.rank === "ozeki" && r.careerWins >= 350) isEligible = true;
+    if (r.rank === "ozeki" && (r.careerWins || 0) >= 350) isEligible = true;
 
     // Needs high momentum or just time for narrative significance
     if (!isEligible) continue;
@@ -46,6 +43,7 @@ export function checkNaturalizations(world: WorldState): void {
     const chance = Math.abs(hash) % 100;
 
     if (chance < 5) { // 5% chance if eligible
+      const originalNationality = r.nationality;
       // Naturalize
       r.nationality = "Japan";
 
@@ -60,7 +58,7 @@ export function checkNaturalizations(world: WorldState): void {
         heyaId: r.heyaId,
         title: `${r.shikona || r.name} acquires Japanese citizenship`,
         summary: `In a major milestone, ${r.shikona || r.name} has formally naturalized as a Japanese citizen. This frees up the foreign slot for ${heya?.name || "their stable"}.`,
-        data: { originalNationality: r.origin, newNationality: "Japan" }
+        data: { originalNationality, newNationality: "Japan" }
       });
 
       if (heya) {
@@ -75,3 +73,4 @@ export function checkNaturalizations(world: WorldState): void {
     }
   }
 }
+

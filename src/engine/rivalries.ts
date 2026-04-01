@@ -570,7 +570,7 @@ function inferDomination01(result: BoutResult): number {
  * Hook called after each bout resolution.
  * Wraps updateRivalriesFromBout with world state management.
  */
-export function onBoutResolved(
+export function onBoutResolvedRivalries(
   world: WorldState,
   context: { match: any; result: any; east: any; west: any }
 ): void {
@@ -593,11 +593,12 @@ export function onBoutResolved(
 /**
  * Weekly tick: apply decay to all rivalries.
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekRivalries(world: WorldState): void {
   const rivalriesState = ensureRivalriesState(world);
   const newState = applyRivalryWeeklyDecay(rivalriesState, world.week ?? 0);
   world.rivalriesState = newState;
 }
+
 
 /**
  * Ensure rivalries state exists on world.

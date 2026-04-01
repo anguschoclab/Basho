@@ -32,11 +32,12 @@ const SUPPORTER_INCOME_FACTOR = 15_000;
  * - Add income (Koenkai)
  * - Check Solvency
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekEconomics(world: WorldState): void {
   for (const heya of world.heyas.values()) {
     processHeyaFinances(heya, world);
   }
 }
+
 
 /**
  * Process heya finances.
@@ -145,10 +146,11 @@ function handleInsolvency(heya: Heya, world: WorldState): void {
  * Constitution §6: ¥70,000/banner, 50/50 rikishi/heya split.
  * 30% of rikishi share → retirement fund.
  */
-export function onBoutResolved(
+export function onBoutResolvedEconomics(
   world: WorldState,
   context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): void {
+
   const { result, east, west } = context;
   
   // Only Makuuchi bouts generate Kensho normally
