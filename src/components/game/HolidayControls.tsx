@@ -116,7 +116,8 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
       setResult(holidayResult);
       setIsOpen(false);
       setShowResult(true);
-    };
+    }
+  };
 
   // Filter targets based on current phase
   const availableTargets = useMemo(() => {

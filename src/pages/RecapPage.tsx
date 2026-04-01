@@ -163,19 +163,27 @@ export default function RecapPage() {
         {/* ═══ MODALS & CEREMONIES ═══ */}
         {showPressConference && (
           <PressConference 
-            heya={world.heyas.get(world.playerHeyaId!)} 
+            world={world}
+            open={showPressConference}
             onClose={handlePressConferenceClose} 
           />
         )}
 
         {showYokozunaDelib && (
           <YokozunaDeliberation 
+            open={showYokozunaDelib}
+            world={world}
+            rikishi={Array.from(world.rikishi.values())[0] as any} // Mock for Phase 3 restoration
+            verdict="deferred"
+            reasoning={["Continued performance required."]}
             onClose={() => setShowYokozunaDelib(false)} 
           />
         )}
 
         {showHoFCeremony && (
           <HoFInductionCeremony 
+            world={world}
+            open={!!showHoFCeremony}
             inductee={showHoFCeremony} 
             onClose={() => setShowHoFCeremony(null)} 
           />

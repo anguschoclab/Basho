@@ -13,6 +13,7 @@ import {
   TrendingDown, 
   UserPlus, 
   UserMinus, 
+  UserX,
   ShieldAlert, 
   Building2,
   Clock,

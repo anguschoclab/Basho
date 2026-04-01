@@ -6,6 +6,7 @@
  * Also processes rikishi retirements and Oyakata candidate conversion.
  */
 
+import { stableSort } from "../utils/sort";
 import type { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { EventBus } from "../events";

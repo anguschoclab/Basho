@@ -40,7 +40,7 @@ const ChartContainer = React.forwardRef<
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
   return (
-    <ChartContext.Provider value={ config }>
+    <ChartContext.Provider value={{ config }}>
       <div
         data-chart={chartId}
         ref={ref}
@@ -141,7 +141,7 @@ const ChartTooltipContent = React.forwardRef<
         return null;
       }
 
-      return <div className={cn("font-medium", labelClassName)}>{value}</div>;
+      return <div className={cn("font-medium", labelClassName)}>{value as React.ReactNode}</div>;
     }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
 
     if (!active || !payload?.length) {

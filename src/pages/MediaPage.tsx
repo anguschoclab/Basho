@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
-import type { MediaHeadline, MediaDigest, MediaState, MediaBeat } from "@/engine/media";
+import { MediaHeadline, MediaState, MediaBeat } from "@/engine/types/media";
 import { buildMediaDigest, createDefaultMediaState } from "@/presenters/uiDigest";
 
 /* ── Style maps ── */
@@ -180,10 +180,10 @@ export default function MediaPage() {
 
   const mediaState: MediaState = world?.mediaState ?? createDefaultMediaState();
 
-  const digest: MediaDigest | null = useMemo(() => {
+  const digest = useMemo(() => {
     if (!world) return null;
-    return buildMediaDigest({ state: mediaState, world, limit: 20 });
-  }, [world, mediaState]);
+    return buildMediaDigest(world);
+  }, [world]);
 
   const allHeadlines = useMemo(() => {
     let list = [...(mediaState.headlines || [])]
@@ -247,7 +247,7 @@ export default function MediaPage() {
                   <Flame className="h-5 w-5 text-primary" /> Top Headlines
                 </CardTitle>
                 <CardDescription>
-                  {digest ? `Week ${digest.week} — ${allHeadlines.length} stories tracked` : "No media data yet"}
+                  {digest ? `Week ${world.week} — ${allHeadlines.length} stories tracked` : "No media data yet"}
                 </CardDescription>
               </div>
               <BeatFilter selected={beatFilter} onChange={setBeatFilter} />

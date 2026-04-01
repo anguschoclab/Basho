@@ -149,11 +149,21 @@ function applyHeadlineEffects(state: MediaState, world: WorldState, headline: Me
     nextPressure[heyaId] = clampInt((nextPressure[heyaId] ?? 0) + pressBump, 0, 100);
   }
 
+  // Update history for each rikishi involved
+  const nextHistory = { ...state.mediaHeatHistory };
+  const bashoName = headline.bashoName || "Interim";
+  for (const id of headline.rikishiIds) {
+    const history = [...(nextHistory[id] || [])];
+    history.push({ basho: bashoName, heat: nextHeat[id] });
+    nextHistory[id] = history.slice(-10); // Keep last 10 snapshots
+  }
+
   return {
     ...state,
     mediaHeat: nextHeat,
     heyaPressure: nextPressure,
-    headlines: [...state.headlines, headline].slice(-250) // Maintain cap
+    headlines: [...state.headlines, headline].slice(-250), // Maintain cap
+    mediaHeatHistory: nextHistory
   };
 }
 
@@ -258,6 +268,7 @@ export function createDefaultMediaState(): MediaState {
     version: "1.0.0",
     headlines: [],
     mediaHeat: {},
+    mediaHeatHistory: {},
     heyaPressure: {},
     bashoStreaks: {},
     streakHeadlinesFired: {},

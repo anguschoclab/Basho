@@ -158,6 +158,7 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
     
     careerWins: 0,
     careerLosses: 0,
+    careerAbsences: 0,
     currentBashoWins: 0,
     currentBashoLosses: 0,
     

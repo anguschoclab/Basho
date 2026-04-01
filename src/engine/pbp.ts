@@ -329,7 +329,7 @@ function renderFact(fact: PbpFact, ctx: PbpContext, lib: PbpLibrary = DEFAULT_PB
     return {
       phase: fact.phase,
       text: text,
-      tags: ["institutional_or_injury"] as PbpTag[]
+      tags: ["institutional_or_injury"] as unknown as PbpTag[]
     };
   }
 

@@ -284,9 +284,9 @@ export function endBasho(world: import('./types').WorldState) {
     for (const [rikishiId, stats] of Object.entries(world.basho.leaderboard)) {
         const r = world.rikishi.get(rikishiId);
         if (r) {
-            r.stats.wins = (r.stats.wins || 0) + ((stats as any).wins || 0);
-            r.stats.losses = (r.stats.losses || 0) + ((stats as any).losses || 0);
-            r.stats.absences = (r.stats.absences || 0) + ((stats as any).absences || 0);
+            r.careerWins = (r.careerWins || 0) + ((stats as any).wins || 0);
+            r.careerLosses = (r.careerLosses || 0) + ((stats as any).losses || 0);
+            r.careerAbsences = (r.careerAbsences || 0) + ((stats as any).absences || 0);
         }
     }
 

@@ -15,12 +15,12 @@ describe('Stable Lords: OPFS Archival System', () => {
 
     it('Test 1.2: isSupported() returns false when API is missing', () => {
       const originalStorage = navigator.storage;
-      Object.defineProperty(global.navigator, 'storage', { value: undefined, configurable: true });
+      Object.defineProperty(globalThis.navigator, 'storage', { value: undefined, configurable: true });
 
       expect(opfsArchiveService.isSupported()).toBe(false);
 
       // Restore
-      Object.defineProperty(global.navigator, 'storage', { value: originalStorage, configurable: true });
+      Object.defineProperty(globalThis.navigator, 'storage', { value: originalStorage, configurable: true });
     });
   });
 
@@ -28,7 +28,7 @@ describe('Stable Lords: OPFS Archival System', () => {
     it('Test 2.1: archiveBoutLog() creates the correct directory structure', async () => {
       await opfsArchiveService.archiveBoutLog(1, 'b-123', { action: 'tachi-ai' });
 
-      const root = await navigator.storage.getDirectory() as MockFileSystemDirectoryHandle;
+      const root = await navigator.storage.getDirectory() as unknown as MockFileSystemDirectoryHandle;
       const seasonDir = await root.getDirectoryHandle('season_1');
       const boutsDir = await seasonDir.getDirectoryHandle('bouts');
       const fileHandle = await boutsDir.getFileHandle('b-123.json');
@@ -40,7 +40,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       const mockLog = [{ tick: 1, text: 'The bout begins.' }, { tick: 2, text: 'Yorikiri.' }];
       await opfsArchiveService.archiveBoutLog(1, 'b-500', mockLog);
 
-      const root = await navigator.storage.getDirectory() as MockFileSystemDirectoryHandle;
+      const root = await navigator.storage.getDirectory() as unknown as MockFileSystemDirectoryHandle;
       const fileHandle = await root
         .getDirectoryHandle('season_1')
         .then(d => d.getDirectoryHandle('bouts'))
@@ -96,7 +96,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       const markdown = '# Weekly Recap\nGreat throws this week!';
       await opfsArchiveService.archiveGazette(1, 4, markdown);
 
-      const root = await navigator.storage.getDirectory() as MockFileSystemDirectoryHandle;
+      const root = await navigator.storage.getDirectory() as unknown as MockFileSystemDirectoryHandle;
       const fileHandle = await root
         .getDirectoryHandle('season_1')
         .then(d => d.getDirectoryHandle('gazettes'))
@@ -115,8 +115,8 @@ describe('Stable Lords: OPFS Archival System', () => {
   describe('Suite 5: Fallback & Quota Management', () => {
     it('Test 5.1: Graceful degradation on QuotaExceededError', async () => {
       // Use Object.defineProperty to ensure window is defined
-      const originalWindow = global.window;
-      Object.defineProperty(global, 'window', {
+      const originalWindow = globalThis.window;
+      Object.defineProperty(globalThis, 'window', {
         value: {
           dispatchEvent: vi.fn(),
         },
@@ -126,7 +126,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
 
       // Inject the QuotaExceededError by manually placing a mocked file handle
-      const root = await navigator.storage.getDirectory() as MockFileSystemDirectoryHandle;
+      const root = await navigator.storage.getDirectory() as unknown as MockFileSystemDirectoryHandle;
       const seasonDir = await root.getDirectoryHandle('season_99', { create: true });
       const boutsDir = await seasonDir.getDirectoryHandle('bouts', { create: true });
       const mockFileHandle = await boutsDir.getFileHandle('b-heavy.json', { create: false }).catch(() => boutsDir.getFileHandle('b-heavy.json', { create: true }));
@@ -153,7 +153,7 @@ describe('Stable Lords: OPFS Archival System', () => {
 
       // Clear the mock file system so it's fresh
       resetMockFileSystem();
-      const root2 = await navigator.storage.getDirectory() as MockFileSystemDirectoryHandle;
+      const root2 = await navigator.storage.getDirectory() as unknown as MockFileSystemDirectoryHandle;
       const seasonDir2 = await root2.getDirectoryHandle('season_99', { create: true });
       const boutsDir2 = await seasonDir2.getDirectoryHandle('bouts', { create: true });
 
@@ -177,7 +177,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
       expect(event.type).toBe('engine:storage:quota-exceeded');
 
-      Object.defineProperty(global, 'window', {
+      Object.defineProperty(globalThis, 'window', {
         value: originalWindow,
         writable: true,
         configurable: true

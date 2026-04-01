@@ -30,6 +30,7 @@ function complianceBadge(state: string) {
     default:
       return <Badge variant="outline">Unknown</Badge>;
   }
+}
 
 /**
  * Risk tone.

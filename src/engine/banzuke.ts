@@ -5,6 +5,7 @@
 
 import { stableTieBreak } from "./utils/sort";
 import { RANK_HIERARCHY, type Division, type RankPosition, type BanzukeEntry, type BashoPerformance, type MovementEvent } from "./types/banzuke";
+export type { BanzukeEntry, BashoPerformance };
 import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
 

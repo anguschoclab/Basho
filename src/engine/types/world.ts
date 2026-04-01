@@ -82,7 +82,7 @@ export interface WorldState {
 
   sponsorPool?: import("../sponsors").SponsorPool;
 
-  mediaState?: import("../media").MediaState;
+  mediaState?: import("./media").MediaState;
 
   perceptionCache?: Record<Id, import("../perception").PerceptionSnapshot>;
 

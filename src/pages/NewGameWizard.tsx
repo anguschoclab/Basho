@@ -28,9 +28,12 @@ import {
   Zap,
   CheckCircle2
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed, formatYenToMan } from "@/utils/engineUtils";
 import { cn } from "@/lib/utils";
+import type { Heya } from "@/engine/types/heya";
 
 const OYAKATA_BACKGROUNDS = [
   {
@@ -274,7 +277,7 @@ export default function NewGameWizard() {
 
                <ScrollArea className="h-[500px] pr-4">
                   <div className="grid gap-4 md:grid-cols-2">
-                    {stables.map((heya) => (
+                    {stables.map((heya: Heya) => (
                       <div
                         key={heya.id}
                         className={cn(
@@ -295,9 +298,9 @@ export default function NewGameWizard() {
                             </div>
                             <div className="flex flex-wrap gap-2">
                                <Badge variant="secondary" className="text-[8px] font-black uppercase tracking-widest h-5 bg-primary/10 border-primary/20 text-primary">{heya.statureBand}</Badge>
-                               <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest h-5 border-2">{heya.facilitiesBand}</Badge>
+                               <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest h-5 border-2">{(heya as any).facilitiesBand}</Badge>
                             </div>
-                            <p className="text-[10px] text-muted-foreground line-clamp-2 italic italic">"{heya.descriptor || 'A stable with a long-standing history of training excellence.'}"</p>
+                            <p className="text-[10px] text-muted-foreground line-clamp-2 italic italic">"{(heya as any).descriptor || 'A stable with a long-standing history of training excellence.'}"</p>
                          </div>
                       </div>
                     ))}

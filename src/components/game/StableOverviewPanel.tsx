@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PerceptionSnapshot  } from "@/engine/perception";
 import { getCachedPerception } from "@/presenters/uiDigest";
+import {
   Shield, Heart, Flame, Swords, Users,
   TrendingUp, Building2, HandCoins, AlertTriangle
 } from "lucide-react";

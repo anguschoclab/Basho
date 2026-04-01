@@ -29,7 +29,7 @@ export interface TickStep {
   silent?: boolean;
 }
 
-interface TickPipelineOptions {
+export interface TickPipelineOptions {
   /** Whether to autosave after all steps complete. Defaults to true. */
   autosave?: boolean;
 }

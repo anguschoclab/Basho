@@ -48,6 +48,20 @@ export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {
     risk: 30,
     tradition: 40,
     compassion: 50
+  },
+  strict: {
+    ambition: 60,
+    patience: 40,
+    risk: 30,
+    tradition: 85,
+    compassion: 10
+  },
+  indulgent: {
+    ambition: 20,
+    patience: 70,
+    risk: 10,
+    tradition: 30,
+    compassion: 90
   }
 };
 
@@ -57,7 +71,9 @@ const ARCHETYPE_DESCRIPTIONS: Record<OyakataArchetype, string> = {
   gambler: "High risk, high reward. Pushes rikishi to the breaking point for glory.",
   nurturer: "Protects their wrestlers like family. Produces long careers but few superstars.",
   tyrant: "Rules through fear. Demands victory at any cost. High turnover rate.",
-  strategist: "Balanced and cunning. Adapts training to the current meta."
+  strategist: "Balanced and cunning. Adapts training to the current meta.",
+  strict: "Demands absolute discipline and adherence to strict protocols. No excuses.",
+  indulgent: "Very lenient with rikishi. Prioritizes happiness over results."
 };
 
 const FORMER_SHIKONA_SUFFIXES = ["yama", "gawa", "fuji", "umi", "kuni", "hime", "maru", "ryu"];

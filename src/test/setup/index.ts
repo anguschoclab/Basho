@@ -83,7 +83,7 @@ export class MockFileSystemDirectoryHandle {
 // Global setup injection
 const rootDir = new MockFileSystemDirectoryHandle('root');
 
-Object.defineProperty(global, 'navigator', {
+Object.defineProperty(globalThis, 'navigator', {
   value: {
     storage: {
       getDirectory: async () => rootDir,

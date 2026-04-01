@@ -76,5 +76,7 @@ export interface MediaState {
   retirementWatchFired: Record<string, boolean>;
   titleRaceDayFired: Record<number, boolean>;
   injuryWithdrawalFired: Record<string, boolean>;
+  mediaHeatHistory: Record<string, Array<{ basho: string; heat: number }>>;
+  weeklyGazette?: string;
 }
 

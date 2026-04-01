@@ -101,6 +101,7 @@ export interface Rikishi {
 
   careerWins: number;
   careerLosses: number;
+  careerAbsences: number;
   makuuchiWins: number;
   consecutiveYusho: number;
 

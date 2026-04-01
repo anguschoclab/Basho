@@ -8,8 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
-import {
 import { DigestItem, DigestSection, UIDigest, buildWeeklyDigest } from "@/presenters/uiDigest";
+import {
   Activity,
   AlertTriangle,
   Coins,

@@ -164,6 +164,7 @@ export function generateFullRikishi(args: {
     
     careerWins: records.careerWins,
     careerLosses: records.careerLosses,
+    careerAbsences: 0,
     makuuchiWins: division === "makuuchi" ? records.careerWins : 0,
     consecutiveYusho: 0,
     
