@@ -164,13 +164,15 @@ export default function StaffPage() {
           {staffList.length < 12 && (
             <Dialog open={isRecruitOpen} onOpenChange={setIsRecruitOpen}>
               <DialogTrigger asChild>
-                <button className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                    <UserPlus className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="font-bold text-lg">Recruit Specialist</h3>
-                  <p className="text-xs text-muted-foreground text-center max-w-[200px] mt-1">Hire a new specialist to improve your stable's performance.</p>
-                </button>
+                <TooltipWrap content="Hire a new specialist to improve your stable's performance" side="top">
+                  <button className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                      <UserPlus className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-lg">Recruit Specialist</h3>
+                    <p className="text-xs text-muted-foreground text-center max-w-[200px] mt-1">Hire a new specialist to improve stable performance.</p>
+                  </button>
+                </TooltipWrap>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
