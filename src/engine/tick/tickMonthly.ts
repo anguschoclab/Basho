@@ -46,7 +46,9 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
 export function tickMonthlyEconomics(world: WorldState): void {
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     let totalSalaries = 0;
-    for (const rId of heya.rikishiIds) {
+    const rikishiIds = heya.rikishiIds || [];
+    for (const rId of rikishiIds) {
+
       const r = world.rikishi.get(rId);
       if (!r) continue;
       const info = RANK_HIERARCHY[r.rank];
@@ -152,16 +154,24 @@ export function tickArchetypeDrift(world: WorldState): void {
     for (const r of world.rikishi.values()) {
       if (!r.isRetired) activeRikishi.push(r);
     }
-    for (const r of stableSort(activeRikishi, x => x.id)) {
+    for (const r of activeRikishi) {
       const evidence = r.archetypeEvidence;
-      if (!evidence || Array.isArray(evidence)) continue;
+      // Safety check: if somehow it's still the old array format or null, skip/reset
+      if (!evidence || Array.isArray(evidence)) {
+        r.archetypeEvidence = {
+          push: { success: 0, fail: 0 },
+          grapple: { success: 0, fail: 0 },
+          evade: { success: 0, fail: 0 }
+        };
+        continue;
+      }
 
       const pushSuccess = evidence.push.success;
       const grappleSuccess = evidence.grapple.success;
       const evadeSuccess = evidence.evade.success;
 
       // Determine the most successful tactical family during this basho
-      let newArchetype: typeof r.tacticalArchetypePrimary = r.tacticalArchetypePrimary;
+      let newArchetype = r.tacticalArchetypePrimary;
 
       if (pushSuccess > grappleSuccess && pushSuccess > evadeSuccess && pushSuccess >= 5) {
         newArchetype = 'oshi';
@@ -172,7 +182,6 @@ export function tickArchetypeDrift(world: WorldState): void {
       }
 
       // If a drift occurred, dispatch event and update
-
       if (newArchetype !== r.tacticalArchetypePrimary) {
         logEngineEvent(world, {
           type: "ARCHETYPE_DRIFT",
@@ -189,13 +198,12 @@ export function tickArchetypeDrift(world: WorldState): void {
       }
 
       // Cleanup: Reset evidence
-
       r.archetypeEvidence = {
         push: { success: 0, fail: 0 },
         grapple: { success: 0, fail: 0 },
         evade: { success: 0, fail: 0 }
       };
-
     }
   }
 }
+

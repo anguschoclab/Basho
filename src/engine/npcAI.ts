@@ -1,404 +1,53 @@
 // npcAI.ts
-// npcAI.ts
 // =======================================================
-// NPC Manager AI & Personas (Canon A7/A8/A11)
-// - Deterministic Oyakata persona quirks + operational modifiers
-// - Weekly decision loop: training, recovery, scouting (A7.1 compliant)
-// - All decisions derived from banded PerceptionSnapshot, never raw stats
+// NPC Manager AI Orchestrator (Canon A7/A8/A11)
+// - Coordinates weekly, monthly, and yearly decision loops
+// - Delegates persona and strategy logic to specialized services
 // =======================================================
 
 import { rngForWorld } from "./rng";
-import { getOyakataStyleProfile, type RecruitmentPhilosophy } from "./oyakataStylePreferences";
+import { getOyakataStyleProfile } from "./oyakataStylePreferences";
 import * as talentpool from "./systems/generation/TalentPoolService";
 import type { WorldState } from "./types/world";
-import type { Style } from "./types/combat";
-import type { OyakataArchetype, Oyakata, OyakataMood } from "./types/oyakata";
+import type { OyakataArchetype, OyakataMood } from "./types/oyakata";
 import type { Id } from "./types/common";
-import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
+import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { ensureHeyaTrainingState } from "./training";
-import { enforceHardCapRosterOverflow } from "./overflow";
-import { HARD_CAP_ROSTER_SIZE } from "./overflow";
-import { getHeyaStyleBias, getOyakataForHeya, getRikishi, getHeya } from "./queries";
+import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
+import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
-import {
-  getCachedPerception,
-  type PerceptionSnapshot,
-  type HealthBand,
-  type WelfareRiskBand,
-  type MoraleBand,
-  type RosterStrengthBand,
-  type RikishiPerception
-} from "./perception";
 import { logEngineEvent } from "./events";
 
-// Strategies
+// Strategies & Personas
 import { getFinanceStrategy } from "./npcFinanceStrategy";
 import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
 import { getRetirementStrategy } from "./npcRetirementStrategy";
-
-// ─── Persona ────────────────────────────────────────────
-
-/**
- * Determine n p c style bias.
- *  * @param world - The World.
- *  * @param stableId - The Stable id.
- *  * @returns The result.
- */
-export function determineNPCStyleBias(world: WorldState, stableId: string): Style | "neutral" {
-  return getHeyaStyleBias(world, stableId);
-}
-
-const QUIRK_POOL = [
-  "Old-School Stickler",
-  "Gambler's Instinct",
-  "Welfare Hawk",
-  "Discipline Hawk",
-  "Media Operator",
-  "Sleeper Scout",
-  "Nepotist",
-  "Weight-Cutter",
-  "Keiko Romantic",
-  "Cold Pragmatist",
-  "Family First",
-  "Numbers Guy"
-] as const;
-
-/**
- * Pick unique.
- *  * @param rng - The Rng.
- *  * @param items - The Items.
- *  * @param count - The Count.
- *  * @returns The result.
- */
-function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
-  const pool = [...items];
-  const out: T[] = [];
-  while (pool.length && out.length < count) {
-    const idx = Math.floor(rng.next() * pool.length);
-    out.push(pool.splice(idx, 1)[0]);
-  }
-  return out;
-}
-
-/**
- * Ensure persona for oyakata.
- *  * @param world - The World.
- *  * @param oyakata - The Oyakata.
- */
-function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
-  if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) return;
-
-  const rng = rngForWorld(world, "oyakataPersona", oyakata.id);
-
-  const baseCount = oyakata.archetype === "tyrant" || oyakata.archetype === "gambler" ? 3 : 2;
-  const quirks = pickUnique(rng, QUIRK_POOL, baseCount);
-
-  const flags = {
-    welfareHawk: quirks.includes("Welfare Hawk") || oyakata.traits.compassion >= 75,
-    disciplineHawk: quirks.includes("Discipline Hawk") || oyakata.archetype === "tyrant" || oyakata.traits.tradition >= 80,
-    publicityHawk: quirks.includes("Media Operator") || oyakata.traits.ambition >= 80,
-    nepotist: quirks.includes("Nepotist")
-  };
-
-  oyakata.quirks = quirks as unknown as string[];
-  oyakata.managerFlags = flags;
-}
-
-/**
- * Get manager persona.
- *  * @param world - The World.
- *  * @param heyaId - The Heya id.
- *  * @returns The result.
- */
-export function getManagerPersona(world: WorldState, heyaId: string): {
-  archetype: OyakataArchetype | "unknown";
-  traits: { ambition: number; patience: number; risk: number; tradition: number; compassion: number };
-  quirks: string[];
-  flags: { welfareHawk: boolean; disciplineHawk: boolean; publicityHawk: boolean; nepotist: boolean };
-  styleBias: Style | "neutral";
-  welfareDiscipline: number;
-  riskAppetite: number;
-  perception: PerceptionSnapshot;
-  mood: OyakataMood;
-} {
-  const heya = getHeya(world, heyaId);
-  const oyakata = getOyakataForHeya(world, heyaId);
-  const perception = getCachedPerception(world, heyaId);
-
-  if (!heya || !oyakata) {
-    return {
-      archetype: "unknown",
-      traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
-      quirks: [],
-      flags: { welfareHawk: false, disciplineHawk: false, publicityHawk: false, nepotist: false },
-      styleBias: "neutral",
-      welfareDiscipline: 0.4,
-      riskAppetite: 0.5,
-      perception,
-      mood: "content" as OyakataMood
-    };
-  }
-
-  ensurePersonaForOyakata(world, oyakata);
-
-  const traits = oyakata.traits;
-  const flags = {
-    welfareHawk: Boolean(oyakata.managerFlags?.welfareHawk),
-    disciplineHawk: Boolean(oyakata.managerFlags?.disciplineHawk),
-    publicityHawk: Boolean(oyakata.managerFlags?.publicityHawk),
-    nepotist: Boolean(oyakata.managerFlags?.nepotist)
-  };
-
-  const welfareDiscipline =
-    Math.max(0, Math.min(1,
-      (traits.compassion / 120) +
-      (flags.welfareHawk ? 0.25 : 0) -
-      (traits.risk / 220)
-    ));
-
-  const riskAppetite =
-    Math.max(0, Math.min(1,
-      (traits.risk / 100) * 0.65 +
-      (traits.ambition / 100) * 0.35
-    ));
-
-  return {
-    archetype: oyakata.archetype,
-    traits,
-    quirks: oyakata.quirks ?? [],
-    flags,
-    styleBias: determineNPCStyleBias(world, heyaId),
-    welfareDiscipline,
-    riskAppetite,
-    perception,
-    mood: (oyakata.mood ?? "content") as OyakataMood
-  };
-}
-
-// ─── NPC Weekly Decision Loop (Canon A7.1) ──────────────
+import { getManagerPersona } from "./systems/NPCPersonaService";
+import { 
+  decideTrainingIntensity, 
+  decideTrainingFocus, 
+  decideRecovery, 
+  decideScoutingPriority, 
+  identifyProtects 
+} from "./strategy/NPCStrategyService";
 
 /** Decision output for a single NPC heya per week */
-interface NPCWeeklyDecision {
+export interface NPCWeeklyDecision {
   heyaId: Id;
   archetype: OyakataArchetype | "unknown";
   trainingIntensity: TrainingIntensity;
   trainingFocus: TrainingFocus;
   recovery: RecoveryEmphasis;
   scoutingPriority: "none" | "passive" | "active" | "aggressive";
-  individualProtects: Id[];  // rikishi to set to "protect" focus
-  individualDevelops: Id[];  // rikishi to set to "develop" focus (philosophy-driven)
-  individualPushes: Id[];    // rikishi to set to "push" focus (philosophy-driven)
-  reasoning: string[];       // audit log entries (A7.3)
-  mood?: OyakataMood;        // current oyakata mood for narrative systems
+  individualProtects: Id[];
+  individualDevelops: Id[];
+  individualPushes: Id[];
+  reasoning: string[];
+  mood?: OyakataMood;
 }
 
 /**
- * Decide training intensity from perception bands + persona.
- * Uses welfare risk, morale, roster health — never raw numbers.
- */
-function decideTrainingIntensity(
-  perception: PerceptionSnapshot,
-  riskAppetite: number,
-  welfareDiscipline: number,
-  mood: OyakataMood | undefined,
-  complianceCap: TrainingIntensity | undefined,
-  philosophy?: RecruitmentPhilosophy
-): { intensity: TrainingIntensity; reason: string } {
-  const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
-  const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
-
-  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
-  const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
-
-  let intensity: TrainingIntensity;
-  let reason: string;
-
-  // Critical welfare → conservative no matter what
-  if (perception.welfareRiskBand === "critical") {
-    intensity = "conservative";
-    reason = "Focusing on stable survival — forced conservative training due to critical welfare risk.";
-  }
-  else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
-    intensity = "conservative";
-    reason = "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach.";
-  }
-  else if (fragileRatio >= 0.4) {
-    intensity = "conservative";
-    reason = `Stabilizing the roster — ${fragileCount} wrestlers worn/fragile; reducing intensity to prevent injuries.`;
-  }
-  else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled") {
-    intensity = "balanced";
-    reason = "Managing stable friction — maintaining balanced training to avoid further morale decay.";
-  }
-  // Philosophy-driven intensity biases
-  else if (philosophy === "size_matters" && perception.welfareRiskBand === "safe") {
-    intensity = "intensive";
-    reason = "Mass-building specialized regimen — pushing hard to build world-class physical presence.";
-  }
-  else if (philosophy === "underdog_hunter" || philosophy === "balanced" || philosophy === "innovator") {
-    intensity = "balanced";
-    reason = `${philosophy === "underdog_hunter" ? "Strategic development" : philosophy === "innovator" ? "Technical refinement" : "Standard cycle"} — maintaining steady upward trajectory.`;
-  }
-  else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
-    intensity = "punishing";
-    reason = "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects.";
-  }
-  else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
-    intensity = "intensive";
-    reason = "Maximum performance output — intensive training to solidify top-tier standing.";
-  }
-  // Drama Pass (Initiative 4): Grudges increase intensity (irrational pressure)
-  else if (mood === "furious" || mood === "obsessed") {
-    intensity = "punishing";
-    reason = "Oyakata's emotional state is driving punishing demands on the roster.";
-  }
-  else {
-    intensity = "balanced";
-    reason = "Standard operational cycle — maintaining balanced development.";
-  }
-
-  if (complianceCap && rank(intensity) > rank(complianceCap)) {
-    intensity = complianceCap;
-    reason += ` (capped by sanctions to ${complianceCap})`;
-  }
-
-  return { intensity, reason };
-}
-
-/**
- * Decide training focus from style bias + roster composition.
- */
-function decideTrainingFocus(
-  perception: PerceptionSnapshot,
-  styleBias: Style | "neutral",
-  tradition: number,
-  philosophy?: RecruitmentPhilosophy
-): { focus: TrainingFocus; reason: string } {
-  // Philosophy-driven focus overrides (oyakata style preferences)
-  if (philosophy === "size_matters") {
-    return { focus: "power", reason: "Size-obsessed philosophy — power focus to bulk up roster" };
-  }
-  if (philosophy === "innovator") {
-    return { focus: "speed", reason: "Innovator philosophy — speed & agility focus" };
-  }
-  if (philosophy === "traditionalist" || (philosophy === "style_purist" && styleBias === "yotsu")) {
-    return { focus: "balance", reason: "Traditional philosophy — balance & fundamentals" };
-  }
-
-  // Traditionalist oyakata emphasize power/balance (yotsu fundamentals)
-  if (tradition >= 75 && styleBias === "yotsu") {
-    return { focus: "balance", reason: "Traditionalist yotsu — emphasizing balance" };
-  }
-  if (tradition >= 75) {
-    return { focus: "power", reason: "Traditionalist approach — power focus" };
-  }
-
-  // If roster is developing/weak, focus on technique (fundamentals)
-  if (perception.rosterStrengthBand === "developing" || perception.rosterStrengthBand === "weak") {
-    return { focus: "technique", reason: "Developing roster — building technique fundamentals" };
-  }
-
-  // Style-aligned focus
-  if (styleBias === "oshi") {
-    return { focus: "power", reason: "Oshi-biased stable — power focus" };
-  }
-  if (styleBias === "yotsu") {
-    return { focus: "technique", reason: "Yotsu-biased stable — technique focus" };
-  }
-
-  return { focus: "neutral", reason: "Balanced training focus" };
-}
-
-/**
- * Decide recovery emphasis from roster health + welfare.
- */
-function decideRecovery(
-  perception: PerceptionSnapshot,
-  welfareDiscipline: number
-): { recovery: RecoveryEmphasis; reason: string } {
-  const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
-  const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
-
-  if (perception.welfareRiskBand === "critical" || fragileRatio >= 0.5) {
-    return { recovery: "high", reason: "Critical health situation — maximum recovery" };
-  }
-  if (perception.welfareRiskBand === "elevated" || fragileRatio >= 0.3 || welfareDiscipline > 0.7) {
-    return { recovery: "high", reason: "Elevated welfare concern — high recovery" };
-  }
-  if (fragileRatio <= 0.1 && perception.welfareRiskBand === "safe") {
-    return { recovery: "low", reason: "Healthy roster — minimal recovery allocation" };
-  }
-
-  return { recovery: "normal", reason: "Standard recovery emphasis" };
-}
-
-/**
- * Decide scouting priority from runway, prestige, roster size.
- */
-function decideScoutingPriority(
-  perception: PerceptionSnapshot,
-  ambition: number,
-  hasSleeperScoutQuirk: boolean
-): { priority: "none" | "passive" | "active" | "aggressive"; reason: string } {
-  // Desperate finances → no scouting
-  if (perception.runwayBand === "desperate" || perception.runwayBand === "critical") {
-    return { priority: "none", reason: "Financial crisis — scouting suspended" };
-  }
-
-  // Small or weak roster → need recruits
-  if (perception.rosterSize < 8 || perception.rosterStrengthBand === "weak") {
-    return { priority: "aggressive", reason: "Roster needs rebuilding — aggressive scouting" };
-  }
-
-  // Sleeper Scout quirk → always at least active
-  if (hasSleeperScoutQuirk) {
-    return { priority: "active", reason: "Sleeper Scout personality — active scouting" };
-  }
-
-  // Ambitious managers scout more
-  if (ambition >= 75 && perception.rosterStrengthBand !== "dominant") {
-    return { priority: "active", reason: "Ambitious manager seeking talent" };
-  }
-
-  // Dominant roster → passive monitoring
-  if (perception.rosterStrengthBand === "dominant") {
-    return { priority: "passive", reason: "Dominant roster — passive scouting" };
-  }
-
-  return { priority: "passive", reason: "Standard scouting activity" };
-}
-
-/**
- * Identify rikishi who should be put on "protect" focus.
- * Managers protect fragile/worn wrestlers, especially high-rank ones.
- */
-function identifyProtects(
-  perception: PerceptionSnapshot,
-  welfareDiscipline: number
-): { protectIds: Id[]; reason: string } {
-  const HIGH_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
-  const protectIds: Id[] = [];
-
-  for (const rp of perception.rikishiPerceptions) {
-    if (rp.healthBand === "fragile") {
-      protectIds.push(rp.rikishiId);
-    } else if (rp.healthBand === "worn" && HIGH_RANKS.has(rp.rank)) {
-      protectIds.push(rp.rikishiId);
-    } else if (rp.healthBand === "worn" && welfareDiscipline > 0.6) {
-      protectIds.push(rp.rikishiId);
-    }
-  }
-
-  const reason = protectIds.length > 0
-    ? `Protecting ${protectIds.length} wrestler(s) due to health concerns`
-    : "No wrestlers require protection";
-
-  return { protectIds, reason };
-}
-
-/**
- * makeNPCWeeklyDecision
  * Core decision function for a single NPC-managed heya.
  * All inputs are banded (PerceptionSnapshot) — AI does not cheat (A7.1).
  */
@@ -407,45 +56,37 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const perception = persona.perception;
   const reasoning: string[] = [];
 
-  // Fetch oyakata style profile for philosophy-driven decisions
-  const heya = world.heyas.get(heyaId);
-  const oyakata = heya ? world.oyakata?.get(heya.oyakataId) : undefined;
+  const heya = getHeya(world, heyaId);
+  const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
   const styleProfile = oyakata ? getOyakataStyleProfile(world, oyakata) : undefined;
   const philosophy = styleProfile?.philosophy;
 
-  // Get compliance cap from sanctions
   const complianceCap = heya?.welfareState?.sanctions?.trainingIntensityCap as TrainingIntensity | undefined;
 
-  // 1. Training intensity (now philosophy-aware)
   const intensityDecision = decideTrainingIntensity(
     perception, persona.riskAppetite, persona.welfareDiscipline, persona.mood, complianceCap, philosophy
   );
   reasoning.push(`[Training] ${intensityDecision.reason}`);
 
-  // 2. Training focus (now philosophy-aware)
   const focusDecision = decideTrainingFocus(
     perception, persona.styleBias, persona.traits.tradition, philosophy
   );
   reasoning.push(`[Focus] ${focusDecision.reason}`);
 
-  // 3. Recovery emphasis
   const recoveryDecision = decideRecovery(perception, persona.welfareDiscipline);
   reasoning.push(`[Recovery] ${recoveryDecision.reason}`);
 
-  // 4. Scouting priority
   const hasSleeperScout = persona.quirks.includes("Sleeper Scout");
   const scoutingDecision = decideScoutingPriority(
     perception, persona.traits.ambition, hasSleeperScout
   );
   reasoning.push(`[Scouting] ${scoutingDecision.reason}`);
 
-  // 5. Individual protections
   const protectDecision = identifyProtects(perception, persona.welfareDiscipline);
   if (protectDecision.protectIds.length > 0) {
     reasoning.push(`[Protect] ${protectDecision.reason}`);
   }
 
-  // 6. Philosophy-driven individual focus: develop wrestlers matching preferred style/archetype
   const individualDevelops: Id[] = [];
   const individualPushes: Id[] = [];
   const protectedSet = new Set(protectDecision.protectIds);
@@ -459,7 +100,6 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
       const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype);
 
-      // Style purists and traditionalists push wrestlers that match, develop the rest less
       if (matchesArchetype && matchesStyle) {
         if ((rp.healthBand === "peak" || rp.healthBand === "good") && (philosophy === "style_purist" || philosophy === "size_matters")) {
           individualPushes.push(rp.rikishiId);
@@ -471,7 +111,6 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       }
     }
 
-    // Cap individual focuses to avoid overwhelming the system (max 3 push, 5 develop)
     individualPushes.splice(3);
     individualDevelops.splice(5);
 
@@ -499,10 +138,9 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 }
 
 /**
- * applyNPCDecision
  * Writes a decision into the world state (training profile + individual focus slots).
  */
-function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void {
+export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void {
   const state = ensureHeyaTrainingState(world, decision.heyaId);
 
   state.activeProfile = {
@@ -512,14 +150,12 @@ function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void 
     recovery: decision.recovery
   };
 
-  // Rebuild individual focus slots: protect > push > develop
   const allManagedIds = new Set([
     ...decision.individualProtects,
     ...decision.individualPushes,
     ...decision.individualDevelops,
   ]);
 
-  // Keep existing slots for rikishi not managed this tick
   const existingFocus = state.focusSlots.filter(f => !allManagedIds.has(f.rikishiId));
 
   const protectSlots = decision.individualProtects.map(id => ({
@@ -535,43 +171,30 @@ function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void 
   state.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
 }
 
-// ─── Weekly Tick (Orchestrator Entry Point) ─────────────
-
 /**
- * tickWeek(world)
- * NPC Manager AI weekly decision loop:
- * 1. For each NPC heya, build PerceptionSnapshot
- * 2. Make decisions using banded data only
- * 3. Apply decisions to world state
- * 4. Log decisions to audit trail (A7.3)
- * 5. Enforce compliance sanctions
+ * NPC Manager AI weekly decision loop
  */
 export function tickWeek(world: WorldState): number {
   const playerHeyaId = world.playerHeyaId;
   let decisionsApplied = 0;
 
-  // Initialize scouting priorities map for this week (consumed by talentpool)
   if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
   for (const heya of getAvailableStables(world)) {
-    // Skip player-owned heya — player makes their own decisions
     if (heya.id === playerHeyaId) continue;
 
     const decision = makeNPCWeeklyDecision(world, heya.id);
 
-    // Apply the decision to world state
     applyNPCDecision(world, decision);
     decisionsApplied++;
 
-
-    const oldMood = heya.oyakataId ? world.oyakata.get(heya.oyakataId)?.mood : "neutral";
+    const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
+    const oldMood = oyakata?.mood ?? "neutral";
     const newMood = decision.mood;
 
-    // Set the mood back on the Oyakata
-    if (heya.oyakataId) {
-      const oyakata = world.oyakata.get(heya.oyakataId);
-      if (oyakata) oyakata.mood = newMood;
+    if (oyakata && newMood) {
+      oyakata.mood = newMood;
     }
 
     if (oldMood !== newMood) {
@@ -587,11 +210,8 @@ export function tickWeek(world: WorldState): number {
       });
     }
 
-    // Publish scouting priority for talentpool consumption
-
     scoutingMap[heya.id] = decision.scoutingPriority;
 
-    // Audit log (A7.3): manager decision log
     logEngineEvent(world, {
       type: "NPC_MANAGER_DECISION",
       category: "training",
@@ -611,7 +231,6 @@ export function tickWeek(world: WorldState): number {
       }
     });
 
-    // Strategy Pivot Headline (Advanced Narrative AI)
     if (decision.trainingIntensity === "punishing") {
        logEngineEvent(world, {
           type: "NARRATIVE_STRATEGY_SHIFT",
@@ -623,40 +242,20 @@ export function tickWeek(world: WorldState): number {
           summary: `Reports suggest ${heya.name} has moved to an extremely punishing training cycle, seeking a breakthrough.`,
           data: { intensity: "punishing", reasoning: decision.reasoning[0] }
        });
-    } else if (decision.trainingIntensity === "conservative" && decision.mood === "anxious") {
-        logEngineEvent(world, {
-          type: "NARRATIVE_STRATEGY_SHIFT",
-          category: "narrative",
-          importance: "major",
-          scope: "world",
-          heyaId: heya.id,
-          title: `Crisis management at ${heya.name}`,
-          summary: `The Association has forced a conservative training shift at ${heya.name} following ongoing welfare concerns.`,
-          data: { intensity: "conservative", reasoning: decision.reasoning[0] }
-       });
     }
   }
 
-  // Commit scouting priorities to world state for talentpool to read
   world.npcScoutingPriorities = scoutingMap;
-
-  // Enforce constitutional Hard-Cap Roster Overflow (C4.3)
   enforceHardCapRosterOverflow(world);
 
   return decisionsApplied;
 }
 
-
 /**
- * tickMonthly(world)
- * NPC Manager AI monthly decision loop:
- * - Evaluate finances and bid on available Myoseki (Elder stock)
- * - Roster management: retire aging/injured rikishi, recruit to fill vacancies
+ * NPC Manager AI monthly decision loop
  */
 export function tickMonthly(world: WorldState): void {
-  // 1. Myoseki Bidding via Finance Strategy
   if (world.myosekiMarket) {
-    // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
     const candidateHeyas = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
     for (const heya of stableSort(candidateHeyas, x => (x as any).id || String(x))) {
       const oyakata = world.oyakata.get(heya.oyakataId)!;
@@ -665,20 +264,16 @@ export function tickMonthly(world: WorldState): void {
     }
   }
 
-  // 2. Roster Management (Retirement & Scouting Strategy)
   const vacanciesByHeyaId: Record<Id, number> = {};
   let hasVacancies = false;
 
-  // ⚡ Bolt: filter player stable and unmanaged stables before applying O(N log N) stableSort
   const candidateHeyas2 = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
   for (const heya of stableSort(candidateHeyas2, x => (x as any).id || String(x))) {
     const oyakata = world.oyakata.get(heya.oyakataId)!;
 
-    // Evaluate retirements
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
     retirementStrat.evaluateRetirements(world, heya as import("./types/heya").Heya, oyakata);
 
-    // Evaluate vacancies
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const vacancies = recruitmentStrat.evaluateVacancies(world, heya as import("./types/heya").Heya, oyakata);
     
@@ -688,27 +283,22 @@ export function tickMonthly(world: WorldState): void {
     }
   }
 
-  // Execute recruiting if under global capacity
   if (hasVacancies) {
-    // Note: HARD_CAP_ROSTER_SIZE is exported from overflow, or we just trust talentpool
     const globalCap = world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === 'number' ? HARD_CAP_ROSTER_SIZE : 30);
     if (world.rikishi.size < globalCap) {
-      // Assuming talentpool is globally available in this file
       talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId);
     }
   }
 }
 
 /**
- * tickYear(world)
- * NPC Manager AI yearly decision loop.
+ * NPC Manager AI yearly decision loop
  */
 export function tickYear(world: WorldState): void {
   for (const heya of getAvailableStables(world)) {
     if (heya.id === world.playerHeyaId) continue;
     const persona = getManagerPersona(world, heya.id);
     
-    // Macro strategic assessments per Constitution A3.5
     if (persona.traits.ambition > 70 && persona.perception.rosterStrengthBand === "weak") {
        logEngineEvent(world, {
            type: "NPC_YEARLY_STRATEGY",
@@ -719,28 +309,6 @@ export function tickYear(world: WorldState): void {
            title: `${heya.name || heya.id} declares rebuilding year`,
            summary: `The ambitious master of ${heya.name || heya.id} is dissatisfied with the roster's strength and has mandated a strict rebuilding phase for ${world.calendar.year}.`,
            data: { year: world.calendar.year, strategy: "rebuild" }
-       });
-    } else if (persona.perception.rosterStrengthBand === "dominant" && persona.traits.tradition > 70) {
-       logEngineEvent(world, {
-           type: "NPC_YEARLY_STRATEGY",
-           category: "narrative",
-           importance: "minor",
-           scope: "heya",
-           heyaId: heya.id,
-           title: `${heya.name || heya.id} seeks to establish dynasty`,
-           summary: `Proud of his dominant stable, the traditional master of ${heya.name || heya.id} focuses on solidifying their legacy this year.`,
-           data: { year: world.calendar.year, strategy: "dynasty" }
-       });
-    } else if (persona.welfareDiscipline > 0.8 && persona.perception.welfareRiskBand === "elevated") {
-       logEngineEvent(world, {
-           type: "NPC_YEARLY_STRATEGY",
-           category: "narrative",
-           importance: "minor",
-           scope: "heya",
-           heyaId: heya.id,
-           title: `${heya.name || heya.id} focuses on rikishi health`,
-           summary: `Following a taxing year, the master of ${heya.name || heya.id} prioritizes rest and recovery over aggressive results.`,
-           data: { year: world.calendar.year, strategy: "recovery" }
        });
     }
   }

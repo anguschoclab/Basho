@@ -52,9 +52,9 @@ export type LoyaltyBand =
   | "devoted"
   | "unshakable";
 
-/** Defines the structure for a staff member. */
 export interface Staff {
   id: Id;
+  heyaId: Id;
   name: string;
   role: StaffRole;
   age: number;
@@ -68,3 +68,4 @@ export interface Staff {
   priorAffiliations: Id[];
   successorEligible: boolean;
 }
+

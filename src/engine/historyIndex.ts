@@ -1,32 +1,8 @@
-// @ts-nocheck
 // historyIndex.ts
 // =======================================================
 // History Index System v1.0
 // Deterministic, JSON-safe searchable index over Basho history + snapshots
 // =======================================================
-//
-// Purpose:
-// - Provide fast queries for UI + narrative systems without scanning full Almanac/History arrays.
-// - Keep persisted state JSON-safe (no Map/Set).
-// - Support both:
-//   (A) "World history" (basho results, banzuke snapshots)
-//   (B) "Rikishi career ledger" style lookups (by basho -> performance summary)
-//
-// Fits alongside:
-// - almanac.ts (canonical historical memory / records)
-// - saveload.ts (persistence / migrations)
-// - uiDigest.ts (builds UI payloads efficiently)
-//
-// Notes:
-// - This module does NOT mutate WorldState unless you call `rebuildHistoryIndexIntoWorld`
-//   (provided as an optional helper).
-// - If you don’t want to store the index in save files, you can rebuild it on load.
-//
-// Assumptions / Compat:
-// - WorldState.history: BashoResult[]
-// - WorldState.currentBanzuke?: BanzukeSnapshot
-// - BashoResult may have nextBanzuke?: BanzukeSnapshot
-// - If you have richer performance logs elsewhere, you can extend `RikishiHistoryEntry`.
 
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
@@ -34,34 +10,25 @@ import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
 import type { BashoName, BashoResult } from "./types/basho";
 
 /** Canon key for a basho (unique) */
-type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
+export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
 
 /** Helper to make a stable key */
-export function makeBashoKey(year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoKey {
-  return `${year}-${bashoNumber}` as BashoKey;
+export function makeBashoKey(year: number, bashoNumber: number): BashoKey {
+  return `${year}-${bashoNumber as 1 | 2 | 3 | 4 | 5 | 6}` as BashoKey;
 }
 
 /** Minimal "what happened this basho" record for a rikishi */
-interface RikishiHistoryEntry {
+export interface RikishiHistoryEntry {
   bashoKey: BashoKey;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName?: BashoName;
-
-  /** The rikishi this entry is for */
-  rikishiId?: string;
-
+  rikishiId: Id;
   division?: Division;
-
-  /** placement going in (if known) */
   priorRank?: RankPosition;
-
-  /** outcome */
   wins?: number;
   losses?: number;
   absences?: number;
-
-  /** flags */
   yusho?: boolean;
   junYusho?: boolean;
   ginoSho?: boolean;
@@ -71,44 +38,27 @@ interface RikishiHistoryEntry {
 }
 
 /** Per-basho rollup for quick UI "History" page */
-interface BashoHistorySummary {
+export interface BashoHistorySummary {
   bashoKey: BashoKey;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;
-
-  /** winners (ids) */
   yusho?: Id;
   junYusho?: Id[];
-
   ginoSho?: Id;
   kantosho?: Id;
   shukunsho?: Id;
-
-  /** snapshot pointers */
   hasBanzukeSnapshot: boolean;
-
-  /** deterministic sort helper */
-  sortKey: string; // `${year}${bashoNumber.toString().padStart(2,'0')}`
+  sortKey: string;
 }
 
 /** The full JSON-safe index */
 export interface HistoryIndex {
   version: "1.0.0";
-
-  /** All basho keys in chronological order */
   bashoKeys: BashoKey[];
-
-  /** Per basho summary */
   basho: Record<BashoKey, BashoHistorySummary>;
-
-  /** Optional banzuke snapshots keyed by basho */
   banzukeByBasho: Record<BashoKey, BanzukeSnapshot>;
-
-  /** Per rikishi list of entries (chronological) */
   rikishi: Record<Id, RikishiHistoryEntry[]>;
-
-  /** Convenience: last known entry pointer */
   lastSeenBashoForRikishi: Record<Id, BashoKey | undefined>;
 }
 
@@ -126,19 +76,12 @@ export function createEmptyHistoryIndex(): HistoryIndex {
 
 /** Stable sort helper (chronological by basho key) */
 function compareBashoKey(a: BashoKey, b: BashoKey): number {
-  // keys are "YYYY-N"
   const [ay, an] = a.split("-").map(Number);
   const [by, bn] = b.split("-").map(Number);
   if (ay !== by) return ay - by;
   return an - bn;
 }
 
-/**
- * Sort key for.
- *  * @param year - The Year.
- *  * @param bashoNumber - The Basho number.
- *  * @returns The result.
- */
 function sortKeyFor(year: number, bashoNumber: number): string {
   const bn = String(bashoNumber).padStart(2, "0");
   return `${year}${bn}`;
@@ -146,28 +89,21 @@ function sortKeyFor(year: number, bashoNumber: number): string {
 
 /**
  * Build index from world history array.
- * Optionally pass `performanceByBasho` if you have per-rikishi basho performance logs
- * (e.g., from almanac). If omitted, rikishi entries will include only prize/yusho flags
- * when derivable from BashoResult.
  */
-function buildHistoryIndex(args: {
+export function buildHistoryIndex(args: {
   world: WorldState;
-  /** Optional richer per-rikishi performance input */
   performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>;
 }): HistoryIndex {
   const { world, performanceByBasho } = args;
-
   const idx = createEmptyHistoryIndex();
+  const history: BashoResult[] = world.history || [];
 
-  const history: BashoResult[] = Array.isArray(world.history) ? world.history : [];
-
-  // Build basho summaries + snapshots
   for (const br of history) {
     const bashoKey = makeBashoKey(br.year, br.bashoNumber);
     const summary: BashoHistorySummary = {
       bashoKey,
       year: br.year,
-      bashoNumber: br.bashoNumber,
+      bashoNumber: br.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
       bashoName: br.bashoName,
       yusho: br.yusho,
       junYusho: br.junYusho,
@@ -186,19 +122,14 @@ function buildHistoryIndex(args: {
     }
   }
 
-  // Ensure chronological order and uniqueness
   idx.bashoKeys = Array.from(new Set(idx.bashoKeys)).sort(compareBashoKey);
 
-  // Add any "current" banzuke if it exists but isn't attached to the last BashoResult
-  // (useful mid-cycle or after generating banzuke separately).
   if (world.currentBanzuke) {
     const ck = makeBashoKey(world.currentBanzuke.year, world.currentBanzuke.bashoNumber);
     if (!idx.banzukeByBasho[ck]) idx.banzukeByBasho[ck] = world.currentBanzuke;
   }
 
-  // Build per-rikishi lists (best-effort)
   if (performanceByBasho) {
-    // Use provided detailed entries
     for (const bk of Object.keys(performanceByBasho) as BashoKey[]) {
       const entries = performanceByBasho[bk] || [];
       for (const e of entries) {
@@ -207,73 +138,43 @@ function buildHistoryIndex(args: {
         idx.lastSeenBashoForRikishi[e.rikishiId] = bk;
       }
     }
-
-    sortRikishiLists(idx);
   } else {
-    // No detailed logs: infer minimal entries from winners/prizes
     for (const bk of idx.bashoKeys) {
       const br = idx.basho[bk];
-      const year = br.year;
-      const bashoNumber = br.bashoNumber;
+      if (!br) continue;
+      const { year, bashoNumber, bashoName } = br;
 
-      // Yusho
       if (br.yusho) {
-        pushRikishiEntry(idx, br.yusho, {
-          bashoKey: bk,
-          year,
-          bashoNumber,
-          bashoName: br.bashoName,
-          yusho: true
-        });
+        pushRikishiEntry(idx, br.yusho, { bashoKey: bk, year, bashoNumber, bashoName, yusho: true, rikishiId: br.yusho });
       }
-
-      // Jun-yusho
       for (const rid of br.junYusho || []) {
-        pushRikishiEntry(idx, rid, {
-          bashoKey: bk,
-          year,
-          bashoNumber,
-          bashoName: br.bashoName,
-          junYusho: true
-        });
+        pushRikishiEntry(idx, rid, { bashoKey: bk, year, bashoNumber, bashoName, junYusho: true, rikishiId: rid });
       }
-
-      // Special prizes (best-effort)
-      if (br.ginoSho) pushRikishiEntry(idx, br.ginoSho, { bashoKey: bk, year, bashoNumber, bashoName: br.bashoName, ginoSho: true });
-      if (br.kantosho) pushRikishiEntry(idx, br.kantosho, { bashoKey: bk, year, bashoNumber, bashoName: br.bashoName, kantosho: true });
-      if (br.shukunsho) pushRikishiEntry(idx, br.shukunsho, { bashoKey: bk, year, bashoNumber, bashoName: br.bashoName, shukunsho: true });
+      if (br.ginoSho) pushRikishiEntry(idx, br.ginoSho, { bashoKey: bk, year, bashoNumber, bashoName, ginoSho: true, rikishiId: br.ginoSho });
+      if (br.kantosho) pushRikishiEntry(idx, br.kantosho, { bashoKey: bk, year, bashoNumber, bashoName, kantosho: true, rikishiId: br.kantosho });
+      if (br.shukunsho) pushRikishiEntry(idx, br.shukunsho, { bashoKey: bk, year, bashoNumber, bashoName, shukunsho: true, rikishiId: br.shukunsho });
     }
-
-    sortRikishiLists(idx);
   }
 
+  sortRikishiLists(idx);
   return idx;
 }
 
 function sortRikishiLists(idx: HistoryIndex) {
   for (const rid of Object.keys(idx.rikishi)) {
-    idx.rikishi[rid] = idx.rikishi[rid].sort((a, b) => compareBashoKey(a.bashoKey, b.bashoKey));
-    idx.lastSeenBashoForRikishi[rid] = idx.rikishi[rid].length
-      ? idx.rikishi[rid][idx.rikishi[rid].length - 1].bashoKey
-      : undefined;
+    const list = idx.rikishi[rid];
+    if (list) {
+      idx.rikishi[rid] = list.sort((a, b) => compareBashoKey(a.bashoKey, b.bashoKey));
+      idx.lastSeenBashoForRikishi[rid] = list.length ? list[list.length - 1].bashoKey : undefined;
+    }
   }
 }
 
-/**
- * Push rikishi entry.
- *  * @param idx - The Idx.
- *  * @param rikishiId - The Rikishi id.
- *  * @param entry - The Entry.
- */
 function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistoryEntry): void {
   if (!idx.rikishi[rikishiId]) idx.rikishi[rikishiId] = [];
-  idx.rikishi[rikishiId].push({ rikishiId, ...entry });
+  idx.rikishi[rikishiId]!.push(entry);
   idx.lastSeenBashoForRikishi[rikishiId] = entry.bashoKey;
 }
-
-/** =======================================================
- *  Query helpers (pure, UI-friendly)
- *  ======================================================= */
 
 export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   return index.bashoKeys.reduce<BashoHistorySummary[]>((acc, k) => {
@@ -283,89 +184,29 @@ export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   }, []);
 }
 
-/**
- * Get basho summary.
- *  * @param index - The Index.
- *  * @param year - The Year.
- *  * @param bashoNumber - The Basho number.
- *  * @returns The result.
- */
 export function getBashoSummary(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoHistorySummary | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.basho[k] || null;
 }
 
-/**
- * Get banzuke snapshot for.
- *  * @param index - The Index.
- *  * @param year - The Year.
- *  * @param bashoNumber - The Basho number.
- *  * @returns The result.
- */
-function getBanzukeSnapshotFor(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BanzukeSnapshot | null {
-  const k = makeBashoKey(year, bashoNumber);
-  return index.banzukeByBasho[k] || null;
-}
-
-/**
- * Get rikishi history.
- *  * @param index - The Index.
- *  * @param rikishiId - The Rikishi id.
- *  * @returns The result.
- */
 export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHistoryEntry[] {
-  return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]] : [];
+  return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]!] : [];
 }
 
-/**
- * Get last seen basho.
- *  * @param index - The Index.
- *  * @param rikishiId - The Rikishi id.
- *  * @returns The result.
- */
-function getLastSeenBasho(index: HistoryIndex, rikishiId: Id): BashoKey | undefined {
-  return index.lastSeenBashoForRikishi[rikishiId];
-}
-
-/** =======================================================
- *  Optional: attach index to world (non-invasive pattern)
- *  ======================================================= */
-
-interface WorldWithHistoryIndex extends WorldState {
-  historyIndex?: HistoryIndex;
-}
-
-/**
- * Rebuild index and attach it onto world (non-canonical helper).
- * Useful if you want world.historyIndex available for UI without recomputation.
- */
-function rebuildHistoryIndexIntoWorld(world: WorldWithHistoryIndex, performanceByBasho?: Record<BashoKey, RikishiHistoryEntry[]>): HistoryIndex {
-  const idx = buildHistoryIndex({ world, performanceByBasho });
-  world.historyIndex = idx;
-  return idx;
-}
-
-/**
- * Index a single BashoResult into the world's history index.
- * Called from world.ts endBasho via safeCall.
- * Incrementally updates the index without full rebuild.
- */
 export function indexBashoResult(world: WorldState, bashoResult: BashoResult): void {
-  const w = world as WorldWithHistoryIndex;
-  if (!w.historyIndex) {
-    w.historyIndex = createEmptyHistoryIndex();
+  if (!world.historyIndex) {
+    world.historyIndex = createEmptyHistoryIndex();
   }
 
-  const idx = w.historyIndex;
+  const idx = world.historyIndex;
   const bashoKey = makeBashoKey(bashoResult.year, bashoResult.bashoNumber);
 
-  // Skip if already indexed
   if (idx.basho[bashoKey]) return;
 
   const summary: BashoHistorySummary = {
     bashoKey,
     year: bashoResult.year,
-    bashoNumber: bashoResult.bashoNumber,
+    bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
     bashoName: bashoResult.bashoName,
     yusho: bashoResult.yusho,
     junYusho: bashoResult.junYusho,
@@ -378,74 +219,63 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
 
   idx.basho[bashoKey] = summary;
   idx.bashoKeys.push(bashoKey);
-  idx.bashoKeys.sort((a, b) => {
-    const [ay, an] = a.split("-").map(Number);
-    const [by, bn] = b.split("-").map(Number);
-    return ay !== by ? ay - by : an - bn;
-  });
+  idx.bashoKeys.sort(compareBashoKey);
 
   if (bashoResult.nextBanzuke) {
     idx.banzukeByBasho[bashoKey] = bashoResult.nextBanzuke;
   }
 
-  // Index prize winners
   if (bashoResult.yusho) {
     pushRikishiEntry(idx, bashoResult.yusho, {
-      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber,
-      bashoName: bashoResult.bashoName, yusho: true
+      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName, yusho: true, rikishiId: bashoResult.yusho
     });
   }
   for (const rid of bashoResult.junYusho || []) {
     pushRikishiEntry(idx, rid, {
-      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber,
-      bashoName: bashoResult.bashoName, junYusho: true
+      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName, junYusho: true, rikishiId: rid
     });
   }
   if (bashoResult.ginoSho) pushRikishiEntry(idx, bashoResult.ginoSho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, ginoSho: true
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, ginoSho: true, rikishiId: bashoResult.ginoSho
   });
   if (bashoResult.kantosho) pushRikishiEntry(idx, bashoResult.kantosho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, kantosho: true
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, kantosho: true, rikishiId: bashoResult.kantosho
   });
   if (bashoResult.shukunsho) pushRikishiEntry(idx, bashoResult.shukunsho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber, bashoName: bashoResult.bashoName, shukunsho: true
+    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, shukunsho: true, rikishiId: bashoResult.shukunsho
   });
 
-  // Index all rikishi who participated (via basho state standings if available)
   const bashoState = world.currentBasho;
   const standingsMap = bashoState?.standings;
   if (standingsMap) {
     const entries = standingsMap instanceof Map
-      ? standingsMap
-      : new Map(Object.entries(standingsMap));
+      ? Array.from(standingsMap.entries())
+      : Object.entries(standingsMap);
 
     for (const [rid, stats] of entries) {
-      let existing = undefined;
+      const s = stats as { wins: number; losses: number };
       const historyArr = idx.rikishi[rid];
-      if (historyArr) {
-        for (let i = historyArr.length - 1; i >= 0; i--) {
-          if (historyArr[i].bashoKey === bashoKey) {
-            existing = historyArr[i];
-            break;
-          }
-        }
-      }
+      let existing = historyArr ? historyArr.find(e => e.bashoKey === bashoKey) : undefined;
+
       if (existing) {
-        existing.wins = stats.wins;
-        existing.losses = stats.losses;
+        existing.wins = s.wins;
+        existing.losses = s.losses;
       } else {
         const r = world.rikishi.get(rid);
         pushRikishiEntry(idx, rid, {
           bashoKey,
           year: bashoResult.year,
-          bashoNumber: bashoResult.bashoNumber,
+          bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
           bashoName: bashoResult.bashoName,
           rikishiId: rid,
           division: r?.division,
-          wins: stats.wins,
-          losses: stats.losses
+          wins: s.wins,
+          losses: s.losses
         });
       }
     }
+
   }
 }

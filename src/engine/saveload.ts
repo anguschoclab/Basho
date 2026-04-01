@@ -113,8 +113,6 @@ function deserializeBashoState(basho: SerializedBashoState): BashoState {
 
 /**
  * Serialize sponsor pool.
- *  * @param pool - The Pool.
- *  * @returns The result.
  */
 function serializeSponsorPool(pool: any): any {
   if (!pool) return undefined;
@@ -126,8 +124,6 @@ function serializeSponsorPool(pool: any): any {
 
 /**
  * Deserialize sponsor pool.
- *  * @param data - The Data.
- *  * @returns The result.
  */
 function deserializeSponsorPool(data: any): any {
   if (!data) return undefined;
@@ -137,15 +133,14 @@ function deserializeSponsorPool(data: any): any {
   };
 }
 
+
 // === WORLD SERIALIZATION ===
 
 /**
  * Serialize world.
- *  * @param world - The World.
- *  * @returns The result.
  */
 export function serializeWorld(world: WorldState): SerializedWorldState {
-  return {
+  const s: SerializedWorldState = {
     seed: world.seed,
     year: world.year,
     week: world.week,
@@ -158,7 +153,7 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     oyakata: mapToObject(world.oyakata),
     staff: world.staff ? mapToObject(world.staff) : {},
     currentBasho: world.currentBasho ? serializeBashoState(world.currentBasho) : undefined,
-    history: world.history,
+    history: world.history || [],
     historyIndex: world.historyIndex,
     lineage: world.lineage || [],
     records: world.records,
@@ -169,52 +164,57 @@ export function serializeWorld(world: WorldState): SerializedWorldState {
     ftue: world.ftue,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
-    talentPool: (world as any).talentPool,
     dayIndexGlobal: world.dayIndexGlobal,
     almanacSnapshots: world.almanacSnapshots || [],
     calendar: world.calendar,
     sponsorPool: serializeSponsorPool((world as any).sponsorPool),
-    ozekiKadoban: (world as any).ozekiKadoban,
+    ozekiKadoban: world.ozekiKadoban || {},
     mediaState: (world as any).mediaState,
-  } as any;
+    candidatePool: (world as any).candidatePool,
+    trainingState: world.trainingState || {},
+    settings: world.settings
+  };
+  return s;
 }
+
+
 
 /**
  * Non-lossy upgrade/sanitize for old rikishi objects.
  * Fills required economics fields if missing.
  */
 function sanitizeRikishi(r: Rikishi): Rikishi {
-  const anyR = r as any;
-
-  if (anyR.economics) {
-    if (typeof anyR.economics.cash !== "number") anyR.economics.cash = 0;
-    if (typeof anyR.economics.retirementFund !== "number") anyR.economics.retirementFund = 0;
-    if (typeof anyR.economics.careerKenshoWon !== "number") anyR.economics.careerKenshoWon = 0;
-    if (typeof anyR.economics.kinboshiCount !== "number") anyR.economics.kinboshiCount = 0;
-    if (typeof anyR.economics.totalEarnings !== "number") anyR.economics.totalEarnings = 0;
-    if (typeof anyR.economics.currentBashoEarnings !== "number") anyR.economics.currentBashoEarnings = 0;
-    if (typeof anyR.economics.popularity !== "number") anyR.economics.popularity = 30;
+  if (r.economics) {
+    const e = r.economics;
+    if (typeof e.cash !== "number") e.cash = 0;
+    if (typeof e.retirementFund !== "number") e.retirementFund = 0;
+    if (typeof e.careerKenshoWon !== "number") e.careerKenshoWon = 0;
+    if (typeof e.kinboshiCount !== "number") e.kinboshiCount = 0;
+    if (typeof e.totalEarnings !== "number") e.totalEarnings = 0;
+    if (typeof e.currentBashoEarnings !== "number") e.currentBashoEarnings = 0;
+    if (typeof e.popularity !== "number") e.popularity = 30;
   }
 
   // fatigue is optional; if present clamp it
-  if (typeof anyR.fatigue === "number") {
-    anyR.fatigue = Math.max(0, Math.min(100, anyR.fatigue));
+  if (typeof r.fatigue === "number") {
+    r.fatigue = Math.max(0, Math.min(100, r.fatigue));
   }
 
   // Derive talentSeed deterministically for legacy rikishi missing it
-  if (typeof anyR.talentSeed !== "number") {
+  if (typeof r.talentSeed !== "number") {
     // Simple deterministic hash from rikishi id
     let hash = 0;
-    const id = String(r.id || "");
-    for (let i = 0; i < id.length; i++) {
-      hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+    const idStr = String(r.id || "");
+    for (let i = 0; i < idStr.length; i++) {
+      hash = ((hash << 5) - hash + idStr.charCodeAt(i)) | 0;
     }
     // Map to 30-90 range (legacy rikishi get reasonable spread)
-    anyR.talentSeed = 30 + Math.abs(hash % 61);
+    r.talentSeed = 30 + Math.abs(hash % 61);
   }
 
   return r;
 }
+
 
 /**
  * Sanitize heya.

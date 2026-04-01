@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * AI / Oyakata Personality Types
  */
@@ -15,7 +14,6 @@ export type OyakataMood =
   | "obsessed"
   | "defeated"
   | "inspired";
-
 
 /** Type representing oyakata archetype. */
 export type OyakataArchetype =
@@ -42,6 +40,7 @@ export interface Oyakata {
   id: Id;
   heyaId: Id;
   name: string;
+  shikona: string;
   age: number;
   archetype: OyakataArchetype;
   traits: OyakataTraits;

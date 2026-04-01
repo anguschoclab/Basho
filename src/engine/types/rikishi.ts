@@ -3,7 +3,18 @@
  */
 
 import type { Id } from "./common";
-import type { Style, CombatArchetype, KimariteId, CombatProfile, BoutTactic } from "./combat";
+import { 
+  Style, 
+  CombatArchetype, 
+  KimariteId, 
+  CombatProfile, 
+  BoutTactic, 
+  RikishiArchetype, 
+  TacticalArchetype 
+} from "./combat";
+
+export type { RikishiArchetype, TacticalArchetype };
+
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
@@ -12,9 +23,9 @@ import type { CareerSnapshot, Milestone } from "./history";
 
 /** Log of tactical success/failure during a basho. */
 export interface ArchetypeEvidence {
-  tactic: BoutTactic;
-  success: boolean;
-  bashoId: string;
+  push: { success: number; fail: number };
+  grapple: { success: number; fail: number };
+  evade: { success: number; fail: number };
 }
 
 /** Career achievements and prestige ledger. */
@@ -40,6 +51,7 @@ export interface RikishiStats {
   mental: number;
   adaptability: number;
   balance: number;
+  specialPrizes?: RikishiAchievements["specialPrizes"];
   achievements?: RikishiAchievements; // Career milestone record, not a trainable stat
 }
 
@@ -87,12 +99,12 @@ export interface Rikishi {
   trainingFocus?: string;
   combatProfile: CombatProfile;
   
-  archetype: CombatArchetype;
-  derivedArchetype: CombatArchetype;
+  archetype: TacticalArchetype;
+  derivedArchetype: RikishiArchetype;
 
   tacticalArchetypePrimary: CombatArchetype;
   tacticalArchetypeSecondary?: CombatArchetype;
-  archetypeEvidence: ArchetypeEvidence[];
+  archetypeEvidence: ArchetypeEvidence;
 
   division: Division;
   rank: Rank;

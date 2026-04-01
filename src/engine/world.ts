@@ -182,9 +182,14 @@ export function simulateBoutForToday(
   const west = world.rikishi.get(match.westRikishiId);
   if (!east || !west) return { world };
 
-  const playerSide = world.playerHeyaId
-    ? (east.heyaId === world.playerHeyaId ? ("east" as Side) : west.heyaId === world.playerHeyaId ? ("west" as Side) : undefined)
+  const eastHeyaId = east.heyaId;
+  const westHeyaId = west.heyaId;
+  const playerHeyaId = world.playerHeyaId;
+
+  const playerSide = playerHeyaId
+    ? (eastHeyaId === playerHeyaId ? ("east" as Side) : westHeyaId === playerHeyaId ? ("west" as Side) : undefined)
     : undefined;
+
 
   const boutContext = {
       id: `d${basho.day}-b${unplayedIndex}`,
@@ -212,10 +217,17 @@ export function endBasho(world: WorldState): WorldState {
   const basho = getCurrentBasho(world);
   if (!basho) return world;
 
-  const table: Array<{id: string, wins: number, losses: number}> = [];
-  for (const [id, rec] of basho.standings.entries()) {
-    table.push({ id, wins: rec.wins, losses: rec.losses });
+  const table: Array<{id: Id, wins: number, losses: number}> = [];
+  const standingsEntries = basho.standings instanceof Map 
+    ? Array.from(basho.standings.entries()) 
+    : Object.entries(basho.standings);
+
+  for (const [id, rec] of standingsEntries) {
+    const s = rec as { wins: number; losses: number };
+    table.push({ id, wins: s.wins, losses: s.losses });
   }
+
+
   table.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   if (table.length === 0) return world;
@@ -316,36 +328,14 @@ export function endBasho(world: WorldState): WorldState {
     const r = world.rikishi.get(rikishiId);
     if (!r) return;
     
-    // Ensure achievements.specialPrizes exists
-    if (!r.stats) {
-      r.stats = { 
-        strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, 
-        achievements: { 
-          kinboshiEarned: 0, 
-          ginboshiEarned: 0, 
-          kinboshiConceded: 0, 
-          ginboshiConceded: 0,
-          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
-        }
-      };
-    }
-    if (!r.stats.achievements) {
-      r.stats.achievements = { 
-        kinboshiEarned: 0, 
-        ginboshiEarned: 0, 
-        kinboshiConceded: 0, 
-        ginboshiConceded: 0,
-        specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
-      };
-    }
-    if (!r.stats.achievements.specialPrizes) {
-      r.stats.achievements.specialPrizes = { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
-    }
-
     // Increment stat
-    if (type === 'Shukun') r.stats.achievements.specialPrizes.shukunSho++;
-    else if (type === 'Kanto') r.stats.achievements.specialPrizes.kantoSho++;
-    else if (type === 'Gino') r.stats.achievements.specialPrizes.ginoSho++;
+    const achievements = r.stats.achievements!;
+    const specialPrizes = achievements.specialPrizes!;
+
+    if (type === 'Shukun') specialPrizes.shukunSho++;
+    else if (type === 'Kanto') specialPrizes.kantoSho++;
+    else if (type === 'Gino') specialPrizes.ginoSho++;
+
 
     // Emit event
     EventBus.specialPrizesAwarded(world, r.id, r.heyaId, type, SANSHO_PRIZE_AMOUNT);
@@ -728,17 +718,24 @@ export function getPlayerStable(world: WorldState) {
 
 // getStableRikishi moved to queries.ts
 
-export function getRikishiBashoStats(world: WorldState, rikishiId: string) {
-    if (!world.basho?.leaderboard) {
+export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
+    const basho = world.currentBasho;
+    const standings = basho?.standings;
+    if (!standings) {
         return { wins: 0, losses: 0, absences: 0 };
     }
-    const stats = world.basho.leaderboard[rikishiId];
-    if (!stats) {
+    
+    const statsArr = standings instanceof Map 
+        ? standings.get(rikishiId) 
+        : (standings as any)[rikishiId];
+
+    if (!statsArr) {
         return { wins: 0, losses: 0, absences: 0 };
     }
     return {
-        wins: stats.wins || 0,
-        losses: stats.losses || 0,
-        absences: stats.absences || 0
+        wins: statsArr.wins || 0,
+        losses: statsArr.losses || 0,
+        absences: statsArr.absences || 0
     };
 }
+

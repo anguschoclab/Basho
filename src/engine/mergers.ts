@@ -1,11 +1,6 @@
-import { getStableRikishi } from "@/engine/world";
-// @ts-nocheck
-// mergers.ts
-// Resolves forced closures and mergers for underperforming or insolvent stables.
-// Aligned with Basho Constitution A13 (19. Stable Mergers, 20. Forced Closures).
-
-import type { WorldState } from "./types/world";
-import type { Heya } from "./types/heya";
+import type { Id } from "./types/common";
+import { getStableRikishi } from "./queries";
+import type { WorldState, ClosedHeyaRecord } from "./types/world";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { updateFacilitiesBand } from "./facilities";
@@ -19,7 +14,7 @@ import { stableTieBreak } from "./utils/sort";
  * - Facilities and funds are partially absorbed.
  * - Source stable is removed from the world.
  */
-export function executeMerger(world: WorldState, sourceHeyaId: string, targetHeyaId: string, reason: string): void {
+export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId: Id, reason: string): void {
   const source = world.heyas.get(sourceHeyaId);
   const target = world.heyas.get(targetHeyaId);
 
@@ -30,7 +25,6 @@ export function executeMerger(world: WorldState, sourceHeyaId: string, targetHey
     const rikishi = world.rikishi.get(rId);
     if (rikishi) {
       rikishi.heyaId = target.id;
-
 
       logEngineEvent(world, {
         type: "RIKISHI_TRANSFERRED",
@@ -83,25 +77,25 @@ export function executeMerger(world: WorldState, sourceHeyaId: string, targetHey
   // 5. Remove source stable
   world.heyas.delete(source.id);
 
-  // Clean up references in world history/almanac if necessary (usually ID is kept for historical lookups)
-  // However, we should keep the Heya object in an archive or let history events refer to the ID.
-  // The constitution states: "identity retired", meaning it's no longer active.
+  // Clean up references in world history/almanac if necessary
   if (!world.closedHeyas) {
-      world.closedHeyas = new Map();
+      world.closedHeyas = new Map<Id, ClosedHeyaRecord>();
   }
-  world.closedHeyas.set(source.id, {
+  
+  const record: ClosedHeyaRecord = {
       ...source,
       closedAtYear: world.year,
       closedAtBasho: world.currentBashoName,
       mergedInto: target.id
-  });
+  };
+  world.closedHeyas.set(source.id, record);
 }
 
 /**
  * Identify a suitable target stable for a merger.
  * Deterministic selection based on prestige, roster size, and random seed.
  */
-export function findMergerTarget(world: WorldState, sourceHeyaId: string): string | null {
+export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null {
   const source = world.heyas.get(sourceHeyaId);
   if (!source) return null;
 
@@ -109,7 +103,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
 
   // Candidates: not the source, not player (unless forced, but usually NPC targets NPC),
   // has room in roster (< 25 rikishi), and prestige >= modest.
-  const candidates: Heya[] = [];
+  const candidates: import("./types/heya").Heya[] = [];
   for (const h of world.heyas.values()) {
     if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 25 &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")) {
@@ -119,7 +113,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
 
   if (candidates.length === 0) {
     // Fallback: any stable with room
-    const fallback: Heya[] = [];
+    const fallback: import("./types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
       if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 30) fallback.push(h);
     }
@@ -131,3 +125,4 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: string): strin
   candidates.sort((a, b) => b.funds - a.funds || stableTieBreak(a.id, b.id));
   return candidates[rng.int(0, Math.min(candidates.length - 1, 3))].id;
 }
+

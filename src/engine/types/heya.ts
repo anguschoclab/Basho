@@ -24,7 +24,9 @@ export interface Heya {
   runwayBand: RunwayBand;
 
   reputation: number;
+  prestige: number;
   funds: number;
+
   activeLoans?: Loan[];
 
   scandalScore: number;

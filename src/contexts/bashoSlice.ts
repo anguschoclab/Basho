@@ -70,19 +70,15 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     case "SIM_FULL_BASHO": {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
-      if (typeof (worldEngine as any).simulateBashoRest === 'function') {
-        (worldEngine as any).simulateBashoRest(world);
-      } else {
-        const currentDay = world.currentBasho!.day;
-        for (let d = currentDay; d <= 15; d++) {
-            // Unroll to prevent excessive inner loop evaluations and memory leaks
-            // Bout processing handles its own queue safely up to 64
-            for (let i = 0; i < 64; i++) {
-               const { result } = worldEngine.simulateBoutForToday(world, 0);
-               if (!result) break;
-            }
-            if (d < 15) worldEngine.advanceBashoDay(world);
+      const currentDay = world.currentBasho!.day;
+      for (let d = currentDay; d <= 15; d++) {
+        // Unroll to prevent excessive inner loop evaluations and memory leaks
+        // Bout processing handles its own queue safely up to 64
+        for (let i = 0; i < 64; i++) {
+          const { result } = worldEngine.simulateBoutForToday(world, 0);
+          if (!result) break;
         }
+        if (d < 15) worldEngine.advanceBashoDay(world);
       }
       try { autosaveWithSignal(world); } catch { /* silent */ }
       return { ...state, world, phase: "basho_results", currentBoutIndex: 0, lastBoutResult: null };

@@ -63,7 +63,21 @@ export interface SerializedWorldState {
 
   dayIndexGlobal: number;
   almanacSnapshots: import("../almanac").AlmanacSnapshot[];
+
+  calendar: {
+    year: number;
+    month: number;
+    currentWeek: number;
+    currentDay: number;
+  };
+  settings: {
+    archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
+    [key: string]: any;
+  };
+  trainingState?: Record<Id, import("./training").BeyaTrainingState>;
+  candidatePool?: any; // Talent acquisition pool
 }
+
 
 /** Type representing save version. */
 export type SaveVersion = "1.0.0";

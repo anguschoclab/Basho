@@ -36,13 +36,19 @@ export interface PostBashoMeta {
   recognitionEligibleWeek: number;
 }
 
-/** Defines the structure for world state. */
 import type { LineageEdge } from "../lineage";
+
+/** Defines the structure for a closed or merged heya. */
+export interface ClosedHeyaRecord extends Heya {
+  closedAtYear: number;
+  closedAtBasho?: BashoName;
+  mergedInto?: Id;
+}
+
 
 export interface WorldState {
   hallOfFame?: import("../hallOfFame").HallOfFameState;
-  historyIndex?: any;
-  banzuke?: any;
+  historyIndex?: import("../historyIndex").HistoryIndex;
   staff: IdMapRuntime<import("./staff").Staff>;
   lineage?: LineageEdge[];
   id: string;
@@ -72,7 +78,8 @@ export interface WorldState {
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;
-  closedHeyas?: Map<string, any>;
+  closedHeyas?: Map<Id, ClosedHeyaRecord>;
+
 
   ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
 
@@ -118,9 +125,6 @@ export interface WorldState {
     [key: string]: any;
   };
 
-  // Dynamic properties set by subsystems
-  injuriesState?: any;
-  basho?: any;
   bashoNumber?: number;
-  [key: string]: any;
 }
+
