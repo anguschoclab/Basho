@@ -4,6 +4,7 @@ import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import {
   Sun,
   Moon,
@@ -12,14 +13,8 @@ import {
   Wallet,
   Calendar,
   Settings,
-  Menu,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
@@ -60,7 +55,9 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
       {/* Left section: Sidebar trigger + Global Context */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <SidebarTrigger />
+          <TooltipWrap content="Collapse/Expand side navigation" side="right">
+            <SidebarTrigger />
+          </TooltipWrap>
           <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
         </div>
 
@@ -76,25 +73,26 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
 
           {/* Economic Context */}
           {playerHeya && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex flex-col cursor-help">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Wallet className="h-3 w-3" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Stable Funds</span>
-                  </div>
-                  <span className={`text-sm font-bold leading-tight ${playerHeya.funds < 0 ? "text-destructive" : "text-foreground"}`}>
-                    ¥{playerHeya.funds.toLocaleString()}
-                  </span>
+            <TooltipWrap
+              content={
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold">Stable Balance: ¥{playerHeya.funds.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Runway: {playerHeya.runwayBand}</p>
+                  <p className="text-[10px] text-muted-foreground italic">Current funds for {playerHeya.name}</p>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Current balance for {playerHeya.name}</p>
-                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">
-                  Runway: {playerHeya.runwayBand}
-                </p>
-              </TooltipContent>
-            </Tooltip>
+              }
+              side="bottom"
+            >
+              <div className="flex flex-col cursor-help">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <Wallet className="h-3 w-3" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Funds</span>
+                </div>
+                <span className={`text-sm font-bold leading-tight ${playerHeya.funds < 0 ? "text-destructive" : "text-foreground"}`}>
+                  ¥{playerHeya.funds.toLocaleString()}
+                </span>
+              </div>
+            </TooltipWrap>
           )}
 
           {/* JSA Status Context */}
@@ -124,11 +122,21 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
             size="icon"
             className="h-8 w-8 rounded-full"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            tooltip={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+            tooltipSide="bottom"
             aria-label="Toggle theme"
           >
             {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => navigate({ to: "/settings" as any })} aria-label="Open settings">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 rounded-full" 
+            onClick={() => navigate({ to: "/settings" as any })} 
+            tooltip="Open system settings and preferences"
+            tooltipSide="bottom"
+            aria-label="Open settings"
+          >
             <Settings className="h-4 w-4" />
           </Button>
         </div>
@@ -143,6 +151,8 @@ export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: bo
               ${inBasho ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"}
             `}
             onClick={handleContinue}
+            tooltip={inBasho ? "Proceed to the next day of the tournament" : "Advance the simulation by one day"}
+            tooltipSide="left"
           >
             <span>{inBasho ? "Advance Day" : "Continue"}</span>
             <ChevronRight className="h-4 w-4" />

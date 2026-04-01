@@ -3,6 +3,7 @@
 
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 /** Defines the structure for sub nav tab. */
 export interface SubNavTab {
@@ -48,34 +49,35 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
             return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  if (tab.href) {
-                    navigate({ to: tab.href as any });
-                  } else {
-                    onTabChange?.(tab.id);
-                  }
-                }}
-                className={cn(
-                  "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <span className="relative z-10">{tab.label.toUpperCase()}</span>
-                
-                {/* Hover effect background */}
-                {!isActive && (
-                  <div className="absolute inset-x-1 inset-y-2 rounded-md bg-muted/0 group-hover:bg-muted/50 transition-colors duration-200" />
-                )}
+              <TooltipWrap key={tab.id} content={`View ${tab.label} section`} side="bottom">
+                <button
+                  onClick={() => {
+                    if (tab.href) {
+                      navigate({ to: tab.href as any });
+                    } else {
+                      onTabChange?.(tab.id);
+                    }
+                  }}
+                  className={cn(
+                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span className="relative z-10">{tab.label.toUpperCase()}</span>
+                  
+                  {/* Hover effect background */}
+                  {!isActive && (
+                    <div className="absolute inset-x-1 inset-y-2 rounded-md bg-muted/0 group-hover:bg-muted/50 transition-colors duration-200" />
+                  )}
 
-                {/* Active indicator bar */}
-                {isActive && (
-                  <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary animate-in fade-in slide-in-from-bottom-1 duration-300 shadow-[0_-2px_10px_rgba(var(--primary),0.3)]" />
-                )}
-              </button>
+                  {/* Active indicator bar */}
+                  {isActive && (
+                    <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary animate-in fade-in slide-in-from-bottom-1 duration-300 shadow-[0_-2px_10px_rgba(var(--primary),0.3)]" />
+                  )}
+                </button>
+              </TooltipWrap>
             );
           })}
         </nav>
