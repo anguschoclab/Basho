@@ -24,12 +24,14 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
   if (value <= 0) return;
 
   const len = list.length;
-  if (len >= 10 && value <= list[len - 1].value) {
+  // fast path bailout. Lists are capped at 10 items.
+  if (len === 10 && value <= list[9].value) {
     return;
   }
 
   let existingIndex = -1;
-  for (let i = 0; i < len; i++) {
+  // Backwards search: existing rikishi making incremental improvements are more likely to be found at higher indices
+  for (let i = len - 1; i >= 0; i--) {
     if (list[i].rikishiId === rikishi.id) {
       existingIndex = i;
       break;
@@ -46,19 +48,13 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
     item.achievedDate.year = year;
     item.achievedDate.month = month;
 
-    // Bubble up to maintain sorted order
+    // Bubble up avoiding object swap allocation overhead
     let curr = existingIndex;
     while (curr > 0 && list[curr - 1].value < value) {
-      const temp = list[curr - 1];
-      list[curr - 1] = list[curr];
-      list[curr] = temp;
+      list[curr] = list[curr - 1];
       curr--;
     }
-    return;
-  }
-
-  // Not in list.
-  if (len >= 10 && value <= list[len - 1].value) {
+    list[curr] = item;
     return;
   }
 
