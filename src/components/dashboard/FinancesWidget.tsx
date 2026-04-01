@@ -47,7 +47,11 @@ export function FinancesWidget() {
     <BaseWidget
       title="Finances"
       icon={Coins}
-      headerAction={{ label: "Deep Dive", onClick: () => navigate({ to: "/office/finances" as any }) }}
+      headerAction={{ 
+        label: "Deep Dive", 
+        onClick: () => navigate({ to: "/office/finances" as any }),
+        tooltip: "Analyze stable financial health and project future runway"
+      }}
     >
       <div className="space-y-4">
         {/* Top: Status & Runway */}

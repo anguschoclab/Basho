@@ -14,6 +14,7 @@ import type { Division, RankPosition } from "@/engine/types/banzuke";
 import { projectRosterEntry, buildPrevRankScores, buildBanzukeRows } from "@/presenters/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { RANK_HIERARCHY, formatRank, getRankTitleJa } from "@/presenters/uiDigest";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -91,19 +92,25 @@ export default function BanzukePage() {
                 className="h-8 w-48 pl-8 pr-8 text-xs"
               />
               {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label="Clear search"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
+                <TooltipWrap content="Clear search filter" side="top">
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipWrap>
               )}
             </div>
             {hasPrevBasho && (
               <div className="flex items-center gap-2">
-                <Switch id="show-changes" checked={showChanges} onCheckedChange={setShowChanges} />
-                <Label htmlFor="show-changes" className="text-xs text-muted-foreground cursor-pointer">Changes</Label>
+                <TooltipWrap content="Toggle rank movement indicators relative to the previous tournament" side="top">
+                  <div className="flex items-center gap-2">
+                    <Switch id="show-changes" checked={showChanges} onCheckedChange={setShowChanges} />
+                    <Label htmlFor="show-changes" className="text-xs text-muted-foreground cursor-pointer">Changes</Label>
+                  </div>
+                </TooltipWrap>
               </div>
             )}
           </div>
@@ -129,10 +136,12 @@ export default function BanzukePage() {
                 return r.rank === d;
               }).length;
               return (
-                <TabsTrigger key={d} value={d} className="capitalize font-display text-xs gap-1">
-                  {d}
-                  <span className="text-[10px] text-muted-foreground font-mono">({divCount})</span>
-                </TabsTrigger>
+                <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
+                  <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
+                    {d}
+                    <span className="text-[10px] text-muted-foreground font-mono">({divCount})</span>
+                  </TabsTrigger>
+                </TooltipWrap>
               );
             })}
           </TabsList>

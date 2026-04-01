@@ -36,7 +36,11 @@ export function TrendsWidget() {
     <BaseWidget 
       title="JSA Meta Trends" 
       icon={Globe}
-      headerAction={{ label: "History", onClick: () => navigate({ to: "/jsa/trends" as any }) }}
+      headerAction={{ 
+        label: "History", 
+        onClick: () => navigate({ to: "/jsa/trends" as any }),
+        tooltip: "View historical meta shifts and tactical evolution in the JSA"
+      }}
     >
       <div className="space-y-3">
         <div className="flex items-center justify-between">

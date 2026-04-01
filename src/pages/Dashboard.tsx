@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight, Activity, TrendingUp } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
@@ -157,7 +158,14 @@ export default function Dashboard() {
 
             <div className="flex items-center gap-2 shrink-0">
               {editMode && (
-                <Button variant="ghost" size="sm" onClick={resetLayout} className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={resetLayout} 
+                  className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest gap-2"
+                  tooltip="Restore widgets to their default positions and sizes"
+                  tooltipSide="bottom"
+                >
                   <RotateCcw className="h-3 w-3" /> Reset Layout
                 </Button>
               )}
@@ -166,6 +174,8 @@ export default function Dashboard() {
                 size="sm"
                 onClick={() => setEditMode(!editMode)}
                 className="h-8 px-4 text-[10px] font-bold uppercase tracking-widest gap-2"
+                tooltip={editMode ? "Save current widget arrangement" : "Toggle edit mode to rearrange dashboard widgets"}
+                tooltipSide="bottom"
               >
                 <GripVertical className="h-3 w-3" />
                 {editMode ? "Confirm Changes" : "Customize Dashboard"}
@@ -178,20 +188,21 @@ export default function Dashboard() {
         {alerts.length > 0 && (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 animate-slide-up">
             {alerts.map((alert, i) => (
-              <button
-                key={i}
-                onClick={() => navigate({ to: alert.link as any })}
-                className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
-              >
-                <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                    <AlertTriangle className={cn("h-4 w-4", alert.color)} />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className={cn("text-xs font-bold leading-tight", alert.color)}>{alert.text}</div>
-                    <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">Action required immediately</div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+              <TooltipWrap key={i} content={`Analyze ${alert.text}`} side="top">
+                <button
+                  onClick={() => navigate({ to: alert.link as any })}
+                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
+                >
+                  <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                      <AlertTriangle className={cn("h-4 w-4", alert.color)} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                      <div className={cn("text-xs font-bold leading-tight", alert.color)}>{alert.text}</div>
+                      <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">Action required immediately</div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </TooltipWrap>
             ))}
           </div>
         )}

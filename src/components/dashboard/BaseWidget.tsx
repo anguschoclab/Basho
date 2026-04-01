@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 export interface BaseWidgetAction {
   label: string;
   onClick: () => void;
+  tooltip?: string;
 }
 
 export interface BaseWidgetProps {
@@ -61,6 +62,8 @@ export function BaseWidget({
                 headerAction.onClick();
               }}
               className="h-6 text-xs gap-1 text-muted-foreground"
+              tooltip={headerAction.tooltip || `View more ${title} details`}
+              tooltipSide="left"
             >
               {headerAction.label} <ChevronRight className="h-3 w-3" />
             </Button>
@@ -86,6 +89,8 @@ export function BaseWidget({
             footerAction.onClick();
           }}
           className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors mt-1"
+          tooltip={footerAction.tooltip || `Navigate to ${footerAction.label}`}
+          tooltipSide="top"
         >
           {footerAction.label} <ChevronRight className="h-3 w-3" />
         </Button>

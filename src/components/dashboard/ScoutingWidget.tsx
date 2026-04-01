@@ -8,6 +8,7 @@ import type { PotentialBand  } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS, toPotentialBand } from "@/presenters/uiDigest";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",

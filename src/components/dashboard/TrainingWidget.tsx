@@ -7,6 +7,7 @@ import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-re
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/training";
 import type { TrainingProfile } from "@/engine/types/training";
 import { INTENSITY_MULTIPLIERS, RECOVERY_MULTIPLIERS, ensureHeyaTrainingState } from "@/presenters/uiDigest";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
 const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];
@@ -41,17 +42,18 @@ function ProfileRow({ label, icon, value, options, onChange }: {
       </div>
       <div className="flex gap-1 flex-1 flex-wrap">
         {options.map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => onChange(opt.value)}
-            className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
-              value === opt.value
-                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
-            }`}
-          >
-            {opt.label}
-          </button>
+          <TooltipWrap key={opt.value} content={`Set ${label.toLowerCase()} to ${opt.label}`} side="top">
+            <button
+              onClick={() => onChange(opt.value)}
+              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
+                value === opt.value
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
+              }`}
+            >
+              {opt.label}
+            </button>
+          </TooltipWrap>
         ))}
       </div>
     </div>
@@ -87,7 +89,11 @@ export function TrainingWidget() {
     <BaseWidget
       title="Training"
       icon={Dumbbell}
-      headerAction={{ label: "Full Plan", onClick: () => navigate({ to: "/training" }) }}
+      headerAction={{ 
+        label: "Full Plan", 
+        onClick: () => navigate({ to: "/training" }),
+        tooltip: "Design and implement comprehensive training regimens for your rikishi"
+      }}
     >
       {/* Current profile */}
       <div className="flex items-center gap-2 flex-wrap">

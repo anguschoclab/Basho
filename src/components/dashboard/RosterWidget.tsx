@@ -6,6 +6,7 @@ import { BaseWidget } from "./BaseWidget";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 export function RosterWidget() {
   const { state } = useGame();
@@ -91,12 +92,14 @@ export function RosterWidget() {
           </div>
         ))}
         {roster.length > 8 && (
-          <button
-            onClick={() => navigate({ to: "/rikishi" })}
-            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
-          >
-            +{roster.length - 8} more wrestlers →
-          </button>
+          <TooltipWrap content="Navigate to the full rikishi directory" side="top">
+            <button
+              onClick={() => navigate({ to: "/rikishi" })}
+              className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+            >
+              +{roster.length - 8} more wrestlers →
+            </button>
+          </TooltipWrap>
         )}
       </div>
     </BaseWidget>

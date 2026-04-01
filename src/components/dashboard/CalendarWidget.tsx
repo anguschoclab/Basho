@@ -109,25 +109,25 @@ export function CalendarWidget() {
       <div className="flex flex-wrap gap-1.5 pt-1">
         {!inBasho ? (
           <>
-            <Button size="sm" variant="secondary" onClick={handleAdvanceDay} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={handleAdvanceDay} className="gap-1.5 h-7 text-xs" tooltip="Advance the simulation by one day">
               <ArrowRight className="h-3 w-3" /> Day
             </Button>
-            <Button size="sm" variant="secondary" onClick={handleAdvanceWeek} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={handleAdvanceWeek} className="gap-1.5 h-7 text-xs" tooltip="Progress simulation by one full week of interim training">
               <Repeat className="h-3 w-3" /> Week
             </Button>
           </>
         ) : (
           <>
-            <Button size="sm" onClick={handleSimDay} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" onClick={handleSimDay} className="gap-1.5 h-7 text-xs" tooltip="Simulate all bouts for the current tournament day">
               <FastForward className="h-3 w-3" /> Sim Day
             </Button>
-            <Button size="sm" variant="secondary" onClick={handleSimFullBasho} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={handleSimFullBasho} className="gap-1.5 h-7 text-xs" tooltip="Automatically simulate the remainder of the tournament">
               <SkipForward className="h-3 w-3" /> Sim All
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/schedule" })} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/schedule" })} className="gap-1.5 h-7 text-xs" tooltip="View full tournament schedule">
               <Calendar className="h-3 w-3" /> Schedule
             </Button>
-            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/basho" })} className="gap-1.5 h-7 text-xs">
+            <Button size="sm" variant="secondary" onClick={() => navigate({ to: "/basho" })} className="gap-1.5 h-7 text-xs" tooltip="View tournament leaderboard and results">
               <ChevronRight className="h-3 w-3" /> Basho
             </Button>
           </>
