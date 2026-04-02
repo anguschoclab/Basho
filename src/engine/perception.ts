@@ -80,6 +80,12 @@ export interface PerceptionSnapshot {
   rikishiPerceptions: RikishiPerception[];
 
   // Style tilt of the stable
+  /**
+   * AI Agent Architecture Alignment (Canon Directive)
+   * Measures how well the current stable state matches the manager's core directives.
+   */
+  alignmentScore: number;
+  
   styleBias: Style | "neutral";
 }
 
@@ -321,6 +327,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     rosterSize: (heya.rikishiIds || []).length,
     moraleBand: bandMorale(heya, world),
     rikishiPerceptions,
+    alignmentScore: 100, // Default to full alignment, updated by Oyakata memory consolidation
     styleBias
   };
 }

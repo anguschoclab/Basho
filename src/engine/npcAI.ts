@@ -12,7 +12,7 @@ import type { WorldState } from "./types/world";
 import type { OyakataArchetype, OyakataMood } from "./types/oyakata";
 import type { Id } from "./types/common";
 import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
-import { ensureHeyaTrainingState } from "./training";
+import { TrainingService } from "./systems/training/TrainingService";
 import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
@@ -141,10 +141,60 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 }
 
 /**
+ * Phase 1: Background Consolidation
+ * Implements Directives: "Skeptical Memory" & "Background Consolidation"
+ * Merges current perception with Oyakata's internal memory buffer.
+ */
+export function consolidateOyakataMemory(world: WorldState, heyaId: Id, perception: any): void {
+  const heya = getHeya(world, heyaId);
+  const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
+  if (!oyakata) return;
+
+  if (!oyakata.memory) {
+    oyakata.memory = {
+      observations: [],
+      coreDirectives: [`Maintain the excellence of ${heya?.name}`, `Prioritize ${oyakata.archetype} values`],
+      lastConsolidationTick: world.week
+    };
+  }
+
+  const memory = oyakata.memory;
+  const tick = world.week;
+
+  // Skeptical Check: Does current perception conflict with previous mood/state?
+  if (perception.moraleBand === 'mutinous' && oyakata.mood !== 'furious' && oyakata.mood !== 'anxious') {
+    memory.observations.push({
+      tick,
+      type: 'alignment',
+      summary: `Unexpected morale collapse detected. Current banding (${perception.moraleBand}) conflicts with established mood (${oyakata.mood}).`,
+      importance: 8
+    });
+  }
+
+  // Record key perception snapshots
+  if (perception.runwayBand === 'desperate' || perception.runwayBand === 'critical') {
+    memory.observations.push({
+      tick,
+      type: 'perception',
+      summary: `Financial runway is ${perception.runwayBand}. Consolidation required to prevent insolvency.`,
+      importance: 10
+    });
+  }
+
+  // Prune noise (Limit to 10 observations per Canon Directive)
+  if (memory.observations.length > 10) {
+    memory.observations.sort((a, b) => b.importance - a.importance);
+    memory.observations = memory.observations.slice(0, 10);
+  }
+
+  memory.lastConsolidationTick = tick;
+}
+
+/**
  * Writes a decision into the world state (training profile + individual focus slots).
  */
 export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void {
-  const state = ensureHeyaTrainingState(world, decision.heyaId);
+  const state = TrainingService.ensureHeyaTrainingState(world, decision.heyaId);
 
   state.activeProfile = {
     ...state.activeProfile,
@@ -159,7 +209,7 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
     ...decision.individualDevelops,
   ]);
 
-  const existingFocus = state.focusSlots.filter(f => !allManagedIds.has(f.rikishiId));
+  const existingFocus = state.focusSlots.filter((f: any) => !allManagedIds.has(f.rikishiId));
 
   const protectSlots = decision.individualProtects.map(id => ({
     rikishiId: id, focusType: "protect" as const
@@ -188,6 +238,13 @@ export function tickWeekNPC(world: WorldState): number {
   for (const heya of getAvailableStables(world)) {
     if (heya.id === playerHeyaId) continue;
 
+    // Phase 1: Context & Perception
+    const perception = buildPerceptionSnapshot(world, heya.id);
+    
+    // Phase 2: Background Consolidation (Skeptical Memory)
+    consolidateOyakataMemory(world, heya.id, perception);
+
+    // Phase 3: Hierarchical Delegation (Decision Logic)
     const decision = makeNPCWeeklyDecision(world, heya.id);
 
     applyNPCDecision(world, decision);

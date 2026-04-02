@@ -64,4 +64,30 @@ export interface Oyakata {
     publicityHawk?: boolean;
     nepotist?: boolean;
   };
+
+  /** 
+   * AI Agent Architecture Components (Canon Directive 2026.04)
+   * Implements "Skeptical Memory" and "Background Consolidation"
+   */
+  memory?: {
+    /** 
+     * Recent observations (hints) about the roster/financials.
+     * Used to resolve conflicting information over multiple ticks.
+     */
+    observations: Array<{
+      tick: number;
+      type: 'perception' | 'incident' | 'alignment';
+      summary: string;
+      importance: number;
+    }>;
+    
+    /** 
+     * The "Active Alignment" context. 
+     * Reinserted into the decision loop to prevent instruction drift.
+     */
+    coreDirectives: string[];
+    
+    /** Timestamp of last consolidation routine. */
+    lastConsolidationTick: number;
+  };
 }
