@@ -1,10 +1,27 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+
+const LeaderboardRow = React.memo(({ s, i, isPlayer, rikishi }: { s: any, i: number, isPlayer: boolean, rikishi: any }) => {
+  return (
+    <div className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-md transition-colors ${
+      isPlayer ? "bg-primary/10 border border-primary/20" : i === 0 ? "bg-gold/5" : "hover:bg-muted/40"
+    }`}>
+      <span className={`w-5 font-display font-bold text-sm ${i === 0 ? "text-gold" : i === 1 ? "text-silver" : i === 2 ? "text-bronze" : "text-muted-foreground"}`}>
+        {i + 1}
+      </span>
+      {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
+      <RikishiName id={rikishi.id} name={rikishi.shikona}  className="flex-1 font-medium truncate" />
+      <span className="font-mono text-muted-foreground tabular-nums">{s.wins}-{s.losses}</span>
+      {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
+    </div>
+  );
+});
+
 
 export function BashoWidget() {
   const { state } = useGame();
@@ -28,6 +45,7 @@ export function BashoWidget() {
         if ((m.result as any)?.isKinboshi) kinboshi++;
         if (m.result?.upset) upsets++;
       }
+    }
 
     for (const r of world.rikishi.values()) {
       if (r.injured) injuries++;
@@ -45,7 +63,6 @@ export function BashoWidget() {
       kinboshi, upsets, injuries,
       top5: standingsArr.slice(0, 5),
     };
-  }
   }, [world?.currentBasho?.day, world?.currentBasho?.matches?.length]);
 
   if (!world) return null;
@@ -100,19 +117,7 @@ export function BashoWidget() {
           const r = world.rikishi.get(s.id);
           if (!r) return null;
           const isPlayer = r.heyaId === world.playerHeyaId;
-          return (
-            <div key={s.id} className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-md transition-colors ${
-              isPlayer ? "bg-primary/10 border border-primary/20" : i === 0 ? "bg-gold/5" : "hover:bg-muted/40"
-            }`}>
-              <span className={`w-5 font-display font-bold text-sm ${i === 0 ? "text-gold" : i === 1 ? "text-silver" : i === 2 ? "text-bronze" : "text-muted-foreground"}`}>
-                {i + 1}
-              </span>
-              {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
-              <RikishiName id={r.id} name={r.shikona}  className="flex-1 font-medium truncate" />
-              <span className="font-mono text-muted-foreground tabular-nums">{s.wins}-{s.losses}</span>
-              {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
-            </div>
-          );
+          return <LeaderboardRow key={s.id} s={s} i={i} isPlayer={isPlayer} rikishi={r} />;
         })}
       </div>
     </BaseWidget>

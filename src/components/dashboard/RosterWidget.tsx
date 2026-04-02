@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,28 @@ import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-rea
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+
+const RosterEntryRow = React.memo(({ entry }: { entry: UIRosterEntry }) => {
+  return (
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
+      <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
+      <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{entry.rank}</span>
+      {entry.isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
+      {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
+        <Star className="h-3 w-3 text-gold shrink-0" />
+      )}
+      {/* Fatigue bar */}
+      <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${
+            entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
+          }`}
+          style={{ width: `${entry.fatigue}%` }}
+        />
+      </div>
+    </div>
+  );
+});
 
 export function RosterWidget() {
   const { state } = useGame();
@@ -73,23 +95,7 @@ export function RosterWidget() {
       {/* Roster list */}
       <div className="space-y-0.5">
         {roster.slice(0, 8).map((entry) => (
-          <div key={entry.id} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
-            <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
-            <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{entry.rank}</span>
-            {entry.isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
-            {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
-              <Star className="h-3 w-3 text-gold shrink-0" />
-            )}
-            {/* Fatigue bar */}
-            <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
-              <div
-                className={`h-full rounded-full transition-all duration-300 ${
-                  entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
-                }`}
-                style={{ width: `${entry.fatigue}%` }}
-              />
-            </div>
-          </div>
+          <RosterEntryRow key={entry.id} entry={entry} />
         ))}
         {roster.length > 8 && (
           <TooltipWrap content="Navigate to the full rikishi directory" side="top">
