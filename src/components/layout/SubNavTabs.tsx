@@ -3,6 +3,7 @@
 
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 /** Defines the structure for sub nav tab. */
@@ -50,7 +51,8 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
             const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
             return (
               <TooltipWrap key={tab.id} content={`View ${tab.label} section`} side="bottom">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     if (tab.href) {
                       navigate({ to: tab.href as any });
@@ -59,9 +61,9 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
                     }
                   }}
                   className={cn(
-                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group",
+                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group rounded-sm hover:bg-transparent rounded-none",
                     isActive
-                      ? "text-primary"
+                      ? "text-primary hover:text-primary"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -76,7 +78,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
                   {isActive && (
                     <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary animate-in fade-in slide-in-from-bottom-1 duration-300 shadow-[0_-2px_10px_rgba(var(--primary),0.3)]" />
                   )}
-                </button>
+                </Button>
               </TooltipWrap>
             );
           })}

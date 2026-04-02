@@ -192,26 +192,24 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           {/* Mode tabs */}
           <div className="flex gap-1 rounded-lg bg-muted p-1">
             <TooltipWrap content="Switch to Save Mode: Create new save points" side="top">
-              <button
-                className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  mode === "save" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                }`}
+              <Button
+                variant={mode === "save" ? "default" : "ghost"}
+                className={`flex-1 ${mode === "save" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("save")}
               >
                 <Save className="h-3.5 w-3.5 inline mr-1.5" />
                 Save
-              </button>
+              </Button>
             </TooltipWrap>
             <TooltipWrap content="Switch to Load Mode: Restore previous save points" side="top">
-              <button
-                className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  mode === "load" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                }`}
+              <Button
+                variant={mode === "load" ? "default" : "ghost"}
+                className={`flex-1 ${mode === "load" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("load")}
               >
                 <FolderOpen className="h-3.5 w-3.5 inline mr-1.5" />
                 Load
-              </button>
+              </Button>
             </TooltipWrap>
           </div>
 
