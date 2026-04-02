@@ -17,15 +17,6 @@ import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
-import { logEngineEvent } from "./events";
-
-// Strategies & Personas
-import { getFinanceStrategy } from "./npcFinanceStrategy";
-import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
-import { getRetirementStrategy } from "./npcRetirementStrategy";
-import { getManagerPersona } from "./systems/NPCPersonaService";
-export { getManagerPersona };
-
 import { 
   decideTrainingIntensity, 
   decideTrainingFocus, 
@@ -33,6 +24,8 @@ import {
   decideScoutingPriority, 
   identifyProtects 
 } from "./strategy/NPCStrategyService";
+
+import { buildPerceptionSnapshot } from "./perception";
 
 /** Decision output for a single NPC heya per week */
 export interface NPCWeeklyDecision {

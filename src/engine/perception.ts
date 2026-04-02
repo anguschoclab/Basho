@@ -287,6 +287,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
       rosterSize: 0,
       moraleBand: "neutral",
       rikishiPerceptions: [],
+      alignmentScore: 100,
       styleBias: "neutral"
     };
   }
