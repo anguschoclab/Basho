@@ -45,7 +45,8 @@ function ProfileRow({ label, icon, value, options, onChange }: {
           <TooltipWrap key={opt.value} content={`Set ${label.toLowerCase()} to ${opt.label}`} side="top">
             <button
               onClick={() => onChange(opt.value)}
-              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
+              aria-pressed={value === opt.value}
+              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
                 value === opt.value
                   ? "bg-primary text-primary-foreground border-primary shadow-sm"
                   : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
@@ -130,13 +131,15 @@ export function TrainingWidget() {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors"
+        aria-expanded={expanded}
+        aria-controls="training-quick-change-panel"
+        className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
       >
         {expanded ? "Hide quick-change ▲" : "Quick-change ▼"}
       </button>
 
       {expanded && (
-        <div className="space-y-2 pt-1 border-t border-border/50 animate-slide-up">
+        <div id="training-quick-change-panel" className="space-y-2 pt-1 border-t border-border/50 animate-slide-up">
           <ProfileRow
             label="Intensity" icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}

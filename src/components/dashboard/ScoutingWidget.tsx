@@ -113,7 +113,7 @@ export function ScoutingWidget() {
         {prospects.length > 6 && (
           <button
             onClick={() => navigate({ to: "/talent-pool" })}
-            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors"
+            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
           >
             +{prospects.length - 6} more prospects →
           </button>
