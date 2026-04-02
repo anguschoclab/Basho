@@ -61,6 +61,13 @@ import { recordOyakataHandover } from "./lineage";
 import { runArchivalPruning } from "./archival";
 import { safeCall } from "./utils/safe";
 
+// New Lifecycle Services
+import * as bashoManager from "./lifecycle/BashoManager";
+import * as competition from "./lifecycle/CompetitionService";
+import * as registry from "./lifecycle/RegistryService";
+import { ensureDaySchedule } from "./schedule";
+
+
 export { 
   getActiveRikishi, 
   getStableRikishi, 
@@ -80,65 +87,19 @@ function getCurrentBasho(world: WorldState): BashoState | undefined {
 
 /**
  * Start basho.
- *  * @param world - The World.
- *  * @param bashoName - The Basho name.
- *  * @returns The result.
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
-  if (world.cyclePhase === "active_basho") return world;
-
-  const name: BashoName =
-    bashoName || world.currentBashoName || "hatsu"; // Default fall back
-
-  // Initialize new basho state
-  const basho = initializeBasho(world, name);
-
-  world.currentBasho = basho;
-  world.cyclePhase = "active_basho";
-
-  ensureDaySchedule(world, basho.day);
-  EventBus.bashoStarted(world, name);
-
+  const updated = bashoManager.startBasho(world, bashoName);
+  
   // Reset basho-scoped media tracking (streaks, promo watch)
-  if (world.mediaState) {
-    world.mediaState = resetBashoMediaTracking(world.mediaState);
+  if (updated.mediaState) {
+    updated.mediaState = resetBashoMediaTracking(updated.mediaState);
   }
-  return world;
-
+  return updated;
 }
 
-/**
- * Ensure day schedule.
- *  * @param world - The World.
- *  * @param day - The Day.
- *  * @returns The result.
- */
-function ensureDaySchedule(world: WorldState, day: number): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
 
-  const already = basho.matches.some((m) => m.day === day);
-  if (already) return world;
 
-  // Use generateDaySchedule from the schedule module
-  if (typeof schedule.generateDaySchedule === "function") {
-    schedule.generateDaySchedule(world, basho, day, world.seed);
-  } else {
-      // Basic fallback scheduling
-      const rikishiIds = Array.from(world.rikishi.keys());
-      for(let i=0; i<rikishiIds.length; i+=2) {
-          if (i+1 < rikishiIds.length) {
-              basho.matches.push({
-                  boutId: `fallback-match-${day}-${i}`,
-                  day,
-                  eastRikishiId: rikishiIds[i],
-                  westRikishiId: rikishiIds[i+1]
-              });
-          }
-      }
-  }
-  return world;
-}
 
 /**
  * Advance basho day.
@@ -214,187 +175,9 @@ export function simulateBoutForToday(
  *  * @returns The result.
  */
 export function endBasho(world: WorldState): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
-
-  const table: Array<{id: Id, wins: number, losses: number}> = [];
-  const standingsEntries = basho.standings instanceof Map 
-    ? Array.from(basho.standings.entries()) 
-    : Object.entries(basho.standings);
-
-  for (const [id, rec] of standingsEntries) {
-    const s = rec as { wins: number; losses: number };
-    table.push({ id, wins: s.wins, losses: s.losses });
-  }
-
-
-  table.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
-
-  if (table.length === 0) return world;
-
-  const bestWins = table[0].wins;
-  const topCandidates = table.reduce<Id[]>((acc, t) => {
-    if (t.wins === bestWins) acc.push(t.id);
-    return acc;
-  }, []);
-  
-  let yusho = topCandidates[0];
-  const playoffMatches: MatchSchedule[] = [];
-  
-  // === PLAYOFF RESOLUTION ===
-  if (topCandidates.length > 1) {
-    // Run single-elimination playoff bouts between tied rikishi
-    let remaining = [...topCandidates];
-    let playoffRound = 1;
-    
-    while (remaining.length > 1) {
-      const nextRound: string[] = [];
-      
-      for (let i = 0; i < remaining.length; i += 2) {
-        if (i + 1 >= remaining.length) {
-          // Bye — odd one advances
-          nextRound.push(remaining[i]);
-          continue;
-        }
-        
-        const eastId = remaining[i];
-        const westId = remaining[i + 1];
-        const east = world.rikishi.get(eastId);
-        const west = world.rikishi.get(westId);
-        
-        if (!east || !west) {
-          nextRound.push(eastId);
-          continue;
-        }
-        
-        const boutCtx = {
-          id: `playoff-r${playoffRound}-${i}`,
-          day: 16 + playoffRound - 1, // Day 16+
-          rikishiEastId: eastId,
-          rikishiWestId: westId,
-        };
-        
-        const result = resolveBout(boutCtx, east, west, basho);
-        const m: MatchSchedule = { 
-          boutId: `result-match-${world.week}-${i}`,
-          day: world.calendar?.currentDay ?? 1, 
-          eastRikishiId: eastId, 
-          westRikishiId: westId, 
-          result: result 
-        };
-        playoffMatches.push(m);
-        nextRound.push(result.winnerRikishiId);
-      }
-      
-      remaining = nextRound;
-      playoffRound++;
-    }
-    
-    yusho = remaining[0];
-  }
-
-  const runnerWins = bestWins - 1;
-  const junYusho = table
-    .filter(t => (t.wins === bestWins && t.id !== yusho) || t.wins === runnerWins)
-    .map(t => t.id);
-
-  const awards = determineSpecialPrizes(
-    basho.matches, 
-    world.rikishi,
-    yusho
-  );
-
-  const bashoResult = {
-    year: basho.year,
-    bashoNumber: basho.bashoNumber,
-    bashoName: basho.bashoName,
-    yusho,
-    junYusho,
-    ginoSho: awards.ginoSho,
-    kantosho: awards.kantosho,
-    shukunsho: awards.shukunsho,
-    playoffMatches: playoffMatches.length > 0 ? playoffMatches : undefined,
-    prizes: {
-      yushoAmount: 10_000_000,
-      junYushoAmount: 2_000_000,
-      specialPrizes: 2_000_000
-    }
-  };
-
-  // --- APPLY SPECIAL PRIZES (Constitution & User Spec) ---
-  const SANSHO_PRIZE_AMOUNT = 2_000_000;
-  const processAward = (rikishiId: string | undefined, type: 'Shukun' | 'Kanto' | 'Gino') => {
-    if (!rikishiId) return;
-    const r = world.rikishi.get(rikishiId);
-    if (!r) return;
-    
-    // Increment stat
-    const achievements = r.stats.achievements!;
-    const specialPrizes = achievements.specialPrizes!;
-
-    if (type === 'Shukun') specialPrizes.shukunSho++;
-    else if (type === 'Kanto') specialPrizes.kantoSho++;
-    else if (type === 'Gino') specialPrizes.ginoSho++;
-
-
-    // Emit event
-    EventBus.specialPrizesAwarded(world, r.id, r.heyaId, type, SANSHO_PRIZE_AMOUNT);
-
-    // Treasury Injection
-    const heya = world.heyas.get(r.heyaId);
-    if (heya) {
-      heya.funds += SANSHO_PRIZE_AMOUNT;
-    }
-  };
-
-  processAward(awards.shukunsho, 'Shukun');
-  processAward(awards.kantosho, 'Kanto');
-  processAward(awards.ginoSho, 'Gino');
-
-  world.history.push(bashoResult);
-
-  // --- ALMANAC SNAPSHOT (Constitution A5.1) ---
-  safeCall(() => {
-    const snapshot = buildAlmanacSnapshot(world);
-    if (snapshot) {
-      if (!world.almanacSnapshots) world.almanacSnapshots = [];
-      world.almanacSnapshots.push(snapshot);
-    }
-  });
-
-  safeCall(() => historyIndex.indexBashoResult(world, bashoResult));
-  const yushoRikishi = world.rikishi.get(yusho);
-  EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona ?? yushoRikishi?.name ?? "Unknown");
-
-  // Snapshot media heat for sparkline history
-  safeCall(() => {
-    if (world.mediaState) {
-      world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
-    }
-  });
-
-  enterPostBasho(world);
-
-  // --- FTUE UPDATE (Constitution A8) ---
-  if (world.ftue?.isActive) {
-    world.ftue.bashoCompleted += 1;
-    if (world.ftue.bashoCompleted >= 1) {
-      world.ftue.isActive = false;
-    }
-  }
-
-  // --- POST-BASHO RESOLUTION PIPELINE (Constitution A3.4 / §6.3) ---
-  runPostBashoResolution(world);
-
-  // Autosave at basho-end boundary (Constitution §6)
-  safeCall(() => { autosave(world); });
-
-  return world;
+  return competition.concludeBashoCompetition(world);
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// POST-BASHO RESOLUTION PIPELINE (Constitution A3.4 / §6.3)
-// ═══════════════════════════════════════════════════════════════════
 
 /**
  * runPostBashoResolution
@@ -421,14 +204,13 @@ function runPostBashoResolution(world: WorldState): void {
   const vacanciesByHeyaId = runRetirements(world);
 
   // === 5. RECRUITMENT WINDOWS (NPC stables fill vacancies) ===
-  runRecruitmentWindow(world, vacanciesByHeyaId);
+  registry.runRecruitmentWindow(world, vacanciesByHeyaId);
 
   // === 6. SPONSOR CHURN (Constitution Addendum D) ===
   safeCall(() => { runSponsorChurn(world); });
 
   // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
-  runCareerJournalUpdates(world);
-  onBashoEnded(world);
+  registry.runCareerJournalUpdates(world);
   runHistoryUpdates(world);
 
   // === 7.1 ARCHIVAL PRUNING (Year-end) ===
@@ -439,6 +221,7 @@ function runPostBashoResolution(world: WorldState): void {
   // === 8. FUTURE NATURALIZATION ===
   checkNaturalizations(world);
 }
+
 
 // ─── 1. PRESTIGE DECAY (Constitution A3.4) ─────────────────────
 
@@ -475,129 +258,7 @@ const bandIndex = (b: import("./types").PrestigeBand) => PRESTIGE_ORDER.indexOf(
  * NPC stables auto-fill from talent pool.
  * Player gets a recruitment window event with duration tracking.
  */
-function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): void {
-  // NPC stables auto-fill from talent pool
-  safeCall(() => talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
 
-  // Track recruitment window state for player
-  const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
-  const playerVacancies = playerHeyaId ? (vacanciesByHeyaId[playerHeyaId] ?? 0) : 0;
-
-  if (playerHeya) {
-    // Set recruitment window state on world (consumed by UI and dailyTick)
-    world._recruitmentWindow = {
-      openedAtWeek: world.week,
-      closesAtWeek: world.week + 4, // 4-week window per Constitution
-      vacancies: playerVacancies,
-      isOpen: true,
-      phase: "post_basho"
-    };
-
-    logEngineEvent(world, {
-      type: "RECRUITMENT_WINDOW_OPEN",
-      category: "career",
-      importance: playerVacancies > 0 ? "major" : "notable",
-      scope: "heya",
-      heyaId: playerHeya.id,
-      title: "Recruitment window open",
-      summary: playerVacancies > 0
-        ? `${playerVacancies} spot(s) opened due to retirements. You have 4 weeks to recruit from the talent pools.`
-        : "The post-basho recruitment window is open for 4 weeks. Scout and sign new talent.",
-      data: {
-        vacancies: playerVacancies,
-        rosterSize: getStableRikishi(world, playerHeya.id).length,
-        windowDuration: 4,
-        closesAtWeek: world.week + 4
-      }
-    });
-  }
-
-  // Log total NPC recruitment activity
-  let totalNPCVacancies = 0;
-  for (const id in vacanciesByHeyaId) {
-    if (id !== playerHeyaId) {
-      totalNPCVacancies += vacanciesByHeyaId[id];
-    }
-  }
-
-  if (totalNPCVacancies > 0) {
-    logEngineEvent(world, {
-      type: "NPC_RECRUITMENT_SUMMARY",
-      category: "career",
-      importance: "minor",
-      scope: "world",
-      title: "NPC stables recruit",
-      summary: `${totalNPCVacancies} recruit(s) signed across rival stables during the post-basho window.`,
-      data: { totalVacanciesFilled: totalNPCVacancies }
-    });
-  }
-}
-
-// ─── 7. CAREER JOURNAL UPDATES (A3.4) ──────────────────────────
-
-/**
- * Update career records, streaks, and HoF eligibility.
- * Per A3.4: "records/streaks/HoF eligibility recompute (post-lock only)"
- */
-function runCareerJournalUpdates(world: WorldState): void {
-  const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
-
-  for (const r of getActiveRikishi(world)) {
-    // Update career totals from basho records
-    r.careerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
-    r.careerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
-
-    // Update career record helper
-    r.careerRecord = {
-      wins: r.careerWins,
-      losses: r.careerLosses,
-      yusho: (r.careerRecord?.yusho ?? 0) + (lastBasho.yusho === r.id ? 1 : 0)
-    };
-
-    // Momentum update based on basho performance
-    const bw = r.currentBashoWins ?? 0;
-    const bl = r.currentBashoLosses ?? 0;
-    if (bw + bl > 0) {
-      const winRate = bw / (bw + bl);
-      if (winRate >= 0.7) r.momentum = Math.min(5, (r.momentum ?? 0) + 2);
-      else if (winRate >= 0.55) r.momentum = Math.min(5, (r.momentum ?? 0) + 1);
-      else if (winRate < 0.35) r.momentum = Math.max(-5, (r.momentum ?? 0) - 2);
-      else if (winRate < 0.45) r.momentum = Math.max(-5, (r.momentum ?? 0) - 1);
-    }
-
-    // HoF eligibility flag (yokozuna with 500+ wins)
-    if (r.rank === "yokozuna" && r.careerWins >= 500) {
-      logEngineEvent(world, {
-        type: "HOF_ELIGIBLE",
-        category: "milestone",
-        importance: "headline",
-        scope: "rikishi",
-        rikishiId: r.id,
-        heyaId: r.heyaId,
-        title: `${r.shikona ?? r.name} eligible for Hall of Fame`,
-        summary: `With ${r.careerWins} career wins, ${r.shikona ?? r.name} has reached Hall of Fame eligibility.`,
-        data: { careerWins: r.careerWins }
-      });
-    }
-
-    // Milestone events
-    if (r.careerWins === 100 || r.careerWins === 200 || r.careerWins === 300 || r.careerWins === 500) {
-      logEngineEvent(world, {
-        type: "CAREER_WINS_MILESTONE",
-        category: "milestone",
-        importance: r.careerWins >= 300 ? "major" : "notable",
-        scope: "rikishi",
-        rikishiId: r.id,
-        heyaId: r.heyaId,
-        title: `${r.shikona ?? r.name} reaches ${r.careerWins} career wins`,
-        summary: `A distinguished milestone for ${r.shikona ?? r.name}.`,
-        data: { careerWins: r.careerWins }
-      });
-    }
-  }
-}
 
 /**
  * Publish banzuke update.

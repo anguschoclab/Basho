@@ -1,12 +1,14 @@
-import { rngFromSeed, SeededRNG } from "../../rng";
-import { 
+import { SeededRNG, rngFromSeed } from "../../rng";
+import type { 
   Sponsor, 
   SponsorTier, 
   SponsorCategory, 
-  SponsorTone 
+  SponsorTone, 
+  SponsorPool 
 } from "../../types/sponsors";
 
-// v2 Procedural Components
+// === CONSTANTS & COMPONENTS ===
+
 const PREFIXES = {
   regional: ["Kyoto", "Osaka", "Nagoya", "Kanto", "Kansai", "Hokkaido", "Kyushu"],
   prestige: ["Imperial", "Diamond", "Golden", "Royal", "Platinum", "Zenith", "Apex"]
@@ -27,37 +29,11 @@ const INDUSTRIES = {
 
 const FINISHING_SUFFIXES = ["Corp", "Ltd", "Group", "Holdings", "Global", "Enterprises"];
 
-const SPONSOR_NAME_PREFIXES = [
-  "Hokuto", "Namba", "Kansai", "Tokai", "Yamato", "Sakura", "Mizuho", "Asahi", "Nihon", "Kinki",
-  "Chuo", "Meiji", "Shonan", "Sanwa", "Sumitomo", "Marubeni", "Taiyo", "Kirin", "Sapporo", "Toyama",
-  "Niigata", "Sendai", "Fukuoka", "Nagoya", "Osaka", "Kyoto", "Aichi", "Shizuoka", "Chiba", "Saitama",
-  "Yokohama", "Kobe", "Takeda", "Matsuda", "Ogawa", "Tanaka", "Yamamoto", "Watanabe"
-];
-
-const SPONSOR_NAME_CORES = [
-  "Transport", "Logistics", "Industries", "Foods", "Trading", "Construction", "Manufacturing",
-  "Electronics", "Automotive", "Marine", "Textiles", "Metals", "Chemicals", "Pharma", "Breweries",
-  "Fisheries", "Agriculture", "Forestry", "Mining", "Commerce", "Finance", "Insurance", "Real Estate", "Tourism"
-];
-
-const SPONSOR_NAME_SUFFIXES = [
-  "Co.", "Corp.", "Inc.", "Ltd.", "Group", "Holdings", "Works", "Industries", "Enterprises",
-  "Associates", "Partners", "Trust", "Foundation", "Institute", "Society", "Association", "Club"
-];
-
-const LEGACY_SUFFIXES = ["Foundation", "Trust", "Institute", "Cultural Society", "Memorial"];
-
-const FAMILY_NAMES = [
-  "Hayashi", "Kobayashi", "Nakamura", "Yoshida", "Sasaki", "Yamaguchi", "Matsumoto", "Inoue",
-  "Kimura", "Shimizu", "Kato", "Abe", "Hashimoto", "Mori", "Ishikawa", "Okada"
-];
-
 const REGIONS = ["tokyo", "osaka", "kyoto", "nagoya", "fukuoka", "sapporo", "sendai", "hiroshima", "kobe", "yokohama", "chiba", "saitama"];
-
 const INDUSTRY_TAGS = ["logistics", "foods", "manufacturing", "construction", "retail", "hospitality", "finance", "cultural", "sports", "media"];
 
 /**
- * Procedural Sponsor Name Generator V2
+ * Procedural Sponsor Name Generator V2 (Authoritative)
  */
 export function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
   const rollIndex = (arr: string[]) => Math.floor(rng.next() * arr.length);
@@ -79,125 +55,61 @@ export function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { disp
   if (tier === "T3" || tier === "T4") {
     const prestige = PREFIXES.prestige[rollIndex(PREFIXES.prestige)];
     const identity = IDENTITIES.family[rollIndex(IDENTITIES.family)];
-    const suffix = "Holdings";
-    return { displayName: `${prestige} ${identity} ${suffix}`, shortName: identity };
+    return { displayName: `${prestige} ${identity} Holdings`, shortName: identity };
   }
   
   if (tier === "T5") {
     const abstract = IDENTITIES.abstract[rollIndex(IDENTITIES.abstract)];
-    const suffix = "Global";
-    return { displayName: `${abstract} ${suffix}`, shortName: abstract };
+    return { displayName: `${abstract} Global`, shortName: abstract };
   }
 
   return { displayName: "Standard Sponsor", shortName: "Standard" };
 }
 
-
 /**
- * Get tier trait ranges for generation
+ * Generate a single sponsor.
  */
-export function getTierTraitRanges(tier: SponsorTier): { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number } {
-  switch (tier) {
-    case "T0":
-      return { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 };
-    case "T1":
-      return { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 };
-    case "T2":
-      return { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 };
-    case "T3":
-      return { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 };
-    case "T4":
-      return { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 };
-    case "T5":
-      return { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 };
-  }
-}
-
-
-/**
- * Legacy Sponsor Name Generator
- */
-export function generateSponsorName(rng: SeededRNG, tier: SponsorTier): { displayName: string; shortName: string } {
-  const rollIndex = (arr: string[]) => Math.floor(rng.next() * arr.length);
-  const prefix = SPONSOR_NAME_PREFIXES[rollIndex(SPONSOR_NAME_PREFIXES)];
-  const core = SPONSOR_NAME_CORES[rollIndex(SPONSOR_NAME_CORES)];
-
-  if (tier === "T5") {
-    const familyName = FAMILY_NAMES[rollIndex(FAMILY_NAMES)];
-    const legacySuffix = LEGACY_SUFFIXES[rollIndex(LEGACY_SUFFIXES)];
-    const pattern = Math.floor(rng.next() * 3);
-
-    if (pattern === 0) return { displayName: `${familyName} ${legacySuffix}`, shortName: familyName };
-    if (pattern === 1) return { displayName: `${prefix} ${core} Holdings`, shortName: prefix };
-    return { displayName: `${core} ${legacySuffix}`, shortName: core };
-  }
-
-  if (tier === "T3" || tier === "T4") {
-    const suffix = SPONSOR_NAME_SUFFIXES[rollIndex(SPONSOR_NAME_SUFFIXES)];
-    const pattern = Math.floor(rng.next() * 3);
-
-    if (pattern === 0) return { displayName: `${prefix} ${core} ${suffix}`, shortName: prefix };
-    if (pattern === 1) return { displayName: `${prefix}-${core} ${suffix}`, shortName: prefix };
-
-    const divisionTag = ["Sports", "Cultural", "Trading"][Math.floor(rng.next() * 3)];
-    return { displayName: `${core} ${suffix} ${divisionTag}`, shortName: core };
-  }
-
-  const suffix = SPONSOR_NAME_SUFFIXES[rollIndex(SPONSOR_NAME_SUFFIXES)];
-  const pattern = Math.floor(rng.next() * 3);
-
-  if (pattern === 0) return { displayName: `${prefix} ${core}`, shortName: prefix };
-  if (pattern === 1) return { displayName: `${core} ${suffix}`, shortName: core };
-  return { displayName: `${prefix} ${core} ${suffix}`, shortName: prefix };
-}
-
-/**
- * Generate a new Sponsor entity
- */
-export function generateSponsor(
-  rng: SeededRNG, 
-  tier: SponsorTier, 
-  createdAtTick: number, 
-  existingIds: Set<string>
-): Sponsor {
+export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
   const { displayName, shortName } = generateSponsorNameV2(rng, tier);
 
   const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
   let sponsorId = `sponsor_${base}`;
-  
   if (existingIds.has(sponsorId)) {
     let attempt = 0;
     while (existingIds.has(sponsorId) && attempt < 10) {
       sponsorId = `sponsor_${base}_${Math.floor(rng.next() * 10_000)}`;
       attempt++;
     }
+    if (existingIds.has(sponsorId)) sponsorId = `sponsor_${base}_${createdAtTick}`;
   }
+  existingIds.add(sponsorId);
 
-  const categoryMap: Record<SponsorTier, SponsorCategory> = {
-    T0: "local_business",
-    T1: "local_business",
-    T2: "regional_corporation",
-    T3: "national_brand",
-    T4: "national_brand",
-    T5: "national_brand" // Global
-  };
+  const categoryRoll = rng.next();
+  let category: SponsorCategory;
+  if (categoryRoll < 0.3) category = "local_business";
+  else if (categoryRoll < 0.5) category = "regional_corporation";
+  else if (categoryRoll < 0.62) category = "national_brand";
+  else if (categoryRoll < 0.72) category = "alumni_association";
+  else if (categoryRoll < 0.82) category = "cultural_foundation";
+  else if (categoryRoll < 0.94) category = "private_benefactor";
+  else category = "anonymous_patron";
 
-  const toneTags: SponsorTone[] = ["traditional", "modern", "luxury", "local", "industrial", "civic"];
+  const traits = getTierTraitRanges(tier);
 
   return {
     sponsorId,
     displayName,
     shortName,
+    category,
     tier,
-    category: categoryMap[tier],
     originRegionId: REGIONS[Math.floor(rng.next() * REGIONS.length)],
     industryTag: INDUSTRY_TAGS[Math.floor(rng.next() * INDUSTRY_TAGS.length)],
-    toneTag: toneTags[Math.floor(rng.next() * toneTags.length)],
-    prestigeAffinity: 20 + Math.floor(rng.next() * 80),
-    loyalty: 40 + Math.floor(rng.next() * 60),
-    scandalTolerance: 10 + Math.floor(rng.next() * 90),
-    riskAppetite: Math.floor(rng.next() * 100),
-    visibilityPreference: Math.floor(rng.next() * 3) as 0 | 1 | 2,
+    toneTag: ["traditional", "modern", "luxury", "local", "industrial", "civic"][Math.floor(rng.next() * 6)] as SponsorTone,
+    prestigeAffinity: Math.floor(traits.prestigeMin + rng.next() * (traits.prestigeMax - traits.prestigeMin)),
+    loyalty: Math.floor(traits.loyaltyMin + rng.next() * (traits.loyaltyMax - traits.loyaltyMin)),
+    scandalTolerance: Math.floor(30 + rng.next() * 50),
+    riskAppetite: tier === "T5" ? Math.floor(60 + rng.next() * 40) : Math.floor(20 + rng.next() * 60),
+    visibilityPreference: tier === "T5" ? 2 : (Math.floor(rng.next() * 3) as 0 | 1 | 2),
     active: true,
     createdAtTick,
     lastSeenTick: createdAtTick,
@@ -205,17 +117,46 @@ export function generateSponsor(
   };
 }
 
-/**
- * Helper to roll a tier based on distribution
- */
-export function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {
+function getTierTraitRanges(tier: SponsorTier) {
+  switch (tier) {
+    case "T0": return { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 };
+    case "T1": return { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 };
+    case "T2": return { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 };
+    case "T3": return { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 };
+    case "T4": return { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 };
+    case "T5": return { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 };
+  }
+}
+
+function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {
   const r = rng.next();
   let cumulative = 0;
-
   const tiers: SponsorTier[] = ["T0", "T1", "T2", "T3", "T4", "T5"];
   for (const t of tiers) {
     cumulative += dist[t] ?? 0;
     if (r < cumulative) return t;
   }
   return "T0";
+}
+
+/**
+ * Generate procedural sponsor pool.
+ */
+export function generateSponsorPool(worldSeed: string, worldSizeScalar: number = 1): SponsorPool {
+  const rng = rngFromSeed(worldSeed, "sponsors", "root");
+  const existingIds = new Set<string>();
+  const poolSize = 180 + Math.floor(worldSizeScalar * 60);
+
+  const tierDistribution: Record<SponsorTier, number> = {
+    T0: 0.35, T1: 0.25, T2: 0.2, T3: 0.12, T4: 0.07, T5: 0.01
+  };
+
+  const sponsors = new Map<string, Sponsor>();
+  for (let i = 0; i < poolSize; i++) {
+    const tier = rollTier(rng, tierDistribution);
+    const sponsor = generateSponsor(rng, tier, 0, existingIds);
+    sponsors.set(sponsor.sponsorId, sponsor);
+  }
+
+  return { sponsors, koenkais: new Map() };
 }

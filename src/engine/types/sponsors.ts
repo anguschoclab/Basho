@@ -1,7 +1,9 @@
 import type { Id } from "./common";
 
+/** Type representing sponsor tier. */
 export type SponsorTier = "T0" | "T1" | "T2" | "T3" | "T4" | "T5";
 
+/** Type representing sponsor category. */
 export type SponsorCategory =
   | "local_business"
   | "regional_corporation"
@@ -11,10 +13,13 @@ export type SponsorCategory =
   | "private_benefactor"
   | "anonymous_patron";
 
+/** Type representing sponsor tone. */
 export type SponsorTone = "traditional" | "modern" | "luxury" | "local" | "industrial" | "civic";
 
+/** Type representing sponsor role. */
 export type SponsorRole = "kensho" | "koenkai_member" | "koenkai_pillar" | "benefactor" | "creditor";
 
+/** Defines the structure for sponsor relationship. */
 export interface SponsorRelationship {
   relId: string;
   sponsorId: string;
@@ -27,6 +32,7 @@ export interface SponsorRelationship {
   notesTag?: string;
 }
 
+/** Defines the structure for sponsor. */
 export interface Sponsor {
   sponsorId: string;
   displayName: string;
@@ -51,8 +57,10 @@ export interface Sponsor {
   relationships: SponsorRelationship[];
 }
 
+/** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 
+/** Defines the structure for koenkai. */
 export interface Koenkai {
   koenkaiId: string;
   beyaId: string;
@@ -62,8 +70,18 @@ export interface Koenkai {
   lastChangedTick: number;
 }
 
+/** Defines the structure for kensho banner slot. */
+export interface KenshoBannerSlot {
+  bannerId: string;
+  boutId: string;
+  sponsorId: string;
+  tier: SponsorTier;
+  displayName: string;
+  ceremonyStyleTag: "classic" | "premium" | "quiet";
+}
+
+/** Defines the structure for sponsor pool. */
 export interface SponsorPool {
-  activeSponsors: Id[];
-  availableSponsors: Sponsor[];
-  lastGenerationWeek: number;
+  sponsors: Map<string, Sponsor>;
+  koenkais: Map<string, Koenkai>;
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router'
 import App from './App'
 import MainMenu from './pages/MainMenu'
@@ -25,7 +24,11 @@ import SponsorManagementPage from './pages/SponsorManagementPage'
 import SettingsPage from './pages/SettingsPage'
 import StaffPage from './pages/StaffPage'
 import TrendsPage from './pages/TrendsPage'
+import ScoutingPage from './pages/ScoutingPage'
+import GovernancePage from './pages/GovernancePage'
+import MyosekiMarketPage from './pages/MyosekiMarketPage'
 import NotFound from './pages/NotFound'
+
 
 // Root route
 const rootRoute = createRootRoute({

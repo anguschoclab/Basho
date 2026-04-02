@@ -34,8 +34,9 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
 /**
  * Weekly governance tick: decay scandal scores, check compliance alerts.
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekGovernance(world: WorldState): void {
   for (const heya of world.heyas.values()) {
+
     // Natural scandal score decay — 1 point per week
     if (heya.scandalScore && heya.scandalScore > 0) {
       heya.scandalScore = Math.max(0, heya.scandalScore - 1);

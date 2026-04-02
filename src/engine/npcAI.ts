@@ -24,6 +24,8 @@ import { getFinanceStrategy } from "./npcFinanceStrategy";
 import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
 import { getRetirementStrategy } from "./npcRetirementStrategy";
 import { getManagerPersona } from "./systems/NPCPersonaService";
+export { getManagerPersona };
+
 import { 
   decideTrainingIntensity, 
   decideTrainingFocus, 
@@ -98,7 +100,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       if (!rikishi) continue;
 
       const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
-      const matchesArchetype = styleProfile.preferredArchetypes.includes(rikishi.archetype);
+      const matchesArchetype = (styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
+
 
       if (matchesArchetype && matchesStyle) {
         if ((rp.healthBand === "peak" || rp.healthBand === "good") && (philosophy === "style_purist" || philosophy === "size_matters")) {
@@ -174,7 +177,8 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
 /**
  * NPC Manager AI weekly decision loop
  */
-export function tickWeek(world: WorldState): number {
+export function tickWeekNPC(world: WorldState): number {
+
   const playerHeyaId = world.playerHeyaId;
   let decisionsApplied = 0;
 
@@ -254,7 +258,8 @@ export function tickWeek(world: WorldState): number {
 /**
  * NPC Manager AI monthly decision loop
  */
-export function tickMonthly(world: WorldState): void {
+export function tickMonthlyNPC(world: WorldState): void {
+
   if (world.myosekiMarket) {
     const candidateHeyas = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
     for (const heya of stableSort(candidateHeyas, x => (x as any).id || String(x))) {

@@ -87,7 +87,7 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
  * Weekly injury tick: rolls for injuries for all active, non-retired rikishi.
  * Applies injury state directly to the rikishi.
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekInjury(world: WorldState): void {
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || rikishi.injured) continue;
 
@@ -95,7 +95,7 @@ export function tickWeek(world: WorldState): void {
       ? world.rng
       : { next: () => Math.random() } as any; // Fallback; world.rng should always be set
     const seededRng = {
-      next: () => rng.next ? rng.next() : (rng as any)(),
+      next: () => (rng.next ? (rng as any).next() : (rng as any)()),
       int: (min: number, max: number) => min + Math.floor(seededRng.next() * (max - min + 1))
     } as SeededRNG;
 
@@ -119,12 +119,13 @@ export function tickWeek(world: WorldState): void {
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
  */
-export function onBoutResolved(
+export function onBoutResolvedInjury(
   world: WorldState,
   ctx: { match: any; result: any; east: any; west: any }
 ): void {
   const { result, east, west } = ctx;
   if (!result) return;
+
 
   // Only applies to makuuchi/juryo bouts with high-intensity outcomes
   const loser = result.winner === "east" ? west : east;

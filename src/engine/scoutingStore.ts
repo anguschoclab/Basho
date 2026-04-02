@@ -68,13 +68,13 @@ function ensureScoutingTable(world: WorldState): Record<string, ScoutedRikishi> 
  *  * @param world - The World.
  *  * @returns The result.
  */
+/**
+ * Get world week.
+ *  * @param world - The World.
+ *  * @returns The result.
+ */
 function getWorldWeek(world: WorldState): number {
-  const w = world;
-  // support multiple schemas
-  if (typeof w.week === "number") return w.week;
-  if (typeof w.currentWeek === "number") return w.currentWeek;
-  if (typeof w.time?.week === "number") return w.time.week;
-  return 0;
+  return world.week ?? 0;
 }
 
 /**
@@ -83,8 +83,7 @@ function getWorldWeek(world: WorldState): number {
  *  * @returns The result.
  */
 function getPlayerHeyaId(world: WorldState): string | null {
-  const w = world;
-  return (w.playerHeyaId ?? w.playerHeya ?? w.player?.heyaId ?? null) as string | null;
+  return world.playerHeyaId ?? null;
 }
 
 /**
@@ -94,12 +93,9 @@ function getPlayerHeyaId(world: WorldState): string | null {
  *  * @returns The result.
  */
 function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
-  const w = world;
-  const map = w.rikishi;
-  if (map && typeof map.get === "function") return map.get(rikishiId) || null;
-  if (map && typeof map === "object") return map[rikishiId] || null;
-  return null;
+  return world.rikishi.get(rikishiId) || null;
 }
+
 
 /**
  * Get or create a ScoutedRikishi entry for a given rikishi.
@@ -224,7 +220,7 @@ export function warmScoutingForRikishiList(world: WorldState, rikishiIds: Id[], 
  * Hook called after each bout resolution.
  * Auto-observes both participants if the player watched (player bouts are always observed).
  */
-export function onBoutResolved(
+export function onBoutResolvedScouting(
   world: WorldState,
   context: { match: any; result: any; east: any; west: any }
 ): void {
@@ -249,6 +245,7 @@ export function onBoutResolved(
 /**
  * Weekly tick: apply scouting decay across all stored entries.
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekScouting(world: WorldState): void {
   applyWeeklyScoutingDecay(world);
 }
+

@@ -36,16 +36,17 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
         w.perceptionCache = cache;
       },
     },
-    { label: "npcAI", run: (w) => { npcAI.tickWeek?.(w); } },
-    { label: "training", run: (w) => { training.tickWeek(w); } },
-    { label: "injuries", run: (w) => { injuries.tickWeek(w); } },
-    { label: "economics_weekly", run: (w) => { economics.tickWeek(w); } },
-    { label: "welfare", run: (w) => { welfare.tickWeek(w); } },
-    { label: "governance", run: (w) => { governance.tickWeek(w); } },
-    { label: "rivalries", run: (w) => { rivalries.tickWeek(w); } },
-    { label: "events", run: (w) => { events.tickWeek(w); } },
-    { label: "scouting", run: (w) => { scoutingStore.tickWeek(w); } },
-    { label: "talentpool", run: (w) => { talentpool.tickWeek(w); } },
+    { label: "npcAI", run: (w) => { npcAI.tickWeekNPC?.(w); } },
+    { label: "training", run: (w) => { training.tickWeekTraining(w); } },
+    { label: "injuries", run: (w) => { injuries.tickWeekInjury(w); } },
+    { label: "economics_weekly", run: (w) => { economics.tickWeekEconomics(w); } },
+    { label: "welfare", run: (w) => { welfare.tickWeekWelfare(w); } },
+    { label: "governance", run: (w) => { governance.tickWeekGovernance(w); } },
+    { label: "rivalries", run: (w) => { rivalries.tickWeekRivalries(w); } },
+    { label: "events", run: (w) => { events.tickWeekEvents(w); } },
+    { label: "scouting", run: (w) => { scoutingStore.tickWeekScouting(w); } },
+    { label: "talentpool", run: (w) => { talentpool.tickWeekTalentPool(w); } },
+
     {
       label: "gazette_archive",
       run: (w) => {
@@ -168,7 +169,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
       title: "Mid-interim recruitment window",
       summary: "A brief mid-interim recruitment window opens. Scout and sign for 2 weeks.",
       data: {
-        rosterSize: playerHeya.rikishiIds.length,
+        rosterSize: (playerHeya.rikishiIds ?? []).length,
         windowDuration: 2,
         closesAtWeek: world.week + 2,
         phase: "mid_interim"
@@ -183,14 +184,15 @@ function tickMidInterimRecruitment(world: WorldState): void {
     // ⚡ Bolt: filter out large and player-owned stables before applying O(N log N) stableSort
     const npcStables = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== world.playerHeyaId && h.rikishiIds.length < 6) {
+      if (h.id !== world.playerHeyaId && (h.rikishiIds ?? []).length < 6) {
         npcStables.push(h);
       }
     }
     for (const heya of stableSort(npcStables, x => x.id)) {
-      smallStables[heya.id] = Math.max(1, 6 - heya.rikishiIds.length);
+      smallStables[heya.id] = Math.max(1, 6 - (heya.rikishiIds ?? []).length);
       hasItems = true;
     }
+
     if (hasItems) {
       talentpool.fillVacanciesForNPC(world, smallStables);
     }

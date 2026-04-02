@@ -50,13 +50,16 @@ export const RECOVERY_MULTIPLIERS: Record<RecoveryEmphasis, { fatigueDecay: numb
 
 // 3. FOCUS BIAS MATRIX (From Canon Table 4.3)
 /** f o c u s_ b i a s_ m a t r i x. */
-export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<Exclude<keyof RikishiStats, 'achievements'>, number>> = {
+type TrainingAttribute = Exclude<keyof RikishiStats, 'achievements' | 'specialPrizes'>;
+
+export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, number>> = {
   power:     { strength: 1.30, speed: 0.85, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   speed:     { strength: 0.85, speed: 1.30, technique: 0.95, balance: 0.95, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   technique: { strength: 0.90, speed: 0.90, technique: 1.35, balance: 1.10, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   balance:   { strength: 0.90, speed: 0.95, technique: 1.10, balance: 1.35, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
   neutral:   { strength: 1.00, speed: 1.00, technique: 1.00, balance: 1.00, weight: 1.0, stamina: 1.0, mental: 1.0, adaptability: 1.0 },
 };
+
 
 // 4. ARCHETYPE AFFINITY (NEW)
 const ARCHETYPE_AFFINITY: Record<RikishiArchetype, Partial<Record<keyof RikishiStats, number>>> = {
@@ -243,7 +246,8 @@ function calculateGrowthVector(
   rikishi: Rikishi,
   heya?: Heya,
   world?: WorldState
-): Record<Exclude<keyof RikishiStats, 'achievements'>, number> {
+): Record<TrainingAttribute, number> {
+
   const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
   const bias = FOCUS_BIAS_MATRIX[profile.focus];
@@ -291,10 +295,11 @@ function calculateGrowthVector(
   const archetype = rikishi.derivedArchetype as RikishiArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
-  const growth: Record<Exclude<keyof RikishiStats, 'achievements'>, number> = {
+  const growth: Record<TrainingAttribute, number> = {
     strength: 0, speed: 0, technique: 0, balance: 0,
     weight: 0, stamina: 0, mental: 0, adaptability: 0
   };
+
 
   // Apply diminishing returns per stat based on talent ceiling
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
@@ -464,9 +469,10 @@ export function createDefaultTrainingState(beyaId: Id): BeyaTrainingState {
 
 // Wrapper for world.ts
 /**
- * Tick week.
+ * Tick week training.
  *  * @param world - The World.
  */
-export function tickWeek(world: WorldState) {
+export function tickWeekTraining(world: WorldState) {
   applyWeeklyTraining(world);
 }
+

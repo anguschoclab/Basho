@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
@@ -8,13 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Banknote, FileText } from "lucide-react";
 import { toast } from "sonner";
-import type { MyosekiStock } from "@/engine/types";
+import type { MyosekiStock } from "@/engine/types/myoseki";
 import { buyMyoseki, leaseMyoseki } from "@/presenters/uiDigest";
 
 export default function MyosekiMarketPage() {
-  const { state, setWorld } = useGame();
+  const { state, updateWorld } = useGame();
   const world = state.world;
   const [activeTab, setActiveTab] = useState("market");
 
@@ -33,16 +31,15 @@ export default function MyosekiMarketPage() {
   const playerFunds = playerHeya?.funds ?? 0;
 
   const availableStocks = stocks.filter(s => s.status === "available");
-  const heldStocks = stocks.filter(s => s.status === "held");
   const leasedStocks = stocks.filter(s => s.status === "leased");
 
-  const myStocks = stocks.filter(s => s.ownerId === playerHeya?.oyakataId || s.holderId === playerHeya?.oyakataId);
+  const myStocks = stocks.filter(s => playerHeya?.oyakataId && (s.ownerId === playerHeya.oyakataId || s.holderId === playerHeya.oyakataId));
 
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
     if (buyMyoseki(world, playerHeya.oyakataId, playerHeya.id, stock.id)) {
-      setWorld({ ...world }); // trigger re-render
+      updateWorld({ ...world }); // trigger re-render
       toast.success(`Successfully acquired ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Insufficient funds to acquire ${stock.name}.`);
@@ -53,17 +50,18 @@ export default function MyosekiMarketPage() {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
     if (leaseMyoseki(world, playerHeya.oyakataId, stock.id)) {
-      setWorld({ ...world });
+      updateWorld({ ...world });
       toast.success(`Successfully leased ${stock.name} Elder Stock!`);
     } else {
       toast.error(`Could not lease ${stock.name}.`);
     }
   };
 
+
   return (
     <AppLayout
       pageTitle="Elder Stock Market (Myoseki)"
-      subNavTabs={managementTabs}
+      subNavTabs={ASSOCIATION_TABS}
       activeSubTab="myoseki"
     >
       <div className="space-y-6">
@@ -131,6 +129,7 @@ export default function MyosekiMarketPage() {
                               <Badge variant={stock.prestigeTier === "elite" ? "default" : stock.prestigeTier === "respected" ? "secondary" : "outline"}>
                                 {stock.prestigeTier}
                               </Badge>
+
                             </div>
                             <CardDescription>Owned by: {stock.ownerId === "JSA" ? "Sumo Association" : stock.ownerId}</CardDescription>
                           </CardHeader>
@@ -140,12 +139,12 @@ export default function MyosekiMarketPage() {
                               <p className="text-xl font-bold text-primary">¥{(stock.askingPrice || 0).toLocaleString()}</p>
                             </div>
                           </CardContent>
-                          <CardFooter className="flex gap-2">
-                            <Button className="w-full" onClick={() => handleBuy(stock)} disabled={playerFunds < (stock.askingPrice || 0)}>
-                              Buy Share
+                          <CardFooter className="flex gap-2 p-0 px-6 pb-6">
+                            <Button className="w-full h-8 text-xs" onClick={() => handleBuy(stock)} disabled={playerFunds < (stock.askingPrice || 0)}>
+                              Buy
                             </Button>
-                            <Button variant="outline" className="w-full" onClick={() => handleLease(stock)}>
-                              Lease Share
+                            <Button variant="outline" className="w-full h-8 text-xs" onClick={() => handleLease(stock)}>
+                              Lease
                             </Button>
                           </CardFooter>
                         </Card>
@@ -203,7 +202,7 @@ export default function MyosekiMarketPage() {
                         <div key={tx.id} className="flex justify-between items-center border-b pb-2">
                           <div>
                             <p className="font-medium text-sm">
-                              {tx.type === "sale" ? "Acquisition" : "Lease"} of {market.stocks[tx.myosekiId]?.name || tx.myosekiId}
+                              {tx.type === "sale" ? "Acquisition" : tx.type === "lease" ? "Lease" : "Return"} of {market.stocks[tx.myosekiId]?.name || tx.myosekiId}
                             </p>
                             <p className="text-xs text-muted-foreground">{tx.date} | From: {tx.fromId} To: {tx.toId}</p>
                           </div>
@@ -222,3 +221,4 @@ export default function MyosekiMarketPage() {
     </AppLayout>
   );
 }
+

@@ -1,72 +1,8 @@
-// Kimarite Registry - Full 82 official winning techniques (JSA list)
-// Includes 5 "bout result" outcomes separately (not kimarite)
-// Source list: Japan Sumo Association kimarite page.  [oai_citation:1‡日本相撲協会公式サイト](https://sumo.or.jp/Kimarite/)
-
 import type { Style, Stance, TacticalArchetype, TacticalFamily } from "./types/combat";
+import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
+export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { stableTieBreak } from "./utils/sort";
 
-/** Defines the JSA official categories for kimarite. */
-export type JsaCategory = 'Kihonwaza' | 'Nageite' | 'Kakeite' | 'Sorite' | 'Hinerite' | 'Tokushuwaza' | 'Hiwaza';
-
-/** Defines specific positional/physical requirements for a move. */
-export interface KimariteRequirements {
-  edgeOfRing?: boolean;
-  maxAttackerBalance?: number;
-  minStrengthDifferential?: number;
-  canFlank?: boolean;
-  requiresWeightAdvantage?: boolean;
-  isDesperation?: boolean;
-  requiredGrip?: {
-    rightHand?: 'inside' | 'outside';
-    leftHand?: 'inside' | 'outside';
-    anyHand?: 'inside' | 'outside';
-    depth?: 'maemitsu' | 'deep' | 'standard';
-  };
-}
-
-/** Defines the structure for kimarite (v1.3 Move-Based Architecture). */
-export interface Kimarite {
-  id: string; // e.g., 'yorikiri'
-  name: string;
-  nameJa?: string;
-  jsaCategory: JsaCategory;
-  tacticalFamily: TacticalFamily; // push, belt, trick, speed
-  baseWeight: number; // Determines standard frequency (1 to 1000)
-  isHighRisk?: boolean; // If true, failure causes a balance penalty
-  requirements?: KimariteRequirements;
-  
-  // How heavily this specific move relies on specific stats (must sum to 1.0)
-  statWeights: {
-    strength: number;
-    weight: number;
-    speed: number;
-    technique: number;
-    balance: number;
-  };
-  
-  // Specific positional/physical requirements
-  requiresBeltGrip?: boolean;
-  leverageTarget?: 'high_center_of_gravity' | 'momentum';
-
-  description?: string;
-  rarity?: "common" | "uncommon" | "rare" | "legendary";
-}
-
-/** Type representing kimarite class (for engine grouping). */
-export type KimariteClass =
-  | "force_out"
-  | "push"
-  | "thrust"
-  | "throw"
-  | "trip"
-  | "twist"
-  | "slap_pull"
-  | "lift"
-  | "rear"
-  | "evasion"
-  | "special"
-  | "result"
-  | "forfeit";
 
 
 // --- Helpers to maintain the 82 techniques with minimal verbosity ---

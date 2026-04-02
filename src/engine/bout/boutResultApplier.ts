@@ -95,10 +95,12 @@ export function applyBoutResult(
   });
 
   // 4. Notify Secondary Systems
-  safeCall(() => injuries.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => rivalries.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => economics.onBoutResolved(world, { match, result, east, west }));
-  safeCall(() => scoutingStore.onBoutResolved(world, { match, result, east, west }));
+  safeCall(() => injuries.onBoutResolvedInjury(world, { match, result, east, west }));
+  safeCall(() => rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
+  safeCall(() => economics.onBoutResolvedEconomics(world, { match, result, east, west }));
+  safeCall(() => scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
+
+
 
   // 5. Update Media (generates headlines, heat, etc.)
   safeCall(() => {

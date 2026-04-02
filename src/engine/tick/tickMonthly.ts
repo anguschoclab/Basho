@@ -15,11 +15,12 @@ import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
   const steps: TickStep[] = [
     { label: "economics_monthly", run: (w) => { tickMonthlyEconomics(w); } },
-    { label: "npcAI_monthly", run: (w) => { npcAI.tickMonthly(w); } },
+    { label: "npcAI_monthly", run: (w) => { npcAI.tickMonthlyNPC(w); } },
     { label: "loan_repayments", run: (w) => { loans.processMonthlyLoanRepayments(w); } },
     { label: "archetype_drift", run: (w) => { tickArchetypeDrift(w); } },
     { label: "achievements_sync", run: (w) => { syncAchievementCounters(w); } },
-    { label: "facilities", run: (w) => { facilities.tickMonthly(w); } },
+    { label: "facilities", run: (w) => { facilities.tickMonthlyFacilities(w); } },
+
   ];
 
   runTickPipeline(world, subs, steps, { autosave: true });
@@ -46,7 +47,8 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
 export function tickMonthlyEconomics(world: WorldState): void {
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     let totalSalaries = 0;
-    const rikishiIds = heya.rikishiIds || [];
+    const rikishiIds = heya.rikishiIds ?? [];
+
     for (const rId of rikishiIds) {
 
       const r = world.rikishi.get(rId);

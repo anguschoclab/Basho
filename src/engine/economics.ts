@@ -294,7 +294,8 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
  */
 function computeStarPower(heya: Heya, world: WorldState): number {
   let starPower = 0;
-  for (const rId of (heya.rikishiIds || [])) {
+  for (const rId of (heya.rikishiIds ?? [])) {
+
     const r = world.rikishi.get(rId);
     if (!r) continue;
     if (r.rank === "yokozuna") starPower += 30;

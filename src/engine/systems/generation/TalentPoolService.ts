@@ -188,7 +188,8 @@ export function offerCandidate(
 /**
  * Weekly maintenance for the talent pool.
  */
-export function tickWeek(world: WorldState): void {
+export function tickWeekTalentPool(world: WorldState): void {
+
   const tp = ensureTalentPoolState(world);
   
   // 1. Weekly decay of scouting intel

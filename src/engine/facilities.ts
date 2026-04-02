@@ -141,7 +141,8 @@ export function investInFacility(
  *  1. Apply maintenance cost or decay
  *  2. NPC stables auto-invest if they can afford it
  */
-export function tickMonthly(world: WorldState): void {
+export function tickMonthlyFacilities(world: WorldState): void {
+
   for (const heya of world.heyas.values()) {
     applyMonthlyDecayOrMaintenance(world, heya);
 
@@ -211,7 +212,8 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): void {
 
   // Only invest if funds are healthy (> 6 months runway)
   const avgFacility = (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-  const monthlyBurn = heya.rikishiIds.length * 150_000 + avgFacility * 9_000;
+  const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
+
   const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 
   if (runwayMonths < 6) return; // Too tight to invest

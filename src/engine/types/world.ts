@@ -59,8 +59,10 @@ export interface WorldState {
   cyclePhase: CyclePhase;
 
   currentBashoName?: BashoName;
+  rng?: import("../rng").SeededRNG;
 
   heyas: IdMapRuntime<Heya>;
+
   rikishi: IdMapRuntime<Rikishi>;
   historicalRikishi: IdMapRuntime<Rikishi>;
   oyakata: IdMapRuntime<Oyakata>;
@@ -69,6 +71,10 @@ export interface WorldState {
   history: BashoResult[];
 
   events: EventsState;
+  playerKnowledge?: {
+    scouting?: Record<string, import("../scouting").ScoutedRikishi>;
+  };
+
 
   governanceLog?: GovernanceRuling[];
   factions?: Record<IchimonName, Faction>;

@@ -276,3 +276,22 @@ export function needsScheduleForDay(division: Division, day: number): boolean {
 export function getTotalBashodays(division: Division): number {
   return DEFAULT_DIVISION_DAYS[division];
 }
+
+/**
+ * Ensure day schedule — checks if a schedule already exists for the day,
+ * and generates it if missing.
+ * 
+ * @param world WorldState
+ * @param day Day number
+ */
+export function ensureDaySchedule(world: WorldState, day: number): void {
+  const basho = world.currentBasho;
+  if (!basho) return;
+
+  const needsMakuuchi = needsScheduleForDay("makuuchi", day);
+  const alreadyScheduled = basho.matches.some(m => m.day === day);
+
+  if (needsMakuuchi && !alreadyScheduled) {
+    generateDaySchedule(world, basho, day, world.seed);
+  }
+}

@@ -206,11 +206,12 @@ function setComplianceState(state: WelfareState, next: ComplianceState) {
 }
 
 /**
- * Tick week.
+ * Tick week welfare.
  *  * @param world - The World.
  *  * @returns The result.
  */
-export function tickWeek(world: WorldState): number {
+export function tickWeekWelfare(world: WorldState): number {
+
   let events = 0;
 
   for (const heya of getAvailableStables(world)) {
