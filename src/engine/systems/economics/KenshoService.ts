@@ -4,6 +4,8 @@ import type {
   SponsorPool, 
   KenshoBannerSlot 
 } from "../../types/sponsors";
+import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 
 /** Type representing bout importance bucket. */
 export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
@@ -136,4 +138,38 @@ export function assignKenshoBanners(
     displayName: sponsor.displayName,
     ceremonyStyleTag: (sponsor.tier === "T5" || sponsor.tier === "T4") ? "premium" : (sponsor.visibilityPreference === 0 ? "quiet" : "classic")
   }));
+}
+
+
+/**
+ * Calculates kensho envelopes based on importance and buzz.
+ * Ref: Phase 3.2 implementation plan.
+ */
+export function calculateKenshoEnvelopes(
+  world: WorldState,
+  rikishi: Rikishi,
+  awardFact: string | undefined,
+  rng: SeededRNG
+): number {
+  let count = 0;
+
+  if (awardFact === 'kinboshi') {
+    count = Math.floor(15 + rng.next() * 11);
+  } else if (awardFact === 'ginboshi') {
+    count = Math.floor(5 + rng.next() * 4);
+  } else {
+    // Standard varies by division and impact
+    count = Math.floor(1 + rng.next() * 3);
+  }
+
+  // --- BUZZ MULTIPLIER (Phase 3.2) ---
+  const mediaState = world.mediaState;
+  if (mediaState && mediaState.mediaHeat) {
+    const heat = mediaState.mediaHeat[rikishi.id] || 0;
+    // Every 20 points of heat adds +25% kensho interest
+    const buzzMod = 1.0 + (heat / 80);
+    count = Math.round(count * buzzMod);
+  }
+
+  return count;
 }
