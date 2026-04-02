@@ -240,3 +240,20 @@ export interface MovementEvent {
   description: string;
   kind: "promotion" | "demotion" | "lateral" | "status";
 }
+
+/** Defines the structure for promotion event. */
+export interface PromotionEvent {
+  rikishiId: string;
+  from: string;
+  to: string;
+  description: string;
+}
+
+/** Defines the structure for demotion event. */
+export interface DemotionEvent {
+  rikishiId: string;
+  from: string;
+  to: string;
+  description: string;
+}
+

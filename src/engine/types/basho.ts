@@ -109,3 +109,30 @@ export interface BashoResult {
 
   nextBanzuke?: BanzukeSnapshot;
 }
+/** Type representing banzuke update hook result. */
+export interface BanzukeUpdateHookResult {
+  promotions: import("./banzuke").PromotionEvent[];
+  demotions: import("./banzuke").DemotionEvent[];
+}
+
+/** Type representing banzuke update hook. */
+export type BanzukeUpdateHook = (args: {
+  world: import("./world").WorldState;
+  bashoName: BashoName;
+  year: number;
+  standings: StandingsTableRuntime;
+  seed: string;
+}) => BanzukeUpdateHookResult;
+
+/** Defines the structure for basho sim result (Auto-Sim style). */
+export interface BashoSimResult {
+  bashoName: BashoName;
+  year: number;
+  yushoWinner: { id: Id; shikona: string; wins: number; losses: number };
+  junYusho: string[];
+  standings: StandingsTableRuntime;
+  keyBouts: BoutResult[];
+  injuries: string[];
+  promotions: import("./banzuke").PromotionEvent[];
+  demotions: import("./banzuke").DemotionEvent[];
+}

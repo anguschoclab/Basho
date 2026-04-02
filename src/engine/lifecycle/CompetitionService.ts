@@ -81,11 +81,11 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
   } as const;
 
   for (const [key, type] of Object.entries(awardTypes)) {
-    const rikishiId = (prizes as any)[key] as string | undefined;
+    const rikishiId = (prizes as Record<string, any>)[key] as string | undefined;
     if (rikishiId) {
       const r = world.rikishi.get(rikishiId);
       if (r) {
-        if (r.stats.achievements?.specialPrizes) {
+        if (r.stats?.achievements?.specialPrizes) {
           const sp = r.stats.achievements.specialPrizes;
           if (type === 'Shukun') sp.shukunSho++;
           else if (type === 'Kanto') sp.kantoSho++;
@@ -101,7 +101,8 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
 
   // Record history
   if (!world.history) world.history = [];
-  world.history.push(result as any);
+  world.history.push(result);
+
 
   // --- ALMANAC SNAPSHOT ---
   safeCall(() => {

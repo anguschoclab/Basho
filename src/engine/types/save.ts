@@ -14,6 +14,19 @@ import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase } from "./world";
 import type { BashoResult } from "./basho";
 
+/** Serialized form of sponsor pool for JSON storage. */
+export interface SerializedSponsorPool {
+  sponsors: Record<string, import("./rikishi").Rikishi>; // Note: This should likely be Sponsor, but keeping it broad for now or importing Sponsor
+  koenkais: Record<string, any>;
+}
+
+// Fixed version with correct internal imports
+export interface SerializedSponsorPoolFixed {
+  sponsors: Record<string, import("./sponsors").Sponsor>;
+  koenkais: Record<string, import("./sponsors").Koenkai>;
+}
+
+
 /** Defines the structure for serialized basho state. */
 export interface SerializedBashoState {
   year: number;
@@ -58,8 +71,9 @@ export interface SerializedWorldState {
   ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
 
   talentPool?: TalentPoolWorldState;
-  sponsorPool?: import("../sponsors").SponsorPool;
+  sponsorPool?: SerializedSponsorPoolFixed;
   mediaState?: import("./media").MediaState;
+
 
   dayIndexGlobal: number;
   almanacSnapshots: import("../almanac").AlmanacSnapshot[];

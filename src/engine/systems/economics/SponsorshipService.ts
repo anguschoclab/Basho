@@ -1,4 +1,4 @@
-import { SeededRNG } from "../../rng";
+import { SeededRNG, rngForWorld } from "../../rng";
 import type { Rikishi } from "../../types/rikishi";
 import type { 
   Sponsor, 
@@ -8,6 +8,7 @@ import type {
   SponsorRelationship 
 } from "../../types/sponsors";
 import { EventBus } from "../../events";
+
 
 const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   none: 0,
@@ -93,10 +94,13 @@ export function selectBenefactor(
   return null;
 }
 
+import type { WorldState } from "../../types/world";
+
 /**
  * Update Rikishi popularity and sponsor triggers based on achievements.
  */
-export function applyAchievementImpact(world: any, rikishi: Rikishi, awardType: 'kinboshi' | 'ginboshi' | 'sansho'): void {
+export function applyAchievementImpact(world: WorldState, rikishi: Rikishi, awardType: 'kinboshi' | 'ginboshi' | 'sansho'): void {
+  void world;
   if (!rikishi.economics) return;
   
   let popBoost = 0;
@@ -115,8 +119,10 @@ export function applyAchievementImpact(world: any, rikishi: Rikishi, awardType: 
  * Process Sponsor Churn (Addendum D).
  * Runs post-basho to evaluate satisfaction and relationship longevity.
  */
-export function processSponsorChurn(world: any, currentTick: number): void {
-  const rng = rngForWorld(world, "churn");
+export function processSponsorChurn(world: WorldState, currentTick: number): void {
+  const rng = rngForWorld(world, "economics", "churn");
+
+
   
   // Logic to iterate over active relationships and roll for churn
   // based on loyalty and target performance.

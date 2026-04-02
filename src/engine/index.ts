@@ -2,6 +2,10 @@
 
 export * from './almanac';
 export * from './autoSim';
+export * from './simulation/AutoSimService';
+export * from './simulation/TournamentSimulator';
+export * from './simulation/ChronicleService';
+
 export type { BashoPerformance } from './banzuke'; 
 export * from './banzuke';
 export * from './bout/boutResolver';
@@ -28,6 +32,10 @@ export * from './lifecycle';
 export * from './lifecycle/BashoManager';
 export * from './lifecycle/CompetitionService';
 export * from './lifecycle/RegistryService';
+export * from './systems/economics/KenshoService';
+export * from './systems/economics/SponsorshipService';
+export * from './systems/generation/SponsorGenerator';
+
 
 export * from './matchmaking';
 export * from './systems/media/MediaService';
@@ -43,6 +51,9 @@ export { getCurrentBasho } from './queries';
 export * from './queries';
 export * from './rivalries';
 export * from './saveload';
+export * from './persistence/SerializationService';
+export * from './persistence/SaveSlotService';
+
 export * from './storageProvider';
 export * from './schedule';
 export * from './scouting';
