@@ -17,6 +17,15 @@ import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
+import { logEngineEvent } from "./events";
+
+// Strategies & Personas
+import { getFinanceStrategy } from "./npcFinanceStrategy";
+import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
+import { getRetirementStrategy } from "./npcRetirementStrategy";
+import { getManagerPersona } from "./systems/NPCPersonaService";
+export { getManagerPersona };
+
 import { 
   decideTrainingIntensity, 
   decideTrainingFocus, 
@@ -58,46 +67,116 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
   const complianceCap = heya?.welfareState?.sanctions?.trainingIntensityCap as TrainingIntensity | undefined;
 
-  const intensityDecision = decideTrainingIntensity(
-    perception, persona.riskAppetite, persona.welfareDiscipline, persona.mood, complianceCap, philosophy
+  // --- Phase 2: Hierarchical Delegation (Worker Agents) ---
+  
+  // 1. Training Worker (Isolated Context)
+  const trainingProposal = spawnTrainingWorker({
+    perception: rpPerception(perception), // Isolated rikishi perception
+    riskAppetite: persona.riskAppetite,
+    welfareDiscipline: persona.welfareDiscipline,
+    mood: persona.mood,
+    complianceCap,
+    philosophy,
+    styleBias: persona.styleBias,
+    tradition: persona.traits.tradition
+  });
+  reasoning.push(...trainingProposal.reasoning);
+
+  // 2. Scouting Worker (Isolated Context)
+  const scoutingProposal = spawnScoutingWorker({
+    runwayBand: perception.runwayBand,
+    rosterSize: perception.rosterSize,
+    rosterStrengthBand: perception.rosterStrengthBand,
+    ambition: persona.traits.ambition,
+    hasSleeperScout: persona.quirks.includes("Sleeper Scout")
+  });
+  reasoning.push(scoutingProposal.reason);
+
+  // 3. Personnel Worker (Isolated Context)
+  const personnelProposal = spawnPersonnelWorker({
+    rikishiPerceptions: perception.rikishiPerceptions,
+    welfareDiscipline: persona.welfareDiscipline,
+    styleProfile,
+    world // Needed for getRikishi (limited read)
+  });
+  reasoning.push(...personnelProposal.reasoning);
+
+  // --- Phase 3: Lead Review (Alignment Check) ---
+  // The Oyakata (Lead Agent) reviews worker proposals against memory/mood.
+  if (persona.mood === 'furious' && trainingProposal.trainingIntensity !== 'punishing') {
+    trainingProposal.trainingIntensity = 'punishing';
+    reasoning.push("[Lead Review] Oyakata overrides: Ignoring worker caution, imposing punishing intensity due to fury.");
+  }
+
+  return {
+    heyaId,
+    archetype: persona.archetype,
+    trainingIntensity: trainingProposal.trainingIntensity,
+    trainingFocus: trainingProposal.trainingFocus,
+    recovery: trainingProposal.recovery,
+    scoutingPriority: scoutingProposal.priority,
+    individualProtects: personnelProposal.individualProtects,
+    individualDevelops: personnelProposal.individualDevelops,
+    individualPushes: personnelProposal.individualPushes,
+    reasoning,
+    mood: persona.mood
+  };
+}
+
+/** Worker: Training Sub-Agent */
+function spawnTrainingWorker(ctx: any) {
+  const intensity = decideTrainingIntensity(
+    ctx.perception, ctx.riskAppetite, ctx.welfareDiscipline, ctx.mood, ctx.complianceCap, ctx.philosophy
   );
-  reasoning.push(`[Training] ${intensityDecision.reason}`);
-
-  const focusDecision = decideTrainingFocus(
-    perception, persona.styleBias, persona.traits.tradition, philosophy
+  const focus = decideTrainingFocus(
+    ctx.perception, ctx.styleBias, ctx.tradition, ctx.philosophy
   );
-  reasoning.push(`[Focus] ${focusDecision.reason}`);
+  const recovery = decideRecovery(ctx.perception, ctx.welfareDiscipline);
+  
+  return {
+    trainingIntensity: intensity.intensity,
+    trainingFocus: focus.focus,
+    recovery: recovery.recovery,
+    reasoning: [`[Training Worker] ${intensity.reason}`, `[Focus Worker] ${focus.reason}`, `[Recovery Worker] ${recovery.reason}`]
+  };
+}
 
-  const recoveryDecision = decideRecovery(perception, persona.welfareDiscipline);
-  reasoning.push(`[Recovery] ${recoveryDecision.reason}`);
-
-  const hasSleeperScout = persona.quirks.includes("Sleeper Scout");
-  const scoutingDecision = decideScoutingPriority(
-    perception, persona.traits.ambition, hasSleeperScout
+/** Worker: Scouting Sub-Agent */
+function spawnScoutingWorker(ctx: any) {
+  const decision = decideScoutingPriority(
+    { runwayBand: ctx.runwayBand, rosterSize: ctx.rosterSize, rosterStrengthBand: ctx.rosterStrengthBand } as any,
+    ctx.ambition, 
+    ctx.hasSleeperScout
   );
-  reasoning.push(`[Scouting] ${scoutingDecision.reason}`);
+  return {
+    priority: decision.priority,
+    reason: `[Scouting Worker] ${decision.reason}`
+  };
+}
 
-  const protectDecision = identifyProtects(perception, persona.welfareDiscipline);
+/** Worker: Personnel Sub-Agent */
+function spawnPersonnelWorker(ctx: any) {
+  const reasoning: string[] = [];
+  const protectDecision = identifyProtects(ctx as any, ctx.welfareDiscipline);
   if (protectDecision.protectIds.length > 0) {
-    reasoning.push(`[Protect] ${protectDecision.reason}`);
+    reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
   }
 
   const individualDevelops: Id[] = [];
   const individualPushes: Id[] = [];
   const protectedSet = new Set(protectDecision.protectIds);
 
-  if (styleProfile && perception.rikishiPerceptions.length > 0) {
-    for (const rp of perception.rikishiPerceptions) {
+  if (ctx.styleProfile && ctx.rikishiPerceptions.length > 0) {
+    for (const rp of ctx.rikishiPerceptions) {
       if (protectedSet.has(rp.rikishiId)) continue;
-      const rikishi = getRikishi(world, rp.rikishiId);
+      const rikishi = getRikishi(ctx.world, rp.rikishiId);
       if (!rikishi) continue;
 
-      const matchesStyle = styleProfile.preferredStyle === "any" || rikishi.style === styleProfile.preferredStyle;
-      const matchesArchetype = (styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
-
+      const matchesStyle = ctx.styleProfile.preferredStyle === "any" || rikishi.style === ctx.styleProfile.preferredStyle;
+      const matchesArchetype = (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
 
       if (matchesArchetype && matchesStyle) {
-        if ((rp.healthBand === "peak" || rp.healthBand === "good") && (philosophy === "style_purist" || philosophy === "size_matters")) {
+        if ((rp.healthBand === "peak" || rp.healthBand === "good") && (ctx.styleProfile.philosophy === "style_purist" || ctx.styleProfile.philosophy === "size_matters")) {
           individualPushes.push(rp.rikishiId);
         } else if (rp.healthBand === "peak" || rp.healthBand === "good") {
           individualDevelops.push(rp.rikishiId);
@@ -106,30 +185,31 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
         individualDevelops.push(rp.rikishiId);
       }
     }
-
     individualPushes.splice(3);
     individualDevelops.splice(5);
 
     if (individualPushes.length > 0) {
-      reasoning.push(`[Philosophy] Pushing ${individualPushes.length} wrestler(s) matching ${styleProfile.description.split(".")[0]}`);
-    }
-    if (individualDevelops.length > 0) {
-      reasoning.push(`[Philosophy] Developing ${individualDevelops.length} wrestler(s) aligned with philosophy`);
+      reasoning.push(`[Personnel Worker] Philosophy push: ${individualPushes.length} wrestlers`);
     }
   }
 
   return {
-    heyaId,
-    archetype: persona.archetype,
-    trainingIntensity: intensityDecision.intensity,
-    trainingFocus: focusDecision.focus,
-    recovery: recoveryDecision.recovery,
-    scoutingPriority: scoutingDecision.priority,
+    protectIds: protectDecision.protectIds,
     individualProtects: protectDecision.protectIds,
     individualDevelops,
     individualPushes,
-    reasoning,
-    mood: persona.mood
+    reasoning
+  };
+}
+
+/** Helper: Isolated perception view */
+function rpPerception(p: any) {
+  return {
+    rikishiPerceptions: p.rikishiPerceptions,
+    welfareRiskBand: p.welfareRiskBand,
+    rosterSize: p.rosterSize,
+    moraleBand: p.moraleBand,
+    rosterStrengthBand: p.rosterStrengthBand
   };
 }
 
@@ -312,7 +392,7 @@ export function tickMonthlyNPC(world: WorldState): void {
 
   if (world.myosekiMarket) {
     const candidateHeyas = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
-    for (const heya of stableSort(candidateHeyas, x => (x as any).id || String(x))) {
+    for (const heya of stableSort(candidateHeyas, (x: any) => (x as any).id || String(x))) {
       const oyakata = world.oyakata.get(heya.oyakataId)!;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
       financeStrat.evaluateFinances(world, heya as import("./types/heya").Heya, oyakata);
@@ -323,7 +403,7 @@ export function tickMonthlyNPC(world: WorldState): void {
   let hasVacancies = false;
 
   const candidateHeyas2 = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
-  for (const heya of stableSort(candidateHeyas2, x => (x as any).id || String(x))) {
+  for (const heya of stableSort(candidateHeyas2, (x: any) => (x as any).id || String(x))) {
     const oyakata = world.oyakata.get(heya.oyakataId)!;
 
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
