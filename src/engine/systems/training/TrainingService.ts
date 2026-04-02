@@ -16,6 +16,7 @@ import type { Id } from "../../types/common";
 import type { BeyaTrainingState } from "../../types/training";
 import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { EntityService } from "../../core/EntityService";
 import { EventBus } from "../../events";
 import { 
   calculateFatigueDelta, 
@@ -30,11 +31,12 @@ export const TrainingService = {
    * Ensure heya training state exists in world.
    */
   ensureHeyaTrainingState(world: WorldState, beyaId: Id): BeyaTrainingState {
-    if (!world.trainingState) world.trainingState = {};
-    if (!world.trainingState[beyaId]) {
-      world.trainingState[beyaId] = this.createDefaultTrainingState(beyaId);
-    }
-    return world.trainingState[beyaId];
+    return EntityService.ensureNestedState(
+      world, 
+      "trainingState" as any, 
+      beyaId, 
+      () => this.createDefaultTrainingState(beyaId)
+    );
   },
 
   /**

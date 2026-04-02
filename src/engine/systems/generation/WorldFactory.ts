@@ -31,6 +31,7 @@ export function createHeyaWithOyakata(args: {
     id: oyakataId,
     heyaId: id,
     name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
+    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
     age: 45 + rng.int(0, 20),
     archetype: seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]),
     traits: {
@@ -55,6 +56,7 @@ export function createHeyaWithOyakata(args: {
     koenkaiBand: "moderate",
     runwayBand: "secure",
     reputation: 80 - tier * 50,
+    prestige: 50 - tier * 30,
     funds: tier < 0.2 ? 40_000_000 : 15_000_000,
     scandalScore: 0,
     governanceStatus: "good_standing",
@@ -174,7 +176,7 @@ export function generateInitialWorld(seed: string): WorldState {
   } as any;
 
   // Initialize and populate talent pools
-  talentpool.tickWeek(world);
+  talentpool.tickWeekTalentPool(world);
 
   return world;
 }

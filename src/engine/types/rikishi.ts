@@ -22,6 +22,8 @@ import type { RikishiBehavior } from "./media";
 import type { CareerSnapshot, Milestone } from "./history";
 
 /** Log of tactical success/failure during a basho. */
+export type AttributeKey = "power" | "speed" | "balance" | "technique";
+
 export interface ArchetypeEvidence {
   push: { success: number; fail: number };
   grapple: { success: number; fail: number };

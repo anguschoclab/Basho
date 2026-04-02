@@ -161,7 +161,7 @@ export function simulateBoutForToday(
       playerSide
   };
 
-  const result = resolveBout(boutContext, east, west, basho, playerTactic);
+  const result = resolveBout(boutContext, east, west, basho, playerTactic, world);
 
   applyBoutResult(world, match, result);
   return { world, result };

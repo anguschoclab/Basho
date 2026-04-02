@@ -5,7 +5,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight, Activity, TrendingUp } from "lucide-react";
+import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight, Activity, TrendingUp, Search } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
@@ -91,6 +91,19 @@ export default function Dashboard() {
     if (playerHeya.riskIndicators?.governance) {
       a.push({ icon: Shield, text: "Governance watch — JSA has concerns", color: "text-warning", link: "/jsa/governance" });
     }
+    
+    // --- WELFARE CONNECTIVITY (Phase 3.3) ---
+    const welfare = playerHeya.welfareState;
+    if (welfare) {
+      if (welfare.complianceState === "sanctioned") {
+        a.push({ icon: AlertTriangle, text: "Heya Sanctioned — Regulatory violations cited", color: "text-destructive", link: "/jsa/governance" });
+      } else if (welfare.complianceState === "investigation") {
+        a.push({ icon: Search, text: "Investigation Active — Cooperate with regulators", color: "text-amber-500", link: "/jsa/governance" });
+      } else if (welfare.complianceState === "watch") {
+        a.push({ icon: Shield, text: "Compliance Watch — Avoid further incidents", color: "text-warning", link: "/jsa/governance" });
+      }
+    }
+
     return a;
   }, [playerHeya]);
 

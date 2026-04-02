@@ -117,7 +117,7 @@ export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick
   };
 }
 
-function getTierTraitRanges(tier: SponsorTier) {
+export function getTierTraitRanges(tier: SponsorTier) {
   switch (tier) {
     case "T0": return { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 };
     case "T1": return { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 };
@@ -128,7 +128,7 @@ function getTierTraitRanges(tier: SponsorTier) {
   }
 }
 
-function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {
+export function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {
   const r = rng.next();
   let cumulative = 0;
   const tiers: SponsorTier[] = ["T0", "T1", "T2", "T3", "T4", "T5"];

@@ -3,7 +3,7 @@
 // Manages Money, Solvency, Salaries, and Support.
 // Aligned with Institutional Economy V2.0 Spec.
 
-import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import { RNGRegistry } from "./core/RNGRegistry";
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { BoutResult, MatchSchedule } from "./types/basho";
@@ -12,6 +12,7 @@ import type { Id } from "./types/common";
 import { reportScandal } from "./governance/GovernanceService";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
+import { calculateKenshoEnvelopes } from "./systems/SponsorService";
 
 // === CONSTANTS ===
 
@@ -165,21 +166,10 @@ export function onBoutResolvedEconomics(
   
   // 1. Determine Kensho count (Envelopes) per User Spec
   // 2. Award Windfalls (v2 Spec)
-  let kenshoCount = 0; // Initialize kenshoCount
-  if (result.awardFact === 'kinboshi') {
-    // Kinboshi Win: 15–25 Envelopes (¥900,000–¥1,500,000 total)
-    // Ref: Plan 3.A
-    kenshoCount = Math.floor(15 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 11);
-    result.kenshoEnvelopes = kenshoCount;
-  } else if (result.awardFact === 'ginboshi') {
-    // Ginboshi Win: 5–8 Envelopes (¥300,000–¥480,000 total)
-    kenshoCount = Math.floor(5 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 4);
-    result.kenshoEnvelopes = kenshoCount;
-  } else {
-    // Standard Win: 1–3 Envelopes
-    kenshoCount = Math.floor(1 + rngForWorld(world, "kensho", `kensho-${winner.id}`).next() * 3);
-    result.kenshoEnvelopes = kenshoCount;
-  }
+  // 1. Determine Kensho count (Envelopes) per User Spec (Phase 3.2: Media Connectivity)
+  const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${winner.id}-${world.dayIndexGlobal}`);
+  const kenshoCount = calculateKenshoEnvelopes(world, winner, result.awardFact ?? undefined, kenshoRng);
+  result.kenshoEnvelopes = kenshoCount;
   // 2. Marketability Shift (Permanent)
   if (!winner.stats) {
      winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } } };

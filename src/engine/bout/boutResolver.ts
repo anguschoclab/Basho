@@ -1,24 +1,49 @@
 import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
+import type { WorldState } from "../types/world";
 // We import the new cleaned physics runner 
 import { resolveBoutPhysics } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
 // Note: injuries module doesn't currently apply per-bout injuries.
-// injuries.ts handles weekly rolls. If a bout-injury system is 
-// implemented in injuries.ts, it will be injected here.
+import { RivalryService } from "../systems/narrative/RivalryService";
+import { EntityCollection } from "../core/EntityCollection";
+import { clamp } from "../utils/math";
 
 export function resolveBout(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
   basho: BashoState,
-  playerTactic?: import("../types/combat").BoutTactic
+  playerTactic?: import("../types/combat").BoutTactic,
+  world?: WorldState
 ): BoutResult {
   const ctxWithTactic = { ...bout, playerTactic };
+
+  // --- PHASE 3: RIVALRY CONNECTIVITY ---
+  let eastMod = 1.0;
+  let westMod = 1.0;
+
+  if (world) {
+    const rivalryState = RivalryService.ensureRivalriesState(world);
+    const rivalryKey = RivalryService.makeRivalryKey(east.id, west.id);
+    const pair = rivalryState.pairs[rivalryKey];
+
+    if (pair) {
+      // High heat increases aggression and mental intensity
+      const heat01 = pair.heat / 100;
+      eastMod = 1.0 + (heat01 * 0.15); // Up to 15% boost
+      westMod = 1.0 + (heat01 * 0.15);
+    }
+  }
+
+  // Clone rikishi to apply temporary bout-only modifiers
+  const eastBout = { ...east, aggression: clamp((east.aggression || 50) * eastMod, 0, 100) };
+  const westBout = { ...west, aggression: clamp((west.aggression || 50) * westMod, 0, 100) };
+
   // 1. Run deterministic physics
-  const result = resolveBoutPhysics(ctxWithTactic, east, west, basho);
+  const result = resolveBoutPhysics(ctxWithTactic, eastBout as Rikishi, westBout as Rikishi, basho);
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
     
@@ -55,8 +80,13 @@ export function resolveBout(
     loser.stats.achievements.ginboshiConceded++;
   }
 
-  // 3. Apply any ensuing injuries based on the bout's physical toll
-  // (Left as a hook for narrative injuries)
+  // 3. Update Rivalry State
+  if (world) {
+    RivalryService.onBoutResolved(world, { 
+      result, 
+      day: bout.day 
+    });
+  }
 
   return result;
 }

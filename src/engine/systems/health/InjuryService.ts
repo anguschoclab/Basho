@@ -16,6 +16,7 @@ import {
   BODY_AREA_LABELS,
   INJURY_TYPE_LABELS
 } from "./BodyDefinitions";
+import { RNGRegistry } from "../../core/RNGRegistry";
 
 /**
  * Calculates a weekly injury chance for a rikishi.
@@ -91,13 +92,7 @@ export function tickWeekInjury(world: WorldState): void {
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || rikishi.injured) continue;
 
-    const rng = world.rng
-      ? world.rng
-      : { next: () => Math.random() } as any; // Fallback; world.rng should always be set
-    const seededRng = {
-      next: () => (rng.next ? (rng as any).next() : (rng as any)()),
-      int: (min: number, max: number) => min + Math.floor(seededRng.next() * (max - min + 1))
-    } as SeededRNG;
+    const seededRng = RNGRegistry.getSystemRNG(world, "health", `tick::${rikishi.id}::${world.week}`);
 
     const fatigue = (rikishi as any).fatigue ?? 0;
     const result = rollWeeklyInjury({ rng: seededRng, rikishi, fatigue });
@@ -136,12 +131,12 @@ export function onBoutResolvedInjury(
   const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
 
   const boutInjuryChance = isViolentFinish ? 0.04 : 0.02; // 2-4% per bout
-  const rng2 = world.rng ?? { next: () => Math.random() } as any;
-  const roll = rng2.next ? rng2.next() : (rng2 as any)();
+  const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.week}`);
+  const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {
     loser.injured = true;
-    loser.injuryWeeksRemaining = 1 + Math.floor(Math.random() * 2); // 1-2 weeks
+    loser.injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
     (loser as any).currentInjury = {
       severity: "minor",
       area: "other",

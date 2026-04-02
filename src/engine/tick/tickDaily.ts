@@ -28,9 +28,9 @@ import type { WorldState, CyclePhase } from "../types/world";
 import { EventBus, logEngineEvent } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
 import { initializeBasho } from "../systems/generation/WorldFactory";
+import { WelfareService } from "../systems/welfare/WelfareService";
 import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
-import { ensureHeyaWelfareState } from "../welfare";
 import { resetBashoMediaTracking } from "../systems/media/MediaService";
 
 import { toRikishiDescriptor } from "../descriptorBands";
@@ -217,7 +217,7 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
   // Pre-calculate heya diet states to avoid repeated lookups per rikishi (O(H) instead of O(R))
   const heyaDietCache = new Map<string, "austerity" | "maintenance" | "heavy_bulk" | "premium">();
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
-    heyaDietCache.set(heya.id, ensureHeyaWelfareState(heya).activeDiet || "maintenance");
+    heyaDietCache.set(heya.id, WelfareService.ensureHeyaWelfareState(heya).activeDiet || "maintenance");
   }
 
   // ⚡ Bolt: filter retired rikishi BEFORE O(N log N) stableSort to drastically reduce sorting overhead
@@ -335,7 +335,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   };
 
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
-    const welfare = ensureHeyaWelfareState(heya);
+    const welfare = WelfareService.ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = costMap[diet as string] ?? 3000;
     const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * costPerRikishi;

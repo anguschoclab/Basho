@@ -108,6 +108,39 @@ export function applyAchievementImpact(world: WorldState, rikishi: Rikishi, awar
 }
 
 /**
+ * Calculates kensho envelopes based on importance and buzz.
+ * Ref: Phase 3.2 implementation plan.
+ */
+export function calculateKenshoEnvelopes(
+  world: WorldState,
+  rikishi: Rikishi,
+  awardFact: string | undefined,
+  rng: SeededRNG
+): number {
+  let count = 0;
+  
+  if (awardFact === 'kinboshi') {
+    count = Math.floor(15 + rng.next() * 11);
+  } else if (awardFact === 'ginboshi') {
+    count = Math.floor(5 + rng.next() * 4);
+  } else {
+    // Standard varies by division and impact
+    count = Math.floor(1 + rng.next() * 3);
+  }
+
+  // --- BUZZ MULTIPLIER (Phase 3.2) ---
+  const mediaState = world.mediaState;
+  if (mediaState && mediaState.mediaHeat) {
+    const heat = mediaState.mediaHeat[rikishi.id] || 0;
+    // Every 20 points of heat adds +25% kensho interest
+    const buzzMod = 1.0 + (heat / 80); 
+    count = Math.round(count * buzzMod);
+  }
+
+  return count;
+}
+
+/**
  * Determine bout importance for kensho allocation
  */
 export function determineBoutImportance(
@@ -254,26 +287,6 @@ export function createKoenkai(
 
 
 /**
- * Get tier trait ranges for generation
- */
-export function getTierTraitRanges(tier: SponsorTier): { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number } {
-  switch (tier) {
-    case "T0":
-      return { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 };
-    case "T1":
-      return { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 };
-    case "T2":
-      return { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 };
-    case "T3":
-      return { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 };
-    case "T4":
-      return { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 };
-    case "T5":
-      return { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 };
-  }
-}
-
-/**
  * Calculate income from supporters for a month
  */
 export function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
@@ -288,22 +301,20 @@ export function generateInitialSponsorPool(worldSeed: string, worldSizeScalar: n
   const existingIds = new Set<string>();
   const poolSize = 180 + Math.floor(worldSizeScalar * 60);
 
-
   const tierDistribution: Record<SponsorTier, number> = {
     T0: 0.35, T1: 0.25, T2: 0.2, T3: 0.12, T4: 0.07, T5: 0.01
   };
 
-  const availableSponsors: Sponsor[] = [];
+  const sponsors = new Map<string, Sponsor>();
   for (let i = 0; i < poolSize; i++) {
     const tier = rollTier(rng, tierDistribution);
     const sponsor = generateSponsor(rng, tier, 0, existingIds);
-    availableSponsors.push(sponsor);
+    sponsors.set(sponsor.sponsorId, sponsor);
   }
 
   return {
-    activeSponsors: [],
-    availableSponsors,
-    lastGenerationWeek: 0
+    sponsors,
+    koenkais: new Map()
   };
 }
 

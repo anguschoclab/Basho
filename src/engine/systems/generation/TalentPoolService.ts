@@ -3,7 +3,9 @@
  * Logic for scouting, revealing, and offering contracts to recruits.
  */
 
-import { SeededRNG, rngForWorld } from "../../rng";
+import { SeededRNG } from "../../rng";
+import { RNGRegistry } from "../../core/RNGRegistry";
+import { EntityService } from "../../core/EntityService";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
 import { 
@@ -89,7 +91,7 @@ export function scoutPool(
   const pool = tp.pools[poolType];
   if (!pool || pool.candidatesHidden.length === 0) return { revealed: [] };
 
-  const rng = rngForWorld(world, "scouting", `reveal_${poolType}_${world.week}`);
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `reveal_${poolType}_${world.week}`);
   const count = Math.min(options.revealCount, pool.candidatesHidden.length);
   
   const revealed: Id[] = [];
@@ -125,7 +127,7 @@ export function scoutCandidate(
   }
 
   const record = tp.playerScouting[candidateId];
-  const rng = rngForWorld(world, "scouting", `intel_${candidateId}_${world.week}`);
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `intel_${candidateId}_${world.week}`);
   
   const gain = (10 + rng.int(0, 15)) * options.effort;
   record.scoutingLevel = clampInt(record.scoutingLevel + gain, 0, 100);
@@ -213,7 +215,7 @@ export function tickWeekTalentPool(world: WorldState): void {
  */
 export function fillVacanciesForNPC(world: WorldState, targetHeyas: Record<string, number>): void {
   const tp = ensureTalentPoolState(world);
-  const rng = rngForWorld(world, "scouting", `npc_fill_${world.week}`);
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
     const heya = world.heyas.get(heyaId);
@@ -242,7 +244,7 @@ export function fillVacanciesForNPC(world: WorldState, targetHeyas: Record<strin
 
 function refreshAllPools(world: WorldState) {
   const tp = ensureTalentPoolState(world);
-  const rng = rngForWorld(world, "scouting", `refresh_${world.year}`);
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `refresh_${world.year}`);
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
   poolTypes.forEach(pt => {
@@ -270,8 +272,10 @@ function refreshAllPools(world: WorldState) {
  * Ensures the talent pool state is initialized.
  */
 function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
-  if (!world.talentPool) {
-    world.talentPool = {
+  return EntityService.ensureState(
+    world, 
+    "talentPool", 
+    () => ({
       version: "1.0.0",
       lastYearlyRefreshYear: world.year,
       candidates: {},
@@ -281,9 +285,8 @@ function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
         foreign: createEmptyPool("foreign")
       },
       playerScouting: {}
-    };
-  }
-  return world.talentPool;
+    })
+  );
 }
 
 function createEmptyPool(type: TalentPoolType) {
@@ -368,7 +371,7 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
 export function tickYear(world: WorldState): void {
   const tp = ensureTalentPoolState(world);
   const currentYear = world.year ?? 2025;
-  const rng = rngForWorld(world, "scouting", `yearly_refresh_${currentYear}`);
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `yearly_refresh_${currentYear}`);
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 

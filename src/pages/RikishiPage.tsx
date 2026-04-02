@@ -6,7 +6,7 @@
  * Architecturally decomposed to use RosterList for list views.
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -14,13 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { 
   ArrowLeft, 
   History, 
   Trophy, 
-  Award, 
   Star, 
   TrendingUp, 
   Activity,
@@ -43,6 +41,7 @@ import { HQ_TABS } from "@/constants/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -209,23 +208,23 @@ export default function RikishiPage() {
                          </h3>
                          <div className="grid grid-cols-2 gap-4">
                             {[
-                              { label: "Forcefulness", val: Number(rikishi.perceivedStats?.strength || 50), color: "bg-amber-500", icon: <Zap className="h-3.5 w-3.5" />, tooltip: "Raw offensive power and pushing force" },
-                              { label: "Agility", val: Number(rikishi.perceivedStats?.speed || 50), color: "bg-blue-500", icon: <TrendingUp className="h-3.5 w-3.5" />, tooltip: "Movement speed and initial reaction at the tachiai" },
-                              { label: "Resilience", val: 75, color: "bg-emerald-500", icon: <Shield className="h-3.5 w-3.5" />, tooltip: "Endurance and ability to recover from momentum loss" },
-                              { label: "Precision", val: 65, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" />, tooltip: "Technical accuracy and belt-grip efficiency" }
-                            ].map((stat, i) => (
-                              <TooltipWrap key={i} content={stat.tooltip} side="top">
-                                <div className="bg-muted/30 p-4 rounded-xl border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
-                                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
-                                      {stat.icon} {stat.label}
-                                   </div>
-                                   <div className="flex items-center gap-3">
-                                      <div className="text-2xl font-display font-black">{stat.val}</div>
-                                      <Progress value={stat.val} className={cn("h-1 flex-1 opacity-40", stat.color)} />
-                                   </div>
-                                </div>
-                              </TooltipWrap>
-                            ))}
+                               { label: "Forcefulness", key: "strength", val: rikishi.perceivedStats.strength, raw: rawRikishi.stats?.strength ?? 50, color: "bg-amber-500", icon: <Zap className="h-3.5 w-3.5" /> },
+                               { label: "Agility", key: "speed", val: rikishi.perceivedStats.speed, raw: rawRikishi.stats?.speed ?? 50, color: "bg-blue-500", icon: <TrendingUp className="h-3.5 w-3.5" /> },
+                               { label: "Resilience", key: "stamina", val: rikishi.perceivedStats.stamina, raw: rawRikishi.stats?.stamina ?? 50, color: "bg-emerald-500", icon: <Shield className="h-3.5 w-3.5" /> },
+                               { label: "Precision", key: "technique", val: rikishi.perceivedStats.technique, raw: rawRikishi.stats?.technique ?? 50, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" /> }
+                             ].map((stat, i) => (
+                               <TooltipWrap key={i} content={NarrativeService.describeAttribute(stat.key, stat.raw)} side="top">
+                                 <div className="bg-muted/30 p-4 rounded-xl border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
+                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
+                                       {stat.icon} {stat.label}
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                       <div className="text-2xl font-display font-black">{stat.val}</div>
+                                       <Progress value={stat.raw} className={cn("h-1 flex-1 opacity-40", stat.color)} />
+                                    </div>
+                                 </div>
+                               </TooltipWrap>
+                             ))}
                          </div>
                       </div>
 
@@ -274,7 +273,7 @@ export default function RikishiPage() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-border/40">
-                            {history.slice().reverse().map((snap, i) => (
+                            {history.slice().reverse().map((snap: any, i: number) => (
                               <tr key={i} className="hover:bg-primary/5 transition-colors group">
                                 <td className="py-4 pr-6 font-display font-black text-sm uppercase tracking-tighter">
                                   {snap.bashoName} {snap.year}
@@ -335,7 +334,7 @@ export default function RikishiPage() {
                             <p className="text-sm font-display italic">This rikishi has not yet participated in Association milestones.</p>
                          </div>
                        ) : (
-                         milestones.slice().reverse().map((m, i) => (
+                         milestones.slice().reverse().map((m: any, i: number) => (
                            <div key={i} className="relative animate-in slide-in-from-left-2 duration-500 fill-mode-both" style={{ animationDelay: `${i * 100}ms` }}>
                              <div className="absolute -left-[35px] top-1.5 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-lg ring-4 ring-primary/10" />
                              <div className="space-y-2 max-w-2xl">

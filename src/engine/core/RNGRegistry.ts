@@ -23,6 +23,8 @@ export type SystemRNGKey =
   | "governance" 
   | "economics" 
   | "combat"
+  | "kensho"
+  | "health"
   | "lifecycle";
 
 /**

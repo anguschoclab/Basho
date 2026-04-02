@@ -15,6 +15,7 @@ import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
+import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -190,10 +191,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
-    powerBand: toStatBand(r.power ?? 50),
-    techniqueBand: toStatBand(r.technique ?? 50),
-    speedBand: toStatBand(r.speed ?? 50),
-    balanceBand: toStatBand(r.balance ?? 50),
+    powerBand: NarrativeService.getStatBand(r.power ?? 50),
+    techniqueBand: NarrativeService.getStatBand(r.technique ?? 50),
+    speedBand: NarrativeService.getStatBand(r.speed ?? 50),
+    balanceBand: NarrativeService.getStatBand(r.balance ?? 50),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.experience),
     currentBashoWins: r.currentBashoWins,
@@ -204,16 +205,16 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
     perceivedStats: {
-      strength: toStatBand(r.stats?.strength ?? r.power ?? 50),
-      technique: toStatBand(r.stats?.technique ?? r.technique ?? 50),
-      speed: toStatBand(r.stats?.speed ?? r.speed ?? 50),
-      stamina: toStatBand(r.stats?.stamina ?? r.stamina ?? 50),
-      mental: toStatBand(r.stats?.mental ?? r.aggression ?? 50),
-      adaptability: toStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
-      balance: toStatBand(r.stats?.balance ?? r.balance ?? 50),
+      strength: NarrativeService.getStatBand(r.stats?.strength ?? r.power ?? 50),
+      technique: NarrativeService.getStatBand(r.stats?.technique ?? r.technique ?? 50),
+      speed: NarrativeService.getStatBand(r.stats?.speed ?? r.speed ?? 50),
+      stamina: NarrativeService.getStatBand(r.stats?.stamina ?? r.stamina ?? 50),
+      mental: NarrativeService.getStatBand(r.stats?.mental ?? r.aggression ?? 50),
+      adaptability: NarrativeService.getStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
+      balance: NarrativeService.getStatBand(r.stats?.balance ?? r.balance ?? 50),
     },
     descriptor: toRikishiDescriptor(r, r.descriptor),
-    potentialBand: toPotentialBand(r.talentSeed ?? 50),
+    potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
     topRivals,
     personalityTraits: r.personalityTraits ?? [],
     favoredKimarite: calculateMostFrequentKimarite(r.id, r.history ?? []),

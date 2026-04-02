@@ -63,7 +63,7 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
  * Create save game object.
  */
 function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame, timestampISO?: string): SaveGame {
-  const now = timestampISO ?? existing?.lastSavedAtISO ?? new Date().toISOString();
+  const now = timestampISO ?? existing?.lastSavedAtISO ?? "1970-01-01T00:00:00Z";
   return {
     version: CURRENT_SAVE_VERSION,
     createdAtISO: existing?.createdAtISO ?? now,
