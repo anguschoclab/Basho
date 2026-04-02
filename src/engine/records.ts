@@ -139,13 +139,25 @@ export function onBashoEnded(world: WorldState) {
 /**
  * Called when a Rikishi retires (Intai).
  */
+function removeActiveRecord(list: RecordEntry[], rikishiId: Id) {
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (list[i].rikishiId === rikishiId) {
+      list.splice(i, 1);
+      break; // Lists only contain each rikishi once
+    }
+  }
+}
+
+/**
+ * Called when a Rikishi retires (Intai).
+ */
 export function onRikishiRetired(world: WorldState, rikishiId: Id) {
   const records = ensureRecordsState(world);
   
-  // Remove from all active lists
-  records.active.careerWins = records.active.careerWins.filter(e => e.rikishiId !== rikishiId);
-  records.active.makuuchiWins = records.active.makuuchiWins.filter(e => e.rikishiId !== rikishiId);
-  records.active.yusho = records.active.yusho.filter(e => e.rikishiId !== rikishiId);
-  records.active.consecutiveYusho = records.active.consecutiveYusho.filter(e => e.rikishiId !== rikishiId);
-  records.active.kinboshi = records.active.kinboshi.filter(e => e.rikishiId !== rikishiId);
+  // ⚡ Bolt: Use manual shift/pop to remove from active lists to avoid O(N) allocation overhead of .filter()
+  removeActiveRecord(records.active.careerWins, rikishiId);
+  removeActiveRecord(records.active.makuuchiWins, rikishiId);
+  removeActiveRecord(records.active.yusho, rikishiId);
+  removeActiveRecord(records.active.consecutiveYusho, rikishiId);
+  removeActiveRecord(records.active.kinboshi, rikishiId);
 }
