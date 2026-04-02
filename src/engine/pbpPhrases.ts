@@ -320,19 +320,39 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     normal: [
       { id: "f_n_1", text: "{winner} finishes it — {kimarite}!" },
       { id: "f_n_2", text: "That’s it! {winner} takes the bout by {kimarite}!", tags: ["crowd_roar"] },
-      { id: "f_n_3", text: "{winner} seals the deal — {kimarite}!" }
+      { id: "f_n_3", text: "{winner} seals the deal — {kimarite}!" },
+      { id: "f_n_4", text: "A definitive finish! {winner} executes a perfect {kimarite}." },
+      { id: "f_n_5", text: "{winner} drives the advantage home, winning with {kimarite}!" },
+      { id: "f_n_6", text: "There's the climax — {winner} wins via {kimarite}!" },
+      { id: "f_n_7", text: "{loser} has no answer for the {kimarite} from {winner}!" },
+      { id: "f_n_8", text: "A textbook application of {kimarite} gives {winner} the victory!" }
     ],
     upset: [
       { id: "f_u_1", text: "UPSET! {winner} shocks the arena with {kimarite}!", tags: ["upset", "crowd_roar"] },
-      { id: "f_u_2", text: "A stunner — {winner} steals it by {kimarite}!", tags: ["upset"] }
+      { id: "f_u_2", text: "A stunner — {winner} steals it by {kimarite}!", tags: ["upset"] },
+      { id: "f_u_3", text: "Unbelievable! {winner} pulls off a massive upset with {kimarite}!" },
+      { id: "f_u_4", text: "The crowd goes wild! An unexpected {kimarite} win for {winner}!" },
+      { id: "f_u_5", text: "Against all odds, {winner} conquers {loser} by {kimarite}!" },
+      { id: "f_u_6", text: "A gigantic upset! {winner} catches {loser} with {kimarite}." },
+      { id: "f_u_7", text: "Nobody saw that coming — {winner} uses {kimarite} to score the huge win!" }
     ],
     close_call: [
       { id: "f_c_1", text: "So close at the edge — but {winner} gets it by {kimarite}!", tags: ["close_call", "gasps"] },
-      { id: "f_c_2", text: "A razor-thin finish! {winner} wins with {kimarite}!", tags: ["close_call"] }
+      { id: "f_c_2", text: "A razor-thin finish! {winner} wins with {kimarite}!", tags: ["close_call"] },
+      { id: "f_c_3", text: "It goes down to the wire, but {winner} manages a {kimarite}!" },
+      { id: "f_c_4", text: "A breathless conclusion! {winner} barely pulls out the {kimarite}!" },
+      { id: "f_c_5", text: "The gyoji almost had to call a mono-ii, but {winner}'s {kimarite} was clean!" },
+      { id: "f_c_6", text: "Narrowly escaping defeat, {winner} counters with {kimarite}!" },
+      { id: "f_c_7", text: "A hair's breadth away from a loss, {winner} secures the {kimarite}." }
     ],
     kinboshi: [
       { id: "f_k_1", text: "KINBOSHI! {winner} claims a gold star with {kimarite}!", tags: ["kinboshi", "crowd_roar"] },
-      { id: "f_k_2", text: "A gold star victory! {winner} defeats a Yokozuna by {kimarite}!", tags: ["kinboshi"] }
+      { id: "f_k_2", text: "A gold star victory! {winner} defeats a Yokozuna by {kimarite}!", tags: ["kinboshi"] },
+      { id: "f_k_3", text: "The Yokozuna falls! {winner} earns a kinboshi via {kimarite}!" },
+      { id: "f_k_4", text: "History is made! {winner} topples the champion with {kimarite}." },
+      { id: "f_k_5", text: "A legendary moment as {winner} secures a kinboshi with {kimarite}!" },
+      { id: "f_k_6", text: "The grand champion goes down! KINBOSHI for {winner} by {kimarite}!" },
+      { id: "f_k_7", text: "A brilliant performance yields a gold star! {winner} wins by {kimarite}!" }
     ]
   },
 
