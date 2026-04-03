@@ -246,16 +246,5 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
  *  * @param world - The World.
  *  * @returns The result.
  */
-function computeStarPower(heya: Heya, world: WorldState): number {
-  let starPower = 0;
-  for (const rId of (heya.rikishiIds ?? [])) {
-
-    const r = world.rikishi.get(rId);
-    if (!r) continue;
-    if (r.rank === "yokozuna") starPower += 30;
-    else if (r.rank === "ozeki") starPower += 20;
-    else if (r.rank === "sekiwake" || r.rank === "komusubi") starPower += 10;
-    else if (r.division === "makuuchi") starPower += 5;
-  }
   return Math.min(100, starPower);
 }
