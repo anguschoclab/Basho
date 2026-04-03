@@ -13,6 +13,8 @@ import { seededPick } from "../../utils/random";
 import { generateFullRikishi } from "./CandidateGenerator";
 import { Division, Rank, Side } from "../../types/banzuke";
 import * as talentpool from "./TalentPoolService";
+import { generateInitialSponsorPool } from "./SponsorGenerator";
+import { createKoenkai } from "../economics/SponsorshipService";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -172,8 +174,24 @@ export function generateInitialWorld(seed: string): WorldState {
     },
     settings: { archiveMode: "standard" },
     planetRating: 50,
-    isInitialSeed: true
+    isInitialSeed: true,
+    sponsorPool: generateInitialSponsorPool(seed)
   } as any;
+
+  // 3. Establish Initial Koenkai Relationships (Constitution A6)
+  if (world.sponsorPool) {
+    for (const heya of world.heyas.values()) {
+      const koenkai = createKoenkai(
+        heya.id,
+        world.sponsorPool,
+        heya.prestigeBand || "respected",
+        worldRng,
+        0
+      );
+      world.sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
+      heya.koenkaiBand = koenkai.strengthBand;
+    }
+  }
 
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);

@@ -10,12 +10,21 @@ import type {
 import { EventBus } from "../../events";
 
 
-const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
+export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
   none: 0,
   weak: 500_000,
   moderate: 1_500_000,
   strong: 3_500_000,
   powerful: 7_000_000
+};
+
+export const SPONSOR_TIER_INCOME: Record<import("../../types/sponsors").SponsorTier, number> = {
+  T0: 100_000,
+  T1: 300_000,
+  T2: 750_000,
+  T3: 1_500_000,
+  T4: 3_000_000,
+  T5: 8_000_000,
 };
 
 /**
@@ -116,15 +125,81 @@ export function applyAchievementImpact(world: WorldState, rikishi: Rikishi, awar
 }
 
 /**
+ * Compute star power for a heya based on its roster.
+ */
+export function computeStarPower(heya: import("../../types/heya").Heya, world: WorldState): number {
+  let starPower = 0;
+  for (const rId of (heya.rikishiIds ?? [])) {
+    const r = world.rikishi.get(rId);
+    if (!r) continue;
+    if (r.rank === "yokozuna") starPower += 30;
+    else if (r.rank === "ozeki") starPower += 20;
+    else if (r.rank === "sekiwake" || r.rank === "komusubi") starPower += 10;
+    else if (r.division === "makuuchi") starPower += 5;
+  }
+  return Math.min(100, starPower);
+}
+
+/**
  * Process Sponsor Churn (Addendum D).
  * Runs post-basho to evaluate satisfaction and relationship longevity.
  */
-export function processSponsorChurn(world: WorldState, currentTick: number): void {
-  const rng = rngForWorld(world, "economics", "churn");
+export function processSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
+  const pool = world.sponsorPool;
+  if (!pool?.sponsors) return { churned: [], retained: 0 };
 
+  const churned: string[] = [];
+  let retained = 0;
 
-  
-  // Logic to iterate over active relationships and roll for churn
-  // based on loyalty and target performance.
-  // This will be expanded in the next iteration.
+  for (const heya of world.heyas.values()) {
+    const koenkaiId = `koenkai_${heya.id}`;
+    const koenkai = pool.koenkais?.get(koenkaiId);
+    if (!koenkai) continue;
+
+    // Compute heya satisfaction inputs (banded per fog-of-war)
+    const prestigeScore = heya.reputation ?? 50;
+    const starPower = computeStarPower(heya, world);
+    const scandalSeverity = heya.scandalScore ?? 0;
+
+    // Satisfaction = (Prestige × 0.5) + (StarPower × 0.3) - (ScandalSeverity × 20)
+    const satisfaction = (prestigeScore * 0.5) + (starPower * 0.3) - (scandalSeverity * 0.2);
+
+    // Check each kōenkai member
+    const survivingMembers: SponsorRelationship[] = koenkai.members.filter((rel: SponsorRelationship) => {
+      const sponsor = pool.sponsors.get(rel.sponsorId);
+      if (!sponsor || !sponsor.active) return false;
+
+      // Churn thresholds per Addendum D2
+      const isLocal = sponsor.category === "local_business";
+      const isCorporate = sponsor.category === "regional_corporation" || sponsor.category === "national_brand";
+      const threshold = isLocal ? 20 : isCorporate ? 50 : 70;
+
+      if (satisfaction < threshold) {
+        sponsor.active = false;
+        churned.push(sponsor.displayName);
+
+        EventBus.financialAlert(world, heya.id,
+          "Sponsor departure",
+          `${sponsor.displayName} has withdrawn support from ${heya.name}.`,
+          { sponsorId: sponsor.sponsorId, satisfaction: Math.round(satisfaction) }
+        );
+        return false;
+      }
+      retained++;
+      return true;
+    });
+
+    koenkai.members = survivingMembers;
+
+    // Update kōenkai band based on remaining members
+    const memberCount = survivingMembers.length;
+    const hasPillar = survivingMembers.some((m: SponsorRelationship) => m.role === "koenkai_pillar");
+    if (memberCount === 0) heya.koenkaiBand = "none";
+    else if (memberCount <= 2 && !hasPillar) heya.koenkaiBand = "weak";
+    else if (memberCount <= 4) heya.koenkaiBand = "moderate";
+    else if (memberCount <= 6 || !hasPillar) heya.koenkaiBand = "strong";
+    else heya.koenkaiBand = "powerful";
+  }
+
+  return { churned, retained };
 }

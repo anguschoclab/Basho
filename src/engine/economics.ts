@@ -13,6 +13,10 @@ import { reportScandal } from "./governance/GovernanceService";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
 import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
+import { 
+  calculateKoenkaiIncome, 
+  processSponsorChurn as runSponsorChurnService 
+} from "./systems/economics/SponsorshipService";
 
 // === CONSTANTS ===
 
@@ -21,9 +25,8 @@ const OYAKATA_SALARY_MONTHLY = 1_200_000; // Standard salary
 const RECRUITMENT_BUDGET_WEEKLY = 100_000; // Baseline scouting burn
 
 // Reputation -> Weekly Supporter Income Multiplier
-// e.g. Rep 50 = 50 * 10,000 = 500,000 / week approx? 
-// Let's align with Spec: "Supporters sustain the stable."
-const SUPPORTER_INCOME_FACTOR = 15_000; 
+// Removed: logic now centralized in SponsorshipService.ts
+// const SUPPORTER_INCOME_FACTOR = 15_000; 
 
 // === CORE LOGIC ===
 
@@ -80,7 +83,9 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
   // 2. Calculate Income (Koenkai / Supporters)
-  const supporterIncome = (heya.reputation || 10) * SUPPORTER_INCOME_FACTOR;
+  // Constitution: Support is disbursed weekly.
+  const monthlyKoenkaiIncome = calculateKoenkaiIncome(heya.koenkaiBand || "none");
+  const supporterIncome = monthlyKoenkaiIncome / 4; // Weekly slice
 
   // KŌENKAI TIER-1 SURVIVAL FLOOR (Constitution §A6 & C2.4):
   // Guarantees minimum base funding that covers staff/roster costs for new heya
@@ -103,16 +108,17 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   heya.funds += net;
 
   // 4. Runway calculation
-  const runwayWeeks = totalBurn > 0 ? heya.funds / totalBurn : 999;
+  const monthlyBurn = totalBurn * 4;
+  const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 999;
 
   // 5. Solvency Check (Bankruptcy)
   if (heya.funds < 0) {
     handleInsolvency(heya, world);
-    EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayWeeks: Math.floor(runwayWeeks) });
+    EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayMonths: Math.floor(runwayMonths) });
   }
 
   // 6. Update Financial Risk Indicator
-  heya.riskIndicators.financial = heya.funds < 0 || runwayWeeks < 8;
+  heya.riskIndicators.financial = heya.funds < 0 || (runwayMonths < 2);
 }
 
 /**
@@ -214,66 +220,10 @@ export function onBoutResolvedEconomics(
 
 /**
  * Run post-basho sponsor churn checks per Constitution Addendum D.
- * Each sponsor computes satisfaction; those below threshold churn out.
+ * Delegates to authoritative SponsorshipService.
  */
 export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
-  const pool = world.sponsorPool;
-  if (!pool?.sponsors) return { churned: [], retained: 0 };
-
-  const churned: string[] = [];
-  let retained = 0;
-
-  for (const heya of world.heyas.values()) {
-    const koenkaiId = `koenkai_${heya.id}`;
-    const koenkai = pool.koenkais?.get(koenkaiId);
-    if (!koenkai) continue;
-
-    // Compute heya satisfaction inputs (banded per fog-of-war)
-    const prestigeScore = heya.reputation ?? 50;
-    const starPower = computeStarPower(heya, world);
-    const scandalSeverity = heya.scandalScore ?? 0;
-
-    // Satisfaction = (Prestige × 0.5) + (StarPower × 0.3) - (ScandalSeverity × 20)
-    const satisfaction = (prestigeScore * 0.5) + (starPower * 0.3) - (scandalSeverity * 0.2);
-
-    // Check each kōenkai member
-    const survivingMembers = koenkai.members.filter((rel: any) => {
-      const sponsor = pool.sponsors.get(rel.sponsorId);
-      if (!sponsor || !sponsor.active) return false;
-
-      // Churn thresholds per Addendum D2
-      const isLocal = sponsor.category === "local_business";
-      const isCorporate = sponsor.category === "regional_corporation" || sponsor.category === "national_brand";
-      const threshold = isLocal ? 20 : isCorporate ? 50 : 70;
-
-      if (satisfaction < threshold) {
-        sponsor.active = false;
-        churned.push(sponsor.displayName);
-
-        EventBus.financialAlert(world, heya.id,
-          "Sponsor departure",
-          `${sponsor.displayName} has withdrawn support from ${heya.name}.`,
-          { sponsorId: sponsor.sponsorId, satisfaction: Math.round(satisfaction) }
-        );
-        return false;
-      }
-      retained++;
-      return true;
-    });
-
-    koenkai.members = survivingMembers;
-
-    // Update kōenkai band based on remaining members
-    const memberCount = survivingMembers.length;
-    const hasPillar = survivingMembers.some((m: any) => m.role === "koenkai_pillar");
-    if (memberCount === 0) heya.koenkaiBand = "none";
-    else if (memberCount <= 2 && !hasPillar) heya.koenkaiBand = "weak";
-    else if (memberCount <= 4) heya.koenkaiBand = "moderate";
-    else if (memberCount <= 6 || !hasPillar) heya.koenkaiBand = "strong";
-    else heya.koenkaiBand = "powerful";
-  }
-
-  return { churned, retained };
+  return runSponsorChurnService(world);
 }
 
 /**
