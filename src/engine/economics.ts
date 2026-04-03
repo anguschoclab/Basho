@@ -15,7 +15,8 @@ import { EventBus } from "./events";
 import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
 import { 
   calculateKoenkaiIncome, 
-  processSponsorChurn as runSponsorChurnService 
+  processSponsorChurn as runSponsorChurnService,
+  selectBenefactor
 } from "./systems/economics/SponsorshipService";
 
 // === CONSTANTS ===
@@ -133,14 +134,27 @@ function handleInsolvency(heya: Heya, world: WorldState): void {
   const DEBT_LIMIT = -20_000_000; // 20m Yen debt limit
 
   if (heya.funds < DEBT_LIMIT) {
-    // Report a Governance Scandal for Insolvency
-    // Only report if not already Sanctioned to avoid spamming
-    if (heya.governanceStatus !== "sanctioned") {
+    // 1. Attempt Benefactor Bailout (Constitution Addendum D.4)
+    const pool = world.sponsorPool;
+    const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
+    const rng = RNGRegistry.getSystemRNG(world, "economics", `bailout-${heya.id}-${world.dayIndexGlobal}`);
+    
+    const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
+    
+    if (benefactor) {
+      const bailoutAmount = 10_000_000; // Standard Pillar bailout
+      heya.funds += bailoutAmount;
+      
+      EventBus.financialAlert(world, heya.id, 
+        "Benefactor Bailout", 
+        `${benefactor.displayName} has provided a ¥10M emergency infusion to stabilize ${heya.name}.`,
+        { benefactorId: benefactor.sponsorId, amount: bailoutAmount }
+      );
+    } else if (heya.governanceStatus !== "sanctioned") {
+      // 2. Regular Governance Scandal for Insolvency
       reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
       
-      // Emergency Bailout (Narrative hook)
-      // Reset to 0 but take massive scandal hit? 
-      // For now, just cap debt so math doesn't break, but scandal keeps rising.
+      // Cap debt so math doesn't spiral into infinity
       heya.funds = DEBT_LIMIT; 
     }
   }
