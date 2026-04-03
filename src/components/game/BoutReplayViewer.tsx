@@ -13,6 +13,7 @@ import { Play, Pause, RotateCcw, SkipForward, Volume2, VolumeX } from "lucide-re
 import { getReplayPhaseDurations } from "@/engine/systems/bout/ReplayMetadata";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { SeededRNG } from "@/engine/rng";
 
 
 /** Defines the structure for bout replay viewer props. */
@@ -114,6 +115,8 @@ export function BoutReplayViewer({
   const safeLog = useMemo(() => (Array.isArray((result as any)?.log) ? (result as any).log : []), [result]);
   const phaseDurations = useMemo(() => getReplayPhaseDurations(result), [result]);
 
+  const rng = useMemo(() => new SeededRNG(result.boutId || "fallback-seed"), [result.boutId]);
+
   const tacticalStrategies = useMemo(() => {
     const strategies: { side: "east" | "west"; strategy: string }[] = [];
     for (const entry of safeLog) {
@@ -195,21 +198,21 @@ export function BoutReplayViewer({
     const newParticles: Particle[] = [];
     for (let i = 0; i < count; i++) {
       const id = particleIdRef.current++;
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 0.5 + Math.random() * 2;
+      const angle = rng.next() * Math.PI * 2;
+      const speed = 0.5 + rng.next() * 2;
       newParticles.push({
         id, x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - (type === "salt" ? 1 : 0),
         life: 1,
-        maxLife: 0.5 + Math.random() * 0.8,
-        size: type === "salt" ? 2 + Math.random() * 3 : 3 + Math.random() * 4,
+        maxLife: 0.5 + rng.next() * 0.8,
+        size: type === "salt" ? 2 + rng.next() * 3 : 3 + rng.next() * 4,
         color: type === "impact" ? "#ff6b35" : type === "salt" ? "#ffffff" : "#d4a574",
         type,
       });
     }
     setParticles(prev => [...prev.slice(-40), ...newParticles]);
-  }, []);
+  }, [rng]);
 
   const currentNarration = useMemo(() => {
     return getPhaseNarration(currentPhase, phaseProgress / 100, result, eastRikishi, westRikishi);
