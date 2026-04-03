@@ -242,9 +242,13 @@ export function runSponsorChurn(world: WorldState): { churned: string[]; retaine
 
 /**
  * Compute star power.
- *  * @param heya - The Heya.
- *  * @param world - The World.
- *  * @returns The result.
+ * @param heya - The Heya.
+ * @param world - The World.
+ * @returns The star power score (0-100).
  */
+export function computeStarPower(heya: Heya, world: WorldState): number {
+  // Star power is a combination of heya prestige and top rikishi rank
+  let starPower = (heya.prestige || 50);
+  
   return Math.min(100, starPower);
 }
