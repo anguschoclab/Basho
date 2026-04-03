@@ -100,7 +100,7 @@ export const selectYokozunaCandidates = createSelector((world: WorldState) => {
 export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[] => {
   const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Rikishi[] = [];
-  for (const rid of Object.keys(kadobanMap)) {
+  for (const rid in kadobanMap) {
     const r = world.rikishi.get(rid);
     if (r) entries.push(r);
   }
