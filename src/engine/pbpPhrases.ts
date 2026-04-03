@@ -339,11 +339,11 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     close_call: [
       { id: "f_c_1", text: "So close at the edge — but {winner} gets it by {kimarite}!", tags: ["close_call", "gasps"] },
       { id: "f_c_2", text: "A razor-thin finish! {winner} wins with {kimarite}!", tags: ["close_call"] },
-      { id: "f_c_3", text: "It goes down to the wire, but {winner} manages a {kimarite}!" },
-      { id: "f_c_4", text: "A breathless conclusion! {winner} barely pulls out the {kimarite}!" },
-      { id: "f_c_5", text: "The gyoji almost had to call a mono-ii, but {winner}'s {kimarite} was clean!" },
-      { id: "f_c_6", text: "Narrowly escaping defeat, {winner} counters with {kimarite}!" },
-      { id: "f_c_7", text: "A hair's breadth away from a loss, {winner} secures the {kimarite}." }
+      { id: "f_c_3", text: "It goes down to the wire, but {winner} manages a {kimarite}!", tags: ["close_call"] },
+      { id: "f_c_4", text: "A breathless conclusion! {winner} barely pulls out the {kimarite}!", tags: ["close_call", "gasps"] },
+      { id: "f_c_5", text: "The gyoji almost had to call a mono-ii, but {winner}'s {kimarite} was clean!", tags: ["close_call"] },
+      { id: "f_c_6", text: "Narrowly escaping defeat, {winner} counters with {kimarite}!", tags: ["close_call"] },
+      { id: "f_c_7", text: "A hair's breadth away from a loss, {winner} secures the {kimarite}.", tags: ["close_call"] }
     ],
     kinboshi: [
       { id: "f_k_1", text: "KINBOSHI! {winner} claims a gold star with {kimarite}!", tags: ["kinboshi", "crowd_roar"] },
