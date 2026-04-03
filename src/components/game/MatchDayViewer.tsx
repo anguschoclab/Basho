@@ -1,10 +1,11 @@
 // MatchDayViewer.tsx - Polished match day panel with staggered animations,
 // east/west color coding, and immersive bout cards
 
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
@@ -24,6 +25,7 @@ import {
   AlertTriangle,
   Eye,
   CircleDot,
+  HeartPulse,
 } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────
@@ -128,19 +130,19 @@ function RikishiSide({
   const isEast = side === "east";
   return (
     <div className={`flex-1 min-w-0 ${isEast ? "text-right" : "text-left"}`}>
-      <button
+      <Button
+        variant="ghost"
         onClick={(e) => {
           e.stopPropagation();
           onClick();
         }}
         className={`
-          font-display text-sm truncate max-w-full
-          transition-colors hover:text-primary cursor-pointer
-          ${isWinner ? "font-bold winner-glow text-success" : "text-foreground"}
+          font-display text-sm truncate max-w-full h-auto p-0 hover:bg-transparent
+          ${isWinner ? "font-bold winner-glow text-success hover:text-success/80" : "text-foreground"}
         `}
       >
         {rikishi.shikona}
-      </button>
+      </Button>
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
         style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
       >
@@ -242,6 +244,120 @@ function useResolvedMatch() {
  * match day viewer.
  *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
  */
+
+const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTactics }: { match: MatchRowData, idx: number, onBoutClick?: (match: MatchLike) => void, onTacticChange?: (boutId: string, tactic: string) => void, playerTactics?: Record<string, string> }) => {
+  const hasResult = !!match.result;
+  return (
+    <div
+      onClick={() => hasResult && onBoutClick?.(match)}
+      className={`
+        bout-card bout-enter p-3 px-4
+        ${hasResult ? "cursor-pointer" : ""}
+        ${match.isPlayerBout ? "bout-card--player bg-primary/[0.03]" : ""}
+        ${hasResult && !match.isPlayerBout ? "opacity-75" : ""}
+      `}
+      style={{ animationDelay: `${idx * 50}ms` }}
+    >
+      <div className="flex items-stretch justify-between relative min-h-[4rem]">
+        {/* East side */}
+        <div className="flex-1 flex flex-col justify-center max-w-[42%] text-right pr-4 relative">
+          {hasResult && match.result?.winnerId === match.east.id && (
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-1.5 h-1 w-1 rounded-full bg-east" />
+          )}
+          <div className="text-[10px] text-muted-foreground font-medium mb-0.5 tracking-wide flex items-center justify-end gap-1.5">
+            {match.east.isInjured && <HeartPulse className="h-3 w-3 text-destructive" />}
+            {match.east.rank}
+          </div>
+          <div className={`font-bold text-sm sm:text-base leading-tight truncate ${hasResult && match.result?.winnerId !== match.east.id ? "text-muted-foreground line-through decoration-muted-foreground/30" : "text-foreground"}`}>
+            {match.east.shikona}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">
+            {match.east.wins}-{match.east.losses}
+          </div>
+        </div>
+
+        {/* Center / Versus */}
+        <div className="w-16 flex flex-col items-center justify-center shrink-0 border-x border-border/30 bg-muted/10">
+          {!hasResult ? (
+            <span className="text-xs font-black text-muted-foreground/40 font-display italic tracking-widest">
+              VS
+            </span>
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full group">
+              <span className="text-[10px] font-medium text-muted-foreground capitalize text-center leading-tight px-1 group-hover:hidden truncate max-w-full">
+                {match.result?.kimarite?.replace(/_/g, " ") || "unknown"}
+              </span>
+              <span className="text-[10px] font-bold text-accent hidden group-hover:block transition-all">
+                REPLAY
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* West side */}
+        <div className="flex-1 flex flex-col justify-center max-w-[42%] text-left pl-4 relative">
+          {hasResult && match.result?.winnerId === match.west.id && (
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-1.5 h-1 w-1 rounded-full bg-west" />
+          )}
+          <div className="text-[10px] text-muted-foreground font-medium mb-0.5 tracking-wide flex items-center gap-1.5">
+            {match.west.rank}
+            {match.west.isInjured && <HeartPulse className="h-3 w-3 text-destructive" />}
+          </div>
+          <div className={`font-bold text-sm sm:text-base leading-tight truncate ${hasResult && match.result?.winnerId !== match.west.id ? "text-muted-foreground line-through decoration-muted-foreground/30" : "text-foreground"}`}>
+            {match.west.shikona}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">
+            {match.west.wins}-{match.west.losses}
+          </div>
+        </div>
+      </div>
+
+      {/* Player Tactics UI */}
+      {match.isPlayerBout && !hasResult && (
+        <div className="mt-3 pt-3 border-t border-border/40 animate-slide-up">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs font-medium text-primary flex items-center gap-1.5">
+              <Swords className="h-3 w-3" />
+              Match Tactic
+            </span>
+            <div className="flex gap-1.5 flex-wrap justify-end">
+              {TACTIC_OPTIONS.map(t => {
+                const isSelected = playerTactics?.[match.boutId!] === t.id;
+                return (
+                  <Tooltip key={t.id}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onTacticChange?.(match.boutId!, t.id); }}
+                        className={`text-[10px] px-2 py-1 rounded-full border transition-all ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t.desc}</TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tags row */}
+      <BoutTags match={match as any} />
+
+      {/* H2H commentary */}
+      {match.h2hCommentary && (match.h2h.wins > 0 || match.h2h.losses > 0) && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground/70 italic line-clamp-1 pl-5">
+          {match.h2hCommentary}
+        </p>
+      )}
+    </div>
+  );
+});
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
@@ -422,14 +538,15 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
                       ].map(t => {
                         const isSelected = (playerTactics[match.boutId || ""] || "STANDARD") === t.id;
                         return (
-                          <button
+                          <Button
+                            variant={isSelected ? "secondary" : "outline"}
                             key={t.id}
                             onClick={() => match.boutId && onTacticChange?.(match.boutId, t.id)}
-                            className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
+                            className={`h-auto p-2 justify-start flex-col items-start ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : ''}`}
                           >
-                            <div className="font-semibold text-xs">{t.label}</div>
-                            <div className="text-[10px] text-muted-foreground">{t.desc}</div>
-                          </button>
+                            <span className="font-semibold text-xs">{t.label}</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">{t.desc}</span>
+                          </Button>
                         );
                       })}
                     </div>
