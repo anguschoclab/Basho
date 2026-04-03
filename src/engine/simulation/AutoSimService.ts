@@ -7,6 +7,7 @@ import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
 import type { ChronicleReport, ChronicleRecordEntry } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
+import { assertNever } from "../utils/types";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -175,6 +176,8 @@ function computeTargetBasho(duration: SimDuration): number {
     case "basho": return Math.max(0, Math.floor(duration.count));
     case "years": return Math.max(0, Math.floor(duration.count) * 6);
     case "untilEvent": return 600; // 100-year cap
+      default: assertNever(duration.type);
+
   }
 }
 

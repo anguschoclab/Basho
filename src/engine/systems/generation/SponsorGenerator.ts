@@ -1,4 +1,5 @@
 import { SeededRNG, rngFromSeed } from "../../rng";
+import { assertNever } from "../../utils/types";
 import type { 
   Sponsor, 
   SponsorTier, 
@@ -125,6 +126,8 @@ export function getTierTraitRanges(tier: SponsorTier) {
     case "T3": return { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 };
     case "T4": return { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 };
     case "T5": return { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 };
+      default: assertNever(tier);
+
   }
 }
 

@@ -8,8 +8,9 @@ import {
   Search, MessageCircle, AlertTriangle, Scale,
 } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
+import type { LucideIcon } from 'lucide-react';
 
-const CAT_ICON: Record<string, any> = {
+const CAT_ICON: Record<string, LucideIcon> = {
   match: Swords, basho: Trophy, training: GraduationCap,
   injury: HeartPulse, economy: Coins, sponsor: Coins,
   promotion: Star, rivalry: Swords, career: Star,

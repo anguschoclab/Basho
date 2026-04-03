@@ -21,8 +21,9 @@ import {
 import type { EngineEvent } from "@/engine/types/events";
 import type { WorldState } from "@/engine/types/world";
 import { formatEventTime } from "@/presenters/uiDigest";
+import type { LucideIcon } from 'lucide-react';
 
-const CATEGORY_META: Record<string, { icon: any; color: string; label: string }> = {
+const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
   basho: { icon: Trophy, color: "text-gold", label: "Basho" },
   training: { icon: GraduationCap, color: "text-success", label: "Training" },

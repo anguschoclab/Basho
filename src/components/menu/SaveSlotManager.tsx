@@ -33,6 +33,7 @@ import {
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
+import type { WorldState } from '../../engine/types/world';
 
 interface SaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
@@ -40,7 +41,7 @@ interface SaveSlotManagerProps {
   loadFromAutosave: () => void;
   hasAutosave: () => boolean;
   onLoadSuccess: () => void;
-  loadWorldDirect?: (world: any) => void;
+  loadWorldDirect?: (world: WorldState) => void;
   createWorld?: (seed: string, playerHeyaId?: string) => void;
 }
 

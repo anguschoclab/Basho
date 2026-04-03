@@ -40,7 +40,7 @@ export interface Milestone {
   title: string;
   description: string;
   date: { year: number; month: number };
-  data?: any;
+
 }
 
 /** Tenure achievements. */

@@ -22,13 +22,14 @@ import type { Heya } from "@/engine/types/heya";
 import { STATURE_CONFIG } from "./HeyaCard";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { sortRikishiByRank } from "@/utils/engineUtils";
+import type { WorldState } from '../../engine/types/world';
 
 interface HeyaPreviewProps {
   heya: Heya | null;
   onClose: () => void;
   onConfirm: (heyaId: string) => void;
   sekitoriCount: number;
-  world: any;
+  world: WorldState;
 }
 
 export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: HeyaPreviewProps) {

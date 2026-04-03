@@ -19,6 +19,7 @@ import { compareRanks, formatRank, kachiKoshiThreshold } from "./banzuke/banzuke
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
+import { assertNever } from "./utils/types";
 
 /** Defines the structure for banzuke update result. */
 interface BanzukeUpdateResult {
@@ -51,6 +52,8 @@ function divisionTier(d: Division): number {
     case "sandanme": return 4;
     case "jonidan": return 5;
     case "jonokuchi": return 6;
+      default: assertNever(d);
+
   }
 }
 

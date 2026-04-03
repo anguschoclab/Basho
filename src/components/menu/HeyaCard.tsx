@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Sparkles, Building2, TrendingDown, AlertTriangle, Plus } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand } from "@/engine/types/narrative";
+import type { LucideIcon } from 'lucide-react';
 
 export const STATURE_CONFIG: Record<
   StatureBand,
@@ -20,7 +21,7 @@ export const STATURE_CONFIG: Record<
     labelJa: string;
     difficulty: string;
     color: string;
-    icon: any;
+    icon: LucideIcon;
   }
 > = {
   legendary: {

@@ -5,6 +5,9 @@
 import type { Id } from "./common";
 import type { Side, BanzukeSnapshot } from "./banzuke";
 import type { KimariteId, Stance } from "./combat";
+import type { PbpLine } from '../bout/boutNarrative';
+import type { PromotionEvent, DemotionEvent } from './banzuke';
+import type { WorldState } from './world';
 
 /** Type representing basho name. */
 export type BashoName = "hatsu" | "haru" | "natsu" | "nagoya" | "aki" | "kyushu";
@@ -29,7 +32,7 @@ export interface BashoInfo {
 export interface BoutLogEntry {
   phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement";
   description?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 /** Defines the structure for bout result. */
@@ -49,7 +52,7 @@ export interface BoutResult {
   kenshoEnvelopes: number;
   log: BoutLogEntry[];
   narrative?: string[];
-  pbpLines?: any[];
+  pbpLines?: PbpLine[];
   pbp?: string[];
 }
 
@@ -111,13 +114,13 @@ export interface BashoResult {
 }
 /** Type representing banzuke update hook result. */
 export interface BanzukeUpdateHookResult {
-  promotions: import("./banzuke").PromotionEvent[];
-  demotions: import("./banzuke").DemotionEvent[];
+  promotions: PromotionEvent[];
+  demotions: DemotionEvent[];
 }
 
 /** Type representing banzuke update hook. */
 export type BanzukeUpdateHook = (args: {
-  world: import("./world").WorldState;
+  world: WorldState;
   bashoName: BashoName;
   year: number;
   standings: StandingsTableRuntime;
@@ -133,6 +136,6 @@ export interface BashoSimResult {
   standings: StandingsTableRuntime;
   keyBouts: BoutResult[];
   injuries: string[];
-  promotions: import("./banzuke").PromotionEvent[];
-  demotions: import("./banzuke").DemotionEvent[];
+  promotions: PromotionEvent[];
+  demotions: DemotionEvent[];
 }
