@@ -37,6 +37,34 @@ export function toPotentialBand(talentSeed: number | undefined, prev?: import(".
 }
 
 /**
+ * Public helper for resolving rivalry heat (Backward compatible).
+ */
+export function toRivalryHeatBand(value: number, prev?: import("./systems/narrative/NarrativeBands").RivalryHeatBand): import("./systems/narrative/NarrativeBands").RivalryHeatBand {
+  return NarrativeService.getRivalryHeatBand(value, prev);
+}
+
+/**
+ * Public helper for resolving scandal level (Backward compatible).
+ */
+export function toScandalBand(value: number, prev?: import("./systems/narrative/NarrativeBands").ScandalBand): import("./systems/narrative/NarrativeBands").ScandalBand {
+  return NarrativeService.getScandalBand(value, prev);
+}
+
+/**
+ * Public helper for resolving prize amounts to bands (direct lookup — no 0–100 clamp).
+ */
+export function toPrizeBand(amount: number): import("./systems/narrative/NarrativeBands").PrizeBand {
+  return NarrativeService.getPrizeBand(amount);
+}
+
+/**
+ * Public helper for resolving trait scores (Backward compatible).
+ */
+export function toTraitBand(value: number, prev?: import("./systems/narrative/NarrativeBands").TraitBand): import("./systems/narrative/NarrativeBands").TraitBand {
+  return NarrativeService.getTraitBand(value, prev);
+}
+
+/**
  * Unified Rikishi Descriptor (Legacy support).
  */
 export interface RikishiDescriptor {

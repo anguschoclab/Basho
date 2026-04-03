@@ -324,7 +324,7 @@ export function tickWeekNPC(world: WorldState): number {
     decisionsApplied++;
 
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
-    const oldMood = oyakata?.mood ?? "neutral";
+    const oldMood = oyakata?.mood ?? "content";
     const newMood = decision.mood;
 
     if (oyakata && newMood) {

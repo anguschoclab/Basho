@@ -16,14 +16,14 @@ const mockPersona = {
     moraleBand: "neutral",
     runwayBand: "comfortable",
     rosterSize: 5,
-    rosterStrengthBand: "average",
+    rosterStrengthBand: "competitive",
     rikishiPerceptions: []
   },
-  riskAppetite: 50,
-  welfareDiscipline: 50,
-  mood: "neutral",
+  riskAppetite: 0.5,
+  welfareDiscipline: 0.5,
+  mood: "content",
   archetype: "traditionalist",
-  traits: { ambition: 50, tradition: 50 },
+  traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
   quirks: [],
   styleBias: "neutral"
 };
@@ -51,7 +51,7 @@ describe("NPC AI Agentic Refactor", () => {
   const mockOyakata = {
     id: oyakataId,
     archetype: "traditionalist",
-    mood: "neutral",
+    mood: "content",
     memory: undefined
   };
 
@@ -65,8 +65,8 @@ describe("NPC AI Agentic Refactor", () => {
       expect((mockOyakata.memory as any).coreDirectives).toContain("Prioritize traditionalist values");
     });
 
-    it("should flag skeptical conflicts (e.g. morale drop vs neutral mood)", () => {
-      mockOyakata.mood = "neutral";
+    it("should flag skeptical conflicts (e.g. morale drop vs content mood)", () => {
+      mockOyakata.mood = "content";
       consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "mutinous" });
       const obs = (mockOyakata.memory as any).observations.find((o: any) => o.type === "alignment");
       expect(obs).toBeDefined();

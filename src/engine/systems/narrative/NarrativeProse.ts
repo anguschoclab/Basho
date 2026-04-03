@@ -10,13 +10,15 @@
  */
 
 import type { RikishiArchetype } from "../../types/combat";
-import type { 
-  StatBand, 
-  FatigueBand, 
-  MomentumBand, 
-  RivalryHeatBand, 
-  PotentialBand, 
-  ScandalBand 
+import type {
+  StatBand,
+  FatigueBand,
+  MomentumBand,
+  RivalryHeatBand,
+  PotentialBand,
+  ScandalBand,
+  PrizeBand,
+  TraitBand
 } from "./NarrativeBands";
 
 // === Attribute Labels (Short) ===
@@ -96,6 +98,42 @@ export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; descriptio
   average:      { label: "Average Ceiling",      description: "Moderate potential — hard work can compensate." },
   limited:      { label: "Limited Upside",        description: "Growth ceiling is low, but grit may surprise." },
   unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
+};
+
+// === Rivalry Heat Labels ===
+export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
+  dormant: "Dormant",
+  simmering: "Simmering",
+  heated: "Heated",
+  fierce: "Fierce",
+  legendary: "Legendary",
+};
+
+// === Scandal Labels ===
+export const SCANDAL_LABELS: Record<ScandalBand, string> = {
+  clean: "Clean",
+  whispers: "Whispers",
+  scrutiny: "Under Scrutiny",
+  scandal: "Scandal",
+  crisis: "Crisis",
+};
+
+// === Prize Labels ===
+export const PRIZE_LABELS: Record<PrizeBand, string> = {
+  nominal: "Nominal",
+  modest: "Modest",
+  notable: "Notable",
+  prestigious: "Prestigious",
+  grand: "Grand",
+};
+
+// === Trait Labels ===
+export const TRAIT_LABELS: Record<TraitBand, string> = {
+  negligible: "Negligible",
+  minor: "Minor",
+  moderate: "Moderate",
+  strong: "Strong",
+  dominant: "Dominant",
 };
 
 // === Archetype Labels ===

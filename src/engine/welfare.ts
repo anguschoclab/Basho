@@ -11,7 +11,8 @@
 import { WelfareService } from "./systems/welfare/WelfareService";
 import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
-import type { DietRegimen } from "./types/economy";
+import type { DietRegimen, WelfareState } from "./types/economy";
+import type { Heya } from "./types/heya";
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/welfare/WelfareCalculations";
@@ -29,6 +30,13 @@ export function tickWeekWelfare(world: WorldState): void {
  */
 export function setHeyaDiet(world: WorldState, heyaId: Id, diet: DietRegimen): void {
   WelfareService.setHeyaDiet(world, heyaId, diet);
+}
+
+/**
+ * Ensure heya welfare state exists (Legacy wrapper).
+ */
+export function ensureHeyaWelfareState(heya: Heya): WelfareState {
+  return WelfareService.ensureHeyaWelfareState(heya);
 }
 
 // Re-export type definitions for backward compatibility

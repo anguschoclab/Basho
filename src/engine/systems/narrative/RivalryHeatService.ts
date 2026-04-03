@@ -13,10 +13,12 @@
 
 import { clamp, clamp01 } from "../../utils/math";
 import { type SeededRNG } from "../../rng";
-import type { 
-  RivalryPairState, 
-  RivalryTone, 
-  RivalryTrigger 
+import type { Id } from "../../types/common";
+import type {
+  RivalryPairState,
+  RivalriesState,
+  RivalryTone,
+  RivalryTrigger
 } from "./RivalryConstants";
 
 /**
@@ -116,4 +118,20 @@ export function applyBoutToPairState(
 
   const tone = deriveTone(next);
   return { ...next, tone };
+}
+
+/**
+ * Derive bout modifier values from a rivalry pair.
+ * Returns tension in the 0.0–1.0 range (pair.heat / 100).
+ * Returns { tension: 0 } if the pair has never met.
+ */
+export function getRivalryBoutModifiers(
+  args: { state: RivalriesState; aId: Id; bId: Id }
+): { tension: number } {
+  const key = args.aId < args.bId
+    ? `${args.aId}|${args.bId}`
+    : `${args.bId}|${args.aId}`;
+  const pair = args.state.pairs[key];
+  if (!pair) return { tension: 0 };
+  return { tension: pair.heat / 100 };
 }

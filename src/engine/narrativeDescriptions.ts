@@ -24,6 +24,22 @@ export function describeAttribute(value: number): string {
 }
 
 /**
+ * Public helper for describing aggression level (Backward compatible).
+ */
+export function describeAggression(value: number): string {
+  const band = NarrativeService.getStatBand(value);
+  return NarrativeService.getStatLabel(band);
+}
+
+/**
+ * Public helper for describing experience level (Backward compatible).
+ */
+export function describeExperience(value: number): string {
+  const band = NarrativeService.getStatBand(value);
+  return NarrativeService.getStatLabel(band);
+}
+
+/**
  * Public helper for describing fatigue (Backward compatible).
  */
 export function describeFatigue(value: number): string {

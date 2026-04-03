@@ -13,17 +13,25 @@
  */
 
 import { clamp } from "../../utils/math";
-import type { 
-  BandDef, 
-  StatBand, 
-  FatigueBand, 
-  MomentumBand, 
-  PotentialBand 
+import type {
+  BandDef,
+  StatBand,
+  FatigueBand,
+  MomentumBand,
+  PotentialBand,
+  RivalryHeatBand,
+  ScandalBand,
+  TraitBand,
+  PrizeBand
 } from "./NarrativeBands";
-import { 
-  STAT_BANDS, 
-  FATIGUE_BANDS, 
-  POTENTIAL_BANDS 
+import {
+  STAT_BANDS,
+  FATIGUE_BANDS,
+  POTENTIAL_BANDS,
+  RIVALRY_HEAT_BANDS,
+  SCANDAL_BANDS,
+  TRAIT_BANDS,
+  PRIZE_BANDS
 } from "./NarrativeBands";
 import { 
   STAT_LABELS, 
@@ -114,5 +122,34 @@ export const NarrativeService = {
     if (v <= -3) return "in_crisis";
     if (v <= -1) return "struggling";
     return "steady";
+  },
+
+  /**
+   * Rivalry Heat Mapping (0–100).
+   */
+  getRivalryHeatBand(value: number, previous?: RivalryHeatBand): RivalryHeatBand {
+    return toBandWithHysteresis(value, RIVALRY_HEAT_BANDS, previous);
+  },
+
+  /**
+   * Scandal Mapping (0–100).
+   */
+  getScandalBand(value: number, previous?: ScandalBand): ScandalBand {
+    return toBandWithHysteresis(value, SCANDAL_BANDS, previous);
+  },
+
+  /**
+   * Trait Mapping (0–100).
+   */
+  getTraitBand(value: number, previous?: TraitBand): TraitBand {
+    return toBandWithHysteresis(value, TRAIT_BANDS, previous);
+  },
+
+  /**
+   * Prize Mapping (yen amounts — no 0–100 clamp, direct lookup).
+   */
+  getPrizeBand(amount: number): PrizeBand {
+    const resolved = PRIZE_BANDS.find(b => amount >= b.min && amount < b.max);
+    return resolved?.band ?? PRIZE_BANDS[PRIZE_BANDS.length - 1].band;
   }
 };
