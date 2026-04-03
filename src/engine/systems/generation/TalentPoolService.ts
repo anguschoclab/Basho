@@ -12,6 +12,7 @@ import {
   TalentPoolType, 
   TalentCandidate, 
   TalentPoolWorldState,
+  TalentPoolState,
   VisibilityBand,
   CandidateAvailabilityState
 } from "../../types/talent";
@@ -253,12 +254,15 @@ function refreshAllPools(world: WorldState) {
     const currentCount = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = pool.hiddenReserveCap - currentCount;
 
-    for (let i = 0; i < toGenerate; i++) {
-      const id = `cand_${pt}_${world.dayIndexGlobal}_${i}`;
-      const candidate = generateCandidate({ id, rng, currentYear: world.year, poolType: pt });
-      tp.candidates[id] = candidate;
-      pool.candidatesHidden.push(id);
-    }
+    fillHiddenCandidates(
+      pool,
+      tp,
+      toGenerate,
+      rng,
+      world.year,
+      pt,
+      (i) => `cand_${pt}_${world.dayIndexGlobal}_${i}`
+    );
   });
 
   tp.lastYearlyRefreshYear = world.year;
@@ -267,6 +271,24 @@ function refreshAllPools(world: WorldState) {
 // ============================================
 // INTERNAL HELPERS
 // ============================================
+
+export function fillHiddenCandidates(
+  pool: TalentPoolState,
+  tp: TalentPoolWorldState,
+  targetCount: number,
+  rng: SeededRNG,
+  currentYear: number,
+  poolType: TalentPoolType,
+  idGenerator: (index: number) => string
+): void {
+  for (let i = 0; i < targetCount; i++) {
+    const id = idGenerator(i);
+    const candidate = generateCandidate({ id, rng, currentYear, poolType });
+    tp.candidates[id] = candidate;
+    pool.candidatesHidden.push(id);
+  }
+}
+
 
 /**
  * Ensures the talent pool state is initialized.
@@ -407,12 +429,15 @@ export function tickYear(world: WorldState): void {
     const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 
-    for (let i = 0; i < toGenerate; i++) {
-      const id = `cand_${poolType}_${currentYear}_${i}_${rng.int(1000, 9999)}`;
-      const candidate = generateCandidate({ id, rng, currentYear, poolType });
-      tp.candidates[id] = candidate;
-      pool.candidatesHidden.push(id);
-    }
+    fillHiddenCandidates(
+      pool,
+      tp,
+      toGenerate,
+      rng,
+      currentYear,
+      poolType,
+      (i) => `cand_${poolType}_${currentYear}_${i}_${rng.int(1000, 9999)}`
+    );
   }
 
   tp.lastYearlyRefreshYear = currentYear;
