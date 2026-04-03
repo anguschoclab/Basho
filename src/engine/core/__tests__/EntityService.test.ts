@@ -27,7 +27,7 @@ describe('EntityService', () => {
     it('should create root state and nested state if they do not exist', () => {
       const world = {} as WorldState;
       const factory = () => ({ val: 1 });
-      const result = EntityService.ensureNestedState(world, 'trainingState' as any, 'heya1', factory);
+      const result = EntityService.ensureNestedState(world, 'trainingState', 'heya1', factory);
 
       expect(result).toEqual({ val: 1 });
       expect((world as any).trainingState).toBeDefined();
