@@ -330,11 +330,11 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     upset: [
       { id: "f_u_1", text: "UPSET! {winner} shocks the arena with {kimarite}!", tags: ["upset", "crowd_roar"] },
       { id: "f_u_2", text: "A stunner — {winner} steals it by {kimarite}!", tags: ["upset"] },
-      { id: "f_u_3", text: "Unbelievable! {winner} pulls off a massive upset with {kimarite}!" },
-      { id: "f_u_4", text: "The crowd goes wild! An unexpected {kimarite} win for {winner}!" },
-      { id: "f_u_5", text: "Against all odds, {winner} conquers {loser} by {kimarite}!" },
-      { id: "f_u_6", text: "A gigantic upset! {winner} catches {loser} with {kimarite}." },
-      { id: "f_u_7", text: "Nobody saw that coming — {winner} uses {kimarite} to score the huge win!" }
+      { id: "f_u_3", text: "Unbelievable! {winner} pulls off a massive upset with {kimarite}!", tags: ["upset"] },
+      { id: "f_u_4", text: "The crowd goes wild! An unexpected {kimarite} win for {winner}!", tags: ["upset", "crowd_roar"] },
+      { id: "f_u_5", text: "Against all odds, {winner} conquers {loser} by {kimarite}!", tags: ["upset"] },
+      { id: "f_u_6", text: "A gigantic upset! {winner} catches {loser} with {kimarite}.", tags: ["upset"] },
+      { id: "f_u_7", text: "Nobody saw that coming — {winner} uses {kimarite} to score the huge win!", tags: ["upset"] }
     ],
     close_call: [
       { id: "f_c_1", text: "So close at the edge — but {winner} gets it by {kimarite}!", tags: ["close_call", "gasps"] },
