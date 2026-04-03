@@ -6,9 +6,6 @@
 import { WorldState } from "../types/world";
 import { SIMULATION_CONFIG } from "./SimulationConfig";
 import * as MediaService from "../systems/media/MediaService";
-// In a real refactor, these would be imported from their new locations:
-// import * as HealthService from "../systems/health/InjuryService";
-// import * as GenerationService from "../systems/generation/WorldFactory";
 
 /**
  * Authoritative post-basho pipeline.
