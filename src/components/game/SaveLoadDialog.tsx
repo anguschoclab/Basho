@@ -193,7 +193,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           <div className="flex gap-1 rounded-lg bg-muted p-1">
             <TooltipWrap content="Switch to Save Mode: Create new save points" side="top">
               <Button
-                variant={mode === "save" ? "default" : "ghost"}
+                variant="ghost"
                 className={`flex-1 ${mode === "save" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("save")}
               >
