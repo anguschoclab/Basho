@@ -1,3 +1,4 @@
+import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
 import { RikishiStats, Rikishi } from "../../types/rikishi";
 import { Rank, Division, Side } from "../../types/banzuke";
@@ -237,6 +238,3 @@ export function generateCandidate(args: {
   };
 }
 
-function seededPick<T>(rng: SeededRNG, items: T[]): T {
-  return items[rng.int(0, items.length - 1)];
-}
