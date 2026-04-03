@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Progress } from "@/components/ui/progress";
@@ -17,7 +18,7 @@ const AXIS_LABELS = {
   nutrition: "Nutrition",
 } as const;
 
-
+const AXES = ["training", "recovery", "nutrition"] as const;
 
 /** facilities widget. */
 export function FacilitiesWidget() {
@@ -31,12 +32,14 @@ export function FacilitiesWidget() {
 
   const maintenance = getMonthlyMaintenanceCost(heya);
   const canAfford = heya.funds >= maintenance;
-  const axes = ["training", "recovery", "nutrition"] as const;
 
-  const atRisk = !canAfford;
-  const lowestAxis = axes.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, axes[0]);
-  const lowestLevel = heya.facilities[lowestAxis];
-  const isLow = lowestLevel <= 25;
+  const { atRisk, lowestAxis, lowestLevel, isLow } = useMemo(() => {
+    const atRisk = !canAfford;
+    const lowestAxis = AXES.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, AXES[0]);
+    const lowestLevel = heya.facilities[lowestAxis];
+    const isLow = lowestLevel <= 25;
+    return { atRisk, lowestAxis, lowestLevel, isLow };
+  }, [canAfford, heya.facilities]);
 
   return (
     <BaseWidget
@@ -62,7 +65,7 @@ export function FacilitiesWidget() {
       headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
     >
       <div className="space-y-2.5">
-        {axes.map((axis) => {
+        {AXES.map((axis) => {
           const Icon = AXIS_ICONS[axis];
           const level = heya.facilities[axis];
           return (

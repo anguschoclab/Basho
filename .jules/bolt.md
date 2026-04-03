@@ -4,3 +4,7 @@
 ## 2024-04-02 - Avoid `.filter()` in active collection array cleanups
 **Learning:** Using `.filter()` to remove elements from frequently updated active arrays (like records or stats collections) causes an O(N) memory allocation per use. In hot engine pathways (like retirements that trigger cascade cleanups), this creates unnecessary garbage collection overhead and drops references needed for optimization.
 **Action:** Use manual backwards `for`-loops combined with `for (let j = i; j < len - 1)` shifts and a final `list.pop()` for removal, bypassing closure and array allocation entirely.
+
+## 2026-04-03 - Stable Reference Constants for useMemo Dependencies
+**Learning:** Moving static arrays and constants outside of React components ensures reference stability, preventing unnecessary `useMemo` or `useCallback` invalidations on every re-render.
+**Action:** Always move fixed arrays (e.g., keys like `['training', 'recovery']`) to the module level rather than defining them inside the component body.
