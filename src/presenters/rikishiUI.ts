@@ -119,12 +119,8 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
   return [`${topKimarite} (${count})`];
 }
 
-export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
-  const heya = world.heyas.get(r.heyaId);
-  const age = world.year - r.birthYear;
-  const careerHistory = r.careerHistory || [];
-  const milestones = r.milestones || [];
 
+export function calculateInjurySummary(r: Rikishi): string {
   let injurySummary = "Healthy";
   if (r.injured && r.injuryStatus) {
     const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
@@ -134,9 +130,12 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     const weeks = r.injuryWeeksRemaining;
     injurySummary = `${sev}${loc} (${weeks}w)`;
   }
+  return injurySummary;
+}
 
-  const h2h = r.h2h ?? {};
-  const topRivals: UIRivalEntry[] = Object.entries(h2h)
+
+export function calculateTopRivals(h2h: NonNullable<Rikishi["h2h"]>, world: WorldState): UIRivalEntry[] {
+  return Object.entries(h2h)
     .map(([oppId, rec]) => {
       const opp = world.rikishi.get(oppId);
       return {
@@ -150,6 +149,31 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     })
     .sort((a, b) => b.totalBouts - a.totalBouts)
     .slice(0, 5);
+}
+
+
+export function calculatePerceivedStats(r: Rikishi): UIRikishi["perceivedStats"] {
+  return {
+    strength: NarrativeService.getStatBand(r.stats?.strength ?? r.power ?? 50),
+    technique: NarrativeService.getStatBand(r.stats?.technique ?? r.technique ?? 50),
+    speed: NarrativeService.getStatBand(r.stats?.speed ?? r.speed ?? 50),
+    stamina: NarrativeService.getStatBand(r.stats?.stamina ?? r.stamina ?? 50),
+    mental: NarrativeService.getStatBand(r.stats?.mental ?? r.aggression ?? 50),
+    adaptability: NarrativeService.getStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
+    balance: NarrativeService.getStatBand(r.stats?.balance ?? r.balance ?? 50),
+  };
+}
+
+export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
+  const heya = world.heyas.get(r.heyaId);
+  const age = world.year - r.birthYear;
+  const careerHistory = r.careerHistory || [];
+  const milestones = r.milestones || [];
+
+  const injurySummary = calculateInjurySummary(r);
+
+  const h2h = r.h2h ?? {};
+  const topRivals = calculateTopRivals(h2h, world);
 
   const rankInfo = RANK_NAMES[r.rank];
   const rankLabel = rankInfo?.en ?? r.rank;
@@ -204,15 +228,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
-    perceivedStats: {
-      strength: NarrativeService.getStatBand(r.stats?.strength ?? r.power ?? 50),
-      technique: NarrativeService.getStatBand(r.stats?.technique ?? r.technique ?? 50),
-      speed: NarrativeService.getStatBand(r.stats?.speed ?? r.speed ?? 50),
-      stamina: NarrativeService.getStatBand(r.stats?.stamina ?? r.stamina ?? 50),
-      mental: NarrativeService.getStatBand(r.stats?.mental ?? r.aggression ?? 50),
-      adaptability: NarrativeService.getStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
-      balance: NarrativeService.getStatBand(r.stats?.balance ?? r.balance ?? 50),
-    },
+    perceivedStats: calculatePerceivedStats(r),
     descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
     topRivals,
