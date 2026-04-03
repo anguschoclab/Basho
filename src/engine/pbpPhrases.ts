@@ -348,11 +348,11 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     kinboshi: [
       { id: "f_k_1", text: "KINBOSHI! {winner} claims a gold star with {kimarite}!", tags: ["kinboshi", "crowd_roar"] },
       { id: "f_k_2", text: "A gold star victory! {winner} defeats a Yokozuna by {kimarite}!", tags: ["kinboshi"] },
-      { id: "f_k_3", text: "The Yokozuna falls! {winner} earns a kinboshi via {kimarite}!" },
-      { id: "f_k_4", text: "History is made! {winner} topples the champion with {kimarite}." },
-      { id: "f_k_5", text: "A legendary moment as {winner} secures a kinboshi with {kimarite}!" },
-      { id: "f_k_6", text: "The grand champion goes down! KINBOSHI for {winner} by {kimarite}!" },
-      { id: "f_k_7", text: "A brilliant performance yields a gold star! {winner} wins by {kimarite}!" }
+      { id: "f_k_3", text: "The Yokozuna falls! {winner} earns a kinboshi via {kimarite}!", tags: ["kinboshi"] },
+      { id: "f_k_4", text: "History is made! {winner} topples the champion with {kimarite}.", tags: ["kinboshi"] },
+      { id: "f_k_5", text: "A legendary moment as {winner} secures a kinboshi with {kimarite}!", tags: ["kinboshi"] },
+      { id: "f_k_6", text: "The grand champion goes down! KINBOSHI for {winner} by {kimarite}!", tags: ["kinboshi", "crowd_roar"] },
+      { id: "f_k_7", text: "A brilliant performance yields a gold star! {winner} wins by {kimarite}!", tags: ["kinboshi"] }
     ]
   },
 
