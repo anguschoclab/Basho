@@ -137,7 +137,7 @@ export function onBashoEnded(world: WorldState) {
 }
 
 /**
- * Called when a Rikishi retires (Intai).
+ * Removes a rikishi from an active record list.
  */
 function removeActiveRecord(list: RecordEntry[], rikishiId: Id) {
   for (let i = list.length - 1; i >= 0; i--) {
