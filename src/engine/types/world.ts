@@ -37,6 +37,17 @@ export interface PostBashoMeta {
 }
 
 import type { LineageEdge } from "../lineage";
+import type { HallOfFameState } from '../hallOfFame';
+import type { HistoryIndex } from '../historyIndex';
+import type { Staff } from './staff';
+import type { SeededRNG } from '../rng';
+import type { ScoutedRikishi } from '../scouting';
+import type { AlmanacSnapshot } from '../almanac';
+import type { OzekiKadobanMap } from '../banzuke';
+import type { SponsorPool } from '../sponsors';
+import type { MediaState } from './media';
+import type { PerceptionSnapshot } from '../perception';
+import type { RivalriesState } from '../rivalries';
 
 /** Defines the structure for a closed or merged heya. */
 export interface ClosedHeyaRecord extends Heya {
@@ -47,9 +58,9 @@ export interface ClosedHeyaRecord extends Heya {
 
 
 export interface WorldState {
-  hallOfFame?: import("../hallOfFame").HallOfFameState;
-  historyIndex?: import("../historyIndex").HistoryIndex;
-  staff: IdMapRuntime<import("./staff").Staff>;
+  hallOfFame?: HallOfFameState;
+  historyIndex?: HistoryIndex;
+  staff: IdMapRuntime<Staff>;
   lineage?: LineageEdge[];
   id: string;
   seed: string;
@@ -59,7 +70,7 @@ export interface WorldState {
   cyclePhase: CyclePhase;
 
   currentBashoName?: BashoName;
-  rng?: import("../rng").SeededRNG;
+  rng?: SeededRNG;
 
   heyas: IdMapRuntime<Heya>;
 
@@ -72,14 +83,14 @@ export interface WorldState {
 
   events: EventsState;
   playerKnowledge?: {
-    scouting?: Record<string, import("../scouting").ScoutedRikishi>;
+    scouting?: Record<string, ScoutedRikishi>;
   };
 
 
   governanceLog?: GovernanceRuling[];
   factions?: Record<IchimonName, Faction>;
 
-  almanacSnapshots?: import("../almanac").AlmanacSnapshot[];
+  almanacSnapshots?: AlmanacSnapshot[];
   ftue: FTUEState;
   playerHeyaId?: Id;
 
@@ -87,17 +98,17 @@ export interface WorldState {
   closedHeyas?: Map<Id, ClosedHeyaRecord>;
 
 
-  ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
+  ozekiKadoban?: OzekiKadobanMap;
 
   trainingState?: Record<Id, BeyaTrainingState>;
 
   talentPool?: TalentPoolWorldState;
 
-  sponsorPool?: import("../sponsors").SponsorPool;
+  sponsorPool?: SponsorPool;
 
-  mediaState?: import("./media").MediaState;
+  mediaState?: MediaState;
 
-  perceptionCache?: Record<Id, import("../perception").PerceptionSnapshot>;
+  perceptionCache?: Record<Id, PerceptionSnapshot>;
 
   npcScoutingPriorities?: Record<Id, "none" | "passive" | "active" | "aggressive">;
 
@@ -109,7 +120,7 @@ export interface WorldState {
 
   _postBashoMeta?: PostBashoMeta;
 
-  rivalriesState?: import("../rivalries").RivalriesState;
+  rivalriesState?: RivalriesState;
 
   calendar: {
     year: number;
@@ -128,7 +139,7 @@ export interface WorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
-    [key: string]: any;
+
   };
 
   bashoNumber?: number;

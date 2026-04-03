@@ -1,4 +1,5 @@
 import { clamp, clampInt, pick, weightedPick, simpleHashToIndex } from './utils';
+import { assertNever } from "./utils/types";
 /**
  * File Name: src/engine/shikona.ts
  * Notes:
@@ -433,6 +434,8 @@ function generateCandidate(
       const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
       return prefix + connector + suffix;
     }
+      default: assertNever(pattern);
+
   }
 }
 

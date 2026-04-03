@@ -1,3 +1,4 @@
+import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/health/BodyDefinitions";
 /**
  * Rikishi Types
  */
@@ -89,10 +90,10 @@ export interface Rikishi {
   injured: boolean;
   injuryWeeksRemaining: number;
   injuryStatus?: {
-    type: string;
+    type: InjuryType;
     isInjured?: boolean;
-    severity: string | number;
-    location?: string;
+    severity: InjurySeverity;
+    location?: InjuryBodyArea;
     weeksRemaining: number;
     weeksToHeal?: number;
   };
@@ -147,8 +148,8 @@ export interface Rikishi {
   talentSeed?: number;
 
   // Dynamic properties set by subsystems
-  injury?: any;
+
   age?: number;
   isPlayer?: boolean;
-  [key: string]: any;
+
 }

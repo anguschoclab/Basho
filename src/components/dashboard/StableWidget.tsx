@@ -17,6 +17,7 @@ import {
   Briefcase,
   Zap
 } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-emerald-500", content: "text-green-500", safe: "text-emerald-500",
@@ -106,7 +107,7 @@ export function StableWidget() {
   );
 }
 
-function StatMini({ icon, label, value }: { icon: any; label: string; value: string }) {
+function StatMini({ icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
   return (
     <div className="flex flex-col gap-1 p-2 rounded-md border border-border/40 bg-card/50">

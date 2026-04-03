@@ -38,6 +38,7 @@ import { toRikishiDescriptor } from "../descriptorBands";
 import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
 import { tickYearBoundary } from "./tickYearly";
+import { assertNever } from "../utils/types";
 
 // ====
 // TYPES
@@ -201,6 +202,8 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
       }
       break;
     }
+      default: assertNever(world.cyclePhase);
+
   }
 
   return undefined;

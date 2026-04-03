@@ -25,6 +25,7 @@ import {
   computeInjuryPressure 
 } from "./WelfareCalculations";
 import { generateGovernanceHeadline } from "../media/MediaService";
+import { assertNever } from "../../utils/types";
 
 /**
  * Unified Welfare Service.
@@ -226,6 +227,8 @@ export const WelfareService = {
           });
         }
         break;
+      default: assertNever(state.complianceState);
+
     }
   },
 

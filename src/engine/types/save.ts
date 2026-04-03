@@ -13,17 +13,32 @@ import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase } from "./world";
 import type { BashoResult } from "./basho";
+import type { Rikishi } from './rikishi';
+import type { Sponsor, Koenkai } from './sponsors';
+import type { ClosedHeyaRecord } from './world';
+import type { Staff } from './staff';
+import type { HistoryIndex } from '../historyIndex';
+import type { LineageEdge } from '../lineage';
+import type { WorldRecords } from './records';
+import type { HallOfFameState } from '../hallOfFame';
+import type { RivalriesState } from '../rivalries';
+import type { MyosekiMarket } from './myoseki';
+import type { OzekiKadobanMap } from '../banzuke';
+import type { MediaState } from './media';
+import type { AlmanacSnapshot } from '../almanac';
+import type { BeyaTrainingState } from './training';
+import type { TalentPoolWorldState } from './talent';
 
 /** Serialized form of sponsor pool for JSON storage. */
 export interface SerializedSponsorPool {
-  sponsors: Record<string, import("./rikishi").Rikishi>; // Note: This should likely be Sponsor, but keeping it broad for now or importing Sponsor
-  koenkais: Record<string, any>;
+  sponsors: Record<string, Rikishi>; // Note: This should likely be Sponsor, but keeping it broad for now or importing Sponsor
+  koenkais: Record<string, Koenkai>;
 }
 
 // Fixed version with correct internal imports
 export interface SerializedSponsorPoolFixed {
-  sponsors: Record<string, import("./sponsors").Sponsor>;
-  koenkais: Record<string, import("./sponsors").Koenkai>;
+  sponsors: Record<string, Sponsor>;
+  koenkais: Record<string, Koenkai>;
 }
 
 
@@ -46,37 +61,37 @@ export interface SerializedWorldState {
   currentBashoName?: BashoName;
 
   heyas: IdMap<Heya>;
-  closedHeyas: IdMap<any>;
+  closedHeyas: IdMap<ClosedHeyaRecord>;
   rikishi: IdMap<Rikishi>;
   historicalRikishi: IdMap<Rikishi>;
   oyakata: IdMap<Oyakata>;
-  staff: IdMap<import("./staff").Staff>;
+  staff: IdMap<Staff>;
 
   currentBasho?: SerializedBashoState;
   history: BashoResult[];
-  historyIndex?: import("../historyIndex").HistoryIndex;
+  historyIndex?: HistoryIndex;
   
-  lineage: import("../lineage").LineageEdge[];
-  records: import("./records").WorldRecords;
-  hallOfFame?: import("../hallOfFame").HallOfFameState;
+  lineage: LineageEdge[];
+  records: WorldRecords;
+  hallOfFame?: HallOfFameState;
 
   events: EventsState;
-  rivalriesState?: import("../rivalries").RivalriesState;
-  myosekiMarket?: import("./myoseki").MyosekiMarket;
+  rivalriesState?: RivalriesState;
+  myosekiMarket?: MyosekiMarket;
 
   ftue: FTUEState;
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;
-  ozekiKadoban?: import("../banzuke").OzekiKadobanMap;
+  ozekiKadoban?: OzekiKadobanMap;
 
   talentPool?: TalentPoolWorldState;
   sponsorPool?: SerializedSponsorPoolFixed;
-  mediaState?: import("./media").MediaState;
+  mediaState?: MediaState;
 
 
   dayIndexGlobal: number;
-  almanacSnapshots: import("../almanac").AlmanacSnapshot[];
+  almanacSnapshots: AlmanacSnapshot[];
 
   calendar: {
     year: number;
@@ -86,10 +101,10 @@ export interface SerializedWorldState {
   };
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
-    [key: string]: any;
+
   };
-  trainingState?: Record<Id, import("./training").BeyaTrainingState>;
-  candidatePool?: any; // Talent acquisition pool
+  trainingState?: Record<Id, BeyaTrainingState>;
+  candidatePool?: TalentPoolWorldState; // Talent acquisition pool
 }
 
 

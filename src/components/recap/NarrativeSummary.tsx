@@ -22,11 +22,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { EngineEvent } from "@/engine/types/events";
+import type { Heya } from '../../engine/types/heya';
+import type { WorldState } from '../../engine/types/world';
 
 interface NarrativeSummaryProps {
   groupedEvents: Record<string, EngineEvent[]>;
-  prestigeChanges: Array<{ heya: any; change: string }>;
-  world: any;
+  prestigeChanges: Array<{ heya: Heya; change: string }>;
+  world: WorldState;
 }
 
 export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: NarrativeSummaryProps) {

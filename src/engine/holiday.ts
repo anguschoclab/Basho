@@ -14,6 +14,7 @@
 import type { WorldState, CyclePhase } from "./types/world";
 import { advanceOneDay, type DailyTickReport } from "./tick/tickDaily";
 import { queryEvents } from "./events";
+import { assertNever } from "./utils/types";
 
 
 // ============================================================================
@@ -231,6 +232,8 @@ function checkGate(
       }
       return null;
     }
+      default: assertNever(gate);
+
   }
 
   return null;
@@ -298,6 +301,8 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
 
     case "postBasho":
       return computeTargetDays(world, "endOfBasho") + 7;
+      default: assertNever(target);
+
   }
 }
 
@@ -479,6 +484,7 @@ function isTargetReached(
       return world.cyclePhase === "post_basho" || world.cyclePhase === "interim";
     case "postBasho":
       return world.cyclePhase === "interim";
+    default: assertNever(target);
   }
 }
 

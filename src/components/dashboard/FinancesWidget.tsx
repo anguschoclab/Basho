@@ -13,8 +13,9 @@ import {
   BarChart,
   Bar
 } from "recharts";
+import type { LucideIcon } from 'lucide-react';
 
-const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: any; bgAccent: string }> = {
+const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: LucideIcon; bgAccent: string }> = {
   secure:      { label: "Secure",      color: "text-emerald-500",    icon: TrendingUp,   bgAccent: "bg-emerald-500/10" },
   comfortable: { label: "Comfortable", color: "text-green-500",      icon: TrendingUp,   bgAccent: "bg-green-500/10" },
   tight:       { label: "Tight",       color: "text-yellow-500",     icon: Minus,         bgAccent: "bg-yellow-500/10" },
