@@ -6,7 +6,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 
-const LeaderboardRow = React.memo(({ s, i, isPlayer, rikishi }: { s: any, i: number, isPlayer: boolean, rikishi: any }) => {
+const LeaderboardRow = React.memo(({ s, i, isPlayer, rikishi }: { s: { id: string; wins: number; losses: number }, i: number, isPlayer: boolean, rikishi: import("@/engine/types/rikishi").Rikishi }) => {
   return (
     <div className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-md transition-colors ${
       isPlayer ? "bg-primary/10 border border-primary/20" : i === 0 ? "bg-gold/5" : "hover:bg-muted/40"
