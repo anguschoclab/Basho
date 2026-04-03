@@ -83,14 +83,24 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "grp_mig_2", text: "Right hand inside — migi-yotsu is established for {leader}!" },
       { id: "grp_mig_3", text: "The grip battle ends with {leader} securing migi-yotsu." },
       { id: "grp_mig_4", text: "{leader} finds the right-inside position. Perfect migi-yotsu!" },
-      { id: "grp_mig_5", text: "Migi-yotsu! {leader} has the exact grip they wanted." }
+      { id: "grp_mig_5", text: "Migi-yotsu! {leader} has the exact grip they wanted." },
+      { id: "grp_mig_6", text: "{leader} confidently slides the right hand inside for migi-yotsu." },
+      { id: "grp_mig_7", text: "The right hand is firmly inside! {leader} establishes migi-yotsu." },
+      { id: "grp_mig_8", text: "A textbook migi-yotsu grip from {leader}! The advantage is clear." },
+      { id: "grp_mig_9", text: "{leader} wins the grip fight, securing a beautiful migi-yotsu." },
+      { id: "grp_mig_10", text: "Migi-yotsu locked in! {leader} controls the grappling exchange." }
     ],
     hidari_yotsu_established: [
       { id: "grp_hid_1", text: "{leader} secures a strong hidari-yotsu position!" },
       { id: "grp_hid_2", text: "Left hand inside! {leader} gets hidari-yotsu." },
       { id: "grp_hid_3", text: "A masterful transition into hidari-yotsu by {leader}." },
       { id: "grp_hid_4", text: "{leader} forces the hidari-yotsu grip — a dangerous setup!" },
-      { id: "grp_hid_5", text: "Hidari-yotsu established! {leader} controls the inside left." }
+      { id: "grp_hid_5", text: "Hidari-yotsu established! {leader} controls the inside left." },
+      { id: "grp_hid_6", text: "A swift left hand inside — {leader} secures hidari-yotsu." },
+      { id: "grp_hid_7", text: "{leader} dominates the inside track with a hidari-yotsu grip." },
+      { id: "grp_hid_8", text: "Hidari-yotsu! {leader} has the left-inside advantage." },
+      { id: "grp_hid_9", text: "The left hand finds its mark. {leader} locks in hidari-yotsu!" },
+      { id: "grp_hid_10", text: "{leader} expertly maneuvers into a commanding hidari-yotsu hold." }
     ],
     double_inside: [
       { id: "grp_dbl_1", text: "Double inside! {leader} dominates the grip completely!" },
@@ -325,7 +335,12 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "f_n_5", text: "{winner} drives the advantage home, winning with {kimarite}!" },
       { id: "f_n_6", text: "There's the climax — {winner} wins via {kimarite}!" },
       { id: "f_n_7", text: "{loser} has no answer for the {kimarite} from {winner}!" },
-      { id: "f_n_8", text: "A textbook application of {kimarite} gives {winner} the victory!" }
+      { id: "f_n_8", text: "A textbook application of {kimarite} gives {winner} the victory!" },
+      { id: "f_n_9", text: "{winner} muscles {loser} over the edge with a powerful {kimarite}!" },
+      { id: "f_n_10", text: "No escape for {loser}! {winner} ends it via {kimarite}." },
+      { id: "f_n_11", text: "A brilliant {kimarite} execution from {winner} to secure the win!" },
+      { id: "f_n_12", text: "{winner} powers through the defense, concluding with {kimarite}!" },
+      { id: "f_n_13", text: "The bout concludes as {winner} forcefully delivers a {kimarite}." }
     ],
     upset: [
       { id: "f_u_1", text: "UPSET! {winner} shocks the arena with {kimarite}!", tags: ["upset", "crowd_roar"] },
@@ -334,7 +349,12 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "f_u_4", text: "The crowd goes wild! An unexpected {kimarite} win for {winner}!", tags: ["upset", "crowd_roar"] },
       { id: "f_u_5", text: "Against all odds, {winner} conquers {loser} by {kimarite}!", tags: ["upset"] },
       { id: "f_u_6", text: "A gigantic upset! {winner} catches {loser} with {kimarite}.", tags: ["upset"] },
-      { id: "f_u_7", text: "Nobody saw that coming — {winner} uses {kimarite} to score the huge win!", tags: ["upset"] }
+      { id: "f_u_7", text: "Nobody saw that coming — {winner} uses {kimarite} to score the huge win!", tags: ["upset"] },
+      { id: "f_u_8", text: "A breathtaking upset! {winner} brings down the giant with {kimarite}!", tags: ["upset", "crowd_roar"] },
+      { id: "f_u_9", text: "{loser} looks stunned! {winner} snatches victory via {kimarite}!", tags: ["upset"] },
+      { id: "f_u_10", text: "Defying all expectations, {winner} pulls out a {kimarite} win!", tags: ["upset"] },
+      { id: "f_u_11", text: "A David vs. Goliath moment! {winner} achieves the impossible with {kimarite}!", tags: ["upset"] },
+      { id: "f_u_12", text: "The arena is in shock! {winner} drops {loser} with a sudden {kimarite}!", tags: ["upset", "gasps"] }
     ],
     close_call: [
       { id: "f_c_1", text: "So close at the edge — but {winner} gets it by {kimarite}!", tags: ["close_call", "gasps"] },
