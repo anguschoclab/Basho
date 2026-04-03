@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { runPostBashoResolution } from '../SimulationRunner';
 import * as MediaService from '../../systems/media/MediaService';
 import type { WorldState } from '../../types/world';
