@@ -151,6 +151,21 @@ function tickMidInterimRecruitment(world: WorldState): void {
 
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
+  // Block recruitment if welfare sanctions are active (Constitution A6.3)
+  if (playerHeya?.welfareState?.complianceState === "sanctioned") {
+    logEngineEvent(world, {
+      type: "RECRUITMENT_BLOCKED_SANCTIONS",
+      category: "discipline",
+      importance: "major",
+      scope: "heya",
+      heyaId: playerHeya.id,
+      title: "Recruitment blocked by sanctions",
+      summary: `${playerHeya.name} cannot open a recruitment window while under JSA welfare sanctions.`,
+      data: { complianceState: "sanctioned", welfareRisk: playerHeya.welfareState?.welfareRisk ?? 0 }
+    });
+    return;
+  }
+
   if (playerHeya) {
     world._recruitmentWindow = {
       openedAtWeek: world.week,

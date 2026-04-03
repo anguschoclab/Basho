@@ -7,9 +7,60 @@ import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
 import { autosave } from "../saveload";
 import { safeCall } from "../utils/safe";
 import { enterPostBasho } from "../tick/tickDaily";
+import { rngForWorld } from "../rng";
+import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState, BashoResult, MatchSchedule } from "../types/basho";
 import type { Id } from "../types/common";
+
+/**
+ * Run a single-elimination playoff among tied yūshō candidates.
+ * Uses resolveBout (physics + narrative + rivalry update) but skips the
+ * full applyBoutResult side-effects (no standings mutation, no kenshō).
+ * The bracket is deterministically shuffled via the world seed.
+ */
+function resolvePlayoffs(
+  world: WorldState,
+  basho: BashoState,
+  candidates: Id[]
+): { winner: Id; matches: MatchSchedule[] } {
+  const allMatches: MatchSchedule[] = [];
+  const rng = rngForWorld(world, "combat", `playoff::${basho.bashoName}::${world.year}`);
+  let round = rng.shuffle(candidates.slice());
+  let day = 16;
+
+  while (round.length > 1) {
+    const next: Id[] = [];
+    const bouts: Array<[Id, Id]> = [];
+
+    for (let i = 0; i + 1 < round.length; i += 2) {
+      bouts.push([round[i], round[i + 1]]);
+    }
+    const bye = round.length % 2 === 1 ? round[round.length - 1] : null;
+
+    for (const [eastId, westId] of bouts) {
+      const east = world.rikishi.get(eastId);
+      const west = world.rikishi.get(westId);
+      if (!east || !west) {
+        next.push(eastId);
+        continue;
+      }
+      const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
+      const result = resolveBout(
+        { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId },
+        east, west, basho, undefined, world
+      );
+      allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
+      next.push(result.winnerRikishiId);
+    }
+
+    if (bye) next.push(bye);
+    round = next;
+    day++;
+  }
+
+  return { winner: round[0], matches: allMatches };
+}
 
 
 /**
@@ -46,11 +97,28 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
   let yusho = topCandidates[0];
   const playoffMatches: MatchSchedule[] = [];
   
-  // === PLAYOFF RESOLUTION (Stub for now) ===
+  // === PLAYOFF RESOLUTION ===
   if (topCandidates.length > 1) {
-    // In a future update, we can re-inject a Mini-Simulator here to resolve ties.
-    // For now, we use the stable tie-breaker (id-based).
-    yusho = topCandidates[0]; 
+    const playoffResult = resolvePlayoffs(world, basho, topCandidates);
+    yusho = playoffResult.winner;
+    playoffMatches.push(...playoffResult.matches);
+
+    const champ = world.rikishi.get(yusho);
+    logEngineEvent(world, {
+      type: "PLAYOFF_RESULT",
+      category: "basho",
+      importance: "headline",
+      scope: "world",
+      title: `Playoff Champion: ${champ?.shikona ?? yusho}`,
+      summary: `${topCandidates.length} rikishi tied at ${bestWins} wins. ${champ?.shikona ?? yusho} wins the Emperor's Cup via playoff.`,
+      data: {
+        bashoName: basho.bashoName,
+        year: world.year,
+        contenders: topCandidates.length,
+        boutCount: playoffMatches.length,
+        championId: yusho,
+      },
+    });
   }
 
   // Determine Special Prizes
@@ -62,7 +130,7 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     yusho,
-    junYusho: topCandidates.slice(1),
+    junYusho: topCandidates.filter(id => id !== yusho),
     ...prizes,
     playoffMatches,
     prizes: {

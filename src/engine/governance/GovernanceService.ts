@@ -5,6 +5,7 @@
 import { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
+import type { GovernanceStatus } from "../types/economy";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -41,7 +42,7 @@ export function tickWeekGovernance(world: WorldState): void {
     if (heya.scandalScore && heya.scandalScore > 0) {
       heya.scandalScore = Math.max(0, heya.scandalScore - 1);
     }
-    // Alert if crossing critical threshold
+    // Alert if crossing critical threshold (player only)
     if (heya.scandalScore && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
       logEngineEvent(world, {
         type: "GOVERNANCE_WARNING",
@@ -54,6 +55,33 @@ export function tickWeekGovernance(world: WorldState): void {
         data: { scandalScore: heya.scandalScore },
         tags: ["governance", "warning"]
       });
+    }
+
+    // Sync governanceStatus from scandalScore thresholds
+    const score = heya.scandalScore ?? 0;
+    const newStatus: GovernanceStatus =
+      score >= 60 ? "sanctioned" :
+      score >= 30 ? "probation" :
+      score >= 15 ? "warning" :
+      "good_standing";
+
+    if (heya.governanceStatus !== newStatus) {
+      const prevStatus = heya.governanceStatus;
+      heya.governanceStatus = newStatus;
+      logEngineEvent(world, {
+        type: "GOVERNANCE_STATUS_CHANGED",
+        category: "discipline",
+        importance: newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable",
+        scope: "heya",
+        heyaId: heya.id,
+        title: `${heya.name}: governance status → ${newStatus}`,
+        summary: `${heya.name} governance standing changed from ${prevStatus} to ${newStatus} (scandal score: ${Math.floor(score)}).`,
+        data: { prevStatus, newStatus, scandalScore: Math.floor(score) }
+      });
+      if (newStatus === "sanctioned" || newStatus === "probation") {
+        generateGovernanceHeadline(world, heya.id, newStatus === "sanctioned" ? "critical" : "major",
+          `${heya.name} governance status has escalated to ${newStatus}.`);
+      }
     }
   }
 }
