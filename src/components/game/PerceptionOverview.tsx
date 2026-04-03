@@ -361,15 +361,16 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
           <ScrollArea className="max-h-28 border border-border rounded-md">
             <div className="p-1 space-y-0.5">
               {snapA.rikishiPerceptions.map(r => (
-                <button
+                <Button
+                  variant="ghost"
                   key={r.rikishiId}
-                  className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
-                    selectedA === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
+                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+                    selectedA === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedA(r.rikishiId)}
                 >
-                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-                </button>
+                  {r.shikona} <span className="text-muted-foreground capitalize ml-1">({r.rank})</span>
+                </Button>
               ))}
             </div>
           </ScrollArea>
@@ -380,15 +381,16 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
           <ScrollArea className="max-h-28 border border-border rounded-md">
             <div className="p-1 space-y-0.5">
               {snapB.rikishiPerceptions.map(r => (
-                <button
+                <Button
+                  variant="ghost"
                   key={r.rikishiId}
-                  className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
-                    selectedB === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
+                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+                    selectedB === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedB(r.rikishiId)}
                 >
-                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-                </button>
+                  {r.shikona} <span className="text-muted-foreground capitalize ml-1">({r.rank})</span>
+                </Button>
               ))}
             </div>
           </ScrollArea>

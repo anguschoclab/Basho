@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import type { PotentialBand  } from "@/engine/descriptorBands";
@@ -115,12 +116,13 @@ export function ScoutingWidget() {
           })
         )}
         {prospects.length > 6 && (
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate({ to: "/talent-pool" })}
-            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
           >
             +{prospects.length - 6} more prospects →
-          </button>
+          </Button>
         )}
       </div>
     </BaseWidget>

@@ -188,7 +188,14 @@ export function SaveSlotManager({
                       </div>
 
                       <div className="flex items-center gap-1">
-                         <Button variant="ghost" size="icon" className="h-8 w-8 text-primary group-hover:scale-110 transition-transform">
+                         <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-primary group-hover:scale-110 transition-transform"
+                            aria-label={slot.slotName === "autosave" ? "Load autosave" : `Load ${slot.slotName.replace("slot_", "Slot ")}`}
+                            tooltip={slot.slotName === "autosave" ? "Load autosave" : `Load ${slot.slotName.replace("slot_", "Slot ")}`}
+                            tooltipSide="top"
+                         >
                             <ArrowRight className="h-4 w-4" />
                          </Button>
                         {slot.slotName !== "autosave" && (
@@ -200,6 +207,9 @@ export function SaveSlotManager({
                               e.stopPropagation();
                               handleDeleteSlot(slot.slotName);
                             }}
+                            aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
+                            tooltip={`Delete ${slot.slotName.replace("slot_", "Slot ")} permanently`}
+                            tooltipSide="top"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

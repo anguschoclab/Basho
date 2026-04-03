@@ -229,7 +229,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "SCANDAL: Bloodied [Rikishi] spotted fleeing a Ginza nightclub!",
     "The Dark Side of Sumo: [Rikishi] embroiled in violent street clash.",
     "Eyewitness Report: [Rikishi] 'out of control' during drunken tirade.",
-    "Disgraceful! [Rikishi] caught on camera in alleyway brawl."
+    "Disgraceful! [Rikishi] caught on camera in alleyway brawl.",
+    "LATE NIGHT DRAMA: [Rikishi] questioned by authorities after club incident.",
+    "Punches Thrown! [Rikishi] in hot water over late-night scrap.",
+    "Another scandal! [Rikishi] reportedly injured in street fight.",
+    "Witnesses claim [Rikishi] instigated a brawl near the stables.",
+    "Trouble outside the ring: [Rikishi] linked to violent late-night clash."
   ],
   SECRET_INJURY_LEAK: [
     "Is [Rikishi] hiding a knee injury? Insiders speak.",
@@ -241,7 +246,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "EXCLUSIVE X-RAYS LEAKED: Is [Rikishi]'s career effectively over?",
     "The Silent Agony: [Rikishi] reportedly struggling to even walk after bouts.",
     "Cover-up at the stable? Oyakata denies rumors of [Rikishi]'s severe tear.",
-    "Doctors Warn [Rikishi] That Further Bouts Risk Permanent Paralysis."
+    "Doctors Warn [Rikishi] That Further Bouts Risk Permanent Paralysis.",
+    "CONFIRMED: [Rikishi] dealing with undisclosed damage, insiders claim.",
+    "Medical Staff 'deeply concerned' about [Rikishi]'s hidden injury.",
+    "Is a secret fracture holding [Rikishi] back this tournament?",
+    "The truth leaks out! [Rikishi] reportedly wrestling through agonizing pain.",
+    "Stable tries to hide the truth about [Rikishi]'s deteriorating condition!"
   ],
   ILLEGAL_GAMBLING: [
     "SHOCKING: [Rikishi] linked to illegal betting ring!",
@@ -253,7 +263,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Police Raid Uncovers Ledger Naming [Rikishi] in Illegal Baseball Betting.",
     "Sponsors Flee as [Rikishi] Faces Blackmail Over Gambling Debts.",
     "High-Stakes Poker Ring Busted: [Rikishi] named as frequent participant.",
-    "The Fall of a Hero: How gambling addiction might end [Rikishi]'s run."
+    "The Fall of a Hero: How gambling addiction might end [Rikishi]'s run.",
+    "Underground Casino Bust: Was [Rikishi] among the patrons?",
+    "Debts pile up! [Rikishi] investigated for illegal gambling ties.",
+    "A risky wager! [Rikishi] caught in illicit betting scandal.",
+    "JSA furious as [Rikishi]'s illegal gambling habits are laid bare.",
+    "Shadowy figures seen demanding payment from [Rikishi] at the stables."
   ],
   TRAINING_ABUSE_ALLEGATION: [
     "Crisis at the heya: [Rikishi] accused of harsh behavior.",

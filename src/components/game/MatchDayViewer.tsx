@@ -5,6 +5,7 @@ import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
@@ -129,19 +130,19 @@ function RikishiSide({
   const isEast = side === "east";
   return (
     <div className={`flex-1 min-w-0 ${isEast ? "text-right" : "text-left"}`}>
-      <button
+      <Button
+        variant="ghost"
         onClick={(e) => {
           e.stopPropagation();
           onClick();
         }}
         className={`
-          font-display text-sm truncate max-w-full
-          transition-colors hover:text-primary cursor-pointer
-          ${isWinner ? "font-bold winner-glow text-success" : "text-foreground"}
+          font-display text-sm truncate max-w-full h-auto p-0 hover:bg-transparent
+          ${isWinner ? "font-bold winner-glow text-success hover:text-success/80" : "text-foreground"}
         `}
       >
         {rikishi.shikona}
-      </button>
+      </Button>
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5"
         style={{ justifyContent: isEast ? "flex-end" : "flex-start" }}
       >
@@ -537,14 +538,15 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
                       ].map(t => {
                         const isSelected = (playerTactics[match.boutId || ""] || "STANDARD") === t.id;
                         return (
-                          <button
+                          <Button
+                            variant={isSelected ? "secondary" : "outline"}
                             key={t.id}
                             onClick={() => match.boutId && onTacticChange?.(match.boutId, t.id)}
-                            className={`p-2 border rounded text-left transition-colors ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : 'bg-background hover:border-primary/50'}`}
+                            className={`h-auto p-2 justify-start flex-col items-start ${isSelected ? 'bg-primary/10 border-primary ring-1 ring-primary' : ''}`}
                           >
-                            <div className="font-semibold text-xs">{t.label}</div>
-                            <div className="text-[10px] text-muted-foreground">{t.desc}</div>
-                          </button>
+                            <span className="font-semibold text-xs">{t.label}</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">{t.desc}</span>
+                          </Button>
                         );
                       })}
                     </div>

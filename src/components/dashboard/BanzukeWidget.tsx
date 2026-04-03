@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollText } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry } from "@/presenters/uiModels";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { BaseWidget } from "./BaseWidget";
 
 const RANK_ORDER: Record<string, number> = {
@@ -86,7 +87,7 @@ export function BanzukeWidget() {
       icon={ScrollText}
       headerAction={{ label: "Full Rankings", onClick: () => navigate({ to: "/banzuke" }) }}
     >
-      <div className="space-y-0.5">
+      <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
         {topRanked.map(({ entry, isPlayer }, i) => (
           <BanzukeEntryRow key={entry.id} entry={entry} isPlayer={isPlayer} i={i} />
         ))}
