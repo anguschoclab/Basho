@@ -361,15 +361,14 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
           <ScrollArea className="max-h-28 border border-border rounded-md">
             <div className="p-1 space-y-0.5">
               {snapA.rikishiPerceptions.map(r => (
-                <Button
-                  variant="ghost"
+                <Button variant="ghost"
                   key={r.rikishiId}
                   className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
                     selectedA === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedA(r.rikishiId)}
                 >
-                  {r.shikona} <span className="text-muted-foreground capitalize ml-1">({r.rank})</span>
+                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
                 </Button>
               ))}
             </div>
@@ -381,15 +380,14 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
           <ScrollArea className="max-h-28 border border-border rounded-md">
             <div className="p-1 space-y-0.5">
               {snapB.rikishiPerceptions.map(r => (
-                <Button
-                  variant="ghost"
+                <Button variant="ghost"
                   key={r.rikishiId}
                   className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
                     selectedB === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedB(r.rikishiId)}
                 >
-                  {r.shikona} <span className="text-muted-foreground capitalize ml-1">({r.rank})</span>
+                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
                 </Button>
               ))}
             </div>

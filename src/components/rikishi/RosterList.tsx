@@ -27,12 +27,12 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
         <div>
            <div className="flex items-center gap-3 mb-1">
               <div className="h-10 w-2 bg-primary rounded-full" />
-              <h1 className="text-4xl font-display font-black tracking-tight uppercase">Stable Roster</h1>
+              <h1 className="text-2xl sm:text-4xl font-display font-black tracking-tight uppercase">Stable Roster</h1>
            </div>
            <p className="text-sm text-muted-foreground font-medium opacity-70">Official Association registry for your active professional roster.</p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
            <div className="bg-muted p-1 rounded-lg flex items-center gap-1 border">
               <Button 
                 variant="ghost" 

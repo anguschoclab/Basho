@@ -44,9 +44,7 @@ function ProfileRow({ label, icon, value, options, onChange }: {
       <div className="flex gap-1 flex-1 flex-wrap">
         {options.map(opt => (
           <TooltipWrap key={opt.value} content={`Set ${label.toLowerCase()} to ${opt.label}`} side="top">
-            <Button
-              variant="outline"
-              size="sm"
+            <Button variant="ghost"
               onClick={() => onChange(opt.value)}
               aria-pressed={value === opt.value}
               className={`h-auto text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
@@ -132,8 +130,7 @@ export function TrainingWidget() {
         ))}
       </div>
 
-      <Button
-        variant="link"
+      <Button variant="ghost"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
         aria-controls="training-quick-change-panel"

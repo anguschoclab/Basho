@@ -116,8 +116,7 @@ export function ScoutingWidget() {
           })
         )}
         {prospects.length > 6 && (
-          <Button
-            variant="ghost"
+          <Button variant="ghost"
             onClick={() => navigate({ to: "/talent-pool" })}
             className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
           >

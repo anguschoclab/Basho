@@ -100,8 +100,7 @@ export function RosterWidget() {
         ))}
         {roster.length > 8 && (
           <TooltipWrap content="Navigate to the full rikishi directory" side="top">
-            <Button
-              variant="ghost"
+            <Button variant="ghost"
               onClick={() => navigate({ to: "/rikishi" })}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
