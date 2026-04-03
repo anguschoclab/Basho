@@ -203,7 +203,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
             </TooltipWrap>
             <TooltipWrap content="Switch to Load Mode: Restore previous save points" side="top">
               <Button
-                variant={mode === "load" ? "default" : "ghost"}
+                variant="ghost"
                 className={`flex-1 ${mode === "load" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("load")}
               >
