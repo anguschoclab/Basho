@@ -1,7 +1,5 @@
 import { RANK_HIERARCHY, type Rank, type RankPosition } from "../types/banzuke";
-import { RankEvaluator } from "../RankEvaluator";
 
-const evaluator = new RankEvaluator(RANK_HIERARCHY);
 
 /** Compare ranks by tier, number, and side. */
 export function compareRanks(a: RankPosition, b: RankPosition): number {
@@ -37,7 +35,7 @@ export function getRankTitleJa(position: RankPosition): string {
 
 /** Get kachi-koshi threshold for a rank. */
 export function kachiKoshiThreshold(rank: Rank): number {
-  return evaluator.getKachiKoshiThreshold(rank);
+  return Math.floor(RANK_HIERARCHY[rank].fightsPerBasho / 2) + 1;
 }
 
 /** Check if performance is kachi-koshi. */

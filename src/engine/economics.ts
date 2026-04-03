@@ -12,7 +12,7 @@ import type { Id } from "./types/common";
 import { reportScandal } from "./governance/GovernanceService";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
-import { calculateKenshoEnvelopes } from "./systems/SponsorService";
+import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
 
 // === CONSTANTS ===
 

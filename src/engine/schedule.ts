@@ -10,8 +10,8 @@ import type { Division } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import { getActiveRikishi } from "./selectors";
-import { StandardMatchmaking } from "./MatchmakingStrategy";
-import type { MatchPairing, MatchmakingRules } from "./matchmaking";
+
+import { buildCandidatePairs, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
@@ -123,8 +123,7 @@ export function scheduleDivisionDay(args: {
   const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
   if (boutsPerDay <= 0 || pool.length < 2) return [];
 
-  const strategy = new StandardMatchmaking();
-  const candidates = strategy.generatePairs(basho, pool, {
+  const candidates = buildCandidatePairs(basho, pool, {
     seed: `${args.seed}-cand-${division}-day${day}`,
     division
   });
@@ -135,7 +134,7 @@ export function scheduleDivisionDay(args: {
 
   // If we couldn't fill the card, optionally allow forced repeats (same-heya still disallowed)
   if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
-     const relaxedCandidates = strategy.generatePairs(basho, pool, {
+     const relaxedCandidates = buildCandidatePairs(basho, pool, {
        seed: `${args.seed}-relaxed-${division}-day${day}`,
        division,
        rules: { avoidRepeatOpponents: false }
