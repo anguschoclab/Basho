@@ -4,7 +4,7 @@ def run_cuj(page):
     page.goto("http://localhost:5174")
     page.wait_for_timeout(2000)
 
-    page.screenshot(path="/home/jules/verification/screenshots/verification3.png")
+    page.screenshot(path="./screenshots/verification3.png")
     page.wait_for_timeout(1000)
 
 if __name__ == "__main__":
