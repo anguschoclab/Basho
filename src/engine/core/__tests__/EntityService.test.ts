@@ -46,7 +46,7 @@ describe('EntityService', () => {
     it('should return existing nested state if it exists', () => {
       const world = { trainingState: { heya1: { val: 2 } } } as unknown as WorldState;
       const factory = () => ({ val: 1 });
-      const result = EntityService.ensureNestedState(world, 'trainingState' as any, 'heya1', factory);
+      const result = EntityService.ensureNestedState(world, 'trainingState', 'heya1', factory);
 
       expect(result).toEqual({ val: 2 });
       expect((world as any).trainingState['heya1']).toEqual({ val: 2 });
