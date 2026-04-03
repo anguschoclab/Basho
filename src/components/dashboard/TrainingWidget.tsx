@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-react";
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/training";
@@ -43,17 +44,19 @@ function ProfileRow({ label, icon, value, options, onChange }: {
       <div className="flex gap-1 flex-1 flex-wrap">
         {options.map(opt => (
           <TooltipWrap key={opt.value} content={`Set ${label.toLowerCase()} to ${opt.label}`} side="top">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => onChange(opt.value)}
               aria-pressed={value === opt.value}
-              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
+              className={`h-auto text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
                 value === opt.value
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
                   : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
               }`}
             >
               {opt.label}
-            </button>
+            </Button>
           </TooltipWrap>
         ))}
       </div>
@@ -129,14 +132,15 @@ export function TrainingWidget() {
         ))}
       </div>
 
-      <button
+      <Button
+        variant="link"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
         aria-controls="training-quick-change-panel"
-        className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+        className="h-auto p-0 text-[11px] text-primary hover:underline underline-offset-2 rounded-sm"
       >
         {expanded ? "Hide quick-change ▲" : "Quick-change ▼"}
-      </button>
+      </Button>
 
       {expanded && (
         <div id="training-quick-change-panel" className="space-y-2 pt-1 border-t border-border/50 animate-slide-up">

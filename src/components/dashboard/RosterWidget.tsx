@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
 import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
@@ -71,11 +72,11 @@ export function RosterWidget() {
       </div>
 
       {/* Roster list */}
-      <div className="space-y-0.5">
+      <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
         {roster.slice(0, 8).map((entry) => (
-          <div key={entry.id} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
+          <div key={entry.id} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group min-w-[250px] sm:min-w-0">
             <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
-            <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{entry.rank}</span>
+            <span className="text-[10px] text-muted-foreground capitalize w-14 text-right shrink-0">{entry.rank}</span>
             {entry.isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
             {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
               <Star className="h-3 w-3 text-gold shrink-0" />
@@ -93,12 +94,13 @@ export function RosterWidget() {
         ))}
         {roster.length > 8 && (
           <TooltipWrap content="Navigate to the full rikishi directory" side="top">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => navigate({ to: "/rikishi" })}
-              className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+              className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
               +{roster.length - 8} more wrestlers →
-            </button>
+            </Button>
           </TooltipWrap>
         )}
       </div>
