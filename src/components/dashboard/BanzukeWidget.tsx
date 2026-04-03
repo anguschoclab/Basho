@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,26 @@ const RANK_BG: Record<string, string> = {
   yokozuna: "rank-shimmer",
   ozeki: "bg-silver/5",
 };
+
+const BanzukeEntryRow = React.memo(({ entry, isPlayer, i }: { entry: import("@/presenters/uiModels").UIRosterEntry, isPlayer: boolean, i: number }) => {
+  return (
+    <div
+      className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
+        isPlayer ? "bg-primary/10 border border-primary/20" : RANK_BG[entry.rank] || (i % 2 === 0 ? "bg-muted/30" : "")
+      } hover:bg-muted/40`}
+    >
+      <span className={`w-16 shrink-0 capitalize text-[11px] font-display ${RANK_STYLE[entry.rank] || ""}`}>
+        {entry.rank === "maegashira" ? `M${entry.rankNumber || ""}` : entry.rank === "juryo" ? `J${entry.rankNumber || ""}` : entry.rank}
+      </span>
+      <span className={`text-[10px] w-4 ${entry.side === "east" ? "text-east" : "text-west"}`}>
+        {entry.side === "east" ? "E" : "W"}
+      </span>
+      <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
+      <span className="text-[10px] text-muted-foreground font-mono tabular-nums">{entry.record}</span>
+      {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>}
+    </div>
+  );
+});
 
 export function BanzukeWidget() {
   const { state } = useGame();
@@ -69,26 +89,7 @@ export function BanzukeWidget() {
     >
       <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
         {topRanked.map(({ entry, isPlayer }, i) => (
-          <div
-            key={entry.id}
-            className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors min-w-[250px] sm:min-w-0 ${
-              isPlayer ? "bg-primary/10 border border-primary/20" : RANK_BG[entry.rank] || (i % 2 === 0 ? "bg-muted/30" : "")
-            } hover:bg-muted/40`}
-          >
-            <span className={`w-16 shrink-0 capitalize text-[11px] font-display ${RANK_STYLE[entry.rank] || ""}`}>
-              {entry.rank === "maegashira" ? `M${entry.rankNumber || ""}` : entry.rank === "juryo" ? `J${entry.rankNumber || ""}` : entry.rank}
-            </span>
-            <TooltipWrap content={entry.side === "east" ? "East" : "West"} side="top">
-              <span className={`text-[10px] w-4 ${entry.side === "east" ? "text-east" : "text-west"}`}>
-                {entry.side === "east" ? "E" : "W"}
-              </span>
-            </TooltipWrap>
-            <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
-            <TooltipWrap content="Wins-Losses" side="top">
-              <span className="text-[10px] text-muted-foreground font-mono tabular-nums shrink-0">{entry.record}</span>
-            </TooltipWrap>
-            {isPlayer && <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1 shrink-0">YOU</Badge>}
-          </div>
+          <BanzukeEntryRow key={entry.id} entry={entry} isPlayer={isPlayer} i={i} />
         ))}
       </div>
     </BaseWidget>
