@@ -61,7 +61,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
                     }
                   }}
                   className={cn(
-                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group rounded-sm hover:bg-transparent rounded-none",
+                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group hover:bg-transparent rounded-none",
                     isActive
                       ? "text-primary hover:text-primary"
                       : "text-muted-foreground hover:text-foreground"
