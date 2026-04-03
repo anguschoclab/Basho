@@ -309,3 +309,63 @@ export function buildCandidatePairs(
   });
   return candidates;
 }
+
+/**
+ * Playoff matchmaking strategy.
+ */
+export function buildPlayoffPairs(
+  basho: BashoState,
+  rikishi: Rikishi[],
+  options: CandidateBuildOptions & { rules?: Partial<MatchmakingRules> }
+): MatchPairing[] {
+  const rules: Partial<MatchmakingRules> = {
+    avoidSameHeya: false,
+    avoidRepeatOpponents: false,
+    preferSimilarRecords: true,
+    ...(options.rules || {})
+  };
+
+  const pool = rikishi.filter(r => r.division === options.division);
+  const out: MatchPairing[] = [];
+
+  for (let i = 0; i < pool.length; i++) {
+      for (let j = i + 1; j < pool.length; j++) {
+        const a = pool[i];
+        const b = pool[j];
+        const pairing = scorePairing({ basho, a, b, rules });
+        if (pairing) out.push(pairing);
+      }
+  }
+  return out.sort((a,b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
+  });
+}
+
+/**
+ * Exhibition matchmaking strategy.
+ */
+export function buildExhibitionPairs(
+  basho: BashoState,
+  rikishi: Rikishi[],
+  options: CandidateBuildOptions
+): MatchPairing[] {
+   const rng = rngFromSeed(options.seed, "matchmaking", "exhibition");
+   const pool = rikishi.filter(r => r.division === options.division);
+   const out: MatchPairing[] = [];
+
+   for (let i = 0; i < pool.length; i++) {
+       for (let j = i + 1; j < pool.length; j++) {
+           out.push({
+               eastId: pool[i].id,
+               westId: pool[j].id,
+               score: rng.next(),
+               reasons: ["exhibition"]
+           });
+       }
+   }
+   return out.sort((a,b) => {
+       if (b.score !== a.score) return b.score - a.score;
+       return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
+   });
+}

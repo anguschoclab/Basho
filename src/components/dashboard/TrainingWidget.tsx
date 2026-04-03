@@ -47,9 +47,9 @@ function ProfileRow({ label, icon, value, options, onChange }: {
             <Button variant="ghost"
               onClick={() => onChange(opt.value)}
               aria-pressed={value === opt.value}
-              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
+              className={`h-auto text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
                 value === opt.value
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
                   : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
               }`}
             >
@@ -134,7 +134,7 @@ export function TrainingWidget() {
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
         aria-controls="training-quick-change-panel"
-        className="text-[11px] text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+        className="h-auto p-0 text-[11px] text-primary hover:underline underline-offset-2 rounded-sm"
       >
         {expanded ? "Hide quick-change ▲" : "Quick-change ▼"}
       </Button>

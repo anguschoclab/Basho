@@ -2,12 +2,12 @@ import type { Rikishi, RikishiStats } from "../types/rikishi";
 import type { TacticalArchetype } from "../types/combat";
 
 export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
-  const power = overrides.power ?? (overrides.stats as any)?.strength ?? 50;
-  const speed = overrides.speed ?? (overrides.stats as any)?.speed ?? 50;
-  const balance = overrides.balance ?? (overrides.stats as any)?.balance ?? 50;
-  const technique = overrides.technique ?? (overrides.stats as any)?.technique ?? 50;
-  const aggression = overrides.aggression ?? (overrides.stats as any)?.aggression ?? 50;
-  const experience = overrides.experience ?? (overrides.stats as any)?.experience ?? 50;
+  const power = overrides.power ?? (overrides.stats as unknown as RikishiStats)?.strength ?? 50;
+  const speed = overrides.speed ?? (overrides.stats as unknown as RikishiStats)?.speed ?? 50;
+  const balance = overrides.balance ?? (overrides.stats as unknown as RikishiStats)?.balance ?? 50;
+  const technique = overrides.technique ?? (overrides.stats as unknown as RikishiStats)?.technique ?? 50;
+  const aggression = overrides.aggression ?? (overrides.stats as unknown as RikishiStats)?.aggression ?? 50;
+  const experience = overrides.experience ?? (overrides.stats as unknown as RikishiStats)?.experience ?? 50;
 
   return {
     id,
@@ -22,7 +22,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     weight: 140,
     height: 180,
     style: "oshi",
-    archetype: "all_rounder" as any,
+    archetype: 'all_rounder' as unknown as TacticalArchetype,
     power,
     speed,
     balance,
@@ -57,7 +57,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
         ginboshiConceded: 0,
         specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
       }
-    } as any,
+    } as unknown as RikishiStats,
     careerWins: 20,
     careerLosses: 10,
     favoredKimarite: [],

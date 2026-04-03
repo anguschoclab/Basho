@@ -5,6 +5,9 @@ import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { rngForWorld } from "./rng";
 import { stableSort } from "./utils/sort";
+import { 
+  selectBenefactor 
+} from "./systems/economics/SponsorshipService";
 
 /**
  * Check and issue loans for insolvent stables.
@@ -33,8 +36,6 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
   const scandalScore = heya.scandalScore || 0;
   const rng = rngForWorld(world, "economy", `loan_${heyaId}_${world.year}_${world.week}`);
 
-  const TIER_MAP: Record<string, number> = { "T0": 0, "T1": 1, "T2": 2, "T3": 3, "T4": 4, "T5": 5 };
-
   // Escalate based on existing debt and scandal
   if (existingLoans === 0 && scandalScore < 30) {
     // 1. Emergency Loan (0%, short-term, restrictive)
@@ -52,23 +53,10 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
     loanType = "benefactor";
     interestRate = 0.06; // 6%
 
-    // Attempt to find a high-tier sponsor to be the benefactor
-    const kōenkai = world.sponsorPool?.koenkais.get(heya.id);
-    let benefactorSponsor: { displayName: string; tier: string } | null = null;
-    if (kōenkai && kōenkai.members.length > 0) {
-      // Find highest tier member
-      let bestTierVal = -1;
-      for (const m of kōenkai.members) {
-        const s = world.sponsorPool?.sponsors.get(m.sponsorId);
-        if (s) {
-          const tVal = TIER_MAP[s.tier] ?? 0;
-          if (tVal > bestTierVal) {
-            bestTierVal = tVal;
-            benefactorSponsor = s;
-          }
-        }
-      }
-    }
+    // Attempt to find a high-tier sponsor to be the benefactor using authoritative service
+    const pool = world.sponsorPool;
+    const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
+    const benefactorSponsor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
 
     if (benefactorSponsor) {
       providerName = benefactorSponsor.displayName;
@@ -174,4 +162,3 @@ export function processMonthlyLoanRepayments(world: WorldState): void {
     }
   }
 }
-

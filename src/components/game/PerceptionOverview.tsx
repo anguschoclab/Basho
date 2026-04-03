@@ -363,8 +363,8 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapA.rikishiPerceptions.map(r => (
                 <Button variant="ghost"
                   key={r.rikishiId}
-                  className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
-                    selectedA === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
+                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+                    selectedA === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedA(r.rikishiId)}
                 >
@@ -382,8 +382,8 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
               {snapB.rikishiPerceptions.map(r => (
                 <Button variant="ghost"
                   key={r.rikishiId}
-                  className={`w-full text-left text-xs px-2 py-1 rounded transition-colors ${
-                    selectedB === r.rikishiId ? "bg-primary/20 text-primary" : "hover:bg-secondary/50"
+                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+                    selectedB === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
                   }`}
                   onClick={() => setSelectedB(r.rikishiId)}
                 >

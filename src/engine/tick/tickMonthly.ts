@@ -82,14 +82,8 @@ export function tickMonthlyEconomics(world: WorldState): void {
       (heya.facilities.recovery * 4000) +
       (heya.facilities.nutrition * 8000);
 
-    const koenkaiBands: Record<string, number> = {
-      none: 0, weak: 200_000, moderate: 800_000, strong: 2_000_000, powerful: 5_000_000
-    };
-    const supporterIncome = koenkaiBands[heya.koenkaiBand] ?? 500_000;
-
     const totalExpenses = totalSalaries + facilityUpkeep;
-    const net = supporterIncome - totalExpenses;
-    heya.funds += net;
+    heya.funds -= totalExpenses;
 
     const monthlyBurn = Math.max(1, totalExpenses);
     const runwayMonths = heya.funds / monthlyBurn;
@@ -108,7 +102,7 @@ export function tickMonthlyEconomics(world: WorldState): void {
         heyaId: heya.id,
         title: "Monthly deficit",
         summary: `${heya.name} is operating at a deficit. Runway: ${heya.runwayBand}.`,
-        data: { net, runway: heya.runwayBand },
+        data: { net: -totalExpenses, runway: heya.runwayBand },
         tags: ["economy"]
       });
     }

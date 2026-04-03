@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { Button } from "@/components/ui/button";
 import {
   Trophy,
   Swords,
@@ -237,19 +238,17 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
         <h2 className="font-display font-semibold text-sm">Messages</h2>
         <div className="flex gap-1 mt-2 flex-wrap">
           {filterOptions.map((f) => (
-            <button
+            <Button
+              variant={filter === f.value ? "default" : "secondary"}
+              size="sm"
               key={f.value}
               onClick={() => setFilter(f.value)}
               aria-pressed={filter === f.value}
               aria-label={`Filter by ${f.label}`}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${
-                filter === f.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
+              className={`h-auto px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${filter === f.value ? "" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {f.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -286,34 +285,35 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                       isExpanded ? "bg-muted" : "hover:bg-muted/50"
                     } ${isPlayerRelevant ? "border-l-2 border-l-primary" : ""}`}
                   >
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => setExpandedId(isExpanded ? null : e.id)}
-                      className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
+                      className="w-full h-auto p-0 justify-start whitespace-normal hover:bg-transparent text-left rounded-sm"
                       aria-expanded={isExpanded}
                       aria-controls={`event-details-${e.id}`}
                     >
-                      <div className="flex items-start gap-2">
+                      <div className="flex items-start gap-2 text-left">
                         <div className={`mt-0.5 shrink-0 ${meta.color}`}>
                           <Icon className="h-3.5 w-3.5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-medium truncate">
+                            <span className="text-xs font-medium truncate text-foreground">
                               {e.title}
                             </span>
-                            <span className="text-[10px] text-muted-foreground shrink-0">
+                            <span className="text-[10px] text-muted-foreground shrink-0 font-normal">
                               {formatEventTime(e)}
                             </span>
                           </div>
                           {!isExpanded && (
-                            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                            <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-normal">
                               {e.summary}
                             </p>
                           )}
                           {!isExpanded && renderEntityTags(e)}
                         </div>
                       </div>
-                    </button>
+                    </Button>
 
                     {isExpanded && (
                       <div id={`event-details-${e.id}`} className="mt-1 ml-6 space-y-1.5">
@@ -342,16 +342,17 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
 
                         {/* Clickable navigation link */}
                         {hasLink && (
-                          <button
+                          <Button
+                            variant="link"
                             onClick={(ev) => {
                               ev.stopPropagation();
                               handleEventClick(e);
                             }}
-                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
+                            className="h-auto p-0 inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5 rounded-sm"
                           >
                             <ExternalLink className="h-2.5 w-2.5" />
                             {getLinkLabel(e)}
-                          </button>
+                          </Button>
                         )}
                       </div>
                     )}

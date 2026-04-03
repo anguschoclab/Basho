@@ -29,8 +29,8 @@ const INDUSTRIES = {
 
 const FINISHING_SUFFIXES = ["Corp", "Ltd", "Group", "Holdings", "Global", "Enterprises"];
 
-const REGIONS = ["tokyo", "osaka", "kyoto", "nagoya", "fukuoka", "sapporo", "sendai", "hiroshima", "kobe", "yokohama", "chiba", "saitama"];
-const INDUSTRY_TAGS = ["logistics", "foods", "manufacturing", "construction", "retail", "hospitality", "finance", "cultural", "sports", "media"];
+export const REGIONS = ["tokyo", "osaka", "kyoto", "nagoya", "fukuoka", "sapporo", "sendai", "hiroshima", "kobe", "yokohama", "chiba", "saitama"];
+export const INDUSTRY_TAGS = ["logistics", "foods", "manufacturing", "construction", "retail", "hospitality", "finance", "cultural", "sports", "media"];
 
 /**
  * Procedural Sponsor Name Generator V2 (Authoritative)
@@ -139,21 +139,21 @@ export function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): Spo
   return "T0";
 }
 
+export const INITIAL_SPONSOR_TIER_DISTRIBUTION: Record<SponsorTier, number> = {
+  T0: 0.35, T1: 0.25, T2: 0.2, T3: 0.12, T4: 0.07, T5: 0.01
+};
+
 /**
  * Generate procedural sponsor pool.
  */
-export function generateSponsorPool(worldSeed: string, worldSizeScalar: number = 1): SponsorPool {
+export function generateInitialSponsorPool(worldSeed: string, worldSizeScalar: number = 1): SponsorPool {
   const rng = rngFromSeed(worldSeed, "sponsors", "root");
   const existingIds = new Set<string>();
   const poolSize = 180 + Math.floor(worldSizeScalar * 60);
 
-  const tierDistribution: Record<SponsorTier, number> = {
-    T0: 0.35, T1: 0.25, T2: 0.2, T3: 0.12, T4: 0.07, T5: 0.01
-  };
-
   const sponsors = new Map<string, Sponsor>();
   for (let i = 0; i < poolSize; i++) {
-    const tier = rollTier(rng, tierDistribution);
+    const tier = rollTier(rng, INITIAL_SPONSOR_TIER_DISTRIBUTION);
     const sponsor = generateSponsor(rng, tier, 0, existingIds);
     sponsors.set(sponsor.sponsorId, sponsor);
   }

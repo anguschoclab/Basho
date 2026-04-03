@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,34 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
   university: GraduationCap,
   foreign: Globe,
 };
+
+const ProspectRow = React.memo(({ c, intel }: { c: TalentCandidate & { pool: TalentPoolType }, intel: number }) => {
+  const canShowName = c.visibilityBand === "public" || intel >= 65;
+  const potential = toPotentialBand(c.talentSeed);
+  const potentialInfo = POTENTIAL_LABELS[potential];
+  const Icon = POOL_ICONS[c.pool as TalentPoolType];
+
+  return (
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
+      <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
+      <span className="flex-1 font-medium truncate">
+        {canShowName ? c.name : "Unknown Prospect"}
+      </span>
+      <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16">
+        {c.archetype.replace(/_/g, " ")}
+      </span>
+      {(potential === "generational" || potential === "star") && (
+        <Sparkles className={`h-3 w-3 shrink-0 ${POTENTIAL_COLORS[potential]}`} />
+      )}
+      <Badge
+        variant={potential === "generational" || potential === "star" ? "default" : "secondary"}
+        className="text-[9px] px-1.5 py-0 h-4 shrink-0"
+      >
+        {potentialInfo.label.split(" ")[0]}
+      </Badge>
+    </div>
+  );
+});
 
 /** scouting widget. */
 export function ScoutingWidget() {
@@ -84,37 +112,13 @@ export function ScoutingWidget() {
         ) : (
           topProspects.map(c => {
             const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
-            const canShowName = c.visibilityBand === "public" || intel >= 65;
-            const potential = toPotentialBand(c.talentSeed);
-            const potentialInfo = POTENTIAL_LABELS[potential];
-            const Icon = POOL_ICONS[c.pool];
-
-            return (
-              <div key={c.candidateId} className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
-                <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
-                <span className="flex-1 font-medium truncate">
-                  {canShowName ? c.name : "Unknown Prospect"}
-                </span>
-                <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16">
-                  {c.archetype.replace(/_/g, " ")}
-                </span>
-                {(potential === "generational" || potential === "star") && (
-                  <Sparkles className={`h-3 w-3 shrink-0 ${POTENTIAL_COLORS[potential]}`} />
-                )}
-                <Badge
-                  variant={potential === "generational" || potential === "star" ? "default" : "secondary"}
-                  className="text-[9px] px-1.5 py-0 h-4 shrink-0"
-                >
-                  {potentialInfo.label.split(" ")[0]}
-                </Badge>
-              </div>
-            );
+            return <ProspectRow key={c.candidateId} c={c} intel={intel} />;
           })
         )}
         {prospects.length > 6 && (
           <Button variant="ghost"
             onClick={() => navigate({ to: "/talent-pool" })}
-            className="w-full text-[11px] text-primary hover:text-primary/80 text-center py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
           >
             +{prospects.length - 6} more prospects →
           </Button>

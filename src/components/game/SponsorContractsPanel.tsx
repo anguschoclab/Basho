@@ -10,7 +10,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, AlertTriangle, Clock, Star, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { StableName } from "@/components/ClickableName";
 import type { WorldState } from "@/engine/types/world";
-import type { Sponsor, SponsorRelationship, Koenkai, SponsorTier } from "@/engine/sponsors";
+import { 
+  SPONSOR_TIER_INCOME, 
+  KOENKAI_MONTHLY_INCOME, 
+  type Sponsor, 
+  type SponsorRelationship, 
+  type Koenkai, 
+  type SponsorTier 
+} from "@/engine/sponsors";
 
 const TIER_LABELS: Record<SponsorTier, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
@@ -19,10 +26,6 @@ const TIER_LABELS: Record<SponsorTier, { label: string; color: string }> = {
   T3: { label: "Major", color: "text-purple-500" },
   T4: { label: "National", color: "text-amber-500" },
   T5: { label: "Prestige", color: "text-amber-400" },
-};
-
-const TIER_INCOME: Record<SponsorTier, number> = {
-  T0: 100_000, T1: 300_000, T2: 750_000, T3: 1_500_000, T4: 3_000_000, T5: 8_000_000,
 };
 
 /** Defines the structure for contract info. */
@@ -54,7 +57,7 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
       for (const rel of sponsor.relationships) {
         if (rel.targetId !== playerHeyaId) continue;
 
-        const monthlyIncome = TIER_INCOME[sponsor.tier] * (rel.strength / 3);
+        const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier] * (rel.strength / 3);
         const satisfactionEstimate = Math.min(100, sponsor.loyalty * 0.6 + (playerHeya?.reputation ?? 50) * 0.4);
         const expiryWeek = rel.endsAtTick ?? null;
         const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
@@ -70,12 +73,13 @@ export function SponsorContractsPanel({ world }: { world: WorldState }) {
     return result;
   }, [world, playerHeyaId, playerHeya]);
 
-  const totalMonthlyIncome = contracts.reduce((sum, c) => sum + c.monthlyIncome, 0);
-  const expiringCount = contracts.reduce((count, c) => count + (c.isExpiringSoon ? 1 : 0), 0);
-
   // Koenkai info
   const koenkai = playerHeyaId ? world.sponsorPool?.koenkais?.get(`koenkai_${playerHeyaId}`) : null;
   const koenkaiStrength = playerHeya?.koenkaiBand ?? "none";
+  const koenkaiIncome = KOENKAI_MONTHLY_INCOME[koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
+
+  const totalMonthlyIncome = contracts.reduce((sum, c) => sum + c.monthlyIncome, 0) + koenkaiIncome;
+  const expiringCount = contracts.reduce((count, c) => count + (c.isExpiringSoon ? 1 : 0), 0);
 
   const handleRenegotiate = (contract: ContractInfo) => {
     // Simple renegotiation: extend contract by 24 weeks, small loyalty boost

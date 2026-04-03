@@ -80,6 +80,6 @@ describe("useDashboardLayout: loadSavedOrder", () => {
     localStorage.setItem("dashboard-widget-order", malicious);
 
     loadSavedOrder();
-    expect((Object.prototype as any).polluted).toBeUndefined();
+    expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
   });
 });
