@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { gameReducer } from '../gameReducer';
 import { initialGameState } from '../gameTypes';
+import type { GameAction } from '../gameTypes';
 import { generateInitialWorld } from '../../engine/systems/generation/WorldFactory';
 
 describe('Game Reducer Purity', () => {
@@ -12,10 +13,10 @@ describe('Game Reducer Purity', () => {
     };
 
     expect(() => {
-      gameReducer(initialState, { type: 'TICK_DAY' } as any);
+      gameReducer(initialState, { type: 'TICK_DAY' } as unknown as GameAction);
     }).not.toThrow();
 
-    const nextState = gameReducer(initialState, { type: 'TICK_DAY' } as any);
+    const nextState = gameReducer(initialState, { type: 'TICK_DAY' } as unknown as GameAction);
 
     // Verify a new object reference was returned
     expect(nextState).not.toBe(initialState);
@@ -37,7 +38,7 @@ describe('Game Reducer: Batch Processing', () => {
     const nextState = gameReducer(initialState, {
       type: 'TICK_MULTIPLE_DAYS',
       payload: { days: 15 }
-    } as any);
+    } as unknown as GameAction);
 
     // 1. Assert state reference changed exactly once (atomic commit)
     expect(nextState).not.toBe(initialState);

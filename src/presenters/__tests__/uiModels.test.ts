@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { projectRikishi, projectHeya, getLocalizedArchetype } from "../uiModels";
-import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
+import { generateInitialWorld } from '../../engine/systems/generation/WorldFactory';
+import type { TacticalArchetype } from '../../engine/types/combat';
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {
@@ -85,7 +86,7 @@ describe("Narrative Leakage - Archetype Localizer", () => {
   });
 
   it("Test B: Fallback Handling", () => {
-    expect(getLocalizedArchetype(undefined as any)).toBe("All-Rounder");
-    expect(getLocalizedArchetype("unknown_enum" as any)).toBe("Unknown");
+    expect(getLocalizedArchetype(undefined as unknown as TacticalArchetype)).toBe("All-Rounder");
+    expect(getLocalizedArchetype('unknown_enum' as unknown as TacticalArchetype)).toBe("Unknown");
   });
 });

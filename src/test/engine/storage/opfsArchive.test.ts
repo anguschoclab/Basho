@@ -131,7 +131,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       const boutsDir = await seasonDir.getDirectoryHandle('bouts', { create: true });
       const mockFileHandle = await boutsDir.getFileHandle('b-heavy.json', { create: false }).catch(() => boutsDir.getFileHandle('b-heavy.json', { create: true }));
 
-      vi.spyOn(mockFileHandle, 'createWritable').mockImplementation(async () => {
+      (vi.spyOn(mockFileHandle, 'createWritable') ).mockImplementation(async () => {
         throw new DOMException('Hard drive full', 'QuotaExceededError');
       });
 
@@ -142,7 +142,7 @@ describe('Stable Lords: OPFS Archival System', () => {
       // Or we can mock `getFileHandle` to return a mocked file that throws on `createWritable`.
 
       const originalGetFileHandle = boutsDir.getFileHandle.bind(boutsDir);
-      vi.spyOn(boutsDir, 'getFileHandle').mockImplementation(async (name, options) => {
+      (vi.spyOn(boutsDir, 'getFileHandle') ).mockImplementation(async (name, options) => {
         if (options?.create) {
             return mockFileHandle;
         }
@@ -158,10 +158,10 @@ describe('Stable Lords: OPFS Archival System', () => {
       const boutsDir2 = await seasonDir2.getDirectoryHandle('bouts', { create: true });
 
       // Mock the getFileHandle for creation.
-      vi.spyOn(boutsDir2, 'getFileHandle').mockImplementation(async (name, options) => {
+      (vi.spyOn(boutsDir2, 'getFileHandle') ).mockImplementation(async (name, options) => {
           if (options?.create) {
              const handle = await root2.getFileHandle('b-heavy.json', {create: true}); // Fake handle
-             vi.spyOn(handle, 'createWritable').mockImplementation(async () => {
+             (vi.spyOn(handle, 'createWritable') ).mockImplementation(async () => {
                  throw new DOMException('Hard drive full', 'QuotaExceededError');
              });
              return handle;

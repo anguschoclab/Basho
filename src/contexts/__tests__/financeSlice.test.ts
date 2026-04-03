@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { financeSlice } from "../financeSlice";
 import { GameState, GameAction } from "../gameTypes";
-import { WorldState } from "@/engine/types/world";
+import { WorldState } from '@/engine/types/world';
+import type { Heya } from '@/engine/types/heya';
 
 describe("Finance Slice", () => {
   it("should handle UPGRADE_HEYA action", () => {
@@ -14,7 +15,7 @@ describe("Finance Slice", () => {
           funds: 10000000,
           facilities: { training: 10, recovery: 10, nutrition: 10 },
           facilitiesBand: "minimal"
-        } as any]
+        } as unknown as Heya]
       ]),
       rikishi: new Map(),
       oyakata: new Map(),
@@ -47,7 +48,7 @@ describe("Finance Slice", () => {
           id: "heya-1",
           funds: 1000000,
           staffIds: []
-        } as any]
+        } as unknown as Heya]
       ]),
       staff: new Map(),
       rikishi: new Map(),

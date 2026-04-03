@@ -2,17 +2,19 @@
 import { describe, it, expect } from 'vitest';
 import { enrichRikishiForUI, formatRadarData, formatMetaTrends } from '../uiDigest';
 import { mockRikishi as generateMockRikishi } from '../../engine/__tests__/utils';
+import type { RikishiStats, Rikishi } from '../../engine/types/rikishi';
+import type { WorldState } from '../../engine/types/world';
 
 describe('UI Digest: Rikishi Perception Boundary', () => {
   it('MUST NOT leak raw numerical stats into the UI model', () => {
     const rawEngineRikishi = generateMockRikishi('r_1', { 
-      stats: { strength: 85, technique: 40 } as any 
+      stats: { strength: 85, technique: 40 } as unknown as RikishiStats
     });
     const uiRikishi = enrichRikishiForUI(rawEngineRikishi);
 
     // 1. Assert raw stats do not exist on the UI object
-    expect((uiRikishi as any).stats).toBeUndefined();
-    expect((uiRikishi as any).strength).toBeUndefined();
+    expect((uiRikishi as Record<string, unknown>).stats).toBeUndefined();
+    expect((uiRikishi as Record<string, unknown>).strength).toBeUndefined();
     
     // 2. Assert perceivedStats exists and contains string descriptors
     expect(uiRikishi.perceivedStats).toBeDefined();
@@ -34,7 +36,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
 
   describe('formatRadarData (v2.0 Visuals)', () => {
     it('should map rikishi attributes to radar points with C5 labels', () => {
-      const mockRikishi: any = {
+      const mockRikishi: Partial<Rikishi> = {
         power: 90,
         speed: 70,
         technique: 50,
@@ -43,7 +45,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
         aggression: 85
       };
 
-      const result = formatRadarData(mockRikishi);
+      const result = formatRadarData(mockRikishi as Rikishi);
       expect(result).toHaveLength(5);
       expect(result[0].subject).toBe("Power");
       expect(result[0].A).toBe(5);
@@ -53,7 +55,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
 
   describe('formatMetaTrends (Streamgraph Data)', () => {
     it('should format world history into stacked components totaling 100%', () => {
-      const mockWorld: any = {
+      const mockWorld: Partial<WorldState> = {
         history: [
           { bashoName: "hatsu", year: 2024, metaBias: "oshi" },
           { bashoName: "haru", year: 2024, metaBias: "yotsu" }
@@ -61,7 +63,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
         bashoNumber: 2
       };
 
-      const result = formatMetaTrends(mockWorld);
+      const result = formatMetaTrends(mockWorld as WorldState);
       expect(result).toHaveLength(2);
       expect(result[0].basho).toBe("H24");
       expect(result[0].oshi + result[0].yotsu + result[0].hybrid).toBe(100);
@@ -71,8 +73,8 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
     });
 
     it('should return empty if no history', () => {
-      const mockWorld: any = { history: [], bashoNumber: 0 };
-      expect(formatMetaTrends(mockWorld)).toEqual([]);
+      const mockWorld: Partial<WorldState> = { history: [], bashoNumber: 0 };
+      expect(formatMetaTrends(mockWorld as WorldState)).toEqual([]);
     });
   });
 });
