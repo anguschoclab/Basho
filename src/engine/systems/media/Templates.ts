@@ -9,17 +9,31 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "{winner} Shocks the Arena Against {loser}",
       "{loser} Falls — {winner} Seizes the Moment",
       "{winner} Derails {loser}'s Basho Ambitions",
-      "Massive Upset! {winner} Topples {loser}"
+      "Massive Upset! {winner} Topples {loser}",
+      "Unbelievable Scene: {winner} Defeats {loser}",
+      "{loser} Caught Off Guard by a Resilient {winner}",
+      "A Stunner in Tokyo! {winner} Beats {loser}",
+      "The Rankings Don't Matter — {winner} Edges {loser}",
+      "David Defeats Goliath: {winner} Outlasts {loser}"
     ],
     standard: [
       "{winner} Defeats {loser} by {kimarite}",
       "{winner} Overcomes {loser}",
       "{winner} Turns Back {loser}",
-      "{winner} Proves Too Strong for {l}",
-      "Textbook Sumo: {winner} Dispatches {loser}"
+      "{winner} Proves Too Strong for {loser}",
+      "Textbook Sumo: {winner} Dispatches {loser}",
+      "{winner} Shows Superior Form Against {loser}",
+      "{winner} Takes the Win with a Solid {kimarite}",
+      "A Dominant Display as {winner} Beats {loser}",
+      "{loser} Falls Short Against a Ready {winner}",
+      "The Execution is Flawless — {winner} Dispatches {loser}"
     ],
     mainEvent: [
-      "{winner} Delivers in the Spotlight"
+      "{winner} Delivers in the Spotlight",
+      "The Main Event Goes to {winner}",
+      "{winner} Closes Out the Day with a Bang",
+      "{winner} Proves They Belong in the Main Event",
+      "A Spectacular Finale: {winner} Prevails"
     ],
     subtitles: {
       upset: [
