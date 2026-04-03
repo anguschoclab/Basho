@@ -25,7 +25,7 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
   foreign: Globe,
 };
 
-const ProspectRow = React.memo(({ c, intel }: { c: any, intel: number }) => {
+const ProspectRow = React.memo(({ c, intel }: { c: TalentCandidate & { pool: TalentPoolType }, intel: number }) => {
   const canShowName = c.visibilityBand === "public" || intel >= 65;
   const potential = toPotentialBand(c.talentSeed);
   const potentialInfo = POTENTIAL_LABELS[potential];
