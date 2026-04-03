@@ -112,6 +112,40 @@ export const RivalryService = {
   /**
    * Factory for a fresh pair.
    */
+
+  /**
+   * Helper to get a rivalry pair.
+   */
+  getRivalry(state: RivalriesState | undefined, aId: Id, bId: Id): RivalryPairState | undefined {
+    if (!state || !state.pairs) return undefined;
+    const key = this.makeRivalryKey(aId, bId);
+    return state.pairs[key];
+  },
+
+  /**
+   * Helper to upsert a rivalry pair.
+   */
+  upsertRivalry(state: RivalriesState | undefined, pair: RivalryPairState): void {
+    if (!state || !state.pairs) return;
+    state.pairs[pair.key] = pair;
+  },
+
+  /**
+   * Helper to get rivalry bout modifiers.
+   */
+  getRivalryBoutModifiers(args: { state: RivalriesState | undefined, aId: Id, bId: Id }): number {
+    const pair = this.getRivalry(args.state, args.aId, args.bId);
+    if (!pair) return 0;
+    return pair.heat > 50 ? 5 : 0; // Simplified modifier
+  },
+
+  /**
+   * Helper to create a default rivalries state.
+   */
+  createDefaultRivalriesState(): RivalriesState {
+    return { version: "1.0.0", pairs: {} };
+  },
+
   createFreshPair(id1: Id, id2: Id, world: WorldState): RivalryPairState {
     const [aId, bId] = id1 < id2 ? [id1, id2] : [id2, id1];
     const rA = EntityCollection.getRikishiById(world, aId);

@@ -36,3 +36,15 @@ export type {
   ScoutedRikishi, 
   ScoutedAttributeTruthSnapshot 
 } from "./systems/recruitment/ScoutingService";
+/**
+ * Legacy wrappers for missing exports.
+ */
+export function createScoutedView(truth: any, heyaId: string, obs: number, inv: any, week: number) {
+  return ScoutingService.createScoutedView(truth, heyaId, obs, inv, week);
+}
+export function describeScoutingLevel(level: number) {
+  return ScoutingService.describeScoutingLevel(level);
+}
+export function getScoutedAttributes(scouted: any, seed?: string) {
+  return ScoutingService.getScoutedAttributes(scouted, seed);
+}

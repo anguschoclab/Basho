@@ -32,3 +32,13 @@ export type {
   BeyaTrainingState, 
   TrainingProfile 
 } from "./types/training";
+
+/**
+ * Legacy wrappers for missing exports.
+ */
+export function createDefaultTrainingState(heyaId: string) {
+  return TrainingService.createDefaultTrainingState(heyaId);
+}
+export function ensureHeyaTrainingState(world: import("./types/world").WorldState, heyaId: string) {
+  return TrainingService.ensureHeyaTrainingState(world, heyaId);
+}

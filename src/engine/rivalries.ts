@@ -41,3 +41,21 @@ export type {
   RivalryTone, 
   RivalryTrigger 
 } from "./systems/narrative/RivalryConstants";
+/**
+ * Legacy wrappers for missing exports.
+ */
+export function getRivalry(state: any, aId: string, bId: string) {
+  return RivalryService.getRivalry(state, aId, bId);
+}
+export function upsertRivalry(state: any, pair: any) {
+  return RivalryService.upsertRivalry(state, pair);
+}
+export function getRivalryBoutModifiers(args: any) {
+  return RivalryService.getRivalryBoutModifiers(args);
+}
+export function createDefaultRivalriesState() {
+  return RivalryService.createDefaultRivalriesState();
+}
+export function makeRivalryKey(aId: string, bId: string) {
+  return RivalryService.makeRivalryKey(aId, bId);
+}

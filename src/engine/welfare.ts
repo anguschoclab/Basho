@@ -33,3 +33,10 @@ export function setHeyaDiet(world: WorldState, heyaId: Id, diet: DietRegimen): v
 
 // Re-export type definitions for backward compatibility
 export type { WelfareState, ComplianceState, DietRegimen } from "./types/economy";
+
+/**
+ * Legacy wrappers.
+ */
+export function ensureHeyaWelfareState(heya: import("./types/heya").Heya) {
+  return WelfareService.ensureHeyaWelfareState(heya);
+}

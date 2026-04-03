@@ -77,3 +77,38 @@ function getInjuryModifier(r: any): string {
   if (severity === "moderate" || (typeof severity === "number" && severity >= 35)) return "hampered";
   return "taped_up";
 }
+
+/**
+ * Legacy constants and helpers.
+ */
+export const PRIZE_LABELS = {
+  yusho: "Emperor's Cup",
+  shukun_sho: "Outstanding Performance",
+  kanto_sho: "Fighting Spirit",
+  gino_sho: "Technique Prize"
+};
+
+export const SCANDAL_LABELS = {
+  minor: "Minor Infraction",
+  moderate: "Moderate Controversy",
+  severe: "Severe Scandal"
+};
+
+export const TRAIT_LABELS = {
+  injury_prone: "Injury Prone",
+  durable: "Durable",
+  inconsistent: "Inconsistent",
+  clutch: "Clutch Performer"
+};
+
+export const RIVALRY_HEAT_LABELS = {
+  cold: "Cold",
+  warm: "Warm",
+  hot: "Hot",
+  boiling: "Boiling"
+};
+
+export function toPrizeBand(prize: string) { return prize; }
+export function toScandalBand(severity: number) { return severity < 30 ? "minor" : severity < 70 ? "moderate" : "severe"; }
+export function toTraitBand(trait: string) { return trait; }
+export function toRivalryHeatBand(heat: number) { return heat < 25 ? "cold" : heat < 50 ? "warm" : heat < 75 ? "hot" : "boiling"; }

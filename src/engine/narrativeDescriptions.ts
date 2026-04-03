@@ -47,3 +47,25 @@ export function describeTrainingEffect(multiplier: number): string {
 
 // Re-export type definitions
 export type { AttributeKey } from "./types/rikishi";
+
+/**
+ * Legacy helper for aggression.
+ */
+export function describeAggression(value: number): string {
+  if (value >= 80) return "Reckless";
+  if (value >= 60) return "Aggressive";
+  if (value >= 40) return "Balanced";
+  if (value >= 20) return "Cautious";
+  return "Passive";
+}
+
+/**
+ * Legacy helper for experience.
+ */
+export function describeExperience(value: number): string {
+  if (value >= 90) return "Veteran";
+  if (value >= 70) return "Experienced";
+  if (value >= 50) return "Seasoned";
+  if (value >= 30) return "Developing";
+  return "Novice";
+}
