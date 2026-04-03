@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { StableName } from "@/components/ClickableName";
 import { Swords, Flame } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { getCachedPerception } from "@/presenters/uiDigest";
+import { selectTopRivals } from "@/presenters/selectors";
 
 /** rivals widget. */
 export function RivalsWidget() {
@@ -15,22 +15,7 @@ export function RivalsWidget() {
 
   const rivals = useMemo(() => {
     if (!world) return [];
-    const entries: { id: string; name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
-    for (const heya of world.heyas.values()) {
-      if (heya.id === world.playerHeyaId) continue;
-      const p = getCachedPerception(world, heya.id);
-      entries.push({
-        id: heya.id,
-        name: p.heyaName,
-        prestige: p.prestigeBand,
-        roster: p.rosterStrengthBand,
-        morale: p.moraleBand,
-        heat: p.stableMediaHeatBand,
-      });
-    }
-    const order = ["elite", "respected", "modest", "struggling", "unknown"];
-    entries.sort((a, b) => order.indexOf(a.prestige) - order.indexOf(b.prestige));
-    return entries.slice(0, 6);
+    return selectTopRivals(world);
   }, [world]);
 
   if (!world || !rivals.length) return null;
