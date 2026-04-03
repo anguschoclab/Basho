@@ -141,6 +141,9 @@ export function assignKenshoBanners(
 }
 
 
+import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
+
 /**
  * Calculates kensho envelopes based on importance and buzz.
  * Ref: Phase 3.2 implementation plan.
@@ -158,15 +161,12 @@ export function calculateKenshoEnvelopes(
   } else if (awardFact === 'ginboshi') {
     count = Math.floor(5 + rng.next() * 4);
   } else {
-    // Standard varies by division and impact
     count = Math.floor(1 + rng.next() * 3);
   }
 
-  // --- BUZZ MULTIPLIER (Phase 3.2) ---
   const mediaState = world.mediaState;
   if (mediaState && mediaState.mediaHeat) {
     const heat = mediaState.mediaHeat[rikishi.id] || 0;
-    // Every 20 points of heat adds +25% kensho interest
     const buzzMod = 1.0 + (heat / 80);
     count = Math.round(count * buzzMod);
   }
