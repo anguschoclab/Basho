@@ -242,7 +242,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
               onClick={() => setFilter(f.value)}
               aria-pressed={filter === f.value}
               aria-label={`Filter by ${f.label}`}
-              className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors ${
+              className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${
                 filter === f.value
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -288,7 +288,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                   >
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : e.id)}
-                      className="w-full text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
+                      className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
                       aria-expanded={isExpanded}
                       aria-controls={`event-details-${e.id}`}
                     >
@@ -347,7 +347,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                               ev.stopPropagation();
                               handleEventClick(e);
                             }}
-                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5"
+                            className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
                           >
                             <ExternalLink className="h-2.5 w-2.5" />
                             {getLinkLabel(e)}
