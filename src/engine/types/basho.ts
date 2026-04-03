@@ -48,6 +48,7 @@ export interface BoutResult {
   duration: number;
   upset: boolean;
   isKinboshi?: boolean;
+  isTitleStakes?: boolean;
   awardFact?: 'kinboshi' | 'ginboshi' | null;
   kenshoEnvelopes: number;
   log: BoutLogEntry[];

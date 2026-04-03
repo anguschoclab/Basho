@@ -80,3 +80,25 @@ export const SCANDAL_BANDS: BandDef<ScandalBand>[] = [
   { band: "scandal", min: 55, max: 80 },
   { band: "crisis", min: 80, max: Infinity },
 ];
+
+// === Prize Bands (yen amounts) ===
+export type PrizeBand = "nominal" | "modest" | "notable" | "prestigious" | "grand";
+
+export const PRIZE_BANDS: BandDef<PrizeBand>[] = [
+  { band: "nominal",     min: 0,          max: 10000 },
+  { band: "modest",      min: 10000,      max: 100000 },
+  { band: "notable",     min: 100000,     max: 1000000 },
+  { band: "prestigious", min: 1000000,    max: 10000000 },
+  { band: "grand",       min: 10000000,   max: Infinity },
+];
+
+// === Trait Bands (0–100 oyakata/rikishi trait scores) ===
+export type TraitBand = "negligible" | "minor" | "moderate" | "strong" | "dominant";
+
+export const TRAIT_BANDS: BandDef<TraitBand>[] = [
+  { band: "negligible", min: 0,  max: 20 },
+  { band: "minor",      min: 20, max: 40 },
+  { band: "moderate",   min: 40, max: 60 },
+  { band: "strong",     min: 60, max: 80 },
+  { band: "dominant",   min: 80, max: Infinity },
+];

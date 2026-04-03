@@ -9,6 +9,8 @@
  */
 
 import type { WorldState } from "./types/world";
+import type { Id } from "./types/common";
+import type { BeyaTrainingState } from "./types/training";
 import { TrainingService } from "./systems/training/TrainingService";
 
 // --- AUTHORITATIVE DELEGATION ---
@@ -22,6 +24,20 @@ export * from "./systems/training/TrainingNarrative";
  */
 export function tickWeekTraining(world: WorldState) {
   TrainingService.applyWeeklyTraining(world);
+}
+
+/**
+ * Ensure heya training state exists (Legacy wrapper).
+ */
+export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): BeyaTrainingState {
+  return TrainingService.ensureHeyaTrainingState(world, heyaId);
+}
+
+/**
+ * Create default training state for a heya (Legacy wrapper).
+ */
+export function createDefaultTrainingState(heyaId: Id): BeyaTrainingState {
+  return TrainingService.createDefaultTrainingState(heyaId);
 }
 
 // Re-export type definitions for backward compatibility
