@@ -169,12 +169,17 @@ export const WelfareService = {
 
         if (state.welfareRisk >= 85 || (seriousCount >= 3 && state.welfareRisk >= 70)) {
           this.setComplianceState(state, "sanctioned");
+          const fineYen = 5_000_000;
           state.sanctions = {
             recruitmentFreezeWeeks: 12,
             trainingIntensityCap: "medium",
-            fineYen: 5_000_000,
+            fineYen,
             note: "Mandatory welfare remediation"
           };
+
+          // Enforce: debit fine immediately from heya treasury
+          heya.funds = (heya.funds ?? 0) - fineYen;
+
           logEngineEvent(world, {
             type: "COMPLIANCE_SANCTIONED",
             category: "discipline",
@@ -182,8 +187,8 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Sanctions Issued",
-            summary: `${heya.name} sanctioned for violations.`,
-            data: { welfareRisk: state.welfareRisk }
+            summary: `${heya.name} sanctioned for welfare violations. ¥${fineYen.toLocaleString()} fine levied.`,
+            data: { welfareRisk: state.welfareRisk, fineYen, newFunds: heya.funds }
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---

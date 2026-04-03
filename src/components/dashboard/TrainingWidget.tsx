@@ -32,7 +32,7 @@ const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
  */
 function ProfileRow({ label, icon, value, options, onChange }: {
   label: string; icon: React.ReactNode; value: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
   onChange: (v: string) => void;
 }) {
   return (
@@ -43,14 +43,17 @@ function ProfileRow({ label, icon, value, options, onChange }: {
       </div>
       <div className="flex gap-1 flex-1 flex-wrap">
         {options.map(opt => (
-          <TooltipWrap key={opt.value} content={`Set ${label.toLowerCase()} to ${opt.label}`} side="top">
+          <TooltipWrap key={opt.value} content={opt.disabled ? "Blocked by welfare sanctions" : `Set ${label.toLowerCase()} to ${opt.label}`} side="top">
             <Button variant="ghost"
-              onClick={() => onChange(opt.value)}
+              onClick={() => !opt.disabled && onChange(opt.value)}
+              disabled={opt.disabled}
               aria-pressed={value === opt.value}
               className={`h-auto text-[10px] px-2 py-0.5 rounded-full border transition-all duration-200 ${
-                value === opt.value
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
-                  : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
+                opt.disabled
+                  ? "opacity-40 cursor-not-allowed border-border bg-muted/30 text-muted-foreground"
+                  : value === opt.value
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
+                    : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
               }`}
             >
               {opt.label}
@@ -80,9 +83,31 @@ export function TrainingWidget() {
   const intensityInfo = INTENSITY_MULTIPLIERS[profile.intensity];
   const recoveryInfo = RECOVERY_MULTIPLIERS[profile.recovery];
 
+  const CAP_TO_INTENSITY: Record<string, TrainingIntensity> = {
+    low: "conservative", medium: "balanced", high: "intensive",
+  };
+  const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
+
+  const sanctionCap = useMemo(() => {
+    if (!world?.playerHeyaId) return null;
+    const ph = world.heyas.get(world.playerHeyaId);
+    return ph?.welfareState?.sanctions?.trainingIntensityCap ?? null;
+  }, [world]);
+
+  const maxIntensityIdx = sanctionCap != null
+    ? INTENSITY_RANK.indexOf(CAP_TO_INTENSITY[sanctionCap] ?? "punishing")
+    : INTENSITY_RANK.length - 1;
+
   const updateProfile = (patch: Partial<TrainingProfile>) => {
     if (!world.playerHeyaId) return;
     const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
+    // Enforce training intensity cap from active welfare sanctions
+    if (patch.intensity) {
+      const chosenIdx = INTENSITY_RANK.indexOf(patch.intensity);
+      if (chosenIdx > maxIntensityIdx) {
+        patch = { ...patch, intensity: INTENSITY_RANK[maxIntensityIdx] };
+      }
+    }
     ts.activeProfile = { ...ts.activeProfile, ...patch };
     updateWorld({ ...world });
   };
@@ -144,7 +169,11 @@ export function TrainingWidget() {
           <ProfileRow
             label="Intensity" icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
-            options={INTENSITY_OPTIONS.map(v => ({ value: v, label: v.charAt(0).toUpperCase() + v.slice(1) }))}
+            options={INTENSITY_OPTIONS.map((v, i) => ({
+              value: v,
+              label: v.charAt(0).toUpperCase() + v.slice(1),
+              disabled: i > maxIntensityIdx,
+            }))}
             onChange={(v) => updateProfile({ intensity: v as TrainingIntensity })}
           />
           <ProfileRow
