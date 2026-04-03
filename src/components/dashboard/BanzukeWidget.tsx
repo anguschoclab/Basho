@@ -25,7 +25,7 @@ const RANK_BG: Record<string, string> = {
   ozeki: "bg-silver/5",
 };
 
-const BanzukeEntryRow = React.memo(({ entry, isPlayer, i }: { entry: any, isPlayer: boolean, i: number }) => {
+const BanzukeEntryRow = React.memo(({ entry, isPlayer, i }: { entry: import("@/presenters/uiModels").UIRosterEntry, isPlayer: boolean, i: number }) => {
   return (
     <div
       className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
