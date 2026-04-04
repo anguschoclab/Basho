@@ -81,7 +81,7 @@ describe('Basho UI Presenters', () => {
       mockMap.set('r_123', mockRikishi('r_123', { shikona: 'Hakuho' }));
 
       const world: Partial<WorldState> = {
-        rikishi: mockMap as unknown as IdMapRuntime<Rikishi>,
+        rikishi: mockMap as IdMapRuntime<Rikishi>,
       };
 
       const result = projectBashoSummary(state as BashoState, bashoResult as BashoResult, world as WorldState);
