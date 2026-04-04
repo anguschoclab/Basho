@@ -273,6 +273,24 @@ interface CandidateBuildOptions {
 /**
  * Build candidate pairs.
  */
+
+function generatePairs(
+  pool: Rikishi[],
+  scoreFn: (a: Rikishi, b: Rikishi) => MatchPairing | null
+): MatchPairing[] {
+  const out: MatchPairing[] = [];
+  for (let i = 0; i < pool.length; i++) {
+      for (let j = i + 1; j < pool.length; j++) {
+        const pairing = scoreFn(pool[i], pool[j]);
+        if (pairing) out.push(pairing);
+      }
+  }
+  return out.sort((a,b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
+  });
+}
+
 export function buildCandidatePairs(
   basho: BashoState,
   rikishi: Rikishi[],
@@ -326,20 +344,7 @@ export function buildPlayoffPairs(
   };
 
   const pool = rikishi.filter(r => r.division === options.division);
-  const out: MatchPairing[] = [];
-
-  for (let i = 0; i < pool.length; i++) {
-      for (let j = i + 1; j < pool.length; j++) {
-        const a = pool[i];
-        const b = pool[j];
-        const pairing = scorePairing({ basho, a, b, rules });
-        if (pairing) out.push(pairing);
-      }
-  }
-  return out.sort((a,b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
-  });
+  return generatePairs(pool, (a, b) => scorePairing({ basho, a, b, rules }));
 }
 
 /**
@@ -352,20 +357,10 @@ export function buildExhibitionPairs(
 ): MatchPairing[] {
    const rng = rngFromSeed(options.seed, "matchmaking", "exhibition");
    const pool = rikishi.filter(r => r.division === options.division);
-   const out: MatchPairing[] = [];
-
-   for (let i = 0; i < pool.length; i++) {
-       for (let j = i + 1; j < pool.length; j++) {
-           out.push({
-               eastId: pool[i].id,
-               westId: pool[j].id,
-               score: rng.next(),
-               reasons: ["exhibition"]
-           });
-       }
-   }
-   return out.sort((a,b) => {
-       if (b.score !== a.score) return b.score - a.score;
-       return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
-   });
+   return generatePairs(pool, (a, b) => ({
+       eastId: a.id,
+       westId: b.id,
+       score: rng.next(),
+       reasons: ["exhibition"]
+   }));
 }

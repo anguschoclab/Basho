@@ -71,7 +71,7 @@ export const ScoutingService = {
    * Create a snapshot of public and scouted info for a rikishi.
    */
   createScoutedView(
-    world: WorldState,
+    currentWeek: number,
     rikishi: Rikishi,
     playerHeyaId: string | null,
     observations: number = 0,
@@ -98,7 +98,7 @@ export const ScoutingService = {
       },
       isOwned,
       timesObserved: observations,
-      lastObservedWeek: world.calendar.currentWeek || 0,
+      lastObservedWeek: currentWeek || 0,
       scoutingInvestment: investment,
       scoutingLevel: level,
       attributes: {

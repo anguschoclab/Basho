@@ -138,6 +138,14 @@ export function tickMyosekiMarket(world: WorldState): void {
   }
 }
 
+
+function getAvailableStock(world: WorldState, myosekiId: Id): MyosekiStock | null {
+  if (!world.myosekiMarket) return null;
+  const stock = world.myosekiMarket.stocks[myosekiId];
+  if (!stock || stock.status !== "available" || !stock.askingPrice) return null;
+  return stock;
+}
+
 function logMyosekiTransaction(
   world: WorldState,
   myosekiId: string,
@@ -161,10 +169,8 @@ function logMyosekiTransaction(
  * Buy a Myoseki stock.
  */
 export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myosekiId: Id): boolean {
-  if (!world.myosekiMarket) return false;
-
-  const stock = world.myosekiMarket.stocks[myosekiId];
-  if (!stock || stock.status !== "available" || !stock.askingPrice) return false;
+  const stock = getAvailableStock(world, myosekiId);
+  if (!stock || !stock.askingPrice) return false;
 
   const heya = world.heyas.get(buyerHeyaId);
   if (!heya || heya.funds < stock.askingPrice) return false;
@@ -192,10 +198,8 @@ export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myos
  * Lease a Myoseki stock.
  */
 export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): boolean {
-  if (!world.myosekiMarket) return false;
-
-  const stock = world.myosekiMarket.stocks[myosekiId];
-  if (!stock || stock.status !== "available" || !stock.askingPrice) return false;
+  const stock = getAvailableStock(world, myosekiId);
+  if (!stock || !stock.askingPrice) return false;
 
   // Transfer lease
   stock.holderId = lesseeId;
