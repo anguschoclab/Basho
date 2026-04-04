@@ -25,3 +25,4 @@ dist-ssr
 coverage/
 playwright-report/
 test-results/
+.claude/worktrees/inspiring-goldstine/

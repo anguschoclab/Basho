@@ -1,3 +1,4 @@
+import { destr } from "destr";
 /**
  * Local Storage Provider
  * 
@@ -24,7 +25,7 @@ export const localStorageProvider = {
     try {
       const item = localStorage.getItem(key);
       if (item === null) return defaultValue;
-      return JSON.parse(item) as T;
+      return destr<T>(item) as T;
     } catch (e) {
       console.warn(`Failed to load ${key} from localStorage, using default.`, e);
       return defaultValue;

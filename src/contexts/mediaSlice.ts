@@ -1,4 +1,3 @@
-import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 
 /**
@@ -9,11 +8,7 @@ export function mediaSlice(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case "HANDLE_MEDIA_EVENT": {
-      // In a real implementation, this would call an engine function to update the world
-      // based on the media choice. For now, we'll just return the state.
-      // const world = cloneWorldForTick(state.world);
-      // handleMediaChoice(world, action.eventId, action.choice);
-      // return { ...state, world };
+      // TODO(10434881180276762453): Implement media choice handling (requires cloning state.world and calling an engine handler)
       return state;
     }
 
