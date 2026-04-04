@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { usePlayerHeya } from "@/hooks/usePlayerHeya";
 import { 
   AreaChart, 
   Area, 
@@ -25,12 +26,9 @@ const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: Lucide
 
 /** finances widget. */
 export function FinancesWidget() {
-  const { state } = useGame();
   const navigate = useNavigate();
-  const world = state.world;
-  if (!world?.playerHeyaId) return null;
+  const { heya } = usePlayerHeya();
 
-  const heya = world.heyas.get(world.playerHeyaId);
   if (!heya) return null;
 
   const band = (heya as any).runwayBand || "comfortable";
