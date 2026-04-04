@@ -13,7 +13,7 @@ export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
   const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
   for (const r of world.rikishi.values()) {
-    if (r.nationality !== "Japan") {
+    if (!r.isRetired && r.nationality !== "Japan") {
       foreignRikishi.push(r);
     }
   }
