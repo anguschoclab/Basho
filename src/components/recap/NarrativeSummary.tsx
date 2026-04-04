@@ -31,6 +31,45 @@ interface NarrativeSummaryProps {
   world: WorldState;
 }
 
+
+
+
+
+
+
+
+function EventCard({ title, summary, isPromotion, isRetirement, icon: Icon }: { title: string; summary: string; isPromotion?: boolean; isRetirement?: boolean; icon: any }) {
+  const isDemotion = isPromotion === false;
+  return (
+    <div className={cn("dossier-paper p-4 rounded-xl flex items-center gap-4 border-l-4",
+      isPromotion ? "border-l-emerald-500" : isDemotion ? "border-l-amber-500" : "border-l-red-500 bg-red-500/[0.02]"
+    )}>
+      <div className={cn("h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+        isPromotion ? "bg-emerald-500/10" : isDemotion ? "bg-amber-500/10" : "bg-red-500/10"
+      )}>
+        <Icon className={cn("h-5 w-5",
+          isPromotion ? "text-emerald-500" : isDemotion ? "text-amber-500" : "text-red-500"
+        )} />
+      </div>
+      <div className="flex-1">
+         <div className="font-display font-black text-sm uppercase tracking-tight">{title}</div>
+         <p className="text-[10px] text-muted-foreground italic leading-relaxed opacity-80">{summary}</p>
+      </div>
+      <div className="text-right">
+        {isRetirement ? (
+          <Badge variant="secondary" className="text-[8px] font-black uppercase tracking-widest bg-red-500/10 text-red-700">INTAI</Badge>
+        ) : (
+          <Badge variant="outline" className={cn("text-[8px] font-black uppercase tracking-widest",
+            isPromotion ? "border-emerald-500/30 text-emerald-600" : "border-amber-500/30 text-amber-600"
+          )}>
+            {isPromotion ? "PROMOTION" : "DEMOTION"}
+          </Badge>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: NarrativeSummaryProps) {
   const hasPrestige = prestigeChanges.length > 0;
   const hasPromotions = groupedEvents.promotions?.length > 0;
@@ -89,20 +128,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
                  {groupedEvents.promotions.map((e, i) => {
                     const isPromotion = !e.type.includes("DEMOTION");
                     return (
-                       <div key={i} className={cn("dossier-paper p-4 rounded-xl flex items-center gap-4 border-l-4", isPromotion ? "border-l-emerald-500" : "border-l-amber-500")}>
-                          <div className={cn("h-10 w-10 rounded-full flex items-center justify-center shrink-0", isPromotion ? "bg-emerald-500/10" : "bg-amber-500/10")}>
-                             {isPromotion ? <TrendingUp className="h-5 w-5 text-emerald-500" /> : <TrendingDown className="h-5 w-5 text-amber-500" />}
-                          </div>
-                          <div className="flex-1">
-                             <div className="font-display font-black text-sm uppercase tracking-tight">{e.title}</div>
-                             <p className="text-[10px] text-muted-foreground italic leading-relaxed opacity-80">{e.summary}</p>
-                          </div>
-                          <div className="text-right">
-                             <Badge variant="outline" className={cn("text-[8px] font-black uppercase tracking-widest", isPromotion ? "border-emerald-500/30 text-emerald-600" : "border-amber-500/30 text-amber-600")}>
-                                {isPromotion ? "PROMOTION" : "DEMOTION"}
-                             </Badge>
-                          </div>
-                       </div>
+                       <EventCard key={i} title={e.title} summary={e.summary} isPromotion={isPromotion} icon={isPromotion ? TrendingUp : TrendingDown} />
                     );
                  })}
               </div>
@@ -121,16 +147,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
               
               <div className="space-y-3">
                  {groupedEvents.retirements.map((e, i) => (
-                    <div key={i} className="dossier-paper p-4 rounded-xl border-l-4 border-l-red-500 flex items-center gap-4 bg-red-500/[0.02]">
-                       <div className="h-10 w-10 bg-red-500/10 rounded-full flex items-center justify-center shrink-0">
-                          <UserX className="h-5 w-5 text-red-500" />
-                       </div>
-                       <div className="flex-1">
-                          <div className="font-display font-black text-sm uppercase tracking-tight">{e.title}</div>
-                          <p className="text-[10px] text-muted-foreground italic leading-relaxed opacity-80">{e.summary}</p>
-                       </div>
-                       <Badge variant="secondary" className="text-[8px] font-black uppercase tracking-widest bg-red-500/10 text-red-700">INTAI</Badge>
-                    </div>
+                    <EventCard key={i} title={e.title} summary={e.summary} isRetirement icon={UserX} />
                  ))}
                  {groupedEvents.retirements.length === 0 && (
                    <div className="py-12 text-center opacity-30 italic text-sm">No veteran departures recorded this basho.</div>

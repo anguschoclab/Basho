@@ -28,26 +28,19 @@ export default function BanzukePage() {
     return buildPrevRankScores(world.history);
   }, [world]);
 
-  const rosterEntries = useMemo(() => {
-    if (!world) return [];
+  const { rosterEntries, heyaNameMap } = useMemo(() => {
+    if (!world) return { rosterEntries: [], heyaNameMap: new Map<string, string>() };
     const arr = [];
-    for (const r of world.rikishi.values()) {
-      if (!r.isRetired) arr.push(r);
-    }
-    return arr
-      .map(r => projectRosterEntry(r, world, prevScoreMap.get(r.id)));
-  }, [world, prevScoreMap]);
-
-  const heyaNameMap = useMemo(() => {
-    if (!world) return new Map<string, string>();
     const map = new Map<string, string>();
     for (const r of world.rikishi.values()) {
-      if (r.isRetired) continue;
-      const heya = world.heyas.get(r.heyaId);
-      if (heya) map.set(r.id, heya.name);
+      if (!r.isRetired) {
+        arr.push(projectRosterEntry(r, world, prevScoreMap.get(r.id)));
+        const heya = world.heyas.get(r.heyaId);
+        if (heya) map.set(r.id, heya.name);
+      }
     }
-    return map;
-  }, [world]);
+    return { rosterEntries: arr, heyaNameMap: map };
+  }, [world, prevScoreMap]);
 
 
   if (!world) return null;

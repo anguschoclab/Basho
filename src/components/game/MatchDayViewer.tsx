@@ -326,16 +326,16 @@ const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTa
                 return (
                   <Tooltip key={t.id}>
                     <TooltipTrigger asChild>
-                      <button
+                      <Button
+                        variant={isSelected ? "default" : "outline"}
+                        size="sm"
                         onClick={(e) => { e.stopPropagation(); onTacticChange?.(match.boutId!, t.id); }}
-                        className={`text-[10px] px-2 py-1 rounded-full border transition-all ${
-                          isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                        className={`text-[10px] px-2 py-1 h-auto rounded-full transition-all ${
+                          !isSelected ? "bg-muted/50 text-muted-foreground border-border hover:bg-muted" : "shadow-sm"
                         }`}
                       >
                         {t.label}
-                      </button>
+                      </Button>
                     </TooltipTrigger>
                     <TooltipContent>{t.desc}</TooltipContent>
                   </Tooltip>
@@ -346,18 +346,24 @@ const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTa
         </div>
       )}
 
-      {/* Tags row */}
-      <BoutTags match={match as any} />
+      <MatchFooter match={match} />
+    </div>
+  );
+});
 
-      {/* H2H commentary */}
+function MatchFooter({ match }: { match: any }) {
+  return (
+    <>
+      <BoutTags match={match as any} />
       {match.h2hCommentary && (match.h2h.wins > 0 || match.h2h.losses > 0) && (
         <p className="mt-1.5 text-[11px] text-muted-foreground/70 italic line-clamp-1 pl-5">
           {match.h2hCommentary}
         </p>
       )}
-    </div>
+    </>
   );
-});
+}
+
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
 
@@ -558,15 +564,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
                   </div>
                 )}
 
-                {/* Tags row */}
-                <BoutTags match={match as any} />
-
-                {/* H2H commentary */}
-                {match.h2hCommentary && (match.h2h.wins > 0 || match.h2h.losses > 0) && (
-                  <p className="mt-1.5 text-[11px] text-muted-foreground/70 italic line-clamp-1 pl-5">
-                    {match.h2hCommentary}
-                  </p>
-                )}
+                <MatchFooter match={match} />
               </div>
             );
           })}

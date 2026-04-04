@@ -44,38 +44,7 @@ export function createScoutedView(
   investment: ScoutingInvestment,
   currentWeek: number
 ): ScoutedRikishi {
-  const isOwned = rikishi.heyaId === playerHeyaId;
-  const level = calculateScoutingLevel(isOwned, observations, investment);
-  return {
-    rikishiId: rikishi.id,
-    publicInfo: {
-      id: rikishi.id,
-      shikona: rikishi.shikona,
-      heyaId: rikishi.heyaId,
-      rank: rikishi.rank,
-      rankNumber: rikishi.rankNumber || 1,
-      side: rikishi.side || "east",
-      height: rikishi.height,
-      weight: rikishi.weight,
-      currentBashoWins: (rikishi as any).currentBashoWins || 0,
-      currentBashoLosses: (rikishi as any).currentBashoLosses || 0,
-      style: rikishi.style,
-      archetype: rikishi.archetype
-    },
-    isOwned,
-    timesObserved: observations,
-    lastObservedWeek: currentWeek,
-    scoutingInvestment: investment,
-    scoutingLevel: level,
-    attributes: {
-      power: rikishi.power || 50,
-      speed: rikishi.speed || 50,
-      balance: rikishi.balance || 50,
-      technique: rikishi.technique || 50,
-      aggression: rikishi.aggression || 50,
-      experience: rikishi.experience || 50
-    }
-  };
+  return ScoutingService.createScoutedView(currentWeek, rikishi, playerHeyaId, observations, investment);
 }
 
 /**

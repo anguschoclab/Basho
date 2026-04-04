@@ -10,6 +10,34 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, Swords, User } from "lucide-react";
+
+function RikishiSelectorList({
+  perceptions,
+  selectedId,
+  onSelect
+}: {
+  perceptions: Array<{ rikishiId: string; shikona: string; rank: string }>;
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <ScrollArea className="max-h-28 border border-border rounded-md">
+      <div className="p-1 space-y-0.5">
+        {perceptions.map(r => (
+          <Button variant="ghost"
+            key={r.rikishiId}
+            className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+              selectedId === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
+            }`}
+            onClick={() => onSelect(r.rikishiId)}
+          >
+            {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
+          </Button>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+}
 import type { WorldState } from "@/engine/types/world";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rank } from "@/engine/types/banzuke";
@@ -152,60 +180,14 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
           {snapshots.map((snap) => {
             const isSelected = compareIds[0] === snap.heyaId || compareIds[1] === snap.heyaId;
             return (
-              <Card
+              <StablePerceptionCard
                 key={snap.heyaId}
-                className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
-                onClick={(e) => {
-                  if (comparing) {
-                    e.preventDefault();
-                    handleToggleCompare(snap.heyaId);
-                  } else {
-                    navigate({ to: "/stable/$id", params: { id: snap.heyaId } as any });
-                  }
-                }}
-              >
-                <CardContent className="p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {comparing ? (
-                          <span className="font-medium text-sm">{snap.heyaName}</span>
-                        ) : (
-                          <StableName id={snap.heyaId} name={snap.heyaName} className="font-medium text-sm" />
-                        )}
-                        {snap.isPlayer && (
-                          <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
-                            Your Stable
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className={`text-[10px] capitalize ${STATURE_COLOR[snap.statureBand] ?? ""}`}>
-                          {snap.statureBand}
-                        </Badge>
-                        {comparing && isSelected && (
-                          <Badge variant="default" className="text-[10px]">Selected</Badge>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 mt-2">
-                        <PerceptionChip icon={Users} label="Roster" value={snap.rosterStrengthBand} count={snap.rosterSize} color={ROSTER_COLOR[snap.rosterStrengthBand]} />
-                        <PerceptionChip icon={Heart} label="Morale" value={snap.moraleBand} color={MORALE_COLOR[snap.moraleBand]} />
-                        <PerceptionChip icon={Shield} label="Welfare" value={snap.welfareRiskBand} color={WELFARE_COLOR[snap.welfareRiskBand]} />
-                        <PerceptionChip icon={Flame} label="Media" value={snap.stableMediaHeatBand} color={snap.stableMediaHeatBand === "blazing" ? "text-destructive" : snap.stableMediaHeatBand === "hot" ? "text-orange-400" : "text-muted-foreground"} />
-                      </div>
-
-                      <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground flex-wrap">
-                        <span>Prestige: <strong className="text-foreground capitalize">{snap.prestigeBand}</strong></span>
-                        <span>Finances: <strong className="text-foreground capitalize">{snap.runwayBand}</strong></span>
-                        <span>Rivalry: <strong className="text-foreground capitalize">{snap.rivalryPressureBand}</strong></span>
-                        <span>Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong></span>
-                        {snap.complianceState !== "compliant" && (
-                          <span className="text-orange-400">⚠ {snap.complianceState}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                snap={snap}
+                comparing={comparing}
+                isSelected={isSelected}
+                onToggleCompare={() => handleToggleCompare(snap.heyaId)}
+                onNavigate={() => navigate({ to: "/stable/$id", params: { id: snap.heyaId } as any })}
+              />
             );
           })}
         </div>
@@ -358,40 +340,12 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
         {/* Rikishi A selector */}
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapA.heyaName}</label>
-          <ScrollArea className="max-h-28 border border-border rounded-md">
-            <div className="p-1 space-y-0.5">
-              {snapA.rikishiPerceptions.map(r => (
-                <Button variant="ghost"
-                  key={r.rikishiId}
-                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
-                    selectedA === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
-                  }`}
-                  onClick={() => setSelectedA(r.rikishiId)}
-                >
-                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
+          <RikishiSelectorList perceptions={snapA.rikishiPerceptions} selectedId={selectedA!} onSelect={setSelectedA} />
         </div>
         {/* Rikishi B selector */}
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapB.heyaName}</label>
-          <ScrollArea className="max-h-28 border border-border rounded-md">
-            <div className="p-1 space-y-0.5">
-              {snapB.rikishiPerceptions.map(r => (
-                <Button variant="ghost"
-                  key={r.rikishiId}
-                  className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
-                    selectedB === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
-                  }`}
-                  onClick={() => setSelectedB(r.rikishiId)}
-                >
-                  {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
+          <RikishiSelectorList perceptions={snapB.rikishiPerceptions} selectedId={selectedB!} onSelect={setSelectedB} />
         </div>
       </div>
 
@@ -641,5 +595,78 @@ function PerceptionChip({
         {count != null && <span className="text-muted-foreground ml-0.5">({count})</span>}
       </span>
     </div>
+  );
+}
+
+
+// === Stable Perception Card Sub-Component ===
+
+function StablePerceptionCard({
+  snap,
+  comparing,
+  isSelected,
+  onToggleCompare,
+  onNavigate,
+}: {
+  snap: PerceptionSnapshot & { isPlayer: boolean };
+  comparing: boolean;
+  isSelected: boolean;
+  onToggleCompare: () => void;
+  onNavigate: () => void;
+}) {
+  return (
+    <Card
+      className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
+      onClick={(e) => {
+        if (comparing) {
+          e.preventDefault();
+          onToggleCompare();
+        } else {
+          onNavigate();
+        }
+      }}
+    >
+      <CardContent className="p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              {comparing ? (
+                <span className="font-medium text-sm">{snap.heyaName}</span>
+              ) : (
+                <StableName id={snap.heyaId} name={snap.heyaName} className="font-medium text-sm" />
+              )}
+              {snap.isPlayer && (
+                <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
+                  Your Stable
+                </Badge>
+              )}
+              <Badge variant="outline" className={`text-[10px] capitalize ${STATURE_COLOR[snap.statureBand] ?? ""}`}>
+                {snap.statureBand}
+              </Badge>
+              {comparing && isSelected && (
+                <Badge variant="default" className="text-[10px]">Selected</Badge>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 mt-2">
+              <PerceptionChip icon={Users} label="Roster" value={snap.rosterStrengthBand} count={snap.rosterSize} color={ROSTER_COLOR[snap.rosterStrengthBand]} />
+              <PerceptionChip icon={Heart} label="Morale" value={snap.moraleBand} color={MORALE_COLOR[snap.moraleBand]} />
+              <PerceptionChip icon={Shield} label="Welfare" value={snap.welfareRiskBand} color={WELFARE_COLOR[snap.welfareRiskBand]} />
+              <PerceptionChip icon={Flame} label="Media" value={snap.stableMediaHeatBand} color={snap.stableMediaHeatBand === "blazing" ? "text-destructive" : snap.stableMediaHeatBand === "hot" ? "text-orange-400" : "text-muted-foreground"} />
+            </div>
+
+            <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground flex-wrap">
+              <span>Prestige: <strong className="text-foreground capitalize">{snap.prestigeBand}</strong></span>
+              <span>Finances: <strong className="text-foreground capitalize">{snap.runwayBand}</strong></span>
+              <span>Rivalry: <strong className="text-foreground capitalize">{snap.rivalryPressureBand}</strong></span>
+              <span>Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong></span>
+              {snap.complianceState !== "compliant" && (
+                <span className="text-orange-400">⚠ {snap.complianceState}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

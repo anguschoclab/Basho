@@ -25,3 +25,22 @@ dist-ssr
 coverage/
 playwright-report/
 test-results/
+
+# AI tool working directories (local to each tool/session)
+.claude/
+.gemini/
+
+# Package manager caches and redundant lock files
+npm_cache/
+package-lock.json
+
+# Patch and diff files
+*.patch
+*.diff
+
+# Benchmark / scratch scripts
+bench_*.js
+benchmark*.ts
+benchmark*.js
+test-benchmark*.ts
+patch*.js

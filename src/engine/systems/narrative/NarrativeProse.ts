@@ -35,40 +35,40 @@ export const STAT_LABELS: Record<StatBand, string> = {
 // === Attribute Prose (Verbose) ===
 export const STAT_PROSE: Record<string, Record<StatBand, string>> = {
   power: {
-    exceptional: "His raw strength is fearsome—opponents buckle on contact.",
-    outstanding: "A powerful frame that most cannot withstand.",
-    strong: "Solid strength, enough to move most men.",
-    capable: "Adequate power for his level.",
-    developing: "Still building the muscle needed at this rank.",
-    limited: "Lacks the power expected of a rikishi.",
-    struggling: "Physically overmatched in most contests."
+    exceptional: "His raw strength is fearsome — opponents buckle on first contact as if struck by a wall.",
+    outstanding: "A powerful frame that most men at this level simply cannot withstand for long.",
+    strong: "Solid, reliable strength. Enough to move most men and punish passive opponents.",
+    capable: "Adequate power for his rank. Won't overwhelm anyone, but holds his own in the clinch.",
+    developing: "Still building the muscle and leverage his rank demands. Improvement is visible.",
+    limited: "Noticeably outpowered by most opponents. Relies on technique to compensate.",
+    struggling: "Physically overmatched in most contests. Raw strength is a liability at this level."
   },
   speed: {
-    exceptional: "Lightning quick—his reactions are almost preternatural.",
-    outstanding: "Fast enough to catch opponents off-guard routinely.",
-    strong: "Quick on his feet, able to exploit openings.",
-    capable: "Moves well enough for his style.",
-    developing: "Could be quicker; timing still maturing.",
-    limited: "Sluggish compared to peers.",
-    struggling: "Slow to react, often caught out."
+    exceptional: "Lightning quick — his first step and reaction time verge on the preternatural.",
+    outstanding: "Fast enough to regularly catch opponents flat-footed before they can set their feet.",
+    strong: "Quick on his feet, able to exploit openings that slower men would miss entirely.",
+    capable: "Moves adequately for his style. Not a liability, not a weapon.",
+    developing: "Could be quicker. Timing is still maturing and opportunities are occasionally left on the clay.",
+    limited: "Sluggish compared to peers. Opponents dictate the pace and he struggles to adjust.",
+    struggling: "Slow to react and easy to outmaneuver. Speed is a consistent weakness at this level."
   },
   balance: {
-    exceptional: "His root is legendary—impossible to shift.",
-    outstanding: "Exceptionally stable; rarely loses footing.",
-    strong: "Well-grounded, recovers well from pressure.",
-    capable: "Adequate balance for competitive sumo.",
-    developing: "Sometimes caught leaning; balance needs work.",
-    limited: "Unsteady; vulnerable to throws.",
-    struggling: "Falls too easily—fundamentals lacking."
+    exceptional: "His root is the stuff of legend — opponents describe pushing him as shoving a mountain.",
+    outstanding: "Exceptionally stable under pressure. Rarely loses footing even in desperate scrambles.",
+    strong: "Well-grounded and composed. Recovers well from disadvantaged positions.",
+    capable: "Adequate balance for competitive sumo. Holds steady in most situations.",
+    developing: "Sometimes caught leaning or off-angle. Balance is a work in progress.",
+    limited: "Unsteady under sustained pressure. Vulnerable to throws and shifts.",
+    struggling: "Falls too easily. Fundamental stability issues limit what he can attempt."
   },
   technique: {
-    exceptional: "A master technician—every move is precise.",
-    outstanding: "Highly skilled; knows exactly what to do.",
-    strong: "Good technical foundation.",
-    capable: "Sound basics, can execute his preferred moves.",
-    developing: "Technique improving but inconsistent.",
-    limited: "Relies on physicality over skill.",
-    struggling: "Lacks the craft to compete effectively."
+    exceptional: "A master technician. Every grip, every angle, every timing read is deliberate and precise.",
+    outstanding: "Highly skilled. Reads situations quickly and executes with the clarity of a veteran.",
+    strong: "A good technical foundation with reliable execution of his preferred techniques.",
+    capable: "Sound basics. Can execute his core moves cleanly when the opportunity presents itself.",
+    developing: "Technique is improving but remains inconsistent, especially under pressure.",
+    limited: "Relies on physicality over craft. Technical sophistication is a gap in his game.",
+    struggling: "Lacks the technical repertoire to compete effectively. Opponents exploit his predictability."
   }
 };
 
@@ -92,12 +92,12 @@ export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
 
 // === Potential Labels & Prose ===
 export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; description: string }> = {
-  generational: { label: "Generational Talent", description: "A once-in-a-decade prospect with limitless ceiling." },
-  star:         { label: "Star Potential",       description: "Could reach the very top with proper development." },
-  solid:        { label: "Solid Prospect",       description: "Reliable growth trajectory with a respectable ceiling." },
-  average:      { label: "Average Ceiling",      description: "Moderate potential — hard work can compensate." },
-  limited:      { label: "Limited Upside",        description: "Growth ceiling is low, but grit may surprise." },
-  unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
+  generational: { label: "Generational Talent", description: "A once-in-a-decade prospect. Scouts argue about him in hushed, reverent tones." },
+  star:         { label: "Star Potential",       description: "The ceiling is the top. Whether he reaches it depends on what happens next." },
+  solid:        { label: "Solid Prospect",       description: "Won't set the sumo world on fire, but a reliable career in the upper divisions is well within reach." },
+  average:      { label: "Average Ceiling",      description: "What he achieves will come from effort, discipline, and smart development — not raw gifts." },
+  limited:      { label: "Limited Upside",        description: "The growth ceiling is low. But the dohyo has surprised everyone before." },
+  unknown:      { label: "Uncharted",             description: "Too early to say. The clay reveals all, in time." },
 };
 
 // === Rivalry Heat Labels ===
@@ -138,24 +138,24 @@ export const TRAIT_LABELS: Record<TraitBand, string> = {
 
 // === Archetype Labels ===
 export const ARCHETYPE_LABELS: Record<RikishiArchetype, { label: string; description: string }> = {
-  Defensive_Stalwart: { 
-    label: "Defensive Stalwart", 
-    description: "A technical specialist who prioritizes stability and reactive counters." 
+  Defensive_Stalwart: {
+    label: "Defensive Stalwart",
+    description: "Calm, grounded, and almost impossible to rush. He absorbs pressure and turns it into opportunity, waiting for the moment his opponent overcommits."
   },
-  Explosive_Blitzer: { 
-    label: "Explosive Blitzer", 
-    description: "Relies on a massive initial charge to end matches instantly, but tires quickly." 
+  Explosive_Blitzer: {
+    label: "Explosive Blitzer",
+    description: "The tachiai is his weapon. He ends fights in seconds — or he doesn't end them at all. Longer bouts expose a stamina cliff that opponents try desperately to reach."
   },
-  Acrobatic_Trickster: { 
-    label: "Acrobatic Trickster", 
-    description: "Uses superior movement and technique to outmaneuver heavier opponents." 
+  Acrobatic_Trickster: {
+    label: "Acrobatic Trickster",
+    description: "Slippery, inventive, and infuriating to fight. He uses angles, timing, and misdirection to make heavier opponents look foolish."
   },
-  Immovable_Mountain: { 
-    label: "Immovable Mountain", 
-    description: "A massive, powerful presence who is near-impossible to push out once established." 
+  Immovable_Mountain: {
+    label: "Immovable Mountain",
+    description: "Once he plants himself, he is not going anywhere. His center of gravity is almost inhumanly low, and his patience is unlimited."
   },
-  All_Rounder: { 
-    label: "All-Rounder", 
-    description: "A balanced fighter with no glaring weaknesses and high adaptability." 
+  All_Rounder: {
+    label: "All-Rounder",
+    description: "No obvious weaknesses, no single predictable style. He adapts to whatever the bout demands — which is what makes him so difficult to game-plan against."
   },
 };

@@ -3,7 +3,7 @@ import { type BoutResult } from "../types/basho";
 
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
-function validateBoutLog(data: any): BoutResult | null {
+function validateBoutLog(data: unknown): BoutResult | null {
   if (!data || typeof data !== "object") {
     return null;
   }
@@ -61,8 +61,8 @@ export class ArchiveConflictError extends Error {
 
 export interface ArchiveService {
   isSupported: () => boolean;
-  archiveBoutLog: (season: number, boutId: string, logData: any) => Promise<void>;
-  retrieveBoutLog: (season: number, boutId: string) => Promise<any | null>;
+  archiveBoutLog: (season: number, boutId: string, logData: unknown) => Promise<void>;
+  retrieveBoutLog: (season: number, boutId: string) => Promise<BoutResult | null>;
   archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
@@ -79,7 +79,7 @@ class OPFSArchiveService implements ArchiveService {
   /**
    * Navigates or creates a nested directory structure.
    */
-  private async getDirectoryPath(path: string[]): Promise<any | null> {
+  private async getDirectoryPath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
     if (!this.isSupported()) return null;
 
     try {
@@ -110,7 +110,7 @@ class OPFSArchiveService implements ArchiveService {
 
   // --- BOUTS ---
 
-  public async archiveBoutLog(season: number, boutId: string, logData: any): Promise<void> {
+  public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return;
 
@@ -121,9 +121,9 @@ class OPFSArchiveService implements ArchiveService {
       await dir.getFileHandle(fileName, { create: false });
       // If the above line DOES NOT throw, the file exists.
       throw new ArchiveConflictError(`Bout log ${boutId} already exists in season ${season}. History is immutable.`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (e instanceof ArchiveConflictError) throw e;
-      if (e.name !== 'NotFoundError') throw e; // Bubble up unexpected errors
+      if ((e instanceof Error || e instanceof DOMException) && e.name !== 'NotFoundError') throw e; // Bubble up unexpected errors
     }
 
     // File does not exist, safe to write.
@@ -137,7 +137,7 @@ class OPFSArchiveService implements ArchiveService {
     }
   }
 
-  public async retrieveBoutLog(season: number, boutId: string): Promise<any | null> {
+  public async retrieveBoutLog(season: number, boutId: string): Promise<BoutResult | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return null;
 
@@ -147,8 +147,8 @@ class OPFSArchiveService implements ArchiveService {
       const contents = await file.text();
       const parsed = JSON.parse(contents);
       return validateBoutLog(parsed);
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
+    } catch (e: unknown) {
+      if ((e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
       console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
       return null;
     }
@@ -161,7 +161,7 @@ class OPFSArchiveService implements ArchiveService {
     const ids: string[] = [];
     try {
       // Async iteration over directory handles
-      for await (const entry of (dir as any).values()) {
+      for await (const entry of ((dir as unknown) as Record<string, () => AsyncIterable<FileSystemHandle>>).values()) {
         if (entry.kind === 'file' && entry.name.endsWith('.json')) {
           ids.push(entry.name.replace('.json', ''));
         }
@@ -196,8 +196,8 @@ class OPFSArchiveService implements ArchiveService {
       const fileHandle = await dir.getFileHandle(`week_${week}.md`, { create: false });
       const file = await fileHandle.getFile();
       return await file.text();
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null;
+    } catch (e: unknown) {
+      if ((e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError') return null;
       console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
       return null;
     }
