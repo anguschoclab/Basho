@@ -106,6 +106,7 @@ export function createStables(worldRng: SeededRNG): { heyaMap: Map<string, Heya>
 
 export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
+  const heyaIds = Array.from(heyaMap.keys());
 
   // 2. Initial Roster Generation (Rank Distribution)
   const rankConfigs: { rank: Rank; division: Division; count: number }[] = [
