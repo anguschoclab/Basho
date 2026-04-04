@@ -326,16 +326,16 @@ const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTa
                 return (
                   <Tooltip key={t.id}>
                     <TooltipTrigger asChild>
-                      <button
+                      <Button
+                        variant={isSelected ? "default" : "outline"}
+                        size="sm"
                         onClick={(e) => { e.stopPropagation(); onTacticChange?.(match.boutId!, t.id); }}
-                        className={`text-[10px] px-2 py-1 rounded-full border transition-all ${
-                          isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                        className={`text-[10px] px-2 py-1 h-auto rounded-full transition-all ${
+                          !isSelected ? "bg-muted/50 text-muted-foreground border-border hover:bg-muted" : "shadow-sm"
                         }`}
                       >
                         {t.label}
-                      </button>
+                      </Button>
                     </TooltipTrigger>
                     <TooltipContent>{t.desc}</TooltipContent>
                   </Tooltip>
