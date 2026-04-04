@@ -167,8 +167,7 @@ describe("selectYokozunaCandidates", () => {
     } as unknown as WorldState;
 
     const result = selectYokozunaCandidates(world);
-    expect(result).toHaveLength(1);
-    expect(result).toContain(r1);
+    expect(result).toEqual([r1]);
   });
 
   it("should memoize the result if the world object is the same", () => {
