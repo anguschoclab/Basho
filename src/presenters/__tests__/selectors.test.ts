@@ -1,111 +1,90 @@
 import { describe, it, expect } from "vitest";
-import { selectInjuredRikishi } from "../selectors";
-import type { WorldState } from "../../engine/types/world";
+import { selectYokozunaCandidates } from "../selectors";
 import { mockRikishi } from "../../engine/__tests__/utils";
+import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
 
 describe("selectors", () => {
-  describe("selectInjuredRikishi", () => {
-    it("should return an empty array if there are no rikishi", () => {
+  describe("selectYokozunaCandidates", () => {
+    it("should return an empty array if the world has no rikishi", () => {
       const world = {
         rikishi: new Map<string, Rikishi>(),
       } as unknown as WorldState;
 
-      const result = selectInjuredRikishi(world);
+      const result = selectYokozunaCandidates(world);
       expect(result).toEqual([]);
     });
 
-    it("should return an empty array if there are no injured rikishi", () => {
-      const healthy1 = mockRikishi("1");
-      healthy1.injured = false;
-      const healthy2 = mockRikishi("2");
-      healthy2.injured = false;
-
+    it("should return an empty array if there are no ozeki", () => {
       const world = {
         rikishi: new Map<string, Rikishi>([
-          ["1", healthy1],
-          ["2", healthy2],
+          ["1", mockRikishi("1", { rank: "yokozuna" })],
+          ["2", mockRikishi("2", { rank: "sekiwake" })],
+          ["3", mockRikishi("3", { rank: "komusubi" })],
+          ["4", mockRikishi("4", { rank: "maegashira" })],
         ]),
       } as unknown as WorldState;
 
-      const result = selectInjuredRikishi(world);
+      const result = selectYokozunaCandidates(world);
       expect(result).toEqual([]);
     });
 
-    it("should return rikishi with the injured flag set to true", () => {
-      const healthy = mockRikishi("1");
-      healthy.injured = false;
-
-      const injured = mockRikishi("2");
-      injured.injured = true;
+    it("should return active ozeki and exclude retired ones or other ranks", () => {
+      const activeOzeki1 = mockRikishi("1", { rank: "ozeki", isRetired: false });
+      const activeOzeki2 = mockRikishi("2", { rank: "ozeki", isRetired: false });
+      const retiredOzeki = mockRikishi("3", { rank: "ozeki", isRetired: true });
+      const activeYokozuna = mockRikishi("4", { rank: "yokozuna", isRetired: false });
 
       const world = {
         rikishi: new Map<string, Rikishi>([
-          ["1", healthy],
-          ["2", injured],
+          ["1", activeOzeki1],
+          ["2", activeOzeki2],
+          ["3", retiredOzeki],
+          ["4", activeYokozuna],
         ]),
       } as unknown as WorldState;
 
-      const result = selectInjuredRikishi(world);
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("2");
+      const result = selectYokozunaCandidates(world);
+
+      expect(result).toHaveLength(2);
+      expect(result).toContain(activeOzeki1);
+      expect(result).toContain(activeOzeki2);
+      expect(result).not.toContain(retiredOzeki);
+      expect(result).not.toContain(activeYokozuna);
     });
 
-    it("should return rikishi with injury.isInjured set to true", () => {
-      const healthy = mockRikishi("1");
-      healthy.injured = false;
-
-      const injured = mockRikishi("2");
-      injured.injured = false;
-      injured.injuryStatus = { isInjured: true } as any;
-
+    it("should memoize the result when called with the same world reference", () => {
       const world = {
         rikishi: new Map<string, Rikishi>([
-          ["1", healthy],
-          ["2", injured],
+          ["1", mockRikishi("1", { rank: "ozeki" })],
         ]),
       } as unknown as WorldState;
 
-      const result = selectInjuredRikishi(world);
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("2");
-    });
-
-    it("should memoize the result if the world state reference is unchanged", () => {
-      const injured = mockRikishi("1");
-      injured.injured = true;
-
-      const world = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", injured],
-        ]),
-      } as unknown as WorldState;
-
-      const result1 = selectInjuredRikishi(world);
-      const result2 = selectInjuredRikishi(world);
+      const result1 = selectYokozunaCandidates(world);
+      const result2 = selectYokozunaCandidates(world);
 
       expect(result1).toBe(result2); // Reference equality
     });
 
-    it("should recompute if the world state reference changes", () => {
-      const injured = mockRikishi("1");
-      injured.injured = true;
-
+    it("should recompute if world reference changes", () => {
       const world1 = {
         rikishi: new Map<string, Rikishi>([
-          ["1", injured],
+          ["1", mockRikishi("1", { rank: "ozeki" })],
         ]),
       } as unknown as WorldState;
 
+      const result1 = selectYokozunaCandidates(world1);
+
       const world2 = {
-        ...world1
+        rikishi: new Map<string, Rikishi>([
+          ["1", mockRikishi("1", { rank: "ozeki" })],
+        ]),
       } as unknown as WorldState;
 
-      const result1 = selectInjuredRikishi(world1);
-      const result2 = selectInjuredRikishi(world2);
+      const result2 = selectYokozunaCandidates(world2);
 
-      expect(result1).not.toBe(result2); // Not equal reference
-      expect(result1).toEqual(result2); // But deeply equal value
+      // Value should be the same but reference should be different
+      expect(result1).not.toBe(result2);
     });
   });
 });
