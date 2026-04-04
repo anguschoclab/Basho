@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { selectInjuredRikishi } from "@/presenters/selectors";
+
 
 const LeaderboardRow = React.memo(({ s, i, isPlayer, rikishi }: { s: { id: string; wins: number; losses: number }, i: number, isPlayer: boolean, rikishi: import("@/engine/types/rikishi").Rikishi }) => {
   return (
@@ -37,7 +39,7 @@ export function BashoWidget() {
     let completedCount = 0;
     let kinboshi = 0;
     let upsets = 0;
-    let injuries = 0;
+    let injuries = selectInjuredRikishi(world).length;
 
     for (const m of matches) {
       if (m.result) {
@@ -45,10 +47,6 @@ export function BashoWidget() {
         if ((m.result as any)?.isKinboshi) kinboshi++;
         if (m.result?.upset) upsets++;
       }
-    }
-
-    for (const r of world.rikishi.values()) {
-      if (r.injured) injuries++;
     }
 
     const standingsArr = [];
