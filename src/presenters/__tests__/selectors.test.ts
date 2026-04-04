@@ -31,7 +31,7 @@ describe("selectors", () => {
 
     it("should return active ozeki and exclude retired ones or other ranks", () => {
       const activeOzeki1 = mockRikishi("1", { rank: "ozeki", isRetired: false });
-      const activeOzeki2 = mockRikishi("2", { rank: "ozeki" }); // isRetired should be undefined/false by default
+      const activeOzeki2 = mockRikishi("2", { rank: "ozeki", isRetired: false });
       const retiredOzeki = mockRikishi("3", { rank: "ozeki", isRetired: true });
       const activeYokozuna = mockRikishi("4", { rank: "yokozuna", isRetired: false });
 
