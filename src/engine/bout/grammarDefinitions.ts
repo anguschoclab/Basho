@@ -234,7 +234,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Punches Thrown! [Rikishi] in hot water over late-night scrap.",
     "Another scandal! [Rikishi] reportedly injured in street fight.",
     "Witnesses claim [Rikishi] instigated a brawl near the stables.",
-    "Trouble outside the ring: [Rikishi] linked to violent late-night clash."
+    "Trouble outside the ring: [Rikishi] linked to violent late-night clash.",
+    "Rumors of broken bottles and bruised egos involving [Rikishi] in the nightlife district.",
+    "Police investigating [Rikishi] over a late-night street incident.",
+    "Brawl breaks out at a pub, with [Rikishi] allegedly throwing tables.",
+    "[Rikishi] faces suspension rumors after a disastrous night out.",
+    "Shocking video surfaces of [Rikishi] in a massive street fight!"
   ],
   SECRET_INJURY_LEAK: [
     "Is [Rikishi] hiding a knee injury? Insiders speak.",
@@ -251,7 +256,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Medical Staff 'deeply concerned' about [Rikishi]'s hidden injury.",
     "Is a secret fracture holding [Rikishi] back this tournament?",
     "The truth leaks out! [Rikishi] reportedly wrestling through agonizing pain.",
-    "Stable tries to hide the truth about [Rikishi]'s deteriorating condition!"
+    "Stable tries to hide the truth about [Rikishi]'s deteriorating condition!",
+    "Leaked medical records suggest [Rikishi] is wrestling on a torn ligament.",
+    "Is [Rikishi] ignoring doctor's orders by stepping onto the dohyo?",
+    "Anonymous source claims [Rikishi] requires surgery immediately.",
+    "The grim reality of [Rikishi]'s hidden injury is finally exposed.",
+    "How long can [Rikishi] keep hiding the pain from the JSA?"
   ],
   ILLEGAL_GAMBLING: [
     "SHOCKING: [Rikishi] linked to illegal betting ring!",
@@ -268,7 +278,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Debts pile up! [Rikishi] investigated for illegal gambling ties.",
     "A risky wager! [Rikishi] caught in illicit betting scandal.",
     "JSA furious as [Rikishi]'s illegal gambling habits are laid bare.",
-    "Shadowy figures seen demanding payment from [Rikishi] at the stables."
+    "Shadowy figures seen demanding payment from [Rikishi] at the stables.",
+    "[Rikishi] implicated in an underground gambling syndicate investigation.",
+    "Are massive debts forcing [Rikishi] into desperate measures?",
+    "JSA launches full inquiry into [Rikishi]'s alleged gambling ties.",
+    "Rumors of [Rikishi] placing bets on rival bouts shake the sumo world.",
+    "Sponsors distance themselves from [Rikishi] over gambling rumors."
   ],
   TRAINING_ABUSE_ALLEGATION: [
     "Crisis at the heya: [Rikishi] accused of harsh behavior.",
@@ -280,7 +295,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Whistleblower Exposes 'Torture' Keiko Sessions Led by [Rikishi].",
     "Is it Tradition or Abuse? The shocking allegations against [Rikishi].",
     "Oyakata Looks the Other Way as [Rikishi] terrorizes stablemates.",
-    "Anonymous Complaint Filed Against [Rikishi] For Hazing Violations."
+    "Anonymous Complaint Filed Against [Rikishi] For Hazing Violations.",
+    "Recruits flee the stable, citing [Rikishi]'s harsh and abusive training methods.",
+    "[Rikishi] under fire for allegedly enforcing cruel punishments on juniors.",
+    "Is it tough love or abuse? The controversy surrounding [Rikishi] grows.",
+    "Former stablemate blows the whistle on [Rikishi]'s brutal hazing rituals.",
+    "JSA investigates [Rikishi] after complaints of excessive force during keiko."
   ],
   COACH_DISPUTE: [
     "[Rikishi] and Coach at odds! Tensions boiling over.",
@@ -292,7 +312,12 @@ export const MEDIA_TEMPLATES: Record<string, string[]> = {
     "Oyakata Threatens to Retire [Rikishi] Following Disrespectful Outburst.",
     "The Silent Treatment: [Rikishi] and Stablemaster Haven't Spoken in Weeks.",
     "Generational Divide: [Rikishi] openly defies Oyakata's traditional training orders.",
-    "Locker Room Divided as [Rikishi] Challenges Stablemaster's Authority."
+    "Locker Room Divided as [Rikishi] Challenges Stablemaster's Authority.",
+    "Public shouting match between [Rikishi] and Oyakata shocks onlookers.",
+    "[Rikishi] reportedly refusing to follow the stable's traditional training regimen.",
+    "Tensions boil over: Is [Rikishi] planning to leave the heya?",
+    "Oyakata expresses deep disappointment in [Rikishi]'s lack of respect.",
+    "A fractured relationship: [Rikishi] and the coach can no longer see eye to eye."
   ],
 
   TABLOID_SCANDAL: [

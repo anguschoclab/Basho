@@ -14,7 +14,12 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "{loser} Caught Off Guard by a Resilient {winner}",
       "A Stunner in Tokyo! {winner} Beats {loser}",
       "The Rankings Don't Matter — {winner} Edges {loser}",
-      "David Defeats Goliath: {winner} Outlasts {loser}"
+      "David Defeats Goliath: {winner} Outlasts {loser}",
+      "The Unthinkable Happens! {winner} Takes Down {loser}",
+      "A Giant Falls: {winner} Secures the Ultimate Upset Against {loser}",
+      "Nobody Predicted This! {winner} Topples {loser}",
+      "An Incredible Reversal of Fortune for {winner} Over {loser}",
+      "The Biggest Shock of the Basho! {winner} Defeats {loser}"
     ],
     standard: [
       "{winner} Defeats {loser} by {kimarite}",
@@ -26,7 +31,12 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "{winner} Takes the Win with a Solid {kimarite}",
       "A Dominant Display as {winner} Beats {loser}",
       "{loser} Falls Short Against a Ready {winner}",
-      "The Execution is Flawless — {winner} Dispatches {loser}"
+      "The Execution is Flawless — {winner} Dispatches {loser}",
+      "A Masterclass by {winner} Against {loser}",
+      "{winner} Comfortably Beats {loser} with {kimarite}",
+      "No Surprises Here: {winner} Handles {loser}",
+      "{winner} Stays Focused and Defeats {loser}",
+      "A Solid Performance Earns {winner} the Victory Over {loser}"
     ],
     mainEvent: [
       "{winner} Delivers in the Spotlight",
@@ -35,6 +45,15 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "{winner} Proves They Belong in the Main Event",
       "A Spectacular Finale: {winner} Prevails"
     ],
+    pressConference: {
+      postMatch: [
+        "How did {winner} prepare for {loser}?",
+        "{winner} reflects on the tactical approach today.",
+        "Coach addresses {loser}'s surprising lack of form.",
+        "Is {winner} the real deal this tournament?",
+        "{loser} promises to bounce back after a tough defeat."
+      ]
+    },
     subtitles: {
       upset: [
         "A momentum swing that changes the conversation.",

@@ -136,7 +136,10 @@ function processTechnicians(world: WorldState, history: BashoResult[], hof: Hall
   const ginoCountsStats = new Map<string, number>();
   for (const br of history) {
     if (br.ginoSho) {
-      ginoCountsStats.set(br.ginoSho, (ginoCountsStats.get(br.ginoSho) || 0) + 1);
+      ginoCountsStats.set(
+        br.ginoSho,
+        (ginoCountsStats.get(br.ginoSho) || 0) + 1,
+      );
     }
   }
 
@@ -209,8 +212,7 @@ export function getInducteesByCategory(world: WorldState, category: HoFCategory)
 /**
  * Main entry point called at end of each basho.
  */
-export function onBashoEnded(world: WorldState) {
-}
+export function onBashoEnded(world: WorldState) {}
 
 /**
  * Is inducted.
@@ -227,7 +229,10 @@ export function isInducted(world: WorldState, rikishiId: Id, category: HoFCatego
 // === LABELS ===
 
 /** h o f_ c a t e g o r y_ l a b e l s. */
-export const HOF_CATEGORY_LABELS: Record<HoFCategory, { name: string; nameJa: string; icon: string }> = {
+export const HOF_CATEGORY_LABELS: Record<
+  HoFCategory,
+  { name: string; nameJa: string; icon: string }
+> = {
   champion: { name: "Champion", nameJa: "横綱殿堂", icon: "🏆" },
   iron_man: { name: "Iron Man", nameJa: "鉄人", icon: "⚔️" },
   technician: { name: "Technician", nameJa: "技能派", icon: "🎯" },
