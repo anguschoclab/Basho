@@ -263,7 +263,7 @@ export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string):
     // Avoid duplicate snapshots for the same basho if called multiple times
     const lastEntry = history[history.length - 1];
     if (lastEntry && lastEntry.basho === bashoName) {
-      lastEntry.heat = heat;
+      history[history.length - 1] = { ...lastEntry, heat };
     } else {
       history.push({ basho: bashoName, heat });
     }
