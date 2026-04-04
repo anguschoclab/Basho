@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Progress } from "@/components/ui/progress";
@@ -19,6 +19,25 @@ const AXIS_LABELS = {
 } as const;
 
 const AXES = ["training", "recovery", "nutrition"] as const;
+
+
+const FacilityAxisRow = React.memo(({ axis, level }: { axis: typeof AXES[number]; level: number }) => {
+  const Icon = AXIS_ICONS[axis];
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
+        </div>
+        <span className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}>
+          {getFacilityLevelLabel(level)}
+        </span>
+      </div>
+      <Progress value={level} className="h-1.5" />
+    </div>
+  );
+});
 
 /** facilities widget. */
 export function FacilitiesWidget() {
@@ -65,24 +84,9 @@ export function FacilitiesWidget() {
       headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
     >
       <div className="space-y-2.5">
-        {AXES.map((axis) => {
-          const Icon = AXIS_ICONS[axis];
-          const level = heya.facilities[axis];
-          return (
-            <div key={axis} className="space-y-1">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
-                </div>
-                <span className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}>
-                  {getFacilityLevelLabel(level)}
-                </span>
-              </div>
-              <Progress value={level} className="h-1.5" />
-            </div>
-          );
-        })}
+        {AXES.map((axis) => (
+          <FacilityAxisRow key={axis} axis={axis} level={heya.facilities[axis]} />
+        ))}
       </div>
 
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
