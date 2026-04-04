@@ -35,40 +35,40 @@ export const STAT_LABELS: Record<StatBand, string> = {
 // === Attribute Prose (Verbose) ===
 export const STAT_PROSE: Record<string, Record<StatBand, string>> = {
   power: {
-    exceptional: "His raw strength is fearsome — opponents buckle on first contact as if struck by a wall.",
-    outstanding: "A powerful frame that most men at this level simply cannot withstand for long.",
-    strong: "Solid, reliable strength. Enough to move most men and punish passive opponents.",
-    capable: "Adequate power for his rank. Won't overwhelm anyone, but holds his own in the clinch.",
-    developing: "Still building the muscle and leverage his rank demands. Improvement is visible.",
-    limited: "Noticeably outpowered by most opponents. Relies on technique to compensate.",
-    struggling: "Physically overmatched in most contests. Raw strength is a liability at this level."
+    exceptional: "His raw strength is fearsome — opponents buckle on first contact as if struck by a massive wall of concrete. He can dismantle defenses on sheer power alone.",
+    outstanding: "A powerful frame that most men at this level simply cannot withstand for long. When he commits forward, the earth seems to tremble.",
+    strong: "Solid, reliable strength. Enough to move most men and strictly punish any passive opponents who try to stall the bout.",
+    capable: "Adequate power for his rank. He won't effortlessly overwhelm anyone, but holds his own comfortably in the clinch.",
+    developing: "Still building the deep muscle and leverage his rank demands. The raw potential is there, and improvement is visible.",
+    limited: "Noticeably outpowered by most opponents. He relies heavily on technique, positioning, and speed to compensate for the strength gap.",
+    struggling: "Physically overmatched in most contests. His raw strength is a distinct liability at this level of sumo."
   },
   speed: {
-    exceptional: "Lightning quick — his first step and reaction time verge on the preternatural.",
-    outstanding: "Fast enough to regularly catch opponents flat-footed before they can set their feet.",
-    strong: "Quick on his feet, able to exploit openings that slower men would miss entirely.",
-    capable: "Moves adequately for his style. Not a liability, not a weapon.",
-    developing: "Could be quicker. Timing is still maturing and opportunities are occasionally left on the clay.",
-    limited: "Sluggish compared to peers. Opponents dictate the pace and he struggles to adjust.",
-    struggling: "Slow to react and easy to outmaneuver. Speed is a consistent weakness at this level."
+    exceptional: "Lightning quick — his first step and reaction time verge on the preternatural. By the time opponents set their feet, he is already executing his offense.",
+    outstanding: "Fast enough to regularly catch opponents flat-footed before they can establish their grips or defensive posture.",
+    strong: "Quick on his feet, able to exploit fleeting openings that slower, more deliberate men would miss entirely.",
+    capable: "Moves adequately for his preferred style. His speed is neither a pronounced liability nor a primary weapon.",
+    developing: "Could be quicker. His timing is still maturing, and momentary opportunities are occasionally left unexploited on the clay.",
+    limited: "Noticeably sluggish compared to his peers. Opponents frequently dictate the pace, and he struggles to adjust laterally.",
+    struggling: "Painfully slow to react and extremely easy to outmaneuver. Speed is a consistent, glaring weakness at this level."
   },
   balance: {
-    exceptional: "His root is the stuff of legend — opponents describe pushing him as shoving a mountain.",
-    outstanding: "Exceptionally stable under pressure. Rarely loses footing even in desperate scrambles.",
-    strong: "Well-grounded and composed. Recovers well from disadvantaged positions.",
-    capable: "Adequate balance for competitive sumo. Holds steady in most situations.",
-    developing: "Sometimes caught leaning or off-angle. Balance is a work in progress.",
-    limited: "Unsteady under sustained pressure. Vulnerable to throws and shifts.",
-    struggling: "Falls too easily. Fundamental stability issues limit what he can attempt."
+    exceptional: "His root is the stuff of legend — opponents describe pushing him as trying to shove a mountain. His center of gravity is an unbreakable anchor.",
+    outstanding: "Exceptionally stable under immense pressure. He rarely loses footing, even in the most desperate, tangled scrambles.",
+    strong: "Well-grounded and composed. He recovers remarkably well from disadvantaged positions and awkward angles.",
+    capable: "Adequate balance for competitive sumo. He holds steady in most standard grappling situations without issue.",
+    developing: "Sometimes caught leaning or off-angle. His balance is a work in progress and can fail under sustained, heavy pressure.",
+    limited: "Unsteady under serious pressure. He is noticeably vulnerable to throws, pull-downs, and sudden shifts in momentum.",
+    struggling: "Falls far too easily. Fundamental stability issues severely limit what he can attempt both offensively and defensively."
   },
   technique: {
-    exceptional: "A master technician. Every grip, every angle, every timing read is deliberate and precise.",
-    outstanding: "Highly skilled. Reads situations quickly and executes with the clarity of a veteran.",
-    strong: "A good technical foundation with reliable execution of his preferred techniques.",
-    capable: "Sound basics. Can execute his core moves cleanly when the opportunity presents itself.",
-    developing: "Technique is improving but remains inconsistent, especially under pressure.",
-    limited: "Relies on physicality over craft. Technical sophistication is a gap in his game.",
-    struggling: "Lacks the technical repertoire to compete effectively. Opponents exploit his predictability."
+    exceptional: "A transcendent master technician. Every grip, every angle, and every timing read is deliberate, precise, and flawlessly executed.",
+    outstanding: "Highly skilled and deeply intuitive. He reads complex situations instantly and executes with the crisp clarity of a seasoned veteran.",
+    strong: "A remarkably good technical foundation, featuring highly reliable execution of his preferred throwing and twisting techniques.",
+    capable: "Sound fundamental basics. He can execute his core moves cleanly when the correct opportunity presents itself.",
+    developing: "His technique is slowly improving but remains frustratingly inconsistent, particularly when he is put under heavy pressure.",
+    limited: "Relies almost entirely on raw physicality over craft. Technical sophistication is a massive, gaping hole in his sumo game.",
+    struggling: "Severely lacks the technical repertoire required to compete effectively. Opponents routinely exploit his sheer predictability."
   }
 };
 
@@ -148,7 +148,7 @@ export const ARCHETYPE_LABELS: Record<RikishiArchetype, { label: string; descrip
   },
   Acrobatic_Trickster: {
     label: "Acrobatic Trickster",
-    description: "Slippery, inventive, and infuriating to fight. He uses angles, timing, and misdirection to make heavier opponents look foolish."
+    description: "Slippery, inventive, and infuriating to fight. He uses unpredictable angles, impeccable timing, and clever misdirection to make heavier, stronger opponents look completely foolish."
   },
   Immovable_Mountain: {
     label: "Immovable Mountain",

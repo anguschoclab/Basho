@@ -18,7 +18,10 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "t_dec_12", text: "No hesitation, no caution. {leader} commits everything and the result is immediate." },
       { id: "t_dec_13", text: "The collision is lopsided from the first millisecond. {leader} takes complete command.", tags: ["crowd_roar"] },
       { id: "t_dec_14", text: "{trailer} is rocked before the crowd even finishes exhaling." },
-      { id: "t_dec_15", text: "A monstrous charge! {leader}'s tachiai tonight is something to behold." }
+      { id: "t_dec_15", text: "A monstrous charge! {leader}'s tachiai tonight is something to behold." },
+      { id: "t_dec_16", text: "{leader} bursts upward from the clay, catching {trailer} completely unprepared." },
+      { id: "t_dec_17", text: "A breathtaking collision! {leader} claims the center immediately." },
+      { id: "t_dec_18", text: "Pure velocity! {leader} converts momentum into absolute positional dominance." }
     ],
     even: [
       { id: "t_even_1", text: "They collide — neither gives an inch!" },
@@ -30,7 +33,10 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "t_even_7", text: "A thunderclap of flesh on flesh. Neither man with any early advantage." },
       { id: "t_even_8", text: "The charge is mutual and clean. Now the real work begins." },
       { id: "t_even_9", text: "Both men hit their marks. No one flinches. The bout has truly begun." },
-      { id: "t_even_10", text: "An even collision — the gyoji watches intently as they lock up." }
+      { id: "t_even_10", text: "An even collision — the gyoji watches intently as they lock up." },
+      { id: "t_even_11", text: "A mirror image at the tachiai! Neither can establish an early angle." },
+      { id: "t_even_12", text: "Head to head, chest to chest! The impact is perfectly balanced." },
+      { id: "t_even_13", text: "Both men hold their ground like ancient oaks. A true test of strength begins." }
     ],
     slow: [
       { id: "t_slow_1", text: "A cautious tachiai… feeling for position." },
@@ -40,7 +46,9 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "t_slow_5", text: "Slow hands, slow feet. They are studying each other." },
       { id: "t_slow_6", text: "The tachiai is careful — almost gentle. The danger will come later." },
       { id: "t_slow_7", text: "A chess match begins. Neither man wants to be the first to blink." },
-      { id: "t_slow_8", text: "They meet softly and start to probe. The crowd senses a long one." }
+      { id: "t_slow_8", text: "They meet softly and start to probe. The crowd senses a long one." },
+      { id: "t_slow_9", text: "A calculating start. {leader} refuses to rush the engagement." },
+      { id: "t_slow_10", text: "They stand up slowly, eyes locked, daring the other to commit first." }
     ]
   },
 
@@ -55,7 +63,9 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "c_grip_7",  text: "{leader} threads the arm inside — a hard-fought grip is won." },
       { id: "c_grip_8",  text: "A clean grip! {leader} locks on and the pressure begins in earnest.", tags: ["crowd_roar"] },
       { id: "c_grip_9",  text: "{trailer} tried everything to deny it, but {leader} has the mawashi now." },
-      { id: "c_grip_10", text: "{leader} earns a deep grip — patience rewarded." }
+      { id: "c_grip_10", text: "{leader} earns a deep grip — patience rewarded." },
+      { id: "c_grip_11", text: "{leader} snatches the thick fabric of the mawashi, anchoring their position." },
+      { id: "c_grip_12", text: "A tactical masterstroke! {leader} finally secures the grip they've been hunting for." }
     ],
     grip_break: [
       { id: "c_break_1", text: "{trailer} breaks the grip — back to the center!" },
@@ -65,7 +75,9 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "c_break_5", text: "Hands come apart! {trailer} escapes the danger and creates distance." },
       { id: "c_break_6", text: "{leader}'s grip is broken in a desperate, violent disengagement." },
       { id: "c_break_7", text: "A savage grip break from {trailer} — back to neutral they go." },
-      { id: "c_break_8", text: "{trailer} pivots hard and sheds the hold. The bout starts over." }
+      { id: "c_break_8", text: "{trailer} pivots hard and sheds the hold. The bout starts over." },
+      { id: "c_break_9", text: "With a violent shudder, {trailer} snaps the grip away!" },
+      { id: "c_break_10", text: "A desperate hip toss forces the hands apart. The danger is momentarily cleared." }
     ],
     oshi_pressure: [
       { id: "c_oshi_1",  text: "{leader} pours on the tsuppari!", tags: ["crowd_roar"] },
@@ -89,7 +101,9 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "c_scr_7", text: "Limbs everywhere! This is sumo at its most primal." },
       { id: "c_scr_8", text: "A messy battle for leverage — both men burning energy fast." },
       { id: "c_scr_9", text: "No dominant position — just ferocity and noise." },
-      { id: "c_scr_10", text: "The scramble is exhausting to watch. One of them must find an angle soon." }
+      { id: "c_scr_10", text: "The scramble is exhausting to watch. One of them must find an angle soon." },
+      { id: "c_scr_11", text: "A flurry of desperate parries and feints! It's a chaotic wrestling match." },
+      { id: "c_scr_12", text: "Neither gives an inch in this furious, untethered exchange of leverage." }
     ],
     rear_attack: [
       { id: "c_rear_1", text: "{leader} slips to the side — danger from behind!", tags: ["gasps"] },
@@ -245,7 +259,9 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "m_ctr_6", text: "{leader} waits, waits, and then — the counter! Perfect timing." },
       { id: "m_ctr_7", text: "A sudden pivot! {leader} has turned the entire bout around." },
       { id: "m_ctr_8", text: "{trailer} overextends, and {leader} capitalizes with a swift counter." },
-      { id: "m_ctr_9", text: "The momentum swings like a pendulum! {leader} is suddenly in control." }
+      { id: "m_ctr_9", text: "The momentum swings like a pendulum! {leader} is suddenly in control." },
+      { id: "m_ctr_10", text: "{leader} shifts the center of gravity, utterly neutralizing {trailer}'s drive." },
+      { id: "m_ctr_11", text: "A brilliant tactical retreat from {leader} opens the door for a fierce counter-attack!" }
     ],
     fatigue_swing: [
       { id: "m_fat_1", text: "You can see the strain — momentum swings!", tags: ["gasps"] },
@@ -538,7 +554,10 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "f_n_17", text: "{loser} is out! {winner} gets the decision — {kimarite}." },
       { id: "f_n_18", text: "{winner} completes the job with {kimarite}. A professional performance." },
       { id: "f_n_19", text: "The gyoji calls it. {winner} via {kimarite}. No argument from the judges." },
-      { id: "f_n_20", text: "{winner} steers {loser} to the boundary and the {kimarite} does the rest." }
+      { id: "f_n_20", text: "{winner} steers {loser} to the boundary and the {kimarite} does the rest." },
+      { id: "f_n_21", text: "An absolute masterclass! {winner} ends the struggle with a breathtaking {kimarite}." },
+      { id: "f_n_22", text: "{winner} channels every ounce of power into a devastating {kimarite} to seal the match." },
+      { id: "f_n_23", text: "The technique is undeniable! {winner} completes the {kimarite} as the gyoji points the fan." }
     ],
     upset: [
       { id: "f_u_1",  text: "UPSET! {winner} shocks the arena with {kimarite}!", tags: ["upset", "crowd_roar"] },
