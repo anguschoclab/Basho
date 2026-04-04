@@ -124,7 +124,7 @@ export function generateFullRikishi(args: {
 
   return {
     ...createBaseInfo(id, name, birthYear, rank, rankNumber, division, side, statsBase.height, statsBase.weight, rng),
-    ...createCombatStats(statsBase, rikishiStats, division, archetype, profile),
+    ...createCombatStats(rikishiStats, division, archetype, profile),
     ...createCareerHistory(records, division)
   } as Rikishi;
 }
