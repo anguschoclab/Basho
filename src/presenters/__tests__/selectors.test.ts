@@ -1,90 +1,91 @@
 import { describe, it, expect } from "vitest";
-import { selectYokozunaCandidates } from "../selectors";
-import { mockRikishi } from "../../engine/__tests__/utils";
+import { selectKadobanRikishi } from "../selectors";
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
+import { mockRikishi } from "../../engine/__tests__/utils";
 
-describe("selectors", () => {
-  describe("selectYokozunaCandidates", () => {
-    it("should return an empty array if the world has no rikishi", () => {
-      const world = {
-        rikishi: new Map<string, Rikishi>(),
-      } as unknown as WorldState;
+describe("selectKadobanRikishi", () => {
+  it("should return an empty array if world.ozekiKadoban is undefined", () => {
+    const world = {
+      ozekiKadoban: undefined,
+      rikishi: new Map(),
+    } as unknown as WorldState;
 
-      const result = selectYokozunaCandidates(world);
-      expect(result).toEqual([]);
-    });
+    const result = selectKadobanRikishi(world);
+    expect(result).toEqual([]);
+  });
 
-    it("should return an empty array if there are no ozeki", () => {
-      const world = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", mockRikishi("1", { rank: "yokozuna" })],
-          ["2", mockRikishi("2", { rank: "sekiwake" })],
-          ["3", mockRikishi("3", { rank: "komusubi" })],
-          ["4", mockRikishi("4", { rank: "maegashira" })],
-        ]),
-      } as unknown as WorldState;
+  it("should return an empty array if world.ozekiKadoban is empty", () => {
+    const world = {
+      ozekiKadoban: {},
+      rikishi: new Map(),
+    } as unknown as WorldState;
 
-      const result = selectYokozunaCandidates(world);
-      expect(result).toEqual([]);
-    });
+    const result = selectKadobanRikishi(world);
+    expect(result).toEqual([]);
+  });
 
-    it("should return active ozeki and exclude retired ones or other ranks", () => {
-      const activeOzeki1 = mockRikishi("1", { rank: "ozeki", isRetired: false });
-      const activeOzeki2 = mockRikishi("2", { rank: "ozeki", isRetired: false });
-      const retiredOzeki = mockRikishi("3", { rank: "ozeki", isRetired: true });
-      const activeYokozuna = mockRikishi("4", { rank: "yokozuna", isRetired: false });
+  it("should return Rikishi objects for each ID in ozekiKadoban", () => {
+    const r1 = mockRikishi("r1", { rank: "ozeki" });
+    const r2 = mockRikishi("r2", { rank: "ozeki" });
+    const r3 = mockRikishi("r3", { rank: "ozeki" });
 
-      const world = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", activeOzeki1],
-          ["2", activeOzeki2],
-          ["3", retiredOzeki],
-          ["4", activeYokozuna],
-        ]),
-      } as unknown as WorldState;
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r1);
+    rikishiMap.set("r2", r2);
+    rikishiMap.set("r3", r3);
 
-      const result = selectYokozunaCandidates(world);
+    const world = {
+      ozekiKadoban: {
+        r1: true,
+        r3: true,
+      },
+      rikishi: rikishiMap,
+    } as unknown as WorldState;
 
-      expect(result).toHaveLength(2);
-      expect(result).toContain(activeOzeki1);
-      expect(result).toContain(activeOzeki2);
-      expect(result).not.toContain(retiredOzeki);
-      expect(result).not.toContain(activeYokozuna);
-    });
+    const result = selectKadobanRikishi(world);
+    expect(result).toHaveLength(2);
+    expect(result).toContain(r1);
+    expect(result).toContain(r3);
+    expect(result).not.toContain(r2);
+  });
 
-    it("should memoize the result when called with the same world reference", () => {
-      const world = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", mockRikishi("1", { rank: "ozeki" })],
-        ]),
-      } as unknown as WorldState;
+  it("should skip IDs in ozekiKadoban that do not exist in world.rikishi", () => {
+    const r1 = mockRikishi("r1", { rank: "ozeki" });
 
-      const result1 = selectYokozunaCandidates(world);
-      const result2 = selectYokozunaCandidates(world);
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r1);
 
-      expect(result1).toBe(result2); // Reference equality
-    });
+    const world = {
+      ozekiKadoban: {
+        r1: true,
+        missing_id: true,
+      },
+      rikishi: rikishiMap,
+    } as unknown as WorldState;
 
-    it("should recompute if world reference changes", () => {
-      const world1 = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", mockRikishi("1", { rank: "ozeki" })],
-        ]),
-      } as unknown as WorldState;
+    const result = selectKadobanRikishi(world);
+    expect(result).toHaveLength(1);
+    expect(result).toContain(r1);
+  });
 
-      const result1 = selectYokozunaCandidates(world1);
+  it("should memoize the result if the world object is the same", () => {
+    const r1 = mockRikishi("r1", { rank: "ozeki" });
 
-      const world2 = {
-        rikishi: new Map<string, Rikishi>([
-          ["1", mockRikishi("1", { rank: "ozeki" })],
-        ]),
-      } as unknown as WorldState;
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r1);
 
-      const result2 = selectYokozunaCandidates(world2);
+    const world = {
+      ozekiKadoban: {
+        r1: true,
+      },
+      rikishi: rikishiMap,
+    } as unknown as WorldState;
 
-      // Value should be the same but reference should be different
-      expect(result1).not.toBe(result2);
-    });
+    const result1 = selectKadobanRikishi(world);
+    const result2 = selectKadobanRikishi(world);
+
+    // Check strict equality to ensure it's the exact same array reference
+    expect(result1).toBe(result2);
   });
 });
