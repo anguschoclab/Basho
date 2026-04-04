@@ -466,116 +466,116 @@ export const INSTITUTIONAL_TEMPLATES: Record<string, string[]> = {
   ],
 
   event_governance_strict: [
-    "The JSA issues a formal decree: the stable's governance status has been officially revised.",
-    "An urgent dispatch from the council confirms a strict alteration in governance status.",
-    "In a stern uncompromising mandate, the compliance committee mandates a new governance status.",
-    "The Oyakata accepts the board's decision to modify their institutional standing.",
-    "Following an internal review, the stable's governance status is publicly updated."
+    "The JSA issues a formal decree: the stable's governance status has been officially revised. Compliance is mandatory and immediate.",
+    "An urgent dispatch from the council confirms a change in governance status. The Oyakata has two weeks to demonstrate corrective action.",
+    "In a stern, uncompromising mandate, the compliance committee revises the heya's standing. No appeal process has been offered.",
+    "The Oyakata accepts the board's ruling in silence, bowing before the council's full assembly.",
+    "Following an exhaustive internal review, the stable's governance status is publicly updated. The ruling brooks no argument."
   ],
   event_governance_indulgent: [
-    "The JSA issues a formal notice: the heya's governance status has been officially revised.",
-    "An urgent dispatch from the council confirms a lenient alteration in governance status.",
-    "In a gentle ruling, the compliance committee mandates a new governance status.",
-    "The stablemaster accepts the board's decision to modify their institutional standing.",
-    "Following an internal review, the heya's governance status is publicly updated."
+    "The JSA issues a gentle notice: the heya's governance status has been informally revised. The board encourages gradual improvement.",
+    "A dispatch from the council quietly confirms the change. The Oyakata is given ample time and latitude to self-correct.",
+    "The compliance committee recommends a new governance status, framing it as guidance rather than discipline.",
+    "The stablemaster accepts the board's suggestion with a relaxed nod. Relations with the council remain warm.",
+    "Following a brief review, the heya's governance standing is quietly updated. The council prefers not to make a scene."
   ],
   event_governance_traditionalist: [
-    "The elders hand down a severe governance ruling, demanding immediate compliance to traditional ways.",
-    "A firm governance ruling is issued by the committee to guide the heya back to its roots.",
-    "The board's governance ruling sends a clear message about historical institutional integrity.",
-    "An unprecedented traditionalist governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling based on ancient precedent."
+    "The elders convene and hand down a ruling rooted entirely in historical precedent, demanding the stable return to its founding principles.",
+    "The board cites ancient customs and the unbroken traditions of the heya system in issuing its governance directive.",
+    "The compliance committee invokes the spirit of past grand champions in its ruling, shaming the stable for drifting from the old ways.",
+    "An elder statesmen of the JSA personally delivers the verdict, lamenting the erosion of sumo's sacred customs.",
+    "The disciplinary panel announces a binding ruling: the stable must recommit to the traditional governance structure or face further sanction."
   ],
   event_governance_scientist: [
-    "A data-driven governance ruling is issued by the committee to modernise the heya.",
-    "The board's governance ruling sends a clear message about scientific institutional integrity.",
-    "An unprecedented analytical governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling based on new metrics.",
-    "The JSA issues a formal notice: the heya's governance status has been officially revised based on recent data."
+    "The JSA presents a data-backed assessment of the stable's governance failures, citing trends in performance, compliance rates, and risk metrics.",
+    "The board's ruling is accompanied by a detailed analytical report. The Oyakata is handed a spreadsheet alongside the official decree.",
+    "The compliance committee flags systemic process failures, recommending a structured remediation framework with measurable benchmarks.",
+    "An unprecedented evidence-based governance ruling is handed down, drawing on injury data, training logs, and fiscal records.",
+    "The JSA formally revises the stable's status following a comprehensive audit. The methodology is transparent and reproducible."
   ],
   event_governance_gambler: [
-    "A high-stakes governance ruling is issued by the committee to shake up the heya.",
-    "The board's governance ruling sends a risky message about institutional integrity.",
-    "An unprecedented gamble of a governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling that feels like a roll of the dice.",
-    "The JSA issues a formal notice: the heya's governance status has been officially revised in a surprising move."
+    "The board surprises everyone with an unexpected governance ruling. Insiders are divided on whether it helps or hurts the stable.",
+    "In a move that raises eyebrows across the sumo world, the JSA issues an unconventional directive. The Oyakata calls it a calculated risk.",
+    "The compliance committee takes an unusual stance, leaving the outcome deliberately ambiguous. The stable must navigate the uncertainty alone.",
+    "An unpredictable governance ruling shakes the stable's foundations. Whether it pays off will become clear only at the next basho.",
+    "The JSA rolls the dice with an unorthodox ruling. Half the council disagrees, but the decision is final."
   ],
   event_governance_nurturer: [
-    "A compassionate governance ruling is issued by the committee to guide the heya.",
-    "The board's governance ruling sends a warm message about institutional integrity.",
-    "An unprecedented supportive governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling focused on wellbeing.",
-    "The JSA issues a formal notice: the heya's governance status has been officially revised with care."
+    "The JSA issues a compassionate governance directive, framing the revisions as an opportunity for growth rather than punishment.",
+    "The board conveys its concerns with warmth and a genuine desire to see the stable and its rikishi flourish.",
+    "The compliance committee pairs its ruling with an offer of institutional support, promising resources to help the heya improve.",
+    "The Oyakata is moved by the council's empathetic tone. The governance change comes with a hand of assistance extended.",
+    "Following the review, the JSA updates the stable's status and assigns a welfare liaison to guide the transition."
   ],
   event_governance_tyrant: [
-    "A brutal governance ruling is issued by the committee to force the heya into line.",
-    "The board's governance ruling sends a terrifying message about institutional integrity.",
-    "An unprecedented tyrannical governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling demanding absolute obedience.",
-    "The JSA issues a formal notice: the heya's governance status has been officially revised with an iron fist."
+    "The board delivers its ruling with barely concealed fury. The Oyakata is given no room to respond before the decree is made public.",
+    "The compliance committee's verdict is brutal and absolute: compliance or expulsion. No middle ground is offered.",
+    "The JSA's ruling lands like a hammer. Other stablemasters watch nervously, aware that they could be next.",
+    "The governance change is announced with deliberate aggression. The council wants a show of force, and they have made one.",
+    "The Oyakata is summoned, berated in front of the full board, and handed the revised status document without ceremony."
   ],
   event_governance_strategist: [
-    "A cunning governance ruling is issued by the committee to outmaneuver the heya.",
-    "The board's governance ruling sends a calculated message about institutional integrity.",
-    "An unprecedented strategic governance ruling alters the future trajectory of the stable.",
-    "The disciplinary panel announces a final, binding governance ruling based on long-term planning.",
-    "The JSA issues a formal notice: the heya's governance status has been officially revised with a master plan."
+    "The JSA's governance ruling appears measured, but insiders believe it is designed to reposition the stable within the broader competitive landscape.",
+    "The compliance committee issues a ruling that serves multiple purposes—none of which are stated explicitly in the official notice.",
+    "The board's directive is precise and deliberate. Each clause has been carefully chosen to maximize leverage over the stable's future decisions.",
+    "A calculating governance ruling arrives, leaving the Oyakata certain that the council has a longer game in mind.",
+    "The JSA revises the stable's status in a move that appears administrative but carries clear political undertones."
   ],
   event_welfare_strict: [
-    "A critical welfare violation notice is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's wellbeing.",
-    "The Oyakata is summoned following a serious welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable conditions."
+    "A welfare violation notice is formally issued, triggering a mandatory JSA investigation. The stable is given 72 hours to respond in writing.",
+    "The welfare committee raises a red flag regarding conditions at the stable. The Oyakata is placed on immediate notice.",
+    "A formal welfare violation notice is filed, citing deep concerns for the physical and psychological wellbeing of the rikishi.",
+    "The Oyakata is summoned before the welfare panel. Attendance is not optional. The atmosphere in the room is icy.",
+    "Welfare monitors issue a stern documented warning outlining specific unacceptable conditions observed during the inspection."
   ],
   event_welfare_indulgent: [
-    "A minor welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding conditions at the heya.",
-    "A formal welfare alert underscores deep concerns for the rikishi's wellbeing.",
-    "The stablemaster is summoned following a routine welfare alert.",
-    "Welfare monitors issue a mild warning detailing unacceptable conditions."
+    "A welfare concern is quietly flagged, and the JSA opens a low-key inquiry. The Oyakata is invited to address the matter informally.",
+    "The welfare committee raises concerns about conditions at the heya, though the tone of the communication remains polite and collegial.",
+    "A routine welfare alert is issued—the third this season. The stablemaster is given broad latitude to self-report and self-correct.",
+    "The Oyakata is gently reminded of welfare obligations following the alert, and offered a compliance grace period.",
+    "Welfare monitors note some concerns but stop short of a formal citation, urging the stable to review its own practices at their convenience."
   ],
   event_welfare_traditionalist: [
-    "A critical traditional welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding ancient conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's traditional wellbeing.",
-    "The Oyakata is summoned following a serious old-school welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable ancient conditions."
+    "The welfare panel notes concerns about conditions at the stable, though elder members are divided on whether modern welfare standards apply to traditional training.",
+    "A welfare notice arrives, couched in language that acknowledges the demands of old-school keiko while still demanding corrective action.",
+    "The Oyakata frames the welfare concerns as a misunderstanding of traditional methods, but accepts the formal notice with a reluctant bow.",
+    "Welfare investigators find conditions that would alarm modern observers—but the Oyakata insists this is simply the way sumo has always been done.",
+    "The welfare committee issues its ruling, acknowledging tradition while making clear that certain practices can no longer be ignored."
   ],
   event_welfare_scientist: [
-    "A critical scientific welfare alert is triggered, prompting an immediate data-driven investigation by the JSA.",
-    "The welfare committee raises a red flag regarding modern conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's scientific wellbeing.",
-    "The Oyakata is summoned following a serious analytical welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable metric conditions."
+    "Welfare investigators present the Oyakata with data: injury incidence rates, recovery timelines, and sleep metrics that paint an unflattering picture.",
+    "The welfare committee's formal notice includes a statistical appendix documenting the measurable decline in rikishi physical indicators.",
+    "A systematic welfare review uncovers procedural failures. The report is thorough, clinical, and difficult to dispute.",
+    "The Oyakata is handed an evidence-based welfare notice. The numbers do not lie, and the council knows it.",
+    "Welfare monitors flag the stable based on tracked biometric anomalies and a pattern of unreported minor injuries."
   ],
   event_welfare_gambler: [
-    "A critical risky welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding dangerous conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's high-stakes wellbeing.",
-    "The Oyakata is summoned following a serious gambling welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable risky conditions."
+    "A welfare alert is issued after an anonymous tip reaches the JSA. The Oyakata downplays it as a calculated overreaction.",
+    "The welfare committee flags concerns, but the Oyakata privately calculates the reputational risk against the cost of real reform.",
+    "A formal welfare notice arrives at a particularly sensitive time. Whether to fight it or comply quietly is a gamble with real stakes.",
+    "The Oyakata had been betting the issue would never surface. The welfare panel has just changed those odds considerably.",
+    "Welfare investigators arrive unannounced. The Oyakata rolls with the surprise inspection, hoping the upside outweighs the exposure."
   ],
   event_welfare_nurturer: [
-    "A critical compassionate welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding caring conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's nurtured wellbeing.",
-    "The Oyakata is summoned following a serious supportive welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable negligent conditions."
+    "The welfare alert visibly shakes the Oyakata, who is genuinely distressed that conditions fell short of the care owed to their rikishi.",
+    "The welfare committee's concerns land hard on a stablemaster who considers the rikishi's wellbeing a personal responsibility.",
+    "The Oyakata accepts the formal notice with heartfelt remorse, immediately calling a stable meeting to address the rikishi directly.",
+    "Welfare monitors find the Oyakata already aware of the issues and in the process of corrective action—but the notice is filed regardless.",
+    "A formal welfare alert is issued, and the Oyakata's response is immediate and emotional: the stable will do better, whatever it costs."
   ],
   event_welfare_tyrant: [
-    "A critical brutal welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding terrifying conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's abused wellbeing.",
-    "The Oyakata is summoned following a serious tyrannical welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable cruel conditions."
+    "Welfare investigators force their way into the stable after reports from three separate rikishi. The Oyakata refuses to acknowledge the findings.",
+    "The welfare notice triggers outrage from the Oyakata, who views any concern for the rikishi's conditions as an attack on authority.",
+    "The JSA's welfare panel documents conditions that have left multiple rikishi too frightened to file complaints under their own names.",
+    "A formal welfare violation is recorded. The Oyakata instructs the stable's rikishi to deny everything. Several already have.",
+    "Welfare monitors issue a severe warning after finding conditions that suggest systematic disregard for basic rikishi welfare standards."
   ],
   event_welfare_strategist: [
-    "A critical strategic welfare alert is triggered, prompting an immediate investigation by the JSA.",
-    "The welfare committee raises a red flag regarding calculated conditions at the stable.",
-    "A formal welfare violation notice underscores deep concerns for the rikishi's planned wellbeing.",
-    "The Oyakata is summoned following a serious cunning welfare violation notice.",
-    "Welfare monitors issue a stern warning detailing unacceptable scheming conditions."
+    "The welfare alert is received. The Oyakata immediately begins managing the narrative, framing the stable's response before the JSA can get ahead of it.",
+    "A formal welfare notice is issued, and the Oyakata's first call is to a communications consultant, not the welfare liaison.",
+    "The welfare committee raises its concerns in writing. The Oyakata's written response arrives within hours—carefully worded and legally reviewed.",
+    "Welfare monitors file their report. The Oyakata has already begun quietly addressing the flagged issues while publicly contesting the findings.",
+    "A welfare alert lands on the Oyakata's desk. They view it as leverage, a liability, and a chess piece—all simultaneously."
   ],
 
 };
