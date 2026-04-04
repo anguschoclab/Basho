@@ -120,21 +120,18 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
 }
 
 
-export function calculateInjurySummary(r: Rikishi): string {
-  let injurySummary = "Healthy";
-  if (r.injured && r.injuryStatus) {
-    const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
-    const sev = typeof r.injuryStatus.severity === "string"
-      ? r.injuryStatus.severity
-      : r.injuryStatus.severity < 30 ? "Minor" : r.injuryStatus.severity < 70 ? "Moderate" : "Severe";
-    const weeks = r.injuryWeeksRemaining;
-    injurySummary = `${sev}${loc} (${weeks}w)`;
-  }
-  return injurySummary;
+function calculateInjurySummary(r: Rikishi): string {
+  if (!r.injured || !r.injuryStatus) return "Healthy";
+  const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
+  const sev = typeof r.injuryStatus.severity === "string"
+    ? r.injuryStatus.severity
+    : r.injuryStatus.severity < 30 ? "Minor" : r.injuryStatus.severity < 70 ? "Moderate" : "Severe";
+  const weeks = r.injuryWeeksRemaining;
+  return `${sev}${loc} (${weeks}w)`;
 }
 
-
-export function calculateTopRivals(h2h: NonNullable<Rikishi["h2h"]>, world: WorldState): UIRivalEntry[] {
+function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[] {
+  const h2h = r.h2h ?? {};
   return Object.entries(h2h)
     .map(([oppId, rec]) => {
       const opp = world.rikishi.get(oppId);
@@ -151,16 +148,20 @@ export function calculateTopRivals(h2h: NonNullable<Rikishi["h2h"]>, world: Worl
     .slice(0, 5);
 }
 
-
-export function calculatePerceivedStats(r: Rikishi): UIRikishi["perceivedStats"] {
+function calculateSpecialPrizes(r: Rikishi) {
   return {
-    strength: NarrativeService.getStatBand(r.stats?.strength ?? r.power ?? 50),
-    technique: NarrativeService.getStatBand(r.stats?.technique ?? r.technique ?? 50),
-    speed: NarrativeService.getStatBand(r.stats?.speed ?? r.speed ?? 50),
-    stamina: NarrativeService.getStatBand(r.stats?.stamina ?? r.stamina ?? 50),
-    mental: NarrativeService.getStatBand(r.stats?.mental ?? r.aggression ?? 50),
-    adaptability: NarrativeService.getStatBand(r.stats?.adaptability ?? r.adaptability ?? 50),
-    balance: NarrativeService.getStatBand(r.stats?.balance ?? r.balance ?? 50),
+    shukunSho: r.stats?.specialPrizes?.shukunSho ?? 0,
+    kantoSho: r.stats?.specialPrizes?.kantoSho ?? 0,
+    ginoSho: r.stats?.specialPrizes?.ginoSho ?? 0,
+  };
+}
+
+function calculateAchievements(r: Rikishi) {
+  return {
+    kinboshiEarned: r.stats?.achievements?.kinboshiEarned ?? 0,
+    ginboshiEarned: r.stats?.achievements?.ginboshiEarned ?? 0,
+    kinboshiConceded: r.stats?.achievements?.kinboshiConceded ?? 0,
+    ginboshiConceded: r.stats?.achievements?.ginboshiConceded ?? 0,
   };
 }
 
@@ -170,10 +171,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const careerHistory = r.careerHistory || [];
   const milestones = r.milestones || [];
 
-  const injurySummary = calculateInjurySummary(r);
 
-  const h2h = r.h2h ?? {};
-  const topRivals = calculateTopRivals(h2h, world);
+
+
 
   const rankInfo = RANK_NAMES[r.rank];
   const rankLabel = rankInfo?.en ?? r.rank;
@@ -211,7 +211,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     derivedArchetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
-    injurySummary,
+    injurySummary: calculateInjurySummary(r),
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
@@ -231,22 +231,13 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     perceivedStats: calculatePerceivedStats(r),
     descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
-    topRivals,
+    topRivals: calculateTopRivals(r, world),
     personalityTraits: r.personalityTraits ?? [],
     favoredKimarite: calculateMostFrequentKimarite(r.id, r.history ?? []),
     preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
     preferredGripDepth: r.combatProfile?.preferredGripDepth ?? 'standard',
-    specialPrizes: {
-      shukunSho: r.stats?.specialPrizes?.shukunSho ?? 0,
-      kantoSho: r.stats?.specialPrizes?.kantoSho ?? 0,
-      ginoSho: r.stats?.specialPrizes?.ginoSho ?? 0,
-    },
-    achievements: {
-      kinboshiEarned: r.stats?.achievements?.kinboshiEarned ?? 0,
-      ginboshiEarned: r.stats?.achievements?.ginboshiEarned ?? 0,
-      kinboshiConceded: r.stats?.achievements?.kinboshiConceded ?? 0,
-      ginboshiConceded: r.stats?.achievements?.ginboshiConceded ?? 0,
-    },
+    specialPrizes: calculateSpecialPrizes(r),
+    achievements: calculateAchievements(r),
     salaryBreakdown: getSalaryBreakdown(
       RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary || 0,
       r.division || "jonokuchi",
