@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
@@ -30,11 +30,11 @@ const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
  * profile row.
  *  * @param { label, icon, value, options, onChange } - The { label, icon, value, options, on change }.
  */
-function ProfileRow({ label, icon, value, options, onChange }: {
+const ProfileRow = React.memo(({ label, icon, value, options, onChange }: {
   label: string; icon: React.ReactNode; value: string;
   options: { value: string; label: string; disabled?: boolean }[];
   onChange: (v: string) => void;
-}) {
+}) => {
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-1.5 w-20 shrink-0">
@@ -63,7 +63,23 @@ function ProfileRow({ label, icon, value, options, onChange }: {
       </div>
     </div>
   );
-}
+});
+
+
+const MultiplierBar = React.memo(({ label, value, icon: Icon, color }: { label: string; value: number; icon: React.ElementType; color: string }) => {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-1 text-muted-foreground">
+        <Icon className="h-3 w-3" />
+        <span>{label}</span>
+      </div>
+      <div className="h-1 rounded-full bg-muted overflow-hidden">
+        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${Math.min(100, value * 60)}%` }} />
+      </div>
+      <span className="font-medium text-foreground">{(value * 100).toFixed(0)}%</span>
+    </div>
+  );
+});
 
 /** training widget. */
 export function TrainingWidget() {
@@ -142,16 +158,7 @@ export function TrainingWidget() {
           { label: "Fatigue", value: intensityInfo.fatigue, icon: Activity, color: intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning" },
           { label: "Recovery", value: recoveryInfo.fatigueDecay, icon: Shield, color: "bg-success" },
         ].map(m => (
-          <div key={m.label} className="space-y-1">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <m.icon className="h-3 w-3" />
-              <span>{m.label}</span>
-            </div>
-            <div className="h-1 rounded-full bg-muted overflow-hidden">
-              <div className={`h-full rounded-full ${m.color} transition-all`} style={{ width: `${Math.min(100, m.value * 60)}%` }} />
-            </div>
-            <span className="font-medium text-foreground">{(m.value * 100).toFixed(0)}%</span>
-          </div>
+          <MultiplierBar key={m.label} label={m.label} value={m.value} icon={m.icon} color={m.color} />
         ))}
       </div>
 

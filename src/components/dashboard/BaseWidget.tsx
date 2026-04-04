@@ -62,6 +62,7 @@ export function BaseWidget({
                 headerAction.onClick();
               }}
               className="h-6 text-xs gap-1 text-muted-foreground"
+              aria-label={headerAction.tooltip || headerAction.label || `View more ${title} details`}
               tooltip={headerAction.tooltip || `View more ${title} details`}
               tooltipSide="left"
             >
@@ -89,6 +90,7 @@ export function BaseWidget({
             footerAction.onClick();
           }}
           className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors mt-1"
+          aria-label={footerAction.tooltip || footerAction.label || `Navigate to ${footerAction.label}`}
           tooltip={footerAction.tooltip || `Navigate to ${footerAction.label}`}
           tooltipSide="top"
         >

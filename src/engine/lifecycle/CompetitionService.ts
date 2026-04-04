@@ -63,17 +63,8 @@ function resolvePlayoffs(
 }
 
 
-/**
- * Conclude Tournament Competition — handles yusho, prizes, and playoffs.
- * Extracted from world.ts for architectural purity.
- * 
- * @param world Current WorldState
- * @returns Updated WorldState with BashoResult recorded
- */
-export function concludeBashoCompetition(world: WorldState): WorldState {
-  const basho = world.currentBasho;
-  if (!basho) return world;
 
+function calculateStandings(basho: BashoState): { topCandidates: Id[], bestWins: number, table: Array<{id: Id, wins: number, losses: number}> } {
   const table: Array<{id: Id, wins: number, losses: number}> = [];
   const standingsEntries = basho.standings instanceof Map 
     ? Array.from(basho.standings.entries()) 
@@ -86,61 +77,20 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
 
   table.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
-  if (table.length === 0) return world;
+  if (table.length === 0) return { topCandidates: [], bestWins: 0, table };
 
   const bestWins = table[0].wins;
   const topCandidates = table.reduce<Id[]>((acc, t) => {
     if (t.wins === bestWins) acc.push(t.id);
     return acc;
   }, []);
-  
-  let yusho = topCandidates[0];
-  const playoffMatches: MatchSchedule[] = [];
-  
-  // === PLAYOFF RESOLUTION ===
-  if (topCandidates.length > 1) {
-    const playoffResult = resolvePlayoffs(world, basho, topCandidates);
-    yusho = playoffResult.winner;
-    playoffMatches.push(...playoffResult.matches);
 
-    const champ = world.rikishi.get(yusho);
-    logEngineEvent(world, {
-      type: "PLAYOFF_RESULT",
-      category: "basho",
-      importance: "headline",
-      scope: "world",
-      title: `Playoff Champion: ${champ?.shikona ?? yusho}`,
-      summary: `${topCandidates.length} rikishi tied at ${bestWins} wins. ${champ?.shikona ?? yusho} wins the Emperor's Cup via playoff.`,
-      data: {
-        bashoName: basho.bashoName,
-        year: world.year,
-        contenders: topCandidates.length,
-        boutCount: playoffMatches.length,
-        championId: yusho,
-      },
-    });
-  }
+  return { topCandidates, bestWins, table };
+}
 
-  // Determine Special Prizes
+function distributePrizes(world: WorldState, basho: BashoState, yusho: Id) {
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
-
-  const result: BashoResult = {
-    year: world.year,
-    bashoNumber: basho.bashoNumber,
-    bashoName: basho.bashoName,
-    yusho,
-    junYusho: topCandidates.filter(id => id !== yusho),
-    ...prizes,
-    playoffMatches,
-    prizes: {
-      yushoAmount: 10000000,
-      junYushoAmount: 2000000,
-      specialPrizes: 2000000
-    }
-  };
-
-  // Apply Special Prizes (Prizes, Treasury, Stats)
   const SANSHO_PRIZE_AMOUNT = 2000000;
   const awardTypes = {
     shukunsho: 'Shukun',
@@ -167,12 +117,36 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     }
   }
 
-  // Record history
+  return prizes;
+}
+
+function recordBashoHistory(
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id,
+  topCandidates: Id[],
+  playoffMatches: MatchSchedule[],
+  prizes: ReturnType<typeof determineSpecialPrizes>,
+  bestWins: number
+) {
+  const result: BashoResult = {
+    year: world.year,
+    bashoNumber: basho.bashoNumber,
+    bashoName: basho.bashoName,
+    yusho,
+    junYusho: topCandidates.filter(id => id !== yusho),
+    ...prizes,
+    playoffMatches,
+    prizes: {
+      yushoAmount: 10000000,
+      junYushoAmount: 2000000,
+      specialPrizes: 2000000
+    }
+  };
+
   if (!world.history) world.history = [];
   world.history.push(result);
 
-
-  // --- ALMANAC SNAPSHOT ---
   safeCall(() => {
     const snapshot = buildAlmanacSnapshot(world);
     if (snapshot) {
@@ -181,19 +155,16 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     }
   });
 
-  // Broadcast
   onBashoEnded(world);
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona || 'Unknown');
 
-  // --- MEDIA SNAPSHOT ---
   safeCall(() => {
     if (world.mediaState) {
       world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
     }
   });
 
-  // --- FTUE UPDATE ---
   if (world.ftue?.isActive) {
     world.ftue.bashoCompleted += 1;
     if (world.ftue.bashoCompleted >= 1) world.ftue.isActive = false;
@@ -214,11 +185,55 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     }
   });
 
-  // Transition to post-basho
   enterPostBasho(world);
 
-  // Autosave
   safeCall(() => { autosave(world); });
+}
+
+/**
+ * Conclude Tournament Competition — handles yusho, prizes, and playoffs.
+ * Extracted from world.ts for architectural purity.
+ *
+ * @param world Current WorldState
+ * @returns Updated WorldState with BashoResult recorded
+ */
+export function concludeBashoCompetition(world: WorldState): WorldState {
+  const basho = world.currentBasho;
+  if (!basho) return world;
+
+  const { topCandidates, bestWins } = calculateStandings(basho);
+
+  if (topCandidates.length === 0) return world;
+
+  let yusho = topCandidates[0];
+  const playoffMatches: MatchSchedule[] = [];
+
+  if (topCandidates.length > 1) {
+    const playoffResult = resolvePlayoffs(world, basho, topCandidates);
+    yusho = playoffResult.winner;
+    playoffMatches.push(...playoffResult.matches);
+
+    const champ = world.rikishi.get(yusho);
+    logEngineEvent(world, {
+      type: "PLAYOFF_RESULT",
+      category: "basho",
+      importance: "headline",
+      scope: "world",
+      title: `Playoff Champion: ${champ?.shikona ?? yusho}`,
+      summary: `${topCandidates.length} rikishi tied at ${bestWins} wins. ${champ?.shikona ?? yusho} wins the Emperor's Cup via playoff.`,
+      data: {
+        bashoName: basho.bashoName,
+        year: world.year,
+        contenders: topCandidates.length,
+        boutCount: playoffMatches.length,
+        championId: yusho,
+      },
+    });
+  }
+
+  const prizes = distributePrizes(world, basho, yusho);
+
+  recordBashoHistory(world, basho, yusho, topCandidates, playoffMatches, prizes, bestWins);
 
   return world;
 }
