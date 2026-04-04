@@ -142,7 +142,7 @@ export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): 
       });
 
       // Randomly assign to a stable
-      const heyaId = `heya_${worldRng.int(1, heyaMap.size)}`;
+      const heyaId = worldRng.pick(heyaIds);
       r.heyaId = heyaId;
       heyaMap.get(heyaId)?.rikishiIds?.push(r.id);
       rikishiMap.set(r.id, r);
