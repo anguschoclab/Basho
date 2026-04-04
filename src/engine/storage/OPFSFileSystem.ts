@@ -8,7 +8,7 @@ export class OPFSFileSystem {
   /**
    * Navigates or creates a nested directory structure.
    */
-  public async getDirectoryPath(path: string[]): Promise<any | null> {
+  public async getDirectoryPath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
     if (!this.isSupported()) return null;
 
     try {
