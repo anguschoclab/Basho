@@ -1,48 +1,33 @@
 
 import { type BoutResult } from "../types/basho";
+import { z } from "zod";
+
+
+const boutResultSchema = z.object({
+  boutId: z.string(),
+  winner: z.string(),
+  winnerRikishiId: z.string(),
+  loserRikishiId: z.string(),
+  kimarite: z.string(),
+  kimariteName: z.string(),
+  stance: z.string(),
+  tachiaiWinner: z.string(),
+  duration: z.number(),
+  upset: z.boolean(),
+  narrative: z.array(z.string()).optional(),
+  pbpLines: z.array(z.any()).optional(),
+  pbp: z.array(z.any()).optional(),
+}).passthrough();
 
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
 function validateBoutLog(data: any): BoutResult | null {
-  if (!data || typeof data !== "object") {
+  const result = boutResultSchema.safeParse(data);
+  if (!result.success) {
+    console.warn(`[OPFS Validation] Invalid BoutResult: ${result.error.message}`);
     return null;
   }
-
-  const requiredStringProps = ["boutId", "winner", "winnerRikishiId", "loserRikishiId", "kimarite", "kimariteName", "stance", "tachiaiWinner"];
-  for (const prop of requiredStringProps) {
-    if (typeof data[prop] !== "string") {
-      console.warn(`[OPFS Validation] Invalid BoutResult: missing or invalid string property '${prop}'`);
-      return null;
-    }
-  }
-
-  if (typeof data.duration !== "number") {
-    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid number property 'duration'");
-    return null;
-  }
-
-  if (typeof data.upset !== "boolean") {
-    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid boolean property 'upset'");
-    return null;
-  }
-
-  // Arrays are optional but if present must be arrays
-  if (data.narrative !== undefined && !Array.isArray(data.narrative)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: narrative must be an array of strings");
-    return null;
-  }
-
-  if (data.pbpLines !== undefined && !Array.isArray(data.pbpLines)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: pbpLines must be an array");
-    return null;
-  }
-
-  if (data.pbp !== undefined && !Array.isArray(data.pbp)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: pbp must be an array");
-    return null;
-  }
-
-  return data as BoutResult;
+  return result.data as BoutResult;
 }
 
 /**
