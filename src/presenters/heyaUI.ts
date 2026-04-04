@@ -43,14 +43,17 @@ export interface UIHeya {
 
 export function projectHeya(h: Heya, world: WorldState): UIHeya {
   const oyakata = getOyakataForHeya(world, h.id);
-  const staff = Array.from(world.staff.values())
-    .filter(s => s.heyaId === h.id)
-    .map(s => ({
-      id: s.id,
-      name: s.name,
-      role: s.role,
-      specialty: (s as any).specialty || "General"
-    }));
+  const staff: UIStaffEntry[] = [];
+  for (const s of world.staff.values()) {
+    if (s.heyaId === h.id) {
+      staff.push({
+        id: s.id,
+        name: s.name,
+        role: s.role,
+        specialty: (s as any).specialty || "General"
+      });
+    }
+  }
 
   const roster = (h.rikishiIds || [])
     .map(id => world.rikishi.get(id))
