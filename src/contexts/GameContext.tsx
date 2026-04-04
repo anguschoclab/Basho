@@ -1,7 +1,7 @@
 // Game State Context — slim provider + hook
 // Types, reducer, and helpers split into sibling modules.
 
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
@@ -165,7 +165,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
-  const value: GameContextValue = {
+  const value: GameContextValue = useMemo(() => ({
     state,
     createWorld, setPhase, selectRikishi, selectHeya,
     startBasho,
@@ -180,7 +180,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
     updateWorld, goOnHoliday, runAutoSimAction,
     tickMultipleDays,
     issueRuling, handleMediaEvent
-  };
+  }), [
+    state,
+    createWorld, setPhase, selectRikishi, selectHeya,
+    startBasho, advanceDay, simulateBoutAction, setBoutTacticAction, simulateAllBouts,
+    endDay, endBasho, simFullBasho, advanceInterim, advanceOneDayAction,
+    saveToSlot, loadFromSlot, quickSaveAction, loadFromAutosaveAction, hasAutosaveCheck, getSaveSlots,
+    getRikishi, getHeya, getCurrentDayMatches, getStandings,
+    updateWorld, goOnHoliday, runAutoSimAction, tickMultipleDays, issueRuling, handleMediaEvent
+  ]);
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }
