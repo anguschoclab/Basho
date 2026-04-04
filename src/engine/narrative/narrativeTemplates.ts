@@ -2,16 +2,26 @@
 // String registries for different bout phases and styles
 
 export const KENSHO_SPONSORS = [
-  "Nagatanien", "Morinaga", "Yaokin", "Kirin Brewery", "Suntory", 
-  "Takashimaya", "Mitsukoshi", "Asahi Breweries", "Pocari Sweat", 
-  "Meiji Holdings", "Yamazaki Baking"
+  "Nagatanien", "Morinaga", "Yaokin", "Kirin Brewery", "Suntory",
+  "Takashimaya", "Mitsukoshi", "Asahi Breweries", "Pocari Sweat",
+  "Meiji Holdings", "Yamazaki Baking", "Ajinomoto", "Nihon Shokken",
+  "Nikkan Sports", "Shiseido", "Itoham Foods", "Maruha Nichiro",
+  "Fuji Television", "Sapporo Breweries", "Daikin Industries"
 ];
 
 export const SHIKIRI_PHRASES = [
   "They crouch at the shikiri-sen. The crowd holds its breath.",
   "They crouch at the shikiri-sen… no hesitation.",
   "Down to the line. Eyes locked. Waiting.",
-  "At the shikiri-sen now. Fingers to the clay. Silence falls."
+  "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+  "The gyoji's fan rises. Both men settle into the squat. A hush descends.",
+  "They plant their fists. The air in the arena turns to stone.",
+  "Fingertips touch the clay. The ritual complete. The moment arrives.",
+  "A long, measured crouch from both men. Nobody blinks.",
+  "The shikiri-sen divides the world into two. Each man stares across it.",
+  "Both men lower themselves. The seconds stretch impossibly thin.",
+  "Eyes meet across the line. A thousand words exchanged in silence.",
+  "Down. Set. The referee holds his breath with the rest of the hall."
 ];
 
 export const TACHIAI_WINNER_PHRASES = [

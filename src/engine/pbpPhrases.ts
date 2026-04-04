@@ -186,10 +186,33 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "edg_slp_4", text: "A dangerous slip is met with an incredible survival instinct." },
       { id: "edg_slp_5", text: "Despite a clear slip, {trailer} holds on and survives!" }
     ],
-    grip_change: [],
-    footwork_angle: [],
-    mistake: [],
-    tachiai_win: []
+    grip_change: [
+      { id: "m_gc_1", text: "{leader} shifts the grip — hunting for a better angle!", tags: ["crowd_roar"] },
+      { id: "m_gc_2", text: "A sudden grip adjustment from {leader} catches {trailer} off guard!" },
+      { id: "m_gc_3", text: "{leader} releases and re-grabs — the mawashi changes hands!" },
+      { id: "m_gc_4", text: "Smart wrestling from {leader}, swapping to a stronger inside grip." },
+      { id: "m_gc_5", text: "{leader} reads the position and transitions to a fresh hold on the belt." }
+    ],
+    footwork_angle: [
+      { id: "m_fa_1", text: "{leader} shuffles the feet and cuts a brutal new angle!" },
+      { id: "m_fa_2", text: "A sharp lateral step from {leader} — geometry shifts in their favor." },
+      { id: "m_fa_3", text: "{leader} pivots, redirecting the whole fight with a single footwork adjustment." },
+      { id: "m_fa_4", text: "The footwork from {leader} is exceptional — {trailer} is suddenly exposed." },
+      { id: "m_fa_5", text: "{leader} finds the angle that {trailer} cannot cover. Masterful positioning." }
+    ],
+    mistake: [
+      { id: "m_mis_1", text: "{trailer} overcommits — and {leader} makes them pay!", tags: ["crowd_roar"] },
+      { id: "m_mis_2", text: "A fatal lunge from {trailer}! {leader} seizes the opening instantly." },
+      { id: "m_mis_3", text: "{trailer} reaches too far — the balance is gone!" },
+      { id: "m_mis_4", text: "A momentary lapse from {trailer}, and {leader} is already capitalizing." },
+      { id: "m_mis_5", text: "Costly mistake! {trailer} loses their center and the momentum swings." }
+    ],
+    tachiai_win: [
+      { id: "m_tw_1", text: "The tachiai advantage is telling — {leader} has dictated the whole bout!" },
+      { id: "m_tw_2", text: "{leader}'s first-step dominance is bearing fruit deep into the bout." },
+      { id: "m_tw_3", text: "From that opening collision, {leader} has never let {trailer} get comfortable." },
+      { id: "m_tw_4", text: "The momentum from the tachi-ai keeps paying dividends for {leader}." }
+    ]
   },
 
   injury: {
@@ -424,7 +447,14 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
     short: [
       { id: "conn_1", text: "Meanwhile…" },
       { id: "conn_2", text: "Back on the clay…" },
-      { id: "conn_3", text: "The battle rages on…" }
+      { id: "conn_3", text: "The battle rages on…" },
+      { id: "conn_4", text: "And still they fight…" },
+      { id: "conn_5", text: "Neither man yields…" },
+      { id: "conn_6", text: "The dohyo demands more…" },
+      { id: "conn_7", text: "Seconds feel like minutes inside that ring…" },
+      { id: "conn_8", text: "The gyoji watches. The crowd watches. Nobody breathes." },
+      { id: "conn_9", text: "On the clay…" },
+      { id: "conn_10", text: "Time stretches in the Kokugikan…" }
     ]
   }
 };
