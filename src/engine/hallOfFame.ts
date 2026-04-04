@@ -100,10 +100,10 @@ function addInductee(
   world: WorldState,
   hof: HallOfFameState,
   newInductees: HoFInductee[],
-  rid: string,
-  r: any,
-  category: "champion" | "iron_man" | "technician",
-  stats: any
+  rid: Id,
+  r: { shikona: string; name?: string; rank: Rank; careerWins?: number; careerLosses?: number },
+  category: HoFCategory,
+  stats: Partial<HoFInductee["stats"]>
 ) {
   const key = `${rid}::${category}`;
   if (hof.inducted[key]) return;
