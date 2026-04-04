@@ -1,6 +1,7 @@
+import type { StandingsTableRuntime } from '../../engine/types/basho';
 // src/presenters/__tests__/uiDigest.test.ts
 import { describe, it, expect } from 'vitest';
-import { enrichRikishiForUI, formatRadarData, formatMetaTrends } from '../uiDigest';
+import { enrichRikishiForUI, formatRadarData, formatMetaTrends, getOzekiRunCandidates } from '../uiDigest';
 import { mockRikishi as generateMockRikishi } from '../../engine/__tests__/utils';
 import type { RikishiStats, Rikishi } from '../../engine/types/rikishi';
 import type { WorldState } from '../../engine/types/world';
@@ -75,6 +76,123 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
     it('should return empty if no history', () => {
       const mockWorld: Partial<WorldState> = { history: [], bashoNumber: 0 };
       expect(formatMetaTrends(mockWorld as WorldState)).toEqual([]);
+    });
+  });
+
+  describe('getOzekiRunCandidates', () => {
+    it('returns empty array if no historyIndex', () => {
+      const world = {
+        rikishi: new Map(),
+      } as unknown as WorldState;
+      expect(getOzekiRunCandidates(world)).toEqual([]);
+    });
+
+    it('returns empty array if no candidates (sekiwake/komusubi)', () => {
+        const mockR = generateMockRikishi('r1', { rank: 'maegashira' });
+        const world = {
+            historyIndex: { rikishi: {} },
+            rikishi: new Map([['r1', mockR]]),
+            heyas: new Map(),
+        } as unknown as WorldState;
+
+        expect(getOzekiRunCandidates(world)).toEqual([]);
+    });
+
+    it('calculates recent wins from last 3 basho results', () => {
+        const mockR = generateMockRikishi('r1', { rank: 'sekiwake', heyaId: 'h2' });
+        const world = {
+            playerHeyaId: 'h1',
+            historyIndex: {
+                rikishi: {
+                    'r1': [
+                        { wins: 5 }, { wins: 8 }, { wins: 8 }, { wins: 10 }, { wins: 11 }
+                    ] // should take last 3: 8+10+11 = 29
+                }
+            },
+            rikishi: new Map([['r1', mockR]]),
+            heyas: new Map(),
+        } as unknown as WorldState;
+
+        const res = getOzekiRunCandidates(world);
+        expect(res).toHaveLength(1);
+        expect(res[0].recentWins).toBe(29);
+        expect(res[0].narrative).toBe("Building a solid case, but needs a spectacular finish.");
+    });
+
+    it('includes current basho standings in recent wins', () => {
+        const mockR = generateMockRikishi('r1', { rank: 'sekiwake', heyaId: 'h2' });
+        const world = {
+            playerHeyaId: 'h1',
+            historyIndex: {
+                rikishi: {
+                    'r1': [
+                        { wins: 10 }, { wins: 10 }
+                    ] // 20 so far
+                }
+            },
+            rikishi: new Map([['r1', mockR]]),
+            heyas: new Map(),
+            currentBasho: {
+                standings: new Map([['r1', { wins: 12 }]]) as StandingsTableRuntime
+            }
+        } as unknown as WorldState;
+
+        const res = getOzekiRunCandidates(world);
+        expect(res).toHaveLength(1);
+        expect(res[0].recentWins).toBe(32); // 20 + 12
+        expect(res[0].narrative).toBe("On the brink. A few more wins will secure the rank.");
+    });
+
+    it('filters NPC rikishi with < 20 wins, but includes player rikishi', () => {
+        const npcR = generateMockRikishi('r1', { rank: 'sekiwake', heyaId: 'npc_heya' });
+        const playerR = generateMockRikishi('r2', { rank: 'komusubi', heyaId: 'player_heya' });
+
+        const world = {
+            playerHeyaId: 'player_heya',
+            historyIndex: {
+                rikishi: {
+                    'r1': [{ wins: 5 }, { wins: 5 }], // 10 total
+                    'r2': [{ wins: 5 }, { wins: 5 }]  // 10 total
+                }
+            },
+            rikishi: new Map([['r1', npcR], ['r2', playerR]]),
+            heyas: new Map(),
+        } as unknown as WorldState;
+
+        const res = getOzekiRunCandidates(world);
+
+        expect(res).toHaveLength(1); // Only playerR is returned
+        expect(res[0].rikishi.id).toBe('r2');
+        expect(res[0].recentWins).toBe(10);
+    });
+
+    it('sorts candidates descending by recentWins and assigns >=33 narrative', () => {
+        const r1 = generateMockRikishi('r1', { rank: 'sekiwake', heyaId: 'h' });
+        const r2 = generateMockRikishi('r2', { rank: 'komusubi', heyaId: 'h' });
+
+        const world = {
+            playerHeyaId: 'player_heya',
+            historyIndex: {
+                rikishi: {
+                    'r1': [{ wins: 11 }, { wins: 11 }, { wins: 11 }], // 33 total
+                    'r2': [{ wins: 12 }, { wins: 12 }, { wins: 10 }]  // 34 total
+                }
+            },
+            rikishi: new Map([['r1', r1], ['r2', r2]]),
+            heyas: new Map(),
+        } as unknown as WorldState;
+
+        const res = getOzekiRunCandidates(world);
+        expect(res).toHaveLength(2);
+
+        // Sorted by recentWins descending
+        expect(res[0].rikishi.id).toBe('r2');
+        expect(res[0].recentWins).toBe(34);
+        expect(res[1].rikishi.id).toBe('r1');
+        expect(res[1].recentWins).toBe(33);
+
+        expect(res[0].narrative).toBe("Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.");
+        expect(res[1].narrative).toBe("Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.");
     });
   });
 });

@@ -7,6 +7,8 @@ import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
 import type { EngineEvent, EventCategory } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
+import { getCachedPerception } from "./uiDigest";
+
 
 /**
  * Simple memoization helper for selectors that depend only on WorldState.
@@ -100,7 +102,7 @@ export const selectYokozunaCandidates = createSelector((world: WorldState) => {
 export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[] => {
   const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Rikishi[] = [];
-  for (const rid of Object.keys(kadobanMap)) {
+  for (const rid in kadobanMap) {
     const r = world.rikishi.get(rid);
     if (r) entries.push(r);
   }
@@ -125,4 +127,27 @@ export const selectRikishiByHeya = createSelector((world: WorldState): Map<strin
     map.set(r.heyaId, list);
   }
   return map;
+});
+
+/**
+ * Select top rivals for the dashboard widget.
+ */
+export const selectTopRivals = createSelector((world: WorldState) => {
+  const entries: { id: string; name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
+  const playerHeyaId = world.playerHeyaId;
+  for (const heya of world.heyas.values()) {
+    if (heya.id === playerHeyaId) continue;
+    const p = getCachedPerception(world, heya.id);
+    entries.push({
+      id: heya.id,
+      name: p.heyaName,
+      prestige: p.prestigeBand,
+      roster: p.rosterStrengthBand,
+      morale: p.moraleBand,
+      heat: p.stableMediaHeatBand,
+    });
+  }
+  const order = ["elite", "respected", "modest", "struggling", "unknown"];
+  entries.sort((a, b) => order.indexOf(a.prestige) - order.indexOf(b.prestige));
+  return entries.slice(0, 6);
 });
