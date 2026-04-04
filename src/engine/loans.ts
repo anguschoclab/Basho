@@ -1,32 +1,27 @@
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
+import type { Heya } from "./types/heya";
 import type { Loan, LoanType } from "./types/economy";
 import { logEngineEvent } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { rngForWorld } from "./rng";
+import type { SeededRNG } from "./rng";
 import { stableSort } from "./utils/sort";
 import { 
   selectBenefactor 
 } from "./systems/economics/SponsorshipService";
 
-/**
- * Check and issue loans for insolvent stables.
- * Triggered when funds drop below a critical threshold (e.g. -5,000,000).
- * Escalate from Emergency -> Supporter -> Benefactor.
- */
-export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return;
 
-  if (heya.funds >= -5_000_000) return; // Not critical enough for bailout yet
+export interface LoanTerms {
+  loanType: LoanType;
+  interestRate: number;
+  providerName: string;
+  stringsAttached: string[];
+  principal: number;
+  months: number;
+}
 
-  // If they already have a benefactor loan, they might be beyond saving (forced closure/merger)
-  if (heya.activeLoans?.some(l => l.type === "benefactor")) {
-    // Escalate to terminal insolvency check (handled by world.ts merger/closure pressure)
-    return;
-  }
-
-  const deficit = Math.abs(heya.funds);
+export function determineLoanTerms(world: WorldState, heya: Heya, rng: SeededRNG, deficit: number): LoanTerms {
   let loanType: LoanType = "emergency";
   let interestRate = 0;
   let providerName = "Sumo Association";
@@ -34,7 +29,6 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
 
   const existingLoans = heya.activeLoans?.length || 0;
   const scandalScore = heya.scandalScore || 0;
-  const rng = rngForWorld(world, "economy", `loan_${heyaId}_${world.year}_${world.week}`);
 
   // Escalate based on existing debt and scandal
   if (existingLoans === 0 && scandalScore < 30) {
@@ -66,57 +60,84 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
     stringsAttached = ["foreign_slot_lock", "upgrade_lock", "merger_block"];
   }
 
-
   // Calculate loan amount (cover deficit + 2M buffer)
   const principal = deficit + 2_000_000;
   // Determine terms (Emergency: 12 months, Supporter: 24 months, Benefactor: 36 months)
   const months = loanType === "emergency" ? 12 : loanType === "supporter" ? 24 : 36;
 
-  // Simple amortization (Principal + Interest) / months
-  const totalInterest = principal * interestRate;
-  const monthlyPayment = Math.ceil((principal + totalInterest) / months);
+  return { loanType, interestRate, providerName, stringsAttached, principal, months };
+}
 
-  const loan: Loan = {
+export function createLoanObject(world: WorldState, heyaId: Id, terms: LoanTerms, rng: SeededRNG): Loan {
+  // Simple amortization (Principal + Interest) / months
+  const totalInterest = terms.principal * terms.interestRate;
+  const monthlyPayment = Math.ceil((terms.principal + totalInterest) / terms.months);
+
+  return {
     id: `loan_${heyaId}_${world.year}_${world.week}_${rng.int(0, 9999)}`,
-    type: loanType,
-    principal,
-    interestRate,
-    remainingBalance: principal + totalInterest,
-    providerName,
+    type: terms.loanType,
+    principal: terms.principal,
+    interestRate: terms.interestRate,
+    remainingBalance: terms.principal + totalInterest,
+    providerName: terms.providerName,
     monthlyPayment,
     issuedAtYear: world.year,
     issuedAtMonth: world.calendar?.month ?? 1,
-    stringsAttached
+    stringsAttached: terms.stringsAttached
   };
+}
+
+/**
+ * Check and issue loans for insolvent stables.
+ * Triggered when funds drop below a critical threshold (e.g. -5,000,000).
+ * Escalate from Emergency -> Supporter -> Benefactor.
+ */
+export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return;
+
+  if (heya.funds >= -5_000_000) return; // Not critical enough for bailout yet
+
+  // If they already have a benefactor loan, they might be beyond saving (forced closure/merger)
+  if (heya.activeLoans?.some(l => l.type === "benefactor")) {
+    // Escalate to terminal insolvency check (handled by world.ts merger/closure pressure)
+    return;
+  }
+
+  const deficit = Math.abs(heya.funds);
+  const rng = rngForWorld(world, "economy", `loan_${heyaId}_${world.year}_${world.week}`);
+
+  const terms = determineLoanTerms(world, heya, rng, deficit);
+  const loan = createLoanObject(world, heyaId, terms, rng);
 
   if (!heya.activeLoans) heya.activeLoans = [];
   heya.activeLoans.push(loan);
-  heya.funds += principal;
+  heya.funds += terms.principal;
 
   // Penalize prestige
   heya.reputation = Math.max(0, (heya.reputation || 50) - 10);
 
-  if (loanType === "benefactor" || loanType === "supporter") {
+  if (terms.loanType === "benefactor" || terms.loanType === "supporter") {
     heya.scandalScore = Math.min(100, (heya.scandalScore || 0) + 10); // Governance scrutiny
   }
 
   logEngineEvent(world, {
     type: "LOAN_ISSUED",
     category: "economy",
-    importance: loanType === "benefactor" ? "headline" : "major",
+    importance: terms.loanType === "benefactor" ? "headline" : "major",
     scope: "heya",
     heyaId: heya.id,
-    title: `${loanType === "emergency" ? "Emergency Loan" : loanType === "supporter" ? "Supporter Loan" : "Benefactor Bailout"} for ${heya.name}`,
-    summary: `${providerName} provides a ¥${principal.toLocaleString()} loan to prevent ${heya.name}'s collapse. Strings attached: ${stringsAttached.join(", ")}.`,
-    data: { loanAmount: principal, loanType, providerName, interestRate }
+    title: `${terms.loanType === "emergency" ? "Emergency Loan" : terms.loanType === "supporter" ? "Supporter Loan" : "Benefactor Bailout"} for ${heya.name}`,
+    summary: `${terms.providerName} provides a ¥${terms.principal.toLocaleString()} loan to prevent ${heya.name}\'s collapse. Strings attached: ${terms.stringsAttached.join(", ")}.`,
+    data: { loanAmount: terms.principal, loanType: terms.loanType, providerName: terms.providerName, interestRate: terms.interestRate }
   });
 
   generateGovernanceHeadline({
     world,
     heyaId: heya.id,
-    type: loanType === "emergency" ? "emergency_loan" : "scandal",
-    severity: loanType === "benefactor" ? "critical" : "major",
-    description: `${providerName} steps in with a ¥${principal.toLocaleString()} bailout for ${heya.name}, but with heavy stipulations.`
+    type: terms.loanType === "emergency" ? "emergency_loan" : "scandal",
+    severity: terms.loanType === "benefactor" ? "critical" : "major",
+    description: `${terms.providerName} steps in with a ¥${terms.principal.toLocaleString()} bailout for ${heya.name}, but with heavy stipulations.`
   });
 }
 
