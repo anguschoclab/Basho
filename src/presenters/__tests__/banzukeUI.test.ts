@@ -122,7 +122,7 @@ describe('banzukeUI', () => {
              divisions: {
                makuuchi: {
                  assignments: [
-                   { rikishiId: 'r1', position: { rank: 'yokozuna', rankNumber: 1, side: 'east' } }
+                   { rikishiId: 'r1', position: { rank: 'ozeki', rankNumber: 1, side: 'east' } }
                  ]
                }
              }
