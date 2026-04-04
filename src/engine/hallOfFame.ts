@@ -86,7 +86,9 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
 
   hof.lastProcessedYear = world.year;
 
-  const history: BashoResult[] = Array.isArray(world.history) ? world.history : [];
+  const history: BashoResult[] = Array.isArray(world.history)
+    ? world.history
+    : [];
   const newInductees: HoFInductee[] = [];
 
   // --- Champions ---
@@ -101,7 +103,7 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
     rid: string,
     r: any,
     category: "champion" | "iron_man" | "technician",
-    stats: any
+    stats: any,
   ) => {
     const key = `${rid}::${category}`;
     if (hof.inducted[key]) return;
@@ -146,7 +148,10 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
   const ginoCountsStats = new Map<string, number>();
   for (const br of history) {
     if (br.ginoSho) {
-      ginoCountsStats.set(br.ginoSho, (ginoCountsStats.get(br.ginoSho) || 0) + 1);
+      ginoCountsStats.set(
+        br.ginoSho,
+        (ginoCountsStats.get(br.ginoSho) || 0) + 1,
+      );
     }
   }
 
@@ -155,73 +160,6 @@ export function processYearEndInduction(world: WorldState): HoFInductee[] {
     const r = world.rikishi.get(rid);
     if (!r) continue;
     addInductee(rid, r, "technician", { ginoShoCount: count });
-  }
-
-  // --- Iron Men ---
-  // Track consecutive basho appearances (no kyujo/absence)
-  // We approximate from history: a rikishi "appeared" if they won yusho, junYusho, or any sansho.
-  // For a more accurate count, we check if rikishi has been active for 30+ basho
-  for (const r of world.rikishi.values()) {
-    if (r.isRetired) continue;
-    const key = `${r.id}::iron_man`;
-    if (hof.inducted[key]) continue;
-
-    // Approximate consecutive basho from career length
-    const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
-    const estimatedBasho = Math.floor(totalBouts / 7); // conservative: even lower-div is 7 bouts
-
-    if (estimatedBasho < IRON_MAN_BASHO_MIN) continue;
-
-    const inductee: HoFInductee = {
-      rikishiId: r.id,
-      shikona: r.shikona || r.name || r.id,
-      category: "iron_man",
-      inductionYear: world.year,
-      stats: {
-        consecutiveBasho: estimatedBasho,
-        highestRank: r.rank,
-        careerWins: r.careerWins || 0,
-        careerLosses: r.careerLosses || 0,
-      },
-    };
-
-    newInductees.push(inductee);
-    hof.inductees.push(inductee);
-    hof.inducted[key] = true;
-  }
-
-  // --- Technicians ---
-  const ginoCounts = new Map<string, number>();
-  for (const br of history) {
-    if (br.ginoSho) {
-      ginoCounts.set(br.ginoSho, (ginoCounts.get(br.ginoSho) || 0) + 1);
-    }
-  }
-
-  for (const [rid, count] of ginoCounts) {
-    if (count < TECHNICIAN_GINO_MIN) continue;
-    const key = `${rid}::technician`;
-    if (hof.inducted[key]) continue;
-
-    const r = world.rikishi.get(rid);
-    if (!r) continue;
-
-    const inductee: HoFInductee = {
-      rikishiId: rid,
-      shikona: r.shikona || r.name || rid,
-      category: "technician",
-      inductionYear: world.year,
-      stats: {
-        ginoShoCount: count,
-        highestRank: r.rank,
-        careerWins: r.careerWins || 0,
-        careerLosses: r.careerLosses || 0,
-      },
-    };
-
-    newInductees.push(inductee);
-    hof.inductees.push(inductee);
-    hof.inducted[key] = true;
   }
 
   return newInductees;
@@ -257,7 +195,10 @@ export function getHallOfFame(world: WorldState): HallOfFameState {
  *  * @param category - The Category.
  *  * @returns The result.
  */
-function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFInductee[] {
+function getInducteesByCategory(
+  world: WorldState,
+  category: HoFCategory,
+): HoFInductee[] {
   const hof = getHallOfFame(world);
   return hof.inductees.filter((i) => i.category === category);
 }
@@ -265,8 +206,7 @@ function getInducteesByCategory(world: WorldState, category: HoFCategory): HoFIn
 /**
  * Main entry point called at end of each basho.
  */
-export function onBashoEnded(world: WorldState) {
-}
+export function onBashoEnded(world: WorldState) {}
 
 /**
  * Is inducted.
@@ -275,7 +215,11 @@ export function onBashoEnded(world: WorldState) {
  *  * @param category - The Category.
  *  * @returns The result.
  */
-function isInducted(world: WorldState, rikishiId: Id, category: HoFCategory): boolean {
+function isInducted(
+  world: WorldState,
+  rikishiId: Id,
+  category: HoFCategory,
+): boolean {
   const hof = getHallOfFame(world);
   return !!hof.inducted[`${rikishiId}::${category}`];
 }
@@ -283,7 +227,10 @@ function isInducted(world: WorldState, rikishiId: Id, category: HoFCategory): bo
 // === LABELS ===
 
 /** h o f_ c a t e g o r y_ l a b e l s. */
-export const HOF_CATEGORY_LABELS: Record<HoFCategory, { name: string; nameJa: string; icon: string }> = {
+export const HOF_CATEGORY_LABELS: Record<
+  HoFCategory,
+  { name: string; nameJa: string; icon: string }
+> = {
   champion: { name: "Champion", nameJa: "横綱殿堂", icon: "🏆" },
   iron_man: { name: "Iron Man", nameJa: "鉄人", icon: "⚔️" },
   technician: { name: "Technician", nameJa: "技能派", icon: "🎯" },
