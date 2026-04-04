@@ -129,7 +129,7 @@ describe('Basho UI Presenters', () => {
           duration: 3.5,
           upset: true,
           isKinboshi: false,
-        } as any,
+        } as unknown as MatchSchedule['result'],
       };
 
       const mockMap = new Map<string, Rikishi>();
