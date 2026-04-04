@@ -25,4 +25,21 @@ dist-ssr
 coverage/
 playwright-report/
 test-results/
-.claude/worktrees/inspiring-goldstine/
+
+# Claude Code local settings and worktrees
+.claude/
+
+# Package manager caches and redundant lock files
+npm_cache/
+package-lock.json
+
+# Patch and diff files
+*.patch
+*.diff
+
+# Benchmark / scratch scripts
+bench_*.js
+benchmark*.ts
+benchmark*.js
+test-benchmark*.ts
+patch*.js
