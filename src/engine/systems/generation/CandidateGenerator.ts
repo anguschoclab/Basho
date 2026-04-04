@@ -161,7 +161,7 @@ function createBaseInfo(
 }
 
 function createCombatStats(
-  statsBase: any, rikishiStats: RikishiStats, division: Division,
+  rikishiStats: RikishiStats, division: Division,
   archetype: any, profile: CombatProfile
 ) {
   return {
