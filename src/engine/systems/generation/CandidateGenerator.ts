@@ -105,7 +105,10 @@ export function generateFullRikishi(args: {
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
   const statsBase = generateRikishiStats({ rng, rank, profile });
-  const records = generateSyntheticCareer({ rng, rank, division, birthYear: currentYear - (18 + rng.int(0, 15)), currentYear });
+
+  // Evaluate birthYear once to preserve RNG sequence
+  const birthYear = currentYear - (18 + rng.int(0, 15));
+  const records = generateSyntheticCareer({ rng, rank, division, birthYear, currentYear });
 
   const name = generateRikishiName(`${rng.seed}::${id}`);
 
@@ -121,20 +124,48 @@ export function generateFullRikishi(args: {
   };
 
   return {
+    ...createBaseInfo(id, name, birthYear, rank, rankNumber, division, side, statsBase.height, statsBase.weight, rng),
+    ...createCombatStats(rikishiStats, division, archetype, profile),
+    ...createCareerHistory(records, division)
+  } as Rikishi;
+}
+
+
+// --- Refactored Helper Functions ---
+
+function createBaseInfo(
+  id: string, name: string, birthYear: number, rank: Rank,
+  rankNumber: number, division: Division, side: Side,
+  height: number, weight: number, rng: SeededRNG
+) {
+  return {
     id,
     shikona: name,
     name: name,
     heyaId: "", // Assigned by factory
     nationality: "Japan",
-    birthYear: currentYear - (18 + rng.int(0, 15)),
+    birthYear,
     rank,
     rankNumber,
     division,
     side,
     
-    height: statsBase.height,
-    weight: statsBase.weight,
+    height,
+    weight,
 
+    behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
+    personalityTraits: [],
+
+    faceAvatarUrl: "",
+    talentSeed: rng.int(0, 1000000)
+  };
+}
+
+function createCombatStats(
+  rikishiStats: RikishiStats, division: Division,
+  archetype: any, profile: CombatProfile
+) {
+  return {
     stats: rikishiStats,
     
     // Flattened accessors for performance/legacy compatibility
@@ -154,15 +185,26 @@ export function generateFullRikishi(args: {
     
     injured: false,
     injuryWeeksRemaining: 0,
-    injuryStatus: { type: "none", isInjured: false, severity: 0, location: "", weeksRemaining: 0, weeksToHeal: 0 },
+    injuryStatus: { type: "none" as const, isInjured: false, severity: 0, location: "", weeksRemaining: 0, weeksToHeal: 0 },
     
     style: (archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid") as Style,
     combatProfile: profile,
     archetype,
     derivedArchetype: archetype,
-    tacticalArchetypePrimary: archetype as any, // Mapping needed?
-    archetypeEvidence: [],
+    tacticalArchetypePrimary: archetype, // Mapping needed?
+    archetypeEvidence: {
+      push: { success: 0, fail: 0 },
+      grapple: { success: 0, fail: 0 },
+      evade: { success: 0, fail: 0 }
+    },
     
+    favoredKimarite: [],
+    weakAgainstStyles: [],
+  };
+}
+
+function createCareerHistory(records: { careerWins: number; careerLosses: number; yushoCount: number }, division: Division) {
+  return {
     careerWins: records.careerWins,
     careerLosses: records.careerLosses,
     careerAbsences: 0,
@@ -178,16 +220,7 @@ export function generateFullRikishi(args: {
     milestones: [],
     history: [],
     h2h: {},
-    
-    favoredKimarite: [],
-    weakAgainstStyles: [],
-    
-    behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
-    personalityTraits: [],
-    
-    faceAvatarUrl: "",
-    talentSeed: rng.int(0, 1000000)
-  } as Rikishi;
+  };
 }
 
 /**
