@@ -15,6 +15,7 @@ import { Division, Rank, Side } from "../../types/banzuke";
 import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
 import { createKoenkai } from "../economics/SponsorshipService";
+import type { BashoName, BashoState } from "../../types/basho";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -202,7 +203,7 @@ export function generateInitialWorld(seed: string): WorldState {
 /**
  * Initialize a new Basho state.
  */
-export function initializeBasho(world: WorldState, name: import("../../types/basho").BashoName): import("../../types/basho").BashoState {
+export function initializeBasho(world: WorldState, name: BashoName): BashoState {
   return {
     id: `basho_${world.year}_${name}`,
     year: world.year,

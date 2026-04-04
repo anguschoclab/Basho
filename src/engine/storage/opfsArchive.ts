@@ -5,45 +5,12 @@ import { OPFSFileSystem } from "./OPFSFileSystem";
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
 function validateBoutLog(data: any): BoutResult | null {
-  if (!data || typeof data !== "object") {
+  const result = boutResultSchema.safeParse(data);
+  if (!result.success) {
+    console.warn(`[OPFS Validation] Invalid BoutResult: ${result.error.message}`);
     return null;
   }
-
-  const requiredStringProps = ["boutId", "winner", "winnerRikishiId", "loserRikishiId", "kimarite", "kimariteName", "stance", "tachiaiWinner"];
-  for (const prop of requiredStringProps) {
-    if (typeof data[prop] !== "string") {
-      console.warn(`[OPFS Validation] Invalid BoutResult: missing or invalid string property '${prop}'`);
-      return null;
-    }
-  }
-
-  if (typeof data.duration !== "number") {
-    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid number property 'duration'");
-    return null;
-  }
-
-  if (typeof data.upset !== "boolean") {
-    console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid boolean property 'upset'");
-    return null;
-  }
-
-  // Arrays are optional but if present must be arrays
-  if (data.narrative !== undefined && !Array.isArray(data.narrative)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: narrative must be an array of strings");
-    return null;
-  }
-
-  if (data.pbpLines !== undefined && !Array.isArray(data.pbpLines)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: pbpLines must be an array");
-    return null;
-  }
-
-  if (data.pbp !== undefined && !Array.isArray(data.pbp)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: pbp must be an array");
-    return null;
-  }
-
-  return data as BoutResult;
+  return result.data as BoutResult;
 }
 
 /**
@@ -91,9 +58,10 @@ class OPFSArchiveService implements ArchiveService {
       await dir.getFileHandle(fileName, { create: false });
       // If the above line DOES NOT throw, the file exists.
       throw new ArchiveConflictError(`Bout log ${boutId} already exists in season ${season}. History is immutable.`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (e instanceof ArchiveConflictError) throw e;
-      if (e.name !== 'NotFoundError') throw e; // Bubble up unexpected errors
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (!isNotFoundError) throw e; // Bubble up unexpected errors
     }
 
     // File does not exist, safe to write.
@@ -117,8 +85,9 @@ class OPFSArchiveService implements ArchiveService {
       const contents = await file.text();
       const parsed = JSON.parse(contents);
       return validateBoutLog(parsed);
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
+    } catch (e: unknown) {
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (isNotFoundError) return null; // Graceful degradation for missing logs
       console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
       return null;
     }
@@ -166,8 +135,9 @@ class OPFSArchiveService implements ArchiveService {
       const fileHandle = await dir.getFileHandle(`week_${week}.md`, { create: false });
       const file = await fileHandle.getFile();
       return await file.text();
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null;
+    } catch (e: unknown) {
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (isNotFoundError) return null;
       console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
       return null;
     }
