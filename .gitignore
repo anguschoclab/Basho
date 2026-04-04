@@ -28,10 +28,7 @@ test-results/
 
 # AI tool working directories (local to each tool/session)
 .claude/
-.agent/
 .gemini/
-.jules/
-.lovable/
 
 # Package manager caches and redundant lock files
 npm_cache/
