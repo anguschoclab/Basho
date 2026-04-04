@@ -106,9 +106,10 @@ class OPFSArchiveService implements ArchiveService {
       await dir.getFileHandle(fileName, { create: false });
       // If the above line DOES NOT throw, the file exists.
       throw new ArchiveConflictError(`Bout log ${boutId} already exists in season ${season}. History is immutable.`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (e instanceof ArchiveConflictError) throw e;
-      if (e.name !== 'NotFoundError') throw e; // Bubble up unexpected errors
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (!isNotFoundError) throw e; // Bubble up unexpected errors
     }
 
     // File does not exist, safe to write.
@@ -132,8 +133,9 @@ class OPFSArchiveService implements ArchiveService {
       const contents = await file.text();
       const parsed = JSON.parse(contents);
       return validateBoutLog(parsed);
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
+    } catch (e: unknown) {
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (isNotFoundError) return null; // Graceful degradation for missing logs
       console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
       return null;
     }
@@ -181,8 +183,9 @@ class OPFSArchiveService implements ArchiveService {
       const fileHandle = await dir.getFileHandle(`week_${week}.md`, { create: false });
       const file = await fileHandle.getFile();
       return await file.text();
-    } catch (e: any) {
-      if (e.name === 'NotFoundError') return null;
+    } catch (e: unknown) {
+      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
+      if (isNotFoundError) return null;
       console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
       return null;
     }
