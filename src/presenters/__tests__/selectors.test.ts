@@ -57,7 +57,7 @@ describe("selectors", () => {
 
       const injured = mockRikishi("2");
       injured.injured = false;
-      injured.injury = { isInjured: true } as any;
+      injured.injuryStatus = { isInjured: true } as any;
 
       const world = {
         rikishi: new Map<string, Rikishi>([
