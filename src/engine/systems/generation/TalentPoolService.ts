@@ -470,21 +470,21 @@ export function tickYear(world: WorldState): void {
 }
 
 function filterAgedOutCandidates(
-  candidateIds: string[],
+  candidateIds: Id[],
   tp: TalentPoolWorldState,
   currentYear: number,
   maxAge: number,
-): string[] {
-  const toRemove: string[] = [];
-  for (const id of candidateIds) {
-    const c = tp.candidates[id];
-    const estimatedAge = c
-      ? currentYear - (c.birthYear ?? currentYear - 20)
-      : 0;
+): Id[] {
+  return candidateIds.filter((id) => {
+    const candidate = tp.candidates[id];
+    // Remove ghost IDs where candidate data is missing
+    if (!candidate) return false;
+
+    const estimatedAge = currentYear - (candidate.birthYear ?? currentYear - 20);
     if (estimatedAge > maxAge) {
-      toRemove.push(id);
       delete tp.candidates[id];
+      return false;
     }
-  }
-  return candidateIds.filter((id) => !toRemove.includes(id));
+    return true;
+  });
 }
