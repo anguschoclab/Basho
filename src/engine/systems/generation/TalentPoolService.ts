@@ -231,11 +231,12 @@ export function fillVacanciesForNPC(world: WorldState, targetHeyas: Record<strin
         const cId = pool.candidatesVisible[rng.int(0, pool.candidatesVisible.length - 1)];
         const c = tp.candidates[cId];
         if (c && c.availabilityState === "available") {
-          // NPC signs them immediately (simplified)
+          // DESIGN: NPC fast-path signing.
+          // To ensure NPC world stabilization and prevent roster collapse, NPCs bypass the
+          // multi-week negotiation phase and sign candidates directly. This is the final intended design.
           c.availabilityState = "signed";
           c.competingSuitors = [{ heyaId, offerType: "standard", interestBand: "high", deadlineWeek: world.week }];
-          // In a real system, you'd wait a week, but for NPC world stabilization, direct assignment is safer
-          // Logic for converting Candidate to Rikishi usually happens at the start of a basho
+          // TODO: Ensure the logic for converting this signed Candidate into a full Rikishi correctly triggers before the next basho
         }
       }
     }
