@@ -36,7 +36,10 @@ describe("UI Models Projections", () => {
     expect(uiHeya.id).toBe(heyaId);
     expect(uiHeya.name).toBe(heya.name);
     expect(uiHeya.oyakataName).toBeDefined();
-    const expectedSize = Array.from(world.rikishi.values()).filter((r: any) => r.heyaId === heyaId).length;
+    let expectedSize = 0;
+    for (const r of world.rikishi.values()) {
+      if (r.heyaId === heyaId) expectedSize++;
+    }
     expect(uiHeya.rosterSize).toBe(expectedSize);
   });
 
