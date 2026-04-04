@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,6 +23,47 @@ const CAT_COLOR: Record<string, string> = {
   promotion: "text-primary", rivalry: "text-accent", milestone: "text-gold", welfare: "text-warning",
   media_jsa: "text-foreground", media_sports: "text-blue-500", media_tabloid: "text-yellow-500",
 };
+
+
+const NewsEventRow = React.memo(({ e, isPlayer }: { e: EngineEvent; isPlayer: boolean }) => {
+  let Icon = CAT_ICON[e.category] || Newspaper;
+  let color = CAT_COLOR[e.category] || "text-muted-foreground";
+
+  // Special handling for media outlets
+  if (e.category === "media" && (e.data as any)?.outlet) {
+    const outlet = (e.data as any).outlet;
+    if (outlet === "TABLOID") {
+      color = "text-yellow-500 font-bold";
+    } else if (outlet === "SPORTS_DAILY") {
+      color = "text-blue-500 font-semibold";
+    } else if (outlet === "JSA_OFFICIAL") {
+      color = "text-foreground font-mono uppercase border-b border-foreground/20";
+      Icon = Scale;
+    }
+
+    return (
+      <div
+        className={`flex items-start gap-2 py-1.5 px-2 rounded-md text-xs transition-colors hover:bg-muted/50 ${
+          isPlayer ? "border-l-2 border-l-primary bg-primary/5" : ""
+        }`}
+      >
+        <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
+        <div className="flex-1 min-w-0">
+          <div className={`font-medium truncate ${e.category === 'media' && (e.data as any)?.outlet === 'TABLOID' ? 'text-yellow-600' : ''}`}>{e.title}</div>
+          <div className="text-[11px] text-muted-foreground truncate">{e.summary}</div>
+        </div>
+        <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">
+          W{e.week}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex">
+      <span>News</span>
+    </div>
+  );
+});
 
 /** news widget. */
 export function NewsWidget() {
@@ -56,47 +97,9 @@ export function NewsWidget() {
           </div>
         ) : (
           <div className="space-y-0.5 pr-2">
-            {recentEvents.map((e) => {
-              let Icon = CAT_ICON[e.category] || Newspaper;
-              let color = CAT_COLOR[e.category] || "text-muted-foreground";
-              const isPlayer = e.heyaId === world?.playerHeyaId;
-
-              // Special handling for media outlets
-              if (e.category === "media" && (e.data as any)?.outlet) {
-                const outlet = (e.data as any).outlet;
-                if (outlet === "TABLOID") {
-                  color = "text-yellow-500 font-bold";
-                } else if (outlet === "SPORTS_DAILY") {
-                  color = "text-blue-500 font-semibold";
-                } else if (outlet === "JSA_OFFICIAL") {
-                  color = "text-foreground font-mono uppercase border-b border-foreground/20";
-                  Icon = Scale;
-                }
-
-              return (
-                <div
-                  key={e.id}
-                  className={`flex items-start gap-2 py-1.5 px-2 rounded-md text-xs transition-colors hover:bg-muted/50 ${
-                    isPlayer ? "border-l-2 border-l-primary bg-primary/5" : ""
-                  }`}
-                >
-                  <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
-                  <div className="flex-1 min-w-0">
-                    <div className={`font-medium truncate ${e.category === 'media' && (e.data as any)?.outlet === 'TABLOID' ? 'text-yellow-600' : ''}`}>{e.title}</div>
-                    <div className="text-[11px] text-muted-foreground truncate">{e.summary}</div>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">
-                    W{e.week}
-                  </span>
-                </div>
-              );
-              }
-              return (
-                <div key={e.id} className="flex">
-                  <span>News</span>
-                </div>
-              );
-            })}
+            {recentEvents.map((e) => (
+              <NewsEventRow key={e.id} e={e} isPlayer={e.heyaId === world?.playerHeyaId} />
+            ))}
           </div>
         )}
       </ScrollArea>
