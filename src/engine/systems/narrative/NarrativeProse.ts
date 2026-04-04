@@ -35,40 +35,40 @@ export const STAT_LABELS: Record<StatBand, string> = {
 // === Attribute Prose (Verbose) ===
 export const STAT_PROSE: Record<string, Record<StatBand, string>> = {
   power: {
-    exceptional: "His raw strength is fearsome—opponents buckle on contact.",
-    outstanding: "A powerful frame that most cannot withstand.",
-    strong: "Solid strength, enough to move most men.",
-    capable: "Adequate power for his level.",
-    developing: "Still building the muscle needed at this rank.",
-    limited: "Lacks the power expected of a rikishi.",
-    struggling: "Physically overmatched in most contests."
+    exceptional: "His raw strength is fearsome — opponents buckle on first contact as if struck by a wall.",
+    outstanding: "A powerful frame that most men at this level simply cannot withstand for long.",
+    strong: "Solid, reliable strength. Enough to move most men and punish passive opponents.",
+    capable: "Adequate power for his rank. Won't overwhelm anyone, but holds his own in the clinch.",
+    developing: "Still building the muscle and leverage his rank demands. Improvement is visible.",
+    limited: "Noticeably outpowered by most opponents. Relies on technique to compensate.",
+    struggling: "Physically overmatched in most contests. Raw strength is a liability at this level."
   },
   speed: {
-    exceptional: "Lightning quick—his reactions are almost preternatural.",
-    outstanding: "Fast enough to catch opponents off-guard routinely.",
-    strong: "Quick on his feet, able to exploit openings.",
-    capable: "Moves well enough for his style.",
-    developing: "Could be quicker; timing still maturing.",
-    limited: "Sluggish compared to peers.",
-    struggling: "Slow to react, often caught out."
+    exceptional: "Lightning quick — his first step and reaction time verge on the preternatural.",
+    outstanding: "Fast enough to regularly catch opponents flat-footed before they can set their feet.",
+    strong: "Quick on his feet, able to exploit openings that slower men would miss entirely.",
+    capable: "Moves adequately for his style. Not a liability, not a weapon.",
+    developing: "Could be quicker. Timing is still maturing and opportunities are occasionally left on the clay.",
+    limited: "Sluggish compared to peers. Opponents dictate the pace and he struggles to adjust.",
+    struggling: "Slow to react and easy to outmaneuver. Speed is a consistent weakness at this level."
   },
   balance: {
-    exceptional: "His root is legendary—impossible to shift.",
-    outstanding: "Exceptionally stable; rarely loses footing.",
-    strong: "Well-grounded, recovers well from pressure.",
-    capable: "Adequate balance for competitive sumo.",
-    developing: "Sometimes caught leaning; balance needs work.",
-    limited: "Unsteady; vulnerable to throws.",
-    struggling: "Falls too easily—fundamentals lacking."
+    exceptional: "His root is the stuff of legend — opponents describe pushing him as shoving a mountain.",
+    outstanding: "Exceptionally stable under pressure. Rarely loses footing even in desperate scrambles.",
+    strong: "Well-grounded and composed. Recovers well from disadvantaged positions.",
+    capable: "Adequate balance for competitive sumo. Holds steady in most situations.",
+    developing: "Sometimes caught leaning or off-angle. Balance is a work in progress.",
+    limited: "Unsteady under sustained pressure. Vulnerable to throws and shifts.",
+    struggling: "Falls too easily. Fundamental stability issues limit what he can attempt."
   },
   technique: {
-    exceptional: "A master technician—every move is precise.",
-    outstanding: "Highly skilled; knows exactly what to do.",
-    strong: "Good technical foundation.",
-    capable: "Sound basics, can execute his preferred moves.",
-    developing: "Technique improving but inconsistent.",
-    limited: "Relies on physicality over skill.",
-    struggling: "Lacks the craft to compete effectively."
+    exceptional: "A master technician. Every grip, every angle, every timing read is deliberate and precise.",
+    outstanding: "Highly skilled. Reads situations quickly and executes with the clarity of a veteran.",
+    strong: "A good technical foundation with reliable execution of his preferred techniques.",
+    capable: "Sound basics. Can execute his core moves cleanly when the opportunity presents itself.",
+    developing: "Technique is improving but remains inconsistent, especially under pressure.",
+    limited: "Relies on physicality over craft. Technical sophistication is a gap in his game.",
+    struggling: "Lacks the technical repertoire to compete effectively. Opponents exploit his predictability."
   }
 };
 
