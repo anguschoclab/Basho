@@ -256,8 +256,24 @@ export function resetBashoMediaTracking(state: MediaState): MediaState {
  * Snapshot current media heat values for history.
  */
 export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string): MediaState {
-  console.log(`MediaService: Snapshotting heat for ${bashoName}`);
-  return state; // Placeholder for now, to be implemented as needed
+  const nextHistory = { ...state.mediaHeatHistory };
+
+  for (const [id, heat] of Object.entries(state.mediaHeat)) {
+    const history = [...(nextHistory[id] || [])];
+    // Avoid duplicate snapshots for the same basho if called multiple times
+    const lastEntry = history[history.length - 1];
+    if (lastEntry && lastEntry.basho === bashoName) {
+      lastEntry.heat = heat;
+    } else {
+      history.push({ basho: bashoName, heat });
+    }
+    nextHistory[id] = history.slice(-10); // Keep last 10 snapshots
+  }
+
+  return {
+    ...state,
+    mediaHeatHistory: nextHistory
+  };
 }
 
 /**
