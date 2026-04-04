@@ -161,45 +161,7 @@ function processChampionsInduction(
   }
 }
 
-function processIronMenInduction(
-  world: WorldState,
-  hof: HallOfFameState,
-  newInductees: HoFInductee[]
-) {
-  // Track consecutive basho appearances (no kyujo/absence)
-  // We approximate from history: a rikishi "appeared" if they won yusho, junYusho, or any sansho.
-  // For a more accurate count, we check if rikishi has been active for 30+ basho
-  for (const r of world.rikishi.values()) {
-    if (r.isRetired) continue;
-
-    // Approximate consecutive basho from career length
-    const totalBouts = (r.careerWins || 0) + (r.careerLosses || 0);
-    const estimatedBasho = Math.floor(totalBouts / 7); // conservative: even lower-div is 7 bouts
-
-    if (estimatedBasho < IRON_MAN_BASHO_MIN) continue;
-    addInductee(world, hof, newInductees, r.id, r, "iron_man", { consecutiveBasho: estimatedBasho });
-  }
-}
-
-function processTechniciansInduction(
-  world: WorldState,
-  hof: HallOfFameState,
-  history: BashoResult[],
-  newInductees: HoFInductee[]
-) {
-  const ginoCounts = new Map<string, number>();
-  for (const br of history) {
-    if (br.ginoSho) {
-      ginoCounts.set(br.ginoSho, (ginoCounts.get(br.ginoSho) || 0) + 1);
-    }
-  }
-
-  for (const [rid, count] of ginoCounts) {
-    if (count < TECHNICIAN_GINO_MIN) continue;
-    const r = world.rikishi.get(rid);
-    if (!r) continue;
-    addInductee(world, hof, newInductees, rid, r, "technician", { ginoShoCount: count });
-  }
+  return newInductees;
 }
 
 // === HELPERS ===
