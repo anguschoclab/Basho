@@ -1,23 +1,6 @@
 
 import { type BoutResult } from "../types/basho";
-import { z } from "zod";
-
-
-const boutResultSchema = z.object({
-  boutId: z.string(),
-  winner: z.string(),
-  winnerRikishiId: z.string(),
-  loserRikishiId: z.string(),
-  kimarite: z.string(),
-  kimariteName: z.string(),
-  stance: z.string(),
-  tachiaiWinner: z.string(),
-  duration: z.number(),
-  upset: z.boolean(),
-  narrative: z.array(z.string()).optional(),
-  pbpLines: z.array(z.any()).optional(),
-  pbp: z.array(z.any()).optional(),
-}).passthrough();
+import { OPFSFileSystem } from "./OPFSFileSystem";
 
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
@@ -54,49 +37,18 @@ export interface ArchiveService {
 }
 
 class OPFSArchiveService implements ArchiveService {
+  private fs = new OPFSFileSystem();
 
   public isSupported(): boolean {
-    return typeof navigator !== 'undefined' &&
-           typeof navigator.storage !== 'undefined' &&
-           typeof navigator.storage.getDirectory === 'function';
+    return this.fs.isSupported();
   }
 
-  /**
-   * Navigates or creates a nested directory structure.
-   */
-  private async getDirectoryPath(path: string[]): Promise<any | null> {
-    if (!this.isSupported()) return null;
 
-    try {
-      let currentDir = await navigator.storage.getDirectory();
-      for (const folder of path) {
-        currentDir = await currentDir.getDirectoryHandle(folder, { create: true });
-      }
-      return currentDir;
-    } catch (e) {
-      console.warn(`[OPFS] Failed to access directory path: ${path.join('/')}`, e);
-      return null;
-    }
-  }
-
-  private handleQuotaError(e: unknown) {
-    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
-      console.warn('[OPFS] Storage quota exceeded. Archiving skipped.');
-      // Dispatch boundary event to UI layer (Zustand store will listen for this to show a Toast)
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('engine:storage:quota-exceeded', {
-          detail: { message: 'Local storage full. Older archives may need to be cleared.' }
-        }));
-      }
-    } else {
-      console.error('[OPFS] Unexpected storage error:', e);
-    }
-  }
 
   // --- BOUTS ---
 
   public async archiveBoutLog(season: number, boutId: string, logData: any): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
+    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return;
 
     const fileName = `${boutId}.json`;
@@ -119,12 +71,12 @@ class OPFSArchiveService implements ArchiveService {
       await writable.write(JSON.stringify(logData));
       await writable.close();
     } catch (e) {
-      this.handleQuotaError(e);
+      this.fs.handleQuotaError(e);
     }
   }
 
   public async retrieveBoutLog(season: number, boutId: string): Promise<any | null> {
-    const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
+    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return null;
 
     try {
@@ -142,7 +94,7 @@ class OPFSArchiveService implements ArchiveService {
   }
 
   public async getArchivedBoutIdsForSeason(season: number): Promise<string[]> {
-    const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
+    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return [];
 
     const ids: string[] = [];
@@ -162,7 +114,7 @@ class OPFSArchiveService implements ArchiveService {
   // --- GAZETTES ---
 
   public async archiveGazette(season: number, week: number, markdown: string): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`, 'gazettes']);
+    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'gazettes']);
     if (!dir) return;
 
     try {
@@ -171,12 +123,12 @@ class OPFSArchiveService implements ArchiveService {
       await writable.write(markdown);
       await writable.close();
     } catch (e) {
-      this.handleQuotaError(e);
+      this.fs.handleQuotaError(e);
     }
   }
 
   public async retrieveGazette(season: number, week: number): Promise<string | null> {
-    const dir = await this.getDirectoryPath([`season_${season}`, 'gazettes']);
+    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'gazettes']);
     if (!dir) return null;
 
     try {
