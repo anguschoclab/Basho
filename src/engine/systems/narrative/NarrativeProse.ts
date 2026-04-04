@@ -92,12 +92,12 @@ export const MOMENTUM_LABELS: Record<MomentumBand, string> = {
 
 // === Potential Labels & Prose ===
 export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; description: string }> = {
-  generational: { label: "Generational Talent", description: "A once-in-a-decade prospect with limitless ceiling." },
-  star:         { label: "Star Potential",       description: "Could reach the very top with proper development." },
-  solid:        { label: "Solid Prospect",       description: "Reliable growth trajectory with a respectable ceiling." },
-  average:      { label: "Average Ceiling",      description: "Moderate potential — hard work can compensate." },
-  limited:      { label: "Limited Upside",        description: "Growth ceiling is low, but grit may surprise." },
-  unknown:      { label: "Uncharted",             description: "Potential has not yet been assessed." },
+  generational: { label: "Generational Talent", description: "A once-in-a-decade prospect. Scouts argue about him in hushed, reverent tones." },
+  star:         { label: "Star Potential",       description: "The ceiling is the top. Whether he reaches it depends on what happens next." },
+  solid:        { label: "Solid Prospect",       description: "Won't set the sumo world on fire, but a reliable career in the upper divisions is well within reach." },
+  average:      { label: "Average Ceiling",      description: "What he achieves will come from effort, discipline, and smart development — not raw gifts." },
+  limited:      { label: "Limited Upside",        description: "The growth ceiling is low. But the dohyo has surprised everyone before." },
+  unknown:      { label: "Uncharted",             description: "Too early to say. The clay reveals all, in time." },
 };
 
 // === Rivalry Heat Labels ===
@@ -138,24 +138,24 @@ export const TRAIT_LABELS: Record<TraitBand, string> = {
 
 // === Archetype Labels ===
 export const ARCHETYPE_LABELS: Record<RikishiArchetype, { label: string; description: string }> = {
-  Defensive_Stalwart: { 
-    label: "Defensive Stalwart", 
-    description: "A technical specialist who prioritizes stability and reactive counters." 
+  Defensive_Stalwart: {
+    label: "Defensive Stalwart",
+    description: "Calm, grounded, and almost impossible to rush. He absorbs pressure and turns it into opportunity, waiting for the moment his opponent overcommits."
   },
-  Explosive_Blitzer: { 
-    label: "Explosive Blitzer", 
-    description: "Relies on a massive initial charge to end matches instantly, but tires quickly." 
+  Explosive_Blitzer: {
+    label: "Explosive Blitzer",
+    description: "The tachiai is his weapon. He ends fights in seconds — or he doesn't end them at all. Longer bouts expose a stamina cliff that opponents try desperately to reach."
   },
-  Acrobatic_Trickster: { 
-    label: "Acrobatic Trickster", 
-    description: "Uses superior movement and technique to outmaneuver heavier opponents." 
+  Acrobatic_Trickster: {
+    label: "Acrobatic Trickster",
+    description: "Slippery, inventive, and infuriating to fight. He uses angles, timing, and misdirection to make heavier opponents look foolish."
   },
-  Immovable_Mountain: { 
-    label: "Immovable Mountain", 
-    description: "A massive, powerful presence who is near-impossible to push out once established." 
+  Immovable_Mountain: {
+    label: "Immovable Mountain",
+    description: "Once he plants himself, he is not going anywhere. His center of gravity is almost inhumanly low, and his patience is unlimited."
   },
-  All_Rounder: { 
-    label: "All-Rounder", 
-    description: "A balanced fighter with no glaring weaknesses and high adaptability." 
+  All_Rounder: {
+    label: "All-Rounder",
+    description: "No obvious weaknesses, no single predictable style. He adapts to whatever the bout demands — which is what makes him so difficult to game-plan against."
   },
 };
