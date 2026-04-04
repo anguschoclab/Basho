@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,6 +21,44 @@ const KIND_COLOR: Record<string, string> = {
   recovery: "text-success", economy: "text-primary/70",
   scouting: "text-primary/60", generic: "text-muted-foreground",
 };
+
+const DigestItemRow = React.memo(({ item }: { item: DigestItem }) => {
+  const Icon = KIND_ICON[item.kind] ?? Newspaper;
+  const color = KIND_COLOR[item.kind] ?? "text-muted-foreground";
+  return (
+    <div className="flex items-start gap-2 text-xs py-0.5">
+      <Icon className={`h-3 w-3 mt-0.5 shrink-0 ${color}`} />
+      <div className="min-w-0">
+        <span className="font-medium">{item.title}</span>
+        {item.detail && (
+          <span className="text-muted-foreground ml-1">— {item.detail}</span>
+        )}
+      </div>
+    </div>
+  );
+});
+
+const DigestSectionView = React.memo(({ section }: { section: DigestSection }) => {
+  return (
+    <div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+        {section.title}
+      </div>
+      <div className="space-y-1">
+        {section.items.slice(0, 4).map(item => (
+          <DigestItemRow key={item.id} item={item} />
+        ))}
+        {section.items.length > 4 && (
+          <p className="text-[10px] text-muted-foreground pl-5">
+            +{section.items.length - 4} more
+          </p>
+        )}
+      </div>
+    </div>
+  );
+});
+
+
 
 /** digest widget. */
 export function DigestWidget() {
@@ -52,33 +90,7 @@ export function DigestWidget() {
         <ScrollArea className="max-h-[260px]">
           <div className="space-y-3">
             {digest.sections.slice(0, 5).map(section => (
-              <div key={section.id}>
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  {section.title}
-                </div>
-                <div className="space-y-1">
-                  {section.items.slice(0, 4).map(item => {
-                    const Icon = KIND_ICON[item.kind] ?? Newspaper;
-                    const color = KIND_COLOR[item.kind] ?? "text-muted-foreground";
-                    return (
-                      <div key={item.id} className="flex items-start gap-2 text-xs py-0.5">
-                        <Icon className={`h-3 w-3 mt-0.5 shrink-0 ${color}`} />
-                        <div className="min-w-0">
-                          <span className="font-medium">{item.title}</span>
-                          {item.detail && (
-                            <span className="text-muted-foreground ml-1">— {item.detail}</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {section.items.length > 4 && (
-                    <p className="text-[10px] text-muted-foreground pl-5">
-                      +{section.items.length - 4} more
-                    </p>
-                  )}
-                </div>
-              </div>
+              <DigestSectionView key={section.id} section={section} />
             ))}
           </div>
         </ScrollArea>

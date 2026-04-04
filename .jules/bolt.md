@@ -1,10 +1,3 @@
-## 2024-05-18 - Avoid Sorting Growing Collections of Inactive Entities
-**Learning:** In continuous simulations where entities (like rikishi) retire but remain in the world state, applying O(N log N) sorting operations (like `stableSort(world.rikishi.values())`) directly on the entire collection causes linear degradation over time.
-**Action:** Always filter out inactive/retired entities into a temporary array using a single-pass `for...of` loop *before* sorting, especially in highly repeated paths like `tickMonthly.ts` or `tickDaily.ts`.
-## 2024-04-02 - Avoid `.filter()` in active collection array cleanups
-**Learning:** Using `.filter()` to remove elements from frequently updated active arrays (like records or stats collections) causes an O(N) memory allocation per use. In hot engine pathways (like retirements that trigger cascade cleanups), this creates unnecessary garbage collection overhead and drops references needed for optimization.
-**Action:** Use manual backwards `for`-loops combined with `for (let j = i; j < len - 1)` shifts and a final `list.pop()` for removal, bypassing closure and array allocation entirely.
-
-## 2026-04-03 - Stable Reference Constants for useMemo Dependencies
-**Learning:** Moving static arrays and constants outside of React components ensures reference stability, preventing unnecessary `useMemo` or `useCallback` invalidations on every re-render.
-**Action:** Always move fixed arrays (e.g., keys like `['training', 'recovery']`) to the module level rather than defining them inside the component body.
+## 2024-04-03 - Component Splitting Dashboard Widgets
+**Learning:** React performance can degrade when mapping over large arrays inline within functional components because every object and closure created in the loop is re-allocated on each render, defeating the shallow-compare benefits of React.memo. Additionally, passing inline objects to memoized children (like `{ label: "Intensity", value: ... }`) breaks the memoization entirely.
+**Action:** Extract inline loop bodies into separate child components explicitly wrapped in `React.memo`, passing primitive values or memoized objects down as props instead of inline object construction.
