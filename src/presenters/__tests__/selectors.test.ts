@@ -119,9 +119,7 @@ describe("selectPromotionCandidates", () => {
     } as unknown as WorldState;
 
     const result = selectPromotionCandidates(world);
-    expect(result).toHaveLength(2);
-    expect(result).toContain(r1);
-    expect(result).toContain(r2);
+    expect(result).toEqual([r1, r2]);
   });
 
   it("should memoize the result if the world object is the same", () => {
