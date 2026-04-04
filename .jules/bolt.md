@@ -1,10 +1,5 @@
-## 2024-05-18 - Avoid Sorting Growing Collections of Inactive Entities
-**Learning:** In continuous simulations where entities (like rikishi) retire but remain in the world state, applying O(N log N) sorting operations (like `stableSort(world.rikishi.values())`) directly on the entire collection causes linear degradation over time.
-**Action:** Always filter out inactive/retired entities into a temporary array using a single-pass `for...of` loop *before* sorting, especially in highly repeated paths like `tickMonthly.ts` or `tickDaily.ts`.
-## 2024-04-02 - Avoid `.filter()` in active collection array cleanups
-**Learning:** Using `.filter()` to remove elements from frequently updated active arrays (like records or stats collections) causes an O(N) memory allocation per use. In hot engine pathways (like retirements that trigger cascade cleanups), this creates unnecessary garbage collection overhead and drops references needed for optimization.
-**Action:** Use manual backwards `for`-loops combined with `for (let j = i; j < len - 1)` shifts and a final `list.pop()` for removal, bypassing closure and array allocation entirely.
+## 2025-04-03 - Optimize Naturalization Check Sorting
 
-## 2026-04-03 - Stable Reference Constants for useMemo Dependencies
-**Learning:** Moving static arrays and constants outside of React components ensures reference stability, preventing unnecessary `useMemo` or `useCallback` invalidations on every re-render.
-**Action:** Always move fixed arrays (e.g., keys like `['training', 'recovery']`) to the module level rather than defining them inside the component body.
+**Learning:** When sorting collections that contain both active and historical entities (like all rikishi in `world.rikishi.values()`), sorting the entire dataset before filtering out the relevant subset introduces severe $O(N \log N)$ overhead that scales poorly as the game progresses and the total number of rikishi grows indefinitely.
+
+**Action:** Always filter large game state Maps/Iterables down to the targeted subset of entities *before* applying `stableSort`.
