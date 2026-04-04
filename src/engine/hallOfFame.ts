@@ -77,10 +77,10 @@ function tryAddInductee(
   world: WorldState,
   hof: HallOfFameState,
   newInductees: HoFInductee[],
-  rid: string,
+  rid: Id,
   r: any,
   category: HoFCategory,
-  stats: any
+  stats: Partial<HoFInductee['stats']>
 ) {
   const key = `${rid}::${category}`;
   if (hof.inducted[key]) return;
