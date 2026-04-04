@@ -1,3 +1,5 @@
-## 2024-04-03 - Component Splitting Dashboard Widgets
-**Learning:** React performance can degrade when mapping over large arrays inline within functional components because every object and closure created in the loop is re-allocated on each render, defeating the shallow-compare benefits of React.memo. Additionally, passing inline objects to memoized children (like `{ label: "Intensity", value: ... }`) breaks the memoization entirely.
-**Action:** Extract inline loop bodies into separate child components explicitly wrapped in `React.memo`, passing primitive values or memoized objects down as props instead of inline object construction.
+## 2025-04-03 - Optimize Naturalization Check Sorting
+
+**Learning:** When sorting collections that contain both active and historical entities (like all rikishi in `world.rikishi.values()`), sorting the entire dataset before filtering out the relevant subset introduces severe $O(N \log N)$ overhead that scales poorly as the game progresses and the total number of rikishi grows indefinitely.
+
+**Action:** Always filter large game state Maps/Iterables down to the targeted subset of entities *before* applying `stableSort`.
