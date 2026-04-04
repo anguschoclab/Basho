@@ -76,14 +76,9 @@ export function createHeyaWithOyakata(args: {
   return { heya, oyakata };
 }
 
-/**
- * Main orchestrator for world generation.
- */
-export function generateInitialWorld(seed: string): WorldState {
-  const worldRng = rngFromSeed(seed, "worldgen", "world");
+export function createStables(worldRng: SeededRNG): { heyaMap: Map<string, Heya>, oyakataMap: Map<string, Oyakata> } {
   const heyaMap = new Map<string, Heya>();
   const oyakataMap = new Map<string, Oyakata>();
-  const rikishiMap = new Map<string, Rikishi>();
 
   // 1. Create Stables (45 traditional stables)
   const HEYA_NAMES = [
@@ -106,6 +101,13 @@ export function generateInitialWorld(seed: string): WorldState {
     oyakataMap.set(oyakata.id, oyakata);
     heya.rikishiIds = [];
   });
+
+  return { heyaMap, oyakataMap };
+}
+
+export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): Map<string, Rikishi> {
+  const rikishiMap = new Map<string, Rikishi>();
+  const heyaIds = Array.from(heyaMap.keys());
 
   // 2. Initial Roster Generation (Rank Distribution)
   const rankConfigs: { rank: Rank; division: Division; count: number }[] = [
@@ -141,13 +143,28 @@ export function generateInitialWorld(seed: string): WorldState {
       });
 
       // Randomly assign to a stable
-      const heyaId = `heya_${worldRng.int(1, HEYA_NAMES.length)}`;
+      const heyaId = worldRng.pick(heyaIds);
       r.heyaId = heyaId;
       heyaMap.get(heyaId)?.rikishiIds?.push(r.id);
       rikishiMap.set(r.id, r);
       totalGenerated++;
     }
   });
+
+  return rikishiMap;
+}
+
+/**
+ * Main orchestrator for world generation.
+ */
+export function generateInitialWorld(seed: string): WorldState {
+  const worldRng = rngFromSeed(seed, "worldgen", "world");
+
+  // 1. Create Stables
+  const { heyaMap, oyakataMap } = createStables(worldRng);
+
+  // 2. Initial Roster Generation
+  const rikishiMap = createRosters(worldRng, heyaMap);
 
   const world: WorldState = {
     id: `world_${seed}`,

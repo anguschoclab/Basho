@@ -12,14 +12,16 @@ import { stableSort } from "./utils/sort";
 export function checkNaturalizations(world: WorldState): void {
   // Usually this would be run yearly or post-basho.
   const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
-  for (const r of stableSort(world.rikishi.values(), x => x.id)) {
-    if (r.nationality !== "Japan") {
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired && r.nationality !== "Japan") {
       foreignRikishi.push(r);
     }
   }
 
-  // Ensure deterministic tie-break before iteration
-  for (const r of foreignRikishi) {
+  // Sort only the foreign rikishi for deterministic tie-break before iteration
+  const sortedForeign = stableSort(foreignRikishi, x => x.id);
+
+  for (const r of sortedForeign) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).
     const birthYear = r.birthYear || (world.year - 18);
     const age = world.year - birthYear;

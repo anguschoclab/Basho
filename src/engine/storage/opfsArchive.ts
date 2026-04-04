@@ -4,10 +4,8 @@ import { OPFSFileSystem } from "./OPFSFileSystem";
 
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
-function validateBoutLog(data: any): BoutResult | null {
-  const result = boutResultSchema.safeParse(data);
-  if (!result.success) {
-    console.warn(`[OPFS Validation] Invalid BoutResult: ${result.error.message}`);
+function validateBoutLog(data: unknown): BoutResult | null {
+  if (!data || typeof data !== "object") {
     return null;
   }
   return result.data as BoutResult;
@@ -29,8 +27,8 @@ export class ArchiveConflictError extends Error {
 
 export interface ArchiveService {
   isSupported: () => boolean;
-  archiveBoutLog: (season: number, boutId: string, logData: any) => Promise<void>;
-  retrieveBoutLog: (season: number, boutId: string) => Promise<any | null>;
+  archiveBoutLog: (season: number, boutId: string, logData: unknown) => Promise<void>;
+  retrieveBoutLog: (season: number, boutId: string) => Promise<BoutResult | null>;
   archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
@@ -43,12 +41,17 @@ class OPFSArchiveService implements ArchiveService {
     return this.fs.isSupported();
   }
 
+  /**
+   * Navigates or creates a nested directory structure.
+   */
+  private async getDirectoryPath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
+    if (!this.isSupported()) return null;
 
 
   // --- BOUTS ---
 
-  public async archiveBoutLog(season: number, boutId: string, logData: any): Promise<void> {
-    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'bouts']);
+  public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
+    const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return;
 
     const fileName = `${boutId}.json`;
@@ -60,8 +63,7 @@ class OPFSArchiveService implements ArchiveService {
       throw new ArchiveConflictError(`Bout log ${boutId} already exists in season ${season}. History is immutable.`);
     } catch (e: unknown) {
       if (e instanceof ArchiveConflictError) throw e;
-      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
-      if (!isNotFoundError) throw e; // Bubble up unexpected errors
+      if ((e instanceof Error || e instanceof DOMException) && e.name !== 'NotFoundError') throw e; // Bubble up unexpected errors
     }
 
     // File does not exist, safe to write.
@@ -75,8 +77,8 @@ class OPFSArchiveService implements ArchiveService {
     }
   }
 
-  public async retrieveBoutLog(season: number, boutId: string): Promise<any | null> {
-    const dir = await this.fs.getDirectoryPath([`season_${season}`, 'bouts']);
+  public async retrieveBoutLog(season: number, boutId: string): Promise<BoutResult | null> {
+    const dir = await this.getDirectoryPath([`season_${season}`, 'bouts']);
     if (!dir) return null;
 
     try {
@@ -86,8 +88,7 @@ class OPFSArchiveService implements ArchiveService {
       const parsed = JSON.parse(contents);
       return validateBoutLog(parsed);
     } catch (e: unknown) {
-      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
-      if (isNotFoundError) return null; // Graceful degradation for missing logs
+      if ((e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError') return null; // Graceful degradation for missing logs
       console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
       return null;
     }
@@ -100,7 +101,7 @@ class OPFSArchiveService implements ArchiveService {
     const ids: string[] = [];
     try {
       // Async iteration over directory handles
-      for await (const entry of (dir as any).values()) {
+      for await (const entry of ((dir as unknown) as Record<string, () => AsyncIterable<FileSystemHandle>>).values()) {
         if (entry.kind === 'file' && entry.name.endsWith('.json')) {
           ids.push(entry.name.replace('.json', ''));
         }
@@ -136,8 +137,7 @@ class OPFSArchiveService implements ArchiveService {
       const file = await fileHandle.getFile();
       return await file.text();
     } catch (e: unknown) {
-      const isNotFoundError = (e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError';
-      if (isNotFoundError) return null;
+      if ((e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError') return null;
       console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
       return null;
     }

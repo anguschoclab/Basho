@@ -67,12 +67,8 @@ export function generateSponsorNameV2(rng: SeededRNG, tier: SponsorTier): { disp
   return { displayName: "Standard Sponsor", shortName: "Standard" };
 }
 
-/**
- * Generate a single sponsor.
- */
-export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
-  const { displayName, shortName } = generateSponsorNameV2(rng, tier);
 
+export function generateSponsorId(rng: SeededRNG, displayName: string, createdAtTick: number, existingIds: Set<string>): string {
   const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
   let sponsorId = `sponsor_${base}`;
   if (existingIds.has(sponsorId)) {
@@ -83,17 +79,31 @@ export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick
     }
     if (existingIds.has(sponsorId)) sponsorId = `sponsor_${base}_${createdAtTick}`;
   }
+  return sponsorId;
+}
+
+
+export function rollSponsorCategory(rng: SeededRNG): SponsorCategory {
+  const categoryRoll = rng.next();
+  if (categoryRoll < 0.3) return "local_business";
+  if (categoryRoll < 0.5) return "regional_corporation";
+  if (categoryRoll < 0.62) return "national_brand";
+  if (categoryRoll < 0.72) return "alumni_association";
+  if (categoryRoll < 0.82) return "cultural_foundation";
+  if (categoryRoll < 0.94) return "private_benefactor";
+  return "anonymous_patron";
+}
+
+/**
+ * Generate a single sponsor.
+ */
+export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick: number, existingIds: Set<string>): Sponsor {
+  const { displayName, shortName } = generateSponsorNameV2(rng, tier);
+
+  const sponsorId = generateSponsorId(rng, displayName, createdAtTick, existingIds);
   existingIds.add(sponsorId);
 
-  const categoryRoll = rng.next();
-  let category: SponsorCategory;
-  if (categoryRoll < 0.3) category = "local_business";
-  else if (categoryRoll < 0.5) category = "regional_corporation";
-  else if (categoryRoll < 0.62) category = "national_brand";
-  else if (categoryRoll < 0.72) category = "alumni_association";
-  else if (categoryRoll < 0.82) category = "cultural_foundation";
-  else if (categoryRoll < 0.94) category = "private_benefactor";
-  else category = "anonymous_patron";
+  const category = rollSponsorCategory(rng);
 
   const traits = getTierTraitRanges(tier);
 
