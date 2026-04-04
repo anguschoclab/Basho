@@ -190,7 +190,7 @@ function createCombatStats(
     combatProfile: profile,
     archetype,
     derivedArchetype: archetype,
-    tacticalArchetypePrimary: archetype as any, // Mapping needed?
+    tacticalArchetypePrimary: archetype, // Mapping needed?
     archetypeEvidence: {
       push: { success: 0, fail: 0 },
       grapple: { success: 0, fail: 0 },
