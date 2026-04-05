@@ -37,7 +37,7 @@ export const STAT_PROSE: Record<string, Record<StatBand, string>> = {
   power: {
     exceptional: "His raw strength is fearsome — opponents buckle on first contact as if struck by a massive wall of concrete. He can dismantle defenses on sheer power alone.",
     outstanding: "A powerful frame that most men at this level simply cannot withstand for long. When he commits forward, the earth seems to tremble.",
-    strong: "Solid, reliable strength. Enough to move most men and strictly punish any passive opponents who try to stall the bout.",
+    strong: "Solid, reliable strength. Enough to move most men and severely punish any passive opponents who try to stall the bout.",
     capable: "Adequate power for his rank. He won't effortlessly overwhelm anyone, but holds his own comfortably in the clinch.",
     developing: "Still building the deep muscle and leverage his rank demands. The raw potential is there, and improvement is visible.",
     limited: "Noticeably outpowered by most opponents. He relies heavily on technique, positioning, and speed to compensate for the strength gap.",
