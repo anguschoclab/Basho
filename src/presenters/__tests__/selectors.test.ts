@@ -253,13 +253,13 @@ describe("selectRecentEvents", () => {
 
     const result = selectRecentEvents(world);
     expect(result.media.map(e => e.id)).toEqual(["e1"]);
-    expect(result.economy.map(e => e.id)).toEqual(expect.arrayContaining(["e3", "e2"]));
+    expect(result.economy.map(e => e.id)).toEqual(["e3", "e2"]);
     expect(result.scouting.map(e => e.id)).toEqual(["e4"]);
     expect(result.training.map(e => e.id)).toEqual(["e5"]);
     expect(result.career.map(e => e.id)).toEqual(["e6"]);
     expect(result.rivalry.map(e => e.id)).toEqual(["e7"]);
-    expect(result.governance.map(e => e.id)).toEqual(expect.arrayContaining(["e9", "e8"]));
-    expect(result.welfare.map(e => e.id)).toEqual(expect.arrayContaining(["e12", "e11", "e10"]));
+    expect(result.governance.map(e => e.id)).toEqual(["e9", "e8"]);
+    expect(result.welfare.map(e => e.id)).toEqual(["e12", "e11", "e10"]);
   });
 
   it("should memoize the result if the world object is the same", () => {
