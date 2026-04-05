@@ -54,7 +54,7 @@ export type EventImportance = "minor" | "notable" | "major" | "headline";
 /** Defines the structure for engine event. */
 export interface EngineEvent {
   id: Id;
-  type: string;
+  type: EngineEventType;
 
   causalEventId?: Id;
 

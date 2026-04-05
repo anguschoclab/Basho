@@ -103,6 +103,7 @@ export interface WorldState {
   trainingState?: Record<Id, BeyaTrainingState>;
 
   talentPool?: TalentPoolWorldState;
+  candidatePool?: TalentPoolWorldState;
 
   sponsorPool?: SponsorPool;
 
