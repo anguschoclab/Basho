@@ -9,8 +9,9 @@
 import { rngFromSeed } from "./rng";
 import { Rikishi, RikishiStats } from "./types/rikishi";
 import { Rank } from "./types/banzuke";
-import { CombatArchetype } from "./types/combat";
+import { CombatArchetype, TacticalArchetype, RikishiArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
+import type { InjurySeverity } from "./systems/health/BodyDefinitions";
 import { generateRikishiName } from "./shikona";
 import { rollArchetype, buildCombatProfile } from "./archetype";
 
@@ -148,12 +149,12 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
     stamina: stats.stamina,
 
     tacticalArchetypePrimary: archetype,
-    archetypeEvidence: [],
-    
+    archetypeEvidence: { push: { success: 0, fail: 0 }, grapple: { success: 0, fail: 0 }, evade: { success: 0, fail: 0 } },
+
     // Style
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
-    archetype: archetype,
-    derivedArchetype: archetype,
+    archetype: archetype as unknown as TacticalArchetype,
+    derivedArchetype: archetype as unknown as RikishiArchetype,
     combatProfile: buildCombatProfile(archetype),
     
     careerWins: 0,
@@ -167,13 +168,13 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
     history: [],
     h2h: {},
     
-    injuryStatus: { 
+    injuryStatus: {
       type: "none",
-      isInjured: false, 
-      severity: 0, 
-      location: "", 
+      isInjured: false,
+      severity: "none" as InjurySeverity,
+      location: undefined,
       weeksRemaining: 0,
-      weeksToHeal: 0 
+      weeksToHeal: 0
     },
     injured: false,
     injuryWeeksRemaining: 0,

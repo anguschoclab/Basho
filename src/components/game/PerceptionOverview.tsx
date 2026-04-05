@@ -110,7 +110,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
     const results: Array<PerceptionSnapshot & { isPlayer: boolean }> = [];
     const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
     for (const heya of world.heyas.values()) {
-      if (heya.rikishiIds.length === 0) continue;
+      if ((heya.rikishiIds?.length ?? 0) === 0) continue;
       const snap = buildPerceptionSnapshot(world, heya.id);
       const entry = { ...snap, isPlayer: heya.id === playerHeyaId };
       results.push(entry);

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
@@ -65,7 +65,7 @@ export function StableWidget() {
 
   if (!p) return null;
 
-  const headerAction = React.useMemo(() => ({
+  const headerAction = useMemo(() => ({
     label: "Manage",
     onClick: () => navigate({ to: "/stable" as any })
   }), [navigate]);
@@ -156,7 +156,7 @@ function StatMini({
   label,
   value,
 }: {
-  icon: LucideIcon;
+  icon: React.ReactNode;
   label: string;
   value: string;
 }) {

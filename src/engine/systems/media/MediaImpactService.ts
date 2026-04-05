@@ -11,8 +11,8 @@ import { assertNever } from "../../utils/types";
 export function calculateBoutImpact(args: {
   upset: boolean;
   rivalryTension: number;
-  winnerRank: string;
-  loserRank: string;
+  winnerRank?: string;
+  loserRank?: string;
 }): number {
   let impact = 18;
   if (args.upset) impact += 20;

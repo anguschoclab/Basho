@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { usePlayerHeya } from "@/hooks/usePlayerHeya";
 import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
@@ -27,10 +28,6 @@ const AXES = ["training", "recovery", "nutrition"] as const;
 const FacilityAxisRow = React.memo(
   ({ axis, level }: { axis: (typeof AXES)[number]; level: number }) => {
     const Icon = AXIS_ICONS[axis];
-    const headerAction = React.useMemo(() => ({
-    label: "Manage",
-    onClick: () => navigate({ to: "/stable" as any })
-  }), [navigate]);
     return (
       <div className="space-y-1">
         <div className="flex items-center justify-between">
@@ -55,6 +52,10 @@ const FacilityAxisRow = React.memo(
 /** facilities widget. */
 export function FacilitiesWidget() {
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "Manage",
+    onClick: () => navigate({ to: "/stable" as any })
+  }), [navigate]);
   const { heya } = usePlayerHeya();
 
   if (!heya) return null;

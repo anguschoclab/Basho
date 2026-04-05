@@ -229,6 +229,7 @@ function useResolvedMatch() {
  */
 
 export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTactics }: { match: MatchRowData, idx: number, onBoutClick?: (match: MatchLike) => void, onTacticChange?: (boutId: string, tactic: string) => void, playerTactics?: Record<string, string> }) => {
+  const navigate = useNavigate();
   const hasResult = !!match.result;
   return (
               <div
@@ -315,7 +316,7 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                         { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
                         { id: "HENKA", label: "Henka", desc: "Counters Belt" }
                       ].map(t => {
-                        const isSelected = (playerTactics[match.boutId || ""] || "STANDARD") === t.id;
+                        const isSelected = (playerTactics?.[match.boutId || ""] || "STANDARD") === t.id;
                         return (
                           <Button
                             variant={isSelected ? "secondary" : "outline"}

@@ -5,8 +5,10 @@ import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoName } from "../types/basho";
 
+export type PbpLine = { text: string; id: string };
+
 /**
- * Pure translator function. Consumes raw physics frames and maps them 
+ * Pure translator function. Consumes raw physics frames and maps them
  * to event tokens defined in grammarDefinitions.ts and pbp.ts, and generates narrative.
  */
 export function generateBoutNarrative(
@@ -20,9 +22,9 @@ export function generateBoutNarrative(
   // Map log entries to narrative context
   const pbpLines = result.log.map((entry, idx) => {
     if ((entry.phase === 'engagement' || entry.phase === 'tachiai') && entry.data?.tickResolutionEvent) {
-      const tickSeed = `${seed}-tick-${entry.data.tick || 0}-${idx}`;
+      const tickSeed = `${seed}-tick-${(entry.data.tick as number) || 0}-${idx}`;
       return {
-        text: synthesizeTickNarrative(entry.data.tickResolutionEvent, tickSeed),
+        text: synthesizeTickNarrative(entry.data.tickResolutionEvent as import('../types/combat').TickResolutionEvent, tickSeed),
         id: `${result.boutId}-${entry.data.tick || 't'}`
       };
     }

@@ -19,11 +19,6 @@ const RivalRow = React.memo(
       heat: string;
     };
   }) => {
-    const headerAction = React.useMemo(() => ({
-    label: "All",
-    onClick: () => navigate({ to: "/rivalries" as any }),
-    tooltip: "Analyze rival stables and their relative prestige"
-  }), [navigate]);
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
         <StableName
@@ -49,6 +44,11 @@ const RivalRow = React.memo(
 export function RivalsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "All",
+    onClick: () => navigate({ to: "/rivalries" as any }),
+    tooltip: "Analyze rival stables and their relative prestige"
+  }), [navigate]);
   const world = state.world;
 
   const rivals = useMemo(() => {

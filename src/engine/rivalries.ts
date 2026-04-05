@@ -17,6 +17,7 @@ import type { RivalriesState, RivalryPairState, RivalryKey } from "./systems/nar
 export * from "./systems/narrative/RivalryConstants";
 export * from "./systems/narrative/RivalryHeatService";
 export * from "./systems/narrative/RivalryService";
+export type { RivalryHeatBand } from "./systems/narrative/NarrativeBands";
 
 /**
  * Create a fresh empty rivalries state (Legacy standalone).

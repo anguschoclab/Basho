@@ -9,36 +9,38 @@ function validateBoutLog(data: unknown): BoutResult | null {
     return null;
   }
 
+  const obj = data as Record<string, unknown>;
+
   const requiredStringProps = ["boutId", "winner", "winnerRikishiId", "loserRikishiId", "kimarite", "kimariteName", "stance", "tachiaiWinner"];
   for (const prop of requiredStringProps) {
-    if (typeof data[prop] !== "string") {
+    if (typeof obj[prop] !== "string") {
       console.warn(`[OPFS Validation] Invalid BoutResult: missing or invalid string property '${prop}'`);
       return null;
     }
   }
 
-  if (typeof data.duration !== "number") {
+  if (typeof obj.duration !== "number") {
     console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid number property 'duration'");
     return null;
   }
 
-  if (typeof data.upset !== "boolean") {
+  if (typeof obj.upset !== "boolean") {
     console.warn("[OPFS Validation] Invalid BoutResult: missing or invalid boolean property 'upset'");
     return null;
   }
 
   // Arrays are optional but if present must be arrays
-  if (data.narrative !== undefined && !Array.isArray(data.narrative)) {
+  if (obj.narrative !== undefined && !Array.isArray(obj.narrative)) {
     console.warn("[OPFS Validation] Invalid BoutResult: narrative must be an array of strings");
     return null;
   }
 
-  if (data.pbpLines !== undefined && !Array.isArray(data.pbpLines)) {
+  if (obj.pbpLines !== undefined && !Array.isArray(obj.pbpLines)) {
     console.warn("[OPFS Validation] Invalid BoutResult: pbpLines must be an array");
     return null;
   }
 
-  if (data.pbp !== undefined && !Array.isArray(data.pbp)) {
+  if (obj.pbp !== undefined && !Array.isArray(obj.pbp)) {
     console.warn("[OPFS Validation] Invalid BoutResult: pbp must be an array");
     return null;
   }

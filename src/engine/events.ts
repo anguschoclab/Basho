@@ -9,7 +9,7 @@ import { stableTieBreak } from "./utils/sort";
  */
 
 import type { WorldState } from "./types/world";
-import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
+import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope, EngineEventType } from "./types/events";
 export type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
 import type { Id } from "./types/common";
 
@@ -40,7 +40,7 @@ export function ensureEventsState(world: WorldState): EventsState {
 
 /** Defines the structure for log engine event params. */
 interface LogEngineEventParams {
-  type: string;
+  type: EngineEventType;
   category: EventCategory;
   phase?: EventPhase;
   importance?: EventImportance;

@@ -88,7 +88,7 @@ class HistoryLRUCache {
 
       return {
         year,
-        bouts: bouts.filter(Boolean),
+        bouts: bouts.filter((b): b is BoutResult => b !== null),
         awards: [],
         banzukeSnapshots: []
       };
