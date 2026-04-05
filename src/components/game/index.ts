@@ -5,6 +5,7 @@ export * from './BoutReplayViewer';
 export * from './BoutResultDisplay';
 export * from './FacilitiesManagementPanel';
 export * from './HoFInductionCeremony';
+export * from './NarrativeCeremonyDialog';
 export * from './HoFTimeline';
 export * from './HolidayControls';
 export * from './InjuryRecoveryPanel';
