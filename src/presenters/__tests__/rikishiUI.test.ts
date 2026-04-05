@@ -90,11 +90,11 @@ describe("projectRosterEntry", () => {
     expect(entry.momentum).toBe(5);
 
     // Check stat bands mapping
-    expect(entry.powerBand).toBeDefined();
-    expect(entry.techniqueBand).toBeDefined();
-    expect(entry.speedBand).toBeDefined();
-    expect(entry.balanceBand).toBeDefined();
-    expect(entry.potentialBand).toBeDefined();
+    expect(entry.powerBand).toEqual(expect.any(String));
+    expect(entry.techniqueBand).toEqual(expect.any(String));
+    expect(entry.speedBand).toEqual(expect.any(String));
+    expect(entry.balanceBand).toEqual(expect.any(String));
+    expect(entry.potentialBand).toEqual(expect.any(String));
     expect(entry.archetypeLabel).toBeDefined();
   });
 
