@@ -5,7 +5,7 @@ import { queryEvents } from '../../engine/events';
 vi.mock('../../engine/events', () => ({ queryEvents: vi.fn((world) => world.events?.log?.map(e => ({...e, type: e.type || "GENERIC"})) || []) }));
 import type { StandingsTableRuntime } from '../../engine/types/basho';
 import { describe, it, expect, vi } from 'vitest';
-import { enrichRikishiForUI, formatRadarData, formatMetaTrends, getOzekiRunCandidates, buildWeeklyDigest } from '../uiDigest';
+import { enrichRikishiForUI, formatRadarData, formatMetaTrends, getOzekiRunCandidates, buildWeeklyDigest, getKadobanDrama } from '../uiDigest';
 import { mockRikishi as generateMockRikishi } from '../../engine/__tests__/utils';
 import type { RikishiStats, Rikishi } from '../../engine/types/rikishi';
 import type { WorldState } from '../../engine/types/world';
@@ -300,5 +300,83 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
       expect(digest?.counts.economy).toBe(1);
       expect(digest?.counts.scouting).toBe(1);
     });
+  });
+});
+
+
+describe('getKadobanDrama', () => {
+  it('should return empty array if ozekiKadoban is undefined/empty', () => {
+    const world = {
+      ozekiKadoban: undefined,
+      rikishi: new Map(),
+      heyas: new Map(),
+    } as unknown as WorldState;
+    expect(getKadobanDrama(world)).toEqual([]);
+  });
+
+  it('should skip if !isKadoban and consecutiveMakeKoshi < 2', () => {
+    const r1 = generateMockRikishi('r_1', { rank: 'ozeki' });
+    const world = {
+      ozekiKadoban: {
+        'r_1': { isKadoban: false, consecutiveMakeKoshi: 1 }
+      },
+      rikishi: new Map([['r_1', r1]]),
+      heyas: new Map(),
+    } as unknown as WorldState;
+    expect(getKadobanDrama(world)).toEqual([]);
+  });
+
+  it('should return "Failed to clear Kadoban. Demotion to Sekiwake confirmed." when demoted', () => {
+    const r1 = generateMockRikishi('r_1', { rank: 'ozeki' });
+    const world = {
+      ozekiKadoban: {
+        'r_1': { isKadoban: true, consecutiveMakeKoshi: 2 }
+      },
+      rikishi: new Map([['r_1', r1]]),
+      heyas: new Map(),
+      currentBasho: {
+        standings: new Map([['r_1', { wins: 0, losses: 8 }]])
+      }
+    } as unknown as WorldState;
+    const result = getKadobanDrama(world);
+    expect(result).toHaveLength(1);
+    expect(result[0].narrative).toBe("Failed to clear Kadoban. Demotion to Sekiwake confirmed.");
+    expect(result[0].isDemoted).toBe(true);
+  });
+
+  it('should return "Cleared Kadoban. Retains Ozeki rank." when cleared', () => {
+    const r1 = generateMockRikishi('r_1', { rank: 'ozeki' });
+    const world = {
+      ozekiKadoban: {
+        'r_1': { isKadoban: true, consecutiveMakeKoshi: 2 }
+      },
+      rikishi: new Map([['r_1', r1]]),
+      heyas: new Map(),
+      currentBasho: {
+        standings: new Map([['r_1', { wins: 8, losses: 0 }]])
+      }
+    } as unknown as WorldState;
+    const result = getKadobanDrama(world);
+    expect(result).toHaveLength(1);
+    expect(result[0].narrative).toBe("Cleared Kadoban. Retains Ozeki rank.");
+    expect(result[0].isDemoted).toBe(false);
+  });
+
+  it('should return "Fighting for survival as Kadoban Ozeki." when isKadoban is true and < 8 wins/losses', () => {
+    const r1 = generateMockRikishi('r_1', { rank: 'ozeki' });
+    const world = {
+      ozekiKadoban: {
+        'r_1': { isKadoban: true, consecutiveMakeKoshi: 2 }
+      },
+      rikishi: new Map([['r_1', r1]]),
+      heyas: new Map(),
+      currentBasho: {
+        standings: new Map([['r_1', { wins: 7, losses: 7 }]])
+      }
+    } as unknown as WorldState;
+    const result = getKadobanDrama(world);
+    expect(result).toHaveLength(1);
+    expect(result[0].narrative).toBe("Fighting for survival as Kadoban Ozeki.");
+    expect(result[0].isDemoted).toBe(false);
   });
 });
