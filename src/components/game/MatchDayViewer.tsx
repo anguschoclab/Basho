@@ -150,7 +150,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
             return (
               <BoutCard
                 key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
-                match={match as any}
+                match={match}
                 idx={idx}
                 onBoutClick={onBoutClick}
                 onTacticChange={onTacticChange}
