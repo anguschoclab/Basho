@@ -95,7 +95,7 @@ function HeadlineCard({
   world,
 }: {
   headline: MediaHeadline;
-  world: any;
+  world: WorldState | null;
 }) {
   const tier = TIER_STYLE[headline.tier] ?? TIER_STYLE.local;
   const tone = TONE_STYLE[headline.tone] ?? TONE_STYLE.neutral;
