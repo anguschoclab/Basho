@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { selectKadobanRikishi, selectPromotionCandidates, selectYokozunaCandidates } from "../selectors";
+import { selectKadobanRikishi, selectPromotionCandidates, selectYokozunaCandidates, selectRikishiByHeya } from "../selectors";
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
 import { mockRikishi } from "../../engine/__tests__/utils";
@@ -184,6 +184,62 @@ describe("selectYokozunaCandidates", () => {
     const result2 = selectYokozunaCandidates(world);
 
     // Check strict equality to ensure it's the exact same array reference
+    expect(result1).toBe(result2);
+  });
+});
+
+
+describe("selectRikishiByHeya", () => {
+  it("should return an empty map if there are no rikishi", () => {
+    const world = {
+      rikishi: new Map(),
+    } as unknown as WorldState;
+
+    const result = selectRikishiByHeya(world);
+    expect(result.size).toBe(0);
+  });
+
+  it("should group rikishi correctly by heyaId", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1" });
+    const r2 = mockRikishi("r2", { heyaId: "h1" });
+    const r3 = mockRikishi("r3", { heyaId: "h2" });
+    const r4 = mockRikishi("r4", { heyaId: "h3" });
+
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r1);
+    rikishiMap.set("r2", r2);
+    rikishiMap.set("r3", r3);
+    rikishiMap.set("r4", r4);
+
+    const world = {
+      rikishi: rikishiMap,
+    } as unknown as WorldState;
+
+    const result = selectRikishiByHeya(world);
+
+    expect(result.size).toBe(3);
+
+    expect(result.get("h1")).toEqual([r1, r2]);
+
+    expect(result.get("h2")).toEqual([r3]);
+
+    expect(result.get("h3")).toEqual([r4]);
+  });
+
+  it("should memoize the result if the world object is the same", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1" });
+
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r1);
+
+    const world = {
+      rikishi: rikishiMap,
+    } as unknown as WorldState;
+
+    const result1 = selectRikishiByHeya(world);
+    const result2 = selectRikishiByHeya(world);
+
+    // Check strict equality to ensure it's the exact same map reference
     expect(result1).toBe(result2);
   });
 });
