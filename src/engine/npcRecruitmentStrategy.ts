@@ -1,5 +1,6 @@
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
+import { assertNever } from "./utils/types";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 
 interface RecruitmentStrategy {
@@ -114,6 +115,7 @@ export function getRecruitmentStrategy(archetype: OyakataArchetype): Recruitment
     case "tyrant":
       return TyrantRecruitmentStrategy;
     default:
+      assertNever(archetype);
       return DefaultRecruitmentStrategy;
   }
 }

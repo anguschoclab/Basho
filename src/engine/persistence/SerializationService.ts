@@ -103,8 +103,8 @@ export const SerializationService = {
       calendar: world.calendar,
       sponsorPool: this.serializeSponsorPool(world.sponsorPool),
       ozekiKadoban: world.ozekiKadoban || {},
-      mediaState: (world as any).mediaState,
-      candidatePool: (world as any).candidatePool,
+      mediaState: world.mediaState,
+      candidatePool: world.candidatePool,
       trainingState: world.trainingState || {},
       settings: world.settings
     };
@@ -114,7 +114,7 @@ export const SerializationService = {
    * Transform SerializedWorldState to live WorldState.
    */
   deserializeWorld(serialized: SerializedWorldState): WorldState {
-    const s = serialized as any;
+    const s = serialized;
     
     // Sanitization Pass
     const heyasObj = s.heyas || {};
@@ -203,7 +203,6 @@ export const SerializationService = {
   },
 
   sanitizeHeya(h: Heya): void {
-    const anyH = h as any;
-    if (typeof anyH.funds !== "number") anyH.funds = 0;
+    if (typeof h.funds !== "number") h.funds = 0;
   }
 };

@@ -6,12 +6,15 @@
  */
 
 import { opfsArchiveService } from "./storage/opfsArchive";
+import type { BoutResult } from "./types/basho";
+import type { RecordEntry } from "./types/records";
+import type { BanzukeSnapshot } from "./types/banzuke";
 
 export interface ArchivedYear {
   year: number;
-  bouts: any[];
-  awards: any[];
-  banzukeSnapshots: any[];
+  bouts: BoutResult[];
+  awards: RecordEntry[];
+  banzukeSnapshots: BanzukeSnapshot[];
 }
 
 class HistoryLRUCache {

@@ -32,7 +32,7 @@ export interface BashoInfo {
 export interface BoutLogEntry {
   phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement";
   description?: string;
-  data?: Record<string, unknown>;
+  data?: Record<string, string | number | boolean | null | undefined>;
 }
 
 /** Defines the structure for bout result. */
