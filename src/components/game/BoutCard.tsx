@@ -342,7 +342,7 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
             );
 });
 
-function MatchFooter({ match }: { match: any }) {
+function MatchFooter({ match }: { match: MatchRowData }) {
   return (
     <>
       <BoutTags match={match as any} />
