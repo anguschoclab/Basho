@@ -13,7 +13,6 @@ import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase } from "./world";
 import type { BashoResult } from "./basho";
-import type { Rikishi } from './rikishi';
 import type { Sponsor, Koenkai } from './sponsors';
 import type { ClosedHeyaRecord } from './world';
 import type { Staff } from './staff';
@@ -27,7 +26,6 @@ import type { OzekiKadobanMap } from '../banzuke';
 import type { MediaState } from './media';
 import type { AlmanacSnapshot } from '../almanac';
 import type { BeyaTrainingState } from './training';
-import type { TalentPoolWorldState } from './talent';
 
 /** Serialized form of sponsor pool for JSON storage. */
 export interface SerializedSponsorPool {

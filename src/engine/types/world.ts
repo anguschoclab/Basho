@@ -143,6 +143,11 @@ export interface WorldState {
 
   };
 
+  // Legacy — used by calendar.ts endBasho() (pre-refactor code path)
+  basho?: any;
+  // Legacy — used by npcRecruitmentStrategy.ts for candidate access
+  scoutingPool?: any[];
+
   bashoNumber?: number;
 }
 

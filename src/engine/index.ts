@@ -56,7 +56,13 @@ export * from './persistence/SaveSlotService';
 
 export * from './storageProvider';
 export * from './schedule';
-export * from './scouting';
+export {
+  recordObservation,
+  createScoutedView,
+  getScoutedAttributes,
+  describeScoutingLevel,
+} from './scouting';
+export type { ScoutedRikishi, PublicRikishiInfo, ScoutedAttributeTruthSnapshot } from './scouting';
 export * from './scoutingStore';
 export * from './shikona';
 export type { KoenkaiBandType, Sponsor, SponsorPool } from './types/sponsors';

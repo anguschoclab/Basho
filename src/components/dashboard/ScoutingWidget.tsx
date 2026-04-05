@@ -39,11 +39,6 @@ const ProspectRow = React.memo(
     const potentialInfo = POTENTIAL_LABELS[potential];
     const Icon = POOL_ICONS[c.pool as TalentPoolType];
 
-    const headerAction = React.useMemo(() => ({
-    label: "Full Board",
-    onClick: () => navigate({ to: "/talent-pool" as any })
-  }), [navigate]);
-
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
         <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -77,6 +72,10 @@ const ProspectRow = React.memo(
 export function ScoutingWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "Full Board",
+    onClick: () => navigate({ to: "/talent" })
+  }), [navigate]);
   const world = state.world;
 
   const prospects = useMemo(() => {
@@ -161,10 +160,7 @@ export function ScoutingWidget() {
         {prospects.length > 6 && (
           <Button
             variant="ghost"
-            onClick={React.useCallback(
-              () => navigate({ to: "/talent-pool" }),
-              [navigate],
-            )}
+            onClick={() => navigate({ to: "/talent" })}
             className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
           >
             +{prospects.length - 6} more prospects →

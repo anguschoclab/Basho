@@ -121,6 +121,7 @@ export function generateOyakata(
     id,
     heyaId,
     name,
+    shikona: name,
     age,
     archetype: type,
     traits: {

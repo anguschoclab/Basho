@@ -105,3 +105,21 @@ function getInjuryModifier(r: any): string {
   if (severity === "moderate" || (typeof severity === "number" && severity >= 35)) return "hampered";
   return "taped_up";
 }
+
+export type DurationBand = "brief" | "short" | "moderate" | "long" | "extended";
+
+export const DURATION_LABELS: Record<DurationBand, string> = {
+  brief:    "A brief moment",
+  short:    "A short while",
+  moderate: "Some time",
+  long:     "A long time",
+  extended: "An extended period",
+};
+
+export function toDurationBand(days: number): DurationBand {
+  if (days <= 1)  return "brief";
+  if (days <= 7)  return "short";
+  if (days <= 30) return "moderate";
+  if (days <= 90) return "long";
+  return "extended";
+}

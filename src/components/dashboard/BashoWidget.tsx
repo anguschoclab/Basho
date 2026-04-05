@@ -19,11 +19,6 @@ const LeaderboardRow = React.memo(
     isPlayer: boolean;
     rikishi: import("@/engine/types/rikishi").Rikishi;
   }) => {
-    const headerAction = React.useMemo(() => ({
-    label: "View",
-    onClick: () => navigate({ to: "/basho" as any }),
-    tooltip: "Review current tournament standings and bracket details"
-  }), [navigate]);
     return (
       <div
         className={`flex items-center gap-2 text-xs py-1.5 px-2 rounded-md transition-colors ${
@@ -61,6 +56,11 @@ const LeaderboardRow = React.memo(
 export function BashoWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "View",
+    onClick: () => navigate({ to: "/basho" as any }),
+    tooltip: "Review current tournament standings and bracket details"
+  }), [navigate]);
   const world = state.world;
 
   const stats = useMemo(() => {

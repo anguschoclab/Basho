@@ -34,10 +34,13 @@ export const SerializationService = {
   /**
    * Deserializes a JSON object into a runtime Map with sorted keys.
    */
-  objectToMap<T>(obj: Record<string, T>): Map<string, T> {
+  objectToMap<T>(obj: Record<string, T | undefined>): Map<string, T> {
     const map = new Map<string, T>();
     if (!obj) return map;
-    for (const key of Object.keys(obj).sort(stableTieBreak)) map.set(key, obj[key]);
+    for (const key of Object.keys(obj).sort(stableTieBreak)) {
+      const v = obj[key];
+      if (v !== undefined) map.set(key, v);
+    }
     return map;
   },
 
@@ -120,8 +123,8 @@ export const SerializationService = {
     // Sanitization Pass
     const heyasObj = s.heyas || {};
     const rikishiObj = s.rikishi || {};
-    for (const k of Object.keys(heyasObj)) this.sanitizeHeya(heyasObj[k]);
-    for (const k of Object.keys(rikishiObj)) this.sanitizeRikishi(rikishiObj[k]);
+    for (const k of Object.keys(heyasObj)) this.sanitizeHeya(heyasObj[k]!);
+    for (const k of Object.keys(rikishiObj)) this.sanitizeRikishi(rikishiObj[k]!);
 
     return {
       id: `world_${serialized.seed}`,

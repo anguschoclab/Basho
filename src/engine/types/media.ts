@@ -44,7 +44,12 @@ export type MediaTone =
   | "concern"
   | "controversy"
   | "hype"
-  | "disrespect";
+  | "disrespect"
+  | "feature"
+  | "narrative"
+  | "analysis"
+  | "interview"
+  | "rumor";
 export type MediaBeat =
   | "daily_bout"
   | "streak"

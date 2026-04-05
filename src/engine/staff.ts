@@ -25,6 +25,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
 
   return {
     id,
+    heyaId,
     name: `Staff Member ${Math.floor(rng.next() * 1000)}`,
     role,
     age,

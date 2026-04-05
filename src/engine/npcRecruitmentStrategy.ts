@@ -114,6 +114,9 @@ export function getRecruitmentStrategy(archetype: OyakataArchetype): Recruitment
       return GamblerRecruitmentStrategy;
     case "tyrant":
       return TyrantRecruitmentStrategy;
+    case "nurturer":
+    case "indulgent":
+      return DefaultRecruitmentStrategy;
     default:
       assertNever(archetype);
       return DefaultRecruitmentStrategy;

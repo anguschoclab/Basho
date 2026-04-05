@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { usePlayerHeya } from "@/hooks/usePlayerHeya";
 import {
   Coins,
   TrendingUp,
@@ -69,7 +71,7 @@ export function FinancesWidget() {
   const config = RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
 
   // Mock history for visual flair
-  const history = React.useMemo(
+  const history = useMemo(
     () => [
       { name: "W1", value: heya.funds * 0.8 },
       { name: "W2", value: heya.funds * 0.85 },
@@ -79,7 +81,7 @@ export function FinancesWidget() {
     [heya.funds],
   );
 
-  const headerAction = React.useMemo(() => ({
+  const headerAction = useMemo(() => ({
     label: "Deep Dive",
     onClick: () => navigate({ to: "/office/finances" as any }),
     tooltip: "Analyze stable financial health and project future runway"

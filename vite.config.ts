@@ -43,7 +43,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    exclude: [...configDefaults.exclude, "e2e/**"],
+    exclude: [...configDefaults.exclude, "e2e/**", ".claude/**"],
     server: {
       deps: {
         inline: ["seedrandom"],

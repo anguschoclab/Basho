@@ -79,11 +79,6 @@ const ProfileRow = React.memo(
     options: { value: string; label: string; disabled?: boolean }[];
     onChange: (v: string) => void;
   }) => {
-    const headerAction = React.useMemo(() => ({
-    label: "Full Plan",
-    onClick: () => navigate({ to: "/training" as any }),
-    tooltip: "Design and implement comprehensive training regimens for your rikishi"
-  }), [navigate]);
     return (
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5 w-20 shrink-0">
@@ -160,6 +155,11 @@ const MultiplierBar = React.memo(
 export function TrainingWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "Full Plan",
+    onClick: () => navigate({ to: "/stable/training" as any }),
+    tooltip: "Design and implement comprehensive training regimens for your rikishi"
+  }), [navigate]);
   const world = state.world;
   const [expanded, setExpanded] = useState(false);
 

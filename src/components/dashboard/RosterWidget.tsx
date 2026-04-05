@@ -16,10 +16,6 @@ import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const RosterEntryRow = React.memo(({ entry }: { entry: UIRosterEntry }) => {
-  const headerAction = React.useMemo(() => ({
-    label: "All Rikishi",
-    onClick: () => navigate({ to: "/rikishi" as any })
-  }), [navigate]);
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
       <RikishiName
@@ -57,6 +53,10 @@ const RosterEntryRow = React.memo(({ entry }: { entry: UIRosterEntry }) => {
 export function RosterWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "All Rikishi",
+    onClick: () => navigate({ to: "/rikishi" as any })
+  }), [navigate]);
   const world = state.world;
 
   const roster = useMemo<UIRosterEntry[]>(() => {
@@ -66,7 +66,7 @@ export function RosterWidget() {
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: UIRosterEntry[] = [];
-    for (const id of heya.rikishiIds) {
+    for (const id of (heya.rikishiIds ?? [])) {
       const r = world.rikishi.get(id);
       if (r && !r.isRetired) {
         entries.push(projectRosterEntry(r));

@@ -101,6 +101,7 @@ export interface UIRikishi {
   salaryBreakdown: SalaryBreakdown;
   careerHistory: any[];
   milestones: any[];
+  h2h?: Record<string, { wins: number; losses: number; streak: number }>;
 }
 
 function calculateMostFrequentKimarite(rikishiId: string, history: any[]): string[] {
@@ -234,9 +235,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     balanceBand: NarrativeService.getStatBand(r.balance ?? 50),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.experience),
-    currentBashoWins: r.currentBashoWins,
-    currentBashoLosses: r.currentBashoLosses,
-    currentBashoRecord: `${r.currentBashoWins}-${r.currentBashoLosses}`,
+    currentBashoWins: r.currentBashoWins ?? 0,
+    currentBashoLosses: r.currentBashoLosses ?? 0,
+    currentBashoRecord: `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
@@ -258,6 +259,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     ),
     careerHistory,
     milestones,
+    h2h: r.h2h as UIRikishi['h2h'],
   };
 }
 
@@ -339,10 +341,10 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     rankNumber: r.rankNumber,
     division: r.division,
     side: r.side,
-    record: `${r.currentBashoWins}-${r.currentBashoLosses}`,
+    record: `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
-    currentBashoWins: r.currentBashoWins,
-    currentBashoLosses: r.currentBashoLosses,
+    currentBashoWins: r.currentBashoWins ?? 0,
+    currentBashoLosses: r.currentBashoLosses ?? 0,
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
     isInjured: r.injured,

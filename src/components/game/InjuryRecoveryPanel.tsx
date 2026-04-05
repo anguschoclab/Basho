@@ -62,7 +62,7 @@ export function InjuryRecoveryPanel({ world }: { world: WorldState }) {
     if (!playerHeya) return [];
     const result: InjuredRikishiInfo[] = [];
 
-    for (const rId of playerHeya.rikishiIds) {
+    for (const rId of (playerHeya.rikishiIds ?? [])) {
       const r = world.rikishi.get(rId);
       if (!r || !r.injured) continue;
 

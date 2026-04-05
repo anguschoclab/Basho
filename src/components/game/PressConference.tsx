@@ -35,11 +35,11 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
   const lastBasho = world.history[world.history.length - 1];
   
   // Question about basho performance
-  const totalWins = playerHeya.rikishiIds.reduce((sum, id) => {
+  const totalWins = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
     const r = world.rikishi.get(id);
     return sum + (r?.currentBashoWins ?? 0);
   }, 0);
-  const totalLosses = playerHeya.rikishiIds.reduce((sum, id) => {
+  const totalLosses = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
     const r = world.rikishi.get(id);
     return sum + (r?.currentBashoLosses ?? 0);
   }, 0);
@@ -78,7 +78,7 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
 
   // Question about rivalries or specific results
   if (lastBasho) {
-    const hasYusho = lastBasho.yusho && playerHeya.rikishiIds.includes(lastBasho.yusho);
+    const hasYusho = lastBasho.yusho && playerHeya.rikishiIds?.includes(lastBasho.yusho);
     
     questions.push({
       id: "future_plans",

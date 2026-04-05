@@ -6,6 +6,7 @@ import { CombatProfile, Style } from "../../types/combat";
 import { clamp, clampInt } from "../../utils/math";
 import { generateRikishiName } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
+import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 
 /**
  * Generates rikishi stats using Gaussian distribution and archetype modifiers.
@@ -185,7 +186,7 @@ function createCombatStats(
     
     injured: false,
     injuryWeeksRemaining: 0,
-    injuryStatus: { type: "none" as const, isInjured: false, severity: 0, location: "", weeksRemaining: 0, weeksToHeal: 0 },
+    injuryStatus: { type: "none" as const, isInjured: false, severity: "none" as InjurySeverity, location: undefined, weeksRemaining: 0, weeksToHeal: 0 },
     
     style: (archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid") as Style,
     combatProfile: profile,
