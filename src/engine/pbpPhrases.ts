@@ -77,7 +77,7 @@ export const DEFAULT_PBP_LIBRARY: PbpLibrary = {
       { id: "c_break_7", text: "A savage grip break from {trailer} — back to neutral they go." },
       { id: "c_break_8", text: "{trailer} pivots hard and sheds the hold. The bout starts over." },
       { id: "c_break_9", text: "With a violent shudder, {trailer} snaps the grip away!" },
-      { id: "c_break_10", text: "A desperate hip toss forces the hands apart. The danger is momentarily cleared." }
+      { id: "c_break_10", text: "A desperate hip shift forces the hands apart. The danger is momentarily cleared." }
     ],
     oshi_pressure: [
       { id: "c_oshi_1",  text: "{leader} pours on the tsuppari!", tags: ["crowd_roar"] },
