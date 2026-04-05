@@ -1,27 +1,61 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import {
+  Coins,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { usePlayerHeya } from "@/hooks/usePlayerHeya";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   BarChart,
-  Bar
+  Bar,
 } from "recharts";
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 
-const RUNWAY_CONFIG: Record<string, { label: string; color: string; icon: LucideIcon; bgAccent: string }> = {
-  secure:      { label: "Secure",      color: "text-emerald-500",    icon: TrendingUp,   bgAccent: "bg-emerald-500/10" },
-  comfortable: { label: "Comfortable", color: "text-green-500",      icon: TrendingUp,   bgAccent: "bg-green-500/10" },
-  tight:       { label: "Tight",       color: "text-yellow-500",     icon: Minus,         bgAccent: "bg-yellow-500/10" },
-  critical:    { label: "Critical",    color: "text-orange-500",     icon: TrendingDown,  bgAccent: "bg-orange-500/10" },
-  desperate:   { label: "Desperate",   color: "text-red-500",        icon: TrendingDown,  bgAccent: "bg-red-500/15" },
+const RUNWAY_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: LucideIcon; bgAccent: string }
+> = {
+  secure: {
+    label: "Secure",
+    color: "text-emerald-500",
+    icon: TrendingUp,
+    bgAccent: "bg-emerald-500/10",
+  },
+  comfortable: {
+    label: "Comfortable",
+    color: "text-green-500",
+    icon: TrendingUp,
+    bgAccent: "bg-green-500/10",
+  },
+  tight: {
+    label: "Tight",
+    color: "text-yellow-500",
+    icon: Minus,
+    bgAccent: "bg-yellow-500/10",
+  },
+  critical: {
+    label: "Critical",
+    color: "text-orange-500",
+    icon: TrendingDown,
+    bgAccent: "bg-orange-500/10",
+  },
+  desperate: {
+    label: "Desperate",
+    color: "text-red-500",
+    icon: TrendingDown,
+    bgAccent: "bg-red-500/15",
+  },
 };
 
 /** finances widget. */
@@ -33,24 +67,29 @@ export function FinancesWidget() {
 
   const band = (heya as any).runwayBand || "comfortable";
   const config = RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
-  
+
   // Mock history for visual flair
-  const history = [
-    { name: "W1", value: heya.funds * 0.8 },
-    { name: "W2", value: heya.funds * 0.85 },
-    { name: "W3", value: heya.funds * 0.9 },
-    { name: "W4", value: heya.funds },
-  ];
+  const history = React.useMemo(
+    () => [
+      { name: "W1", value: heya.funds * 0.8 },
+      { name: "W2", value: heya.funds * 0.85 },
+      { name: "W3", value: heya.funds * 0.9 },
+      { name: "W4", value: heya.funds },
+    ],
+    [heya.funds],
+  );
+
+  const headerAction = React.useMemo(() => ({
+    label: "Deep Dive",
+    onClick: () => navigate({ to: "/office/finances" as any }),
+    tooltip: "Analyze stable financial health and project future runway"
+  }), [navigate]);
 
   return (
     <BaseWidget
       title="Finances"
       icon={Coins}
-      headerAction={{ 
-        label: "Deep Dive", 
-        onClick: () => navigate({ to: "/office/finances" as any }),
-        tooltip: "Analyze stable financial health and project future runway"
-      }}
+      headerAction={headerAction}
     >
       <div className="space-y-4">
         {/* Top: Status & Runway */}
@@ -60,13 +99,21 @@ export function FinancesWidget() {
               <config.icon className={`h-5 w-5 ${config.color}`} />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Status</div>
-              <div className={`text-lg font-bold leading-none ${config.color}`}>{config.label}</div>
+              <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                Status
+              </div>
+              <div className={`text-lg font-bold leading-none ${config.color}`}>
+                {config.label}
+              </div>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Balance</div>
-            <div className="text-lg font-bold leading-none">¥{heya.funds.toLocaleString()}</div>
+            <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+              Balance
+            </div>
+            <div className="text-lg font-bold leading-none">
+              ¥{heya.funds.toLocaleString()}
+            </div>
           </div>
         </div>
 
@@ -76,16 +123,24 @@ export function FinancesWidget() {
             <AreaChart data={history}>
               <defs>
                 <linearGradient id="colorFunds" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop
+                    offset="5%"
+                    stopColor="hsl(var(--primary))"
+                    stopOpacity={0.3}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="hsl(var(--primary))"
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke="hsl(var(--primary))" 
-                fillOpacity={1} 
-                fill="url(#colorFunds)" 
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="hsl(var(--primary))"
+                fillOpacity={1}
+                fill="url(#colorFunds)"
                 strokeWidth={2}
                 animationDuration={1500}
               />

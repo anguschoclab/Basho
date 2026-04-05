@@ -4,22 +4,42 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { BaseWidget } from "./BaseWidget";
-import { buildWeeklyDigest, type DigestItem, type DigestSection } from "@/presenters/uiDigest";
 import {
-  AlertTriangle, TrendingUp, Activity, Coins, FileText, Sparkles,
-  Users, Building2, Newspaper,
+  buildWeeklyDigest,
+  type DigestItem,
+  type DigestSection,
+} from "@/presenters/uiDigest";
+import {
+  AlertTriangle,
+  TrendingUp,
+  Activity,
+  Coins,
+  FileText,
+  Sparkles,
+  Users,
+  Building2,
+  Newspaper,
 } from "lucide-react";
 
 const KIND_ICON: Record<string, React.ElementType> = {
-  training: TrendingUp, injury: AlertTriangle, recovery: Activity,
-  salary: Coins, koenkai: Users, expense: Building2,
-  economy: Sparkles, scouting: FileText, generic: Newspaper,
+  training: TrendingUp,
+  injury: AlertTriangle,
+  recovery: Activity,
+  salary: Coins,
+  koenkai: Users,
+  expense: Building2,
+  economy: Sparkles,
+  scouting: FileText,
+  generic: Newspaper,
 };
 
 const KIND_COLOR: Record<string, string> = {
-  training: "text-primary", injury: "text-destructive",
-  recovery: "text-success", economy: "text-primary/70",
-  scouting: "text-primary/60", generic: "text-muted-foreground",
+  training: "text-primary",
+  injury: "text-destructive",
+  recovery: "text-success",
+  economy: "text-primary/70",
+  scouting: "text-primary/60",
+  generic: "text-muted-foreground",
 };
 
 const DigestItemRow = React.memo(({ item }: { item: DigestItem }) => {
@@ -38,27 +58,27 @@ const DigestItemRow = React.memo(({ item }: { item: DigestItem }) => {
   );
 });
 
-const DigestSectionView = React.memo(({ section }: { section: DigestSection }) => {
-  return (
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-        {section.title}
+const DigestSectionView = React.memo(
+  ({ section }: { section: DigestSection }) => {
+    return (
+      <div>
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+          {section.title}
+        </div>
+        <div className="space-y-1">
+          {section.items.slice(0, 4).map((item) => (
+            <DigestItemRow key={item.id} item={item} />
+          ))}
+          {section.items.length > 4 && (
+            <p className="text-[10px] text-muted-foreground pl-5">
+              +{section.items.length - 4} more
+            </p>
+          )}
+        </div>
       </div>
-      <div className="space-y-1">
-        {section.items.slice(0, 4).map(item => (
-          <DigestItemRow key={item.id} item={item} />
-        ))}
-        {section.items.length > 4 && (
-          <p className="text-[10px] text-muted-foreground pl-5">
-            +{section.items.length - 4} more
-          </p>
-        )}
-      </div>
-    </div>
-  );
-});
-
-
+    );
+  },
+);
 
 /** digest widget. */
 export function DigestWidget() {
@@ -67,7 +87,10 @@ export function DigestWidget() {
 
   if (!digest) return null;
 
-  const totalItems = digest.sections.reduce((s, sec) => s + sec.items.length, 0);
+  const totalItems = useMemo(
+    () => digest.sections.reduce((s, sec) => s + sec.items.length, 0),
+    [digest.sections],
+  );
 
   return (
     <BaseWidget
@@ -75,7 +98,9 @@ export function DigestWidget() {
       icon={Newspaper}
       headerContent={
         totalItems > 0 && (
-          <Badge variant="secondary" className="text-[10px]">{totalItems} events</Badge>
+          <Badge variant="secondary" className="text-[10px]">
+            {totalItems} events
+          </Badge>
         )
       }
     >
@@ -84,12 +109,14 @@ export function DigestWidget() {
       {digest.sections.length === 0 ? (
         <div className="text-center py-4">
           <Newspaper className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
-          <p className="text-xs text-muted-foreground">A quiet week. No notable events.</p>
+          <p className="text-xs text-muted-foreground">
+            A quiet week. No notable events.
+          </p>
         </div>
       ) : (
         <ScrollArea className="max-h-[260px]">
           <div className="space-y-3">
-            {digest.sections.slice(0, 5).map(section => (
+            {digest.sections.slice(0, 5).map((section) => (
               <DigestSectionView key={section.id} section={section} />
             ))}
           </div>
