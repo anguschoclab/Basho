@@ -219,21 +219,11 @@ describe("selectRikishiByHeya", () => {
 
     expect(result.size).toBe(3);
 
-    const h1List = result.get("h1");
-    expect(h1List).toBeDefined();
-    expect(h1List).toHaveLength(2);
-    expect(h1List).toContain(r1);
-    expect(h1List).toContain(r2);
+    expect(result.get("h1")).toEqual([r1, r2]);
 
-    const h2List = result.get("h2");
-    expect(h2List).toBeDefined();
-    expect(h2List).toHaveLength(1);
-    expect(h2List).toContain(r3);
+    expect(result.get("h2")).toEqual([r3]);
 
-    const h3List = result.get("h3");
-    expect(h3List).toBeDefined();
-    expect(h3List).toHaveLength(1);
-    expect(h3List).toContain(r4);
+    expect(result.get("h3")).toEqual([r4]);
   });
 
   it("should memoize the result if the world object is the same", () => {
