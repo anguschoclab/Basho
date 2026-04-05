@@ -41,7 +41,8 @@ function LeaderboardWidget({ title, entries, icon: Icon, colorClass = "text-prim
             entries.map((entry, idx) => (
               <Link
                 key={`${entry.rikishiId}-${idx}`}
-                to={`/rikishi/${entry.rikishiId}`}
+                to="/rikishi/$rikishiId"
+                params={{ rikishiId: entry.rikishiId }}
                 className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
               >
                 <span className={`w-5 text-center font-bold ${idx < 3 ? colorClass : "text-muted-foreground"}`}>

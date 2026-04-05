@@ -41,10 +41,6 @@ const BanzukeEntryRow = React.memo(
     isPlayer: boolean;
     i: number;
   }) => {
-    const headerAction = React.useMemo(() => ({
-    label: "Full Rankings",
-    onClick: () => navigate({ to: "/banzuke" as any })
-  }), [navigate]);
     return (
       <div
         className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
@@ -88,6 +84,10 @@ const BanzukeEntryRow = React.memo(
 export function BanzukeWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
+  const headerAction = useMemo(() => ({
+    label: "Full Rankings",
+    onClick: () => navigate({ to: "/banzuke" as any })
+  }), [navigate]);
   const world = state.world;
 
   const topRanked = useMemo(() => {

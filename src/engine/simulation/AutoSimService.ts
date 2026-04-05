@@ -176,8 +176,9 @@ function computeTargetBasho(duration: SimDuration): number {
     case "basho": return Math.max(0, Math.floor(duration.count));
     case "years": return Math.max(0, Math.floor(duration.count) * 6);
     case "untilEvent": return 600; // 100-year cap
-      default: assertNever(duration.type);
-
+      default:
+        assertNever(duration as never);
+        return 0;
   }
 }
 

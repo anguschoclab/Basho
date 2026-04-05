@@ -167,8 +167,8 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
  * Determine the CPU rikishi's bout tactic based on their stats and archetype.
  */
 export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
-  const isYotsu = cpu.style === "yotsu" || cpu.archetype === "yotsu";
-  const isOshi = cpu.style === "oshi" || cpu.archetype === "oshi";
+  const isYotsu = cpu.style === "yotsu";
+  const isOshi = cpu.style === "oshi";
 
   const roll = rng.next();
 

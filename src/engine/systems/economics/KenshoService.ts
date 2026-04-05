@@ -141,9 +141,6 @@ export function assignKenshoBanners(
 }
 
 
-import type { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-
 /**
  * Calculates kensho envelopes based on importance and buzz.
  * Ref: Phase 3.2 implementation plan.

@@ -9,7 +9,7 @@ import { stableTieBreak } from "./utils/sort";
  */
 
 import type { WorldState } from "./types/world";
-import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
+import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope, EngineEventType } from "./types/events";
 export type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
 import type { Id } from "./types/common";
 
@@ -85,7 +85,7 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
 
   const ev: EngineEvent = {
     id,
-    type: params.type,
+    type: params.type as EngineEventType,
     causalEventId: params.causalEventId,
     year,
     week,

@@ -20,11 +20,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import type { BashoState } from '../../engine/types/basho';
+import type { BashoResult } from '../../engine/types/basho';
 import type { WorldState } from '../../engine/types/world';
 
 interface TournamentCeremonyProps {
-  lastBasho: BashoState;
+  lastBasho: BashoResult;
   world: WorldState;
 }
 

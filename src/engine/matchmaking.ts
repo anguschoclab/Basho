@@ -268,6 +268,7 @@ export function scorePairing(args: {
 interface CandidateBuildOptions {
   seed: string;
   division?: Division;
+  rules?: Partial<MatchmakingRules>;
 }
 
 /**

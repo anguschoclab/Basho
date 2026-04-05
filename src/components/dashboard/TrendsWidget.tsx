@@ -18,15 +18,16 @@ export function TrendsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
   const world = state.world;
-  if (!world) return null;
-
-  const data = formatMetaTrends(world);
-  if (data.length === 0) {
-    const headerAction = React.useMemo(() => ({
+  const headerAction = React.useMemo(() => ({
     label: "History",
     onClick: () => navigate({ to: "/jsa/trends" as any }),
     tooltip: "View historical meta shifts and tactical evolution in the JSA"
   }), [navigate]);
+
+  if (!world) return null;
+
+  const data = formatMetaTrends(world);
+  if (data.length === 0) {
     return (
       <BaseWidget title="JSA Meta Trends" icon={Globe}>
         <div className="h-40 flex flex-col items-center justify-center text-muted-foreground gap-2">

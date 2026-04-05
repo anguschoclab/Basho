@@ -355,7 +355,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     winner: finalWinner as Side,
     winnerRikishiId: finalWinner === "east" ? east.id : west.id,
     loserRikishiId: finalWinner === "east" ? west.id : east.id,
-    kimarite: finalKimarite?.id || "yorikiri",
+    kimarite: (finalKimarite?.id || "yorikiri") as BoutResult['kimarite'],
     kimariteName: finalKimarite?.name || "Yorikiri",
     stance: st.stance,
     tachiaiWinner: st.tachiaiWinner,

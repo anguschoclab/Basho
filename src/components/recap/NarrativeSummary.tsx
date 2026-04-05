@@ -74,7 +74,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
   const hasPrestige = prestigeChanges.length > 0;
   const hasPromotions = groupedEvents.promotions?.length > 0;
   const hasRetirements = groupedEvents.retirements?.length > 0;
-  const hasGovernance = (groupedEvents.governance?.length > 0) || (world.governanceLog?.length > 0);
+  const hasGovernance = (groupedEvents.governance?.length > 0) || ((world.governanceLog?.length ?? 0) > 0);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 delay-300 fill-mode-both">
