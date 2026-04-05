@@ -6,11 +6,24 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Newspaper, Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import {
+  Newspaper,
+  Flame,
+  TrendingUp,
+  Building2,
+  Zap,
+  Filter,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -22,14 +35,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { MediaHeadline, MediaState, MediaBeat } from "@/engine/types/media";
-import { buildMediaDigest, createDefaultMediaState } from "@/presenters/uiDigest";
+import {
+  buildMediaDigest,
+  createDefaultMediaState,
+} from "@/presenters/uiDigest";
 
 /* ── Style maps ── */
 
 const TIER_STYLE: Record<string, { label: string; class: string }> = {
-  main_event: { label: "Main Event", class: "bg-primary/20 text-primary border-primary/30" },
-  national: { label: "National", class: "bg-accent/20 text-accent-foreground border-accent/30" },
-  local: { label: "Local", class: "bg-muted text-muted-foreground border-border" },
+  main_event: {
+    label: "Main Event",
+    class: "bg-primary/20 text-primary border-primary/30",
+  },
+  national: {
+    label: "National",
+    class: "bg-accent/20 text-accent-foreground border-accent/30",
+  },
+  local: {
+    label: "Local",
+    class: "bg-muted text-muted-foreground border-border",
+  },
 };
 
 const TONE_STYLE: Record<string, { label: string; class: string }> = {
@@ -53,6 +78,7 @@ const BEAT_LABELS: Record<MediaBeat, string> = {
   feature: "Feature",
   retirement_watch: "Retirement",
   discipline: "Discipline",
+  controversy: "Controversy",
 };
 
 const ALL_BEATS = Object.keys(BEAT_LABELS) as MediaBeat[];
@@ -63,7 +89,13 @@ const ALL_BEATS = Object.keys(BEAT_LABELS) as MediaBeat[];
  * headline card.
  *  * @param { headline, world } - The { headline, world }.
  */
-function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any }) {
+function HeadlineCard({
+  headline,
+  world,
+}: {
+  headline: MediaHeadline;
+  world: any;
+}) {
   const tier = TIER_STYLE[headline.tier] ?? TIER_STYLE.local;
   const tone = TONE_STYLE[headline.tone] ?? TONE_STYLE.neutral;
   const beatLabel = BEAT_LABELS[headline.beat] ?? headline.beat;
@@ -73,21 +105,39 @@ function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-medium text-sm leading-tight">{headline.title}</h3>
         <div className="flex gap-1 shrink-0 flex-wrap justify-end">
-          <Badge variant="outline" className={`text-[10px] ${tier.class}`}>{tier.label}</Badge>
-          <Badge variant="outline" className={`text-[10px] ${tone.class}`}>{tone.label}</Badge>
-          <Badge variant="secondary" className="text-[10px]">{beatLabel}</Badge>
+          <Badge variant="outline" className={`text-[10px] ${tier.class}`}>
+            {tier.label}
+          </Badge>
+          <Badge variant="outline" className={`text-[10px] ${tone.class}`}>
+            {tone.label}
+          </Badge>
+          <Badge variant="secondary" className="text-[10px]">
+            {beatLabel}
+          </Badge>
         </div>
       </div>
       {headline.subtitle && (
-        <p className="text-xs text-muted-foreground italic">{headline.subtitle}</p>
+        <p className="text-xs text-muted-foreground italic">
+          {headline.subtitle}
+        </p>
       )}
       <div className="flex items-center gap-2 flex-wrap">
-        {headline.rikishiIds.map(id => {
+        {headline.rikishiIds.map((id) => {
           const r = world?.rikishi?.get(id);
-          return r ? <RikishiName key={id} id={id} name={r.shikona} className="text-xs" /> : null;
+          return r ? (
+            <RikishiName
+              key={id}
+              id={id}
+              name={r.shikona}
+              className="text-xs"
+            />
+          ) : null;
         })}
         {headline.bout?.upset && (
-          <Badge variant="outline" className="text-[10px] bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
+          <Badge
+            variant="outline"
+            className="text-[10px] bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
+          >
             <Zap className="h-2.5 w-2.5 mr-0.5" /> Upset
           </Badge>
         )}
@@ -100,12 +150,19 @@ function HeadlineCard({ headline, world }: { headline: MediaHeadline; world: any
  * beat filter.
  *  * @param { selected, onChange } - The { selected, on change }.
  */
-function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange: (s: Set<MediaBeat>) => void }) {
+function BeatFilter({
+  selected,
+  onChange,
+}: {
+  selected: Set<MediaBeat>;
+  onChange: (s: Set<MediaBeat>) => void;
+}) {
   const allSelected = selected.size === 0;
 
   const toggle = (beat: MediaBeat) => {
     const next = new Set(selected);
-    if (next.has(beat)) next.delete(beat); else next.add(beat);
+    if (next.has(beat)) next.delete(beat);
+    else next.add(beat);
     onChange(next);
   };
 
@@ -114,11 +171,15 @@ function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <Filter className="h-3.5 w-3.5" />
-          {allSelected ? "All Beats" : `${selected.size} Beat${selected.size > 1 ? "s" : ""}`}
+          {allSelected
+            ? "All Beats"
+            : `${selected.size} Beat${selected.size > 1 ? "s" : ""}`}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuLabel className="text-xs">Filter by Beat</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-xs">
+          Filter by Beat
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={allSelected}
@@ -127,7 +188,7 @@ function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange
           Show All
         </DropdownMenuCheckboxItem>
         <DropdownMenuSeparator />
-        {ALL_BEATS.map(beat => (
+        {ALL_BEATS.map((beat) => (
           <DropdownMenuCheckboxItem
             key={beat}
             checked={selected.has(beat)}
@@ -145,8 +206,13 @@ function BeatFilter({ selected, onChange }: { selected: Set<MediaBeat>; onChange
  * heat sparkline.
  *  * @param { data } - The { data }.
  */
-function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> }) {
-  if (data.length < 2) return <span className="text-[10px] text-muted-foreground">—</span>;
+function HeatSparkline({
+  data,
+}: {
+  data: Array<{ basho: string; heat: number }>;
+}) {
+  if (data.length < 2)
+    return <span className="text-[10px] text-muted-foreground">—</span>;
   return (
     <div className="w-20 h-6">
       <ResponsiveContainer width="100%" height="100%">
@@ -186,11 +252,12 @@ export default function MediaPage() {
   }, [world]);
 
   const allHeadlines = useMemo(() => {
-    let list = [...(mediaState.headlines || [])]
-      .sort((a, b) => b.impact - a.impact || b.week - a.week);
+    let list = [...(mediaState.headlines || [])].sort(
+      (a, b) => b.impact - a.impact || b.week - a.week,
+    );
 
     if (beatFilter.size > 0) {
-      list = list.filter(h => beatFilter.has(h.beat));
+      list = list.filter((h) => beatFilter.has(h.beat));
     }
 
     return list.slice(0, 50);
@@ -204,7 +271,7 @@ export default function MediaPage() {
         r: world?.rikishi?.get(id),
         history: mediaState.mediaHeatHistory?.[id] ?? [],
       }))
-      .filter(x => x.r)
+      .filter((x) => x.r)
       .sort((a, b) => b.heat - a.heat)
       .slice(0, 10);
   }, [mediaState.mediaHeat, mediaState.mediaHeatHistory, world]);
@@ -212,22 +279,34 @@ export default function MediaPage() {
   const pressuredHeya = useMemo(() => {
     return Object.entries(mediaState.heyaPressure || {})
       .map(([id, pressure]) => ({ id, pressure, h: world?.heyas?.get(id) }))
-      .filter(x => x.h)
+      .filter((x) => x.h)
       .sort((a, b) => b.pressure - a.pressure)
       .slice(0, 8);
   }, [mediaState.heyaPressure, world]);
 
   if (!world) {
     return (
-      <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="media" pageTitle="Media">
-        <div className="flex items-center justify-center h-64 text-muted-foreground">No world loaded</div>
+      <AppLayout
+        subNavTabs={ASSOCIATION_TABS}
+        activeSubTab="media"
+        pageTitle="Media"
+      >
+        <div className="flex items-center justify-center h-64 text-muted-foreground">
+          No world loaded
+        </div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout pageTitle="Media & Press" subNavTabs={ASSOCIATION_TABS} activeSubTab="media">
-      <Helmet><title>Media & Press — Sumo Manager</title></Helmet>
+    <AppLayout
+      pageTitle="Media & Press"
+      subNavTabs={ASSOCIATION_TABS}
+      activeSubTab="media"
+    >
+      <Helmet>
+        <title>Media & Press — Sumo Manager</title>
+      </Helmet>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
@@ -247,7 +326,9 @@ export default function MediaPage() {
                   <Flame className="h-5 w-5 text-primary" /> Top Headlines
                 </CardTitle>
                 <CardDescription>
-                  {digest ? `Week ${world.week} — ${allHeadlines.length} stories tracked` : "No media data yet"}
+                  {digest
+                    ? `Week ${world.week} — ${allHeadlines.length} stories tracked`
+                    : "No media data yet"}
                 </CardDescription>
               </div>
               <BeatFilter selected={beatFilter} onChange={setBeatFilter} />
@@ -279,18 +360,28 @@ export default function MediaPage() {
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" /> Media Heat — Rikishi
               </CardTitle>
-              <CardDescription>Most covered wrestlers with basho-over-basho trend</CardDescription>
+              <CardDescription>
+                Most covered wrestlers with basho-over-basho trend
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {hotRikishi.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-4">No media heat data yet.</p>
+                <p className="text-muted-foreground text-sm text-center py-4">
+                  No media heat data yet.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {hotRikishi.map(({ id, heat, r, history }) => (
                     <div key={id} className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
-                        <RikishiName id={id} name={r!.shikona} className="font-medium text-sm" />
-                        <div className="text-xs text-muted-foreground">{r!.rank}</div>
+                        <RikishiName
+                          id={id}
+                          name={r!.shikona}
+                          className="font-medium text-sm"
+                        />
+                        <div className="text-xs text-muted-foreground">
+                          {r!.rank}
+                        </div>
                       </div>
                       <HeatSparkline data={history} />
                       <div className="w-20 h-2 rounded-full bg-muted overflow-hidden">
@@ -299,7 +390,9 @@ export default function MediaPage() {
                           style={{ width: `${Math.min(100, heat)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-mono w-8 text-right">{Math.round(heat)}</span>
+                      <span className="text-xs font-mono w-8 text-right">
+                        {Math.round(heat)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -317,13 +410,19 @@ export default function MediaPage() {
             </CardHeader>
             <CardContent>
               {pressuredHeya.length === 0 ? (
-                <p className="text-muted-foreground text-sm text-center py-4">No pressure data yet.</p>
+                <p className="text-muted-foreground text-sm text-center py-4">
+                  No pressure data yet.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {pressuredHeya.map(({ id, pressure, h }) => (
                     <div key={id} className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
-                        <StableName id={id} name={h!.name} className="font-medium text-sm" />
+                        <StableName
+                          id={id}
+                          name={h!.name}
+                          className="font-medium text-sm"
+                        />
                       </div>
                       <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
                         <div
@@ -331,7 +430,9 @@ export default function MediaPage() {
                           style={{ width: `${Math.min(100, pressure)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-mono w-8 text-right">{Math.round(pressure)}</span>
+                      <span className="text-xs font-mono w-8 text-right">
+                        {Math.round(pressure)}
+                      </span>
                     </div>
                   ))}
                 </div>
