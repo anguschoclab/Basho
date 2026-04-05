@@ -104,6 +104,7 @@ export const SerializationService = {
       sponsorPool: this.serializeSponsorPool(world.sponsorPool),
       ozekiKadoban: world.ozekiKadoban || {},
       mediaState: world.mediaState,
+      talentPool: world.talentPool,
       candidatePool: world.candidatePool,
       trainingState: world.trainingState || {},
       settings: world.settings
