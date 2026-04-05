@@ -60,7 +60,7 @@ describe('PerceptionPresenter', () => {
     it('uses default values if stamina or fatigue are missing', () => {
       // Create an object that is missing stamina and fatigue
       // mockRikishi provides a default stamina: 100, so we have to explicitly undefined them
-      const mockObj = { injured: false, injuryWeeksRemaining: 0 } as Rikishi;
+      const mockObj = mockRikishi('test-rikishi', { stamina: undefined, fatigue: undefined } as any);
       expect(mockObj.stamina).toBeUndefined();
       expect(mockObj.fatigue).toBeUndefined();
 
