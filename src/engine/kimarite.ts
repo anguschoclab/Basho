@@ -72,13 +72,13 @@ function K(entry: KBase): Kimarite & { kimariteClass?: KimariteClass } {
 /** COMPLETE OFFICIAL 82 KIMARITE (v1.3 taxonomy) */
 export const KIMARITE_REGISTRY: (Kimarite & { kimariteClass?: KimariteClass })[] = [
   // === Kihonwaza (Basic Techniques - 7 moves) ===
-  K({ id: 'yorikiri', name: 'Yorikiri', nameJa: '寄り切り', jsaCategory: 'Kihonwaza', baseWeight: 1000, description: 'Classic force out by gripping the opponent\'s belt and driving relentlessly forward until they step over the edge.', tacticalFamily: 'belt', requiresBeltGrip: true }),
-  K({ id: 'oshidashi', name: 'Oshidashi', nameJa: '押し出し', jsaCategory: 'Kihonwaza', baseWeight: 850, description: 'Frontal push out using a barrage of powerful hand thrusts to march the opponent out of the ring without touching the belt.' }),
+  K({ id: 'yorikiri', name: 'Yorikiri', nameJa: '寄り切り', jsaCategory: 'Kihonwaza', baseWeight: 1000, description: 'Classic force out by gripping the opponent\'s belt and driving relentlessly forward until they step over the edge. A staple of yotsu-zumo.', tacticalFamily: 'belt', requiresBeltGrip: true }),
+  K({ id: 'oshidashi', name: 'Oshidashi', nameJa: '押し出し', jsaCategory: 'Kihonwaza', baseWeight: 850, description: 'Frontal push out using a barrage of powerful hand thrusts to march the opponent out of the ring without touching the belt. A pure demonstration of oshi-zumo.' }),
   K({ id: 'oshitaoshi', name: 'Oshitaoshi', nameJa: '押し倒し', jsaCategory: 'Kihonwaza', baseWeight: 250, description: 'Overwhelming frontal push down that crushes the opponent directly into the clay.' }),
   K({ id: 'yoritaoshi', name: 'Yoritaoshi', nameJa: '寄り倒し', jsaCategory: 'Kihonwaza', baseWeight: 200, description: 'Devastating frontal force down, collapsing the opponent backward while maintaining a solid belt grip.', tacticalFamily: 'belt', requiresBeltGrip: true }),
   K({ id: 'tsukidashi', name: 'Tsukidashi', nameJa: '突き出し', jsaCategory: 'Kihonwaza', baseWeight: 120, description: 'Violent thrust out, using rapid open-palm strikes to send the opponent reeling across the boundary.', statWeights: { strength: 0.3, weight: 0.3, speed: 0.3, technique: 0.1, balance: 0.0 } }),
   K({ id: 'tsukitaoshi', name: 'Tsukitaoshi', nameJa: '突き倒し', jsaCategory: 'Kihonwaza', baseWeight: 50, description: 'Ferocious thrust down that knocks the opponent completely off their feet.', statWeights: { strength: 0.3, weight: 0.3, speed: 0.3, technique: 0.1, balance: 0.0 } }),
-  K({ id: 'abisetaoshi', name: 'Abisetaoshi', nameJa: '浴びせ倒し', jsaCategory: 'Kihonwaza', baseWeight: 30, description: 'Backward force down where the attacker leans heavily, using their entire body weight to flatten the defender.', tacticalFamily: 'belt', requiresBeltGrip: true }),
+  K({ id: 'abisetaoshi', name: 'Abisetaoshi', nameJa: '浴びせ倒し', jsaCategory: 'Kihonwaza', baseWeight: 30, description: 'Backward force down where the attacker leans heavily, using their entire body weight to flatten the defender into the clay.', tacticalFamily: 'belt', requiresBeltGrip: true }),
 
   // === Tokushuwaza (Special Techniques - 19 moves) ===
   K({ id: 'hatakikomi', name: 'Hatakikomi', nameJa: '叩き込み', jsaCategory: 'Tokushuwaza', baseWeight: 400, description: 'Slap down using the opponent\'s forward momentum', kimariteClass: 'slap_pull' }),
