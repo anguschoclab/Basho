@@ -1,87 +1,87 @@
-import { describe, it, expect } from 'vitest';
-import { getMediaToneColor, getHealthBadge, getMediaHeatLabel } from '../PerceptionPresenter';
-import type { MediaTone } from '../../engine/types/media';
-import { mockRikishi } from '../../engine/__tests__/utils';
-import type { Rikishi } from '../../engine/types/rikishi';
+import { describe, it, expect } from "vitest";
+import { getHealthBadge, getMediaHeatLabel, getMediaToneColor } from "../PerceptionPresenter";
+import { Rikishi } from "../../engine/types/rikishi";
 
-describe('PerceptionPresenter', () => {
-
-  describe('getMediaToneColor', () => {
-    it('returns the correct color for "praise"', () => {
-      expect(getMediaToneColor("praise")).toBe("#34d399");
-    });
-
-    it('returns the correct color for "hype"', () => {
-      expect(getMediaToneColor("hype")).toBe("#f472b6");
-    });
-
-    it('returns the correct color for "concern"', () => {
-      expect(getMediaToneColor("concern")).toBe("#fbbf24");
-    });
-
-    it('returns the correct color for "controversy"', () => {
-      expect(getMediaToneColor("controversy")).toBe("#f87171");
-    });
-
-    it('returns the correct color for "disrespect"', () => {
-      expect(getMediaToneColor("disrespect")).toBe("#9ca3af");
-    });
-
-    it('returns the default color for "neutral" or unknown values', () => {
-      expect(getMediaToneColor("neutral" as MediaTone)).toBe("#94a3b8");
-      expect(getMediaToneColor("unknown" as MediaTone)).toBe("#94a3b8");
-    });
-  });
-
-  describe('getHealthBadge', () => {
-    it('returns "Recovering" if rikishi is injured and has weeks remaining', () => {
-      const rikishi = mockRikishi('r1', { injured: true, injuryWeeksRemaining: 1 });
+describe("PerceptionPresenter", () => {
+  describe("getHealthBadge", () => {
+    it("returns 'Recovering' if injured and injuryWeeksRemaining > 0", () => {
+      const rikishi = { injured: true, injuryWeeksRemaining: 1 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Recovering");
     });
 
-    it('calculates health based on stamina and fatigue', () => {
-      // 80 - 0 = 80 => Fresh
-      let rikishi = mockRikishi('r1', { stamina: 80, fatigue: 0 });
+    it("returns health-based badge if injured is true but injuryWeeksRemaining is 0", () => {
+      const rikishi = { injured: true, injuryWeeksRemaining: 0, stamina: 100, fatigue: 0 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
+    });
 
-      // 80 - 10 = 70 => Worn
-      rikishi = mockRikishi('r2', { stamina: 80, fatigue: 10 });
+    it("returns 'Fresh' if health >= 80", () => {
+      const rikishi = { stamina: 80, fatigue: 0 } as Rikishi;
+      expect(getHealthBadge(rikishi)).toBe("Fresh");
+    });
+
+    it("returns 'Worn' if health >= 50 and < 80", () => {
+      const rikishi = { stamina: 100, fatigue: 30 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Worn");
 
-      // 50 - 10 = 40 => Struggling
-      rikishi = mockRikishi('r3', { stamina: 50, fatigue: 10 });
+      const edge = { stamina: 50, fatigue: 0 } as Rikishi;
+      expect(getHealthBadge(edge)).toBe("Worn");
+    });
+
+    it("returns 'Struggling' if health >= 20 and < 50", () => {
+      const rikishi = { stamina: 100, fatigue: 60 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Struggling");
 
-      // 20 - 5 = 15 => Critical
-      rikishi = mockRikishi('r4', { stamina: 20, fatigue: 5 });
+      const edge = { stamina: 20, fatigue: 0 } as Rikishi;
+      expect(getHealthBadge(edge)).toBe("Struggling");
+    });
+
+    it("returns 'Critical' if health < 20", () => {
+      const rikishi = { stamina: 100, fatigue: 90 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Critical");
     });
 
-    it('uses default values if stamina or fatigue are missing', () => {
-      // Create an object that is missing stamina and fatigue
-      // mockRikishi provides a default stamina: 100, so we have to explicitly undefined them
-      const mockObj = mockRikishi('test-rikishi', { stamina: undefined, fatigue: undefined } as any);
-      expect(mockObj.stamina).toBeUndefined();
-      expect(mockObj.fatigue).toBeUndefined();
-
-      // Health = (undefined ?? 50) - (undefined ?? 0) = 50 - 0 = 50 => Worn
-      expect(getHealthBadge(mockObj)).toBe("Worn");
+    it("defaults stamina to 50 and fatigue to 0 if not provided", () => {
+      // health = 50 - 0 = 50 -> "Worn"
+      const rikishi = {} as Rikishi;
+      expect(getHealthBadge(rikishi)).toBe("Worn");
     });
   });
 
-  describe('getMediaHeatLabel', () => {
-    it('returns correctly mapped labels and colors for heat scores', () => {
-      expect(getMediaHeatLabel(90)).toEqual({ label: "Red Hot", color: "#ef4444" });
+  describe("getMediaHeatLabel", () => {
+    it("returns 'Red Hot' for heat >= 85", () => {
       expect(getMediaHeatLabel(85)).toEqual({ label: "Red Hot", color: "#ef4444" });
+      expect(getMediaHeatLabel(100)).toEqual({ label: "Red Hot", color: "#ef4444" });
+    });
 
-      expect(getMediaHeatLabel(70)).toEqual({ label: "Rising", color: "#f59e0b" });
+    it("returns 'Rising' for heat >= 60 and < 85", () => {
       expect(getMediaHeatLabel(60)).toEqual({ label: "Rising", color: "#f59e0b" });
+      expect(getMediaHeatLabel(84)).toEqual({ label: "Rising", color: "#f59e0b" });
+    });
 
-      expect(getMediaHeatLabel(40)).toEqual({ label: "Notable", color: "#10b981" });
+    it("returns 'Notable' for heat >= 30 and < 60", () => {
       expect(getMediaHeatLabel(30)).toEqual({ label: "Notable", color: "#10b981" });
+      expect(getMediaHeatLabel(59)).toEqual({ label: "Notable", color: "#10b981" });
+    });
 
-      expect(getMediaHeatLabel(20)).toEqual({ label: "Under the Radar", color: "#6b7280" });
+    it("returns 'Under the Radar' for heat < 30", () => {
+      expect(getMediaHeatLabel(29)).toEqual({ label: "Under the Radar", color: "#6b7280" });
       expect(getMediaHeatLabel(0)).toEqual({ label: "Under the Radar", color: "#6b7280" });
+      expect(getMediaHeatLabel(-10)).toEqual({ label: "Under the Radar", color: "#6b7280" });
+    });
+  });
+
+  describe("getMediaToneColor", () => {
+    it("returns expected colors for known tones", () => {
+      expect(getMediaToneColor("praise")).toBe("#34d399");
+      expect(getMediaToneColor("hype")).toBe("#f472b6");
+      expect(getMediaToneColor("concern")).toBe("#fbbf24");
+      expect(getMediaToneColor("controversy")).toBe("#f87171");
+      expect(getMediaToneColor("disrespect")).toBe("#9ca3af");
+    });
+
+    it("returns default color for unknown or unhandled tones", () => {
+      // Cast to MediaTone to test default case fallback
+      expect(getMediaToneColor("unknown" as any)).toBe("#94a3b8");
     });
   });
 });
