@@ -40,7 +40,7 @@ export function ensureEventsState(world: WorldState): EventsState {
 
 /** Defines the structure for log engine event params. */
 interface LogEngineEventParams {
-  type: EngineEventType;
+  type: string;
   category: EventCategory;
   phase?: EventPhase;
   importance?: EventImportance;
@@ -85,7 +85,7 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
 
   const ev: EngineEvent = {
     id,
-    type: params.type,
+    type: params.type as EngineEventType,
     causalEventId: params.causalEventId,
     year,
     week,
