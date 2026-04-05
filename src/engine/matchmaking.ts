@@ -191,7 +191,7 @@ export function scorePairing(args: {
     const s = recordSimilarity(ra, rb);
 
     // In the second half of the tournament (day > 7), strictly prioritize similar records (Swiss-system style)
-    const day = (basho as any).day || 1;
+    const day = basho.day || 1;
     if (day > 7) {
       score *= (0.2 + 0.8 * s); // Much higher weight to record similarity
       if (s > 0.9) reasons.push("strict_record_match");
@@ -210,7 +210,7 @@ export function scorePairing(args: {
   // Soft: similar rank slot
   if (rules.preferSimilarRank) {
     const s = rankSimilarity(a, b);
-    const day = (basho as any).day || 1;
+    const day = basho.day || 1;
 
     // Joi-jin Scheduling (Top Ranks)
     // Sanyaku vs Sanyaku usually happens more frequently in the second half.

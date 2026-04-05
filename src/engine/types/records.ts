@@ -34,7 +34,7 @@ export interface RecordEntry {
 
 /** Defines the structure for chronicle record entry. */
 export interface ChronicleRecordEntry {
-  type: "careerWins" | "makuuchiWins" | "yusho" | "consecutiveYusho" | "kinboshi" | (string & {});
+  type: "careerWins" | "makuuchiWins" | "yusho" | "consecutiveYusho" | "kinboshi";
   holder: string;
   value: string;
   brokenOn: string;

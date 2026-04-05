@@ -4,25 +4,48 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
-import { Users, ChevronRight, HeartPulse, AlertTriangle, Star } from "lucide-react";
+import {
+  Users,
+  ChevronRight,
+  HeartPulse,
+  AlertTriangle,
+  Star,
+} from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const RosterEntryRow = React.memo(({ entry }: { entry: UIRosterEntry }) => {
+  const headerAction = React.useMemo(() => ({
+    label: "All Rikishi",
+    onClick: () => navigate({ to: "/rikishi" as any })
+  }), [navigate]);
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
-      <RikishiName id={entry.id} name={entry.shikona}  className="flex-1 font-medium truncate" />
-      <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{entry.rank}</span>
-      {entry.isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
-      {(entry.potentialBand === "star" || entry.potentialBand === "generational") && (
+      <RikishiName
+        id={entry.id}
+        name={entry.shikona}
+        className="flex-1 font-medium truncate"
+      />
+      <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">
+        {entry.rank}
+      </span>
+      {entry.isInjured && (
+        <HeartPulse className="h-3 w-3 text-destructive shrink-0" />
+      )}
+      {(entry.potentialBand === "star" ||
+        entry.potentialBand === "generational") && (
         <Star className="h-3 w-3 text-gold shrink-0" />
       )}
       {/* Fatigue bar */}
       <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
-            entry.fatigue > 70 ? "bg-destructive" : entry.fatigue > 40 ? "bg-warning" : "bg-primary/60"
+            entry.fatigue > 70
+              ? "bg-destructive"
+              : entry.fatigue > 40
+                ? "bg-warning"
+                : "bg-primary/60"
           }`}
           style={{ width: `${entry.fatigue}%` }}
         />
@@ -54,14 +77,19 @@ export function RosterWidget() {
 
   if (!world) return null;
 
-  const injuredCount = roster.reduce((count, r) => count + (r.isInjured ? 1 : 0), 0);
-  const avgFatigue = roster.length ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length) : 0;
+  const injuredCount = roster.reduce(
+    (count, r) => count + (r.isInjured ? 1 : 0),
+    0,
+  );
+  const avgFatigue = roster.length
+    ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length)
+    : 0;
 
   return (
     <BaseWidget
       title="My Roster"
       icon={Users}
-      headerAction={{ label: "All Rikishi", onClick: () => navigate({ to: "/rikishi" }) }}
+      headerAction={headerAction}
     >
       {/* Summary row with visual indicators */}
       <div className="flex gap-3 text-xs">
@@ -87,7 +115,11 @@ export function RosterWidget() {
       <div className="h-1 rounded-full bg-muted overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
+            avgFatigue > 70
+              ? "bg-destructive"
+              : avgFatigue > 40
+                ? "bg-warning"
+                : "bg-primary"
           }`}
           style={{ width: `${avgFatigue}%` }}
         />
@@ -99,9 +131,16 @@ export function RosterWidget() {
           <RosterEntryRow key={entry.id} entry={entry} />
         ))}
         {roster.length > 8 && (
-          <TooltipWrap content="Navigate to the full rikishi directory" side="top">
-            <Button variant="ghost"
-              onClick={() => navigate({ to: "/rikishi" })}
+          <TooltipWrap
+            content="Navigate to the full rikishi directory"
+            side="top"
+          >
+            <Button
+              variant="ghost"
+              onClick={React.useCallback(
+                () => navigate({ to: "/rikishi" }),
+                [navigate],
+              )}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
               +{roster.length - 8} more wrestlers →

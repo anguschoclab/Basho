@@ -83,7 +83,9 @@ export function DraggableWidget({
         "widget-enter relative",
         isEditMode && "cursor-grab active:cursor-grabbing",
         isDragging && "opacity-40 scale-[0.98]",
-        isDragOver && isEditMode && "ring-2 ring-primary/50 ring-offset-2 ring-offset-background rounded-lg",
+        isDragOver &&
+          isEditMode &&
+          "ring-2 ring-primary/50 ring-offset-2 ring-offset-background rounded-lg",
       )}
     >
       {isEditMode && (

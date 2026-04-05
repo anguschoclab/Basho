@@ -6,6 +6,7 @@ import { Rikishi } from "../../types/rikishi";
 import { MediaHeadline, MediaTone, MediaBeat, HeadlineTier } from "../../types/media";
 import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
 import { clampInt } from "../../utils/math";
+import { assertNever } from "../../utils/types";
 
 export function calculateBoutImpact(args: {
   upset: boolean;
@@ -32,7 +33,14 @@ export function getRankImpact(rank?: string): number {
     case "komusubi": return 5;
     case "maegashira": return 3;
     case "juryo": return 2;
-    default: return 0;
+    case "makushita": return 0;
+    case "sandanme": return 0;
+    case "jonidan": return 0;
+    case "jonokuchi": return 0;
+    case undefined: return 0;
+    default:
+      assertNever(rank as never);
+      return 0;
   }
 }
 
@@ -55,7 +63,17 @@ export function calculatePressureBump(tone: MediaTone): number {
       return 8;
     case "disrespect":
       return 6;
+    case "hype":
+    case "praise":
+    case "neutral":
+    case "feature":
+    case "narrative":
+    case "analysis":
+    case "interview":
+    case "rumor":
+      return 2;
     default:
+      assertNever(tone);
       return 2;
   }
 }

@@ -9,15 +9,15 @@ import {
 import type { WorldState } from "../types/world";
 import type { EngineEvent } from "../types/events";
 
-describe("events.ts - Core Bus", () => {
-  const createMockWorld = (): WorldState => ({
-    year: 2025,
-    week: 1,
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-    seed: "test-seed",
-    events: undefined
-  } as unknown as WorldState);
+const createMockWorld = (): WorldState => ({
+  year: 2025,
+  week: 1,
+  calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+  seed: "test-seed",
+  events: undefined
+} as unknown as WorldState);
 
+describe("events.ts - Core Bus", () => {
   describe("ensureEventsState", () => {
     it("initializes missing events state on world", () => {
       const world = createMockWorld();
@@ -159,14 +159,6 @@ describe("events.ts - Core Bus", () => {
 });
 
 describe("events.ts - Helpers & Cleanup", () => {
-  const createMockWorld = (): WorldState => ({
-    year: 2025,
-    week: 1,
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-    seed: "test-seed",
-    events: undefined
-  } as unknown as WorldState);
-
   describe("EventBus", () => {
     it("wraps logEngineEvent correctly for standard domains", () => {
       const world = createMockWorld();
