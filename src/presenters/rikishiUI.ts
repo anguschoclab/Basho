@@ -165,6 +165,19 @@ function calculateAchievements(r: Rikishi) {
   };
 }
 
+
+export function calculatePerceivedStats(r: Rikishi) {
+  return {
+    strength: NarrativeService.getStatBand(r.stats?.strength ?? 50),
+    technique: NarrativeService.getStatBand(r.stats?.technique ?? 50),
+    speed: NarrativeService.getStatBand(r.stats?.speed ?? 50),
+    stamina: NarrativeService.getStatBand(r.stats?.stamina ?? 50),
+    mental: NarrativeService.getStatBand(r.stats?.mental ?? 50),
+    adaptability: NarrativeService.getStatBand(r.stats?.adaptability ?? 50),
+    balance: NarrativeService.getStatBand(r.stats?.balance ?? 50),
+  };
+}
+
 export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const heya = world.heyas.get(r.heyaId);
   const age = world.year - r.birthYear;
