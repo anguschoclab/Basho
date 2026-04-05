@@ -171,7 +171,7 @@ function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
 function BoutTags({
   match,
 }: {
-  match: NonNullable<ReturnType<typeof useResolvedMatch>>;
+  match: MatchRowData;
 }) {
   const { heatBand, rivalry, h2h, east, west } = match;
   const streak = east.h2h?.[west.id]?.streak ?? 0;
