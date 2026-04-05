@@ -144,6 +144,29 @@ describe("SponsorshipService", () => {
   });
 
   describe("processSponsorChurn", () => {
+      const createSponsorsAndKoenkai = (extraSponsor = false) => {
+        const sponsors = new Map<string, Sponsor>([
+          ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as Sponsor],
+          ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as Sponsor]
+        ]);
+        const members = [
+          { sponsorId: "s_local", role: "koenkai_member" },
+          { sponsorId: "s_corp", role: "koenkai_pillar" }
+        ];
+        if (extraSponsor) {
+          sponsors.set("s_other", { sponsorId: "s_other", active: true, category: "unknown", displayName: "Other" } as Sponsor);
+          members.push({ sponsorId: "s_other", role: "koenkai_member" });
+        }
+
+        const koenkais = new Map<string, Koenkai>([
+          ["koenkai_h1", {
+            koenkaiId: "koenkai_h1",
+            beyaId: "h1",
+            members
+          } as Koenkai]
+        ]);
+        return { sponsors, koenkais };
+      };
     it("returns empty values if no sponsors pool", () => {
       expect(processSponsorChurn({} as WorldState)).toEqual({ churned: [], retained: 0 });
     });
@@ -205,27 +228,7 @@ describe("SponsorshipService", () => {
         rikishiIds: ["r1"] // star power 30 * 0.3 = 9. satisfaction = 59
       } as unknown as Heya;
 
-      const sponsors = new Map<string, Sponsor>([
-        // local threshold 20 (satisfaction 59 > 20, retain)
-        ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as Sponsor],
-        // corporate threshold 50 (satisfaction 59 > 50, retain)
-        ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as Sponsor],
-        // national threshold 70 (satisfaction 59 < 70, churn) - wait, national_brand is 'corporate' so threshold is 50. Let's do another one
-        // actually threshold for non-local/corporate is 70
-        ["s_other", { sponsorId: "s_other", active: true, category: "unknown", displayName: "Other" } as Sponsor]
-      ]);
-
-      const koenkais = new Map<string, Koenkai>([
-        ["koenkai_h1", {
-          koenkaiId: "koenkai_h1",
-          beyaId: "h1",
-          members: [
-            { sponsorId: "s_local", role: "koenkai_member" },
-            { sponsorId: "s_corp", role: "koenkai_pillar" },
-            { sponsorId: "s_other", role: "koenkai_member" }
-          ]
-        } as Koenkai]
-      ]);
+      const { sponsors, koenkais } = createSponsorsAndKoenkai(true);
 
       const world = {
         heyas: new Map([["h1", heya]]),
