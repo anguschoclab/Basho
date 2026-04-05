@@ -4,7 +4,11 @@ import { useGame } from "@/contexts/GameContext";
 import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { getFacilityLevelColor, getFacilityLevelLabel, getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
+import {
+  getFacilityLevelColor,
+  getFacilityLevelLabel,
+  getMonthlyMaintenanceCost,
+} from "@/presenters/uiDigest";
 
 const AXIS_ICONS = {
   training: Building,
@@ -20,33 +24,39 @@ const AXIS_LABELS = {
 
 const AXES = ["training", "recovery", "nutrition"] as const;
 
-
-const FacilityAxisRow = React.memo(({ axis, level }: { axis: typeof AXES[number]; level: number }) => {
-  const Icon = AXIS_ICONS[axis];
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[11px] text-muted-foreground">{AXIS_LABELS[axis]}</span>
+const FacilityAxisRow = React.memo(
+  ({ axis, level }: { axis: (typeof AXES)[number]; level: number }) => {
+    const Icon = AXIS_ICONS[axis];
+    const headerAction = React.useMemo(() => ({
+    label: "Manage",
+    onClick: () => navigate({ to: "/stable" as any })
+  }), [navigate]);
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-[11px] text-muted-foreground">
+              {AXIS_LABELS[axis]}
+            </span>
+          </div>
+          <span
+            className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}
+          >
+            {getFacilityLevelLabel(level)}
+          </span>
         </div>
-        <span className={`text-[10px] font-medium ${getFacilityLevelColor(level)}`}>
-          {getFacilityLevelLabel(level)}
-        </span>
+        <Progress value={level} className="h-1.5" />
       </div>
-      <Progress value={level} className="h-1.5" />
-    </div>
-  );
-});
+    );
+  },
+);
 
 /** facilities widget. */
 export function FacilitiesWidget() {
-  const { state } = useGame();
   const navigate = useNavigate();
-  const world = state.world;
-  if (!world?.playerHeyaId) return null;
+  const { heya } = usePlayerHeya();
 
-  const heya = world.heyas.get(world.playerHeyaId);
   if (!heya) return null;
 
   const maintenance = getMonthlyMaintenanceCost(heya);
@@ -54,7 +64,10 @@ export function FacilitiesWidget() {
 
   const { atRisk, lowestAxis, lowestLevel, isLow } = useMemo(() => {
     const atRisk = !canAfford;
-    const lowestAxis = AXES.reduce((low, a) => heya.facilities[a] < heya.facilities[low] ? a : low, AXES[0]);
+    const lowestAxis = AXES.reduce(
+      (low, a) => (heya.facilities[a] < heya.facilities[low] ? a : low),
+      AXES[0],
+    );
     const lowestLevel = heya.facilities[lowestAxis];
     const isLow = lowestLevel <= 25;
     return { atRisk, lowestAxis, lowestLevel, isLow };
@@ -64,7 +77,9 @@ export function FacilitiesWidget() {
     <BaseWidget
       title="Facilities"
       icon={Wrench}
-      className={atRisk ? "border-destructive/40 ring-1 ring-destructive/20" : ""}
+      className={
+        atRisk ? "border-destructive/40 ring-1 ring-destructive/20" : ""
+      }
       iconClassName={atRisk ? "text-destructive" : ""}
       headerContent={
         <>
@@ -81,17 +96,23 @@ export function FacilitiesWidget() {
           )}
         </>
       }
-      headerAction={{ label: "Manage", onClick: () => navigate({ to: "/stable" as any }) }}
+      headerAction={headerAction}
     >
       <div className="space-y-2.5">
         {AXES.map((axis) => (
-          <FacilityAxisRow key={axis} axis={axis} level={heya.facilities[axis]} />
+          <FacilityAxisRow
+            key={axis}
+            axis={axis}
+            level={heya.facilities[axis]}
+          />
         ))}
       </div>
 
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
-        <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
+        <span
+          className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}
+        >
           ¥{maintenance.toLocaleString()}
         </span>
       </div>

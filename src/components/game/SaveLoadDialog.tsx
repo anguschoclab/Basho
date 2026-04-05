@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
-import type { SaveSlotInfo  } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/engine/saveload";
 
 // Global open signal for keyboard shortcut integration
 const openListeners = new Set<() => void>();
@@ -43,6 +43,7 @@ import {
   Upload,
   Clock,
   HardDrive,
+  Loader2,
 } from "lucide-react";
 
 /** Defines the structure for save load dialog props. */
@@ -55,15 +56,20 @@ interface SaveLoadDialogProps {
  *  * @param { trigger } - The { trigger }.
  */
 export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
-  const { state, saveToSlot, loadFromSlot, getSaveSlots, updateWorld } = useGame();
+  const { state, saveToSlot, loadFromSlot, getSaveSlots, updateWorld } =
+    useGame();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"save" | "load">("save");
   const [slots, setSlots] = useState<SaveSlotInfo[]>([]);
   const [confirmOverwrite, setConfirmOverwrite] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
-  const refreshSlots = useCallback(() => setSlots(getSaveSlots()), [getSaveSlots]);
+  const refreshSlots = useCallback(
+    () => setSlots(getSaveSlots()),
+    [getSaveSlots],
+  );
 
   const handleOpen = (newOpen: boolean) => {
     if (newOpen) refreshSlots();
@@ -72,9 +78,14 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   // Listen for global open signal (keyboard shortcut)
   useEffect(() => {
-    const handler = () => { refreshSlots(); setOpen(true); };
+    const handler = () => {
+      refreshSlots();
+      setOpen(true);
+    };
     openListeners.add(handler);
-    return () => { openListeners.delete(handler); };
+    return () => {
+      openListeners.delete(handler);
+    };
   }, [refreshSlots]);
 
   const emptySlots = useMemo(() => {
@@ -91,7 +102,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   const handleSave = (slotName: string) => {
     // Check if slot exists for overwrite confirmation
-    const existing = slots.find(s => s.slotName === slotName);
+    const existing = slots.find((s) => s.slotName === slotName);
     if (existing && !existing.isAutosave) {
       setConfirmOverwrite(slotName);
       return;
@@ -102,10 +113,17 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const doSave = (slotName: string) => {
     const ok = saveToSlot(slotName);
     if (ok) {
-      toast({ title: "Game Saved", description: `Saved to ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.` });
+      toast({
+        title: "Game Saved",
+        description: `Saved to ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
+      });
       refreshSlots();
     } else {
-      toast({ title: "Save Failed", description: "Could not save game.", variant: "destructive" });
+      toast({
+        title: "Save Failed",
+        description: "Could not save game.",
+        variant: "destructive",
+      });
     }
     setConfirmOverwrite(null);
   };
@@ -113,10 +131,17 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const handleLoad = (slotName: string) => {
     const ok = loadFromSlot(slotName);
     if (ok) {
-      toast({ title: "Game Loaded", description: `Loaded from ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.` });
+      toast({
+        title: "Game Loaded",
+        description: `Loaded from ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
+      });
       setOpen(false);
     } else {
-      toast({ title: "Load Failed", description: "Could not load save.", variant: "destructive" });
+      toast({
+        title: "Load Failed",
+        description: "Could not load save.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -126,14 +151,21 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
   const doDelete = (slotName: string) => {
     deleteSave(slotName);
-    toast({ title: "Save Deleted", description: `${slotName.replace("_", " ")} removed.` });
+    toast({
+      title: "Save Deleted",
+      description: `${slotName.replace("_", " ")} removed.`,
+    });
     refreshSlots();
     setConfirmDelete(null);
   };
 
   const handleExport = () => {
     if (state.world) {
-      const { json, filename } = exportSave(state.world, "Manual Save", new Date().toISOString());
+      const { json, filename } = exportSave(
+        state.world,
+        "Manual Save",
+        new Date().toISOString(),
+      );
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -150,15 +182,28 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const world = await importSave(file);
-    if (world) {
-      updateWorld(world);
-      toast({ title: "Save Imported", description: "World loaded from file." });
-      setOpen(false);
-    } else {
-      toast({ title: "Import Failed", description: "Invalid save file.", variant: "destructive" });
+
+    setIsImporting(true);
+    try {
+      const world = await importSave(file);
+      if (world) {
+        updateWorld(world);
+        toast({
+          title: "Save Imported",
+          description: "World loaded from file.",
+        });
+        setOpen(false);
+      } else {
+        toast({
+          title: "Import Failed",
+          description: "Invalid save file.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsImporting(false);
+      e.target.value = "";
     }
-    e.target.value = "";
   };
 
   const hasWorld = !!state.world;
@@ -168,10 +213,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       <Dialog open={open} onOpenChange={handleOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8" 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
               aria-label="Open save and load dialog"
               tooltip="Save / Load Game"
             >
@@ -191,7 +236,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
 
           {/* Mode tabs */}
           <div className="flex gap-1 rounded-lg bg-muted p-1">
-            <TooltipWrap content="Switch to Save Mode: Create new save points" side="top">
+            <TooltipWrap
+              content="Switch to Save Mode: Create new save points"
+              side="top"
+            >
               <Button
                 variant="ghost"
                 className={`flex-1 ${mode === "save" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
@@ -201,7 +249,10 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                 Save
               </Button>
             </TooltipWrap>
-            <TooltipWrap content="Switch to Load Mode: Restore previous save points" side="top">
+            <TooltipWrap
+              content="Switch to Load Mode: Restore previous save points"
+              side="top"
+            >
               <Button
                 variant="ghost"
                 className={`flex-1 ${mode === "load" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
@@ -221,17 +272,33 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                   key={slot.key}
                   className="flex items-center gap-2 p-2.5 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
                 >
-                  <TooltipWrap content={mode === "load" ? "Restore this game state" : "Overwrite this save slot"} side="left">
+                  <TooltipWrap
+                    content={
+                      mode === "load"
+                        ? "Restore this game state"
+                        : "Overwrite this save slot"
+                    }
+                    side="left"
+                  >
                     <div
                       className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => mode === "load" ? handleLoad(slot.slotName) : handleSave(slot.slotName)}
+                      onClick={() =>
+                        mode === "load"
+                          ? handleLoad(slot.slotName)
+                          : handleSave(slot.slotName)
+                      }
                     >
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm truncate">
                           {slot.playerHeyaName || "Unknown"}
                         </span>
-                        <Badge variant={slot.isAutosave ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 shrink-0">
-                          {slot.isAutosave ? "Auto" : slot.slotName.replace("slot_", "Slot ")}
+                        <Badge
+                          variant={slot.isAutosave ? "default" : "secondary"}
+                          className="text-[10px] px-1.5 py-0 shrink-0"
+                        >
+                          {slot.isAutosave
+                            ? "Auto"
+                            : slot.slotName.replace("slot_", "Slot ")}
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
@@ -262,22 +329,30 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
               ))}
 
               {/* Empty slots (save mode only) */}
-              {mode === "save" && hasWorld && emptySlots.map((slotName) => (
-                <TooltipWrap key={slotName} content="Save current progress to this empty slot" side="top">
-                  <div
-                    className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-                    onClick={() => doSave(slotName)}
+              {mode === "save" &&
+                hasWorld &&
+                emptySlots.map((slotName) => (
+                  <TooltipWrap
+                    key={slotName}
+                    content="Save current progress to this empty slot"
+                    side="top"
                   >
-                    <Save className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {slotName.replace("slot_", "Slot ")} — Empty
-                    </span>
-                  </div>
-                </TooltipWrap>
-              ))}
+                    <div
+                      className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                      onClick={() => doSave(slotName)}
+                    >
+                      <Save className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {slotName.replace("slot_", "Slot ")} — Empty
+                      </span>
+                    </div>
+                  </TooltipWrap>
+                ))}
 
               {mode === "load" && slots.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-6">No saved games found.</p>
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  No saved games found.
+                </p>
               )}
             </div>
           </ScrollArea>
@@ -287,27 +362,52 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
           {/* Export / Import */}
           <div className="flex gap-2">
             {hasWorld && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-1.5" 
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
                 onClick={handleExport}
                 tooltip="Download current world state as a JSON file"
               >
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
             )}
-            <label>
-              <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-1.5" 
+            <label
+              className={
+                isImporting
+                  ? "opacity-50 cursor-not-allowed pointer-events-none"
+                  : ""
+              }
+            >
+              <input
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={handleImport}
+                disabled={isImporting}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
                 asChild
-                tooltip="Upload a previously exported save file"
+                tooltip={
+                  isImporting
+                    ? "Importing save file..."
+                    : "Upload a previously exported save file"
+                }
               >
                 <span>
-                  <Upload className="h-3.5 w-3.5" /> Import
+                  {isImporting ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />{" "}
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-3.5 w-3.5" /> Import
+                    </>
+                  )}
                 </span>
               </Button>
             </label>
@@ -316,17 +416,24 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       </Dialog>
 
       {/* Overwrite confirmation */}
-      <AlertDialog open={!!confirmOverwrite} onOpenChange={(o) => !o && setConfirmOverwrite(null)}>
+      <AlertDialog
+        open={!!confirmOverwrite}
+        onOpenChange={(o) => !o && setConfirmOverwrite(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Overwrite save?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will replace the existing save in {confirmOverwrite?.replace("slot_", "Slot ")}. This cannot be undone.
+              This will replace the existing save in{" "}
+              {confirmOverwrite?.replace("slot_", "Slot ")}. This cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmOverwrite && doSave(confirmOverwrite)}>
+            <AlertDialogAction
+              onClick={() => confirmOverwrite && doSave(confirmOverwrite)}
+            >
               Overwrite
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -334,12 +441,16 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
       </AlertDialog>
 
       {/* Delete confirmation */}
-      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+      <AlertDialog
+        open={!!confirmDelete}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete save?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete {confirmDelete?.replace("slot_", "Slot ")}. This cannot be undone.
+              This will permanently delete{" "}
+              {confirmDelete?.replace("slot_", "Slot ")}. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
