@@ -9,6 +9,11 @@ describe("PerceptionPresenter", () => {
       expect(getHealthBadge(rikishi)).toBe("Recovering");
     });
 
+    it("returns health-based badge if injured is true but injuryWeeksRemaining is 0", () => {
+      const rikishi = { injured: true, injuryWeeksRemaining: 0, stamina: 100, fatigue: 0 } as Rikishi;
+      expect(getHealthBadge(rikishi)).toBe("Fresh");
+    });
+
     it("returns 'Fresh' if health >= 80", () => {
       const rikishi = { stamina: 100, fatigue: 10 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
