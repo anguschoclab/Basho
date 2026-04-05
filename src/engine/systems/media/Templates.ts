@@ -22,7 +22,9 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "The Biggest Shock of the Basho! {winner} Defeats {loser}",
       "Chaos in the Rankings! {loser} Upset by {winner}",
       "{winner} Silences the Critics with a Stunning Victory Over {loser}",
-      "A Historic Blunder? {loser} Falls to Unlikely Challenger {winner}"
+      "A Historic Blunder? {loser} Falls to Unlikely Challenger {winner}",
+      "{winner} Defies the Odds, Stunning {loser}!",
+      "A Tactical Masterclass: {winner} Dismantles {loser}"
     ],
     standard: [
       "{winner} Defeats {loser} by {kimarite}",
@@ -42,7 +44,9 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "A Solid Performance Earns {winner} the Victory Over {loser}",
       "Business as Usual: {winner} Cruises Past {loser}",
       "{winner} Shows Championship Form in Win Over {loser}",
-      "A Methodical Takedown by {winner} Against {loser}"
+      "A Methodical Takedown by {winner} Against {loser}",
+      "{winner} Secures a Hard-Fought Win Against {loser}",
+      "No Mistakes Made: {winner} Bests {loser}"
     ],
     mainEvent: [
       "{winner} Delivers in the Spotlight",
@@ -62,7 +66,11 @@ export const MEDIA_GENERIC_TEMPLATES = {
         "{loser} promises to bounce back after a tough defeat.",
         "A reporter asks {winner} about the controversial opening charge.",
         "Coach brushes off questions regarding {loser}'s stamina issues.",
-        "{winner} credits their stablemates for today's tactical success."
+        "{winner} credits their stablemates for today's tactical success.",
+        "{loser} faces difficult questions regarding a potential slump.",
+        "Is the pressure finally getting to {loser}?",
+        "{winner} dismisses rumors of a lingering injury.",
+        "Coach praises {winner}'s unyielding spirit in the clutch."
       ]
     },
     subtitles: {
@@ -84,12 +92,16 @@ export const MEDIA_GENERIC_TEMPLATES = {
         "Concern Deepens After {loser} Limps Off the Dohyo",
         "Medical Staff Rush to {loser} Following Brutal Finish",
         "Is {loser}'s Tournament Over? Injury Fears Mount",
-        "A Costly Victory: {winner} Shows Signs of Damage"
+        "A Costly Victory: {winner} Shows Signs of Damage",
+        "Silent Arena: {loser} Down Following Brutal Clash",
+        "Worry in the Preparation Room: {loser} Suspected of Major Injury"
       ],
       controversy: [
         "Fans Demand Answers After Questionable Call in {winner} vs {loser}",
         "Did {winner} Step Out First? The Mono-ii That Changed Everything",
-        "Tempers Flare Backstage Between {winner} and {loser}'s Stables"
+        "Tempers Flare Backstage Between {winner} and {loser}'s Stables",
+        "A Phantom Heel? Debate Rages Over {winner}'s Victory",
+        "Shimpan Under Scrutiny Following Tense {winner} vs {loser} Finish"
       ]
     }
   },
