@@ -15,7 +15,7 @@ describe("PerceptionPresenter", () => {
     });
 
     it("returns 'Fresh' if health >= 80", () => {
-      const rikishi = { stamina: 100, fatigue: 10 } as Rikishi;
+      const rikishi = { stamina: 80, fatigue: 0 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
     });
 
