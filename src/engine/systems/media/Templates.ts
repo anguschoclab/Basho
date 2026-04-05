@@ -19,7 +19,10 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "A Giant Falls: {winner} Secures the Ultimate Upset Against {loser}",
       "Nobody Predicted This! {winner} Topples {loser}",
       "An Incredible Reversal of Fortune for {winner} Over {loser}",
-      "The Biggest Shock of the Basho! {winner} Defeats {loser}"
+      "The Biggest Shock of the Basho! {winner} Defeats {loser}",
+      "Chaos in the Rankings! {loser} Upset by {winner}",
+      "{winner} Silences the Critics with a Stunning Victory Over {loser}",
+      "A Historic Blunder? {loser} Falls to Unlikely Challenger {winner}"
     ],
     standard: [
       "{winner} Defeats {loser} by {kimarite}",
@@ -36,14 +39,19 @@ export const MEDIA_GENERIC_TEMPLATES = {
       "{winner} Comfortably Beats {loser} with {kimarite}",
       "No Surprises Here: {winner} Handles {loser}",
       "{winner} Stays Focused and Defeats {loser}",
-      "A Solid Performance Earns {winner} the Victory Over {loser}"
+      "A Solid Performance Earns {winner} the Victory Over {loser}",
+      "Business as Usual: {winner} Cruises Past {loser}",
+      "{winner} Shows Championship Form in Win Over {loser}",
+      "A Methodical Takedown by {winner} Against {loser}"
     ],
     mainEvent: [
       "{winner} Delivers in the Spotlight",
       "The Main Event Goes to {winner}",
       "{winner} Closes Out the Day with a Bang",
       "{winner} Proves They Belong in the Main Event",
-      "A Spectacular Finale: {winner} Prevails"
+      "A Spectacular Finale: {winner} Prevails",
+      "{winner} Shines Brightest on the Grand Stage",
+      "The Pressure Fails to Crack {winner} in the Main Event"
     ],
     pressConference: {
       postMatch: [
@@ -51,7 +59,10 @@ export const MEDIA_GENERIC_TEMPLATES = {
         "{winner} reflects on the tactical approach today.",
         "Coach addresses {loser}'s surprising lack of form.",
         "Is {winner} the real deal this tournament?",
-        "{loser} promises to bounce back after a tough defeat."
+        "{loser} promises to bounce back after a tough defeat.",
+        "A reporter asks {winner} about the controversial opening charge.",
+        "Coach brushes off questions regarding {loser}'s stamina issues.",
+        "{winner} credits their stablemates for today's tactical success."
       ]
     },
     subtitles: {
@@ -66,6 +77,19 @@ export const MEDIA_GENERIC_TEMPLATES = {
         "A crisp finish that keeps the pressure on.",
         "No hesitation — just execution.",
         "The race tightens with every day."
+      ]
+    },
+    drama: {
+      injury: [
+        "Concern Deepens After {loser} Limps Off the Dohyo",
+        "Medical Staff Rush to {loser} Following Brutal Finish",
+        "Is {loser}'s Tournament Over? Injury Fears Mount",
+        "A Costly Victory: {winner} Shows Signs of Damage"
+      ],
+      controversy: [
+        "Fans Demand Answers After Questionable Call in {winner} vs {loser}",
+        "Did {winner} Step Out First? The Mono-ii That Changed Everything",
+        "Tempers Flare Backstage Between {winner} and {loser}'s Stables"
       ]
     }
   },

@@ -60,12 +60,9 @@ const RUNWAY_CONFIG: Record<
 
 /** finances widget. */
 export function FinancesWidget() {
-  const { state } = useGame();
   const navigate = useNavigate();
-  const world = state.world;
-  if (!world?.playerHeyaId) return null;
+  const { heya } = usePlayerHeya();
 
-  const heya = world.heyas.get(world.playerHeyaId);
   if (!heya) return null;
 
   const band = (heya as any).runwayBand || "comfortable";

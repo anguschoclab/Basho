@@ -54,12 +54,9 @@ const FacilityAxisRow = React.memo(
 
 /** facilities widget. */
 export function FacilitiesWidget() {
-  const { state } = useGame();
   const navigate = useNavigate();
-  const world = state.world;
-  if (!world?.playerHeyaId) return null;
+  const { heya } = usePlayerHeya();
 
-  const heya = world.heyas.get(world.playerHeyaId);
   if (!heya) return null;
 
   const maintenance = getMonthlyMaintenanceCost(heya);

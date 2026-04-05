@@ -55,10 +55,15 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     }
   }
 
-  const roster = (h.rikishiIds || [])
-    .map(id => world.rikishi.get(id))
-    .filter((r): r is import("../engine/types/rikishi").Rikishi => r !== undefined)
-    .map(r => projectRosterEntry(r, world));
+  // ⚡ Bolt Optimization: Use a single reduce pass instead of chained .map().filter().map()
+  // This avoids intermediate array allocations, improving UI render performance when calculating the roster.
+  const roster = (h.rikishiIds || []).reduce<UIRosterEntry[]>((acc, id) => {
+    const r = world.rikishi.get(id);
+    if (r !== undefined) {
+      acc.push(projectRosterEntry(r, world));
+    }
+    return acc;
+  }, []);
 
   const prestigeBand = h.prestige < 20 ? "Emerging" : h.prestige < 50 ? "Respected" : h.prestige < 80 ? "Elite" : "Legendary";
 
