@@ -54,6 +54,16 @@ describe('banzukeUI', () => {
       expect(rows[0].east?.shikona).toBe('D_East');
     });
 
+    it('should filter out both east and west if neither match the search query', () => {
+      // This will cover the `if (!eastMatch && !westMatch) continue;` line
+      const entries: Partial<UIRosterEntry>[] = [
+         { id: '1', shikona: 'A_East', division: 'makuuchi', rank: 'maegashira', rankNumber: 1, side: 'east' },
+         { id: '2', shikona: 'B_West', division: 'makuuchi', rank: 'maegashira', rankNumber: 1, side: 'west' },
+      ];
+      const rows = buildBanzukeRows(entries as UIRosterEntry[], 'makuuchi', 'nomatch');
+      expect(rows).toHaveLength(0);
+    });
+
     it('should filter by search query (case-insensitive) across both sides', () => {
       // search 'east' matches A_East, C_East, D_East (in juryo), F_East, G_East
       const rows1 = buildBanzukeRows(mockEntries as UIRosterEntry[], 'makuuchi', 'east');
@@ -104,6 +114,45 @@ describe('banzukeUI', () => {
   });
 
   describe('buildPrevRankScores', () => {
+    it('should skip divisions without assignments and continue correctly', () => {
+      const history = [{
+        nextBanzuke: {
+          divisions: {
+            emptyDiv: { assignments: [] },
+            makuuchi: {
+              assignments: [
+                { rikishiId: 'r_m1', position: { rank: 'maegashira', rankNumber: 1, side: 'east' } }
+              ]
+            }
+          }
+        }
+      }];
+      const map = buildPrevRankScores(history as any[]);
+      expect(map.size).toBe(1);
+      expect(map.get('r_m1')).toBe(5002);
+    });
+
+    it('should stop at the first history entry that contains a nextBanzuke (working backwards)', () => {
+      const history = [
+        {
+          nextBanzuke: {
+            divisions: { makuuchi: { assignments: [{ rikishiId: 'older', position: { rank: 'ozeki', rankNumber: 1, side: 'west' } }] } }
+          }
+        },
+        {
+          // Middle entry without nextBanzuke
+        },
+        {
+          nextBanzuke: {
+            divisions: { makuuchi: { assignments: [{ rikishiId: 'newer', position: { rank: 'yokozuna', rankNumber: 1, side: 'east' } }] } }
+          }
+        }
+      ];
+      const map = buildPrevRankScores(history as any[]);
+      expect(map.size).toBe(1);
+      expect(map.has('newer')).toBe(true);
+      expect(map.has('older')).toBe(false);
+    });
     it('should return an empty map if history is empty', () => {
       const map = buildPrevRankScores([]);
       expect(map.size).toBe(0);
