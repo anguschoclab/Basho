@@ -2,13 +2,24 @@
 // Per uiDigest.ts: Converts engine outputs into readable, grouped digest sections
 
 import React, { useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
-import { DigestItem, DigestSection, UIDigest, buildWeeklyDigest } from "@/presenters/uiDigest";
+import {
+  DigestItem,
+  DigestSection,
+  UIDigest,
+  buildWeeklyDigest,
+} from "@/presenters/uiDigest";
 import {
   Activity,
   AlertTriangle,
@@ -17,7 +28,7 @@ import {
   Users,
   Building2,
   FileText,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 
 /** Defines the structure for weekly digest props. */
@@ -54,7 +65,11 @@ const KIND_COLORS: Record<string, string> = {
  * digest item display.
  *  * @param { item } - The { item }.
  */
-function DigestItemDisplay({ item }: { item: DigestItem }) {
+const DigestItemDisplay = React.memo(function DigestItemDisplay({
+  item,
+}: {
+  item: DigestItem;
+}) {
   const Icon = KIND_ICONS[item.kind] || FileText;
   const colorClass = KIND_COLORS[item.kind] || "text-muted-foreground";
 
@@ -70,7 +85,9 @@ function DigestItemDisplay({ item }: { item: DigestItem }) {
           ) : null}
           {item.rikishiId || item.heyaId ? (
             <span className="text-muted-foreground">
-              {item.title.includes(" ") ? item.title.substring(item.title.indexOf(" ")) : ""}
+              {item.title.includes(" ")
+                ? item.title.substring(item.title.indexOf(" "))
+                : ""}
             </span>
           ) : (
             item.title
@@ -82,13 +99,17 @@ function DigestItemDisplay({ item }: { item: DigestItem }) {
       </div>
     </div>
   );
-}
+});
 
 /**
  * digest section display.
  *  * @param { section } - The { section }.
  */
-function DigestSectionDisplay({ section }: { section: DigestSection }) {
+const DigestSectionDisplay = React.memo(function DigestSectionDisplay({
+  section,
+}: {
+  section: DigestSection;
+}) {
   if (!section.items.length) return null;
 
   return (
@@ -108,15 +129,21 @@ function DigestSectionDisplay({ section }: { section: DigestSection }) {
       </div>
     </div>
   );
-}
+});
 
 /**
  * weekly digest.
  *  * @param { digest: digestProp, className } - The { digest: digest prop, class name }.
  */
-export function WeeklyDigest({ digest: digestProp, className }: WeeklyDigestProps) {
+export function WeeklyDigest({
+  digest: digestProp,
+  className,
+}: WeeklyDigestProps) {
   const { state } = useGame();
-  const digest = useMemo(() => digestProp ?? buildWeeklyDigest(state.world), [digestProp, state.world]);
+  const digest = useMemo(
+    () => digestProp ?? buildWeeklyDigest(state.world),
+    [digestProp, state.world],
+  );
 
   if (!digest) {
     return (
@@ -129,7 +156,8 @@ export function WeeklyDigest({ digest: digestProp, className }: WeeklyDigestProp
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            No recent activity to report. Start your first basho to begin tracking events.
+            No recent activity to report. Start your first basho to begin
+            tracking events.
           </p>
         </CardContent>
       </Card>
@@ -153,7 +181,9 @@ export function WeeklyDigest({ digest: digestProp, className }: WeeklyDigestProp
           </div>
           <div className="flex gap-2">
             {counts.trainingEvents > 0 && (
-              <Badge variant="secondary">{counts.trainingEvents} training</Badge>
+              <Badge variant="secondary">
+                {counts.trainingEvents} training
+              </Badge>
             )}
             {counts.injuries > 0 && (
               <Badge variant="destructive">{counts.injuries} injured</Badge>
