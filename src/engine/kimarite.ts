@@ -3,55 +3,45 @@ import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from 
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { stableTieBreak } from "./utils/sort";
 
+// --- Domain Models & Defaults ---
 
+type KimariteDefinition = Kimarite & { kimariteClass?: KimariteClass };
 
-// --- Helpers to maintain the 82 techniques with minimal verbosity ---
-
-/** Base fields needed for definition */
-interface KBase {
+interface KimariteBaseEntry {
   id: string;
   name: string;
   nameJa?: string;
   jsaCategory: JsaCategory;
   tacticalFamily?: TacticalFamily;
-  baseWeight?: number; // Optional in KBase, but will be filled by defaults or entry
+  baseWeight?: number; 
   isHighRisk?: boolean;
   requirements?: KimariteRequirements;
-  statWeights?: Kimarite['statWeights']; // Override defaults
+  statWeights?: Kimarite['statWeights']; 
   requiresBeltGrip?: boolean;
   leverageTarget?: Kimarite['leverageTarget'];
   description?: string;
   rarity?: Kimarite['rarity'];
-  kimariteClass?: KimariteClass; // Legacy engine compatibility
+  kimariteClass?: KimariteClass;
 }
 
-function K(entry: KBase): Kimarite & { kimariteClass?: KimariteClass } {
-  let defaults: any;
-  switch (entry.jsaCategory) {
-    case 'Kihonwaza':
-      defaults = { tacticalFamily: 'push', baseWeight: 500, statWeights: { strength: 0.4, weight: 0.4, speed: 0.1, technique: 0.1, balance: 0.0 }, kimariteClass: 'force_out' };
-      break;
-    case 'Nageite':
-      defaults = { tacticalFamily: 'belt', baseWeight: 100, statWeights: { strength: 0.3, weight: 0.1, speed: 0.1, technique: 0.5, balance: 0.0 }, requiresBeltGrip: true, kimariteClass: 'throw' };
-      break;
-    case 'Kakeite':
-      defaults = { tacticalFamily: 'speed', baseWeight: 50, statWeights: { strength: 0.1, weight: 0.0, speed: 0.5, technique: 0.4, balance: 0.0 }, kimariteClass: 'trip' };
-      break;
-    case 'Sorite':
-      defaults = { tacticalFamily: 'trick', baseWeight: 1, isHighRisk: true, requirements: { isDesperation: true }, statWeights: { strength: 0.1, weight: 0.0, speed: 0.1, technique: 0.8, balance: 0.0 }, kimariteClass: 'special' };
-      break;
-    case 'Hinerite':
-      defaults = { tacticalFamily: 'trick', baseWeight: 100, statWeights: { strength: 0.1, weight: 0.1, speed: 0.2, technique: 0.6, balance: 0.0 }, leverageTarget: 'momentum', kimariteClass: 'twist' };
-      break;
-    case 'Tokushuwaza':
-      defaults = { tacticalFamily: 'trick', baseWeight: 50, statWeights: { strength: 0.2, weight: 0.2, speed: 0.2, technique: 0.4, balance: 0.0 }, kimariteClass: 'special' };
-      break;
-    case 'Hiwaza':
-      defaults = { tacticalFamily: 'trick', baseWeight: 1, statWeights: { strength: 0.1, weight: 0.4, speed: 0.2, technique: 0.3, balance: 0.0 }, kimariteClass: 'result' };
-      break;
-  }
+const CATEGORY_DEFAULTS: Record<JsaCategory, Partial<KimariteDefinition>> = {
+  Kihonwaza: { tacticalFamily: 'push', baseWeight: 500, statWeights: { strength: 0.4, weight: 0.4, speed: 0.1, technique: 0.1, balance: 0.0 }, kimariteClass: 'force_out' },
+  Nageite: { tacticalFamily: 'belt', baseWeight: 100, statWeights: { strength: 0.3, weight: 0.1, speed: 0.1, technique: 0.5, balance: 0.0 }, requiresBeltGrip: true, kimariteClass: 'throw' },
+  Kakeite: { tacticalFamily: 'speed', baseWeight: 50, statWeights: { strength: 0.1, weight: 0.0, speed: 0.5, technique: 0.4, balance: 0.0 }, kimariteClass: 'trip' },
+  Sorite: { tacticalFamily: 'trick', baseWeight: 1, isHighRisk: true, requirements: { isDesperation: true }, statWeights: { strength: 0.1, weight: 0.0, speed: 0.1, technique: 0.8, balance: 0.0 }, kimariteClass: 'special' },
+  Hinerite: { tacticalFamily: 'trick', baseWeight: 100, statWeights: { strength: 0.1, weight: 0.1, speed: 0.2, technique: 0.6, balance: 0.0 }, leverageTarget: 'momentum', kimariteClass: 'twist' },
+  Tokushuwaza: { tacticalFamily: 'trick', baseWeight: 50, statWeights: { strength: 0.2, weight: 0.2, speed: 0.2, technique: 0.4, balance: 0.0 }, kimariteClass: 'special' },
+  Hiwaza: { tacticalFamily: 'trick', baseWeight: 1, statWeights: { strength: 0.1, weight: 0.4, speed: 0.2, technique: 0.3, balance: 0.0 }, kimariteClass: 'result' },
+};
 
-  const baseWeight = entry.baseWeight ?? defaults.baseWeight;
+/**
+ * Domain builder function to apply correct defaults and scaling logic
+ * based on the JSA category taxonomy.
+ */
+function defineKimarite(entry: KimariteBaseEntry): KimariteDefinition {
+  const defaults = CATEGORY_DEFAULTS[entry.jsaCategory] || {};
+  const baseWeight = entry.baseWeight ?? defaults.baseWeight ?? 1;
+  
   const rarity = entry.rarity ?? (
     baseWeight <= 5 ? "legendary" :
     baseWeight <= 30 ? "rare" :
@@ -61,16 +51,19 @@ function K(entry: KBase): Kimarite & { kimariteClass?: KimariteClass } {
   return {
     ...defaults,
     ...entry,
-    statWeights: entry.statWeights ?? defaults.statWeights,
+    statWeights: entry.statWeights ?? defaults.statWeights ?? { strength: 0.2, weight: 0.2, speed: 0.2, technique: 0.2, balance: 0.2 },
     baseWeight,
     rarity,
     requirements: { ...defaults.requirements, ...entry.requirements },
     isHighRisk: entry.isHighRisk ?? defaults.isHighRisk ?? false,
-  };
+  } as KimariteDefinition;
 }
 
+// Local alias strictly for visual alignment of the static data block
+const K = defineKimarite;
+
 /** COMPLETE OFFICIAL 82 KIMARITE (v1.3 taxonomy) */
-export const KIMARITE_REGISTRY: (Kimarite & { kimariteClass?: KimariteClass })[] = [
+export const KIMARITE_REGISTRY: KimariteDefinition[] = [
   // === Kihonwaza (Basic Techniques - 7 moves) ===
   K({ id: 'yorikiri', name: 'Yorikiri', nameJa: '寄り切り', jsaCategory: 'Kihonwaza', baseWeight: 1000, description: 'Classic force out by gripping the opponent\'s belt and driving relentlessly forward until they step over the edge. A staple of yotsu-zumo.', tacticalFamily: 'belt', requiresBeltGrip: true }),
   K({ id: 'oshidashi', name: 'Oshidashi', nameJa: '押し出し', jsaCategory: 'Kihonwaza', baseWeight: 850, description: 'Frontal push out using a barrage of powerful hand thrusts to march the opponent out of the ring without touching the belt. A pure demonstration of oshi-zumo.' }),
@@ -179,14 +172,16 @@ export const KIMARITE_REGISTRY: (Kimarite & { kimariteClass?: KimariteClass })[]
   { id: 'hansoku', name: 'Hansoku', nameJa: '反則', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', baseWeight: 0, statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, description: 'Win by disqualification', kimariteClass: 'forfeit' },
 ];
 
-/** Legacy alias for compatibility */
+// --- High-Performance Lookups ---
 
+/** Pre-computed map for O(1) direct ID lookups during combat simulations */
+const KIMARITE_MAP = new Map<string, KimariteDefinition>(
+  KIMARITE_REGISTRY.map(k => [k.id, k])
+);
 
-// --- Lookup helpers ---
-
-/** Get kimarite by ID */
-export function getKimarite(id: string): (Kimarite & { kimariteClass?: KimariteClass }) | undefined {
-  return KIMARITE_REGISTRY.find(k => k.id === id);
+/** Get kimarite by ID (O(1) operation) */
+export function getKimarite(id: string): KimariteDefinition | undefined {
+  return KIMARITE_MAP.get(id);
 }
 
 /** Get kimarite by JSA category */
@@ -195,7 +190,7 @@ export function getKimariteByJsaCategory(category: JsaCategory): Kimarite[] {
 }
 
 /** Get kimarite by legacy KimariteClass */
-export function getKimariteByClass(kimariteClass: KimariteClass): (Kimarite & { kimariteClass?: KimariteClass })[] {
+export function getKimariteByClass(kimariteClass: KimariteClass): KimariteDefinition[] {
   return KIMARITE_REGISTRY.filter(k => k.kimariteClass === kimariteClass);
 }
 
