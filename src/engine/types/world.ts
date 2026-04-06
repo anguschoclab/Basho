@@ -18,7 +18,7 @@ import type { WorldRecords } from "./records";
 import type { TutorialState } from "./tutorial";
 
 /** Type representing cycle phase. */
-export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
+export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
 
 /** Defines the structure for recruitment window. */
 export interface RecruitmentWindow {

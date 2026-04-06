@@ -423,25 +423,69 @@ function tryPair(
   return p;
 }
 
-/** Phase 1 — Days 1–7: Banzuke-proximal pairing */
+/**
+ * Phase 1 — Days 1–7: The San'yaku Gauntlet.
+ *
+ * Step 1: Partition into three groups:
+ *   - Elite      = Yokozuna + Ozeki
+ *   - Upper-Joi  = M1–M4
+ *   - Rest       = Sekiwake, Komusubi, M5+
+ *
+ * Step 2: Each Elite MUST face an Upper-Joi rikishi (not another Elite).
+ *   Greedy: for each Elite (sorted by banzuke ordinal) find the highest-available
+ *   Upper-Joi that satisfies all hard constraints (heya block + no repeat).
+ *
+ * Step 3: Standard proximity for all remaining unmatched rikishi — sort by
+ *   banzuke ordinal and pair i with i+1 (offset up to 3 to dodge heya conflicts).
+ *   Heya block is NEVER overridden in Phase 1 (JSA 2.1 mandate).
+ */
 function phase1(
   basho: BashoState,
   pool: Rikishi[],
   facedSet: Set<string>,
   rivalriesState?: RivalriesState
 ): MatchPairing[] {
-  const sorted = [...pool].sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
   const paired = new Set<string>();
   const pairings: MatchPairing[] = [];
 
-  for (let i = 0; i < sorted.length; i++) {
-    const a = sorted[i];
+  // ── Step 1: Partition ───────────────────────────────────
+  const elite = pool
+    .filter(r => r.rank === "yokozuna" || r.rank === "ozeki")
+    .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+
+  const upperJoi = pool
+    .filter(r => isM1toM4(r))
+    .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+
+  // ── Step 2: Elite vs Upper-Joi gauntlet ────────────────
+  for (const e of elite) {
+    if (paired.has(e.id)) continue;
+    for (const joi of upperJoi) {
+      if (paired.has(joi.id)) continue;
+      const p = tryPair(basho, e, joi, facedSet, paired, rivalriesState);
+      if (p) {
+        pairings.push({ ...p, reasons: [...p.reasons, "gauntlet"] });
+        paired.add(e.id);
+        paired.add(joi.id);
+        break;
+      }
+    }
+    // Elite overflow: if no Upper-Joi available, falls through to Step 3
+  }
+
+  // ── Step 3: Standard proximity for remaining ────────────
+  const remaining = [...pool]
+    .filter(r => !paired.has(r.id))
+    .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+
+  for (let i = 0; i < remaining.length; i++) {
+    const a = remaining[i];
     if (paired.has(a.id)) continue;
 
-    // Try i+1, i+2, i+3 for heya conflict avoidance
     let matched = false;
-    for (let offset = 1; offset <= 3 && i + offset < sorted.length; offset++) {
-      const b = sorted[i + offset];
+    // Try i+1, i+2, i+3 offsets to dodge heya conflicts
+    for (let offset = 1; offset <= 3 && i + offset < remaining.length; offset++) {
+      const b = remaining[i + offset];
       if (paired.has(b.id)) continue;
       const p = tryPair(basho, a, b, facedSet, paired, rivalriesState);
       if (p) {
@@ -453,12 +497,16 @@ function phase1(
       }
     }
 
-    // Fallback: forced same-heya pairing if needed
+    // Forced fallback: allow repeat but NEVER override the heya block (JSA 2.1)
     if (!matched) {
-      for (let j = i + 1; j < sorted.length; j++) {
-        const b = sorted[j];
+      for (let j = i + 1; j < remaining.length; j++) {
+        const b = remaining[j];
         if (paired.has(b.id)) continue;
-        const forced = scorePairing({ basho, a, b, facedPairs: facedSet, allowRepeatOverride: true, rules: { avoidSameHeya: false } });
+        const forced = scorePairing({
+          basho, a, b, facedPairs: facedSet,
+          allowRepeatOverride: true,
+          // avoidSameHeya stays true (default) — heya block is absolute in Swiss
+        });
         if (forced) {
           pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
           paired.add(a.id);
@@ -466,16 +514,6 @@ function phase1(
           break;
         }
       }
-    }
-  }
-
-  // Post-pass: ensure all san'yaku face M1–M4 if not already
-  for (const pairing of pairings) {
-    const east = pool.find(r => r.id === pairing.eastId);
-    const west = pool.find(r => r.id === pairing.westId);
-    if (!east || !west) continue;
-    if (isSanyakuRank(east) && !isM1toM4(west) && west.rank === "maegashira") {
-      pairing.reasons.push("sanyaku_vs_joi");
     }
   }
 
@@ -671,12 +709,52 @@ function phase3(
   return [...remainderPairings, ...pairings, ...reserved];
 }
 
+// =============================================================================
+// Chronological Sort — lowest-ranked bouts at index 0, elite last (TDD 2.4 §3)
+// =============================================================================
+
+/**
+ * Sort a finalized pairing list in chronological broadcast order.
+ *
+ * In real sumo: lower-ranked rikishi fight in the morning, the top-ranked
+ * bouts (Yokozuna/Ozeki) happen last at ~17:30.
+ *
+ * Algorithm: sort by (banzukeOrdinal(east) + banzukeOrdinal(west)) DESCENDING
+ * so that the highest combined ordinal (= most junior rikishi) appears at
+ * index 0, and the lowest combined ordinal (= elite san'yaku) appears last.
+ *
+ * Pairings already tagged "kore_yori_sanyaku" or "finale" are guaranteed to
+ * be at the end regardless, so within the sorted result the finale bout will
+ * always be index length-1.
+ */
+function sortChronologically(pairings: MatchPairing[], pool: Rikishi[]): MatchPairing[] {
+  const byId = new Map<string, Rikishi>(pool.map(r => [r.id, r]));
+
+  const rankScore = (p: MatchPairing): number => {
+    const east = byId.get(p.eastId);
+    const west = byId.get(p.westId);
+    return (east ? banzukeOrdinal(east) : 9000) + (west ? banzukeOrdinal(west) : 9000);
+  };
+
+  // Finale / kore-yori-san'yaku bouts always float to the end
+  const isElite = (p: MatchPairing) =>
+    p.reasons.includes("finale") || p.reasons.includes("kore_yori_sanyaku");
+
+  const regular = pairings.filter(p => !isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
+  const elite = pairings.filter(p => isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
+
+  return [...regular, ...elite];
+}
+
 /**
  * Build Swiss torikumi for a single day of a Basho.
  * Implements the JSA Shimpan three-phase matchmaking system:
- *   - Days 1–7: Banzuke-proximal (Phase 1)
+ *   - Days 1–7: Banzuke-proximal / San'yaku Gauntlet (Phase 1)
  *   - Days 8–14: Swiss win-bucket (Phase 2)
  *   - Day 15: Senshuraku / kore yori san'yaku (Phase 3)
+ *
+ * Output is always sorted chronologically: lowest-ranked bouts at index 0,
+ * elite san'yaku (and the Yusho decider) at the end. (TDD §2.4 Step 3)
  */
 export function buildSwissTorikumi(
   basho: BashoState,
@@ -697,7 +775,10 @@ export function buildSwissTorikumi(
   const facedSet = buildFacedSet(basho);
   const day = basho.day ?? 1;
 
-  if (day <= 7) return phase1(basho, pool, facedSet, options.rivalriesState);
-  if (day === 15) return phase3(basho, pool, facedSet, options.rivalriesState);
-  return phase2(basho, pool, facedSet, options.rivalriesState);
+  let raw: MatchPairing[];
+  if (day <= 7) raw = phase1(basho, pool, facedSet, options.rivalriesState);
+  else if (day === 15) raw = phase3(basho, pool, facedSet, options.rivalriesState);
+  else raw = phase2(basho, pool, facedSet, options.rivalriesState);
+
+  return sortChronologically(raw, pool);
 }

@@ -11,7 +11,7 @@ import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import { getActiveRikishi } from "./selectors";
 
-import { buildCandidatePairs, type MatchPairing, type MatchmakingRules } from "./matchmaking";
+import { buildCandidatePairs, buildSwissTorikumi, type MatchPairing, type MatchmakingRules } from "./matchmaking";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
@@ -103,6 +103,19 @@ function greedySelectPairs(candidates: MatchPairing[], maxPairs: number, used = 
  * Schedule bouts for a single division on a single day.
  * Appends matches to basho.matches and returns the new matches.
  */
+/**
+ * Schedule bouts for a single division on a single day.
+ *
+ * For **makuuchi** the JSA Swiss Shimpan algorithm (buildSwissTorikumi) is
+ * used directly.  It returns a fully-ordered, chronologically-sorted array
+ * (lowest rank first, elite last) — no secondary shuffle is applied so the
+ * broadcast order is preserved in basho.matches.
+ *
+ * For all other divisions the legacy candidate-pair / greedy-select path
+ * is retained (lower divisions use 7-day schedules, not the Swiss system).
+ *
+ * Appends matches to basho.matches and returns the new entries.
+ */
 export function scheduleDivisionDay(args: {
   world: WorldState;
   basho: BashoState;
@@ -114,58 +127,66 @@ export function scheduleDivisionDay(args: {
 }): MatchSchedule[] {
   const { world, basho, division, day } = args;
   const rules = args.rules ?? {};
-  const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
 
   const roster = activeDivisionRoster(world, division);
   const maxActive = args.config?.maxActiveRikishi;
   const pool = typeof maxActive === "number" ? roster.slice(0, Math.max(0, maxActive)) : roster;
 
-  const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
-  if (boutsPerDay <= 0 || pool.length < 2) return [];
+  if (pool.length < 2) return [];
 
-  const candidates = buildCandidatePairs(basho, pool, {
-    seed: `${args.seed}-cand-${division}-day${day}`,
-    division
-  });
+  let finalPairings: MatchPairing[];
 
-  // First pass: strict (no repeats)
-  const used = new Set<string>();
-  const selected = greedySelectPairs(candidates, boutsPerDay, used);
-
-  // If we couldn't fill the card, optionally allow forced repeats (same-heya still disallowed)
-  if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
-     const relaxedCandidates = buildCandidatePairs(basho, pool, {
-       seed: `${args.seed}-relaxed-${division}-day${day}`,
-       division,
-       rules: { avoidRepeatOpponents: false }
-     });
-     
-     const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
-     selected.push(...additional);
-  }
-
-  // Deterministic shuffle of final list so it doesn't always appear sorted by score
-  const shuffled = [...selected];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(rng.next() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
-  const scheduled: MatchSchedule[] = [];
-  for (const p of shuffled) {
-    scheduled.push({
-      boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
-      day,
-      eastRikishiId: p.eastId,
-      westRikishiId: p.westId
+  if (division === "makuuchi") {
+    // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
+    // buildSwissTorikumi already applies the three-phase constraint solver
+    // and returns results sorted chronologically (lowest rank → elite last).
+    finalPairings = buildSwissTorikumi(basho, pool, {
+      seed: `${args.seed}-swiss-makuuchi-day${day}`,
+      division: "makuuchi",
+      rivalriesState: (world as any).rivalriesState,
     });
+  } else {
+    // ── Legacy candidate-pair path (all lower divisions) ───────────────────
+    const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
+    const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
+    if (boutsPerDay <= 0) return [];
+
+    const candidates = buildCandidatePairs(basho, pool, {
+      seed: `${args.seed}-cand-${division}-day${day}`,
+      division,
+    });
+
+    const used = new Set<string>();
+    const selected = greedySelectPairs(candidates, boutsPerDay, used);
+
+    if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
+      const relaxedCandidates = buildCandidatePairs(basho, pool, {
+        seed: `${args.seed}-relaxed-${division}-day${day}`,
+        division,
+        rules: { avoidRepeatOpponents: false },
+      });
+      const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
+      selected.push(...additional);
+    }
+
+    // Deterministic shuffle for lower divisions (broadcast order not mandated)
+    const shuffled = [...selected];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(rng.next() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    finalPairings = shuffled;
   }
 
-  // Append to basho state (mutates basho.matches as engine expects)
-  basho.matches.push(...scheduled);
+  const scheduled: MatchSchedule[] = finalPairings.map(p => ({
+    boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
+    day,
+    eastRikishiId: p.eastId,
+    westRikishiId: p.westId,
+  }));
 
-  // Update opponent map (not strictly needed because basho.matches holds truth)
-  void previousOpponentsSet(basho);
+  // Append to basho state (engine truth source)
+  basho.matches.push(...scheduled);
 
   return scheduled;
 }

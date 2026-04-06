@@ -185,6 +185,35 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 
     case "interim": {
       const remaining = world._interimDaysRemaining ?? 0;
+      // Banzuke reveal starts 14 days before the basho (JSA §1.2)
+      if (remaining <= 14) {
+        world.cyclePhase = "banzuke_reveal";
+        world._interimDaysRemaining = 14;
+        logEngineEvent(world, {
+          type: "BANZUKE_REVEAL",
+          category: "basho",
+          importance: "major",
+          scope: "world",
+          title: "Banzuke Hatsu-Dashi — The Rankings Are Revealed",
+          summary: `The official banzuke for the ${world.currentBashoName ?? "upcoming basho"} has been published.`,
+          data: {
+            from: prev,
+            to: world.cyclePhase,
+            bashoName: world.currentBashoName,
+            // Attach current banzuke snapshot so UI and MediaImpactService can
+            // process promotion/demotion fame shifts.
+            banzukeSnapshot: world.currentBanzuke ?? null,
+          },
+          tags: ["phase", "banzuke", "promotion"],
+        });
+        return { from: prev, to: world.cyclePhase };
+      }
+      break;
+    }
+
+    case "banzuke_reveal": {
+      // The reveal phase lasts 7 days; then normal pre-basho preparation begins.
+      const remaining = world._interimDaysRemaining ?? 0;
       if (remaining <= 7) {
         world.cyclePhase = "pre_basho";
         world._interimDaysRemaining = 7;
@@ -196,12 +225,13 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
           title: "Pre-basho preparation begins",
           summary: `Stables begin final preparations for the upcoming ${world.currentBashoName ?? "basho"}.`,
           data: { from: prev, to: world.cyclePhase, bashoName: world.currentBashoName },
-          tags: ["phase"]
+          tags: ["phase"],
         });
         return { from: prev, to: world.cyclePhase };
       }
       break;
     }
+
       default: assertNever(world.cyclePhase);
 
   }
@@ -298,7 +328,9 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
   // 0.5) Enforce Weekly Boundary (C3.3) before Basho Torikumi 
   // Constitution C3.3: Training injuries must lock in before Day 1 Torikumi.
   // If we are about to transition to active_basho, or 7 days have passed, trigger the weekly tick.
-  const aboutToStartBasho = world.cyclePhase === "pre_basho" && (world._interimDaysRemaining || 0) <= 0;
+  const aboutToStartBasho =
+    (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
+    (world._interimDaysRemaining || 0) <= 0;
   world._daysSinceLastWeeklyTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
   
   if (world._daysSinceLastWeeklyTick >= 7 || aboutToStartBasho) {
