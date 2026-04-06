@@ -151,7 +151,7 @@ export function StableWidget() {
   );
 }
 
-function StatMini({
+const StatMini = React.memo(function StatMini({
   icon,
   label,
   value,
@@ -172,4 +172,4 @@ function StatMini({
       </div>
     </div>
   );
-}
+});

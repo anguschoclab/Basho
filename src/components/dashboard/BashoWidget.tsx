@@ -53,6 +53,17 @@ const LeaderboardRow = React.memo(
   },
 );
 
+const QuickStat = React.memo(({ label, value, color }: { label: string; value: number; color: string }) => {
+  return (
+    <div className="text-center p-1.5 rounded-md bg-muted/30">
+      <div className={`text-lg font-bold font-display ${color}`}>
+        {value}
+      </div>
+      <div className="text-[10px] text-muted-foreground">{label}</div>
+    </div>
+  );
+});
+
 export function BashoWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -130,43 +141,10 @@ export function BashoWidget() {
 
       {/* Quick stats with visual emphasis */}
       <div className="grid grid-cols-4 gap-2">
-        {[
-          {
-            label: "Bouts",
-            value: stats.bouts,
-            icon: Swords,
-            color: "text-foreground",
-          },
-          {
-            label: "Kinboshi",
-            value: stats.kinboshi,
-            icon: Star,
-            color: stats.kinboshi > 0 ? "text-gold" : "text-muted-foreground",
-          },
-          {
-            label: "Upsets",
-            value: stats.upsets,
-            icon: Swords,
-            color: stats.upsets > 3 ? "text-accent" : "text-muted-foreground",
-          },
-          {
-            label: "Injuries",
-            value: stats.injuries,
-            icon: HeartPulse,
-            color:
-              stats.injuries > 2 ? "text-destructive" : "text-muted-foreground",
-          },
-        ].map((s) => (
-          <div
-            key={s.label}
-            className="text-center p-1.5 rounded-md bg-muted/30"
-          >
-            <div className={`text-lg font-bold font-display ${s.color}`}>
-              {s.value}
-            </div>
-            <div className="text-[10px] text-muted-foreground">{s.label}</div>
-          </div>
-        ))}
+        <QuickStat label="Bouts" value={stats.bouts} color="text-foreground" />
+        <QuickStat label="Kinboshi" value={stats.kinboshi} color={stats.kinboshi > 0 ? "text-gold" : "text-muted-foreground"} />
+        <QuickStat label="Upsets" value={stats.upsets} color={stats.upsets > 3 ? "text-accent" : "text-muted-foreground"} />
+        <QuickStat label="Injuries" value={stats.injuries} color={stats.injuries > 2 ? "text-destructive" : "text-muted-foreground"} />
       </div>
 
       {/* Leaderboard */}

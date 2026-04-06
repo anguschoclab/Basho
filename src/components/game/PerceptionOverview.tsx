@@ -1,3 +1,4 @@
+import React from "react";
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
@@ -106,6 +107,15 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
   const [comparing, setComparing] = useState(false);
   const [compareMode, setCompareMode] = useState<"stables" | "rikishi">("stables");
 
+  const handleGlobalCompareToggle = React.useCallback(() => {
+    setComparing(!comparing);
+    if (comparing) {
+      setCompareIds([null, null]);
+      setCompareMode("stables");
+    }
+  }, [comparing, setCompareIds, setCompareMode]);
+
+
   const { snapshots, snapMap } = useMemo(() => {
     const results: Array<PerceptionSnapshot & { isPlayer: boolean }> = [];
     const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
@@ -147,7 +157,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
           variant={comparing ? "default" : "outline"}
           size="sm"
           className="ml-auto gap-1.5 h-7 text-xs"
-          onClick={() => { setComparing(!comparing); if (comparing) { setCompareIds([null, null]); setCompareMode("stables"); } }}
+          onClick={handleGlobalCompareToggle}
         >
           <GitCompareArrows className="h-3.5 w-3.5" />
           {comparing ? "Exit Compare" : "Compare Stables"}
@@ -214,7 +224,7 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
  *   set compare mode,
  * }.
  */
-function StableComparisonFull({
+const StableComparisonFull = React.memo(function StableComparisonFull({
   snapA,
   snapB,
   world,
@@ -264,7 +274,7 @@ function StableComparisonFull({
       </CardContent>
     </Card>
   );
-}
+});
 
 // === Stable Metric Grid ===
 
@@ -379,7 +389,7 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
  *   label, val a, val b, color map a, color map b,
  * }.
  */
-function RikishiRow({
+const RikishiRow = React.memo(function RikishiRow({
   label, valA, valB, colorMapA, colorMapB,
 }: {
   label: string;
@@ -397,7 +407,7 @@ function RikishiRow({
       <div className={`capitalize font-medium ${colorMapB?.[valB] ?? ""}`}>{valB}</div>
     </div>
   );
-}
+});
 
 // === H2H Bout History Panel ===
 
@@ -601,7 +611,7 @@ function PerceptionChip({
 
 // === Stable Perception Card Sub-Component ===
 
-function StablePerceptionCard({
+const StablePerceptionCard = React.memo(function StablePerceptionCard({
   snap,
   comparing,
   isSelected,
@@ -669,4 +679,4 @@ function StablePerceptionCard({
       </CardContent>
     </Card>
   );
-}
+});
