@@ -44,8 +44,8 @@ describe("resolveBoutPhysics — determinism", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result1 = resolveBoutPhysics(ctx, east, west, basho);
-    const result2 = resolveBoutPhysics(ctx, east, west, basho);
+    const { result: result1 } = resolveBoutPhysics(ctx, east, west, basho);
+    const { result: result2 } = resolveBoutPhysics(ctx, east, west, basho);
 
     expect(result1.winner).toBe(result2.winner);
     expect(result1.kimarite).toBe(result2.kimarite);
@@ -62,8 +62,8 @@ describe("resolveBoutPhysics — determinism", () => {
     const ctx1 = makeBoutContext({ rikishiEastId: "alpha", rikishiWestId: "beta" });
     const ctx2 = makeBoutContext({ rikishiEastId: "gamma", rikishiWestId: "delta" });
 
-    const result1 = resolveBoutPhysics(ctx1, east1, west1, basho);
-    const result2 = resolveBoutPhysics(ctx2, east2, west2, basho);
+    const { result: result1 } = resolveBoutPhysics(ctx1, east1, west1, basho);
+    const { result: result2 } = resolveBoutPhysics(ctx2, east2, west2, basho);
 
     // They should be structurally valid but may differ — just ensure they complete
     expect(["east", "west"]).toContain(result1.winner);
@@ -82,7 +82,7 @@ describe("resolveBoutPhysics — henka tactic", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext({ playerSide: "east", playerTactic: "HENKA" });
 
-    const result = resolveBoutPhysics(ctx, east, west, basho);
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
     expect(["east", "west"]).toContain(result.winner);
     expect(result.kimariteName).toBeTruthy();
   });
@@ -108,7 +108,7 @@ describe("resolveBoutPhysics — aggression modifier", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBoutPhysics(ctx, east, west, basho);
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
     expect(["east", "west"]).toContain(result.winner);
     expect(result.kimarite).toBeTruthy();
   });
@@ -124,8 +124,8 @@ describe("resolveBoutPhysics — aggression modifier", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const resultA = resolveBoutPhysics(ctx, eastHigh, westLow, basho);
-    const resultB = resolveBoutPhysics(ctx, eastLow, westHigh, basho);
+    const { result: resultA } = resolveBoutPhysics(ctx, eastHigh, westLow, basho);
+    const { result: resultB } = resolveBoutPhysics(ctx, eastLow, westHigh, basho);
 
     expect(["east", "west"]).toContain(resultA.winner);
     expect(["east", "west"]).toContain(resultB.winner);
@@ -143,7 +143,7 @@ describe("resolveBoutPhysics — output structure", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBoutPhysics(ctx, east, west, basho);
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
 
     expect(result.boutId).toBeTruthy();
     expect(["east", "west"]).toContain(result.winner);
@@ -163,7 +163,7 @@ describe("resolveBoutPhysics — output structure", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBoutPhysics(ctx, east, west, basho);
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
 
     if (result.winner === "east") {
       expect(result.winnerRikishiId).toBe("r-east");
