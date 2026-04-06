@@ -17,6 +17,8 @@
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { RECORDS_TABS } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,12 +75,12 @@ export default function HistoryPage() {
   const history = [...((world.history ?? []) as HistoryRecord[])].reverse();
 
   return (
-    <>
+    <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
       <Helmet>
         <title>History - Basho</title>
       </Helmet>
 
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate({ to: "/" })}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -254,6 +256,6 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
-    </>
+    </AppLayout>
   );
 }

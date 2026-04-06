@@ -4,6 +4,7 @@
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { RECORDS_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -343,24 +344,16 @@ export default function HallOfFamePage() {
 
   const totalInductees = hof?.inductees.length ?? 0;
 
-  const recordsTabs = [
-    { id: "recap", label: "Recap", href: "/recap" },
-    { id: "history", label: "History", href: "/history" },
-    { id: "almanac", label: "Almanac", href: "/almanac" },
-    { id: "media", label: "Media", href: "/media" },
-    { id: "hall-of-fame", label: "Hall of Fame" },
-  ];
-
   if (!world) {
     return (
-      <AppLayout pageTitle="Hall of Fame" subNavTabs={recordsTabs} activeSubTab="hall-of-fame">
+      <AppLayout pageTitle="Hall of Fame" subNavTabs={RECORDS_TABS} activeSubTab="hall-of-fame">
         <div className="flex items-center justify-center h-64 text-muted-foreground">No world loaded</div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout pageTitle="Hall of Fame" subNavTabs={recordsTabs} activeSubTab="hall-of-fame">
+    <AppLayout pageTitle="Hall of Fame" subNavTabs={RECORDS_TABS} activeSubTab="hall-of-fame">
       <Helmet><title>Hall of Fame — Sumo Manager</title></Helmet>
       <div className="space-y-6">
         {/* Hero Header */}

@@ -26,3 +26,9 @@ export const TOURNAMENT_TABS = [
   { id: "schedule", label: "Schedule", href: "/schedule" },
   { id: "rivalries", label: "Rivalries", href: "/rivalries" },
 ];
+
+export const RECORDS_TABS = [
+  { id: "history", label: "History", href: "/history" },
+  { id: "almanac", label: "Almanac", href: "/almanac" },
+  { id: "hall-of-fame", label: "Hall of Fame", href: "/hall-of-fame" },
+];

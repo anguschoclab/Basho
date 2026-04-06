@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { RECORDS_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -76,14 +78,14 @@ export default function AlmanacPage() {
 
   if (!world) {
     return (
-      <div className="p-6 max-w-5xl mx-auto space-y-4 text-center">
-        <Card className="paper py-12">
+      <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
+        <Card className="paper py-12 text-center">
           <CardHeader>
             <CardTitle>Almanac unavailable</CardTitle>
             <CardDescription>The world state is not loaded yet.</CardDescription>
           </CardHeader>
         </Card>
-      </div>
+      </AppLayout>
     );
   }
 
@@ -107,12 +109,12 @@ export default function AlmanacPage() {
   }, [world.rikishi, world.year]);
 
   return (
-    <>
+    <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
       <Helmet>
         <title>Almanac - The Memory of the World</title>
       </Helmet>
 
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-4xl font-bold flex items-center gap-3">
@@ -223,6 +225,6 @@ export default function AlmanacPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </AppLayout>
   );
 }
