@@ -5,13 +5,12 @@
  */
 
 import React from "react";
-import { useGameStore } from "../../store/gameStore";
-import { Marquee } from "../ui/marquee"; // Assuming a marquee component exists or we can mock it
+import { useGame } from "../../contexts/GameContext";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 
 export function InboxNewsTicker() {
-  const digest = useGameStore((state) => state.digest);
+  const { digest } = useGame();
   if (!digest || !digest.sections) return null;
 
   // Flatten all items from all sections for the ticker

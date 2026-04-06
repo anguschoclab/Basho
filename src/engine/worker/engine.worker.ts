@@ -62,6 +62,8 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
             }
           }
           emitDigest();
+          // Return updated world so main thread can sync its own state
+          self.postMessage({ type: "WORLD_UPDATED", world: currentWorld });
         }
         break;
 

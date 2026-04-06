@@ -36,6 +36,7 @@ import {
   Home,
   Calendar,
   AlertTriangle,
+  Lock,
 } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -48,6 +49,7 @@ export function AppSidebar() {
   const world = state.world;
 
   const isLoaded = !!world;
+  const tutorialCompleted = world?.tutorialState?.completed ?? false;
   const playerHeya = isLoaded && world?.playerHeyaId
     ? world.heyas.get(world.playerHeyaId)
     : null;
@@ -95,7 +97,7 @@ export function AppSidebar() {
         { title: "Training", url: "/stable/training", icon: Dumbbell },
         { title: "Medical", url: "/stable/medical", icon: Heart },
         { title: "Staff & Coaches", url: "/stable/staff", icon: Briefcase },
-        { title: "Scouting", url: "/office/scouting", icon: Search },
+        { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
       ],
     },
     {
@@ -121,6 +123,7 @@ export function AppSidebar() {
           title: "Finances",
           url: "/office/finances",
           icon: Coins,
+          locked: !tutorialCompleted,
           badge: fundsCritical ? "!" : fundsLow ? "Low" : undefined,
           badgeClass: fundsCritical
             ? "bg-destructive/20 text-destructive border-destructive/30"
@@ -174,10 +177,29 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
-                  const itemAny = item as typeof item & { exactOnly?: boolean; badge?: string; badgeClass?: string };
+                  const itemAny = item as typeof item & { exactOnly?: boolean; badge?: string; badgeClass?: string; locked?: boolean };
                   const active = itemAny.exactOnly
                     ? isActive(item.url)
                     : isSectionActive(item.url);
+
+                  if (itemAny.locked) {
+                    return (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton
+                          tooltip={`${item.title} — Complete your first Basho to unlock`}
+                          isActive={false}
+                          className="mx-2 w-[calc(100%-1rem)] opacity-40 cursor-not-allowed pointer-events-none"
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            <item.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                            <span className="group-data-[collapsible=icon]:hidden flex-1 truncate text-muted-foreground">{item.title}</span>
+                            <Lock className="h-3 w-3 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden" />
+                          </div>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+
                   return (
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton

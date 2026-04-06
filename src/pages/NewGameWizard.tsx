@@ -34,6 +34,7 @@ import { Helmet } from "react-helmet";
 import { makeDeterministicSeed, formatYenToMan } from "@/utils/engineUtils";
 import { cn } from "@/lib/utils";
 import type { Heya } from "@/engine/types/heya";
+import { ExhibitionBout } from "@/components/onboarding/ExhibitionBout";
 
 const OYAKATA_BACKGROUNDS = [
   {
@@ -103,6 +104,10 @@ export default function NewGameWizard() {
       ichimon,
       heyaId: selectedHeyaId,
     });
+    setStep(4);
+  };
+
+  const handleExhibitionComplete = () => {
     navigate({ to: "/" });
   };
 
@@ -135,7 +140,7 @@ export default function NewGameWizard() {
             </div>
             <h1 className="text-4xl font-display font-black tracking-tight text-white uppercase sumi-e-ink">Begin Your Legacy</h1>
             <div className="flex items-center gap-1 justify-center">
-               {[1, 2, 3].map((s) => (
+               {[1, 2, 3, 4].map((s) => (
                  <div key={s} className={cn("h-1 rounded-full transition-all duration-500", s === step ? "w-12 bg-white" : "w-6 bg-white/20")} />
                ))}
             </div>
@@ -315,6 +320,14 @@ export default function NewGameWizard() {
               <Button onClick={handleFinish} disabled={!selectedHeyaId} className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-2xl bg-primary text-white hover:scale-105 transition-transform">
                 Begin Journey <Sparkles className="w-6 h-6" />
               </Button>
+            </div>
+          </div>
+        )}
+        {/* ── STEP 4: EXHIBITION BOUT ── */}
+        {step === 4 && (
+          <div className="animate-in fade-in slide-in-from-right-10 duration-700">
+            <div className="glass rounded-2xl shadow-2xl border-2 border-primary/10 overflow-hidden">
+              <ExhibitionBout onComplete={handleExhibitionComplete} />
             </div>
           </div>
         )}

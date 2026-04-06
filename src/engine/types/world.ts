@@ -15,6 +15,7 @@ import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 import type { MyosekiMarket } from "./myoseki";
 import type { WorldRecords } from "./records";
+import type { TutorialState } from "./tutorial";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim";
@@ -92,6 +93,7 @@ export interface WorldState {
 
   almanacSnapshots?: AlmanacSnapshot[];
   ftue: FTUEState;
+  tutorialState?: TutorialState;
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;

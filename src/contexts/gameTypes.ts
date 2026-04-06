@@ -3,6 +3,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { BoutResult } from "@/engine/types/basho";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
+import type { UIDigest } from "@/presenters/uiDigest";
 
 /** Type representing game phase. */
 export type GamePhase =
@@ -26,6 +27,8 @@ export type GamePhase =
 export interface GameState {
   phase: GamePhase;
   world: WorldState | null;
+  /** Latest UIDigest built from world after each tick — consumed by InboxNewsTicker and similar components. */
+  digest: UIDigest | null;
   selectedRikishiId: string | null;
   selectedHeyaId: string | null;
   currentBoutIndex: number;
@@ -62,12 +65,16 @@ export type GameAction =
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
-  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" };
+  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
+  | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
+  | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
+  | { type: "COMPLETE_TUTORIAL" };
 
 /** Initial game state. */
 export const initialGameState: GameState = {
   phase: "menu",
   world: null,
+  digest: null,
   selectedRikishiId: null,
   selectedHeyaId: null,
   currentBoutIndex: 0,

@@ -79,6 +79,24 @@ function tierOf(r: Rikishi): number {
 const jitter = (rng: SeededRNG, scale = 1) => (rng.next() - 0.5) * scale;
 
 /**
+ * Returns true if the trickster's henka attempt succeeds against an oncoming pusher.
+ */
+function checkHenkaTrick(
+  trickster: Rikishi,
+  opponent: Rikishi,
+  tAct: import("../types/combat").CombatAction,
+  oAct: import("../types/combat").CombatAction,
+  rng: SeededRNG,
+): boolean {
+  if (tAct.family === 'trick' && oAct.family === 'push') {
+    const tScore = stat(trickster, 'technique') + (stat(opponent, 'speed') * 1.5) + jitter(rng, 5);
+    const oScore = stat(opponent, 'balance') + jitter(rng, 5);
+    return tScore > oScore;
+  }
+  return false;
+}
+
+/**
  * Resolve grip clash: Triggered when wrestlers enter or maintain a belt grapple.
  */
 function resolveGripClash(rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): void {
@@ -140,6 +158,15 @@ function selectAction(rng: SeededRNG, r: Rikishi, st: EngineState, opponent: Rik
      prefs.push *= 0.1;
   }
   
+  // Aggression (boosted by rivalry heat in boutResolver) shifts toward explosive push/speed
+  const aggression = stat(r, 'aggression', 50);
+  if (aggression > 65) {
+    const boost = (aggression - 65) / 70;
+    prefs.push = (prefs.push || 25) * (1 + boost);
+    prefs.speed = (prefs.speed || 25) * (1 + boost * 0.7);
+    prefs.belt = (prefs.belt || 25) * Math.max(0.5, 1 - boost * 0.6);
+  }
+
   const roll = rng.next();
   let cumulative = 0;
   let family: TacticalFamily = 'push';
@@ -176,24 +203,14 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
   const eastAction = selectAction(rng, east, st, west);
   const westAction = selectAction(rng, west, st, east);
 
-  // Henka Check
-  const checkHenka = (trickster: Rikishi, opponent: Rikishi, side: Side, tAct: CombatAction, oAct: CombatAction) => {
-    if (tAct.family === 'trick' && oAct.family === 'push') {
-       const tScore = stat(trickster, 'technique') + (stat(opponent, 'speed') * 1.5) + jitter(rng, 5);
-       const oScore = stat(opponent, 'balance') + jitter(rng, 5);
-       if (tScore > oScore) return true;
-    }
-    return false;
-  };
-
-  if (checkHenka(east, west, "east", eastAction, westAction)) {
+  if (checkHenkaTrick(east, west, eastAction, westAction, rng)) {
     st.advantage = "east";
     st.tachiaiWinner = "east";
     st.position = "lateral";
     st.log.push({ phase: 'tachiai', data: { event: 'henka_success', winner: 'east', trick: 'henka' } });
     return { earlyWinner: "east", earlyKimarite: 'hatakikomi' };
   }
-  if (checkHenka(west, east, "west", westAction, eastAction)) {
+  if (checkHenkaTrick(west, east, westAction, eastAction, rng)) {
     st.advantage = "west";
     st.tachiaiWinner = "west";
     st.position = "lateral";

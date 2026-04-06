@@ -226,7 +226,43 @@ export function tickWeekTalentPool(world: WorldState): void {
     }
   }
 
-  // 2. Periodic pool refresh logic (basho cadence)
+  // 2. Resolve expired suitor deadlines: pick the winner, fire fame event for high talent
+  for (const candidate of Object.values(tp.candidates)) {
+    if (candidate.availabilityState !== 'in_talks') continue;
+    if (!candidate.competingSuitors.length) continue;
+
+    const deadlineExpired = candidate.competingSuitors.some(s => world.week >= s.deadlineWeek);
+    if (!deadlineExpired) continue;
+
+    // Pick the suitor with the highest interest band
+    const bandRank: Record<string, number> = { all_in: 4, high: 3, medium: 2, low: 1 };
+    const winner = [...candidate.competingSuitors].sort(
+      (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
+    )[0];
+
+    candidate.availabilityState = 'signed';
+    candidate.competingSuitors = [winner];
+
+    // High-talent signing: fire fame event and give reputation boost to signing stable
+    if (candidate.talentSeed >= 80) {
+      const heya = world.heyas.get(winner.heyaId);
+      if (heya) {
+        heya.reputation = Math.min(100, (heya.reputation ?? 50) + 5);
+        logEngineEvent(world, {
+          type: 'HIGH_TALENT_SIGNED',
+          category: 'scouting',
+          importance: 'major',
+          scope: 'heya',
+          heyaId: winner.heyaId,
+          title: `Elite prospect joins ${heya.name}`,
+          summary: `${candidate.name} (talent ${candidate.talentSeed}) has committed to ${heya.name}, boosting stable prestige.`,
+          data: { talentSeed: candidate.talentSeed, candidateId: candidate.candidateId },
+        });
+      }
+    }
+  }
+
+  // 3. Periodic pool refresh logic (basho cadence)
   // Check if we are at the start of a basho month (odd months)
   if (
     world.calendar &&

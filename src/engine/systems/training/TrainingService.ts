@@ -53,7 +53,15 @@ export const TrainingService = {
 
       // 1. Fatigue Logic
       const fatigueDelta = calculateFatigueDelta(profile, individualFocus);
-      rikishi.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) + fatigueDelta));
+      const focusType = individualFocus?.focusType;
+      const isOnRecoveryFocus = focusType === 'protect' || focusType === 'rebuild';
+
+      if (rikishi.injured && isOnRecoveryFocus) {
+        // Recovery focus flips the delta: injured wrestlers on protect/rebuild shed fatigue
+        rikishi.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) - Math.abs(fatigueDelta)));
+      } else {
+        rikishi.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) + fatigueDelta));
+      }
 
       // 2. Growth Logic (Skip if injured)
       if (!rikishi.injured) {

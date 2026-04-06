@@ -96,6 +96,21 @@ export function updateMediaFromBout(args: {
   // 3. Apply Effects
   let nextState = applyHeadlineEffects(state, world, headline);
 
+  // 4. Log significant headlines to world.events.log so UIDigest picks them up
+  if (tier === 'main_event' || tier === 'national') {
+    logEngineEvent(world, {
+      type: `MEDIA_HEADLINE_${tier.toUpperCase()}`,
+      category: 'media',
+      importance: tier === 'main_event' ? 'major' : 'notable',
+      scope: 'world',
+      rikishiId: result.winnerRikishiId,
+      title,
+      summary: subtitle || title,
+      data: { tier, beat, tone, impact },
+      tags: ['media', 'bout', beat],
+    });
+  }
+
   // 4. Handle Streaks
   const extraHeadlines: MediaHeadline[] = [];
   const streakResult = processStreak(nextState, world, result.winnerRikishiId, result.loserRikishiId, day, bashoName, rng);

@@ -14,6 +14,7 @@ import { registerLocalStorage } from "./localStorageProvider";
 registerLocalStorage();
 
 import type { GamePhase, GameState } from "./gameTypes";
+import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
 import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
@@ -28,6 +29,7 @@ import * as actions from "./gameActions";
 /** Defines the structure for game context value. */
 interface GameContextValue {
   state: GameState;
+  digest: UIDigest | null;
   createWorld: (seed: string, playerHeyaId?: string) => void;
   setPhase: (phase: GamePhase) => void;
   selectRikishi: (id: string | null) => void;
@@ -58,6 +60,9 @@ interface GameContextValue {
   updateWorld: (world: WorldState) => void;
   issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
   handleMediaEvent: (eventId: string, choice: string) => void;
+  advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
+  setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
+  completeTutorial: () => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -106,6 +111,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const handleMediaEvent = useCallback((eventId: string, choice: string) => {
     dispatch(actions.handleMediaEvent(eventId, choice));
+  }, []);
+
+  const advanceTutorialStepAction = useCallback((step: import("@/engine/types/tutorial").TutorialStep) => {
+    dispatch(actions.advanceTutorialStep(step));
+  }, []);
+
+  const setTutorialFlagAction = useCallback((flag: keyof import("@/engine/types/tutorial").TutorialFlags) => {
+    dispatch(actions.setTutorialFlag(flag));
+  }, []);
+
+  const completeTutorialAction = useCallback(() => {
+    dispatch(actions.completeTutorial());
   }, []);
 
   const goOnHoliday = useCallback((config: HolidayConfig): HolidayResult | null => {
@@ -167,6 +184,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const value: GameContextValue = useMemo(() => ({
     state,
+    digest: state.digest,
     createWorld, setPhase, selectRikishi, selectHeya,
     startBasho,
     advanceDay,
@@ -179,7 +197,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     getRikishi, getHeya, getCurrentDayMatches, getStandings,
     updateWorld, goOnHoliday, runAutoSimAction,
     tickMultipleDays,
-    issueRuling, handleMediaEvent
+    issueRuling, handleMediaEvent,
+    advanceTutorialStep: advanceTutorialStepAction,
+    setTutorialFlag: setTutorialFlagAction,
+    completeTutorial: completeTutorialAction,
   }), [
     state,
     createWorld, setPhase, selectRikishi, selectHeya,
@@ -187,7 +208,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     endDay, endBasho, simFullBasho, advanceInterim, advanceOneDayAction,
     saveToSlot, loadFromSlot, quickSaveAction, loadFromAutosaveAction, hasAutosaveCheck, getSaveSlots,
     getRikishi, getHeya, getCurrentDayMatches, getStandings,
-    updateWorld, goOnHoliday, runAutoSimAction, tickMultipleDays, issueRuling, handleMediaEvent
+    updateWorld, goOnHoliday, runAutoSimAction, tickMultipleDays, issueRuling, handleMediaEvent,
+    advanceTutorialStepAction, setTutorialFlagAction, completeTutorialAction,
   ]);
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

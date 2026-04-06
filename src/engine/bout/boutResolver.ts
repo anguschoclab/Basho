@@ -2,7 +2,7 @@ import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
-// We import the new cleaned physics runner 
+// We import the new cleaned physics runner
 import { resolveBoutPhysics } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
@@ -10,6 +10,7 @@ import { generateBoutNarrative } from "./boutNarrative";
 import { RivalryService } from "../systems/narrative/RivalryService";
 import { EntityCollection } from "../core/EntityCollection";
 import { clamp } from "../utils/math";
+import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 
 export function resolveBout(
   bout: BoutContext,
@@ -42,8 +43,27 @@ export function resolveBout(
   const eastBout = { ...east, aggression: clamp((east.aggression || 50) * eastMod, 0, 100) };
   const westBout = { ...west, aggression: clamp((west.aggression || 50) * westMod, 0, 100) };
 
+  // NPC tactic override: desperation/rivalry pressure on key days
+  let cpuTacticOverride = bout.cpuTacticOverride;
+  if (!cpuTacticOverride && world) {
+    const bashoDay = basho.day ?? 1;
+    const standings = basho.standings;
+    // Determine which side is the NPC (the non-player side)
+    const npcSide = bout.playerSide === 'east' ? 'west' : bout.playerSide === 'west' ? 'east' : null;
+    if (npcSide) {
+      const npcRikishi = npcSide === 'east' ? east : west;
+      const npcRecord = standings?.get(npcRikishi.id) ?? { wins: 0, losses: 0 };
+      const rivalryKey = RivalryService.makeRivalryKey(east.id, west.id);
+      const rivalryState = RivalryService.ensureRivalriesState(world);
+      const rivalryHeat = rivalryState.pairs[rivalryKey]?.heat ?? 0;
+      cpuTacticOverride = decideBoutTacticOverride(npcRecord, rivalryHeat, bashoDay);
+    }
+  }
+
+  const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
+
   // 1. Run deterministic physics
-  const result = resolveBoutPhysics(ctxWithTactic, eastBout as Rikishi, westBout as Rikishi, basho);
+  const result = resolveBoutPhysics(ctxFinal, eastBout as Rikishi, westBout as Rikishi, basho);
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
     

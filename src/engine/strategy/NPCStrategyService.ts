@@ -2,7 +2,7 @@ import { PerceptionSnapshot } from "../perception";
 import { OyakataMood } from "../types/oyakata";
 import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/training";
 import { RecruitmentPhilosophy } from "../oyakataStylePreferences";
-import { Style } from "../types/combat";
+import { Style, BoutTactic } from "../types/combat";
 import { Id } from "../types/common";
 
 /**
@@ -135,6 +135,26 @@ export function decideRecovery(
   }
 
   return { recovery: "normal", reason: "Standard recovery emphasis" };
+}
+
+/**
+ * Decide bout tactic override for an NPC on high-pressure days.
+ * Returns an override tactic when kachi-koshi/make-koshi is on the line or rivalry heat is extreme.
+ * Returns undefined for standard play.
+ */
+export function decideBoutTacticOverride(
+  record: { wins: number; losses: number },
+  rivalryHeat: number,
+  bashoDay: number
+): BoutTactic | undefined {
+  const isFinalDay = bashoDay === 15;
+  const isMakeKoshiPrecipice = record.losses === 7; // 8th loss would mean losing record
+  const isKachiKoshiPrecipice = record.wins === 7;  // 8th win would mean winning record
+
+  if (isFinalDay && isMakeKoshiPrecipice) return 'OSHI_THRUST'; // desperation aggression
+  if (isFinalDay && rivalryHeat > 70) return 'OSHI_THRUST';     // heated rivalry climax
+  if (isFinalDay && isKachiKoshiPrecipice) return 'STANDARD';   // no override needed for kachi
+  return undefined;
 }
 
 /**

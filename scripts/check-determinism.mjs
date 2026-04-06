@@ -60,4 +60,5 @@ if (failed) {
   process.exit(1);
 } else {
   console.log("Determinism check passed: no Math.random or seedrandom usage in src/engine.");
+  console.log("Tip: also run 'vitest run src/engine/__tests__/simulationDeterminism.test.ts' for headless hash-based simulation determinism tests.");
 }

@@ -7,16 +7,26 @@
 
 import { create } from "zustand";
 import type { UIDigest } from "../presenters/uiDigest";
+import type { WorldState } from "../engine/types/world";
 import type { EngineCommand, EngineEvent } from "../engine/worker/types";
 
 interface GameStoreState {
   digest: UIDigest | null;
+  /** Last world state received from the worker after AUTO_SIM_DAYS. */
+  workerWorld: WorldState | null;
   isSimulating: boolean;
   progress: { message: string; current: number; total: number } | null;
   error: string | null;
 
   // Worker reference
   worker: Worker | null;
+
+  /**
+   * Optional callback invoked when the worker emits WORLD_UPDATED.
+   * Set this from GameContext to keep the main-thread world in sync
+   * after a worker-driven AUTO_SIM_DAYS completes.
+   */
+  onWorldUpdated: ((world: WorldState) => void) | null;
 
   // Actions
   initWorker: () => void;
@@ -25,14 +35,17 @@ interface GameStoreState {
   setSimulating: (isSimulating: boolean) => void;
   setProgress: (progress: { message: string; current: number; total: number } | null) => void;
   setError: (error: string | null) => void;
+  setOnWorldUpdated: (cb: ((world: WorldState) => void) | null) => void;
 }
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
   digest: null,
+  workerWorld: null,
   isSimulating: false,
   progress: null,
   error: null,
   worker: null,
+  onWorldUpdated: null,
 
   initWorker: () => {
     if (get().worker) return;
@@ -54,6 +67,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           break;
         case "DIGEST_UPDATED":
           set({ digest: data.digest });
+          break;
+        case "WORLD_UPDATED":
+          set({ workerWorld: data.world });
+          get().onWorldUpdated?.(data.world);
           break;
         case "PROGRESS":
           set({ progress: { message: data.message, current: data.current, total: data.total } });
@@ -85,4 +102,5 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   setSimulating: (isSimulating) => set({ isSimulating }),
   setProgress: (progress) => set({ progress }),
   setError: (error) => set({ error }),
+  setOnWorldUpdated: (cb) => set({ onWorldUpdated: cb }),
 }));

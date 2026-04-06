@@ -127,3 +127,17 @@ export const issueRuling = (rulingId: string, severity: "lenient" | "standard" |
   rulingId,
   severity,
 });
+
+export const advanceTutorialStep = (step: import("@/engine/types/tutorial").TutorialStep): GameAction => ({
+  type: "ADVANCE_TUTORIAL_STEP",
+  step,
+});
+
+export const setTutorialFlag = (flag: keyof import("@/engine/types/tutorial").TutorialFlags): GameAction => ({
+  type: "SET_TUTORIAL_FLAG",
+  flag,
+});
+
+export const completeTutorial = (): GameAction => ({
+  type: "COMPLETE_TUTORIAL",
+});

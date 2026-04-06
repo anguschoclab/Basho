@@ -2,6 +2,7 @@
 import type { GameState, GameAction } from "./gameTypes";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { combineReducers } from "./gameHelpers";
+import { buildWeeklyDigest } from "@/presenters/uiDigest";
 
 /** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
 function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }): ReturnType<typeof generateInitialWorld> {
@@ -83,16 +84,55 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "ADVANCE_TUTORIAL_STEP": {
+      if (!state.world) return state;
+      const ts = state.world.tutorialState;
+      return {
+        ...state,
+        world: {
+          ...state.world,
+          tutorialState: ts
+            ? { ...ts, currentStep: action.step }
+            : { completed: false, currentStep: action.step, flags: { seenStaminaTooltip: false, seenGripTooltip: false, seenMomentumTooltip: false, seenBashoRecordTooltip: false, finishedExhibition: false } },
+        },
+      };
+    }
+
+    case "SET_TUTORIAL_FLAG": {
+      if (!state.world?.tutorialState) return state;
+      return {
+        ...state,
+        world: {
+          ...state.world,
+          tutorialState: {
+            ...state.world.tutorialState,
+            flags: { ...state.world.tutorialState.flags, [action.flag]: true },
+          },
+        },
+      };
+    }
+
+    case "COMPLETE_TUTORIAL": {
+      if (!state.world) return state;
+      return {
+        ...state,
+        world: {
+          ...state.world,
+          tutorialState: {
+            ...(state.world.tutorialState ?? { flags: { seenStaminaTooltip: false, seenGripTooltip: false, seenMomentumTooltip: false, seenBashoRecordTooltip: false, finishedExhibition: false } }),
+            completed: true,
+            currentStep: 'DONE' as const,
+          },
+        },
+      };
+    }
+
     default:
       return state;
   }
 }
 
-/**
- * Combined Game Reducer
- * Sequentially applies slice reducers to handle specific domains of the GameState.
- */
-export const gameReducer = combineReducers<GameState, GameAction>([
+const baseReducer = combineReducers<GameState, GameAction>([
   coreSlice,
   timeSlice,
   heyaSlice,
@@ -101,3 +141,15 @@ export const gameReducer = combineReducers<GameState, GameAction>([
   bashoSlice,
   mediaSlice,
 ]);
+
+/**
+ * Combined Game Reducer — rebuilds UIDigest whenever the world changes.
+ * This ensures InboxNewsTicker and other digest consumers always see fresh data.
+ */
+export function gameReducer(state: GameState, action: GameAction): GameState {
+  const next = baseReducer(state, action);
+  if (next.world !== state.world) {
+    return { ...next, digest: buildWeeklyDigest(next.world) };
+  }
+  return next;
+}
