@@ -13,6 +13,7 @@ import {
   TACTICAL_MATRIX,
   CombatAction,
 } from "../types/combat";
+import type { EngineSnapshot } from "./kimariteEvaluator";
 
 import { RANK_HIERARCHY } from "../types/banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
@@ -303,7 +304,7 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
 /**
  * Main entrance to bout physics.
  */
-export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikishi, basho: BashoState): BoutResult {
+export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikishi, basho: BashoState): { result: BoutResult; engineSnapshot: EngineSnapshot } {
   const seed = `${basho.id || "basho"}-${basho.year || 0}-${bout.day}-${east.id}-${west.id}`;
   const rng = rngFromSeed(seed, "bout", "root");
 
@@ -367,7 +368,7 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
   const upset = (finalWinner === "east" && eT > wT + 1) || (finalWinner === "west" && wT > eT + 1);
   const isKinboshi = (finalWinner === "east" && eT === 5 && wT === 1) || (finalWinner === "west" && wT === 5 && eT === 1);
 
-  return {
+  const result: BoutResult = {
     boutId: bout.id,
     winner: finalWinner as Side,
     winnerRikishiId: finalWinner === "east" ? east.id : west.id,
@@ -382,4 +383,13 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     log: st.log,
     kenshoEnvelopes: 0
   };
+
+  const engineSnapshot: EngineSnapshot = {
+    stance: st.stance,
+    grappleState: st.grappleState,
+    balanceEast: st.balanceEast,
+    balanceWest: st.balanceWest,
+  };
+
+  return { result, engineSnapshot };
 }

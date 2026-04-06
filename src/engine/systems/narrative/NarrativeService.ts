@@ -22,7 +22,8 @@ import type {
   RivalryHeatBand,
   ScandalBand,
   TraitBand,
-  PrizeBand
+  PrizeBand,
+  DescriptorBand
 } from "./NarrativeBands";
 import {
   STAT_BANDS,
@@ -31,7 +32,10 @@ import {
   RIVALRY_HEAT_BANDS,
   SCANDAL_BANDS,
   TRAIT_BANDS,
-  PRIZE_BANDS
+  PRIZE_BANDS,
+  CONDITION_DESCRIPTOR_BANDS,
+  MORALE_DESCRIPTOR_BANDS,
+  POTENTIAL_DESCRIPTOR_BANDS
 } from "./NarrativeBands";
 import { 
   STAT_LABELS, 
@@ -151,5 +155,41 @@ export const NarrativeService = {
   getPrizeBand(amount: number): PrizeBand {
     const resolved = PRIZE_BANDS.find(b => amount >= b.min && amount < b.max);
     return resolved?.band ?? PRIZE_BANDS[PRIZE_BANDS.length - 1].band;
-  }
+  },
+
+  /**
+   * Condition Descriptor (Iki & Koshi — Breath & Hips).
+   * Input: 0.0–1.0 float (r.condition).
+   */
+  getConditionDescriptor(value: number): DescriptorBand {
+    const v = clamp(value, 0, 1);
+    return (
+      CONDITION_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
+      CONDITION_DESCRIPTOR_BANDS[CONDITION_DESCRIPTOR_BANDS.length - 1].band
+    );
+  },
+
+  /**
+   * Morale Descriptor (Kiai — Fighting Spirit).
+   * Input: 0.0–1.0 float (r.motivation).
+   */
+  getMoraleDescriptor(value: number): DescriptorBand {
+    const v = clamp(value, 0, 1);
+    return (
+      MORALE_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
+      MORALE_DESCRIPTOR_BANDS[MORALE_DESCRIPTOR_BANDS.length - 1].band
+    );
+  },
+
+  /**
+   * Potential Descriptor (Soshitsu — Innate Talent).
+   * Input: 0–100 integer (r.talentSeed).
+   */
+  getPotentialDescriptor(talentSeed: number): DescriptorBand {
+    const v = clamp(talentSeed, 0, 100);
+    return (
+      POTENTIAL_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
+      POTENTIAL_DESCRIPTOR_BANDS[POTENTIAL_DESCRIPTOR_BANDS.length - 1].band
+    );
+  },
 };

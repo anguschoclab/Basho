@@ -65,6 +65,30 @@ export function toTraitBand(value: number, prev?: import("./systems/narrative/Na
 }
 
 /**
+ * Public helper: condition (Iki/Koshi) → Japanese DescriptorBand.
+ * Input: 0.0–1.0 float (r.condition).
+ */
+export function toConditionDescriptor(value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getConditionDescriptor(value);
+}
+
+/**
+ * Public helper: morale (Kiai) → Japanese DescriptorBand.
+ * Input: 0.0–1.0 float (r.motivation).
+ */
+export function toMoraleDescriptor(value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getMoraleDescriptor(value);
+}
+
+/**
+ * Public helper: potential (Soshitsu) → Japanese DescriptorBand.
+ * Input: 0–100 integer (r.talentSeed).
+ */
+export function toPotentialDescriptor(talentSeed: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getPotentialDescriptor(talentSeed);
+}
+
+/**
  * Unified Rikishi Descriptor (Legacy support).
  */
 export interface RikishiDescriptor {

@@ -9,7 +9,7 @@
 
 import { rngFromSeed, SeededRNG } from "./rng";
 import { Rikishi } from "./types/rikishi";
-import { H2HRecord } from "./types/records";
+import { H2HRecord, H2HReport, H2HRecentMeeting } from "./types/records";
 import { BoutResult } from "./types/basho";
 import type { BoutTactic, TacticalResult } from "./types/combat";
 
@@ -162,6 +162,40 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   return `${p1Name} leads the series ${record.wins} to ${record.losses}.`;
 }
 
+
+/**
+ * Build a structured H2H report for two rikishi.
+ * Reads from rikishi.history[] (MatchResultLog[]) — the authoritative per-bout source.
+ * Returns up to 5 recent meetings sorted newest-first.
+ */
+export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
+  const aHistory = (rA.history ?? []).filter(m => m.opponentId === rB.id);
+  const bHistory = (rB.history ?? []).filter(m => m.opponentId === rA.id);
+
+  const aWins = aHistory.filter(m => m.win).length;
+  const bWins = bHistory.filter(m => m.win).length;
+
+  // Build recent meetings from rA's perspective (covers all shared bouts)
+  const meetings: H2HRecentMeeting[] = aHistory.map(m => ({
+    bashoId: m.bashoId,
+    year: m.year,
+    day: m.day,
+    winnerId: m.win ? rA.id : rB.id,
+    kimarite: m.kimarite,
+  }));
+
+  // Sort newest first (year desc, then day desc)
+  meetings.sort((a, b) => b.year !== a.year ? b.year - a.year : b.day - a.day);
+
+  return {
+    aId: rA.id,
+    aWins,
+    bId: rB.id,
+    bWins,
+    totalMeetings: aWins + bWins,
+    recentMeetings: meetings.slice(0, 5),
+  };
+}
 
 /**
  * Determine the CPU rikishi's bout tactic based on their stats and archetype.

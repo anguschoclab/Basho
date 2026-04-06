@@ -6,6 +6,8 @@ import type { WorldState } from "../types/world";
 import { resolveBoutPhysics } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
+import { determineKimarite } from "./kimariteEvaluator";
+import { KIMARITE_REGISTRY } from "../kimarite";
 // Note: injuries module doesn't currently apply per-bout injuries.
 import { RivalryService } from "../systems/narrative/RivalryService";
 import { EntityCollection } from "../core/EntityCollection";
@@ -63,16 +65,25 @@ export function resolveBout(
   const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
 
   // 1. Run deterministic physics
-  const result = resolveBoutPhysics(ctxFinal, eastBout as Rikishi, westBout as Rikishi, basho);
+  const { result, engineSnapshot } = resolveBoutPhysics(ctxFinal, eastBout as Rikishi, westBout as Rikishi, basho);
+
+  // 1.5. Override kimarite via strategy evaluator
+  const winner = result.winner === 'east' ? east : west;
+  const loser = result.winner === 'east' ? west : east;
+
+  const overrideId = determineKimarite(result, winner, loser, engineSnapshot);
+  if (overrideId !== result.kimarite) {
+    const k = KIMARITE_REGISTRY.find((k) => k.id === overrideId);
+    result.kimarite = overrideId as BoutResult['kimarite'];
+    if (k) result.kimariteName = k.name;
+  }
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
-    
+
   // 2. Generate narrative based on data frames
   generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`);
 
   // 2.5. Achievement Detection (Gold & Silver Stars - v2)
-  const winner = result.winner === 'east' ? east : west;
-  const loser = result.winner === 'east' ? west : east;
 
   // Initialize achievements if missing
   const defaultAchievements = (): RikishiAchievements => ({

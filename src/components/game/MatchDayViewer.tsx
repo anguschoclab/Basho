@@ -1,7 +1,7 @@
 // MatchDayViewer.tsx - Polished match day panel with staggered animations,
 // east/west color coding, and immersive bout cards
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { BoutCard, getHeatBand, getH2HRecord } from "./BoutCard";
 import type { MatchLike, MatchRowData } from "./BoutCard";
@@ -15,7 +15,8 @@ import type { BoutResult } from "@/engine/types/basho";
 import type { RankPosition } from "@/engine/types/banzuke";
 import type { RivalryHeatBand, RivalriesState  } from "@/engine/rivalries";
 import { projectRikishi } from "@/presenters/uiModels";
-import { compareRanks, generateH2HCommentary, getRivalry } from "@/presenters/uiDigest";
+import { compareRanks, generateH2HCommentary, getRivalry, buildBoutPreviewUI } from "@/presenters/uiDigest";
+import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
 import {
   Flame,
   Thermometer,
@@ -58,6 +59,26 @@ interface MatchDayViewerProps {
  */
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
   const navigate = useNavigate();
+  const [previewBoutId, setPreviewBoutId] = useState<string | null>(null);
+
+  const previewData = useMemo(() => {
+    if (!previewBoutId) return null;
+    return buildBoutPreviewUI(previewBoutId, world);
+  }, [previewBoutId, world]);
+
+  const handleBoutClick = (match: MatchLike) => {
+    // Show pre-match overlay for pending player bouts
+    if (match.boutId && !match.result) {
+      const east = world.rikishi.get(match.eastRikishiId);
+      const west = world.rikishi.get(match.westRikishiId);
+      const isPlayerBout = east && west && (playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id));
+      if (isPlayerBout) {
+        setPreviewBoutId(match.boutId);
+        return;
+      }
+    }
+    onBoutClick?.(match);
+  };
 
   const resolvedMatches = useMemo(() => {
     return matches.reduce<Array<MatchLike & {
@@ -124,42 +145,55 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
   const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
 
   return (
-    <Card className="paper overflow-hidden">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Swords className="h-4.5 w-4.5" />
-            Today's Card
-          </CardTitle>
-          <Badge variant="secondary" className="font-mono text-xs">
-            {completedCount}/{sortedMatches.length}
-          </Badge>
-        </div>
-      </CardHeader>
+    <>
+      {previewData && (
+        <BoutPreMatchOverlay
+          preview={previewData}
+          onDismiss={() => setPreviewBoutId(null)}
+          onBegin={() => {
+            const match = matches.find(m => m.boutId === previewData.boutId);
+            setPreviewBoutId(null);
+            if (match) onBoutClick?.(match);
+          }}
+        />
+      )}
+      <Card className="paper overflow-hidden">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Swords className="h-4.5 w-4.5" />
+              Today's Card
+            </CardTitle>
+            <Badge variant="secondary" className="font-mono text-xs">
+              {completedCount}/{sortedMatches.length}
+            </Badge>
+          </div>
+        </CardHeader>
 
-      <CardContent className="p-0">
-        {/* Thin east/west color bar at top */}
-        <div className="flex h-0.5">
-          <div className="flex-1 bg-east/30" />
-          <div className="flex-1 bg-west/30" />
-        </div>
+        <CardContent className="p-0">
+          {/* Thin east/west color bar at top */}
+          <div className="flex h-0.5">
+            <div className="flex-1 bg-east/30" />
+            <div className="flex-1 bg-west/30" />
+          </div>
 
-        <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
-          {sortedMatches.map((match, idx) => {
-            if (!match) return null;
-            return (
-              <BoutCard
-                key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
-                match={match}
-                idx={idx}
-                onBoutClick={onBoutClick}
-                onTacticChange={onTacticChange}
-                playerTactics={playerTactics}
-              />
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+          <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
+            {sortedMatches.map((match, idx) => {
+              if (!match) return null;
+              return (
+                <BoutCard
+                  key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
+                  match={match}
+                  idx={idx}
+                  onBoutClick={handleBoutClick}
+                  onTacticChange={onTacticChange}
+                  playerTactics={playerTactics}
+                />
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

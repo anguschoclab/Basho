@@ -10,6 +10,7 @@ export * from "./rikishiUI";
 export * from "./heyaUI";
 export * from "./bashoUI";
 export * from "./banzukeUI";
+export * from "./boutPreviewUI";
 
 // Legacy compat: Added only if absolutely necessary for un-refactored code
 export function getLocalizedArchetype(archetype?: string): string {

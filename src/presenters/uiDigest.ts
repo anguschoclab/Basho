@@ -1,7 +1,9 @@
 import type { Id } from "../engine/types/common";
 import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";
-import { generateH2HCommentary } from "../engine/h2h";
+import { generateH2HCommentary, getH2HReport } from "../engine/h2h";
+import { RivalryService } from "../engine/systems/narrative/RivalryService";
+import type { BoutPreviewUI } from "./boutPreviewUI";
 import { 
   selectInjuredRikishi, 
   selectRecentEvents, 
@@ -419,4 +421,30 @@ export { getArchetypeDescription } from "../engine/oyakataPersonalities";
 export { getKimarite } from "../engine/kimarite";
 export { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "../engine/scoutingStore";
 export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine/governance/GovernanceService";
+
+/**
+ * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
+ * Returns null if the bout or its participants cannot be found.
+ */
+export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPreviewUI | null {
+  const match = world.currentBasho?.matches.find(m => m.boutId === boutId);
+  if (!match) return null;
+
+  const east = world.rikishi.get(match.eastRikishiId);
+  const west = world.rikishi.get(match.westRikishiId);
+  if (!east || !west) return null;
+
+  const rivalriesState = RivalryService.ensureRivalriesState(world);
+  const key = RivalryService.makeRivalryKey(east.id, west.id);
+  const rivalryHeat = rivalriesState.pairs[key]?.heat ?? 0;
+
+  return {
+    boutId,
+    day: match.day ?? world.currentBasho?.day ?? 1,
+    eastRikishi: projectRikishi(east, world),
+    westRikishi: projectRikishi(west, world),
+    h2hReport: getH2HReport(east, west),
+    rivalryHeat,
+  };
+}
 

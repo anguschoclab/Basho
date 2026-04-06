@@ -25,6 +25,26 @@ export interface MatchResultLog {
   year: number;
 }
 
+/** A single recent H2H meeting entry for broadcast display. */
+export interface H2HRecentMeeting {
+  bashoId: string;
+  year: number;
+  day: number;
+  winnerId: string;
+  kimarite: string;
+}
+
+/** Structured H2H report for NHK-style pre-bout broadcast overlay. */
+export interface H2HReport {
+  aId: string;
+  aWins: number;
+  bId: string;
+  bWins: number;
+  totalMeetings: number;
+  /** Last 5 meetings, sorted newest first. */
+  recentMeetings: H2HRecentMeeting[];
+}
+
 export interface RecordEntry {
   rikishiId: string;
   shikona: string;

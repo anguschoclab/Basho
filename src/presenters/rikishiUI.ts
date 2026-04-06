@@ -3,14 +3,15 @@ import type { Rikishi, RikishiArchetype } from "../engine/types/rikishi";
 import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
 import type { Style, TacticalArchetype } from "../engine/types/combat";
-import { 
-  toRikishiDescriptor, 
-  toPotentialBand, 
-  ARCHETYPE_LABELS, 
-  toStatBand, 
-  type RikishiDescriptor, 
-  type PotentialBand 
+import {
+  toRikishiDescriptor,
+  toPotentialBand,
+  ARCHETYPE_LABELS,
+  toStatBand,
+  type RikishiDescriptor,
+  type PotentialBand
 } from "../engine/descriptorBands";
+import type { DescriptorBand } from "../engine/systems/narrative/NarrativeBands";
 import { getCareerPhase } from "../engine/training";
 import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
@@ -82,9 +83,14 @@ export interface UIRikishi {
   };
   descriptor: RikishiDescriptor;
   potentialBand: PotentialBand;
+  conditionDescriptor: DescriptorBand;
+  moraleDescriptor: DescriptorBand;
+  potentialDescriptor: DescriptorBand;
   topRivals: UIRivalEntry[];
   personalityTraits: string[];
   favoredKimarite: string[];
+  favoredKimariteDetailed: { kimarite: string; percentage: number }[];
+  favoredKimariteDisplay: string;
   preferredGrip: string;
   preferredGripDepth: string;
   specialPrizes: {
@@ -104,8 +110,8 @@ export interface UIRikishi {
   h2h?: Record<string, { wins: number; losses: number; streak: number }>;
 }
 
-function calculateMostFrequentKimarite(rikishiId: string, history: any[]): string[] {
-  if (!history || history.length === 0) return ["Unknown (Rookie)"];
+function calculateMostFrequentKimarite(history: any[]): { kimarite: string; percentage: number }[] {
+  if (!history || history.length === 0) return [];
   const winCounts: Record<string, number> = {};
   let totalWins = 0;
   for (const match of history) {
@@ -114,10 +120,21 @@ function calculateMostFrequentKimarite(rikishiId: string, history: any[]): strin
       totalWins++;
     }
   }
-  if (totalWins === 0) return ["Unknown (Rookie)"];
-  const sorted = Object.entries(winCounts).sort((a, b) => b[1] - a[1]);
-  const [topKimarite, count] = sorted[0];
-  return [`${topKimarite} (${count})`];
+  if (totalWins === 0) return [];
+  return Object.entries(winCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([kimarite, count]) => ({
+      kimarite,
+      percentage: Math.round((count / totalWins) * 100),
+    }));
+}
+
+function buildFavoredKimariteDisplay(entries: { kimarite: string; percentage: number }[]): string {
+  if (entries.length === 0) return "Unknown (Rookie)";
+  const top = entries[0];
+  // Capitalize first letter of kimarite id for display
+  const name = top.kimarite.charAt(0).toUpperCase() + top.kimarite.slice(1);
+  return `${name} (${top.percentage}%)`;
 }
 
 
@@ -245,9 +262,14 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     perceivedStats: calculatePerceivedStats(r),
     descriptor: toRikishiDescriptor(r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
+    conditionDescriptor: NarrativeService.getConditionDescriptor(r.condition ?? 0.5),
+    moraleDescriptor: NarrativeService.getMoraleDescriptor(r.motivation ?? 0.5),
+    potentialDescriptor: NarrativeService.getPotentialDescriptor(r.talentSeed ?? 50),
     topRivals: calculateTopRivals(r, world),
     personalityTraits: r.personalityTraits ?? [],
-    favoredKimarite: calculateMostFrequentKimarite(r.id, r.history ?? []),
+    favoredKimariteDetailed: calculateMostFrequentKimarite(r.history ?? []),
+    favoredKimariteDisplay: buildFavoredKimariteDisplay(calculateMostFrequentKimarite(r.history ?? [])),
+    favoredKimarite: calculateMostFrequentKimarite(r.history ?? []).slice(0, 1).map(e => `${e.kimarite} (${e.percentage}%)`),
     preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
     preferredGripDepth: r.combatProfile?.preferredGripDepth ?? 'standard',
     specialPrizes: calculateSpecialPrizes(r),
