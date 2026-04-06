@@ -90,7 +90,7 @@ export default function NewGameWizard() {
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
 
   const world = state.world;
-  const stables = useMemo(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
+  const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
 
   const handleNext = () => setStep((s) => s + 1);
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));

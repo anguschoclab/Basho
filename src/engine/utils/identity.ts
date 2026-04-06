@@ -5,7 +5,7 @@ import type { Rikishi } from "../types/rikishi";
  * In Sumo Manager Pro, "Foreign" is defined as any rikishi whose nationality
  * is NOT Japan, regardless of origin.
  */
-export function isForeign(rikishi: Pick<Rikishi, 'nationality'>): boolean {
+export function isForeign(rikishi: { nationality?: string }): boolean {
   if (!rikishi.nationality) return false;
   return rikishi.nationality.toLowerCase() !== "japan" && 
          rikishi.nationality.toLowerCase() !== "jp";

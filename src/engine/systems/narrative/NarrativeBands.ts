@@ -46,7 +46,7 @@ export const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
 export type MomentumBand = "on_fire" | "rising" | "steady" | "struggling" | "in_crisis";
 
 // === Rivalry Heat Bands (0–100) ===
-export type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary";
+export type RivalryHeatBand = "dormant" | "simmering" | "heated" | "fierce" | "legendary" | "inferno" | "hot" | "warm" | "cold";
 
 export const RIVALRY_HEAT_BANDS: BandDef<RivalryHeatBand>[] = [
   { band: "dormant", min: 0, max: 20 },

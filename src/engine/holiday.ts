@@ -195,7 +195,7 @@ function checkGate(
         const r = world.rikishi.get(rid);
         if (!r) continue;
         // Check if wrestler is on a promotion run (high wins in current basho)
-        if (r.currentBashoWins >= 12 && getRankTier(r.rank) <= 4) {
+        if ((r.currentBashoWins ?? 0) >= 12 && getRankTier(r.rank) <= 4) {
           return {
             gate,
             message: `Promotion momentum — ${r.shikona ?? r.name ?? rid} is on a remarkable tournament run.`,

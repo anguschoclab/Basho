@@ -101,7 +101,7 @@ export function OpponentScoutingTab({
 
             const scouted = getOrCreateScouted(world, r.id, 1);
             const scoutLevel = getScoutingLevel(world, r.id, 1);
-            const attrs = getScoutedAttributes(scouted, originalRikishi, seed);
+            const attrs = getScoutedAttributes(scouted, seed);
             const scoutInfo = describeScoutingLevel(scoutLevel);
             const rankNames = RANK_NAMES[r.rank] || { ja: r.rank, en: r.rank };
             const heya = world.heyas.get(r.heyaId);

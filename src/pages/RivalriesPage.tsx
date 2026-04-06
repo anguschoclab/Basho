@@ -12,10 +12,15 @@ import { clamp, formatRank } from "@/presenters/uiDigest";
 
 // Display config
 const HEAT_BAND_CONFIG: Record<RivalryHeatBand, { label: string; color: string; bgColor: string; barColor: string; glowClass: string }> = {
-  inferno: { label: "Inferno", color: "text-destructive", bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent", glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
-  hot:     { label: "Hot",     color: "text-accent",      bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-warning",      glowClass: "" },
-  warm:    { label: "Warm",    color: "text-warning",     bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
-  cold:    { label: "Cold",    color: "text-muted-foreground", bgColor: "bg-muted border-border",             barColor: "bg-muted-foreground",                           glowClass: "" },
+  inferno:   { label: "Inferno",   color: "text-destructive",      bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent", glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
+  hot:       { label: "Hot",       color: "text-accent",           bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-warning",      glowClass: "" },
+  warm:      { label: "Warm",      color: "text-warning",          bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
+  cold:      { label: "Cold",      color: "text-muted-foreground", bgColor: "bg-muted border-border",                  barColor: "bg-muted-foreground",                           glowClass: "" },
+  dormant:   { label: "Dormant",   color: "text-muted-foreground", bgColor: "bg-muted border-border",                  barColor: "bg-muted-foreground/50",                        glowClass: "" },
+  simmering: { label: "Simmering", color: "text-warning/80",       bgColor: "bg-warning/10 border-warning/20",         barColor: "bg-warning/60",                                 glowClass: "" },
+  heated:    { label: "Heated",    color: "text-warning",          bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
+  fierce:    { label: "Fierce",    color: "text-accent",           bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-destructive",   glowClass: "" },
+  legendary: { label: "Legendary", color: "text-destructive",      bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent",   glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
 };
 
 const TONE_CONFIG: Record<RivalryTone, { label: string; description: string; icon: any; ja: string }> = {
@@ -137,8 +142,8 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
   const aWins = pair.aWins || 0;
   const bWins = pair.bWins || 0;
 
-  const rankA = formatRank({ rank: rikishiA.rank, side: rikishiA.side ?? "east", rankNumber: rikishiA.rikishiRankNumber ?? rikishiA.rankNumber });
-  const rankB = formatRank({ rank: rikishiB.rank, side: rikishiB.side ?? "east", rankNumber: rikishiB.rikishiRankNumber ?? rikishiB.rankNumber });
+  const rankA = formatRank({ rank: rikishiA.rank as any, side: rikishiA.side ?? "east", rankNumber: rikishiA.rankNumber ?? 0 });
+  const rankB = formatRank({ rank: rikishiB.rank as any, side: rikishiB.side ?? "east", rankNumber: rikishiB.rankNumber ?? 0 });
 
 
   return (

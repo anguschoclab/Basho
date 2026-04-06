@@ -537,7 +537,7 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
   for (const r of world.rikishi.values()) {
     if (r.division === "makuuchi") {
       makuuchiRikishiCount++;
-      totalMakuuchiWins += r.currentBashoWins;
+      totalMakuuchiWins += r.currentBashoWins ?? 0;
       if (r.injured) {
         makuuchiInjuryCount++;
       }

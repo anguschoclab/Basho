@@ -107,6 +107,10 @@ export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
   heated: "Heated",
   fierce: "Fierce",
   legendary: "Legendary",
+  inferno: "Inferno",
+  hot: "Hot",
+  warm: "Warm",
+  cold: "Cold",
 };
 
 // === Scandal Labels ===

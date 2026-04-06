@@ -31,7 +31,7 @@ export const DefaultRetirementStrategy: RetirementStrategy = {
         EventBus.retirement(world, r.id, heya.id, r.shikona || r.name || r.id, retireReason);
 
         // Remove from heya
-        heya.rikishiIds = heya.rikishiIds.filter(id => id !== r.id);
+        heya.rikishiIds = (heya.rikishiIds ?? []).filter(id => id !== r.id);
 
         // Remove from global active map
         world.rikishi.delete(r.id);

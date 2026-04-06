@@ -168,7 +168,7 @@ export default function AlmanacPage() {
                           <p className="font-mono text-lg">Full House</p>
                        </div>
                        <div className="text-right">
-                          <Link to={`/basho/${basho.id || idx}`} className="text-primary hover:underline text-sm font-semibold">
+                          <Link to={"/basho" as any} className="text-primary hover:underline text-sm font-semibold">
                             View Full Results →
                           </Link>
                        </div>

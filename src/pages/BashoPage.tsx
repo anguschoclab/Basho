@@ -201,7 +201,7 @@ export default function BashoPage() {
   const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
   const handleSimulateAll = () => { simulateAllBouts(); };
   const handleNextDay = () => {
-    if (basho.day >= 15) setShowEndBashoConfirm(true);
+    if ((basho?.day ?? 0) >= 15) setShowEndBashoConfirm(true);
     else advanceDay();
   };
   const handleTacticChange = useCallback((id: string, tactic: string) => setBoutTactic(id, tactic as any), [setBoutTactic]);

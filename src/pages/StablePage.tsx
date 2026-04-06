@@ -49,7 +49,7 @@ export default function StablePage() {
   if (!world || !heya) return null;
 
   const rikishiList = useMemo(() => {
-    return heya.rikishiIds
+    return (heya.rikishiIds ?? [])
       .map((id) => {
         const r = world.rikishi.get(id);
         return r ? projectRikishi(r, world) : null;

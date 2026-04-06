@@ -47,7 +47,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): number {
       }
 
       // 4. Performance trend: recent basho wins/losses
-      const winRatio = r.currentBashoWins / (r.currentBashoWins + r.currentBashoLosses || 1);
+      const winRatio = (r.currentBashoWins ?? 0) / ((r.currentBashoWins ?? 0) + (r.currentBashoLosses ?? 0) || 1);
       score += winRatio * 20;
 
       // 5. Foreign-slot retention bias
@@ -81,7 +81,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): number {
  */
 function releaseRikishiToPool(world: WorldState, heya: Heya, rikishi: Rikishi) {
   // Remove from stable
-  heya.rikishiIds = heya.rikishiIds.filter((id) => id !== rikishi.id);
+  heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== rikishi.id);
   rikishi.heyaId = ""; // No longer attached to a stable
 
   // Audit event for the release

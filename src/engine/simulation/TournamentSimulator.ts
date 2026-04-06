@@ -68,8 +68,8 @@ export function simulateEntireBasho(
       const winner = result.winner === "east" ? east : west;
       const loser = result.winner === "east" ? west : east;
 
-      winner.currentBashoWins++;
-      loser.currentBashoLosses++;
+      winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
+      loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
 
       const winnerStanding = standings.get(winner.id);
       const loserStanding = standings.get(loser.id);
