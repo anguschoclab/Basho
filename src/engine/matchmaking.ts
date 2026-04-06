@@ -618,6 +618,29 @@ function phase2(
 }
 
 /** Phase 3 — Day 15 (Senshuraku): kore yori san'yaku + yusho exception */
+/**
+ * Phase 3 — Day 15 (Senshuraku): Yusho Exception + Kore yori san'yaku + Swiss fallback.
+ *
+ * Execution order (per TDD §3.1–3.3):
+ *
+ *  A. YUSHO EXCEPTION OVERRIDE (§3.1)
+ *     — Exactly one leader AND that leader is Maegashira
+ *       → pair them against the highest-available Yokozuna/Ozeki gatekeeper.
+ *
+ *  B. KORE YORI SAN'YAKU (§3.2)
+ *     — All remaining Yokozuna and Ozeki are force-paired against each other.
+ *     — Heya block and no-rematch rules are respected; if no valid elite
+ *       opponent exists the elite falls back into the Swiss pool.
+ *     — The final pairing in the reserved list (the absolute last bout of the
+ *       tournament) is tagged "finale". Priority: Yokozuna vs Yokozuna >
+ *       Yokozuna vs Ozeki.
+ *
+ *  C. SWISS FALLBACK (§3.3)
+ *     — All unmatched rikishi are passed into phase2() as normal.
+ *
+ *  The combined output is NOT sorted here — sortChronologically() handles
+ *  ordering after buildSwissTorikumi() collects the full result.
+ */
 function phase3(
   basho: BashoState,
   pool: Rikishi[],
@@ -626,87 +649,93 @@ function phase3(
 ): MatchPairing[] {
   const standings = basho.standings;
   const paired = new Set<string>();
-  const pairings: MatchPairing[] = [];
+  const yushoExceptionPairings: MatchPairing[] = [];
+  const koreyoriPairings: MatchPairing[] = [];
 
-  // Determine max wins for yusho contender logic
+  // ── A. YUSHO EXCEPTION OVERRIDE (TDD §3.1) ───────────────────────────────
+  //
+  // Condition: exactly one rikishi holds the highest win count AND they are
+  // a Maegashira (lower-ranked "Cinderella" story).
   let maxWins = 0;
   for (const [, rec] of standings ?? []) {
     if (rec.wins > maxWins) maxWins = rec.wins;
   }
 
-  const contenders = pool.filter(r => {
-    const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
-    return rec.wins >= maxWins - 1;
-  });
+  const leaders = pool.filter(r => (standings?.get(r.id)?.wins ?? 0) >= maxWins);
 
-  // YUSHO EXCEPTION: non-san'yaku contender leads → face highest available san'yaku
-  const nonSanyakuLeader = contenders.find(r => !isSanyakuRank(r) && (standings?.get(r.id)?.wins ?? 0) >= maxWins);
-  if (nonSanyakuLeader) {
+  if (leaders.length === 1 && leaders[0].rank === "maegashira") {
+    const cinderella = leaders[0];
+    // Highest-available Yokozuna or Ozeki (sorted by banzuke ordinal = most elite first)
     const gatekeeper = pool
-      .filter(r => isSanyakuRank(r) && !paired.has(r.id))
+      .filter(r => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
       .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
+
     if (gatekeeper) {
-      const p = tryPair(basho, nonSanyakuLeader, gatekeeper, facedSet, paired, rivalriesState);
+      const p = tryPair(basho, cinderella, gatekeeper, facedSet, paired, rivalriesState);
       if (p) {
-        pairings.push({ ...p, reasons: [...p.reasons, "yusho_exception"] });
-        paired.add(nonSanyakuLeader.id);
+        yushoExceptionPairings.push({ ...p, reasons: [...p.reasons, "yusho_exception"] });
+        paired.add(cinderella.id);
         paired.add(gatekeeper.id);
       }
     }
   }
 
-  // Build kore yori san'yaku: last 3 bouts reserved for top san'yaku
-  const sanYakuSorted = pool
-    .filter(r => isSanyakuRank(r) && !paired.has(r.id))
+  // ── B. KORE YORI SAN'YAKU (TDD §3.2) ─────────────────────────────────────
+  //
+  // All remaining Yokozuna and Ozeki must be paired against each other.
+  // Only Yokozuna/Ozeki qualify for forced elite pairings — Sekiwake and
+  // Komusubi fall into the Swiss fallback like the rest of the roster.
+  //
+  // We use a mutable working array so already-paired elites are skipped cleanly.
+  let elites = pool
+    .filter(r => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
     .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
-  const reserved: MatchPairing[] = [];
+  while (elites.length >= 2) {
+    const e1 = elites[0];
+    let didPair = false;
 
-  // Yokozuna vs Yokozuna absolutely last
-  const yokozuna = sanYakuSorted.filter(r => r.rank === "yokozuna");
-  if (yokozuna.length >= 2) {
-    const p = tryPair(basho, yokozuna[0], yokozuna[1], facedSet, paired, rivalriesState);
-    if (p) {
-      reserved.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku", "finale"] });
-      paired.add(yokozuna[0].id);
-      paired.add(yokozuna[1].id);
-    }
-  } else if (yokozuna.length === 1) {
-    const ozeki = sanYakuSorted.find(r => r.rank === "ozeki" && !paired.has(r.id));
-    if (ozeki) {
-      const p = tryPair(basho, yokozuna[0], ozeki, facedSet, paired, rivalriesState);
-      if (p) {
-        reserved.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku", "finale"] });
-        paired.add(yokozuna[0].id);
-        paired.add(ozeki.id);
-      }
-    }
-  }
+    for (let i = 1; i < elites.length; i++) {
+      const e2 = elites[i];
+      if (paired.has(e2.id)) continue;
 
-  // Fill remaining kore yori san'yaku slots (up to 3 total reserved bouts)
-  const remainingSanyaku = sanYakuSorted.filter(r => !paired.has(r.id));
-  for (let i = 0; i < remainingSanyaku.length - 1 && reserved.length < 3; i++) {
-    const a = remainingSanyaku[i];
-    if (paired.has(a.id)) continue;
-    for (let j = i + 1; j < remainingSanyaku.length; j++) {
-      const b = remainingSanyaku[j];
-      if (paired.has(b.id)) continue;
-      const p = tryPair(basho, a, b, facedSet, paired, rivalriesState);
+      const p = tryPair(basho, e1, e2, facedSet, paired, rivalriesState);
       if (p) {
-        reserved.unshift({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
-        paired.add(a.id);
-        paired.add(b.id);
+        koreyoriPairings.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
+        paired.add(e1.id);
+        paired.add(e2.id);
+        // Rebuild elites list without the two just paired
+        elites = elites.filter(r => r.id !== e1.id && r.id !== e2.id);
+        didPair = true;
         break;
       }
     }
+
+    if (!didPair) {
+      // No valid elite opponent (stablemate / already met) — leave in pool for Swiss
+      elites = elites.slice(1);
+    }
   }
 
-  // Fill remaining bouts using Phase 2 logic
-  const remaining = pool.filter(r => !paired.has(r.id));
-  const remainderPairings = phase2(basho, remaining, facedSet, rivalriesState);
+  // Promote the highest-ranked pairing to "finale" (last bout of the basho).
+  // Yokozuna vs Yokozuna is preferred; Yokozuna vs Ozeki otherwise.
+  // koreyoriPairings is already sorted by banzukeOrdinal so the first entry
+  // has the lowest combined ordinal = most elite. That bout goes last.
+  if (koreyoriPairings.length > 0) {
+    const finaleIdx = 0; // lowest banzukeOrdinal sum = most elite pairing
+    koreyoriPairings[finaleIdx] = {
+      ...koreyoriPairings[finaleIdx],
+      reasons: [...koreyoriPairings[finaleIdx].reasons, "finale"],
+    };
+  }
 
-  // Combine: regular bouts first, reserved kore yori san'yaku last
-  return [...remainderPairings, ...pairings, ...reserved];
+  // ── C. SWISS FALLBACK for the rest (TDD §3.3) ────────────────────────────
+  const swissPool = pool.filter(r => !paired.has(r.id));
+  const swissPairings = phase2(basho, swissPool, facedSet, rivalriesState);
+
+  // Combine: Swiss bouts first, Yusho exception next, kore-yori-san'yaku last
+  // (sortChronologically will enforce final broadcast order)
+  return [...swissPairings, ...yushoExceptionPairings, ...koreyoriPairings];
 }
 
 // =============================================================================
