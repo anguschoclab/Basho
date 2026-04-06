@@ -7,7 +7,7 @@ import {
   computeStarPower,
   processSponsorChurn
 } from "../SponsorshipService";
-import { SeededRNG } from "../../../rng";
+import { RNGRegistry } from "../../../core/RNGRegistry";
 import type { SponsorPool, Sponsor, Koenkai, KoenkaiBandType } from "../../../types/sponsors";
 import type { WorldState } from "../../../types/world";
 import type { Heya } from "../../../types/heya";
@@ -16,7 +16,7 @@ import { mockRikishi } from "../../../__tests__/utils";
 describe("SponsorshipService", () => {
   describe("createKoenkai", () => {
     it("creates a koenkai and determines strength band based on prestige", () => {
-      const rng = new SeededRNG("test");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test" } as WorldState, "matchmaking");
       const sponsors = new Map<string, Sponsor>();
       for (let i = 0; i < 10; i++) {
         sponsors.set(`s${i}`, {
@@ -51,7 +51,7 @@ describe("SponsorshipService", () => {
   describe("selectBenefactor", () => {
     it("returns null if koenkai is undefined", () => {
       const sponsorPool = { sponsors: new Map() } as SponsorPool;
-      const rng = new SeededRNG("test");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test" } as WorldState, "matchmaking");
       expect(selectBenefactor("heya-1", sponsorPool, undefined, rng)).toBeNull();
     });
 
@@ -62,7 +62,7 @@ describe("SponsorshipService", () => {
       const koenkai = {
         members: [{ role: "koenkai_pillar", sponsorId: "s1" }]
       } as Koenkai;
-      const rng = new SeededRNG("test");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test" } as WorldState, "matchmaking");
       expect(selectBenefactor("heya-1", { sponsors } as SponsorPool, koenkai, rng)).toBeNull();
     });
 
@@ -77,7 +77,7 @@ describe("SponsorshipService", () => {
           { role: "koenkai_pillar", sponsorId: "s2" }
         ]
       } as Koenkai;
-      const rng = new SeededRNG("test");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test" } as WorldState, "matchmaking");
       const benefactor = selectBenefactor("heya-1", { sponsors } as SponsorPool, koenkai, rng);
       expect(benefactor?.sponsorId).toBe("s2");
     });

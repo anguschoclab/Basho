@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { determineBoutImportance, assignKenshoBanners, calculateKenshoEnvelopes } from "../KenshoService";
-import { SeededRNG } from "../../../rng";
+import { RNGRegistry } from "../../../core/RNGRegistry";
 import type { SponsorPool, Sponsor } from "../../../types/sponsors";
 import type { WorldState } from "../../../types/world";
 import { mockRikishi } from "../../../__tests__/utils";
@@ -36,7 +36,7 @@ describe("KenshoService", () => {
   });
 
   describe("assignKenshoBanners", () => {
-    const mockRNG = new SeededRNG("test-seed");
+    const mockRNG = RNGRegistry.getSystemRNG({ seed: "test-seed" } as WorldState, "matchmaking");
 
     it("returns empty array if count is 0", () => {
       const sponsorPool: SponsorPool = { sponsors: new Map(), availableSponsors: [] };
@@ -57,7 +57,7 @@ describe("KenshoService", () => {
       }
       const sponsorPool: SponsorPool = { sponsors, availableSponsors: [] };
 
-      const rng = new SeededRNG("test-seed-2");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test-seed-2" } as WorldState, "matchmaking");
       const resultPeak = assignKenshoBanners("bout-peak", 10, "peak", sponsorPool, rng);
       expect(resultPeak.length).toBe(10);
 
@@ -67,7 +67,7 @@ describe("KenshoService", () => {
       const uniqueSponsors = new Set(resultPeak.map(s => s.sponsorId));
       expect(uniqueSponsors.size).toBe(10);
 
-      const rng2 = new SeededRNG("test-seed-3");
+      const rng2 = RNGRegistry.getSystemRNG({ seed: "test-seed-3" } as WorldState, "matchmaking");
       const resultLow = assignKenshoBanners("bout-low", 5, "low", sponsorPool, rng2);
       expect(resultLow.length).toBe(5);
       const uniqueSponsorsLow = new Set(resultLow.map(s => s.sponsorId));
@@ -77,7 +77,7 @@ describe("KenshoService", () => {
 
   describe("calculateKenshoEnvelopes", () => {
     it("calculates correctly with kinboshi", () => {
-      const rng = new SeededRNG("test-kinboshi");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test-kinboshi" } as WorldState, "matchmaking");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
       const res = calculateKenshoEnvelopes(world, rikishi, "kinboshi", rng);
@@ -86,7 +86,7 @@ describe("KenshoService", () => {
     });
 
     it("calculates correctly with ginboshi", () => {
-      const rng = new SeededRNG("test-ginboshi");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test-ginboshi" } as WorldState, "matchmaking");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
       const res = calculateKenshoEnvelopes(world, rikishi, "ginboshi", rng);
@@ -95,7 +95,7 @@ describe("KenshoService", () => {
     });
 
     it("calculates correctly with normal awards", () => {
-      const rng = new SeededRNG("test-normal");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test-normal" } as WorldState, "matchmaking");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
       const res = calculateKenshoEnvelopes(world, rikishi, undefined, rng);
@@ -104,7 +104,7 @@ describe("KenshoService", () => {
     });
 
     it("applies buzz modifier correctly", () => {
-      const rng = new SeededRNG("test-buzz");
+      const rng = RNGRegistry.getSystemRNG({ seed: "test-buzz" } as WorldState, "matchmaking");
       const rikishi = mockRikishi("r1");
       const world = { mediaState: { mediaHeat: { "r1": 80 } } } as unknown as WorldState;
       // Normal envelope: ~1-3. Mod: 1.0 + 80/80 = 2.0. Result ~ 2-6.
