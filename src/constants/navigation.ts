@@ -1,27 +1,28 @@
 export const HQ_TABS = [
   { id: "stable", label: "Overview", href: "/stable" },
-  { id: "roster", label: "Roster Management", href: "/stable/roster" },
-  { id: "training", label: "Training Ground", href: "/stable/training" },
-  { id: "staff", label: "Staff & Coaches", href: "/stable/staff" },
-  { id: "medical", label: "Performance Center", href: "/stable/medical" },
+  { id: "roster", label: "Roster", href: "/stable/roster" },
+  { id: "training", label: "Training", href: "/stable/training" },
+  { id: "staff", label: "Staff", href: "/stable/staff" },
+  { id: "medical", label: "Medical", href: "/stable/medical" },
 ];
 
 export const OFFICE_TABS = [
-  { id: "economy", label: "Finances & Loans", href: "/office/finances" },
-  { id: "facilities", label: "Infrastructure", href: "/office/facilities" },
-  { id: "sponsors", label: "Sponsor Portfolio", href: "/office/sponsors" },
-  { id: "scouting", label: "Scouting Network", href: "/office/scouting" },
+  { id: "economy", label: "Finances", href: "/office/finances" },
+  { id: "facilities", label: "Facilities", href: "/office/facilities" },
+  { id: "sponsors", label: "Sponsors", href: "/office/sponsors" },
+  { id: "scouting", label: "Scouting", href: "/office/scouting" },
 ];
 
 export const ASSOCIATION_TABS = [
-  { id: "governance", label: "JSA Governance", href: "/jsa/governance" },
-  { id: "talent", label: "Talent Liquidity", href: "/jsa/talent" },
-  { id: "trends", label: "League Trends", href: "/jsa/trends" },
+  { id: "governance", label: "Governance", href: "/jsa/governance" },
+  { id: "myoseki", label: "Elder Market", href: "/myoseki" },
+  { id: "media", label: "Press & Rep", href: "/media" },
+  { id: "trends", label: "Trends", href: "/jsa/trends" },
 ];
 
 export const TOURNAMENT_TABS = [
-  { id: "basho", label: "Current Basho", href: "/basho" },
-  { id: "banzuke", label: "Banzuke Records", href: "/banzuke" },
-  { id: "schedule", label: "Tournament Schedule", href: "/schedule" },
-  { id: "rivalries", label: "Stable Rivalries", href: "/rivalries" },
+  { id: "basho", label: "Basho", href: "/basho" },
+  { id: "banzuke", label: "Banzuke", href: "/banzuke" },
+  { id: "schedule", label: "Schedule", href: "/schedule" },
+  { id: "rivalries", label: "Rivalries", href: "/rivalries" },
 ];

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -47,34 +48,29 @@ export default function SchedulePage() {
 
   if (!world || !currentBasho) {
     return (
-      <AppLayout>
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">Schedule Management</h1>
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              No active basho currently.
-            </CardContent>
-          </Card>
-        </div>
+      <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
+        <Card>
+          <CardContent className="py-8 text-center text-muted-foreground">
+            No active basho currently.
+          </CardContent>
+        </Card>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="flex-1 space-y-6 p-8 pt-6">
-        <div className="flex items-center justify-between">
+    <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Schedule Management</h2>
-            <p className="text-muted-foreground mt-1">
-              View upcoming and past bouts for all divisions across the tournament.
+            <h2 className="text-2xl font-display font-bold tracking-tight">Schedule</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              View upcoming and past bouts for all divisions.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="px-3 py-1">
-              {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)} Basho {currentBasho.year}
-            </Badge>
-          </div>
+          <Badge variant="outline" className="px-3 py-1">
+            {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)} Basho {currentBasho.year}
+          </Badge>
         </div>
 
         <div className="grid gap-6 md:grid-cols-[250px_1fr]">

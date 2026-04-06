@@ -3,6 +3,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
+import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -209,14 +210,8 @@ export default function BashoPage() {
 
   if (!world || !basho) return null;
 
-  const competitionTabs = [
-    { id: "basho", label: "Basho" },
-    { id: "banzuke", label: "Banzuke", href: "/banzuke" },
-    { id: "rivalries", label: "Rivalries", href: "/rivalries" },
-  ];
-
   return (
-    <AppLayout pageTitle={bashoInfo?.nameEn || "Tournament"} subNavTabs={competitionTabs} activeSubTab="basho">
+    <AppLayout pageTitle={bashoInfo?.nameEn || "Tournament"} subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
       <Helmet><title>{`${bashoInfo?.nameEn || "Tournament"} Day ${basho.day}`}</title></Helmet>
 
       <div className="space-y-4">

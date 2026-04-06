@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -293,16 +294,10 @@ export default function RivalriesPage() {
     );
   }
 
-  const competitionTabs = [
-    { id: "basho", label: "Basho", href: "/basho" },
-    { id: "banzuke", label: "Banzuke", href: "/banzuke" },
-    { id: "rivalries", label: "Rivalries" },
-  ];
-
   const hasRivalries = stats.total > 0;
 
   return (
-    <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={competitionTabs} activeSubTab="rivalries">
+    <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={TOURNAMENT_TABS} activeSubTab="rivalries">
       <Helmet><title>Rivalries & Feuds - Basho</title></Helmet>
 
       <div className="space-y-6 animate-fade-in">

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
+import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
@@ -49,14 +50,8 @@ export default function BanzukePage() {
   const hasPrevBasho = prevScoreMap.size > 0;
   const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
-  const competitionTabs = [
-    { id: "basho", label: "Basho", href: "/basho" },
-    { id: "banzuke", label: "Banzuke" },
-    { id: "rivalries", label: "Rivalries", href: "/rivalries" },
-  ];
-
   return (
-    <AppLayout pageTitle="Official Banzuke" subNavTabs={competitionTabs} activeSubTab="banzuke">
+    <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
       <div className="space-y-4 animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
