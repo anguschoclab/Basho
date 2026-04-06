@@ -239,12 +239,6 @@ export function scorePairing(args: {
     if (s > 0.75 && !reasons.includes("similar_rank")) reasons.push("similar_rank");
   }
 
-  // Soft: avoid huge weight mismatch
-  if (rules.avoidHugeWeightMismatch) {
-    const s = weightMismatchScore(a, b);
-    score *= (0.7 + 0.3 * s);
-    if (s < 0.6) reasons.push("weight_mismatch");
-  }
 
   // Mild penalty if repeat is allowed (forced scenario)
   if (faced) {
