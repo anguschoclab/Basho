@@ -174,6 +174,16 @@ export function TrainingWidget() {
   const intensityInfo = INTENSITY_MULTIPLIERS[profile.intensity];
   const recoveryInfo = RECOVERY_MULTIPLIERS[profile.recovery];
 
+  // Read pre-computed modifier from transientContext (set by phase02_context each tick).
+  // Falls back to raw intensity multiplier if context hasn't been built yet.
+  const activeModifiers = world.transientContext?.activeModifiers;
+  const effectiveGrowthMultiplier =
+    activeModifiers != null
+      ? activeModifiers.trainingMultiplier
+      : intensityInfo.growth;
+  const financialPenalty = activeModifiers?.financialPenalty ?? false;
+  const moraleBoost = activeModifiers?.moraleBoost ?? false;
+
   const CAP_TO_INTENSITY: Record<string, TrainingIntensity> = {
     low: "conservative",
     medium: "balanced",
@@ -234,14 +244,28 @@ export function TrainingWidget() {
         </Badge>
       </div>
 
-      {/* Multiplier bars */}
+      {/* Context-driven status banners — sourced from transientContext (never derived in UI) */}
+      {financialPenalty && (
+        <div className="flex items-center gap-1.5 rounded-md bg-destructive/10 border border-destructive/30 px-2 py-1.5 text-[11px] text-destructive">
+          <Activity className="h-3 w-3 shrink-0" />
+          Stable is bankrupt! Training effectiveness severely reduced.
+        </div>
+      )}
+      {moraleBoost && !financialPenalty && (
+        <div className="flex items-center gap-1.5 rounded-md bg-success/10 border border-success/30 px-2 py-1.5 text-[11px] text-success">
+          <Zap className="h-3 w-3 shrink-0" />
+          Yusho boost active — training gains increased.
+        </div>
+      )}
+
+      {/* Multiplier bars — Growth uses effectiveGrowthMultiplier from transientContext */}
       <div className="grid grid-cols-3 gap-2 text-[10px]">
         {[
           {
             label: "Growth",
-            value: intensityInfo.growth,
+            value: effectiveGrowthMultiplier,
             icon: Zap,
-            color: "bg-primary",
+            color: financialPenalty ? "bg-destructive" : "bg-primary",
           },
           {
             label: "Fatigue",

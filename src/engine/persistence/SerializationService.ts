@@ -1,4 +1,5 @@
 import { stableTieBreak } from "../utils/sort";
+import { rebuildTransientContext } from "../tick/orchestrator";
 import { 
   WorldState, 
   SerializedWorldState, 
@@ -75,8 +76,13 @@ export const SerializationService = {
 
   /**
    * Transform WorldState to SerializedWorldState.
+   * NOTE: transientContext is intentionally excluded — it is ephemeral and
+   * must be rebuilt by rebuildTransientContext() on load.
    */
   serializeWorld(world: WorldState): SerializedWorldState {
+    // Destructure to explicitly drop transientContext before serialization
+    const { transientContext: _dropped, ...persistableWorld } = world as any;
+    void _dropped; // suppress unused-var lint
     return {
       seed: world.seed,
       year: world.year,
@@ -116,6 +122,8 @@ export const SerializationService = {
 
   /**
    * Transform SerializedWorldState to live WorldState.
+   * After reconstruction, rebuildTransientContext() is called so the UI
+   * immediately has valid activeModifiers without requiring a tick.
    */
   deserializeWorld(serialized: SerializedWorldState): WorldState {
     const s = serialized;
@@ -126,7 +134,7 @@ export const SerializationService = {
     for (const k of Object.keys(heyasObj)) this.sanitizeHeya(heyasObj[k]!);
     for (const k of Object.keys(rikishiObj)) this.sanitizeRikishi(rikishiObj[k]!);
 
-    return {
+    const liveWorld = {
       id: `world_${serialized.seed}`,
       seed: serialized.seed,
       year: serialized.year,
@@ -146,7 +154,7 @@ export const SerializationService = {
       history: serialized.history || [],
       historyIndex: s.historyIndex,
       lineage: s.lineage || [],
-      records: s.records || { 
+      records: s.records || {
         allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
         active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
       },
@@ -172,6 +180,15 @@ export const SerializationService = {
         currentDay: 1
       }
     };
+
+    // Rebuild ephemeral transientContext so the UI has valid activeModifiers
+    // immediately after a save is loaded, without requiring an advance.
+    try {
+      return rebuildTransientContext(liveWorld);
+    } catch {
+      // Non-fatal: UI falls back to raw multipliers if context rebuild fails
+      return liveWorld;
+    }
   },
 
   serializeSponsorPool(pool?: SponsorPool): SerializedSponsorPool | undefined {

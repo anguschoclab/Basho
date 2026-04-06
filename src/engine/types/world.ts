@@ -20,6 +20,37 @@ import type { TutorialState } from "./tutorial";
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
 
+// ── Pipeline: Transient Context ───────────────────────────────────────────────
+// Computed once per week by phase02_context.ts. Never persisted to save files.
+
+/** Pre-calculated modifier bundle derived by phase02_context each tick. */
+export interface ActiveModifiers {
+  /** Multiplier applied to all training gains. Derived from facility level + oyakata bonus. */
+  trainingMultiplier: number;
+  /** Multiplier applied to stamina recovery and injury healing. Derived from recovery facility + nutrition. */
+  recoveryMultiplier: number;
+  /** True when the heya's bank balance < 0. Halves effective trainingMultiplier. */
+  financialPenalty: boolean;
+  /** True when a rikishi won a basho in the last 4 weeks. Adds +0.15 to trainingMultiplier. */
+  moraleBoost: boolean;
+}
+
+/** Mutation ledger produced during a single pipeline run. */
+export interface TickDeltas {
+  revenue: number;
+  expenses: number;
+  /** RikishiID → list of stat changes applied this tick. */
+  statChanges: Record<string, { stat: string; amount: number }[]>;
+  /** IDs of rikishi who sustained a new injury this tick. */
+  injuriesSustained: string[];
+}
+
+/** Ephemeral context injected into WorldState for the duration of a tick. */
+export interface TransientContext {
+  activeModifiers: ActiveModifiers;
+  deltas: TickDeltas;
+}
+
 /** Defines the structure for recruitment window. */
 export interface RecruitmentWindow {
   openedAtWeek: number;
@@ -144,6 +175,12 @@ export interface WorldState {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
 
   };
+
+  /**
+   * Ephemeral computed context for the current tick. Never written to save files.
+   * Populated by phase02_context at the start of each pipeline run.
+   */
+  transientContext?: TransientContext;
 
   // Legacy — used by calendar.ts endBasho() (pre-refactor code path)
   basho?: any;

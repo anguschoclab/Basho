@@ -13,10 +13,10 @@
 
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import type { Heya } from "../../types/heya";
-import type { WorldState } from "../../types/world";
-import type { 
-  TrainingProfile, 
-  IndividualFocus, 
+import type { WorldState, ActiveModifiers } from "../../types/world";
+import type {
+  TrainingProfile,
+  IndividualFocus,
 } from "../../types/training";
 import type { RikishiArchetype } from "../../types/combat";
 import { 
@@ -144,4 +144,35 @@ export function calculateGrowthVector(
   growth.adaptability = applyCapped('adaptability', 0.2, rikishi.stats?.adaptability || 50);
 
   return growth;
+}
+
+/**
+ * Pipeline-friendly entry point: calculates weekly training gains for a
+ * rikishi given an explicit `ActiveModifiers` context from phase02_context.
+ *
+ * Unlike `calculateGrowthVector`, this function does NOT require a Heya or
+ * WorldState reference — the modifier values have already been pre-computed and
+ * stored in `activeModifiers`. This satisfies the Anti-Monolith mandate: phase
+ * controllers pass modifiers; math functions never reach into world state.
+ *
+ * @param rikishi        The rikishi to compute gains for.
+ * @param activeModifiers Pre-calculated modifier bundle from transientContext.
+ * @param profile        The heya's active training profile.
+ * @param focus          Optional individual focus slot for this rikishi.
+ */
+export function calculateGains(
+  rikishi: Rikishi,
+  activeModifiers: ActiveModifiers,
+  profile: TrainingProfile,
+  focus?: IndividualFocus,
+): Record<TrainingAttribute, number> {
+  // Derive base growth without facility/world references
+  const base = calculateGrowthVector(profile, focus, rikishi);
+
+  const mult = activeModifiers.trainingMultiplier;
+  const result = {} as Record<TrainingAttribute, number>;
+  for (const key of Object.keys(base) as TrainingAttribute[]) {
+    result[key] = base[key] * mult;
+  }
+  return result;
 }
