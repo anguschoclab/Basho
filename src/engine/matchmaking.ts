@@ -5,7 +5,6 @@ import { stableTieBreak } from './utils/sort';
 // Matchmaking System v1.1 — Deterministic torikumi pairing for ALL divisions
 // - Deterministic (seedrandom only, no Math.random)
 // - Hard rules: no same-heya, avoid repeats within basho (unless forced)
-// - Soft rules: similar records, similar rank placement, avoid huge size mismatch (optional)
 // - Division-aware bout counts (sekitori 15, others 7 by default; overrideable)
 // - Produces scored candidate pairs; schedule.ts builds final set.
 // =======================================================
