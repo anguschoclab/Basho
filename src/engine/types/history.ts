@@ -5,6 +5,7 @@ import type { Id } from "./common";
  * Immutable snapshot of a Rikishi's performance in a single basho.
  */
 export interface CareerSnapshot {
+  id: string;
   bashoId: string;
   year: number;
   month: number;

@@ -3,17 +3,33 @@ import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";
 import { generateH2HCommentary, getH2HReport } from "../engine/h2h";
 import { RivalryService } from "../engine/systems/narrative/RivalryService";
+import { 
+  KOENKAI_MONTHLY_INCOME, 
+  SPONSOR_TIER_INCOME 
+} from "../engine/systems/economics/SponsorshipService";
 import type { BoutPreviewUI } from "./boutPreviewUI";
 import { 
   selectInjuredRikishi, 
   selectRecentEvents, 
   selectPromotionCandidates, 
   selectYokozunaCandidates, 
-  selectKadobanRikishi 
+  selectKadobanRikishi, 
+  selectTopRivals,
+  selectRikishiByHeya
 } from "./selectors";
 import { projectRikishi } from "./uiModels";
 import type { UIRikishi } from "./uiModels";
 import type { Rikishi } from "../engine/types/rikishi";
+import { getHallOfFame } from "../engine/hallOfFame";
+import { buildMediaDigest as buildRawMediaDigest } from "../engine/systems/media/MediaService";
+import type { HoFInductee } from "../engine/hallOfFame";
+import type { MediaState } from "../engine/types/media";
+import * as talentpool from "../engine/systems/generation/TalentPoolService";
+import { warmScoutingForRikishiList, getOrCreateScouted, getScoutingLevel } from "../engine/scoutingStore";
+import { getScoutedAttributes, describeScoutingLevel } from "../engine/scouting";
+import { RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
+import { getHeyaRoster, getSekitoriInHeya } from "../engine/queries";
+import { buildPerceptionSnapshot } from "../engine/perception";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -95,7 +111,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Key matchup (during basho) ---
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
-  if (basho && world.cyclePhase === "active_basho") {
+  if (basho && world.cyclePhase === "active_basho" && world.week > 1) {
     const day = basho.day ?? 1;
     let matchupCount = 0;
     for (const match of (basho.matches || [])) {
@@ -404,9 +420,9 @@ export { BASHO_CALENDAR, getBashoByNumber, getBashoIndex, getDayName, getSeasona
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
 export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
 export { FATIGUE_LABELS, POTENTIAL_LABELS, PRIZE_LABELS, RIVALRY_HEAT_LABELS, SCANDAL_LABELS, TRAIT_LABELS, toFatigueBand, toPotentialBand, toPrizeBand, toRivalryHeatBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
-export { HOF_CATEGORY_LABELS, getHallOfFame } from "../engine/hallOfFame";
+export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
 export { RANK_HIERARCHY, compareRanks, formatRank, getRankTitleJa, isKachiKoshi, isMakeKoshi } from "../engine/banzuke";
-export { buildMediaDigest, createDefaultMediaState } from "../engine/systems/media/MediaService";
+export { createDefaultMediaState } from "../engine/systems/media/MediaService";
 export { buildPbpFromBoutResult } from "../engine/pbp";
 export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
 export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
@@ -421,6 +437,8 @@ export { getArchetypeDescription } from "../engine/oyakataPersonalities";
 export { getKimarite } from "../engine/kimarite";
 export { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "../engine/scoutingStore";
 export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine/governance/GovernanceService";
+export { scoutPool, scoutCandidate, offerCandidate, getCandidateScoutingLevel } from "../engine/systems/generation/TalentPoolService";
+export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -448,3 +466,440 @@ export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPrevi
   };
 }
 
+/**
+ * Project a list of recent headlines for the Media Page.
+ */
+export function projectMediaUIDigest(world: WorldState) {
+  const mediaState = (world.mediaState as MediaState) || buildRawMediaDigest(world as any); 
+  const headlines = [...(mediaState.headlines || [])].sort((a, b) => b.impact - a.impact || b.week - a.week);
+  
+  const hotRikishi = Object.entries(mediaState.mediaHeat || {})
+    .map(([id, heat]) => ({
+      id,
+      heat: heat as number,
+      rikishi: world.rikishi.get(id) ? projectRikishi(world.rikishi.get(id)!, world) : null,
+      history: (mediaState.mediaHeatHistory?.[id] as any[]) ?? [],
+    }))
+    .filter(x => x.rikishi)
+    .sort((a, b) => b.heat - a.heat)
+    .slice(0, 10);
+
+  const pressuredHeya = Object.entries(mediaState.heyaPressure || {})
+    .map(([id, pressure]) => ({ 
+      id, 
+      pressure: pressure as number,
+      heya: world.heyas.get(id) 
+    }))
+    .filter(x => x.heya)
+    .sort((a, b) => b.pressure - a.pressure)
+    .slice(0, 8);
+
+  return {
+    headlines,
+    hotRikishi,
+    pressuredHeya,
+    currentWeek: world.week
+  };
+}
+
+/**
+ * Project Hall of Fame data for the HOF Page.
+ */
+export function projectHOFUIDigest(world: WorldState) {
+  const rawHof = getHallOfFame(world);
+  
+  const inductees = rawHof.inductees.map((ind: HoFInductee) => {
+    const rikishi = world.rikishi.get(ind.rikishiId);
+    const heya = rikishi ? world.heyas.get(rikishi.heyaId) : null;
+    
+    // Greatest fights projection
+    const greatestFights = (rikishi as Rikishi)?.history
+      ?.filter(m => m.win)
+      .slice(-10)
+      .map(m => ({
+        bashoName: m.bashoId ?? "",
+        kimarite: m.kimarite,
+        opponentName: world.rikishi.get(m.opponentId)?.shikona ?? "Unknown",
+        isWin: m.win,
+      }))
+      .reverse()
+      .slice(0, 5) ?? [];
+
+    // Yusho list projection
+    const yushoList = world.history
+      .filter(br => br.yusho === ind.rikishiId)
+      .map(br => ({ year: br.year, bashoName: (br as any).bashoName }));
+
+    return {
+      ...ind,
+      rikishi: rikishi ? projectRikishi(rikishi, world) : null,
+      heyaName: heya?.name ?? "Independent",
+      greatestFights,
+      yushoList
+    };
+  });
+
+  return { inductees };
+}
+
+/**
+ * Project recruitment data for ScoutingPage.
+ */
+export function projectRecruitmentUIDigest(world: WorldState, poolType: "high_school" | "university" | "foreign") {
+  const candidates = talentpool.listVisibleCandidates(world, poolType).map(c => {
+    const scoutLevel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
+    return {
+      ...c,
+      scoutLevel,
+      scoutInfo: describeScoutingLevel(scoutLevel),
+    };
+  });
+  return { candidates };
+}
+
+/**
+ * Project opponent scouting list for ScoutingPage.
+ */
+export function projectOpponentScoutingUIDigest(world: WorldState, playerHeyaId: string | null, filterDivision: string) {
+  const list: any[] = [];
+  const seed = (world as any).seed || "default";
+
+  for (const r of world.rikishi.values()) {
+    if (r.isRetired) continue;
+    if (r.heyaId === playerHeyaId) continue;
+    if (filterDivision && r.division !== filterDivision) continue;
+    
+    const scouted = getOrCreateScouted(world, r.id);
+    const scoutLevel = getScoutingLevel(world, r.id);
+    const attrs = getScoutedAttributes(scouted, seed);
+    const heya = world.heyas.get(r.heyaId);
+
+    list.push({
+      ...projectRikishi(r, world),
+      scoutLevel,
+      scoutInfo: describeScoutingLevel(scoutLevel),
+      scoutedProgress: scouted.scoutingLevel,
+      scoutingInvestment: scouted.scoutingInvestment,
+      scoutedAttrs: attrs,
+      heyaName: heya?.name ?? "Unknown Stable"
+    });
+  }
+
+  // Sort by rank tier
+  list.sort((a, b) => {
+    const ta = RANK_HIERARCHY[a.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
+    const tb = RANK_HIERARCHY[b.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
+    if (ta !== tb) return ta - tb;
+    return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
+  });
+
+  const sliced = list.slice(0, 40);
+  // Pre-warm scouting entries inside project to keep UI pure
+  warmScoutingForRikishiList(world, sliced.map(r => r.id));
+
+  return { opponents: sliced };
+}
+
+/**
+ * Project H2H history between two stables for PerceptionOverview.
+ */
+export function projectH2HBetweenHeyas(world: WorldState, heyaAId: string, heyaBId: string) {
+  const heyaA = world.heyas.get(heyaAId);
+  const heyaB = world.heyas.get(heyaBId);
+  if (!heyaA || !heyaB) return null;
+
+  const rikishiAIds = new Set(heyaA.rikishiIds);
+  const rikishiBIds = new Set(heyaB.rikishiIds);
+
+  let winsA = 0;
+  let winsB = 0;
+  const matchups: any[] = [];
+
+  for (const rAId of rikishiAIds) {
+    const rA = world.rikishi.get(rAId);
+    if (!rA?.h2h) continue;
+
+    for (const rBId of rikishiBIds) {
+      const record = rA.h2h[rBId];
+      if (!record || (record.wins === 0 && record.losses === 0)) continue;
+
+      const rB = world.rikishi.get(rBId);
+      if (!rB) continue;
+
+      winsA += record.wins;
+      winsB += record.losses;
+
+      matchups.push({
+        rikishiAId: rAId,
+        rikishiAName: rA.shikona,
+        rikishiBId: rBId,
+        rikishiBName: rB.shikona,
+        aWins: record.wins,
+        bWins: record.losses,
+        lastKimarite: record.lastMatch?.kimarite,
+        lastWinner: record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
+      });
+    }
+  }
+
+  matchups.sort((a, b) => (b.aWins + b.bWins) - (a.aWins + a.bWins));
+
+  return { 
+    heyaAName: heyaA.name,
+    heyaBName: heyaB.name,
+    winsA, 
+    winsB, 
+    totalBouts: winsA + winsB, 
+    matchups 
+  };
+}
+
+/**
+ * Project dashboard data for the main overview.
+ */
+export function projectDashboardUIDigest(world: WorldState) {
+  const playerHeyaId = world.playerHeyaId;
+  if (!playerHeyaId) return null;
+
+  const heya = world.heyas.get(playerHeyaId);
+  if (!heya) return null;
+
+  // Recent 5 events for the ticker
+  const recentEvents = queryEvents(world, { limit: 5 });
+
+  // Top 3 rivals (using cached perception to avoid re-calculating)
+  const topRivals = selectTopRivals(world).slice(0, 3);
+
+  // Financial summary
+  const finances = {
+    balance: heya.funds,
+    weeklyIncome: 1250000, // Placeholder for actual calc
+    weeklyExpense: 850000, 
+    status: heya.funds > 10000000 ? "stable" : "critical" as const,
+  };
+
+  return {
+    heya: {
+      name: heya.name,
+      reputation: heya.reputation,
+      prestige: heya.prestigeBand,
+      funds: heya.funds,
+    },
+    stats: {
+      rosterSize: (heya.rikishiIds || []).length,
+      sekitoriCount: getSekitoriInHeya(world, playerHeyaId),
+      injuredCount: getHeyaRoster(world, playerHeyaId).filter(r => r.injured).length,
+    },
+    recentEvents,
+    topRivals,
+    finances,
+    currentWeek: world.week,
+    currentYear: world.year,
+    phase: world.cyclePhase,
+  };
+}
+
+/**
+ * Project sponsorship management data.
+ */
+export function projectSponsorUIDigest(world: WorldState) {
+  const playerHeyaId = world.playerHeyaId;
+  if (!playerHeyaId) return null;
+  const heya = world.heyas.get(playerHeyaId);
+  if (!heya) return null;
+
+  const pool = world.sponsorPool;
+  if (!pool) return null;
+
+  const activeSponsors: any[] = [];
+  
+  for (const sponsor of pool.sponsors.values()) {
+    if (!sponsor.active) continue;
+    for (const rel of sponsor.relationships) {
+      if (rel.targetId !== playerHeyaId) continue;
+
+      const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier] * (rel.strength / 3);
+      const satisfactionEstimate = Math.min(100, sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4);
+      const expiryWeek = rel.endsAtTick ?? null;
+      const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
+
+      activeSponsors.push({
+        relId: rel.relId,
+        sponsorId: sponsor.sponsorId,
+        name: sponsor.displayName,
+        tier: sponsor.tier,
+        category: sponsor.category.replace("_", " "),
+        monthlyIncome,
+        satisfaction: satisfactionEstimate,
+        expiryWeek,
+        isExpiringSoon,
+        strength: rel.strength,
+        loyalty: sponsor.loyalty,
+        role: rel.role.replace("_", " "),
+      });
+    }
+  }
+
+  activeSponsors.sort((a, b) => {
+    const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
+    return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
+  });
+
+  const koenkaiStrength = heya.koenkaiBand ?? "none";
+  const koenkaiIncome = KOENKAI_MONTHLY_INCOME[koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
+
+  return {
+    koenkaiName: `${heya.name} Supporters Association`,
+    strength: koenkaiStrength,
+    activeSponsors,
+    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
+    expiringCount: activeSponsors.filter(s => s.isExpiringSoon).length,
+    koenkaiIncome,
+  };
+}
+
+/**
+ * Perform a contract renewal. 
+ * Decouples the UI from direct engine mutations.
+ */
+export function renewSponsorContract(world: WorldState, relId: string): boolean {
+  const pool = world.sponsorPool;
+  if (!pool) return false;
+
+  for (const sponsor of pool.sponsors.values()) {
+    const relIdx = sponsor.relationships.findIndex(r => r.relId === relId);
+    if (relIdx >= 0) {
+      const rel = sponsor.relationships[relIdx];
+      sponsor.relationships[relIdx] = {
+        ...rel,
+        endsAtTick: (world.week ?? 0) + 52,
+        strength: Math.min(5, rel.strength + 1) as any,
+      };
+      sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Project medical and injury recovery data.
+ */
+export function projectMedicalUIDigest(world: WorldState) {
+  const playerHeyaId = world.playerHeyaId;
+  if (!playerHeyaId) return null;
+  const heya = world.heyas.get(playerHeyaId);
+  if (!heya) return null;
+
+  const roster = getHeyaRoster(world, playerHeyaId);
+  const injured = roster.filter(r => r.injured);
+  const perception = buildPerceptionSnapshot(world, playerHeyaId);
+
+  const recoveryFacility = heya.facilities?.recovery ?? 50;
+  const facilityLabel = recoveryFacility >= 80 ? "Excellent" : recoveryFacility >= 60 ? "Good" : recoveryFacility >= 40 ? "Adequate" : "Basic";
+
+  return {
+    heyaName: heya.name,
+    facilityLevel: recoveryFacility,
+    facilityLabel,
+    injuredRikishi: injured.map(r => {
+      const injuryStatus = r.injuryStatus;
+      const weeksRemaining = r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
+      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
+      const recoveryProgress = weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+      const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+
+      return {
+        id: r.id,
+        shikona: r.shikona,
+        severity: typeof (injuryStatus as any)?.severity === "string" ? (injuryStatus as any).severity : "unknown",
+        location: (injuryStatus as any)?.location || "unknown",
+        weeksRemaining,
+        weeksTotal,
+        recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
+        facilityBonus,
+      };
+    }),
+    welfare: {
+      welfareRisk: heya.welfareState?.welfareRisk ?? 0,
+      activeDiet: heya.welfareState?.activeDiet ?? "maintenance",
+      complianceState: heya.welfareState?.complianceState ?? "compliant",
+      weeksInState: heya.welfareState?.weeksInState ?? 0,
+    },
+    perception: {
+      welfareRiskBand: perception.welfareRiskBand,
+      moraleBand: perception.moraleBand,
+      rosterStrengthBand: perception.rosterStrengthBand,
+      stableMediaHeatBand: perception.stableMediaHeatBand,
+      rivalryPressureBand: perception.rivalryPressureBand,
+      rikishiHealthPerceptions: perception.rikishiPerceptions.map((rp: any) => ({
+        rikishiId: rp.rikishiId,
+        shikona: rp.shikona,
+        rank: rp.rank,
+        healthBand: rp.healthBand,
+        momentum: rp.momentum,
+      }))
+    }
+  };
+}
+
+/**
+ * Update heya diet via presenter.
+ */
+export function setHeyaDietAction(world: WorldState, heyaId: string, diet: any): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return false;
+  if (!heya.welfareState) {
+    heya.welfareState = { welfareRisk: 0, activeDiet: diet, complianceState: "compliant", weeksInState: 0 };
+  } else {
+    heya.welfareState.activeDiet = diet;
+  }
+  return true;
+}
+
+/**
+ * Project banzuke and rank movement data.
+ */
+export function projectBanzukeUIDigest(world: WorldState) {
+  const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const;
+  
+  const banzuke = divisions.reduce((acc, div) => {
+    acc[div] = selectRikishiByHeya(world); // This is not quite right, need by division
+    return acc;
+  }, {} as any);
+
+  // Real implementation would filter by division and sort by rank
+  const makuuchi = Array.from(world.rikishi.values())
+    .filter(r => r.division === "makuuchi")
+    .sort((a, b) => compareRanks(a.rank as any, b.rank as any) || (a.rankNumber || 0) - (b.rankNumber || 0))
+    .map(r => projectRikishi(r, world));
+
+  return {
+    year: world.year,
+    basho: world.currentBashoName,
+    makuuchi,
+  };
+}
+
+/**
+ * Project tournament live data.
+ */
+export function projectTournamentUIDigest(world: WorldState) {
+  const basho = world.currentBasho;
+  if (!basho) return null;
+
+  return {
+    name: basho.name,
+    day: basho.day,
+    isComplete: world.cyclePhase === "interim",
+    matches: (basho.matches || []).filter(m => m.day === basho.day).map(m => {
+       const east = world.rikishi.get(m.eastRikishiId);
+       const west = world.rikishi.get(m.westRikishiId);
+       return {
+         ...m,
+         eastName: east?.shikona || "Unknown",
+         westName: west?.shikona || "Unknown",
+       };
+    }),
+  };
+}

@@ -10,6 +10,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, Swords, User } from "lucide-react";
+import { useGame } from "@/contexts/GameContext";
+import { 
+  buildPerceptionSnapshot, 
+  projectH2HBetweenHeyas 
+} from "@/presenters/uiDigest";
 
 function RikishiSelectorList({
   perceptions,
@@ -38,11 +43,6 @@ function RikishiSelectorList({
     </ScrollArea>
   );
 }
-import type { WorldState } from "@/engine/types/world";
-import type { UIRikishi } from "@/presenters/uiModels";
-import type { Rank } from "@/engine/types/banzuke";
-import type { PerceptionSnapshot, RikishiPerception  } from "@/engine/perception";
-import { buildPerceptionSnapshot } from "@/presenters/uiDigest";
 
 const STATURE_COLOR: Record<string, string> = {
   legendary: "text-amber-400",
@@ -90,25 +90,18 @@ const MOMENTUM_COLOR: Record<string, string> = {
   declining: "text-destructive",
 };
 
-/** Defines the structure for perception overview props. */
-interface PerceptionOverviewProps {
-  world: WorldState;
-  playerHeyaId: string | null;
-}
-
-/**
- * perception overview.
- *  * @param { world, playerHeyaId } - The { world, player heya id }.
- */
-export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewProps) {
+export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
+  const { state } = useGame();
+  const world = state.world;
   const [compareIds, setCompareIds] = useState<[string | null, string | null]>([null, null]);
   const [comparing, setComparing] = useState(false);
-  const [compareMode, setCompareMode] = useState<"stables" | "rikishi">("stables");
+  const [compareMode, setCompareMode] = useState<"stables" | "rikishi" | "h2h">("stables");
 
   const { snapshots, snapMap } = useMemo(() => {
-    const results: Array<PerceptionSnapshot & { isPlayer: boolean }> = [];
-    const map = new Map<string, PerceptionSnapshot & { isPlayer: boolean }>();
+    if (!world) return { snapshots: [], snapMap: new Map() };
+    const results: Array<any> = [];
+    const map = new Map<string, any>();
     for (const heya of world.heyas.values()) {
       if ((heya.rikishiIds?.length ?? 0) === 0) continue;
       const snap = buildPerceptionSnapshot(world, heya.id);
@@ -161,13 +154,41 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
 
       {/* Comparison panel */}
       {comparing && snapA && snapB && (
-        <StableComparisonFull
-          snapA={snapA}
-          snapB={snapB}
-          world={world}
-          compareMode={compareMode}
-          setCompareMode={setCompareMode}
-        />
+          <Card className="paper border-primary/20">
+            <CardHeader className="pb-2 pt-3 px-4">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <GitCompareArrows className="h-4 w-4 text-primary" />
+                {snapA.heyaName} vs {snapB.heyaName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-3">
+              <Tabs value={compareMode} onValueChange={(v) => setCompareMode(v as any)}>
+                <TabsList className="grid w-full max-w-xs grid-cols-3 mb-3">
+                  <TabsTrigger value="stables" className="gap-1 text-xs">
+                    <Building2 className="h-3 w-3" /> Stables
+                  </TabsTrigger>
+                  <TabsTrigger value="rikishi" className="gap-1 text-xs">
+                    <User className="h-3 w-3" /> Rikishi
+                  </TabsTrigger>
+                  <TabsTrigger value="h2h" className="gap-1 text-xs">
+                    <Swords className="h-3 w-3" /> H2H
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="stables">
+                  <StableMetricGrid snapA={snapA} snapB={snapB} />
+                </TabsContent>
+
+                <TabsContent value="rikishi">
+                  <RikishiComparisonGrid snapA={snapA} snapB={snapB} />
+                </TabsContent>
+
+                <TabsContent value="h2h">
+                  <H2HPanel heyaAId={snapA.heyaId} heyaBId={snapB.heyaId} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
       )}
       {comparing && (!snapA || !snapB) && (
         <div className="text-xs text-muted-foreground border border-dashed border-primary/30 rounded-lg p-4 text-center">
@@ -196,82 +217,10 @@ export function PerceptionOverview({ world, playerHeyaId }: PerceptionOverviewPr
   );
 }
 
-// === Full Comparison with Tabs ===
-
-/**
- * stable comparison full.
- *  * @param {
- *   snapA,
- *   snapB,
- *   world,
- *   compareMode,
- *   setCompareMode,
- * } - The {
- *   snap a,
- *   snap b,
- *   world,
- *   compare mode,
- *   set compare mode,
- * }.
- */
-function StableComparisonFull({
-  snapA,
-  snapB,
-  world,
-  compareMode,
-  setCompareMode,
-}: {
-  snapA: PerceptionSnapshot;
-  snapB: PerceptionSnapshot;
-  world: WorldState;
-  compareMode: "stables" | "rikishi";
-  setCompareMode: (m: "stables" | "rikishi") => void;
-}) {
-  return (
-    <Card className="paper border-primary/20">
-      <CardHeader className="pb-2 pt-3 px-4">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <GitCompareArrows className="h-4 w-4 text-primary" />
-          {snapA.heyaName} vs {snapB.heyaName}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-4 pb-3">
-        <Tabs value={compareMode} onValueChange={(v) => setCompareMode(v as any)}>
-          <TabsList className="grid w-full max-w-xs grid-cols-3 mb-3">
-            <TabsTrigger value="stables" className="gap-1 text-xs">
-              <Building2 className="h-3 w-3" /> Stables
-            </TabsTrigger>
-            <TabsTrigger value="rikishi" className="gap-1 text-xs">
-              <User className="h-3 w-3" /> Rikishi
-            </TabsTrigger>
-            <TabsTrigger value="h2h" className="gap-1 text-xs">
-              <Swords className="h-3 w-3" /> H2H
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="stables">
-            <StableMetricGrid snapA={snapA} snapB={snapB} />
-          </TabsContent>
-
-          <TabsContent value="rikishi">
-            <RikishiComparisonGrid snapA={snapA} snapB={snapB} />
-          </TabsContent>
-
-          <TabsContent value="h2h">
-            <H2HPanel heyaAId={snapA.heyaId} heyaBId={snapB.heyaId} heyaAName={snapA.heyaName} heyaBName={snapB.heyaName} world={world} />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
-  );
-}
-
-// === Stable Metric Grid ===
-
 const COMPARE_ROWS: Array<{
   label: string;
   icon: React.ElementType;
-  get: (s: PerceptionSnapshot) => string;
+  get: (s: any) => string;
   colorMap?: Record<string, string>;
 }> = [
   { label: "Stature", icon: Building2, get: s => s.statureBand, colorMap: STATURE_COLOR },
@@ -286,11 +235,7 @@ const COMPARE_ROWS: Array<{
   { label: "Compliance", icon: Shield, get: s => s.complianceState },
 ];
 
-/**
- * stable metric grid.
- *  * @param { snapA, snapB } - The { snap a, snap b }.
- */
-function StableMetricGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: PerceptionSnapshot }) {
+function StableMetricGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
   return (
     <>
       <div className="grid grid-cols-[1fr_24px_80px_24px_1fr] gap-1 text-xs font-medium mb-2 pb-1 border-b border-border">
@@ -321,28 +266,20 @@ function StableMetricGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: 
   );
 }
 
-// === Rikishi Side-by-Side Comparison ===
-
-/**
- * rikishi comparison grid.
- *  * @param { snapA, snapB } - The { snap a, snap b }.
- */
-function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; snapB: PerceptionSnapshot }) {
+function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
   const [selectedA, setSelectedA] = useState<string | null>(snapA.rikishiPerceptions[0]?.rikishiId ?? null);
   const [selectedB, setSelectedB] = useState<string | null>(snapB.rikishiPerceptions[0]?.rikishiId ?? null);
 
-  const rA = snapA.rikishiPerceptions.find(r => r.rikishiId === selectedA);
-  const rB = snapB.rikishiPerceptions.find(r => r.rikishiId === selectedB);
+  const rA = snapA.rikishiPerceptions.find((r: any) => r.rikishiId === selectedA);
+  const rB = snapB.rikishiPerceptions.find((r: any) => r.rikishiId === selectedB);
 
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-4">
-        {/* Rikishi A selector */}
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapA.heyaName}</label>
           <RikishiSelectorList perceptions={snapA.rikishiPerceptions} selectedId={selectedA!} onSelect={setSelectedA} />
         </div>
-        {/* Rikishi B selector */}
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapB.heyaName}</label>
           <RikishiSelectorList perceptions={snapB.rikishiPerceptions} selectedId={selectedB!} onSelect={setSelectedB} />
@@ -371,14 +308,6 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: PerceptionSnapshot; sn
   );
 }
 
-/**
- * rikishi row.
- *  * @param {
- *   label, valA, valB, colorMapA, colorMapB,
- * } - The {
- *   label, val a, val b, color map a, color map b,
- * }.
- */
 function RikishiRow({
   label, valA, valB, colorMapA, colorMapB,
 }: {
@@ -399,89 +328,19 @@ function RikishiRow({
   );
 }
 
-// === H2H Bout History Panel ===
-
-/**
- * h2 h panel.
- *  * @param {
- *   heyaAId,
- *   heyaBId,
- *   heyaAName,
- *   heyaBName,
- *   world,
- * } - The {
- *   heya a id,
- *   heya b id,
- *   heya a name,
- *   heya b name,
- *   world,
- * }.
- */
 function H2HPanel({
   heyaAId,
   heyaBId,
-  heyaAName,
-  heyaBName,
-  world,
 }: {
   heyaAId: string;
   heyaBId: string;
-  heyaAName: string;
-  heyaBName: string;
-  world: WorldState;
 }) {
+  const { state } = useGame();
+  const world = state.world;
+
   const h2hData = useMemo(() => {
-    const heyaA = world.heyas.get(heyaAId);
-    const heyaB = world.heyas.get(heyaBId);
-    if (!heyaA || !heyaB) return null;
-
-    const rikishiAIds = new Set(heyaA.rikishiIds);
-    const rikishiBIds = new Set(heyaB.rikishiIds);
-
-    let winsA = 0;
-    let winsB = 0;
-    const matchups: Array<{
-      rikishiAId: string;
-      rikishiAName: string;
-      rikishiBId: string;
-      rikishiBName: string;
-      aWins: number;
-      bWins: number;
-      lastKimarite?: string;
-      lastWinner?: string;
-    }> = [];
-
-    // Scan H2H records from rikishi in heya A against rikishi in heya B
-    for (const rAId of rikishiAIds) {
-      const rA = world.rikishi.get(rAId);
-      if (!rA?.h2h) continue;
-
-      for (const rBId of rikishiBIds) {
-        const record = rA.h2h[rBId];
-        if (!record || (record.wins === 0 && record.losses === 0)) continue;
-
-        const rB = world.rikishi.get(rBId);
-        if (!rB) continue;
-
-        winsA += record.wins;
-        winsB += record.losses;
-
-        matchups.push({
-          rikishiAId: rAId,
-          rikishiAName: rA.shikona,
-          rikishiBId: rBId,
-          rikishiBName: rB.shikona,
-          aWins: record.wins,
-          bWins: record.losses,
-          lastKimarite: record.lastMatch?.kimarite,
-          lastWinner: record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
-        });
-      }
-    }
-
-    matchups.sort((a, b) => (b.aWins + b.bWins) - (a.aWins + a.bWins));
-
-    return { winsA, winsB, totalBouts: winsA + winsB, matchups };
+    if (!world) return null;
+    return projectH2HBetweenHeyas(world, heyaAId, heyaBId);
   }, [world, heyaAId, heyaBId]);
 
   if (!h2hData) return <p className="text-xs text-muted-foreground">No data available.</p>;
@@ -502,12 +361,12 @@ function H2HPanel({
       <div className="flex items-center justify-center gap-4 py-2">
         <div className="text-right">
           <div className="text-lg font-display font-bold text-primary">{h2hData.winsA}</div>
-          <div className="text-[10px] text-muted-foreground">{heyaAName}</div>
+          <div className="text-[10px] text-muted-foreground">{h2hData.heyaAName}</div>
         </div>
         <div className="text-muted-foreground text-xs font-medium">—</div>
         <div className="text-left">
           <div className="text-lg font-display font-bold text-primary">{h2hData.winsB}</div>
-          <div className="text-[10px] text-muted-foreground">{heyaBName}</div>
+          <div className="text-[10px] text-muted-foreground">{h2hData.heyaBName}</div>
         </div>
       </div>
       <div className="text-center text-[10px] text-muted-foreground">
@@ -515,23 +374,21 @@ function H2HPanel({
       </div>
 
       {/* Win share bar */}
-      {h2hData.totalBouts > 0 && (
-        <div className="flex h-2 rounded-full overflow-hidden bg-muted">
-          <div
-            className="bg-primary transition-all"
-            style={{ width: `${(h2hData.winsA / h2hData.totalBouts) * 100}%` }}
-          />
-          <div
-            className="bg-destructive transition-all"
-            style={{ width: `${(h2hData.winsB / h2hData.totalBouts) * 100}%` }}
-          />
-        </div>
-      )}
+      <div className="flex h-2 rounded-full overflow-hidden bg-muted">
+        <div
+          className="bg-primary transition-all"
+          style={{ width: `${(h2hData.winsA / h2hData.totalBouts) * 100}%` }}
+        />
+        <div
+          className="bg-destructive transition-all"
+          style={{ width: `${(h2hData.winsB / h2hData.totalBouts) * 100}%` }}
+        />
+      </div>
 
       {/* Individual matchups */}
       <ScrollArea className="max-h-48">
         <div className="space-y-1.5 pr-2">
-          {h2hData.matchups.map((m, i) => (
+          {h2hData.matchups.map((m: any, i: number) => (
             <div key={i} className="flex items-center justify-between text-xs p-2 rounded bg-secondary/30">
               <div className="flex-1 text-right truncate">
                 <RikishiName id={m.rikishiAId} name={m.rikishiAName} className="text-xs font-medium" />
@@ -555,24 +412,6 @@ function H2HPanel({
   );
 }
 
-// === Shared Components ===
-
-/**
- * perception chip.
- *  * @param {
- *   icon: Icon,
- *   label,
- *   value,
- *   count,
- *   color,
- * } - The {
- *   icon:  icon,
- *   label,
- *   value,
- *   count,
- *   color,
- * }.
- */
 function PerceptionChip({
   icon: Icon,
   label,
@@ -598,9 +437,6 @@ function PerceptionChip({
   );
 }
 
-
-// === Stable Perception Card Sub-Component ===
-
 function StablePerceptionCard({
   snap,
   comparing,
@@ -608,7 +444,7 @@ function StablePerceptionCard({
   onToggleCompare,
   onNavigate,
 }: {
-  snap: PerceptionSnapshot & { isPlayer: boolean };
+  snap: any;
   comparing: boolean;
   isSelected: boolean;
   onToggleCompare: () => void;

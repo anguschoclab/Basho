@@ -73,7 +73,7 @@ export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
   calculateMaxBid(world, heya, oyakata, candidateId) {
     // Scientists value 'Potential' (talentSeed) above all else
     const candidate = world.scoutingPool?.find(c => c.id === candidateId);
-    let potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
+    const potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
     return heya.funds * 0.20 * potentialMultiplier;
   }
 };

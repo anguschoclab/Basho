@@ -16,6 +16,7 @@ import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
 import { createKoenkai } from "../economics/SponsorshipService";
 import type { BashoName, BashoState } from "../../types/basho";
+import type { Faction, IchimonName } from "../../types/economy";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -28,13 +29,13 @@ export function createHeyaWithOyakata(args: {
   currentYear: number
 }): { heya: Heya, oyakata: Oyakata } {
   const { id, name, rng, tier, currentYear } = args;
-  const oyakataId = `oyakata_${id.split('_')[1]}`;
+  const oyakataId = rng.uuid('OY');
   
   const oyakata: Oyakata = {
     id: oyakataId,
     heyaId: id,
-    name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
-    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
+    name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
+    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
     age: 45 + rng.int(0, 20),
     archetype: seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]),
     traits: {
@@ -94,7 +95,7 @@ export function createStables(worldRng: SeededRNG): { heyaMap: Map<string, Heya>
   ];
 
   HEYA_NAMES.forEach((name, i) => {
-    const id = `heya_${i + 1}`;
+    const id = worldRng.uuid('HY');
     const tier = i / HEYA_NAMES.length;
     const { heya, oyakata } = createHeyaWithOyakata({ id, name, rng: worldRng, tier, currentYear: 2025 });
     heyaMap.set(id, heya);
@@ -131,7 +132,7 @@ export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): 
         ? Math.floor(i / 2) + 1 
         : 1;
 
-      const rikishiId = `rk_${totalGenerated + 1}`;
+      const rikishiId = worldRng.uuid('RK');
       const r = generateFullRikishi({
         id: rikishiId,
         rng: worldRng,
@@ -167,7 +168,7 @@ export function generateInitialWorld(seed: string): WorldState {
   const rikishiMap = createRosters(worldRng, heyaMap);
 
   const world: WorldState = {
-    id: `world_${seed}`,
+    id: worldRng.uuid('WD'),
     seed,
     year: 2025,
     week: 1,
@@ -182,9 +183,9 @@ export function generateInitialWorld(seed: string): WorldState {
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
-    playerHeyaId: "heya_1", // Default to stable 1
+    playerHeyaId: Array.from(heyaMap.keys())[0], 
     almanacSnapshots: [],
-    factions: {},
+    factions: createInitialFactions(worldRng),
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     records: { 
       allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }, 
@@ -207,6 +208,7 @@ export function generateInitialWorld(seed: string): WorldState {
         0
       );
       world.sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
+      heya.koenkaiId = koenkai.koenkaiId;
       heya.koenkaiBand = koenkai.strengthBand;
     }
   }
@@ -221,10 +223,11 @@ export function generateInitialWorld(seed: string): WorldState {
  * Initialize a new Basho state.
  */
 export function initializeBasho(world: WorldState, name: BashoName): BashoState {
+  const rng = rngFromSeed(world.seed, "basho", `${world.year}-${name}`);
   return {
-    id: `basho_${world.year}_${name}`,
+    id: rng.uuid('BS'),
     year: world.year,
-    bashoNumber: 1, // Simple increment or lookup needed for real logic
+    bashoNumber: 1, 
     bashoName: name,
     day: 1,
     currentDay: 1,
@@ -232,4 +235,21 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     standings: new Map(),
     isActive: true
   };
+}
+
+function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
+  const names: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
+  const factions: Record<string, Faction> = {};
+  
+  names.forEach(name => {
+    const id = rng.uuid('FN');
+    factions[id] = {
+      id: name, // The type Faction uses IchimonName as ID internally (A6.2 compliance)
+      name: `${name} Ichimon`,
+      influence: 50,
+      oyakataLeaderId: null
+    };
+  });
+  
+  return factions;
 }

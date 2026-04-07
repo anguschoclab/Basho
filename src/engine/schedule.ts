@@ -1,4 +1,4 @@
-import { stableSort } from './utils';
+import { stableSort } from "./utils";
 // schedule.ts
 // =======================================================
 // Schedule Builder v1.1 — Deterministic torikumi pairing for ALL divisions
@@ -11,7 +11,12 @@ import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import { getActiveRikishi } from "./selectors";
 
-import { buildCandidatePairs, buildSwissTorikumi, type MatchPairing, type MatchmakingRules } from "./matchmaking";
+import {
+  buildCandidatePairs,
+  buildSwissTorikumi,
+  type MatchPairing,
+  type MatchmakingRules,
+} from "./matchmaking";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
@@ -35,12 +40,10 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
   makushita: 7,
   sandanme: 7,
   jonidan: 7,
-  jonokuchi: 7
+  jonokuchi: 7,
 };
 
 // === HELPERS ===
-
-
 
 /**
  * Active division roster.
@@ -48,14 +51,17 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
  *  * @param division - The Division.
  *  * @returns The result.
  */
-function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
+function activeDivisionRoster(
+  world: WorldState,
+  division: Division,
+): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of getActiveRikishi(world)) {
     if (r.division === division && !r.injured) {
       pool.push(r);
     }
   }
-  return stableSort(pool, r => r.id);
+  return stableSort(pool, (r) => r.id);
 }
 
 /**
@@ -68,10 +74,10 @@ function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
   for (const m of basho.matches) {
     const e = m.eastRikishiId;
     const w = m.westRikishiId;
-    
+
     if (!map.has(e)) map.set(e, new Set());
     if (!map.has(w)) map.set(w, new Set());
-    
+
     map.get(e)!.add(w);
     map.get(w)!.add(e);
   }
@@ -82,18 +88,22 @@ function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
  * Greedy selection of non-overlapping pairs.
  * Candidates should be pre-sorted by score (descending).
  */
-function greedySelectPairs(candidates: MatchPairing[], maxPairs: number, used = new Set<string>()): MatchPairing[] {
+function greedySelectPairs(
+  candidates: MatchPairing[],
+  maxPairs: number,
+  used = new Set<string>(),
+): MatchPairing[] {
   const selected: MatchPairing[] = [];
-  
+
   for (const c of candidates) {
     if (selected.length >= maxPairs) break;
     if (used.has(c.eastId) || used.has(c.westId)) continue;
-    
+
     selected.push(c);
     used.add(c.eastId);
     used.add(c.westId);
   }
-  
+
   return selected;
 }
 
@@ -130,12 +140,18 @@ export function scheduleDivisionDay(args: {
 
   const roster = activeDivisionRoster(world, division);
   const maxActive = args.config?.maxActiveRikishi;
-  const pool = typeof maxActive === "number" ? roster.slice(0, Math.max(0, maxActive)) : roster;
+  if (!needsScheduleForDay(division, day)) return [];
+
+  const pool =
+    typeof maxActive === "number"
+      ? roster.slice(0, Math.max(0, maxActive))
+      : roster;
 
   if (pool.length < 2) return [];
 
   let finalPairings: MatchPairing[];
 
+  const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
     // buildSwissTorikumi already applies the three-phase constraint solver
@@ -147,7 +163,6 @@ export function scheduleDivisionDay(args: {
     });
   } else {
     // ── Legacy candidate-pair path (all lower divisions) ───────────────────
-    const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
     const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
     if (boutsPerDay <= 0) return [];
 
@@ -165,7 +180,11 @@ export function scheduleDivisionDay(args: {
         division,
         rules: { avoidRepeatOpponents: false },
       });
-      const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
+      const additional = greedySelectPairs(
+        relaxedCandidates,
+        boutsPerDay - selected.length,
+        used,
+      );
       selected.push(...additional);
     }
 
@@ -178,7 +197,7 @@ export function scheduleDivisionDay(args: {
     finalPairings = shuffled;
   }
 
-  const scheduled: MatchSchedule[] = finalPairings.map(p => ({
+  const scheduled: MatchSchedule[] = finalPairings.map((p) => ({
     boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
     day,
     eastRikishiId: p.eastId,
@@ -205,7 +224,14 @@ function scheduleAllDivisionsDay(args: {
 }): MatchSchedule[] {
   const divisions: Division[] =
     args.divisions ??
-    (["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "makuuchi"] as Division[]);
+    ([
+      "jonokuchi",
+      "jonidan",
+      "sandanme",
+      "makushita",
+      "juryo",
+      "makuuchi",
+    ] as Division[]);
 
   const out: MatchSchedule[] = [];
   for (const div of divisions) {
@@ -216,8 +242,8 @@ function scheduleAllDivisionsDay(args: {
         division: div,
         day: args.day,
         seed: args.seed,
-        rules: args.rules
-      })
+        rules: args.rules,
+      }),
     );
   }
   return out;
@@ -235,7 +261,7 @@ export function generateDaySchedule(
   basho: BashoState,
   day: number,
   seed: string,
-  rules?: ScheduleRules
+  rules?: ScheduleRules,
 ): MatchSchedule[] {
   return scheduleAllDivisionsDay({ world, basho, day, seed, rules });
 }
@@ -253,17 +279,20 @@ export function generateFullBashoSchedule(args: {
 }): void {
   const divisions: Division[] =
     args.divisions ??
-    (["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as Division[]);
+    ([
+      "makuuchi",
+      "juryo",
+      "makushita",
+      "sandanme",
+      "jonidan",
+      "jonokuchi",
+    ] as Division[]);
 
-  const maxDays = Math.max(...divisions.map(d => DEFAULT_DIVISION_DAYS[d]));
+  const maxDays = 15;
 
   for (let day = 1; day <= maxDays; day++) {
     for (const div of divisions) {
-      const divDays = DEFAULT_DIVISION_DAYS[div];
-      
-      // Lower divisions (7 days) only fight on odd days: 1, 3, 5, 7, 9, 11, 13
-      if (divDays === 7 && day % 2 === 0) continue;
-      if (day > divDays) continue;
+      if (!needsScheduleForDay(div, day)) continue;
 
       scheduleDivisionDay({
         world: args.world,
@@ -271,7 +300,7 @@ export function generateFullBashoSchedule(args: {
         division: div,
         day,
         seed: args.seed,
-        rules: args.rules
+        rules: args.rules,
       });
     }
   }
@@ -281,12 +310,15 @@ export function generateFullBashoSchedule(args: {
  * Check if a specific day needs scheduling for a division.
  */
 export function needsScheduleForDay(division: Division, day: number): boolean {
-  const maxDays = DEFAULT_DIVISION_DAYS[division];
-  if (day > maxDays) return false;
-  
-  // Lower divisions fight on odd days only
-  if (maxDays === 7 && day % 2 === 0) return false;
-  
+  if (day > 15) return false;
+
+  const divDays = DEFAULT_DIVISION_DAYS[division];
+  // Lower divisions fight on odd days only, up to day 13 (7 bouts: 1, 3, 5, 7, 9, 11, 13)
+  if (divDays === 7) {
+    if (day % 2 === 0) return false;
+    if (day > 13) return false;
+  }
+
   return true;
 }
 
@@ -300,7 +332,7 @@ export function getTotalBashodays(division: Division): number {
 /**
  * Ensure day schedule — checks if a schedule already exists for the day,
  * and generates it if missing.
- * 
+ *
  * @param world WorldState
  * @param day Day number
  */
@@ -309,7 +341,7 @@ export function ensureDaySchedule(world: WorldState, day: number): void {
   if (!basho) return;
 
   const needsMakuuchi = needsScheduleForDay("makuuchi", day);
-  const alreadyScheduled = basho.matches.some(m => m.day === day);
+  const alreadyScheduled = basho.matches.some((m) => m.day === day);
 
   if (needsMakuuchi && !alreadyScheduled) {
     generateDaySchedule(world, basho, day, world.seed);

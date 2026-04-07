@@ -335,7 +335,7 @@ function refreshAllPools(world: WorldState) {
     const toGenerate = pool.hiddenReserveCap - currentCount;
 
     for (let i = 0; i < toGenerate; i++) {
-      const id = `cand_${pt}_${world.dayIndexGlobal}_${i}`;
+      const id = rng.uuid('CD');
       const candidate = generateCandidate({
         id,
         rng,
@@ -381,17 +381,18 @@ function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
     lastYearlyRefreshYear: world.year,
     candidates: {},
     pools: {
-      high_school: createEmptyPool("high_school"),
-      university: createEmptyPool("university"),
-      foreign: createEmptyPool("foreign"),
+      high_school: createEmptyPool("high_school", world),
+      university: createEmptyPool("university", world),
+      foreign: createEmptyPool("foreign", world),
     },
     playerScouting: {},
   }));
 }
 
-function createEmptyPool(type: TalentPoolType) {
+function createEmptyPool(type: TalentPoolType, world: WorldState) {
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `pool_init_${type}`);
   return {
-    poolId: `pool_${type}`,
+    poolId: rng.uuid('PL'),
     poolType: type,
     refreshCadence: "basho" as const,
     populationCap: 20,
@@ -425,7 +426,8 @@ export function reinjectToTalentPool(
 ): void {
   const tp = ensureTalentPoolState(world);
   // Convert the rikishi to a lightweight candidate object and mark it available
-  const id = `reinjected_${rikishi.id}`;
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `reinject_${rikishi.id}`);
+  const id = rng.uuid('CD');
   const isForeginer = countsAsForeignFromRikishi(rikishi);
   const poolType: TalentPoolType = isForeginer ? "foreign" : "high_school";
 
@@ -507,15 +509,15 @@ export function tickYear(world: WorldState): void {
       pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 
-    fillHiddenCandidates(
-      pool,
-      tp,
-      toGenerate,
-      rng,
-      currentYear,
-      poolType,
-      (i) => `cand_${poolType}_${currentYear}_${i}_${rng.int(1000, 9999)}`
-    );
+      fillHiddenCandidates(
+        pool,
+        tp,
+        toGenerate,
+        rng,
+        currentYear,
+        poolType,
+        () => rng.uuid('CD')
+      );
   }
 
   tp.lastYearlyRefreshYear = currentYear;

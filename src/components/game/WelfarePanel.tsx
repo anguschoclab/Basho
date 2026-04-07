@@ -1,42 +1,33 @@
 // WelfarePanel.tsx — Welfare & Compliance panel for StablePage
-// Surfaces welfare.ts compliance state machine + perception.ts banded data
-
-import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Utensils } from "lucide-react";
+import { Utensils, Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-react";
 import type { DietRegimen } from "@/engine/types/economy";
-import { Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-react";
-import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
-import type { ComplianceState } from "@/engine/types/economy";
-import type { WelfareRiskBand, MoraleBand, RosterStrengthBand } from "@/engine/perception";
-import { buildPerceptionSnapshot, ensureHeyaWelfareState } from "@/presenters/uiDigest";
+import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
-const COMPLIANCE_DISPLAY: Record<ComplianceState, { label: string; color: string; description: string; icon: React.ElementType }> = {
+const COMPLIANCE_DISPLAY: Record<string, { label: string; color: string; description: string; icon: React.ElementType }> = {
   compliant: { label: "Compliant", color: "text-emerald-400", description: "No concerns from the JSA. Your stable operates within regulations.", icon: CheckCircle },
   watch: { label: "Under Watch", color: "text-yellow-400", description: "The JSA has flagged minor concerns. Improve conditions to avoid escalation.", icon: AlertTriangle },
   investigation: { label: "Investigation", color: "text-orange-400", description: "An active investigation is underway. Serious consequences may follow.", icon: Shield },
   sanctioned: { label: "Sanctioned", color: "text-destructive", description: "The JSA has imposed sanctions. Financial penalties and reputation damage are in effect.", icon: AlertTriangle },
 };
 
-const WELFARE_RISK_DISPLAY: Record<WelfareRiskBand, { label: string; color: string }> = {
+const WELFARE_RISK_DISPLAY: Record<string, { label: string; color: string }> = {
   safe: { label: "Safe", color: "text-emerald-400" },
   cautious: { label: "Cautious", color: "text-yellow-400" },
   elevated: { label: "Elevated", color: "text-orange-400" },
   critical: { label: "Critical", color: "text-destructive" },
 };
 
-const MORALE_DISPLAY: Record<MoraleBand, { label: string; color: string }> = {
+const MORALE_DISPLAY: Record<string, { label: string; color: string }> = {
   inspired: { label: "Inspired", color: "text-emerald-400" },
   content: { label: "Content", color: "text-green-400" },
   neutral: { label: "Neutral", color: "text-muted-foreground" },
   disgruntled: { label: "Disgruntled", color: "text-orange-400" },
   mutinous: { label: "Mutinous", color: "text-destructive" },
 };
-
 
 const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: string }> = {
   austerity: { label: "Austerity", cost: "¥1,000/day", desc: "Minimal portions. High morale penalty, weight loss." },
@@ -45,7 +36,7 @@ const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: str
   premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." }
 };
 
-const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string }> = {
+const ROSTER_DISPLAY: Record<string, { label: string; color: string }> = {
   dominant: { label: "Dominant", color: "text-amber-400" },
   strong: { label: "Strong", color: "text-emerald-400" },
   competitive: { label: "Competitive", color: "text-primary" },
@@ -56,24 +47,20 @@ const ROSTER_DISPLAY: Record<RosterStrengthBand, { label: string; color: string 
 /** Defines the structure for welfare panel props. */
 interface WelfarePanelProps {
   onSetDiet?: (diet: DietRegimen) => void;
-  isOwner?: boolean;
-  world: WorldState;
-  heya: Heya;
+  digest: NonNullable<ReturnType<typeof projectMedicalUIDigest>>;
 }
 
 /**
  * welfare panel.
- *  * @param { world, heya } - The { world, heya }.
  */
-export function WelfarePanel({ world, heya, isOwner = false, onSetDiet }: WelfarePanelProps) {
-  const welfare = useMemo(() => ensureHeyaWelfareState(heya), [heya]);
-  const perception = useMemo(() => buildPerceptionSnapshot(world, heya.id), [world, heya.id]);
+export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
+  const { welfare, perception } = digest;
 
   const comp = COMPLIANCE_DISPLAY[welfare.complianceState] ?? COMPLIANCE_DISPLAY.compliant;
   const CompIcon = comp.icon;
-  const riskDisplay = WELFARE_RISK_DISPLAY[perception.welfareRiskBand];
-  const moraleDisplay = MORALE_DISPLAY[perception.moraleBand];
-  const rosterDisplay = ROSTER_DISPLAY[perception.rosterStrengthBand];
+  const riskDisplay = WELFARE_RISK_DISPLAY[perception.welfareRiskBand] ?? WELFARE_RISK_DISPLAY.safe;
+  const moraleDisplay = MORALE_DISPLAY[perception.moraleBand] ?? MORALE_DISPLAY.neutral;
+  const rosterDisplay = ROSTER_DISPLAY[perception.rosterStrengthBand] ?? ROSTER_DISPLAY.competitive;
 
   // Visual welfare risk as percentage (0 = safe, 100 = critical)
   const riskPct = Math.min(100, (welfare.welfareRisk / 100) * 100);
@@ -166,7 +153,6 @@ export function WelfarePanel({ world, heya, isOwner = false, onSetDiet }: Welfar
                   key={diet}
                   variant={isActive ? "default" : "outline"}
                   className="h-auto flex-col items-start p-3 text-left w-full whitespace-normal"
-                  disabled={!isOwner}
                   onClick={() => onSetDiet?.(diet)}
                 >
                   <div className="flex justify-between w-full mb-1">
@@ -182,7 +168,7 @@ export function WelfarePanel({ world, heya, isOwner = false, onSetDiet }: Welfar
       </Card>
 
       {/* Rikishi Health Overview */}
-      {perception.rikishiPerceptions.length > 0 && (
+      {perception.rikishiHealthPerceptions.length > 0 && (
         <Card className="paper">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -192,7 +178,7 @@ export function WelfarePanel({ world, heya, isOwner = false, onSetDiet }: Welfar
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {perception.rikishiPerceptions.slice(0, 12).map(rp => {
+              {perception.rikishiHealthPerceptions.slice(0, 12).map(rp => {
                 const healthColors: Record<string, string> = {
                   peak: "text-emerald-400",
                   good: "text-green-400",

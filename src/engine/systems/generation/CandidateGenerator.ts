@@ -111,7 +111,7 @@ export function generateFullRikishi(args: {
   const birthYear = currentYear - (18 + rng.int(0, 15));
   const records = generateSyntheticCareer({ rng, rank, division, birthYear, currentYear });
 
-  const name = generateRikishiName(`${rng.seed}::${id}`);
+  const name = generateRikishiName(`${rng.seed}::${id}`, rng);
 
   const rikishiStats: RikishiStats = {
     ...statsBase,
@@ -239,7 +239,7 @@ export function generateCandidate(args: {
   const profile = buildCombatProfile(archetype);
   const statsBase = generateRikishiStats({ rng, rank: "jonokuchi", profile });
 
-  const name = generateRikishiName(`${rng.seed}::candidate::${id}`);
+  const name = generateRikishiName(`${rng.seed}::candidate::${id}`, rng);
 
   // Determine origin based on pool
   const origin = poolType === "foreign" 
@@ -248,7 +248,7 @@ export function generateCandidate(args: {
 
   return {
     candidateId: id,
-    personId: `p_${id}`,
+    personId: rng.uuid('PS'),
     name,
     nationality: poolType === "foreign" ? origin : "Japan",
     birthYear: currentYear - (15 + rng.int(0, (poolType === "university" ? 7 : 3))),
