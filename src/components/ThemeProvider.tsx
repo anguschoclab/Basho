@@ -55,7 +55,7 @@ export function ThemeProvider({
 
   const value = useMemo(
     () => ({ theme, setTheme, resolvedTheme }),
-    [theme, resolvedTheme],
+    [theme, setTheme, resolvedTheme],
   );
 
   return (
