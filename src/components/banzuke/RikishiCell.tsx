@@ -1,13 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { RankChangeIndicator } from "./RankChangeIndicator";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
 import type { UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 interface Props {
   entry: UIRosterEntry | null;
-  kadobanMap: OzekiKadobanMap;
+  kadobanMap: Record<string, { isKadoban: boolean }>;
   heyaName?: string;
   showChanges: boolean;
   searchQuery: string;

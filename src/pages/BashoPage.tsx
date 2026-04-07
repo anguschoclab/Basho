@@ -26,11 +26,16 @@ import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Play, FastForward, ChevronRight, Trophy, Star, Crown, Calendar, ChevronDown } from "lucide-react";
-import type { Rikishi } from "@/engine/types/rikishi";
-import type { BoutResult } from "@/engine/types/basho";
-import type { Division } from "@/engine/types/banzuke";
-import { BASHO_CALENDAR, DEFAULT_DIVISION_DAYS, getDayName, getSeasonalFlavor, getTotalBashodays, isKeyDay, needsScheduleForDay } from "@/presenters/uiDigest";
-import { projectRikishi } from "@/presenters/uiModels";
+import { 
+  BASHO_CALENDAR, 
+  getDayName, 
+  getSeasonalFlavor, 
+  getTotalBashodays, 
+  isKeyDay, 
+  needsScheduleForDay,
+  projectBashoUIDigest 
+} from "@/presenters/uiDigest";
+import type { UIRikishi } from "@/presenters/uiModels";
 
 /** Type representing match like. */
 type MatchLike = {
@@ -38,21 +43,22 @@ type MatchLike = {
   boutId?: string;
   eastRikishiId: string;
   westRikishiId: string;
-  result?: BoutResult;
+  result?: any;
+  eastRikishi?: UIRikishi | null;
+  westRikishi?: UIRikishi | null;
+  isPlayerBout?: boolean;
 };
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
-  east: Rikishi;
-  west: Rikishi;
-  result: BoutResult;
+  east: UIRikishi;
+  west: UIRikishi;
+  result: any; // BoutResult projection
   isPlayerBout: boolean;
 }
 
 /**
  * Make pair key.
- *  * @param a - The A.
- *  * @param b - The B.
  */
 function makePairKey(a: string, b: string) {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
@@ -65,10 +71,9 @@ interface ScheduleOverviewProps {
 
 /**
  * schedule overview.
- *  * @param { currentDay } - The { current day }.
  */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
-  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
   
   return (
     <div className="space-y-3">
@@ -77,7 +82,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
       </div>
       
       {divisions.map((division) => {
-        const totalDays = getTotalBashodays(division);
+        const totalDays = getTotalBashodays(division as any);
         const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
         
         return (
@@ -89,7 +94,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
             
             <div className="grid grid-cols-15 gap-1">
               {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
-                const needsScheduling = needsScheduleForDay(division, day);
+                const needsScheduling = needsScheduleForDay(division as any, day);
                 const isCurrent = day === currentDay;
                 const isPast = day < currentDay;
                 
@@ -123,8 +128,8 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
 /** basho page. */
 export default function BashoPage() {
   const navigate = useNavigate();
-  const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, getCurrentDayMatches, getStandings, setBoutTactic } = useGame();
-  const { world, playerHeyaId } = state;
+  const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, setBoutTactic } = useGame();
+  const { world } = state;
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
   const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
@@ -132,87 +137,63 @@ export default function BashoPage() {
   const [showScheduleOverview, setShowScheduleOverview] = useState(false);
   const lastAutoShownKeyRef = useRef<string | null>(null);
 
-  const basho = world?.currentBasho ?? null;
-  const bashoInfo = basho ? BASHO_CALENDAR[basho.bashoName] : null;
-  const dayInfo = basho ? getDayName(basho.day) : null;
+  const bashoDigest = useMemo(() => {
+    if (!world) return null;
+    return projectBashoUIDigest(world);
+  }, [world]);
 
-  const matches = (getCurrentDayMatches?.() as unknown as MatchLike[]) ?? [];
-  const standings = (getStandings?.() ?? []).slice(0, 10);
-
-  const playerRikishiIds = useMemo(() => {
-    if (!playerHeyaId || !world) return new Set<string>();
-    const heya = world.heyas.get(playerHeyaId);
-    return new Set(heya?.rikishiIds ?? []);
-  }, [playerHeyaId, world]);
-
-  const resolveRikishi = useCallback(
-    (id: string): Rikishi | null => world?.rikishi.get(id) ?? null,
-    [world]
-  );
-
-  const isPlayerBout = useCallback(
-    (m: MatchLike) => playerRikishiIds.has(m.eastRikishiId) || playerRikishiIds.has(m.westRikishiId),
-    [playerRikishiIds]
-  );
-
-  const nextBoutIndex = useMemo(() => matches.findIndex((m) => !m.result), [matches]);
-  const completedBouts = useMemo(() => matches.reduce((count, m) => count + (m.result ? 1 : 0), 0), [matches]);
-  const remainingBouts = matches.length - completedBouts;
-  const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
-
-  // Auto-show player bout
   const lastBoutKey = useMemo(() => {
-    const last = (state as any).lastBoutResult as BoutResult | undefined;
-    if (!last) return null;
-    const w = (last as any).winnerRikishiId;
-    const l = (last as any).loserRikishiId;
-    if (typeof w !== "string" || typeof l !== "string") return null;
-    const km = typeof (last as any).kimariteId === "string" ? (last as any).kimariteId : "";
-    return `${makePairKey(w, l)}::${basho?.day ?? 0}::${km}`;
-  }, [(state as any).lastBoutResult, basho?.day]);
+    const last = (state as any).lastBoutResult;
+    if (!last || !bashoDigest) return null;
+    return `${makePairKey(last.winnerRikishiId, last.loserRikishiId)}::${bashoDigest.day}::${last.kimarite || ""}`;
+  }, [(state as any).lastBoutResult, bashoDigest]);
 
   useEffect(() => {
-    if (state.phase === "basho_recap") { navigate({ to: "/recap" }); return; }
-    if (state.phase === "basho_results") { navigate({ to: "/recap" }); return; }
+    if (state.phase === "basho_recap" || state.phase === "basho_results") { navigate({ to: "/recap" }); return; }
     if (!world?.currentBasho) navigate({ to: "/" });
   }, [world, navigate, state.phase]);
 
+  // Auto-show player bout logic reconstruction
   useEffect(() => {
-    const last = (state as any).lastBoutResult as BoutResult | undefined;
-    if (!last || !lastBoutKey || lastAutoShownKeyRef.current === lastBoutKey || selectedBout) return;
-    const winnerId = (last as any).winnerRikishiId;
-    const loserId = (last as any).loserRikishiId;
-    if (typeof winnerId !== "string" || typeof loserId !== "string") return;
-    const winner = resolveRikishi(winnerId);
-    const loser = resolveRikishi(loserId);
-    if (!winner || !loser) return;
-    if (!playerRikishiIds.has(winner.id) && !playerRikishiIds.has(loser.id)) return;
-    const matchToday = matches.find(m =>
-      (m.eastRikishiId === winner.id && m.westRikishiId === loser.id) ||
-      (m.eastRikishiId === loser.id && m.westRikishiId === winner.id)
+    const last = (state as any).lastBoutResult;
+    if (!last || !lastBoutKey || lastAutoShownKeyRef.current === lastBoutKey || selectedBout || !bashoDigest) return;
+    
+    const matchToday = bashoDigest.matches.find((m: any) => 
+      (m.eastRikishiId === last.winnerRikishiId && m.westRikishiId === last.loserRikishiId) ||
+      (m.eastRikishiId === last.loserRikishiId && m.westRikishiId === last.winnerRikishiId)
     );
-    const east = matchToday ? resolveRikishi(matchToday.eastRikishiId) : winner;
-    const west = matchToday ? resolveRikishi(matchToday.westRikishiId) : loser;
-    if (east && west) {
-      setAutoShowPlayerBout({ east, west, result: last, isPlayerBout: true });
+
+    if (matchToday && matchToday.isPlayerBout && matchToday.eastRikishi && matchToday.westRikishi) {
+      setAutoShowPlayerBout({ 
+        east: matchToday.eastRikishi, 
+        west: matchToday.westRikishi, 
+        result: last, 
+        isPlayerBout: true 
+      });
       lastAutoShownKeyRef.current = lastBoutKey;
     }
-  }, [matches, playerRikishiIds, resolveRikishi, selectedBout, (state as any).lastBoutResult, lastBoutKey]);
+  }, [bashoDigest, lastBoutKey, selectedBout, state.lastBoutResult]);
 
-  const handleSimulateNext = () => { if (nextBoutIndex >= 0) simulateBout(nextBoutIndex); };
+  const handleSimulateNext = () => { if (bashoDigest && bashoDigest.matches.findIndex((m: any) => !m.result) >= 0) simulateBout(bashoDigest.matches.findIndex((m: any) => !m.result)); };
   const handleSimulateAll = () => { simulateAllBouts(); };
   const handleNextDay = () => {
-    if ((basho?.day ?? 0) >= 15) setShowEndBashoConfirm(true);
+    if (bashoDigest && bashoDigest.day >= 15) setShowEndBashoConfirm(true);
     else advanceDay();
   };
   const handleTacticChange = useCallback((id: string, tactic: string) => setBoutTactic(id, tactic as any), [setBoutTactic]);
   const confirmEndBasho = () => { setShowEndBashoConfirm(false); endBasho(); navigate({ to: "/" }); };
 
-  if (!world || !basho) return null;
+  if (!world || !bashoDigest) return null;
+
+  const { bashoName, day, matches, standings, playerRikishiIds, completedBouts, dayProgress, seasonalFlavor } = bashoDigest;
+  const bashoInfo = BASHO_CALENDAR[bashoName as keyof typeof BASHO_CALENDAR];
+  const dayInfo = getDayName(day);
+  const remainingBouts = matches.length - completedBouts;
+  const nextBoutIndex = matches.findIndex((m: any) => !m.result);
 
   return (
     <AppLayout pageTitle={bashoInfo?.nameEn || "Tournament"} subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
-      <Helmet><title>{`${bashoInfo?.nameEn || "Tournament"} Day ${basho.day}`}</title></Helmet>
+      <Helmet><title>{`${bashoInfo?.nameEn || "Tournament"} Day ${day}`}</title></Helmet>
 
       <div className="space-y-4">
         {/* ═══════════ DAY HEADER ═══════════ */}
@@ -221,18 +202,18 @@ export default function BashoPage() {
             <div className="flex items-center gap-3">
               <h1 className="font-display text-2xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
-                Day {basho.day}/{getTotalBashodays("makuuchi")}
+                Day {day}/{getTotalBashodays("makuuchi")}
               </Badge>
-              {isKeyDay(basho.day) && (
+              {isKeyDay(day) && (
                 <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs">Key Day</Badge>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {dayInfo?.dayJa ?? `Day ${basho.day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/{matches.length} bouts complete
+              {dayInfo?.dayJa ?? `Day ${day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/{matches.length} bouts complete
             </p>
-            {bashoInfo?.season && (
+            {seasonalFlavor && (
               <p className="text-xs text-muted-foreground/70 italic mt-0.5">
-                {getSeasonalFlavor(bashoInfo.season, world?.seed)}
+                {seasonalFlavor}
               </p>
             )}
           </div>
@@ -244,8 +225,8 @@ export default function BashoPage() {
               <FastForward className="h-3.5 w-3.5" /> Sim All
             </Button>
             {remainingBouts === 0 && (
-              <Button size="sm" onClick={handleNextDay} className="gap-1.5">
-                {basho.day >= 15 ? "End Basho" : "Next Day"} <ChevronRight className="h-3.5 w-3.5" />
+              <Button size="sm" onClick={handleNextDay} className="gap-1.5" id="advance-basho-btn">
+                {day >= 15 ? "End Basho" : "Next Day"} <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
@@ -272,7 +253,7 @@ export default function BashoPage() {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <CardContent className="px-4 pb-4 pt-0">
-                  <ScheduleOverview currentDay={basho.day} />
+                  <ScheduleOverview currentDay={day} />
                 </CardContent>
               </CollapsibleContent>
             </Card>
@@ -287,7 +268,7 @@ export default function BashoPage() {
               <div className="space-y-1">
                 {standings.map((entry: any, idx: number) => {
                   const rid = entry?.rikishi?.id as string | undefined;
-                  const isPlayer = !!rid && playerRikishiIds.has(rid);
+                  const isPlayer = !!rid && playerRikishiIds.includes(rid);
                   return (
                     <div
                       key={rid ?? `l-${idx}`}
@@ -311,21 +292,23 @@ export default function BashoPage() {
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
             <MatchDayViewer
-              matches={matches}
+              matches={matches as any}
               world={world}
-              playerRikishiIds={playerRikishiIds}
+              playerRikishiIds={new Set(playerRikishiIds)}
               onSimulateBout={simulateBout}
               onSimulateAll={simulateAllBouts}
               onTacticChange={handleTacticChange}
               onEndDay={handleNextDay}
               highlightRikishiId={(state as any).selectedRikishiId || undefined}
               playerTactics={(state as any).boutTactics}
-              onBoutClick={(match) => {
-                if (!match.result) return;
-                const east = resolveRikishi(match.eastRikishiId);
-                const west = resolveRikishi(match.westRikishiId);
-                if (!east || !west) return;
-                setSelectedBout({ east, west, result: match.result, isPlayerBout: isPlayerBout(match) });
+              onBoutClick={(match: any) => {
+                if (!match.result || !match.eastRikishi || !match.westRikishi) return;
+                setSelectedBout({ 
+                  east: match.eastRikishi, 
+                  west: match.westRikishi, 
+                  result: match.result, 
+                  isPlayerBout: match.isPlayerBout 
+                });
               }}
             />
           </div>
@@ -337,16 +320,16 @@ export default function BashoPage() {
         <BoutNarrativeModal
           open={!!selectedBout}
           onOpenChange={(open) => !open && setSelectedBout(null)}
-          east={projectRikishi(selectedBout.east, world)} west={projectRikishi(selectedBout.west, world)}
-          result={selectedBout.result} bashoName={basho.bashoName} day={basho.day}
+          east={selectedBout.east} west={selectedBout.west}
+          result={selectedBout.result} bashoName={(bashoName as any)} day={day}
         />
       )}
       {autoShowPlayerBout && !selectedBout && (
         <BoutNarrativeModal
           open={!!autoShowPlayerBout}
           onOpenChange={(open) => !open && setAutoShowPlayerBout(null)}
-          east={projectRikishi(autoShowPlayerBout.east, world)} west={projectRikishi(autoShowPlayerBout.west, world)}
-          result={autoShowPlayerBout.result} bashoName={basho.bashoName} day={basho.day}
+          east={autoShowPlayerBout.east} west={autoShowPlayerBout.west}
+          result={autoShowPlayerBout.result} bashoName={(bashoName as any)} day={day}
         />
       )}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>

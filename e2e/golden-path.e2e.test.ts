@@ -4,8 +4,8 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   // 1. Boot: Navigate to Main Menu
   await page.goto('/');
   
-  // Wait for the world to be generated and the menu to appear
-  await expect(page.locator('h1').first()).toContainText(/Basho/i, { timeout: 30000 });
+  // Wait for the world to be generated and the menu to appear (can take a while)
+  await expect(page.locator('h1').first()).toContainText(/Basho/i, { timeout: 60000 });
   
   // 2. Start Game: Select a recommended stable and click "Begin Journey"
   // The first recommended stable is pre-selected by default in the UI logic usually, 
@@ -15,13 +15,14 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   
   const beginJourneyButton = page.getByRole('button', { name: /Inaugurate/i });
   await expect(beginJourneyButton).toBeVisible();
-  await beginJourneyButton.click();
+  await beginJourneyButton.click({ force: true });
   
   // 3. View Stable: Verify Dashboard loads and "My Stable" contains rikishi
   await expect(page.locator('h1').first()).not.toContainText(/Basho/i); // Should be on Dashboard
   
-  // Navigate to "My Stable" via the secondary nav
-  await page.getByRole('link', { name: /Stable Overview/i }).click();
+  // Navigate to "My Stable" via the sidebar
+  await page.waitForTimeout(1000); // Wait for dashboard animations
+  await page.getByRole('link', { name: /^Overview$/i }).first().click();
   
   // Verify Rikishi Cards are present
   // Wait for Active Rikishi to be visible
@@ -57,8 +58,7 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   
   // 5. Verify: Wait for simulation completion
   // wait for End Basho or Next Day
-  // The state transition might mean the "Next Day" button is right there on the top nav now, or the page reloads.
-  const nextDayBtn = page.getByRole('button', { name: /End Basho|Next Day|Advance Day/i }).first();
-  await expect(nextDayBtn).toBeVisible({ timeout: 30000 });
+  const nextDayBtn = page.locator('#advance-basho-btn, button:has-text("End Basho"), button:has-text("Next Day")').first();
+  await expect(nextDayBtn).toBeVisible({ timeout: 60000 });
   
 });

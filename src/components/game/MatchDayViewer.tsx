@@ -3,45 +3,22 @@
 
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { BoutCard, getHeatBand, getH2HRecord } from "./BoutCard";
-import type { MatchLike, MatchRowData } from "./BoutCard";
+import { BoutCard } from "./BoutCard";
+import type { MatchLike } from "./BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { UIRikishi } from "@/presenters/uiModels";
-import type { WorldState } from "@/engine/types/world";
-import type { BoutResult } from "@/engine/types/basho";
-import type { RankPosition } from "@/engine/types/banzuke";
-import type { RivalryHeatBand, RivalriesState  } from "@/engine/rivalries";
-import { projectRikishi } from "@/presenters/uiModels";
-import { compareRanks, generateH2HCommentary, getRivalry, buildBoutPreviewUI } from "@/presenters/uiDigest";
+import { CircleDot, Swords } from "lucide-react";
+import { compareRanks, buildBoutPreviewUI } from "@/presenters/uiDigest";
 import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
-import {
-  Flame,
-  Thermometer,
-  Snowflake,
-  Star,
-  Swords,
-  Users,
-  TrendingUp,
-  AlertTriangle,
-  Eye,
-  CircleDot,
-  HeartPulse,
-} from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────
 
-/** Defines the structure for match like. */
-
-
 /** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
-  matches: MatchLike[];
-  world: WorldState;
+  matches: any[]; // enriched via projectBashoUIDigest
+  world: any;
   playerRikishiIds: Set<string>;
-  onBoutClick?: (match: MatchLike) => void;
+  onBoutClick?: (match: any) => void;
   onTacticChange?: (boutId: string, tactic: string) => void;
   playerTactics?: Record<string, string>;
   onSimulateBout?: (index: number) => void;
@@ -50,15 +27,9 @@ interface MatchDayViewerProps {
   highlightRikishiId?: string;
 }
 
-// ── Helpers ────────────────────────────────────────────
+// ── Main Component ─────────────────────────────────────
 
-/**
- * Get heat band.
- *  * @param heat - The Heat.
- *  * @returns The result.
- */
 export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
-  const navigate = useNavigate();
   const [previewBoutId, setPreviewBoutId] = useState<string | null>(null);
 
   const previewData = useMemo(() => {
@@ -66,57 +37,17 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
     return buildBoutPreviewUI(previewBoutId, world);
   }, [previewBoutId, world]);
 
-  const handleBoutClick = (match: MatchLike) => {
+  const handleBoutClick = (match: any) => {
     // Show pre-match overlay for pending player bouts
-    if (match.boutId && !match.result) {
-      const east = world.rikishi.get(match.eastRikishiId);
-      const west = world.rikishi.get(match.westRikishiId);
-      const isPlayerBout = east && west && (playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id));
-      if (isPlayerBout) {
-        setPreviewBoutId(match.boutId);
-        return;
-      }
+    if (match.boutId && !match.result && match.isPlayerBout) {
+      setPreviewBoutId(match.boutId);
+      return;
     }
     onBoutClick?.(match);
   };
 
-  const resolvedMatches = useMemo(() => {
-    return matches.reduce<Array<MatchLike & {
-      east: UIRikishi;
-      west: UIRikishi;
-      h2h: { wins: number; losses: number };
-      rivalry: any;
-      heatBand: RivalryHeatBand | null;
-      isPlayerBout: boolean;
-      h2hCommentary: string;
-    }>>((acc, match) => {
-      const east = world.rikishi.get(match.eastRikishiId);
-      const west = world.rikishi.get(match.westRikishiId);
-      if (!east || !west) return acc;
-
-      const h2h = getH2HRecord(projectRikishi(east, world), projectRikishi(west, world));
-      const rivalriesState = (world as any).rivalriesState as RivalriesState | undefined;
-      const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
-      const heatBand = rivalry ? getHeatBand(rivalry.heat) : null;
-      const isPlayerBout = playerRikishiIds.has(east.id) || playerRikishiIds.has(west.id);
-      const h2hCommentary = generateH2HCommentary(east as any, west as any);
-
-      acc.push({ 
-        ...match, 
-        east: projectRikishi(east, world), 
-        west: projectRikishi(west, world), 
-        h2h, 
-        rivalry, 
-        heatBand, 
-        isPlayerBout, 
-        h2hCommentary 
-      });
-      return acc;
-    }, []);
-  }, [matches, world, playerRikishiIds]);
-
   const sortedMatches = useMemo(() => {
-    return [...resolvedMatches].sort((a, b) => {
+    return [...matches].sort((a, b) => {
       if (!a || !b) return 0;
       if (a.isPlayerBout !== b.isPlayerBout) return a.isPlayerBout ? -1 : 1;
       const aHeat = a.rivalry?.heat ?? 0;
@@ -125,11 +56,11 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
       const aPlayed = !!a.result;
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-      const aPos = { rank: a.east.rank, side: a.east.side ?? "east", rankNumber: a.east.rankNumber } as RankPosition;
-      const bPos = { rank: b.east.rank, side: b.east.side ?? "east", rankNumber: b.east.rankNumber } as RankPosition;
-      return compareRanks(aPos, bPos);
+      const aPos = { rank: a.eastRikishi.rank, side: a.eastRikishi.side ?? "east", rankNumber: a.eastRikishi.rankNumber };
+      const bPos = { rank: b.eastRikishi.rank, side: b.eastRikishi.side ?? "east", rankNumber: b.eastRikishi.rankNumber };
+      return compareRanks(aPos as any, bPos as any);
     });
-  }, [resolvedMatches]);
+  }, [matches]);
 
   if (sortedMatches.length === 0) {
     return (
@@ -171,7 +102,6 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
         </CardHeader>
 
         <CardContent className="p-0">
-          {/* Thin east/west color bar at top */}
           <div className="flex h-0.5">
             <div className="flex-1 bg-east/30" />
             <div className="flex-1 bg-west/30" />
@@ -180,10 +110,16 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
           <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
             {sortedMatches.map((match, idx) => {
               if (!match) return null;
+              // Map the enriched match data to the format BoutCard expects if needed
+              const matchRow = {
+                ...match,
+                east: match.eastRikishi,
+                west: match.westRikishi,
+              };
               return (
                 <BoutCard
                   key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
-                  match={match}
+                  match={matchRow as any}
                   idx={idx}
                   onBoutClick={handleBoutClick}
                   onTacticChange={onTacticChange}

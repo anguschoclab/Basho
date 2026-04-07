@@ -12,10 +12,10 @@ import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { projectRosterEntry, buildPrevRankScores, buildBanzukeRows } from "@/presenters/uiModels";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import { RANK_HIERARCHY, formatRank, getRankTitleJa } from "@/presenters/uiDigest";
+import { RANK_HIERARCHY, getRankTitleJa, projectBanzukeUIDigest } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import type { UIRikishi } from "@/presenters/uiModels";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -24,31 +24,15 @@ export default function BanzukePage() {
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const prevScoreMap = useMemo(() => {
-    if (!world?.history) return new Map<string, number>();
-    return buildPrevRankScores(world.history);
+  const banzukeDigest = useMemo(() => {
+    if (!world) return null;
+    return projectBanzukeUIDigest(world);
   }, [world]);
 
-  const { rosterEntries, heyaNameMap } = useMemo(() => {
-    if (!world) return { rosterEntries: [], heyaNameMap: new Map<string, string>() };
-    const arr = [];
-    const map = new Map<string, string>();
-    for (const r of world.rikishi.values()) {
-      if (!r.isRetired) {
-        arr.push(projectRosterEntry(r, world, prevScoreMap.get(r.id)));
-        const heya = world.heyas.get(r.heyaId);
-        if (heya) map.set(r.id, heya.name);
-      }
-    }
-    return { rosterEntries: arr, heyaNameMap: map };
-  }, [world, prevScoreMap]);
+  if (!world || !banzukeDigest) return null;
 
-
-  if (!world) return null;
-
-  const kadobanMap: OzekiKadobanMap = world.ozekiKadoban ?? {};
-  const hasPrevBasho = prevScoreMap.size > 0;
-  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const { divisions: banzukeData, kadobanMap, heyaNameMap, hasPrevBasho } = banzukeDigest;
+  const divisionKeys: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
@@ -117,12 +101,9 @@ export default function BanzukePage() {
         {/* Division tabs */}
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
-            {divisions.map(d => {
-              const makuuchiRanks = ["yokozuna","ozeki","sekiwake","komusubi","maegashira"];
-              const divCount = rosterEntries.filter(r => {
-                if (d === "makuuchi") return makuuchiRanks.includes(r.rank);
-                return r.rank === d;
-              }).length;
+            {divisionKeys.map(d => {
+              const divData = banzukeData.find((b: any) => b.division === d);
+              const divCount = divData?.rows.reduce((acc: number, r: any) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0), 0) || 0;
               return (
                 <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
                   <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
@@ -134,8 +115,17 @@ export default function BanzukePage() {
             })}
           </TabsList>
 
-          {divisions.map(div => {
-            const rows = buildBanzukeRows(rosterEntries, div, searchQuery);
+          {divisionKeys.map(div => {
+            const divData = banzukeData.find((b: any) => b.division === div);
+            let rows = divData?.rows || [];
+            if (searchQuery) {
+              const q = searchQuery.toLowerCase();
+              rows = rows.filter((r: any) => 
+                r.east?.shikona?.toLowerCase().includes(q) || 
+                r.west?.shikona?.toLowerCase().includes(q)
+              );
+            }
+            
             return (
               <TabsContent key={div} value={div}>
                 <Card className="overflow-hidden">

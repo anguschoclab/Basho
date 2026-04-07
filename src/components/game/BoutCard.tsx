@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { useNavigate } from "@tanstack/react-router";
 import type { UIRikishi } from "@/presenters/uiModels";
-import type { BoutResult } from "@/engine/types/basho";
-import type { RivalryHeatBand } from "@/engine/rivalries";
 import {
   Flame,
   Thermometer,
@@ -17,16 +15,17 @@ import {
   AlertTriangle,
   Eye,
   CircleDot,
-  HeartPulse,
   Users,
 } from "lucide-react";
+
+export type RivalryHeatBand = "cold" | "warm" | "hot" | "inferno";
 
 export interface MatchLike {
   day?: number;
   boutId?: string;
   eastRikishiId: string;
   westRikishiId: string;
-  result?: BoutResult;
+  result?: any;
 }
 
 export interface MatchRowData extends MatchLike {
@@ -39,13 +38,6 @@ export interface MatchRowData extends MatchLike {
   h2hCommentary: string;
 }
 
-const TACTIC_OPTIONS = [
-  { id: "STANDARD", label: "Standard", desc: "Balanced" },
-  { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
-  { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
-  { id: "HENKA", label: "Henka", desc: "Counters Belt" }
-];
-
 export function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 75) return "inferno";
   if (heat >= 50) return "hot";
@@ -53,7 +45,7 @@ export function getHeatBand(heat: number): RivalryHeatBand {
   return "cold";
 }
 
-export const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label: string; classes: string }> = {
+export const HEAT_CONFIG: Record<string, { icon: React.ReactNode; label: string; classes: string }> = {
   inferno: {
     icon: <Flame className="h-3.5 w-3.5" />,
     label: "Inferno Rivalry",
@@ -73,61 +65,13 @@ export const HEAT_CONFIG: Record<RivalryHeatBand, { icon: React.ReactNode; label
     icon: <Snowflake className="h-3.5 w-3.5" />,
     label: "Cold",
     classes: "bg-muted text-muted-foreground border-border",
-  },
-  dormant: {
-    icon: <Snowflake className="h-3.5 w-3.5" />,
-    label: "Dormant",
-    classes: "bg-muted text-muted-foreground border-border",
-  },
-  simmering: {
-    icon: <Thermometer className="h-3.5 w-3.5" />,
-    label: "Simmering",
-    classes: "bg-warning/10 text-warning/80 border-warning/20",
-  },
-  heated: {
-    icon: <Thermometer className="h-3.5 w-3.5" />,
-    label: "Heated",
-    classes: "bg-warning/15 text-warning border-warning/25",
-  },
-  fierce: {
-    icon: <Flame className="h-3.5 w-3.5" />,
-    label: "Fierce",
-    classes: "bg-destructive/10 text-destructive border-destructive/20",
-  },
-  legendary: {
-    icon: <Flame className="h-3.5 w-3.5" />,
-    label: "Legendary",
-    classes: "bg-destructive/15 text-destructive border-destructive/25",
-  },
+  }
 };
 
-/**
- * Get h2 h record.
- *  * @param r1 - The R1.
- *  * @param r2 - The R2.
- */
 export function getH2HRecord(r1: UIRikishi, r2: UIRikishi) {
   const record = (r1 as any).h2h?.[r2.id];
   return record ? { wins: record.wins, losses: record.losses } : { wins: 0, losses: 0 };
 }
-
-// ── Sub-components ─────────────────────────────────────
-
-/**
- * rikishi side.
- *  * @param {
- *   rikishi,
- *   side,
- *   isWinner,
- *   onClick,
- * } - The {
- *   rikishi,
- *   side,
- *   is winner,
- *   on click,
- * }.
- */
-
 
 function RikishiSide({
   rikishi,
@@ -168,10 +112,6 @@ function RikishiSide({
   );
 }
 
-/**
- * h2 h center.
- *  * @param { wins, losses } - The { wins, losses }.
- */
 function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   return (
     <div className="vs-divider shrink-0 w-16 text-center px-1">
@@ -185,26 +125,17 @@ function H2HCenter({ wins, losses }: { wins: number; losses: number }) {
   );
 }
 
-/**
- * bout tags.
- *  * @param {
- *   match,
- * } - The {
- *   match,
- * }.
- */
 function BoutTags({
   match,
 }: {
   match: MatchRowData;
 }) {
   const { heatBand, rivalry, h2h, east, west } = match;
-  const streak = east.h2h?.[west.id]?.streak ?? 0;
+  const streak = (east as any).h2h?.[west.id]?.streak ?? 0;
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap mt-2">
-      {/* Rivalry badge */}
-      {heatBand && heatBand !== "cold" && (
+      {heatBand && heatBand !== "cold" && HEAT_CONFIG[heatBand] && (
         <TooltipWrap content={<><p className="text-xs max-w-[200px]">
               {rivalry?.tone && <span className="capitalize">{rivalry.tone.replace("_", " ")}</span>}
               {rivalry && ` · ${rivalry.meetings} meetings`}
@@ -216,14 +147,12 @@ function BoutTags({
           </TooltipWrap>
       )}
 
-      {/* First meeting */}
       {h2h.wins === 0 && h2h.losses === 0 && (
         <Badge variant="secondary" className="text-[10px] gap-1">
           <Users className="h-3 w-3" /> First Meeting
         </Badge>
       )}
 
-      {/* Win streak */}
       {streak >= 3 && (
         <Badge variant="outline" className="text-[10px] text-success border-success/25 gap-1">
           <TrendingUp className="h-3 w-3" />
@@ -240,20 +169,7 @@ function BoutTags({
   );
 }
 
-// Just a type helper for the resolved match shape
-/** Use resolved match. */
-function useResolvedMatch() {
-  return null as any;
-}
-
-// ── Main Component ─────────────────────────────────────
-
-/**
- * match day viewer.
- *  * @param { matches, world, playerRikishiIds, onBoutClick } - The { matches, world, player rikishi ids, on bout click }.
- */
-
-export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTactics }: { match: MatchRowData, idx: number, onBoutClick?: (match: MatchLike) => void, onTacticChange?: (boutId: string, tactic: string) => void, playerTactics?: Record<string, string> }) => {
+export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, playerTactics }: { match: MatchRowData, idx: number, onBoutClick?: (match: any) => void, onTacticChange?: (boutId: string, tactic: string) => void, playerTactics?: Record<string, string> }) => {
   const navigate = useNavigate();
   const hasResult = !!match.result;
   return (
@@ -267,14 +183,11 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                   ${hasResult ? "bg-card" : "bg-card/60"}
                 `}
               >
-                {/* Main row */}
                 <div className="flex items-center gap-2">
-                  {/* Player star */}
                   {match.isPlayerBout && (
                     <Star className="h-3.5 w-3.5 text-primary shrink-0" fill="currentColor" />
                   )}
 
-                  {/* East */}
                   <RikishiSide
                     rikishi={match.east}
                     side="east"
@@ -282,10 +195,8 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                     onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.east.id } as any })}
                   />
 
-                  {/* H2H center */}
                   <H2HCenter wins={match.h2h.wins} losses={match.h2h.losses} />
 
-                  {/* West */}
                   <RikishiSide
                     rikishi={match.west}
                     side="west"
@@ -293,7 +204,6 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                     onClick={() => navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } as any })}
                   />
 
-                  {/* Result badge */}
                   <div className="shrink-0 ml-1 flex items-center gap-1.5">
                     {hasResult ? (
                       <div className="result-reveal flex items-center gap-1.5">
@@ -318,8 +228,6 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                   </div>
                 </div>
 
-
-                {/* Shikiri Prep Panel for Player Bouts */}
                 {match.isPlayerBout && !hasResult && onTacticChange && (
                   <div className="mt-3 p-3 bg-card border rounded-md shadow-sm" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2 mb-2 pb-2 border-b">
@@ -327,13 +235,11 @@ export const BoutCard = React.memo(({ match, idx, onBoutClick, onTacticChange, p
                       <h4 className="font-semibold text-sm">Shikiri Prep: Set Tactic</h4>
                     </div>
 
-                    {/* Scouting Brief */}
                     <div className="grid grid-cols-2 gap-2 text-xs mb-3 p-2 bg-muted/30 rounded">
                       <div className="text-muted-foreground">Opponent Style:</div>
                       <div className="font-medium capitalize">{match.east.style} vs {match.west.style}</div>
                     </div>
 
-                    {/* Tactic Buttons */}
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { id: "STANDARD", label: "Standard", desc: "Balanced" },

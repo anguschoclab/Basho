@@ -65,10 +65,8 @@ export function phase02_context(world: WorldState): WorldState {
   // Preserve revenue/expenses written by phase01; reset per-tick change lists
   const prevDeltas = world.transientContext?.deltas;
   const deltas = {
-    revenue: prevDeltas?.revenue ?? 0,
-    expenses: prevDeltas?.expenses ?? 0,
     ...emptyDeltas(),
-    // restore revenue/expenses after emptyDeltas resets them
+    // restore revenue/expenses from phase01 after initialization
     revenue: prevDeltas?.revenue ?? 0,
     expenses: prevDeltas?.expenses ?? 0,
   };
@@ -91,5 +89,5 @@ function checkMoraleBoost(world: WorldState): boolean {
   const playerHeya = world.heyas.get(world.playerHeyaId);
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
-  return playerRikishiIds.has(lastBasho.yushoWinnerId ?? "");
+  return playerRikishiIds.has(lastBasho.yusho ?? "");
 }
