@@ -5,7 +5,8 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await page.goto('/');
   
   // Wait for the world to be generated and the menu to appear
-  await expect(page.locator('h1').first()).toContainText(/Basho/i);
+  // Setting a longer timeout (15s) as initial generation can be heavy.
+  await expect(page.locator('h1').first()).toContainText(/Basho/i, { timeout: 15000 });
   
   // 2. Start Game: Select a recommended stable and click "Begin Journey"
   // The first recommended stable is pre-selected by default in the UI logic usually, 

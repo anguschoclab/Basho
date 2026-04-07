@@ -8,21 +8,13 @@ import { stableTieBreak } from "./utils/sort";
  * - Provides helper factories for common domains (injury, governance, recruitment, etc.).
  */
 
+import { rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope, EngineEventType } from "./types/events";
 export type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
 import type { Id } from "./types/common";
 
 
-
-/** Stable hash for deterministic IDs (FNV-1a-like) */
-import { simpleHashToIndex } from "./utils/math";
-
-/** Stable hash for deterministic IDs (FNV-1a-like) */
-function stableHash(s: string): string {
-  // Using large prime to get the raw hash before modulo
-  return simpleHashToIndex(s, 0xFFFFFFFF).toString(16);
-}
 
 /**
  * Ensure events state.
@@ -80,8 +72,9 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
     return events.log[events.log.length - 1] as EngineEvent;
   }
 
-  const idSeed = `${world.seed ?? "seed"}::${dedupeKey}::${events.log.length}`;
-  const id = `EV-${stableHash(idSeed).toUpperCase()}`;
+  const idRngLabel = `${dedupeKey}::${events.log.length}`;
+  const rng = rngForWorld(world, "events", idRngLabel);
+  const id = rng.uuid('EV');
 
   const ev: EngineEvent = {
     id,

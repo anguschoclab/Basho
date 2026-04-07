@@ -91,6 +91,7 @@ export interface BashoState {
 
 /** Defines the structure for basho result. */
 export interface BashoResult {
+  id: string;
   year: number;
   bashoNumber: 1 | 2 | 3 | 4 | 5 | 6;
   bashoName: BashoName;

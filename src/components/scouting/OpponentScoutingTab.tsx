@@ -1,3 +1,5 @@
+// OpponentScoutingTab.tsx — Comprehensive opponent lookup & scouting investment
+
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -7,63 +9,33 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
-import {
-  RANK_NAMES,
-  describeScoutingLevel,
-  getScoutedAttributes,
-  type ScoutingInvestment,
-} from "@/engine/scouting";
-import {
-  getOrCreateScouted,
-  getScoutingLevel,
-  setScoutingInvestment,
-  warmScoutingForRikishiList,
-} from "@/engine/scoutingStore";
 import { useToast } from "@/hooks/use-toast";
-import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { 
+  projectOpponentScoutingUIDigest, 
+  setScoutingInvestment,
+  RANK_NAMES 
+} from "@/presenters/uiDigest";
 import { AttrChip } from "./AttrChip";
 
 export function OpponentScoutingTab({
-  world,
   playerHeyaId,
 }: {
-  world: any;
   playerHeyaId: string | null;
 }) {
   const navigate = useNavigate();
-  const { updateWorld } = useGame();
+  const { state, updateWorld } = useGame();
+  const world = state.world;
   const { toast } = useToast();
   const [filterDivision, setFilterDivision] = useState<string>("makuuchi");
 
-  const opponents = useMemo(() => {
-    if (!world) return [];
-    const list: UIRikishi[] = [];
-    for (const r of world.rikishi.values()) {
-      if (r.isRetired) continue;
-      if (r.heyaId === playerHeyaId) continue;
-      if (filterDivision && r.division !== filterDivision) continue;
-      list.push(projectRikishi(r, world));
-    }
-    // Sort by rank tier
-    list.sort((a, b) => {
-      const ta = RANK_HIERARCHY[a.rank]?.tier ?? 99;
-      const tb = RANK_HIERARCHY[b.rank]?.tier ?? 99;
-      if (ta !== tb) return ta - tb;
-      return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
-    });
-    const sliced = list.slice(0, 40);
-    // Pre-warm scouting entries for all opponents shown
-    warmScoutingForRikishiList(
-      world,
-      sliced.map((r) => r.id),
-    );
-    return sliced;
+  const digest = useMemo(() => {
+    if (!world) return { opponents: [] };
+    return projectOpponentScoutingUIDigest(world, playerHeyaId, filterDivision);
   }, [world, playerHeyaId, filterDivision]);
 
   const handleInvestScouting = (
     rikishiId: string,
-    level: ScoutingInvestment,
+    level: any,
   ) => {
     if (!world) return;
     setScoutingInvestment(world, rikishiId, level);
@@ -73,8 +45,6 @@ export function OpponentScoutingTab({
       description: `Investment set to ${level}.`,
     });
   };
-
-  const seed = world?.seed || "default";
 
   return (
     <div className="space-y-4">
@@ -95,16 +65,8 @@ export function OpponentScoutingTab({
 
       <ScrollArea className="h-[600px]">
         <div className="space-y-3 pr-2">
-          {opponents.map((r) => {
-            const originalRikishi = world.rikishi.get(r.id);
-            if (!originalRikishi) return null;
-
-            const scouted = getOrCreateScouted(world, r.id, 1);
-            const scoutLevel = getScoutingLevel(world, r.id, 1);
-            const attrs = getScoutedAttributes(scouted, seed);
-            const scoutInfo = describeScoutingLevel(scoutLevel);
+          {digest.opponents.map((r) => {
             const rankNames = RANK_NAMES[r.rank] || { ja: r.rank, en: r.rank };
-            const heya = world.heyas.get(r.heyaId);
 
             return (
               <Card
@@ -131,33 +93,32 @@ export function OpponentScoutingTab({
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {heya?.name ?? "Unknown stable"} • {r.height}cm /{" "}
-                        {r.weight}kg
+                        {r.heyaName} • {r.height}cm / {r.weight}kg
                       </div>
 
                       {/* Scouted attributes — narrative only */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-xs">
-                        <AttrChip label="Power" attr={attrs.power} />
-                        <AttrChip label="Speed" attr={attrs.speed} />
-                        <AttrChip label="Balance" attr={attrs.balance} />
-                        <AttrChip label="Technique" attr={attrs.technique} />
-                        <AttrChip label="Aggression" attr={attrs.aggression} />
-                        <AttrChip label="Experience" attr={attrs.experience} />
+                        <AttrChip label="Power" attr={r.scoutedAttrs.power} />
+                        <AttrChip label="Speed" attr={r.scoutedAttrs.speed} />
+                        <AttrChip label="Balance" attr={r.scoutedAttrs.balance} />
+                        <AttrChip label="Technique" attr={r.scoutedAttrs.technique} />
+                        <AttrChip label="Aggression" attr={r.scoutedAttrs.aggression} />
+                        <AttrChip label="Experience" attr={r.scoutedAttrs.experience} />
                       </div>
                     </div>
 
                     {/* Scouting level + invest controls */}
                     <div className="flex flex-col items-end gap-2 shrink-0 min-w-[140px]">
                       <div className="flex items-center gap-2">
-                        <Search className={`h-4 w-4 ${scoutInfo.color}`} />
+                        <Search className={`h-4 w-4 ${r.scoutInfo.color}`} />
                         <span
-                          className={`text-sm font-medium ${scoutInfo.color}`}
+                          className={`text-sm font-medium ${r.scoutInfo.color}`}
                         >
-                          {scoutInfo.label}
+                          {r.scoutInfo.label}
                         </span>
                       </div>
                       <Progress
-                        value={scouted.scoutingLevel}
+                        value={r.scoutedProgress}
                         className="h-1.5 w-24"
                       />
 
@@ -169,12 +130,12 @@ export function OpponentScoutingTab({
                             "light",
                             "standard",
                             "deep",
-                          ] as ScoutingInvestment[]
+                          ] as const
                         ).map((inv) => (
                           <Button
                             key={inv}
                             variant={
-                              scouted.scoutingInvestment === inv
+                              r.scoutingInvestment === inv
                                 ? "default"
                                 : "ghost"
                             }
@@ -196,7 +157,7 @@ export function OpponentScoutingTab({
             );
           })}
 
-          {opponents.length === 0 && (
+          {digest.opponents.length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-8">
               No opponents found in this division.
             </p>

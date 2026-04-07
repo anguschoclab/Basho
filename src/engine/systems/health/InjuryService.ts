@@ -101,6 +101,7 @@ export function tickWeekInjury(world: WorldState): void {
       rikishi.injured = true;
       rikishi.injuryWeeksRemaining = result.weeksOut;
       (rikishi as any).currentInjury = {
+        id: seededRng.uuid('IJ'),
         severity: result.severity,
         area: result.area,
         type: result.type,
@@ -138,6 +139,7 @@ export function onBoutResolvedInjury(
     loser.injured = true;
     loser.injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
     (loser as any).currentInjury = {
+      id: rngSeed.uuid('IJ'),
       severity: "minor",
       area: "other",
       type: "inflammation",

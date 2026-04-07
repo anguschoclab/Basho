@@ -9,11 +9,13 @@ import type { CareerSnapshot } from "./types/history";
 export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): CareerSnapshot {
   const lastBasho = world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
   
+  const rng = rngForWorld(world, "history", `career_${rikishi.id}_${world.year}_${world.currentBashoName}`);
   const bashoId = lastBasho 
-    ? `${lastBasho.year}-${lastBasho.bashoName}` 
+    ? lastBasho.id
     : `${world.year}-${world.currentBashoName || "Honbasho"}`;
-
+  
   return {
+    id: rng.uuid('CH'),
     bashoId,
 
     year: world.year,

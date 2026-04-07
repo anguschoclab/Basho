@@ -1,3 +1,5 @@
+// RecruitingTab.tsx — talent scouting and signing
+
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,39 +15,40 @@ import {
   GraduationCap,
   School,
 } from "lucide-react";
-import { describeScoutingLevel, ARCHETYPE_NAMES } from "@/engine/scouting";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { useToast } from "@/hooks/use-toast";
 import type { TacticalArchetype } from "@/engine/types/combat";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
+import { 
+  projectRecruitmentUIDigest, 
+  scoutPool, 
+  scoutCandidate, 
+  offerCandidate, 
+  describeScoutingLevel, 
+  ARCHETYPE_NAMES 
+} from "@/presenters/uiDigest";
 
 export function RecruitingTab({
-  world,
   playerHeyaId,
 }: {
-  world: any;
   playerHeyaId: string | null;
 }) {
-  const { updateWorld } = useGame();
+  const { state, updateWorld } = useGame();
+  const world = state.world;
   const { toast } = useToast();
   const [activePool, setActivePool] = useState<
     "high_school" | "university" | "foreign"
   >("high_school");
   const [signingCandidate, setSigningCandidate] = useState<any>(null);
 
-  const candidates = useMemo(() => {
-    if (!world) return [];
-    try {
-      return talentpool.listVisibleCandidates(world, activePool);
-    } catch {
-      return [];
-    }
+  const digest = useMemo(() => {
+    if (!world) return { candidates: [] };
+    return projectRecruitmentUIDigest(world, activePool);
   }, [world, activePool]);
 
   const handleScoutPool = () => {
     if (!world) return;
     try {
-      const result = talentpool.scoutPool(world, activePool, {
+      const result = scoutPool(world, activePool, {
         revealCount: 2,
       });
       updateWorld({ ...world });
@@ -71,7 +74,7 @@ export function RecruitingTab({
   const handleScoutCandidate = (candidateId: string) => {
     if (!world) return;
     try {
-      const result = talentpool.scoutCandidate(world, candidateId, {
+      const result = scoutCandidate(world, candidateId, {
         effort: 1,
       });
       updateWorld({ ...world });
@@ -93,7 +96,7 @@ export function RecruitingTab({
   const handleConfirmSigning = (offer: any) => {
     if (!world || !playerHeyaId || !signingCandidate) return;
     try {
-      const result = talentpool.offerCandidate(
+      const result = offerCandidate(
         world,
         signingCandidate.candidateId,
         playerHeyaId,
@@ -162,12 +165,7 @@ export function RecruitingTab({
 
       <ScrollArea className="h-[550px]">
         <div className="space-y-3 pr-2">
-          {candidates.map((c: any) => {
-            const scoutLevel = talentpool.getCandidateScoutingLevel(
-              world,
-              c.candidateId,
-            );
-            const scoutInfo = describeScoutingLevel(scoutLevel);
+          {digest.candidates.map((c: any) => {
             const visLabel =
               c.visibilityBand === "public"
                 ? "Public"
@@ -202,7 +200,7 @@ export function RecruitingTab({
                         {c.weight ? `${c.weight}kg` : ""}
                       </div>
 
-                      {scoutLevel >= 35 && (
+                      {c.scoutLevel >= 35 && (
                         <div className="mt-2 text-xs text-muted-foreground">
                           {c.archetype && (
                             <span>
@@ -211,7 +209,7 @@ export function RecruitingTab({
                                 ?.label ?? c.archetype}
                             </span>
                           )}
-                          {scoutLevel >= 65 && c.talentSeed && (
+                          {c.scoutLevel >= 65 && c.talentSeed && (
                             <span className="ml-3">
                               Potential:{" "}
                               {c.talentSeed > 0.7
@@ -227,9 +225,9 @@ export function RecruitingTab({
 
                     <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1">
-                        <Search className={`h-3 w-3 ${scoutInfo.color}`} />
-                        <span className={`text-xs ${scoutInfo.color}`}>
-                          {scoutInfo.label}
+                        <Search className={`h-3 w-3 ${c.scoutInfo.color}`} />
+                        <span className={`text-xs ${c.scoutInfo.color}`}>
+                          {c.scoutInfo.label}
                         </span>
                       </div>
 
@@ -242,7 +240,6 @@ export function RecruitingTab({
                             e.stopPropagation();
                             handleScoutCandidate(c.candidateId);
                           }}
-                          tooltip="Gather more detailed intel on this specific prospect"
                         >
                           <Eye className="h-3 w-3" />
                           Scout
@@ -256,7 +253,6 @@ export function RecruitingTab({
                               e.stopPropagation();
                               handleOfferClick(c);
                             }}
-                            tooltip="Initiate recruitment talks and make a signing offer"
                           >
                             <UserPlus className="h-3 w-3" />
                             Offer
@@ -270,7 +266,7 @@ export function RecruitingTab({
             );
           })}
 
-          {candidates.length === 0 && (
+          {digest.candidates.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <Binoculars className="h-8 w-8 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No visible prospects in this pool yet.</p>

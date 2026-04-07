@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { WorldState } from "@/engine/types/world";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
@@ -35,11 +34,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
-import { MediaHeadline, MediaState, MediaBeat } from "@/engine/types/media";
-import {
-  buildMediaDigest,
-  createDefaultMediaState,
-} from "@/presenters/uiDigest";
+import { MediaHeadline, MediaBeat } from "@/engine/types/media";
+import { projectMediaUIDigest, createDefaultMediaState } from "@/presenters/uiDigest";
 
 /* ── Style maps ── */
 
@@ -86,16 +82,10 @@ const ALL_BEATS = Object.keys(BEAT_LABELS) as MediaBeat[];
 
 /* ── Sub-components ── */
 
-/**
- * headline card.
- *  * @param { headline, world } - The { headline, world }.
- */
 function HeadlineCard({
   headline,
-  world,
 }: {
-  headline: MediaHeadline;
-  world: WorldState | null;
+  headline: MediaHeadline & { rikishiNames?: Record<string, string> };
 }) {
   const tier = TIER_STYLE[headline.tier] ?? TIER_STYLE.local;
   const tone = TONE_STYLE[headline.tone] ?? TONE_STYLE.neutral;
@@ -124,15 +114,15 @@ function HeadlineCard({
       )}
       <div className="flex items-center gap-2 flex-wrap">
         {headline.rikishiIds.map((id) => {
-          const r = world?.rikishi?.get(id);
-          return r ? (
+          const name = headline.rikishiNames?.[id] || "Unknown";
+          return (
             <RikishiName
               key={id}
               id={id}
-              name={r.shikona}
+              name={name}
               className="text-xs"
             />
-          ) : null;
+          );
         })}
         {headline.bout?.upset && (
           <Badge
@@ -147,10 +137,6 @@ function HeadlineCard({
   );
 }
 
-/**
- * beat filter.
- *  * @param { selected, onChange } - The { selected, on change }.
- */
 function BeatFilter({
   selected,
   onChange,
@@ -203,10 +189,6 @@ function BeatFilter({
   );
 }
 
-/**
- * heat sparkline.
- *  * @param { data } - The { data }.
- */
 function HeatSparkline({
   data,
 }: {
@@ -221,8 +203,8 @@ function HeatSparkline({
           <YAxis domain={[0, 100]} hide />
           <Tooltip
             contentStyle={{ fontSize: 10, padding: "2px 6px" }}
-            formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
-            labelFormatter={(l: string) => l.toUpperCase()}
+            formatter={(v: any) => [`${Math.round(Number(v))}`, "Heat"]}
+            labelFormatter={(l: any) => String(l).toUpperCase()}
           />
           <Line
             type="monotone"
@@ -237,53 +219,35 @@ function HeatSparkline({
   );
 }
 
-/* ── Page ── */
-
-/** media page. */
 export default function MediaPage() {
   const { state } = useGame();
   const world = state.world;
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
-  const mediaState: MediaState = world?.mediaState ?? createDefaultMediaState();
-
   const digest = useMemo(() => {
     if (!world) return null;
-    return buildMediaDigest(world);
+    return projectMediaUIDigest(world);
   }, [world]);
 
   const allHeadlines = useMemo(() => {
-    let list = [...(mediaState.headlines || [])].sort(
-      (a, b) => b.impact - a.impact || b.week - a.week,
-    );
+    if (!digest) return [];
+    let list = digest.headlines.map(h => {
+      const rikishiNames: Record<string, string> = {};
+      h.rikishiIds.forEach(rid => {
+        rikishiNames[rid] = world?.rikishi?.get(rid)?.shikona || "Unknown";
+      });
+      return { ...h, rikishiNames };
+    });
 
     if (beatFilter.size > 0) {
       list = list.filter((h) => beatFilter.has(h.beat));
     }
 
     return list.slice(0, 50);
-  }, [mediaState.headlines, beatFilter]);
+  }, [digest, beatFilter, world]);
 
-  const hotRikishi = useMemo(() => {
-    return Object.entries(mediaState.mediaHeat || {})
-      .map(([id, heat]) => ({
-        id,
-        heat,
-        r: world?.rikishi?.get(id),
-        history: mediaState.mediaHeatHistory?.[id] ?? [],
-      }))
-      .filter((x) => x.r)
-      .sort((a, b) => b.heat - a.heat)
-      .slice(0, 10);
-  }, [mediaState.mediaHeat, mediaState.mediaHeatHistory, world]);
-
-  const pressuredHeya = useMemo(() => {
-    return Object.entries(mediaState.heyaPressure || {})
-      .map(([id, pressure]) => ({ id, pressure, h: world?.heyas?.get(id) }))
-      .filter((x) => x.h)
-      .sort((a, b) => b.pressure - a.pressure)
-      .slice(0, 8);
-  }, [mediaState.heyaPressure, world]);
+  const hotRikishi = digest?.hotRikishi ?? [];
+  const pressuredHeya = digest?.pressuredHeya ?? [];
 
   if (!world) {
     return (
@@ -346,7 +310,7 @@ export default function MediaPage() {
               <ScrollArea className="max-h-[500px]">
                 <div className="space-y-2">
                   {allHeadlines.map((h, i) => (
-                    <HeadlineCard key={h.id || i} headline={h} world={world} />
+                    <HeadlineCard key={h.id || i} headline={h} />
                   ))}
                 </div>
               </ScrollArea>
@@ -372,16 +336,16 @@ export default function MediaPage() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {hotRikishi.map(({ id, heat, r, history }) => (
+                  {hotRikishi.map(({ id, heat, rikishi, history }) => (
                     <div key={id} className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <RikishiName
                           id={id}
-                          name={r!.shikona}
+                          name={rikishi?.shikona || "Unknown"}
                           className="font-medium text-sm"
                         />
                         <div className="text-xs text-muted-foreground">
-                          {r!.rank}
+                          {rikishi?.rank || "Unknown"}
                         </div>
                       </div>
                       <HeatSparkline data={history} />
@@ -416,12 +380,12 @@ export default function MediaPage() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {pressuredHeya.map(({ id, pressure, h }) => (
+                  {pressuredHeya.map(({ id, pressure, heya }) => (
                     <div key={id} className="flex items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <StableName
                           id={id}
-                          name={h!.name}
+                          name={heya?.name || "Unknown"}
                           className="font-medium text-sm"
                         />
                       </div>

@@ -1,24 +1,29 @@
+// StableIntelTab.tsx — Full visibility into your own stables
+
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight } from "lucide-react";
-import { RANK_NAMES } from "@/engine/scouting";
-import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
-import { RANK_HIERARCHY } from "@/engine/banzuke";
+import { 
+  projectRikishi, 
+  RANK_HIERARCHY, 
+  RANK_NAMES 
+} from "@/presenters/uiDigest";
 
 export function StableIntelTab({
-  world,
   playerHeyaId,
 }: {
-  world: any;
   playerHeyaId: string | null;
 }) {
   const navigate = useNavigate();
+  const { state } = useGame();
+  const world = state.world;
 
   const roster = useMemo(() => {
     if (!world || !playerHeyaId) return [];
-    const list: UIRikishi[] = [];
+    const list: any[] = [];
     for (const r of world.rikishi.values()) {
       if (r.heyaId !== playerHeyaId || r.isRetired) continue;
       list.push(projectRikishi(r, world));
@@ -30,8 +35,6 @@ export function StableIntelTab({
     });
     return list;
   }, [world, playerHeyaId]);
-
-  const seed = world?.seed || "default";
 
   return (
     <div className="space-y-4">

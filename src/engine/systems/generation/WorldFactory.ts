@@ -33,8 +33,8 @@ export function createHeyaWithOyakata(args: {
   const oyakata: Oyakata = {
     id: oyakataId,
     heyaId: id,
-    name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
-    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`),
+    name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
+    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
     age: 45 + rng.int(0, 20),
     archetype: seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]),
     traits: {
