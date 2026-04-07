@@ -158,7 +158,7 @@ export interface Rikishi {
   currentBashoRecord?: { wins: number; losses: number };
 
   // UI hysteresis descriptor (set by tickDaily, consumed by presenters)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   descriptor?: any;
 
   // Backward-compat alias for injuryStatus (set by RecoveryService)

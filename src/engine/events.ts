@@ -81,7 +81,7 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   }
 
   const idSeed = `${world.seed ?? "seed"}::${dedupeKey}::${events.log.length}`;
-  const id = `evt-${stableHash(idSeed)}`;
+  const id = `EV-${stableHash(idSeed).toUpperCase()}`;
 
   const ev: EngineEvent = {
     id,

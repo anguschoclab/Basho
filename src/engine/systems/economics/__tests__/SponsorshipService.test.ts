@@ -7,7 +7,7 @@ import {
   computeStarPower,
   processSponsorChurn
 } from "../SponsorshipService";
-import { SeededRNG } from "../../../rng";
+import { rngFromSeed, SeededRNG } from "../../../rng";
 import type { SponsorPool, Sponsor, Koenkai, KoenkaiBandType } from "../../../types/sponsors";
 import type { WorldState } from "../../../types/world";
 import type { Heya } from "../../../types/heya";
@@ -16,7 +16,7 @@ import { mockRikishi } from "../../../__tests__/utils";
 describe("SponsorshipService", () => {
   describe("createKoenkai", () => {
     it("creates a koenkai and determines strength band based on prestige", () => {
-      const rng = new SeededRNG("test");
+      const rng = rngFromSeed("test", "sponsorship", "create-koenkai");
       const sponsors = new Map<string, Sponsor>();
       for (let i = 0; i < 10; i++) {
         sponsors.set(`s${i}`, {
@@ -24,9 +24,9 @@ describe("SponsorshipService", () => {
           active: true,
           tier: i % 3 === 0 ? "T1" : "T2", // Eligible
           prestigeAffinity: i * 10
-        } as Sponsor);
+        } as unknown as Sponsor);
       }
-      const sponsorPool = { sponsors, availableSponsors: [] } as SponsorPool;
+      const sponsorPool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
 
       const koenkaiElite = createKoenkai("heya-1", sponsorPool, "elite", rng, 1);
       expect(koenkaiElite.strengthBand).toBe("powerful");
@@ -50,35 +50,35 @@ describe("SponsorshipService", () => {
 
   describe("selectBenefactor", () => {
     it("returns null if koenkai is undefined", () => {
-      const sponsorPool = { sponsors: new Map() } as SponsorPool;
-      const rng = new SeededRNG("test");
+      const sponsorPool = { sponsors: new Map() } as unknown as SponsorPool;
+      const rng = rngFromSeed("test", "sponsorship", "select-benefactor");
       expect(selectBenefactor("heya-1", sponsorPool, undefined, rng)).toBeNull();
     });
 
     it("returns null if no pillar with risk appetite >= 50", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", riskAppetite: 40 } as Sponsor]
+        ["s1", { sponsorId: "s1", riskAppetite: 40 } as unknown as Sponsor]
       ]);
       const koenkai = {
         members: [{ role: "koenkai_pillar", sponsorId: "s1" }]
-      } as Koenkai;
-      const rng = new SeededRNG("test");
-      expect(selectBenefactor("heya-1", { sponsors } as SponsorPool, koenkai, rng)).toBeNull();
+      } as unknown as Koenkai;
+      const rng = rngFromSeed("test", "sponsorship", "select-benefactor");
+      expect(selectBenefactor("heya-1", { sponsors } as unknown as SponsorPool, koenkai, rng)).toBeNull();
     });
 
     it("returns pillar with highest risk appetite >= 50", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", riskAppetite: 60 } as Sponsor],
-        ["s2", { sponsorId: "s2", riskAppetite: 80 } as Sponsor]
+        ["s1", { sponsorId: "s1", riskAppetite: 60 } as unknown as Sponsor],
+        ["s2", { sponsorId: "s2", riskAppetite: 80 } as unknown as Sponsor]
       ]);
       const koenkai = {
         members: [
           { role: "koenkai_pillar", sponsorId: "s1" },
           { role: "koenkai_pillar", sponsorId: "s2" }
         ]
-      } as Koenkai;
-      const rng = new SeededRNG("test");
-      const benefactor = selectBenefactor("heya-1", { sponsors } as SponsorPool, koenkai, rng);
+      } as unknown as Koenkai;
+      const rng = rngFromSeed("test", "sponsorship", "select-benefactor-winner");
+      const benefactor = selectBenefactor("heya-1", { sponsors } as unknown as SponsorPool, koenkai, rng);
       expect(benefactor?.sponsorId).toBe("s2");
     });
   });
@@ -112,14 +112,14 @@ describe("SponsorshipService", () => {
           ["r2", mockRikishi("r2", { rank: "ozeki", division: "makuuchi" })], // +20
           ["r3", mockRikishi("r3", { rank: "sekiwake", division: "makuuchi" })], // +10
           ["r4", mockRikishi("r4", { rank: "maegashira", division: "makuuchi" })], // +5
-          ["r5", mockRikishi("r5", { rank: "juyro", division: "juyro" })] // +0
+          ["r5", mockRikishi("r5", { rank: "juryo", division: "juryo" })] // +0
         ])
       } as unknown as WorldState;
 
       const heya = {
         id: "heya-1",
         rikishiIds: ["r1", "r2", "r3", "r4", "r5"]
-      } as Heya;
+      } as unknown as Heya;
 
       expect(computeStarPower(heya, world)).toBe(65); // 30+20+10+5
     });
@@ -137,7 +137,7 @@ describe("SponsorshipService", () => {
       const heya = {
         id: "heya-1",
         rikishiIds: ["r1", "r2", "r3", "r4"]
-      } as Heya;
+      } as unknown as Heya;
 
       expect(computeStarPower(heya, world)).toBe(100); // 4*30 = 120 -> capped 100
     });
@@ -146,15 +146,15 @@ describe("SponsorshipService", () => {
   describe("processSponsorChurn", () => {
       const createSponsorsAndKoenkai = (extraSponsor = false) => {
         const sponsors = new Map<string, Sponsor>([
-          ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as Sponsor],
-          ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as Sponsor]
+          ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as unknown as Sponsor],
+          ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as unknown as Sponsor]
         ]);
         const members = [
           { sponsorId: "s_local", role: "koenkai_member" },
           { sponsorId: "s_corp", role: "koenkai_pillar" }
         ];
         if (extraSponsor) {
-          sponsors.set("s_other", { sponsorId: "s_other", active: true, category: "unknown", displayName: "Other" } as Sponsor);
+          sponsors.set("s_other", { sponsorId: "s_other", active: true, category: "unknown", displayName: "Other" } as unknown as Sponsor);
           members.push({ sponsorId: "s_other", role: "koenkai_member" });
         }
 
@@ -163,7 +163,7 @@ describe("SponsorshipService", () => {
             koenkaiId: "koenkai_h1",
             beyaId: "h1",
             members
-          } as Koenkai]
+          } as unknown as Koenkai]
         ]);
         return { sponsors, koenkais };
       };
@@ -175,6 +175,7 @@ describe("SponsorshipService", () => {
       const heya = {
         id: "h1",
         name: "Heya 1",
+        koenkaiId: "koenkai_h1",
         reputation: 20, // prestige * 0.5 = 10
         scandalScore: 0,
         rikishiIds: [] // star power 0. satisfaction = 10
@@ -182,9 +183,9 @@ describe("SponsorshipService", () => {
 
       const sponsors = new Map<string, Sponsor>([
         // local threshold 20 (satisfaction 10 < 20, churn)
-        ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as Sponsor],
+        ["s_local", { sponsorId: "s_local", active: true, category: "local_business", displayName: "Local" } as unknown as Sponsor],
         // corporate threshold 50 (satisfaction 10 < 50, churn)
-        ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as Sponsor]
+        ["s_corp", { sponsorId: "s_corp", active: true, category: "national_brand", displayName: "Corp" } as unknown as Sponsor]
       ]);
 
       const koenkais = new Map<string, Koenkai>([
@@ -195,7 +196,7 @@ describe("SponsorshipService", () => {
             { sponsorId: "s_local", role: "koenkai_member" },
             { sponsorId: "s_corp", role: "koenkai_pillar" }
           ]
-        } as Koenkai]
+        } as unknown as Koenkai]
       ]);
 
       const world = {
@@ -223,6 +224,7 @@ describe("SponsorshipService", () => {
       const heya = {
         id: "h1",
         name: "Heya 1",
+        koenkaiId: "koenkai_h1",
         reputation: 100, // prestige * 0.5 = 50
         scandalScore: 0,
         rikishiIds: ["r1"] // star power 30 * 0.3 = 9. satisfaction = 59

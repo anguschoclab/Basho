@@ -53,7 +53,7 @@ describe("events.ts - Core Bus", () => {
       });
 
       expect(event.id).toBeDefined();
-      expect(event.id.startsWith("evt-")).toBe(true);
+      expect(event.id.startsWith("EV-")).toBe(true);
       expect(event.type).toBe("TEST_EVENT");
       expect(event.year).toBe(2025);
       expect(event.week).toBe(1);

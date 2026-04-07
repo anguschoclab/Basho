@@ -36,11 +36,14 @@ function setStandings(
   }
 }
 
+let _rikishiCounter = 0;
 /**
  * Create a mock Rikishi with flexible rank/rankNumber.
  */
 function createRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
-  return mockRikishi(overrides.id || `r-${Math.random()}`, {
+  _rikishiCounter++;
+  const id = overrides.id || `r-mock-${_rikishiCounter}`;
+  return mockRikishi(id, {
     rank: "maegashira",
     rankNumber: 5,
     ...overrides,

@@ -72,7 +72,7 @@ export function BashoWidget() {
     let completedCount = 0;
     let kinboshi = 0;
     let upsets = 0;
-    let injuries = selectInjuredRikishi(world).length;
+    const injuries = selectInjuredRikishi(world).length;
 
     for (const m of matches) {
       if (m.result) {

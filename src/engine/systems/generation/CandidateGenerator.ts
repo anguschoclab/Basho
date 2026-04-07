@@ -248,7 +248,7 @@ export function generateCandidate(args: {
 
   return {
     candidateId: id,
-    personId: `p_${id}`,
+    personId: rng.uuid('PS'),
     name,
     nationality: poolType === "foreign" ? origin : "Japan",
     birthYear: currentYear - (15 + rng.int(0, (poolType === "university" ? 7 : 3))),

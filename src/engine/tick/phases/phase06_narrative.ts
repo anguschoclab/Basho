@@ -25,7 +25,7 @@ export function phase06_narrative(world: WorldState): WorldState {
   if (!deltas) return world;
 
   // Work on a shallow clone for the events array
-  let next: WorldState = { ...world };
+  const next: WorldState = { ...world };
 
   // ── Injury headlines ──────────────────────────────────────────────────────
   for (const rId of deltas.injuriesSustained) {

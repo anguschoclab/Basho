@@ -71,7 +71,7 @@ export function updateMediaFromBout(args: {
   });
 
   const headline: MediaHeadline = {
-    id: `mh-${week}-${day ?? 0}-${result.winnerRikishiId}-${result.loserRikishiId}-${Math.floor(rng.next() * 1e6)}`,
+    id: rng.uuid('MH'),
     week,
     bashoName,
     tier,
@@ -236,7 +236,7 @@ function processStreak(state: MediaState, world: WorldState, winnerId: string, l
   });
 
   const headline: MediaHeadline = {
-    id: `mh-streak-${world.week}-${day ?? 0}-${winnerId}-${streak}`,
+    id: rng.uuid('MH'),
     week: world.week,
     bashoName,
     tier: streak >= 10 ? "main_event" : "national",
