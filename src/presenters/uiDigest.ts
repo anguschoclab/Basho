@@ -106,7 +106,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   // --- Key matchup (during basho) ---
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
-  if (basho && world.cyclePhase === "active_basho") {
+  if (basho && world.cyclePhase === "active_basho" && world.week > 1) {
     const day = basho.day ?? 1;
     let matchupCount = 0;
     for (const match of (basho.matches || [])) {
@@ -581,8 +581,8 @@ export function projectOpponentScoutingUIDigest(world: WorldState, playerHeyaId:
 
   // Sort by rank tier
   list.sort((a, b) => {
-    const ta = RANK_HIERARCHY[a.rank]?.tier ?? 99;
-    const tb = RANK_HIERARCHY[b.rank]?.tier ?? 99;
+    const ta = RANK_HIERARCHY[a.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
+    const tb = RANK_HIERARCHY[b.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
     if (ta !== tb) return ta - tb;
     return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
   });
@@ -759,7 +759,7 @@ export function projectBanzukeUIDigest(world: WorldState) {
   // Real implementation would filter by division and sort by rank
   const makuuchi = Array.from(world.rikishi.values())
     .filter(r => r.division === "makuuchi")
-    .sort((a, b) => compareRanks(a.rank, b.rank) || (a.rankNumber || 0) - (b.rankNumber || 0))
+    .sort((a, b) => compareRanks(a.rank as any, b.rank as any) || (a.rankNumber || 0) - (b.rankNumber || 0))
     .map(r => projectRikishi(r, world));
 
   return {
