@@ -140,6 +140,8 @@ export function scheduleDivisionDay(args: {
 
   const roster = activeDivisionRoster(world, division);
   const maxActive = args.config?.maxActiveRikishi;
+  if (!needsScheduleForDay(division, day)) return [];
+
   const pool =
     typeof maxActive === "number"
       ? roster.slice(0, Math.max(0, maxActive))
