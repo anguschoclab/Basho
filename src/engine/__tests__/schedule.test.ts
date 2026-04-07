@@ -61,7 +61,7 @@ function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
 
 function setStandings(
   basho: BashoState,
-  records: Record<string, { wins: number; losses: number }>
+  records: Record<string, { wins: number; losses: number }>,
 ) {
   for (const [id, record] of Object.entries(records)) {
     basho.standings.set(id, record);
@@ -207,7 +207,10 @@ describe("scheduleDivisionDay", () => {
       rank: "maegashira",
       rankNumber: 10,
     });
-    const yoko = mockRikishi("yoko", { division: "makuuchi", rank: "yokozuna" });
+    const yoko = mockRikishi("yoko", {
+      division: "makuuchi",
+      rank: "yokozuna",
+    });
     world.rikishi.set(m10.id, m10);
     world.rikishi.set(yoko.id, yoko);
 
@@ -387,7 +390,7 @@ describe("scheduleDivisionDay — chronological order for makuuchi", () => {
     expect(scheduled.length).toBeGreaterThan(0);
     const lastMatch = scheduled[scheduled.length - 1];
     expect([lastMatch.eastRikishiId, lastMatch.westRikishiId]).toContain(
-      yoko.id
+      yoko.id,
     );
   });
 });
@@ -430,7 +433,7 @@ describe("scheduleDivisionDay — basho state mutation", () => {
     const hasRematch = dayTwoMatches.some(
       (m) =>
         (m.eastRikishiId === r1.id && m.westRikishiId === r2.id) ||
-        (m.eastRikishiId === r2.id && m.westRikishiId === r1.id)
+        (m.eastRikishiId === r2.id && m.westRikishiId === r1.id),
     );
 
     expect(hasRematch).toBe(false);
