@@ -4,3 +4,6 @@
 ## 2025-03-24 - React Context Memoization
 **Learning:** Providing inline objects to Context values (like `value={{ theme, setTheme }}`) forces re-renders for all context consumers on every provider render.
 **Action:** Wrap context objects in `useMemo` with stable dependencies to prevent unnecessary render cascades.
+## 2024-04-07 - Ineffective useMemo with Rest Props
+**Learning:** When optimizing React components using `useMemo` for Context Provider values, spreading `props` (e.g., `...props`) into the memoized object where `props` is derived from an object rest spread (like `...props` in arguments) creates a new object on every render, invalidating the memoization.
+**Action:** Do not memoize rest spread objects. Extract explicit state/primitive properties, or accept that forwarding rest parameters inside a single value object prevents stable memoization.
