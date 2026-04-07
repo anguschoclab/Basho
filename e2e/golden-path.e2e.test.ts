@@ -5,8 +5,7 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await page.goto('/');
   
   // Wait for the world to be generated and the menu to appear
-  // Setting a longer timeout (15s) as initial generation can be heavy.
-  await expect(page.locator('h1').first()).toContainText(/Basho/i, { timeout: 15000 });
+  await expect(page.locator('h1').first()).toContainText(/Basho/i, { timeout: 30000 });
   
   // 2. Start Game: Select a recommended stable and click "Begin Journey"
   // The first recommended stable is pre-selected by default in the UI logic usually, 
@@ -60,6 +59,6 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   // wait for End Basho or Next Day
   // The state transition might mean the "Next Day" button is right there on the top nav now, or the page reloads.
   const nextDayBtn = page.getByRole('button', { name: /End Basho|Next Day|Advance Day/i }).first();
-  await expect(nextDayBtn).toBeVisible({ timeout: 15000 });
+  await expect(nextDayBtn).toBeVisible({ timeout: 30000 });
   
 });

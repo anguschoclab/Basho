@@ -6,25 +6,23 @@ import { HQ_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";
-import { setHeyaDiet } from "@/engine/welfare";
+import { projectMedicalUIDigest, setHeyaDietAction } from "@/presenters/uiDigest";
 import type { DietRegimen } from "@/engine/types/economy";
 
 /** injury recovery page. */
 export default function InjuryRecoveryPage() {
   const { state, updateWorld } = useGame();
-  const world = state.world;
-  const heya = useMemo(() => {
-    if (!world || !state.playerHeyaId) return null;
-    return world.heyas.get(state.playerHeyaId) || null;
-  }, [world, state.playerHeyaId]);
+  const digest = useMemo(() => state.world ? projectMedicalUIDigest(state.world) : null, [state.world]);
 
   const handleSetDiet = useCallback((diet: DietRegimen) => {
-    if (!world || !state.playerHeyaId) return;
-    setHeyaDiet(world, state.playerHeyaId, diet);
-    updateWorld(world);
-  }, [world, state.playerHeyaId, updateWorld]);
+    if (!state.world || !state.playerHeyaId) return;
+    const success = setHeyaDietAction(state.world, state.playerHeyaId, diet);
+    if (success) {
+      updateWorld({ ...state.world });
+    }
+  }, [state.world, state.playerHeyaId, updateWorld]);
 
-  if (!world || !heya) {
+  if (!digest) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full text-muted-foreground">Loading...</div>
@@ -39,7 +37,7 @@ export default function InjuryRecoveryPage() {
       activeSubTab="medical"
     >
       <Helmet>
-        <title>Performance Center — {heya.name} | Basho</title>
+        <title>Performance Center — {digest.heyaName} | Basho</title>
       </Helmet>
       
       <div className="space-y-8">
@@ -50,14 +48,12 @@ export default function InjuryRecoveryPage() {
               Monitor and manage injured wrestlers. Better recovery facilities speed healing.
             </p>
           </div>
-          <InjuryRecoveryPanel world={world} />
+          <InjuryRecoveryPanel digest={digest} />
         </div>
 
         <div className="space-y-6">
           <WelfarePanel 
-            world={world} 
-            heya={heya} 
-            isOwner={true} 
+            digest={digest}
             onSetDiet={handleSetDiet} 
           />
         </div>
@@ -65,4 +61,3 @@ export default function InjuryRecoveryPage() {
     </AppLayout>
   );
 }
-

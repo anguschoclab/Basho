@@ -16,6 +16,7 @@ import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
 import { createKoenkai } from "../economics/SponsorshipService";
 import type { BashoName, BashoState } from "../../types/basho";
+import type { Faction, IchimonName } from "../../types/economy";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -182,9 +183,9 @@ export function generateInitialWorld(seed: string): WorldState {
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
-    playerHeyaId: Array.from(heyaMap.keys())[0], // Default to first stable generated
+    playerHeyaId: Array.from(heyaMap.keys())[0], 
     almanacSnapshots: [],
-    factions: {},
+    factions: createInitialFactions(worldRng),
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     records: { 
       allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }, 
@@ -226,7 +227,7 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
   return {
     id: rng.uuid('BS'),
     year: world.year,
-    bashoNumber: 1, // Simple increment or lookup needed for real logic
+    bashoNumber: 1, 
     bashoName: name,
     day: 1,
     currentDay: 1,
@@ -234,4 +235,21 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     standings: new Map(),
     isActive: true
   };
+}
+
+function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
+  const names: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
+  const factions: Record<string, Faction> = {};
+  
+  names.forEach(name => {
+    const id = rng.uuid('FN');
+    factions[id] = {
+      id: name, // The type Faction uses IchimonName as ID internally (A6.2 compliance)
+      name: `${name} Ichimon`,
+      influence: 50,
+      oyakataLeaderId: null
+    };
+  });
+  
+  return factions;
 }

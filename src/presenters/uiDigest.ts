@@ -3,6 +3,10 @@ import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";
 import { generateH2HCommentary, getH2HReport } from "../engine/h2h";
 import { RivalryService } from "../engine/systems/narrative/RivalryService";
+import { 
+  KOENKAI_MONTHLY_INCOME, 
+  SPONSOR_TIER_INCOME 
+} from "../engine/systems/economics/SponsorshipService";
 import type { BoutPreviewUI } from "./boutPreviewUI";
 import { 
   selectInjuredRikishi, 
@@ -25,6 +29,7 @@ import { warmScoutingForRikishiList, getOrCreateScouted, getScoutingLevel } from
 import { getScoutedAttributes, describeScoutingLevel } from "../engine/scouting";
 import { RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
 import { getHeyaRoster, getSekitoriInHeya } from "../engine/queries";
+import { buildPerceptionSnapshot } from "../engine/perception";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -433,6 +438,7 @@ export { getKimarite } from "../engine/kimarite";
 export { getOrCreateScouted, getScoutingLevel, setScoutingInvestment, warmScoutingForRikishiList } from "../engine/scoutingStore";
 export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine/governance/GovernanceService";
 export { scoutPool, scoutCandidate, offerCandidate, getCandidateScoutingLevel } from "../engine/systems/generation/TalentPoolService";
+export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -703,26 +709,77 @@ export function projectSponsorUIDigest(world: WorldState) {
   if (!heya) return null;
 
   const pool = world.sponsorPool;
-  const koenkai = pool?.koenkais?.get(heya.koenkaiId || "");
+  if (!pool) return null;
 
-  const activeSponsors = (koenkai?.members || []).map(rel => {
-    const sponsor = pool?.sponsors.get(rel.sponsorId);
-    return {
-      relId: rel.relId,
-      name: sponsor?.displayName || "Unknown Sponsor",
-      tier: sponsor?.tier || "T0",
-      category: sponsor?.category || "local",
-      monthlySupport: 50000, // calc based on tier
-      loyalty: 80, // placeholder
-    };
+  const activeSponsors: any[] = [];
+  
+  for (const sponsor of pool.sponsors.values()) {
+    if (!sponsor.active) continue;
+    for (const rel of sponsor.relationships) {
+      if (rel.targetId !== playerHeyaId) continue;
+
+      const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier] * (rel.strength / 3);
+      const satisfactionEstimate = Math.min(100, sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4);
+      const expiryWeek = rel.endsAtTick ?? null;
+      const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
+
+      activeSponsors.push({
+        relId: rel.relId,
+        sponsorId: sponsor.sponsorId,
+        name: sponsor.displayName,
+        tier: sponsor.tier,
+        category: sponsor.category.replace("_", " "),
+        monthlyIncome,
+        satisfaction: satisfactionEstimate,
+        expiryWeek,
+        isExpiringSoon,
+        strength: rel.strength,
+        loyalty: sponsor.loyalty,
+        role: rel.role.replace("_", " "),
+      });
+    }
+  }
+
+  activeSponsors.sort((a, b) => {
+    const tierOrder: Record<string, number> = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
+    return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
   });
+
+  const koenkaiStrength = heya.koenkaiBand ?? "none";
+  const koenkaiIncome = KOENKAI_MONTHLY_INCOME[koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
 
   return {
     koenkaiName: `${heya.name} Supporters Association`,
-    strength: heya.koenkaiBand || "none",
+    strength: koenkaiStrength,
     activeSponsors,
-    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlySupport, 0),
+    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
+    expiringCount: activeSponsors.filter(s => s.isExpiringSoon).length,
+    koenkaiIncome,
   };
+}
+
+/**
+ * Perform a contract renewal. 
+ * Decouples the UI from direct engine mutations.
+ */
+export function renewSponsorContract(world: WorldState, relId: string): boolean {
+  const pool = world.sponsorPool;
+  if (!pool) return false;
+
+  for (const sponsor of pool.sponsors.values()) {
+    const relIdx = sponsor.relationships.findIndex(r => r.relId === relId);
+    if (relIdx >= 0) {
+      const rel = sponsor.relationships[relIdx];
+      sponsor.relationships[relIdx] = {
+        ...rel,
+        endsAtTick: (world.week ?? 0) + 52,
+        strength: Math.min(5, rel.strength + 1) as any,
+      };
+      sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -731,18 +788,73 @@ export function projectSponsorUIDigest(world: WorldState) {
 export function projectMedicalUIDigest(world: WorldState) {
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return null;
+  const heya = world.heyas.get(playerHeyaId);
+  if (!heya) return null;
 
-  const injured = getHeyaRoster(world, playerHeyaId).filter(r => r.injured);
+  const roster = getHeyaRoster(world, playerHeyaId);
+  const injured = roster.filter(r => r.injured);
+  const perception = buildPerceptionSnapshot(world, playerHeyaId);
+
+  const recoveryFacility = heya.facilities?.recovery ?? 50;
+  const facilityLabel = recoveryFacility >= 80 ? "Excellent" : recoveryFacility >= 60 ? "Good" : recoveryFacility >= 40 ? "Adequate" : "Basic";
 
   return {
-    injuredRikishi: injured.map(r => ({
-      ...projectRikishi(r, world),
-      injury: r.injuryStatus,
-      weeksRemaining: r.injuryWeeksRemaining,
-    })),
-    facilityLevel: 50, // placeholder
-    medicalStaff: [], // placeholder
+    heyaName: heya.name,
+    facilityLevel: recoveryFacility,
+    facilityLabel,
+    injuredRikishi: injured.map(r => {
+      const injuryStatus = r.injuryStatus;
+      const weeksRemaining = r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
+      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
+      const recoveryProgress = weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+      const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+
+      return {
+        id: r.id,
+        shikona: r.shikona,
+        severity: typeof (injuryStatus as any)?.severity === "string" ? (injuryStatus as any).severity : "unknown",
+        location: (injuryStatus as any)?.location || "unknown",
+        weeksRemaining,
+        weeksTotal,
+        recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
+        facilityBonus,
+      };
+    }),
+    welfare: {
+      welfareRisk: heya.welfareState?.welfareRisk ?? 0,
+      activeDiet: heya.welfareState?.activeDiet ?? "maintenance",
+      complianceState: heya.welfareState?.complianceState ?? "compliant",
+      weeksInState: heya.welfareState?.weeksInState ?? 0,
+    },
+    perception: {
+      welfareRiskBand: perception.welfareRiskBand,
+      moraleBand: perception.moraleBand,
+      rosterStrengthBand: perception.rosterStrengthBand,
+      stableMediaHeatBand: perception.stableMediaHeatBand,
+      rivalryPressureBand: perception.rivalryPressureBand,
+      rikishiHealthPerceptions: perception.rikishiPerceptions.map((rp: any) => ({
+        rikishiId: rp.rikishiId,
+        shikona: rp.shikona,
+        rank: rp.rank,
+        healthBand: rp.healthBand,
+        momentum: rp.momentum,
+      }))
+    }
   };
+}
+
+/**
+ * Update heya diet via presenter.
+ */
+export function setHeyaDietAction(world: WorldState, heyaId: string, diet: any): boolean {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return false;
+  if (!heya.welfareState) {
+    heya.welfareState = { welfareRisk: 0, activeDiet: diet, complianceState: "compliant", weeksInState: 0 };
+  } else {
+    heya.welfareState.activeDiet = diet;
+  }
+  return true;
 }
 
 /**
