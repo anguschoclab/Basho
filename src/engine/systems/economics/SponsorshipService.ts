@@ -37,7 +37,7 @@ export function createKoenkai(
   rng: SeededRNG,
   currentTick: number
 ): Koenkai {
-  const koenkaiId = `koenkai_${beyaId}`;
+  const koenkaiId = rng.uuid('KN');
   const memberCount = 3 + Math.floor(rng.next() * 5);
 
   const eligibleSponsors = Array.from(sponsorPool.sponsors.values())
@@ -48,7 +48,7 @@ export function createKoenkai(
   const members: SponsorRelationship[] = picked.map((sponsor, idx) => {
     const isPillar = idx === 0 && sponsor.tier !== "T1";
     return {
-      relId: `rel_${koenkaiId}_${sponsor.sponsorId}`,
+      relId: rng.uuid('SR'),
       sponsorId: sponsor.sponsorId,
       targetType: "beya",
       targetId: beyaId,
@@ -152,7 +152,8 @@ export function processSponsorChurn(world: WorldState): { churned: string[]; ret
   let retained = 0;
 
   for (const heya of world.heyas.values()) {
-    const koenkaiId = `koenkai_${heya.id}`;
+    const koenkaiId = heya.koenkaiId;
+    if (!koenkaiId) continue;
     const koenkai = pool.koenkais?.get(koenkaiId);
     if (!koenkai) continue;
 

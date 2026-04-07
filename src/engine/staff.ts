@@ -10,7 +10,7 @@ function rollBand(rng: SeededRNG, bands: readonly any[]): any {
 export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequence: number): Staff {
   const rng = rngFromSeed(seed, "staff", `${heyaId}-${role}-${sequence}`);
 
-  const id = `S-${seed}-${heyaId}-${role}-${sequence}`;
+  const id = rng.uuid('ST');
 
   const age = 25 + Math.floor(rng.next() * 40);
 

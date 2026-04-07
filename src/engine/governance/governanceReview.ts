@@ -295,7 +295,8 @@ export function runRetirements(world: WorldState): Record<string, number> {
           const availableStock = Object.values(world.myosekiMarket.stocks).find(s => s.status === "available");
           if (availableStock) {
             // Become an Oyakata
-            const newOyakataId = `oyakata_${id}`;
+            const rng = rngForWorld(world, "governance", `retirement_${id}`);
+            const newOyakataId = rng.uuid('OY');
             const newOyakata = generateOyakata(newOyakataId, r.heyaId, r.shikona ?? r.name ?? id, age);
 
             availableStock.ownerId = newOyakataId;
@@ -304,7 +305,7 @@ export function runRetirements(world: WorldState): Record<string, number> {
             delete availableStock.askingPrice;
 
             const tx = {
-              id: `tx_${world.year}_${world.week || 1}_${availableStock.id}`,
+              id: rng.uuid('MT'),
               date: `${world.year}-W${world.week || 1}`,
               myosekiId: availableStock.id,
               type: "sale" as const,

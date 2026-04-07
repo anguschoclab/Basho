@@ -180,6 +180,8 @@ describe("scheduleDivisionDay", () => {
     });
     const r1 = mockRikishi("r1", { division: "makuuchi" });
     const r2 = mockRikishi("r2", { division: "makuuchi" });
+    world.rikishi.set(r1.id, r1);
+    world.rikishi.set(r2.id, r2);
 
     const scheduled = scheduleDivisionDay({
       world,
@@ -206,6 +208,8 @@ describe("scheduleDivisionDay", () => {
       rankNumber: 10,
     });
     const yoko = mockRikishi("yoko", { division: "makuuchi", rank: "yokozuna" });
+    world.rikishi.set(m10.id, m10);
+    world.rikishi.set(yoko.id, yoko);
 
     const scheduled = scheduleDivisionDay({
       world,

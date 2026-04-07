@@ -74,7 +74,7 @@ export function createLoanObject(world: WorldState, heyaId: Id, terms: LoanTerms
   const monthlyPayment = Math.ceil((terms.principal + totalInterest) / terms.months);
 
   return {
-    id: `loan_${heyaId}_${world.year}_${world.week}_${rng.int(0, 9999)}`,
+    id: rng.uuid('LN'),
     type: terms.loanType,
     principal: terms.principal,
     interestRate: terms.interestRate,

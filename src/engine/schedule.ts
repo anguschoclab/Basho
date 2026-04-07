@@ -136,6 +136,7 @@ export function scheduleDivisionDay(args: {
 
   let finalPairings: MatchPairing[];
 
+  const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
     // buildSwissTorikumi already applies the three-phase constraint solver
@@ -147,7 +148,6 @@ export function scheduleDivisionDay(args: {
     });
   } else {
     // ── Legacy candidate-pair path (all lower divisions) ───────────────────
-    const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
     const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
     if (boutsPerDay <= 0) return [];
 
@@ -179,7 +179,7 @@ export function scheduleDivisionDay(args: {
   }
 
   const scheduled: MatchSchedule[] = finalPairings.map(p => ({
-    boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
+    boutId: rng.uuid('BT'),
     day,
     eastRikishiId: p.eastId,
     westRikishiId: p.westId,
@@ -281,11 +281,14 @@ export function generateFullBashoSchedule(args: {
  * Check if a specific day needs scheduling for a division.
  */
 export function needsScheduleForDay(division: Division, day: number): boolean {
-  const maxDays = DEFAULT_DIVISION_DAYS[division];
-  if (day > maxDays) return false;
+  if (day > 15) return false;
+  const bouts = DEFAULT_DIVISION_DAYS[division];
   
-  // Lower divisions fight on odd days only
-  if (maxDays === 7 && day % 2 === 0) return false;
+  // Lower divisions fight on odd days only (1, 3, 5, 7, 9, 11, 13)
+  if (bouts === 7) {
+    if (day > 13) return false;
+    if (day % 2 === 0) return false;
+  }
   
   return true;
 }

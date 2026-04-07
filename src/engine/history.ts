@@ -1,3 +1,4 @@
+import { rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { CareerSnapshot } from "./types/history";
@@ -51,10 +52,12 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
   const month = world.calendar.month;
   const lastBasho = world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
 
+  const rng = rngForWorld(world, "history", `milestone_${rikishi.id}`);
+
   // 1. Yusho Milestone
   if (lastBasho?.yusho === rikishi.id) {
     rikishi.milestones.push({
-      id: `milestone-${rikishi.id}-yusho-${year}-${month}`,
+      id: rng.uuid('ML'),
       type: "yusho",
       title: "Tournament Champion (優勝)",
       description: `Won the ${world.currentBashoName || "basho"} with a record of ${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}.`,
@@ -66,7 +69,7 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
   const wins = rikishi.careerWins || 0;
   if ([100, 500, 700, 1000].includes(wins)) {
      rikishi.milestones.push({
-      id: `milestone-${rikishi.id}-wins-${wins}`,
+      id: rng.uuid('ML'),
       type: "stats_record",
       title: `${wins} Career Wins`,
       description: `Reached the landmark of ${wins} career victories.`,
