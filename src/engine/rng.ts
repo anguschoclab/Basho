@@ -14,6 +14,7 @@
 
 import seedrandom from "seedrandom";
 import type { WorldState } from "./types/world";
+import { simpleHashToIndex } from "./utils/math";
 
 /**
  * A lightweight seeded RNG wrapper with a common interface.
@@ -21,6 +22,7 @@ import type { WorldState } from "./types/world";
 export class SeededRNG {
   public readonly seed: string;
   private rng: seedrandom.PRNG;
+  private idCounters: Map<string, number> = new Map();
   
   constructor(seed: string) {
     this.seed = seed;
@@ -63,6 +65,22 @@ export class SeededRNG {
     while (v === 0) v = this.next();
     const num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     return num * stdDev + mean;
+  }
+
+  /**
+   * Generates a deterministic, unique ID with a prefix.
+   * Maintains a counter per prefix within this RNG instance to ensure
+   * chronological uniqueness within a single simulation stream.
+   */
+  uuid(prefix: string): string {
+    const count = (this.idCounters.get(prefix) || 0) + 1;
+    this.idCounters.set(prefix, count);
+
+    // Create a stable hash combining seed, prefix, and the current counter
+    const hashSeed = `${this.seed}::${prefix}::${count}`;
+    const hash = simpleHashToIndex(hashSeed, 0xFFFFFFFF).toString(16).padStart(8, '0');
+
+    return `${prefix}-${hash.toUpperCase()}`;
   }
 }
 

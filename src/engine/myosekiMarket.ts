@@ -60,9 +60,10 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
+    const id = rng.uuid('MS');
 
-    stocks[`myo_${i}`] = {
-      id: `myo_${i}`,
+    stocks[id] = {
+      id,
       name,
       prestigeTier,
       ownerId: oyakata.id,
@@ -79,9 +80,10 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 
     const basePrice = prestigeTier === "elite" ? 250_000_000 : prestigeTier === "respected" ? 200_000_000 : 150_000_000;
     const askingPrice = basePrice + Math.floor(rng.next() * 50_000_000);
+    const id = rng.uuid('MS');
 
-    stocks[`myo_${i}`] = {
-      id: `myo_${i}`,
+    stocks[id] = {
+      id,
       name,
       prestigeTier,
       ownerId: "JSA",
@@ -154,8 +156,9 @@ function logMyosekiTransaction(
   toId: string,
   amount: number
 ) {
+  const rng = rngForWorld(world, "market", "tx");
   world.myosekiMarket!.history.unshift({
-    id: `tx_${world.year}_${world.week}_${myosekiId}_${type}`, // Replaced Date.now() for determinism
+    id: rng.uuid('MT'),
     date: `${world.year}-W${world.week}`,
     myosekiId,
     type,

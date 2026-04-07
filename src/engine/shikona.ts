@@ -1,5 +1,6 @@
 import { clamp, clampInt, pick, weightedPick, simpleHashToIndex } from './utils';
 import { assertNever } from "./utils/types";
+import { SeededRNG } from "./rng";
 /**
  * File Name: src/engine/shikona.ts
  * Notes:
@@ -19,6 +20,7 @@ interface ShikonaGenerationConfig {
   heyaId?: string;
   rank?: string; // e.g. "Jonokuchi", "Yokozuna"
   preferPrestigious?: boolean;
+  rng?: SeededRNG;
 }
 
 /** Type representing rank tier. */
@@ -443,7 +445,10 @@ function generateCandidate(
  * Public API: Generates a high-fidelity Shikona.
  */
 export function generateShikona(seed: string = "default", config: ShikonaGenerationConfig = {}): string {
-  const rng = seededRandom(seed + (config.heyaId || "") + (config.nationality || ""));
+  const rng = config.rng 
+    ? () => config.rng!.next()
+    : seededRandom(seed + (config.heyaId || "") + (config.nationality || ""));
+    
   const house = getHouseStyle(config.heyaId);
   const rankRule = getRankRule(config.rank);
   
@@ -463,26 +468,31 @@ export function generateShikona(seed: string = "default", config: ShikonaGenerat
 /**
  * Generate rikishi name.
  *  * @param seed - The Seed.
+ *  * @param rng - Optional injected RNG.
  *  * @returns The result.
  */
-export function generateRikishiName(seed: string): string {
-    return generateShikona(seed, {});
+export function generateRikishiName(seed: string, rng?: SeededRNG): string {
+    return generateShikona(seed, { rng });
 }
 
 /**
  * Generate oyakata name.
  *  * @param seed - The Seed.
+ *  * @param rng - Optional injected RNG.
  *  * @returns The result.
  */
-export function generateOyakataName(seed: string): string {
+export function generateOyakataName(seed: string, rng?: SeededRNG): string {
     const names = [
         "Miyagino", "Isegahama", "Kokonoe", "Takasago", "Dewanoumi",
         "Hakkaku", "Futagoyama", "Shibatayama", "Arashio", "Tokitsukaze",
         "Kasugano", "Oguruma", "Kise", "Tamanoi", "Oshima"
     ];
-    // Deterministic pick using the same internal seeded RNG core as shikona generation.
-    const rng = seededRandom(seed + "::oyakataName");
-    const idx = Math.floor(rng() * names.length);
+    // Deterministic pick using injected RNG or local seeded core.
+    const roll = rng 
+      ? () => rng.next() 
+      : seededRandom(seed + "::oyakataName");
+      
+    const idx = Math.floor(roll() * names.length);
     return names[Math.max(0, Math.min(names.length - 1, idx))];
 }
 const IdentityService = {

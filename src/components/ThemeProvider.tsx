@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  ReactNode,
+} from "react";
 
 /** Type representing theme. */
 type Theme = "dark" | "light" | "system";
@@ -20,15 +27,24 @@ const ThemeContext = createContext<ThemeProviderState>({
  * theme provider.
  *  * @param { children, defaultTheme = "dark" } - The { children, default theme = "dark" }.
  */
-export function ThemeProvider({ children, defaultTheme = "dark" }: { children: ReactNode; defaultTheme?: Theme }) {
+export function ThemeProvider({
+  children,
+  defaultTheme = "dark",
+}: {
+  children: ReactNode;
+  defaultTheme?: Theme;
+}) {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem("basho-theme") as Theme | null;
     return stored || defaultTheme;
   });
 
-  const resolvedTheme = theme === "system"
-    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : theme;
+  const resolvedTheme =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : theme;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -37,10 +53,13 @@ export function ThemeProvider({ children, defaultTheme = "dark" }: { children: R
     localStorage.setItem("basho-theme", theme);
   }, [theme, resolvedTheme]);
 
+  const value = useMemo(
+    () => ({ theme, setTheme, resolvedTheme }),
+    [theme, setTheme, resolvedTheme],
+  );
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 

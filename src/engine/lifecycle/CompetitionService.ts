@@ -129,7 +129,10 @@ function recordBashoHistory(
   prizes: ReturnType<typeof determineSpecialPrizes>,
   bestWins: number
 ) {
+  const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
+  
   const result: BashoResult = {
+    id: rng.uuid('HI'),
     year: world.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,

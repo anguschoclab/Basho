@@ -68,8 +68,7 @@ export default tseslint.config(
               "message": "UI components should only consume processed UIDigest. Direct access to raw engine state or systems is forbidden."
             },
             {
-              "group": ["**/engine/*"],
-              "allow": ["**/engine/types/common", "**/engine/worker/*", "**/presenters/*"],
+              "group": ["**/engine/!(types/common|worker/*)"],
               "message": "Importing logic from src/engine/ is forbidden. Use src/presenters/ or src/engine/types/common."
             }
           ]

@@ -257,7 +257,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     for (const [rid, stats] of entries) {
       const s = stats as { wins: number; losses: number };
       const historyArr = idx.rikishi[rid];
-      let existing = historyArr ? historyArr.find(e => e.bashoKey === bashoKey) : undefined;
+      const existing = historyArr ? historyArr.find(e => e.bashoKey === bashoKey) : undefined;
 
       if (existing) {
         existing.wins = s.wins;

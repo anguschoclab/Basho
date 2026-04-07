@@ -129,7 +129,7 @@ export async function importSave(file: File): Promise<WorldState | null> {
     const text = await file.text();
     const parsed = destr(text);
     if (!SaveSlotService.isValidSave(parsed)) throw new Error("Invalid save file structure");
-    let save = parsed as SaveGame;
+    const save = parsed as SaveGame;
     return SerializationService.deserializeWorld(save.world);
   } catch (e) {
     console.error("Failed to import save:", e);

@@ -12,6 +12,7 @@
 
 import type { BashoName, BashoInfo } from "./types/basho";
 import { simpleHashToIndex } from "./utils/math";
+import { rngForWorld } from "./rng";
 
 // === BASHO CALENDAR ===
 //
@@ -273,7 +274,10 @@ export function isBashoMonth(month: number): boolean {
 export function endBasho(world: import('./types').WorldState) {
     if (!world.basho) return;
 
+    const rng = rngForWorld(world, "history", `basho_concluded_${world.basho.year}_${world.basho.bashoName}`);
+    
     world.history.push({
+        id: rng.uuid('HI'),
         type: 'BASHO_CONCLUDED',
         bashoId: world.basho.id,
         year: world.basho.year,

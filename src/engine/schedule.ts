@@ -151,6 +151,7 @@ export function scheduleDivisionDay(args: {
 
   let finalPairings: MatchPairing[];
 
+  const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
     // buildSwissTorikumi already applies the three-phase constraint solver
@@ -162,7 +163,6 @@ export function scheduleDivisionDay(args: {
     });
   } else {
     // ── Legacy candidate-pair path (all lower divisions) ───────────────────
-    const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
     const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
     if (boutsPerDay <= 0) return [];
 

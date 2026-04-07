@@ -14,11 +14,9 @@ import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Trophy, Shield, Target, Award, Swords, Crown, TrendingUp, Star, Calendar } from "lucide-react";
 import { HoFTimeline } from "@/components/game/HoFTimeline";
-import type { HoFInductee, HoFCategory  } from "@/engine/hallOfFame";
-import type { WorldState } from "@/engine/types/world";
-import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoResult } from "@/engine/types/basho";
-import { HOF_CATEGORY_LABELS, getHallOfFame } from "@/presenters/uiDigest";
+import type { HoFCategory  } from "@/engine/hallOfFame";
+import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
+import type { UIRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {
   champion: Trophy,
@@ -44,54 +42,9 @@ const RANK_JA: Record<string, string> = {
   sandanme: "三段目", jonidan: "序二段", jonokuchi: "序ノ口",
 };
 
-/**
- * Get greatest fights.
- *  * @param world - The World.
- *  * @param rikishiId - The Rikishi id.
- *  * @returns The result.
- */
-function getGreatestFights(world: WorldState, rikishiId: string): Array<{ bashoName: string; kimarite: string; opponentName: string; isWin: boolean }> {
-  const r = world.rikishi.get(rikishiId);
-  if (!r?.history) return [];
-  
-  // Pick notable bouts — wins by diverse kimarite, or recent bouts
-  const fights = r.history
-    .filter(m => m.win)
-    .slice(-10) // last 10 wins
-    .map(m => {
-      const opp = world.rikishi.get(m.opponentId);
-      return {
-        bashoName: m.bashoId ?? "",
-        kimarite: m.kimarite,
-        opponentName: opp?.shikona ?? "Unknown",
-        isWin: m.win,
-      };
-    })
-    .reverse()
-    .slice(0, 5);
-  
-  return fights;
-}
-
-/**
- * Get yusho basho.
- *  * @param world - The World.
- *  * @param rikishiId - The Rikishi id.
- *  * @returns The result.
- */
-function getYushoBasho(world: WorldState, rikishiId: string): Array<{ year: number; bashoName: string }> {
-  return world.history
-    .filter(br => br.yusho === rikishiId)
-    .map(br => ({ year: br.year, bashoName: br.bashoName }));
-}
-
 // === Portrait Avatar ===
 
-/**
- * rikishi portrait.
- *  * @param { rikishi, category } - The { rikishi, category }.
- */
-function RikishiPortrait({ rikishi, category }: { rikishi: Rikishi | undefined; category: HoFCategory }) {
+function RikishiPortrait({ rikishi, category }: { rikishi: UIRikishi | null; category: HoFCategory }) {
   const accent = CATEGORY_ACCENT[category];
   const initials = rikishi?.shikona?.slice(0, 2) ?? "??";
   
@@ -104,21 +57,13 @@ function RikishiPortrait({ rikishi, category }: { rikishi: Rikishi | undefined; 
 
 // === Inductee Full Card ===
 
-/**
- * inductee full card.
- *  * @param { inductee, world } - The { inductee, world }.
- */
-function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: WorldState }) {
-  const Icon = CATEGORY_ICONS[inductee.category];
-  const label = HOF_CATEGORY_LABELS[inductee.category];
-  const accent = CATEGORY_ACCENT[inductee.category];
-  const gradient = CATEGORY_GRADIENT[inductee.category];
-  const rikishi = world.rikishi.get(inductee.rikishiId);
-  const heya = rikishi ? world.heyas.get(rikishi.heyaId) : null;
+function InducteeFullCard({ inductee }: { inductee: any }) {
+  const Icon = CATEGORY_ICONS[inductee.category as HoFCategory];
+  const label = HOF_CATEGORY_LABELS[inductee.category as HoFCategory];
+  const accent = CATEGORY_ACCENT[inductee.category as HoFCategory];
+  const gradient = CATEGORY_GRADIENT[inductee.category as HoFCategory];
+  const rikishi = inductee.rikishi;
   
-  const greatestFights = useMemo(() => getGreatestFights(world, inductee.rikishiId), [world, inductee.rikishiId]);
-  const yushoList = useMemo(() => getYushoBasho(world, inductee.rikishiId), [world, inductee.rikishiId]);
-
   return (
     <Card className={`border bg-gradient-to-br ${gradient} overflow-hidden`}>
       <CardContent className="p-5">
@@ -129,7 +74,7 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
             {/* Name & Badge */}
             <div className="flex items-center gap-2 flex-wrap">
               <RikishiName id={inductee.rikishiId} name={inductee.shikona} className="font-display font-bold text-lg" />
-              <Badge variant="outline" className={`gap-1 ${accent} border-current/30`}>
+              <Badge className={`gap-1 ${accent} border-current/30`}>
                 <Icon className="h-3 w-3" />
                 {label.icon} {label.name}
               </Badge>
@@ -147,9 +92,9 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
                 <Calendar className="h-3 w-3" />
                 Inducted: <strong className="text-foreground">{inductee.inductionYear}</strong>
               </span>
-              {heya && (
+              {inductee.heyaName && (
                 <span>
-                  Stable: <StableName id={heya.id} name={heya.name} className="text-xs font-medium" />
+                  Stable: <span className="text-xs font-medium">{inductee.heyaName}</span>
                 </span>
               )}
             </div>
@@ -171,12 +116,12 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
             </div>
 
             {/* Yūshō list for champions */}
-            {inductee.category === "champion" && yushoList.length > 0 && (
+            {inductee.category === "champion" && inductee.yushoList?.length > 0 && (
               <div className="mt-3">
                 <div className="text-[10px] text-muted-foreground mb-1 font-medium uppercase tracking-wider">Tournament Victories</div>
                 <div className="flex gap-1.5 flex-wrap">
-                  {yushoList.map((y, i) => (
-                    <Badge key={i} variant="outline" className="text-[10px] capitalize">
+                  {inductee.yushoList.map((y: any, i: number) => (
+                    <Badge key={i} className="text-[10px] capitalize">
                       {y.bashoName} {y.year}
                     </Badge>
                   ))}
@@ -185,18 +130,18 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
             )}
 
             {/* Greatest Fights */}
-            {greatestFights.length > 0 && (
+            {inductee.greatestFights?.length > 0 && (
               <div className="mt-3">
                 <div className="text-[10px] text-muted-foreground mb-1 font-medium uppercase tracking-wider flex items-center gap-1">
                   <Swords className="h-3 w-3" /> Notable Bouts
                 </div>
                 <div className="space-y-1">
-                  {greatestFights.map((f, i) => (
+                  {inductee.greatestFights.map((f: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
                       <span className="text-emerald-400">W</span>
                       <span className="text-muted-foreground">vs</span>
                       <span className="font-medium">{f.opponentName}</span>
-                      <Badge variant="outline" className="text-[9px]">{f.kimarite}</Badge>
+                      <Badge className="text-[9px]">{f.kimarite}</Badge>
                     </div>
                   ))}
                 </div>
@@ -209,10 +154,6 @@ function InducteeFullCard({ inductee, world }: { inductee: HoFInductee; world: W
   );
 }
 
-/**
- * stat box.
- *  * @param { icon: Icon, label, value, accent } - The { icon:  icon, label, value, accent }.
- */
 function StatBox({ icon: Icon, label, value, accent }: { icon: React.ElementType; label: string; value: string | number; accent: string }) {
   return (
     <div className="bg-background/50 rounded-md p-2 text-center">
@@ -225,16 +166,12 @@ function StatBox({ icon: Icon, label, value, accent }: { icon: React.ElementType
 
 // === Category Tab ===
 
-/**
- * category tab.
- *  * @param { category, inductees, world } - The { category, inductees, world }.
- */
-function CategoryTab({ category, inductees, world }: { category: HoFCategory; inductees: HoFInductee[]; world: WorldState }) {
+function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: any[] }) {
   const label = HOF_CATEGORY_LABELS[category];
 
   // Group by induction year
   const byYear = useMemo(() => {
-    const map = new Map<number, HoFInductee[]>();
+    const map = new Map<number, any[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
@@ -265,7 +202,7 @@ function CategoryTab({ category, inductees, world }: { category: HoFCategory; in
             </div>
             <div className="space-y-3">
               {inds.map((ind, i) => (
-                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} world={world} />
+                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
               ))}
             </div>
           </div>
@@ -277,13 +214,9 @@ function CategoryTab({ category, inductees, world }: { category: HoFCategory; in
 
 // === All-time view ===
 
-/**
- * all inductees tab.
- *  * @param { inductees, world } - The { inductees, world }.
- */
-function AllInducteesTab({ inductees, world }: { inductees: HoFInductee[]; world: WorldState }) {
+function AllInducteesTab({ inductees }: { inductees: any[] }) {
   const byYear = useMemo(() => {
-    const map = new Map<number, HoFInductee[]>();
+    const map = new Map<number, any[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
@@ -314,7 +247,7 @@ function AllInducteesTab({ inductees, world }: { inductees: HoFInductee[]; world
             </div>
             <div className="space-y-3">
               {inds.map((ind, i) => (
-                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} world={world} />
+                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
               ))}
             </div>
           </div>
@@ -326,18 +259,17 @@ function AllInducteesTab({ inductees, world }: { inductees: HoFInductee[]; world
 
 // === Main Page ===
 
-/** hall of fame page. */
 export default function HallOfFamePage() {
   const { state } = useGame();
   const world = state.world;
 
-  const hof = useMemo(() => world ? getHallOfFame(world) : null, [world]);
+  const hof = useMemo(() => world ? projectHOFUIDigest(world) : null, [world]);
 
   const byCategory = useMemo(() => {
-    const map: Record<HoFCategory, HoFInductee[]> = { champion: [], iron_man: [], technician: [] };
+    const map: Record<HoFCategory, any[]> = { champion: [], iron_man: [], technician: [] };
     if (!hof) return map;
     for (const ind of hof.inductees) {
-      map[ind.category]?.push(ind);
+      map[ind.category as HoFCategory]?.push(ind);
     }
     return map;
   }, [hof]);
@@ -391,7 +323,7 @@ export default function HallOfFamePage() {
 
         {/* Timeline Visualization */}
         {totalInductees > 0 && (
-          <HoFTimeline inductees={hof?.inductees ?? []} world={world} />
+          <HoFTimeline inductees={hof?.inductees as any ?? []} />
         )}
 
         {/* Tabs */}
@@ -411,16 +343,16 @@ export default function HallOfFamePage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="mt-4">
-            <AllInducteesTab inductees={hof?.inductees ?? []} world={world} />
+            <AllInducteesTab inductees={hof?.inductees ?? []} />
           </TabsContent>
           <TabsContent value="champion" className="mt-4">
-            <CategoryTab category="champion" inductees={byCategory.champion} world={world} />
+            <CategoryTab category="champion" inductees={byCategory.champion} />
           </TabsContent>
           <TabsContent value="iron_man" className="mt-4">
-            <CategoryTab category="iron_man" inductees={byCategory.iron_man} world={world} />
+            <CategoryTab category="iron_man" inductees={byCategory.iron_man} />
           </TabsContent>
           <TabsContent value="technician" className="mt-4">
-            <CategoryTab category="technician" inductees={byCategory.technician} world={world} />
+            <CategoryTab category="technician" inductees={byCategory.technician} />
           </TabsContent>
         </Tabs>
       </div>
