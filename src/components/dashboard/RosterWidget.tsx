@@ -15,48 +15,66 @@ import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
-const RosterEntryRow = React.memo(({ entry }: { entry: UIRosterEntry }) => {
-  return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
-      <RikishiName
-        id={entry.id}
-        name={entry.shikona}
-        className="flex-1 font-medium truncate"
-      />
-      <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">
-        {entry.rank}
-      </span>
-      {entry.isInjured && (
-        <HeartPulse className="h-3 w-3 text-destructive shrink-0" />
-      )}
-      {(entry.potentialBand === "star" ||
-        entry.potentialBand === "generational") && (
-        <Star className="h-3 w-3 text-gold shrink-0" />
-      )}
-      {/* Fatigue bar */}
-      <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
-        <div
-          className={`h-full rounded-full transition-all duration-300 ${
-            entry.fatigue > 70
-              ? "bg-destructive"
-              : entry.fatigue > 40
-                ? "bg-warning"
-                : "bg-primary/60"
-          }`}
-          style={{ width: `${entry.fatigue}%` }}
+const RosterEntryRow = React.memo(
+  ({
+    id,
+    shikona,
+    rank,
+    isInjured,
+    potentialBand,
+    fatigue,
+  }: {
+    id: string;
+    shikona: string;
+    rank: string;
+    isInjured: boolean;
+    potentialBand: string;
+    fatigue: number;
+  }) => {
+    return (
+      <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
+        <RikishiName
+          id={id}
+          name={shikona}
+          className="flex-1 font-medium truncate"
         />
+        <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">
+          {rank}
+        </span>
+        {isInjured && (
+          <HeartPulse className="h-3 w-3 text-destructive shrink-0" />
+        )}
+        {(potentialBand === "star" || potentialBand === "generational") && (
+          <Star className="h-3 w-3 text-gold shrink-0" />
+        )}
+        {/* Fatigue bar */}
+        <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${
+              fatigue > 70
+                ? "bg-destructive"
+                : fatigue > 40
+                  ? "bg-warning"
+                  : "bg-primary/60"
+            }`}
+            style={{ width: `${fatigue}%` }}
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 export function RosterWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "All Rikishi",
-    onClick: () => navigate({ to: "/rikishi" as any })
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "All Rikishi",
+      onClick: () => navigate({ to: "/rikishi" as any }),
+    }),
+    [navigate],
+  );
   const world = state.world;
 
   const roster = useMemo<UIRosterEntry[]>(() => {
@@ -66,7 +84,7 @@ export function RosterWidget() {
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: UIRosterEntry[] = [];
-    for (const id of (heya.rikishiIds ?? [])) {
+    for (const id of heya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
       if (r && !r.isRetired) {
         entries.push(projectRosterEntry(r));
@@ -86,11 +104,7 @@ export function RosterWidget() {
     : 0;
 
   return (
-    <BaseWidget
-      title="My Roster"
-      icon={Users}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="My Roster" icon={Users} headerAction={headerAction}>
       {/* Summary row with visual indicators */}
       <div className="flex gap-3 text-xs">
         <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md">
@@ -127,9 +141,25 @@ export function RosterWidget() {
 
       {/* Roster list */}
       <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
-        {roster.slice(0, 8).map((entry) => (
-          <RosterEntryRow key={entry.id} entry={entry} />
-        ))}
+        {(() => {
+          const limit = Math.min(8, roster.length);
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const entry = roster[i];
+            nodes[i] = (
+              <RosterEntryRow
+                key={entry.id}
+                id={entry.id}
+                shikona={entry.shikona}
+                rank={entry.rank}
+                isInjured={entry.isInjured}
+                potentialBand={entry.potentialBand}
+                fatigue={entry.fatigue}
+              />
+            );
+          }
+          return nodes;
+        })()}
         {roster.length > 8 && (
           <TooltipWrap
             content="Navigate to the full rikishi directory"

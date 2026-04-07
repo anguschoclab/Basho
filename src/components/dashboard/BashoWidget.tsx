@@ -9,15 +9,19 @@ import { selectInjuredRikishi } from "@/presenters/selectors";
 
 const LeaderboardRow = React.memo(
   ({
-    s,
+    id,
+    shikona,
+    wins,
+    losses,
     i,
     isPlayer,
-    rikishi,
   }: {
-    s: { id: string; wins: number; losses: number };
+    id: string;
+    shikona: string;
+    wins: number;
+    losses: number;
     i: number;
     isPlayer: boolean;
-    rikishi: import("@/engine/types/rikishi").Rikishi;
   }) => {
     return (
       <div
@@ -36,12 +40,12 @@ const LeaderboardRow = React.memo(
         </span>
         {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
         <RikishiName
-          id={rikishi.id}
-          name={rikishi.shikona}
+          id={id}
+          name={shikona}
           className="flex-1 font-medium truncate"
         />
         <span className="font-mono text-muted-foreground tabular-nums">
-          {s.wins}-{s.losses}
+          {wins}-{losses}
         </span>
         {isPlayer && (
           <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">
@@ -56,11 +60,14 @@ const LeaderboardRow = React.memo(
 export function BashoWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "View",
-    onClick: () => navigate({ to: "/basho" as any }),
-    tooltip: "Review current tournament standings and bracket details"
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "View",
+      onClick: () => navigate({ to: "/basho" as any }),
+      tooltip: "Review current tournament standings and bracket details",
+    }),
+    [navigate],
+  );
   const world = state.world;
 
   const stats = useMemo(() => {
@@ -174,20 +181,28 @@ export function BashoWidget() {
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1 mb-1">
           Leaderboard
         </div>
-        {stats.top5.map((s, i) => {
-          const r = world.rikishi.get(s.id);
-          if (!r) return null;
-          const isPlayer = r.heyaId === world.playerHeyaId;
-          return (
-            <LeaderboardRow
-              key={s.id}
-              s={s}
-              i={i}
-              isPlayer={isPlayer}
-              rikishi={r}
-            />
-          );
-        })}
+        {(() => {
+          const limit = stats.top5.length;
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const s = stats.top5[i];
+            const r = world.rikishi.get(s.id);
+            if (!r) continue;
+            const isPlayer = r.heyaId === world.playerHeyaId;
+            nodes[i] = (
+              <LeaderboardRow
+                key={s.id}
+                id={r.id}
+                shikona={r.shikona}
+                wins={s.wins}
+                losses={s.losses}
+                i={i}
+                isPlayer={isPlayer}
+              />
+            );
+          }
+          return nodes;
+        })()}
       </div>
     </BaseWidget>
   );

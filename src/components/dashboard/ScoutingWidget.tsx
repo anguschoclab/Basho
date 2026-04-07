@@ -72,10 +72,13 @@ const ProspectRow = React.memo(
 export function ScoutingWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "Full Board",
-    onClick: () => navigate({ to: "/talent" })
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Full Board",
+      onClick: () => navigate({ to: "/talent" }),
+    }),
+    [navigate],
+  );
   const world = state.world;
 
   const prospects = useMemo(() => {
@@ -113,11 +116,7 @@ export function ScoutingWidget() {
   const topProspects = prospects.slice(0, 6);
 
   return (
-    <BaseWidget
-      title="Scouting"
-      icon={Search}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Scouting" icon={Search} headerAction={headerAction}>
       {/* Pool summary with icons */}
       <div className="flex gap-2 text-xs">
         {(["high_school", "university", "foreign"] as TalentPoolType[]).map(

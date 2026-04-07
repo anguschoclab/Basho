@@ -42,36 +42,59 @@ const KIND_COLOR: Record<string, string> = {
   generic: "text-muted-foreground",
 };
 
-const DigestItemRow = React.memo(({ item }: { item: DigestItem }) => {
-  const Icon = KIND_ICON[item.kind] ?? Newspaper;
-  const color = KIND_COLOR[item.kind] ?? "text-muted-foreground";
-  return (
-    <div className="flex items-start gap-2 text-xs py-0.5">
-      <Icon className={`h-3 w-3 mt-0.5 shrink-0 ${color}`} />
-      <div className="min-w-0">
-        <span className="font-medium">{item.title}</span>
-        {item.detail && (
-          <span className="text-muted-foreground ml-1">— {item.detail}</span>
-        )}
+const DigestItemRow = React.memo(
+  ({
+    kind,
+    title,
+    detail,
+  }: {
+    kind: string;
+    title: string;
+    detail?: string;
+  }) => {
+    const Icon = KIND_ICON[kind] ?? Newspaper;
+    const color = KIND_COLOR[kind] ?? "text-muted-foreground";
+    return (
+      <div className="flex items-start gap-2 text-xs py-0.5">
+        <Icon className={`h-3 w-3 mt-0.5 shrink-0 ${color}`} />
+        <div className="min-w-0">
+          <span className="font-medium">{title}</span>
+          {detail && (
+            <span className="text-muted-foreground ml-1">— {detail}</span>
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 const DigestSectionView = React.memo(
-  ({ section }: { section: DigestSection }) => {
+  ({ title, items }: { title: string; items: DigestItem[] }) => {
     return (
       <div>
         <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-          {section.title}
+          {title}
         </div>
         <div className="space-y-1">
-          {section.items.slice(0, 4).map((item) => (
-            <DigestItemRow key={item.id} item={item} />
-          ))}
-          {section.items.length > 4 && (
+          {(() => {
+            const limit = Math.min(4, items.length);
+            const nodes = new Array(limit);
+            for (let i = 0; i < limit; i++) {
+              const item = items[i];
+              nodes[i] = (
+                <DigestItemRow
+                  key={item.id}
+                  kind={item.kind}
+                  title={item.title}
+                  detail={item.detail}
+                />
+              );
+            }
+            return nodes;
+          })()}
+          {items.length > 4 && (
             <p className="text-[10px] text-muted-foreground pl-5">
-              +{section.items.length - 4} more
+              +{items.length - 4} more
             </p>
           )}
         </div>
@@ -116,9 +139,21 @@ export function DigestWidget() {
       ) : (
         <ScrollArea className="max-h-[260px]">
           <div className="space-y-3">
-            {digest.sections.slice(0, 5).map((section) => (
-              <DigestSectionView key={section.id} section={section} />
-            ))}
+            {(() => {
+              const limit = Math.min(5, digest.sections.length);
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const section = digest.sections[i];
+                nodes[i] = (
+                  <DigestSectionView
+                    key={section.id}
+                    title={section.title}
+                    items={section.items}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </div>
         </ScrollArea>
       )}
