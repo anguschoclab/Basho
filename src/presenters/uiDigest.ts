@@ -862,44 +862,96 @@ export function setHeyaDietAction(world: WorldState, heyaId: string, diet: any):
  */
 export function projectBanzukeUIDigest(world: WorldState) {
   const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const;
+  const history = world.history || [];
   
-  const banzuke = divisions.reduce((acc, div) => {
-    acc[div] = selectRikishiByHeya(world); // This is not quite right, need by division
-    return acc;
-  }, {} as any);
+  // Use existing banzukeUI logic but in the presenter context
+  const { buildPrevRankScores, buildBanzukeRows } = require("./banzukeUI");
+  const prevScoreMap = buildPrevRankScores(history);
+  
+  const allRikishi = Array.from(world.rikishi.values()).filter(r => !r.isRetired);
+  const rosterEntries = allRikishi.map(r => {
+    const entry = (require("./rikishiUI")).projectRosterEntry(r, world, prevScoreMap.get(r.id));
+    return entry;
+  });
 
-  // Real implementation would filter by division and sort by rank
-  const makuuchi = Array.from(world.rikishi.values())
-    .filter(r => r.division === "makuuchi")
-    .sort((a, b) => compareRanks(a.rank as any, b.rank as any) || (a.rankNumber || 0) - (b.rankNumber || 0))
-    .map(r => projectRikishi(r, world));
+  const dividerData = divisions.map(div => {
+    return {
+      division: div,
+      rows: buildBanzukeRows(rosterEntries, div, ""), // search happens in UI filter
+    };
+  });
+
+  const heyaNameMap = new Map<string, string>();
+  for (const h of world.heyas.values()) {
+    heyaNameMap.set(h.id, h.name);
+  }
 
   return {
     year: world.year,
     basho: world.currentBashoName,
-    makuuchi,
+    divisions: dividerData,
+    kadobanMap: world.ozekiKadoban || {},
+    heyaNameMap,
+    hasPrevBasho: prevScoreMap.size > 0,
   };
 }
 
 /**
- * Project tournament live data.
+ * Project tournament live data for BashoPage.
  */
-export function projectTournamentUIDigest(world: WorldState) {
+export function projectBashoUIDigest(world: WorldState) {
   const basho = world.currentBasho;
   if (!basho) return null;
 
+  const playerHeyaId = world.playerHeyaId;
+  const playerRikishiIds = new Set<string>();
+  if (playerHeyaId) {
+    const heya = world.heyas.get(playerHeyaId);
+    if (heya) heya.rikishiIds.forEach(id => playerRikishiIds.add(id));
+  }
+
+  const day = basho.day;
+  const matches = (basho.matches || [])
+    .filter(m => m.day === day)
+    .map(match => {
+      const east = world.rikishi.get(match.eastRikishiId);
+      const west = world.rikishi.get(match.westRikishiId);
+      return {
+        ...match,
+        eastRikishi: east ? projectRikishi(east, world) : null,
+        westRikishi: west ? projectRikishi(west, world) : null,
+        isPlayerBout: playerRikishiIds.has(match.eastRikishiId) || playerRikishiIds.has(match.westRikishiId),
+      };
+    });
+
+  const completedBouts = matches.filter(m => m.result).length;
+  const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
+
+  // Standings (simplified projection)
+  const standings = Array.from(world.rikishi.values())
+    .filter(r => !r.isRetired && r.division === "makuuchi")
+    .map(r => {
+      const record = (r as any).currentBashoRecord || { wins: 0, losses: 0 };
+      return {
+        rikishi: projectRikishi(r, world),
+        wins: record.wins,
+        losses: record.losses,
+      };
+    })
+    .sort((a, b) => b.wins - a.wins || compareRanks(a.rikishi.rank as any, b.rikishi.rank as any))
+    .slice(0, 10);
+
   return {
-    name: basho.name,
-    day: basho.day,
-    isComplete: world.cyclePhase === "interim",
-    matches: (basho.matches || []).filter(m => m.day === basho.day).map(m => {
-       const east = world.rikishi.get(m.eastRikishiId);
-       const west = world.rikishi.get(m.westRikishiId);
-       return {
-         ...m,
-         eastName: east?.shikona || "Unknown",
-         westName: west?.shikona || "Unknown",
-       };
-    }),
+    bashoName: basho.name,
+    day,
+    year: world.year,
+    matches,
+    standings,
+    playerRikishiIds: Array.from(playerRikishiIds),
+    completedBouts,
+    totalBouts: matches.length,
+    dayProgress,
+    isKeyDay: (require("../engine/calendar")).isKeyDay(day),
+    seasonalFlavor: (require("../engine/calendar")).getSeasonalFlavor(basho.season || "spring", (world as any).seed),
   };
 }

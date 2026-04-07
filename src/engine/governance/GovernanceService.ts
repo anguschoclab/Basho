@@ -5,7 +5,8 @@
 import { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
-import type { GovernanceStatus } from "../types/economy";
+import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
+import { rngForWorld } from "../rng";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -18,6 +19,22 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
   const scoreBump = impactMap[severity] || 5;
   heya.scandalScore = (heya.scandalScore ?? 0) + scoreBump;
 
+  // Record deterministic ruling
+  if (!world.governanceLog) world.governanceLog = [];
+  const rng = rngForWorld(world, "governance", `ruling_${world.dayIndexGlobal}_${heyaId}`);
+  const ruling: GovernanceRuling = {
+    id: rng.uuid('GR'),
+    date: `Year ${world.year}, Day ${world.dayIndexGlobal}`,
+    heyaId,
+    type: "warning", 
+    severity: severity === "critical" ? "high" : severity === "major" ? "medium" : "low",
+    reason,
+    effects: {
+      scandalScoreDelta: scoreBump
+    }
+  };
+  world.governanceLog.push(ruling);
+
   logEngineEvent(world, {
     type: "GOVERNANCE_SCANDAL_REPORTED",
     category: "discipline",
@@ -26,7 +43,7 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
     heyaId,
     title: `Scandal reported: ${heya.name}`,
     summary: `Institutionally reported ${severity} conduct issue: ${reason}.`,
-    data: { severity, reason, scoreBump, totalScore: heya.scandalScore }
+    data: { severity, reason, scoreBump, totalScore: heya.scandalScore, rulingId: ruling.id }
   });
 
   generateGovernanceHeadline(world, heyaId, severity, reason);
