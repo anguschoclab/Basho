@@ -18,11 +18,14 @@ export function TrendsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
   const world = state.world;
-  const headerAction = React.useMemo(() => ({
-    label: "History",
-    onClick: () => navigate({ to: "/jsa/trends" as any }),
-    tooltip: "View historical meta shifts and tactical evolution in the JSA"
-  }), [navigate]);
+  const headerAction = React.useMemo(
+    () => ({
+      label: "History",
+      onClick: () => navigate({ to: "/jsa/trends" as any }),
+      tooltip: "View historical meta shifts and tactical evolution in the JSA",
+    }),
+    [navigate],
+  );
 
   if (!world) return null;
 

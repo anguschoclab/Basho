@@ -258,6 +258,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
 
       const mockWorld = {
         cyclePhase: "active_basho",
+        week: 2, // Must be > 1 to include matchups
         currentBasho: {
           day: 1,
           matches: [{ day: 1, eastRikishiId: 'r1', westRikishiId: 'r2' }]

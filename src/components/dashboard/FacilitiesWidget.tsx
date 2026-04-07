@@ -52,10 +52,13 @@ const FacilityAxisRow = React.memo(
 /** facilities widget. */
 export function FacilitiesWidget() {
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "Manage",
-    onClick: () => navigate({ to: "/stable" as any })
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Manage",
+      onClick: () => navigate({ to: "/stable" as any }),
+    }),
+    [navigate],
+  );
   const { heya } = usePlayerHeya();
 
   if (!heya) return null;

@@ -33,11 +33,21 @@ const RANK_BG: Record<string, string> = {
 
 const BanzukeEntryRow = React.memo(
   ({
-    entry,
+    id,
+    shikona,
+    rank,
+    rankNumber,
+    side,
+    record,
     isPlayer,
     i,
   }: {
-    entry: import("@/presenters/uiModels").UIRosterEntry;
+    id: string;
+    shikona: string;
+    rank: string;
+    rankNumber?: number;
+    side?: "east" | "west";
+    record: string;
     isPlayer: boolean;
     i: number;
   }) => {
@@ -46,30 +56,30 @@ const BanzukeEntryRow = React.memo(
         className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
           isPlayer
             ? "bg-primary/10 border border-primary/20"
-            : RANK_BG[entry.rank] || (i % 2 === 0 ? "bg-muted/30" : "")
+            : RANK_BG[rank] || (i % 2 === 0 ? "bg-muted/30" : "")
         } hover:bg-muted/40`}
       >
         <span
-          className={`w-12 sm:w-16 shrink-0 capitalize text-[10px] sm:text-[11px] font-display ${RANK_STYLE[entry.rank] || ""}`}
+          className={`w-12 sm:w-16 shrink-0 capitalize text-[10px] sm:text-[11px] font-display ${RANK_STYLE[rank] || ""}`}
         >
-          {entry.rank === "maegashira"
-            ? `M${entry.rankNumber || ""}`
-            : entry.rank === "juryo"
-              ? `J${entry.rankNumber || ""}`
-              : entry.rank}
+          {rank === "maegashira"
+            ? `M${rankNumber || ""}`
+            : rank === "juryo"
+              ? `J${rankNumber || ""}`
+              : rank}
         </span>
         <span
-          className={`text-[10px] w-4 ${entry.side === "east" ? "text-east" : "text-west"}`}
+          className={`text-[10px] w-4 ${side === "east" ? "text-east" : "text-west"}`}
         >
-          {entry.side === "east" ? "E" : "W"}
+          {side === "east" ? "E" : "W"}
         </span>
         <RikishiName
-          id={entry.id}
-          name={entry.shikona}
+          id={id}
+          name={shikona}
           className="flex-1 font-medium truncate"
         />
         <span className="text-[10px] text-muted-foreground font-mono tabular-nums hidden sm:inline">
-          {entry.record}
+          {record}
         </span>
         {isPlayer && (
           <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">
@@ -84,10 +94,13 @@ const BanzukeEntryRow = React.memo(
 export function BanzukeWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "Full Rankings",
-    onClick: () => navigate({ to: "/banzuke" as any })
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Full Rankings",
+      onClick: () => navigate({ to: "/banzuke" as any }),
+    }),
+    [navigate],
+  );
   const world = state.world;
 
   const topRanked = useMemo(() => {
@@ -121,20 +134,29 @@ export function BanzukeWidget() {
   if (!world) return null;
 
   return (
-    <BaseWidget
-      title="Banzuke"
-      icon={ScrollText}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Banzuke" icon={ScrollText} headerAction={headerAction}>
       <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
-        {topRanked.map(({ entry, isPlayer }, i) => (
-          <BanzukeEntryRow
-            key={entry.id}
-            entry={entry as any}
-            isPlayer={isPlayer}
-            i={i}
-          />
-        ))}
+        {(() => {
+          const limit = topRanked.length;
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const { entry, isPlayer } = topRanked[i];
+            nodes[i] = (
+              <BanzukeEntryRow
+                key={entry.id}
+                id={entry.id}
+                shikona={entry.shikona}
+                rank={entry.rank}
+                rankNumber={entry.rankNumber}
+                side={entry.side as "east" | "west"}
+                record={entry.record}
+                isPlayer={isPlayer}
+                i={i}
+              />
+            );
+          }
+          return nodes;
+        })()}
       </div>
     </BaseWidget>
   );

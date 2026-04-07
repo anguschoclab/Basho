@@ -44,11 +44,14 @@ const RivalRow = React.memo(
 export function RivalsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "All",
-    onClick: () => navigate({ to: "/rivalries" as any }),
-    tooltip: "Analyze rival stables and their relative prestige"
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "All",
+      onClick: () => navigate({ to: "/rivalries" as any }),
+      tooltip: "Analyze rival stables and their relative prestige",
+    }),
+    [navigate],
+  );
   const world = state.world;
 
   const rivals = useMemo(() => {
@@ -59,11 +62,7 @@ export function RivalsWidget() {
   if (!world || !rivals.length) return null;
 
   return (
-    <BaseWidget
-      title="Rival Stables"
-      icon={Swords}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
       <div className="space-y-0.5">
         {rivals.map((r) => (
           <RivalRow key={r.id} r={r} />
