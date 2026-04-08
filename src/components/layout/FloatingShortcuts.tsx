@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Keyboard, PanelRightOpen } from "lucide-react";
-import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
 
 interface FloatingShortcutsProps {
