@@ -19,7 +19,7 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
 import { clamp } from "../../utils/math";
-import { logEngineEvent } from "../../events";
+import { logEngineEvent, EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 import { 
@@ -77,17 +77,11 @@ export const WelfareService = {
       // 4. Material Shift logging
       const riskUp = state.welfareRisk - beforeRisk;
       if (Math.abs(riskUp) >= 8) {
-        const riskRng = rngFromSeed(`welfare-risk-${heya.id}-${week}`, "narrative", "welfare");
-        const riskSummary = BardEngine.resolve(riskRng, "institutional.welfare.risk_update", { heyaname: heya.name }).text;
-        logEngineEvent(world, {
-          type: "WELFARE_RISK_UPDATE",
-          category: "discipline",
-          importance: state.welfareRisk >= 70 ? "major" : "notable",
-          scope: "heya",
-          heyaId: heya.id,
-          title: "Welfare Risk Shift",
-          summary: riskSummary,
-          data: { welfareRisk: state.welfareRisk, delta: riskUp, reasons: reasons.join("|") }
+        EventBus.welfareRiskShift(world, heya.id, { 
+          heyaname: heya.name, 
+          welfareRisk: state.welfareRisk, 
+          delta: riskUp, 
+          reasons: reasons.join("|") 
         });
       }
     });
@@ -106,18 +100,10 @@ export const WelfareService = {
         const watchThreshold = hasNegligence ? 30 : 45;
         if (state.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && state.welfareRisk >= 20)) {
           this.setComplianceState(state, "watch");
-          const watchPath = hasNegligence ? "institutional.welfare.watch_negligence" : "institutional.welfare.watch_started";
-          const watchRng = rngFromSeed(`welfare-watch-${heya.id}-${week}`, "narrative", "welfare");
-          const watchSummary = BardEngine.resolve(watchRng, watchPath, { heyaname: heya.name }).text;
-          logEngineEvent(world, {
-            type: "COMPLIANCE_WATCH",
-            category: "discipline",
-            importance: "notable",
-            scope: "heya",
-            heyaId: heya.id,
-            title: hasNegligence ? "Compliance Watch — Negligence Suspected" : "Compliance Watch",
-            summary: watchSummary,
-            data: { welfareRisk: state.welfareRisk, negligenceCount, reasons: reasons.join("|") }
+          EventBus.complianceWatch(world, heya.id, { 
+            heyaname: heya.name, 
+            hasNegligence, 
+            reasons: reasons.join("|") 
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
@@ -137,17 +123,9 @@ export const WelfareService = {
             triggers: reasons,
             progress: 0
           };
-          const invOpenRng = rngFromSeed(`welfare-inv-open-${heya.id}-${week}`, "narrative", "welfare");
-          const invOpenSummary = BardEngine.resolve(invOpenRng, "institutional.welfare.investigation_opened", { heyaname: heya.name }).text;
-          logEngineEvent(world, {
-            type: "COMPLIANCE_INVESTIGATION_OPENED",
-            category: "discipline",
-            importance: state.welfareRisk >= 80 ? "headline" : "major",
-            scope: "heya",
-            heyaId: heya.id,
-            title: "Investigation Opened",
-            summary: invOpenSummary,
-            data: { welfareRisk: state.welfareRisk }
+          EventBus.complianceInvestigation(world, heya.id, "opened", { 
+            heyaname: heya.name, 
+            welfareRisk: state.welfareRisk 
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
@@ -157,17 +135,9 @@ export const WelfareService = {
           }
         } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
           this.setComplianceState(state, "compliant");
-          const clearedRng = rngFromSeed(`welfare-cleared-${heya.id}-${week}`, "narrative", "welfare");
-          const clearedSummary = BardEngine.resolve(clearedRng, "institutional.welfare.cleared", { heyaname: heya.name }).text;
-          logEngineEvent(world, {
-            type: "COMPLIANCE_CLEARED",
-            category: "discipline",
-            importance: "minor",
-            scope: "heya",
-            heyaId: heya.id,
-            title: "Watch Lifted",
-            summary: clearedSummary,
-            data: { welfareRisk: state.welfareRisk }
+          EventBus.complianceCleared(world, heya.id, { 
+            heyaname: heya.name, 
+            welfareRisk: state.welfareRisk 
           });
         }
         break;
@@ -186,20 +156,13 @@ export const WelfareService = {
             note: "Mandatory welfare remediation"
           };
 
-          // Enforce: debit fine immediately from heya treasury
           heya.funds = (heya.funds ?? 0) - fineYen;
 
-          const sanctionRng = rngFromSeed(`welfare-sanction-${heya.id}-${week}`, "narrative", "welfare");
-          const sanctionSummary = BardEngine.resolve(sanctionRng, "institutional.welfare.sanctioned", { heyaname: heya.name }).text;
-          logEngineEvent(world, {
-            type: "COMPLIANCE_SANCTIONED",
-            category: "discipline",
-            importance: "headline",
-            scope: "heya",
-            heyaId: heya.id,
-            title: "Sanctions Issued",
-            summary: sanctionSummary,
-            data: { welfareRisk: state.welfareRisk, fineYen, newFunds: heya.funds }
+          EventBus.complianceSanctioned(world, heya.id, { 
+            heyaname: heya.name, 
+            welfareRisk: state.welfareRisk, 
+            fineYen, 
+            newFunds: heya.funds 
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
@@ -210,17 +173,9 @@ export const WelfareService = {
         } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
-          const invCloseRng = rngFromSeed(`welfare-inv-close-${heya.id}-${week}`, "narrative", "welfare");
-          const invCloseSummary = BardEngine.resolve(invCloseRng, "institutional.welfare.investigation_closed", { heyaname: heya.name }).text;
-          logEngineEvent(world, {
-            type: "COMPLIANCE_INVESTIGATION_CLOSED",
-            category: "discipline",
-            importance: "major",
-            scope: "heya",
-            heyaId: heya.id,
-            title: "Investigation Closed",
-            summary: invCloseSummary,
-            data: { welfareRisk: state.welfareRisk }
+          EventBus.complianceInvestigation(world, heya.id, "closed", { 
+            heyaname: heya.name, 
+            welfareRisk: state.welfareRisk 
           });
         }
         break;
@@ -273,15 +228,10 @@ export const WelfareService = {
     const oldDiet = state.activeDiet;
     state.activeDiet = diet;
 
-    logEngineEvent(world, {
-      type: "DIET_CHANGED",
-      category: "facility",
-      importance: "minor",
-      scope: "heya",
-      heyaId,
-      title: `${heya.name} changed diet to ${diet}`,
-      summary: `${heya.name} is now using the ${diet} regimen.`,
-      data: { oldDiet, newDiet: diet }
+    EventBus.dietChanged(world, heyaId, { 
+      heyaname: heya.name, 
+      oldDiet, 
+      newDiet: diet 
     });
   }
 };

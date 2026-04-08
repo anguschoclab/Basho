@@ -1,18 +1,12 @@
 /**
  * src/engine/systems/narrative/NarrativeService.ts
  * ================================================
- * Hysteresis-based Narrative Engine for Sumo Manager Pro.
- * 
- * Provides the core observability layer, translating raw engine values 
- * into qualitative bands (Exceptional, Strong, Fresh, etc.) and verbose prose.
- * 
- * Built-in Hysteresis (Constitution C5.3) prevents visual "flicker" 
- * when a value oscillates near a boundary.
- * 
- * Goal: Quality-first simulation feedback.
+ * Data-driven Narrative Service for Sumo Manager Pro.
  */
 
 import { clamp } from "../../utils/math";
+import { SeededRNG } from "../../rng";
+import { BardEngine } from "../../narrative/BardEngine";
 import type {
   BandDef,
   StatBand,
@@ -38,17 +32,21 @@ import {
   POTENTIAL_DESCRIPTOR_BANDS
 } from "./NarrativeBands";
 import { 
-  STAT_LABELS, 
-  STAT_PROSE, 
-  FATIGUE_LABELS 
+  getStatLabel,
+  getStatProse,
+  getFatigueLabel,
+  getMomentumLabel,
+  getPotentialInfo,
+  getArchetypeInfo,
+  getRivalryHeatLabel,
+  getScandalLabel,
+  getPrizeLabel,
+  getTraitLabel
 } from "./NarrativeProse";
+import type { RikishiArchetype } from "../../types/combat";
 
-// [CONSTITUTION C5.3]
 const HYSTERESIS_DELTA = 5;
 
-/** 
- * Resolve a raw value to a qualitative band with hysteresis (Constitution C5.3).
- */
 function toBandWithHysteresis<T extends string>(
   value: number,
   ladder: BandDef<T>[],
@@ -60,9 +58,7 @@ function toBandWithHysteresis<T extends string>(
   if (lastBand && lastBand !== resolved.band) {
     const prevDef = ladder.find(b => b.band === lastBand);
     if (prevDef) {
-       // Upward Transition: enters higher band immediately
        if (v >= prevDef.max) return resolved.band;
-       // Downward Transition: sticks to band unless it drops below threshold - hysteresis
        if (v <= prevDef.min - HYSTERESIS_DELTA) return resolved.band;
        return lastBand;
     }
@@ -72,53 +68,45 @@ function toBandWithHysteresis<T extends string>(
 }
 
 /**
- * Unified Narrative Service.
+ * Internal helper to resolve DescriptorBand strings from archive.
  */
+function resolveDescriptor(rng: SeededRNG, path: string, entry: { id: string, colorCode: string }): DescriptorBand {
+  const label = BardEngine.resolve(rng, `${path}.${entry.id}.label`).text;
+  const tooltip = BardEngine.resolve(rng, `${path}.${entry.id}.tooltip`).text;
+  return { id: entry.id, label, tooltip, colorCode: entry.colorCode };
+}
+
 export const NarrativeService = {
-  /**
-   * Translate 0-100 stat into a StatBand.
-   */
   getStatBand(value: number, previous?: StatBand): StatBand {
     return toBandWithHysteresis(value, STAT_BANDS, previous);
   },
 
-  /**
-   * Get localized label for a StatBand.
-   */
-  getStatLabel(band: StatBand): string {
-    return STAT_LABELS[band];
+  getStatLabel(rng: SeededRNG, band: StatBand): string {
+    return getStatLabel(rng, band);
   },
 
-  /**
-   * Get verbose description for an attribute.
-   */
-  describeAttribute(attribute: string, value: number): string {
+  describeAttribute(rng: SeededRNG, attribute: string, value: number): string {
     const band = this.getStatBand(value);
-    return STAT_PROSE[attribute]?.[band] ?? `${STAT_LABELS[band]} ${attribute}`;
+    return getStatProse(rng, attribute, band);
   },
 
-  /**
-   * Fatigue Mapping.
-   */
   getFatigueBand(value: number, previous?: FatigueBand): FatigueBand {
     return toBandWithHysteresis(value, FATIGUE_BANDS, previous);
   },
 
-  getFatigueLabel(band: FatigueBand): string {
-    return FATIGUE_LABELS[band];
+  getFatigueLabel(rng: SeededRNG, band: FatigueBand): string {
+    return getFatigueLabel(rng, band);
   },
 
-  /**
-   * Potential Mapping.
-   */
   getPotentialBand(talentSeed: number | undefined, previous?: PotentialBand): PotentialBand {
     if (talentSeed == null) return "unknown";
     return toBandWithHysteresis(talentSeed, POTENTIAL_BANDS, previous);
   },
 
-  /**
-   * Momentum Mapping (Non-hysteresis, usually short-lived).
-   */
+  getPotentialInfo(rng: SeededRNG, band: PotentialBand): { label: string; description: string } {
+    return getPotentialInfo(rng, band);
+  },
+
   getMomentumBand(momentum: number): MomentumBand {
     const v = Math.abs(momentum) > 10 ? (clamp(momentum, 0, 100) - 50) / 10 : clamp(momentum, -5, 5);
     if (v >= 3) return "on_fire";
@@ -128,68 +116,62 @@ export const NarrativeService = {
     return "steady";
   },
 
-  /**
-   * Rivalry Heat Mapping (0–100).
-   */
+  getMomentumLabel(rng: SeededRNG, band: MomentumBand): string {
+    return getMomentumLabel(rng, band);
+  },
+
   getRivalryHeatBand(value: number, previous?: RivalryHeatBand): RivalryHeatBand {
     return toBandWithHysteresis(value, RIVALRY_HEAT_BANDS, previous);
   },
 
-  /**
-   * Scandal Mapping (0–100).
-   */
+  getRivalryHeatLabel(rng: SeededRNG, band: RivalryHeatBand): string {
+    return getRivalryHeatLabel(rng, band);
+  },
+
   getScandalBand(value: number, previous?: ScandalBand): ScandalBand {
     return toBandWithHysteresis(value, SCANDAL_BANDS, previous);
   },
 
-  /**
-   * Trait Mapping (0–100).
-   */
+  getScandalLabel(rng: SeededRNG, band: ScandalBand): string {
+    return getScandalLabel(rng, band);
+  },
+
   getTraitBand(value: number, previous?: TraitBand): TraitBand {
     return toBandWithHysteresis(value, TRAIT_BANDS, previous);
   },
 
-  /**
-   * Prize Mapping (yen amounts — no 0–100 clamp, direct lookup).
-   */
+  getTraitLabel(rng: SeededRNG, band: TraitBand): string {
+    return getTraitLabel(rng, band);
+  },
+
   getPrizeBand(amount: number): PrizeBand {
     const resolved = PRIZE_BANDS.find(b => amount >= b.min && amount < b.max);
     return resolved?.band ?? PRIZE_BANDS[PRIZE_BANDS.length - 1].band;
   },
 
-  /**
-   * Condition Descriptor (Iki & Koshi — Breath & Hips).
-   * Input: 0.0–1.0 float (r.condition).
-   */
-  getConditionDescriptor(value: number): DescriptorBand {
-    const v = clamp(value, 0, 1);
-    return (
-      CONDITION_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
-      CONDITION_DESCRIPTOR_BANDS[CONDITION_DESCRIPTOR_BANDS.length - 1].band
-    );
+  getPrizeLabel(rng: SeededRNG, band: PrizeBand): string {
+    return getPrizeLabel(rng, band);
   },
 
-  /**
-   * Morale Descriptor (Kiai — Fighting Spirit).
-   * Input: 0.0–1.0 float (r.motivation).
-   */
-  getMoraleDescriptor(value: number): DescriptorBand {
+  getConditionDescriptor(rng: SeededRNG, value: number): DescriptorBand {
     const v = clamp(value, 0, 1);
-    return (
-      MORALE_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
-      MORALE_DESCRIPTOR_BANDS[MORALE_DESCRIPTOR_BANDS.length - 1].band
-    );
+    const entry = CONDITION_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? CONDITION_DESCRIPTOR_BANDS[CONDITION_DESCRIPTOR_BANDS.length - 1];
+    return resolveDescriptor(rng, "rikishi.descriptors.condition", entry);
   },
 
-  /**
-   * Potential Descriptor (Soshitsu — Innate Talent).
-   * Input: 0–100 integer (r.talentSeed).
-   */
-  getPotentialDescriptor(talentSeed: number): DescriptorBand {
+  getMoraleDescriptor(rng: SeededRNG, value: number): DescriptorBand {
+    const v = clamp(value, 0, 1);
+    const entry = MORALE_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? MORALE_DESCRIPTOR_BANDS[MORALE_DESCRIPTOR_BANDS.length - 1];
+    return resolveDescriptor(rng, "rikishi.descriptors.morale", entry);
+  },
+
+  getPotentialDescriptor(rng: SeededRNG, talentSeed: number): DescriptorBand {
     const v = clamp(talentSeed, 0, 100);
-    return (
-      POTENTIAL_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max)?.band ??
-      POTENTIAL_DESCRIPTOR_BANDS[POTENTIAL_DESCRIPTOR_BANDS.length - 1].band
-    );
+    const entry = POTENTIAL_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? POTENTIAL_DESCRIPTOR_BANDS[POTENTIAL_DESCRIPTOR_BANDS.length - 1];
+    return resolveDescriptor(rng, "rikishi.descriptors.potential", entry);
   },
+
+  getArchetypeInfo(rng: SeededRNG, archetype: RikishiArchetype): { label: string; description: string } {
+    return getArchetypeInfo(rng, archetype);
+  }
 };

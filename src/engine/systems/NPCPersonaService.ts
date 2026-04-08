@@ -4,6 +4,8 @@ import { OyakataArchetype, Oyakata, OyakataMood } from "../types/oyakata";
 import { rngForWorld } from "../rng";
 import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "../queries";
 import { getCachedPerception, PerceptionSnapshot } from "../perception";
+import { BardEngine } from "../narrative/BardEngine";
+import { SeededRNG } from "../rng";
 
 export interface NPCPersona {
   archetype: OyakataArchetype | "unknown";
@@ -17,7 +19,7 @@ export interface NPCPersona {
   mood: OyakataMood;
 }
 
-const QUIRK_POOL = [
+const QUIRK_IDS = [
   "Old-School Stickler",
   "Gambler's Instinct",
   "Welfare Hawk",
@@ -54,16 +56,19 @@ export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): vo
   const rng = rngForWorld(world, "oyakataPersona", oyakata.id);
 
   const baseCount = oyakata.archetype === "tyrant" || oyakata.archetype === "gambler" ? 3 : 2;
-  const quirks = pickUnique(rng, QUIRK_POOL, baseCount);
+  const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
+
+  // Hydrate quirk labels via BardEngine
+  const quirkLabels = quirkIds.map(id => BardEngine.resolve(rng, `oyakata.quirks.${id}`).text);
 
   const flags = {
-    welfareHawk: quirks.includes("Welfare Hawk") || oyakata.traits.compassion >= 75,
-    disciplineHawk: quirks.includes("Discipline Hawk") || oyakata.archetype === "tyrant" || oyakata.traits.tradition >= 80,
-    publicityHawk: quirks.includes("Media Operator") || oyakata.traits.ambition >= 80,
-    nepotist: quirks.includes("Nepotist")
+    welfareHawk: quirkIds.includes("Welfare Hawk") || oyakata.traits.compassion >= 75,
+    disciplineHawk: quirkIds.includes("Discipline Hawk") || oyakata.archetype === "tyrant" || oyakata.traits.tradition >= 80,
+    publicityHawk: quirkIds.includes("Media Operator") || oyakata.traits.ambition >= 80,
+    nepotist: quirkIds.includes("Nepotist")
   };
 
-  oyakata.quirks = quirks as unknown as string[];
+  oyakata.quirks = quirkLabels;
   oyakata.managerFlags = flags;
 }
 

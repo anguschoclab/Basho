@@ -36,6 +36,8 @@ import { buildPerceptionSnapshot } from "../engine/perception";
 import { buildPrevRankScores, buildBanzukeRows } from "./banzukeUI";
 import { projectRosterEntry } from "./rikishiUI";
 import { BASHO_CALENDAR, isKeyDay, getSeasonalFlavor } from "../engine/calendar";
+import { BardEngine } from "../engine/narrative/BardEngine";
+import { SeededRNG } from "../engine/rng";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -188,12 +190,19 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
     scouting: scoutItems.length,
   };
 
+  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
+
   const headline =
     basho && world.cyclePhase === "active_basho"
-      ? `Basho Day ${basho.day ?? 1}: ${matchupItems.length ? "Key matchups highlighted." : "Tournament in progress."}`
+      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", { 
+          DAY: (basho.day ?? 1).toString(), 
+          DETAIL: matchupItems.length ? "Key matchups highlighted." : "Tournament in progress." 
+        }).text
       : injuryItems.length
-        ? `${injuryItems.length} injury update${injuryItems.length === 1 ? "" : "s"} this week.`
-        : "No major events recorded this week.";
+        ? BardEngine.resolve(rng, "ui.digest.status.injured", { 
+            SHIKONA: injuryItems[0].title.split(" ")[0] // Simplified extract
+          }).text
+        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
 
   return {
     time: { label: labelForWorld(world) },
@@ -295,18 +304,19 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
       }
     }
 
+    const rng = world.rng || new SeededRNG(world.seed || "ozeki_run");
     const threshold = 33;
     if (recentWins >= 20 || r.heyaId === playerHeyaId) {
+      let runKey = "building";
+      if (recentWins >= 33) runKey = "imminent";
+      else if (recentWins >= 30) runKey = "brink";
+
       candidates.push({
         rikishi: projectRikishi(r, world),
         recentWins,
         threshold,
         progress: Math.min(100, (recentWins / threshold) * 100),
-        narrative: recentWins >= 33
-          ? "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent."
-          : recentWins >= 30
-          ? "On the brink. A few more wins will secure the rank."
-          : "Building a solid case, but needs a spectacular finish."
+        narrative: BardEngine.resolve(rng, `ui.digest.promotion.ozeki_run.${runKey}`).text
       });
     }
   }
@@ -334,10 +344,13 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
     const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
 
     if (yushos >= 1 || junYushos >= 1 || r.heyaId === world.playerHeyaId) {
-      let narrative = "Requires two consecutive yusho for promotion.";
-      if (yushos >= 2) narrative = "Unanimous Yokozuna Deliberation Council recommendation expected.";
-      else if (yushos === 1 && junYushos === 1) narrative = "Borderline case. The Council will scrutinize the quality of sumo.";
-      else if (yushos === 1) narrative = "Secured one Yusho. Must win the current basho to complete the run.";
+      const rng = world.rng || new SeededRNG(world.seed || r.id);
+      let runKey = "standard";
+      if (yushos >= 2) runKey = "unanimous";
+      else if (yushos === 1 && junYushos === 1) runKey = "borderline";
+      else if (yushos === 1) runKey = "partial";
+
+      const narrative = BardEngine.resolve(rng, `ui.digest.promotion.yokozuna_run.${runKey}`).text;
 
       candidates.push({
         rikishi: projectRikishi(r, world),
@@ -373,24 +386,28 @@ export function getKadobanDrama(world: WorldState): Array<{ rikishi: UIRikishi; 
     }
     const isDemoted = status.isKadoban && losses >= 8;
 
-    let narrative = "Fighting for survival as Kadoban Ozeki.";
-    if (isDemoted) narrative = "Failed to clear Kadoban. Demotion to Sekiwake confirmed.";
-    else if (status.isKadoban && wins >= 8) narrative = "Cleared Kadoban. Retains Ozeki rank.";
-    else if (status.consecutiveMakeKoshi === 1 && losses >= 8) narrative = "Second consecutive Make-Koshi. Will be Kadoban next basho.";
-    else if (status.consecutiveMakeKoshi === 1) narrative = "In danger of falling to Kadoban status with another losing record.";
+    const rng = world.rng || new SeededRNG(world.seed || rid);
+    let runKey = "fighting";
+    if (isDemoted) runKey = "demoted";
+    else if (status.isKadoban && wins >= 8) runKey = "cleared";
+    else if (status.consecutiveMakeKoshi === 1) runKey = "danger";
+
+    const narrative = BardEngine.resolve(rng, `ui.digest.kadoban.${runKey}`).text;
 
     entries.push({ rikishi: projectRikishi(r, world), narrative, isDemoted });
   }
   return entries;
 }
 
-export function getFacilityLevelLabel(level: number): string {
-
-  if (level >= 85) return "World-Class";
-  if (level >= 65) return "Excellent";
-  if (level >= 45) return "Adequate";
-  if (level >= 25) return "Basic";
-  return "Minimal";
+export function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
+  let band = "limited";
+  if (level >= 85) band = "exceptional";
+  else if (level >= 65) band = "outstanding";
+  else if (level >= 45) band = "strong";
+  else if (level >= 25) band = "capable";
+  
+  // Note: re-using rikishi stats bands for facility quality labels
+  return BardEngine.resolve(rng, `rikishi.stats.power.${band}`).text.split(" — ")[0].split(".")[0]; 
 }
 
 export function getFacilityLevelColor(level: number): string {
@@ -425,7 +442,7 @@ export { FOCUS_BIAS_MATRIX, INTENSITY_MULTIPLIERS, PHASE_EFFECTS, RECOVERY_MULTI
 export { BASHO_CALENDAR, getBashoByNumber, getBashoIndex, getDayName, getSeasonalFlavor, isKeyDay } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
 export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
-export { FATIGUE_LABELS, POTENTIAL_LABELS, PRIZE_LABELS, RIVALRY_HEAT_LABELS, SCANDAL_LABELS, TRAIT_LABELS, toFatigueBand, toPotentialBand, toPrizeBand, toRivalryHeatBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
+export { toFatigueBand, toPotentialBand, toPrizeBand, toRivalryHeatBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
 export { RANK_HIERARCHY, compareRanks, formatRank, getRankTitleJa, isKachiKoshi, isMakeKoshi } from "../engine/banzuke";
 export { createDefaultMediaState } from "../engine/systems/media/MediaService";
@@ -799,9 +816,10 @@ export function projectMedicalUIDigest(world: WorldState) {
   const roster = getHeyaRoster(world, playerHeyaId);
   const injured = roster.filter(r => r.injured);
   const perception = buildPerceptionSnapshot(world, playerHeyaId);
+  const rng = world.rng || new SeededRNG(world.seed || "medical_digest");
 
   const recoveryFacility = heya.facilities?.recovery ?? 50;
-  const facilityLabel = recoveryFacility >= 80 ? "Excellent" : recoveryFacility >= 60 ? "Good" : recoveryFacility >= 40 ? "Adequate" : "Basic";
+  const facilityLabel = getFacilityLevelLabel(rng, recoveryFacility);
 
   return {
     heyaName: heya.name,

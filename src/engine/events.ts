@@ -207,8 +207,12 @@ export const EventBus = {
   },
 
   // --- Training ---
-  trainingMilestone: (world: WorldState, rikishiId: Id, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
-    logEngineEvent(world, {
+  trainingMilestone: (world: WorldState, rikishiId: Id, heyaId: Id, data: Record<string, any> = {}) => {
+    const rng = rngFromSeed(`training-milestone-${rikishiId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = BardEngine.resolve(rng, "events.training.breakthrough_title", data).text;
+    const summary = BardEngine.resolve(rng, "events.training.milestone", data).text;
+
+    return logEngineEvent(world, {
       type: "TRAINING_MILESTONE",
       category: "training",
       importance: "notable",
@@ -219,7 +223,8 @@ export const EventBus = {
       summary,
       data,
       tags: ["training"]
-    }),
+    });
+  },
 
   trainingProfileChanged: (world: WorldState, heyaId: Id, summary: string) =>
     logEngineEvent(world, {
@@ -234,8 +239,12 @@ export const EventBus = {
     }),
 
   // --- Economics ---
-  financialAlert: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
-    logEngineEvent(world, {
+  financialAlert: (world: WorldState, heyaId: Id, data: Record<string, any> = {}) => {
+    const rng = rngFromSeed(`finance-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = BardEngine.resolve(rng, "events.economy.insolvency_title", data).text;
+    const summary = BardEngine.resolve(rng, "events.economy.insolvency_summary", data).text;
+
+    return logEngineEvent(world, {
       type: "FINANCIAL_ALERT",
       category: "economy",
       importance: data?.insolvency ? "headline" : "major",
@@ -245,10 +254,16 @@ export const EventBus = {
       summary,
       data,
       tags: ["economy"]
-    }),
+    });
+  },
 
-  kenshoAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, amount: number, envelopes: number) =>
-    logEngineEvent(world, {
+  kenshoAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, amount: number, envelopes: number) => {
+    const rng = rngFromSeed(`kensho-${rikishiId}-${world.year}-${world.week}`, "narrative", "event");
+    const ctx = { AMOUNT: amount.toLocaleString(), ENVELOPES: envelopes };
+    const title = BardEngine.resolve(rng, "events.economy.kensho_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.economy.kensho_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "KENSHO_AWARDED",
       category: "economy",
       phase: "basho_day",
@@ -256,14 +271,20 @@ export const EventBus = {
       scope: "rikishi",
       rikishiId,
       heyaId,
-      title: "Kensho prize money",
-      summary: `${envelopes} envelope${envelopes === 1 ? "" : "s"} awarded (¥${amount.toLocaleString()}).`,
+      title,
+      summary,
       data: { amount, envelopes },
       tags: ["economy", "kensho"]
-    }),
+    });
+  },
 
-  specialPrizesAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, prizeType: 'Shukun' | 'Kanto' | 'Gino', amount: number) =>
-    logEngineEvent(world, {
+  specialPrizesAwarded: (world: WorldState, rikishiId: Id, heyaId: Id, prizeType: 'Shukun' | 'Kanto' | 'Gino', amount: number) => {
+    const rng = rngFromSeed(`prize-${rikishiId}-${world.year}-${world.week}-${prizeType}`, "narrative", "event");
+    const ctx = { PRIZETYPE: prizeType, AMOUNT: amount.toLocaleString() };
+    const title = BardEngine.resolve(rng, "events.economy.special_prize_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.economy.special_prize_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "SPECIAL_PRIZES_AWARDED",
       category: "basho",
       importance: "headline",
@@ -271,36 +292,49 @@ export const EventBus = {
       scope: "rikishi",
       rikishiId,
       heyaId,
-      title: "Special Prize Awarded!",
-      summary: `Awarded ${prizeType}-shō for outstanding performance (¥${amount.toLocaleString()}).`,
+      title,
+      summary,
       data: { rikishiId, heyaId, prizeType, amount },
       tags: ["basho", "award", "economy"]
-    }),
+    });
+  },
 
   // --- Rivalries ---
-  rivalryEscalated: (world: WorldState, aId: Id, bId: Id, heatBand: string, tone: string, summary: string) =>
-    logEngineEvent(world, {
+  rivalryEscalated: (world: WorldState, aId: Id, bId: Id, aName: string, bName: string, heatBand: string, tone: string) => {
+    const rng = rngFromSeed(`rivalry-esc-${aId}-${bId}-${world.year}-${world.week}`, "narrative", "event");
+    const ctx = { A_NAME: aName, B_NAME: bName, HEAT: heatBand };
+    const title = BardEngine.resolve(rng, "events.rivalry.escalated_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.rivalry.escalated_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "RIVALRY_ESCALATED",
       category: "rivalry",
       importance: heatBand === "inferno" ? "headline" : heatBand === "hot" ? "major" : "notable",
       scope: "world",
-      title: `Rivalry intensifies (${heatBand})`,
+      title,
       summary,
       data: { aId, bId, heatBand, tone },
       tags: ["rivalry"]
-    }),
+    });
+  },
 
-  rivalryFormed: (world: WorldState, aId: Id, bId: Id, tone: string, summary: string) =>
-    logEngineEvent(world, {
+  rivalryFormed: (world: WorldState, aId: Id, bId: Id, aName: string, bName: string, tone: string) => {
+    const rng = rngFromSeed(`rivalry-form-${aId}-${bId}-${world.year}-${world.week}`, "narrative", "event");
+    const ctx = { A_NAME: aName, B_NAME: bName };
+    const title = BardEngine.resolve(rng, "events.rivalry.formed_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.rivalry.formed_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "RIVALRY_FORMED",
       category: "rivalry",
       importance: "notable",
       scope: "world",
-      title: "New rivalry emerges",
+      title,
       summary,
       data: { aId, bId, tone },
       tags: ["rivalry"]
-    }),
+    });
+  },
 
   // --- Lifecycle ---
   retirement: (world: WorldState, rikishiId: Id, heyaId: Id, name: string, reason: string) => {
@@ -384,22 +418,33 @@ export const EventBus = {
     });
   },
 
-  bashoDay: (world: WorldState, day: number) =>
-    logEngineEvent(world, {
+  bashoDay: (world: WorldState, day: number) => {
+    const rng = rngFromSeed(`basho-day-${day}-${world.year}`, "narrative", "event");
+    const ctx = { DAY: day };
+    const title = BardEngine.resolve(rng, "events.basho.day_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.basho.day_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "BASHO_DAY_ADVANCED",
       category: "basho",
       importance: day === 15 ? "major" : day === 1 ? "notable" : "minor",
       phase: "basho_day",
       scope: "world",
-      title: `Day ${day}`,
-      summary: `Tournament day ${day} begins.`,
+      title,
+      summary,
       data: { day },
       tags: ["basho"]
-    }),
+    });
+  },
 
   // --- Welfare ---
-  welfareAlert: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>
-    logEngineEvent(world, {
+  welfareAlert: (world: WorldState, heyaId: Id, data: Record<string, any> = {}) => {
+    const rng = rngFromSeed(`welfare-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const ctx = { HEYANAME: data.heyaName, STATUS: data.complianceState };
+    const title = BardEngine.resolve(rng, "events.welfare.alert_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.welfare.alert_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "WELFARE_ALERT",
       category: "welfare",
       importance: data?.complianceState === "sanctioned" ? "headline" : "major",
@@ -409,21 +454,155 @@ export const EventBus = {
       summary,
       data,
       tags: ["welfare"]
-    }),
+    });
+  },
+
+  welfareRiskShift: (world: WorldState, heyaId: Id, data: { heyaname: string, welfareRisk: number, delta: number, reasons: string }) => {
+    const rng = rngFromSeed(`welfare-risk-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = "Welfare Risk Shift";
+    const summary = BardEngine.resolve(rng, "institutional.welfare.risk_update", data).text;
+
+    return logEngineEvent(world, {
+      type: "WELFARE_RISK_UPDATE",
+      category: "discipline",
+      importance: data.welfareRisk >= 70 ? "major" : "notable",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  complianceWatch: (world: WorldState, heyaId: Id, data: { heyaname: string, hasNegligence: boolean, reasons: string }) => {
+    const rng = rngFromSeed(`welfare-watch-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const watchPath = data.hasNegligence ? "institutional.welfare.watch_negligence" : "institutional.welfare.watch_started";
+    const title = data.hasNegligence ? "Compliance Watch — Negligence Suspected" : "Compliance Watch";
+    const summary = BardEngine.resolve(rng, watchPath, data).text;
+
+    return logEngineEvent(world, {
+      type: "COMPLIANCE_WATCH",
+      category: "discipline",
+      importance: "notable",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  complianceInvestigation: (world: WorldState, heyaId: Id, type: 'opened' | 'closed', data: { heyaname: string, welfareRisk: number }) => {
+    const rng = rngFromSeed(`welfare-inv-${type}-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const path = type === 'opened' ? "institutional.welfare.investigation_opened" : "institutional.welfare.investigation_closed";
+    const title = type === 'opened' ? "Investigation Opened" : "Investigation Closed";
+    const summary = BardEngine.resolve(rng, path, data).text;
+
+    return logEngineEvent(world, {
+      type: type === 'opened' ? "COMPLIANCE_INVESTIGATION_OPENED" : "COMPLIANCE_INVESTIGATION_CLOSED",
+      category: "discipline",
+      importance: type === 'opened' ? (data.welfareRisk >= 80 ? "headline" : "major") : "major",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  complianceSanctioned: (world: WorldState, heyaId: Id, data: { heyaname: string, welfareRisk: number, fineYen: number, newFunds: number }) => {
+    const rng = rngFromSeed(`welfare-sanction-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = "Sanctions Issued";
+    const summary = BardEngine.resolve(rng, "institutional.welfare.sanctioned", data).text;
+
+    return logEngineEvent(world, {
+      type: "COMPLIANCE_SANCTIONED",
+      category: "discipline",
+      importance: "headline",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  complianceCleared: (world: WorldState, heyaId: Id, data: { heyaname: string, welfareRisk: number }) => {
+    const rng = rngFromSeed(`welfare-cleared-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = "Watch Lifted";
+    const summary = BardEngine.resolve(rng, "institutional.welfare.cleared", data).text;
+
+    return logEngineEvent(world, {
+      type: "COMPLIANCE_CLEARED",
+      category: "discipline",
+      importance: "minor",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  complianceSanctionsLifted: (world: WorldState, heyaId: Id, data: { heyaname: string, welfareRisk: number }) => {
+    const rng = rngFromSeed(`welfare-lift-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+    const title = "Sanctions Lifted";
+    const summary = BardEngine.resolve(rng, "institutional.welfare.sanctions_lifted", data).text;
+
+    return logEngineEvent(world, {
+      type: "COMPLIANCE_SANCTIONS_LIFTED",
+      category: "discipline",
+      importance: "major",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["welfare", "discipline"]
+    });
+  },
+
+  dietChanged: (world: WorldState, heyaId: Id, data: { heyaname: string, oldDiet: string, newDiet: string }) => {
+    const title = `${data.heyaname} changed diet to ${data.newDiet}`;
+    const summary = `${data.heyaname} is now using the ${data.newDiet} regimen.`;
+
+    return logEngineEvent(world, {
+      type: "DIET_CHANGED",
+      category: "facility",
+      importance: "minor",
+      scope: "heya",
+      heyaId,
+      title,
+      summary,
+      data,
+      tags: ["facility", "welfare"]
+    });
+  },
 
   // --- Bout result (for almanac) ---
-  boutResult: (world: WorldState, winnerId: Id, loserId: Id, kimarite: string, day: number) =>
-    logEngineEvent(world, {
+  boutResult: (world: WorldState, winnerId: Id, loserId: Id, kimarite: string, day: number) => {
+    const rng = rngFromSeed(`bout-result-${winnerId}-${loserId}-${world.year}-${world.week}-${day}`, "narrative", "event");
+    const ctx = { KIMARITE: kimarite };
+    const title = BardEngine.resolve(rng, "events.basho.bout_title", ctx).text;
+    const summary = BardEngine.resolve(rng, "events.basho.bout_summary", ctx).text;
+
+    return logEngineEvent(world, {
       type: "BOUT_RESULT",
       category: "basho",
       importance: "minor",
       phase: "basho_day",
       scope: "world",
-      title: "Bout concluded",
-      summary: `Winner decided by ${kimarite}.`,
+      title,
+      summary,
       data: { winnerId, loserId, kimarite, day },
       tags: ["basho", "bout"]
-    }),
+    });
+  },
 };
 
 /** Flavor tick & cleanup */

@@ -5,11 +5,7 @@
  * 
  * Defines the [min, max) ranges for qualitative descriptors.
  * Used by the Hysteresis Engine to translate raw numbers into labels.
- * 
- * Goal: Single source of truth for observability.
  */
-
-import type { RikishiArchetype } from "../../types/combat";
 
 /** Generic band definition structure */
 export interface BandDef<T extends string> {
@@ -106,122 +102,34 @@ export const TRAIT_BANDS: BandDef<TraitBand>[] = [
 // =============================================================================
 // === Japanese Descriptor Bands (Canonical Separation)
 // =============================================================================
-// These bands replace raw 0–1 floats on the UI layer with localized sumo
-// terminology. The Presentation layer must only receive DescriptorBand objects.
 
 export interface DescriptorBand {
-  label: string;      // The localized sumo term (e.g. "Zekkouchou (絶好調)")
-  tooltip: string;    // Explicit mechanical translation for players
-  colorCode: string;  // Tailwind color class (e.g. "text-green-600")
+  id: string;         // key for archive.json lookup
+  label: string;      // Resolved via BardEngine
+  tooltip: string;    // Resolved via BardEngine
+  colorCode: string;  // Tailwind color class
 }
 
-// --- Condition / Stamina (Iki & Koshi — Breath & Hips) ---
-// Input: r.condition (0.0–1.0 float)
-export const CONDITION_DESCRIPTOR_BANDS: Array<{ min: number; max: number; band: DescriptorBand }> = [
-  {
-    min: 0.85, max: 1.01,
-    band: {
-      label: "Zekkouchou (絶好調)",
-      tooltip: "Legs are deeply rooted; lungs are full. Maximum resistance to late-bout fatigue and throws.",
-      colorCode: "text-green-600",
-    },
-  },
-  {
-    min: 0.60, max: 0.85,
-    band: {
-      label: "Bachi-bachi (ばちばち)",
-      tooltip: "Moving with snap and vigor. Capable of sustained pushing attacks.",
-      colorCode: "text-blue-500",
-    },
-  },
-  {
-    min: 0.35, max: 0.60,
-    band: {
-      label: "Iki-girashite (息を切らして)",
-      tooltip: "Starting to breathe heavily. Susceptible to fatigue in extended grappling (Yotsu) bouts.",
-      colorCode: "text-yellow-500",
-    },
-  },
-  {
-    min: 0.00, max: 0.35,
-    band: {
-      label: "Koshi-kudake (腰砕け)",
-      tooltip: "Legs are entirely gone. Highly vulnerable to pull-downs (Hikiotoshi) and slap-downs.",
-      colorCode: "text-red-500",
-    },
-  },
+// --- Condition / Stamina ---
+export const CONDITION_DESCRIPTOR_BANDS: Array<{ min: number; max: number; id: string; colorCode: string }> = [
+  { min: 0.85, max: 1.01, id: "Zekkouchou", colorCode: "text-green-600" },
+  { min: 0.60, max: 0.85, id: "Bachi-bachi", colorCode: "text-blue-500" },
+  { min: 0.35, max: 0.60, id: "Iki-girashite", colorCode: "text-yellow-500" },
+  { min: 0.00, max: 0.35, id: "Koshi-kudake", colorCode: "text-red-500" },
 ];
 
-// --- Morale / Mental State (Kiai — Fighting Spirit) ---
-// Input: r.motivation (0.0–1.0 float)
-export const MORALE_DESCRIPTOR_BANDS: Array<{ min: number; max: number; band: DescriptorBand }> = [
-  {
-    min: 0.85, max: 1.01,
-    band: {
-      label: "Shin-Gi-Tai (心技体)",
-      tooltip: "Mind, technique, and body are aligned. Highly resistant to Henka (sidesteps) and pressure.",
-      colorCode: "text-purple-600",
-    },
-  },
-  {
-    min: 0.60, max: 0.85,
-    band: {
-      label: "Kiai juubun (気合十分)",
-      tooltip: "Focused and aggressive. Likely to initiate a strong, forward-moving tachiai (initial charge).",
-      colorCode: "text-blue-500",
-    },
-  },
-  {
-    min: 0.35, max: 0.60,
-    band: {
-      label: "Mayoi (迷い)",
-      tooltip: "Second-guessing their sumo. Tachiai may lack power; prone to being pushed back early.",
-      colorCode: "text-yellow-500",
-    },
-  },
-  {
-    min: 0.00, max: 0.35,
-    band: {
-      label: "Fugainai (不甲斐ない)",
-      tooltip: "Completely demoralized. Prone to easy mistakes, false starts (Matta), and yielding the belt.",
-      colorCode: "text-red-500",
-    },
-  },
+// --- Morale / Mental State ---
+export const MORALE_DESCRIPTOR_BANDS: Array<{ min: number; max: number; id: string; colorCode: string }> = [
+  { min: 0.85, max: 1.01, id: "Shin-Gi-Tai", colorCode: "text-purple-600" },
+  { min: 0.60, max: 0.85, id: "Kiai juubun", colorCode: "text-blue-500" },
+  { min: 0.35, max: 0.60, id: "Mayoi", colorCode: "text-yellow-500" },
+  { min: 0.00, max: 0.35, id: "Fugainai", colorCode: "text-red-500" },
 ];
 
-// --- Hidden Potential (Soshitsu — Innate Talent) ---
-// Input: r.talentSeed (0–100 integer)
-export const POTENTIAL_DESCRIPTOR_BANDS: Array<{ min: number; max: number; band: DescriptorBand }> = [
-  {
-    min: 90, max: 101,
-    band: {
-      label: "Taiki Bansei (大器晩成)",
-      tooltip: "A generational talent capable of reaching Yokozuna. Exceptional stat growth ceilings.",
-      colorCode: "text-amber-500",
-    },
-  },
-  {
-    min: 75, max: 90,
-    band: {
-      label: "Soshitsu Ari (素質あり)",
-      tooltip: "Strong fundamentals. A definite San'yaku (champion) candidate if trained rigorously.",
-      colorCode: "text-blue-500",
-    },
-  },
-  {
-    min: 50, max: 75,
-    band: {
-      label: "Mikan no Taiki (未完の大器)",
-      tooltip: "Average prospect. Will require specialized, intense training to survive the top division.",
-      colorCode: "text-slate-400",
-    },
-  },
-  {
-    min: 0, max: 50,
-    band: {
-      label: "Genkai (限界)",
-      tooltip: "Physical limits are apparent. Best suited as a reliable lower-division stable pillar.",
-      colorCode: "text-slate-500",
-    },
-  },
+// --- Hidden Potential ---
+export const POTENTIAL_DESCRIPTOR_BANDS: Array<{ min: number; max: number; id: string; colorCode: string }> = [
+  { min: 90, max: 101, id: "Taiki Bansei", colorCode: "text-amber-500" },
+  { min: 75, max: 90, id: "Soshitsu Ari", colorCode: "text-blue-500" },
+  { min: 50, max: 75, id: "Mikan no Taiki", colorCode: "text-slate-400" },
+  { min: 0, max: 50, id: "Genkai", colorCode: "text-slate-500" },
 ];

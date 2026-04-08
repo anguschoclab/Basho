@@ -64,6 +64,9 @@ export class BardEngine {
     // If it's an array, return it directly
     if (Array.isArray(current)) return current;
 
+    // If it's a string, wrap it in an array
+    if (typeof current === 'string') return [current];
+
     // If it's an object, look for intensity blocks or 'common'
     if (typeof current === 'object' && current !== null) {
       const intensityKey = `intensity_${intensity}`;

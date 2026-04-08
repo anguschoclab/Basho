@@ -12,6 +12,7 @@ import { Rikishi } from "./types/rikishi";
 import { H2HRecord, H2HReport, H2HRecentMeeting } from "./types/records";
 import { BoutResult } from "./types/basho";
 import type { BoutTactic, TacticalResult } from "./types/combat";
+import { BardEngine } from "./narrative/BardEngine";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.
@@ -96,12 +97,7 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
 
   // Case 0: First meeting
   if (!record || (record.wins === 0 && record.losses === 0)) {
-    return getRandomFromArray(rng, [
-      "These two are meeting for the very first time in the ring.",
-      "A fresh matchup today; no prior history between these two.",
-      "The crowd leans forward for this first-ever encounter.",
-      "No data exists for this matchup - it's a complete unknown.",
-    ]);
+    return BardEngine.resolve(rng, "h2h.first_meeting").text;
   }
 
   const total = record.wins + record.losses;
@@ -111,36 +107,29 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   
   // Case 1: Lopsided Domination (Win rate > 75% with 4+ matches)
   if (total >= 4 && record.wins / total > 0.75) {
-    return getRandomFromArray(rng, [
-      `${p1Name} has absolutely dominated this matchup, leading the series ${record.wins}-${record.losses}.`,
-      `${p2Name} has struggled historically here, winning only ${record.losses} of their ${total} meetings.`,
-      `History is heavily on ${p1Name}'s side today with a commanding ${record.wins}-${record.losses} record.`,
-      `${p1Name} owns this rivalry, having won ${Math.floor((record.wins/total)*100)}% of their bouts.`,
-    ]);
+    return BardEngine.resolve(rng, "h2h.domination", { 
+      P1: p1Name, P2: p2Name, WINS: record.wins.toString(), LOSSES: record.losses.toString(), TOTAL: total.toString() 
+    }).text;
   }
   if (total >= 4 && record.losses / total > 0.75) {
-    return getRandomFromArray(rng, [
-      `${p1Name} has a mountain to climb today, trailing ${record.wins}-${record.losses} in head-to-head bouts.`,
-      `${p2Name} seems to have ${p1Name}'s number, winning nearly every time they meet.`,
-      `Can ${p1Name} finally turn the tide? They are ${record.wins}-${record.losses} lifetime against ${p2Name}.`,
-    ]);
+    // Note: domain 'domination' templates handle P2 struggling as well.
+    return BardEngine.resolve(rng, "h2h.domination", { 
+      P1: p2Name, P2: p1Name, WINS: record.losses.toString(), LOSSES: record.wins.toString(), TOTAL: total.toString() 
+    }).text;
   }
 
   // Case 2: Deadlock (Exact tie or off by 1)
   if (Math.abs(record.wins - record.losses) <= 1 && total > 2) {
-    return getRandomFromArray(rng, [
-      `This is as close as it gets—a ${record.wins}-${record.losses} career split between them.`,
-      `A true rivalry! The record stands at ${record.wins} wins to ${record.losses}.`,
-      `Neither man has been able to gain a decisive edge in this series, currently standing at ${record.wins}-${record.losses}.`,
-    ]);
+    return BardEngine.resolve(rng, "h2h.deadlock", { 
+      WINS: record.wins.toString(), LOSSES: record.losses.toString() 
+    }).text;
   }
 
   // Case 3: Streak Narrative
-  if (record.streak >= 3) {
-    return `${p1Name} enters the ring confident, having won the last ${record.streak} meetings against ${p2Name}.`;
-  }
-  if (record.streak <= -3) {
-    return `${p1Name} is desperate to snap a ${Math.abs(record.streak)}-bout losing streak against ${p2Name}.`;
+  if (Math.abs(record.streak) >= 3) {
+    return BardEngine.resolve(rng, "h2h.streak", { 
+      P1: p1Name, P2: p2Name, STREAK: Math.abs(record.streak).toString() 
+    }).text;
   }
 
   // Case 4: Recent History Specifics (Last match commentary)
@@ -148,14 +137,9 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
     const winnerName = last.winnerId === r1.id ? p1Name : p2Name;
     const loserName = last.winnerId === r1.id ? p2Name : p1Name;
     
-    // If last match was recent (same year)
-    const templates = [
-      `Last time they met on Day ${last.day}, ${winnerName} won decisively by ${last.kimarite}.`,
-      `${loserName} will be looking for revenge after that ${last.kimarite} loss in the previous basho.`,
-      `Fans remember their last bout well—a crushing ${last.kimarite} victory for ${winnerName}.`,
-    ];
-    
-    return getRandomFromArray(rng, templates);
+    return BardEngine.resolve(rng, "h2h.recent", { 
+      DAY: last.day.toString(), WINNER: winnerName, LOSER: loserName, KIMARITE: last.kimarite 
+    }).text;
   }
 
   // Fallback generic

@@ -53,19 +53,21 @@ export function generateStreakHeadline(args: {
   const ctx = { shikona, streak };
 
   let titlePath: string;
-  let subtitle: string;
+  let subKey: string;
 
   if (streak >= 10) {
     titlePath = "media.streaks.legendary";
-    subtitle = "The entire division is watching. This is history in the making.";
+    subKey = "legendary";
   } else if (streak >= 8) {
     titlePath = "media.streaks.hot";
-    subtitle = "A kachi-koshi secured — but the momentum says there's more to come.";
+    subKey = "hot";
   } else {
     titlePath = "media.streaks.notable";
-    subtitle = "Consistency is building into something the press can't ignore.";
+    subKey = "notable";
   }
 
   const title = BardEngine.resolve(rng, titlePath, ctx).text;
+  const subtitle = BardEngine.resolve(rng, `media.streaks.subtitles.${subKey}`, ctx).text;
+
   return { title, subtitle };
 }

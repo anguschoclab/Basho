@@ -4,6 +4,12 @@ import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/tra
 import { RecruitmentPhilosophy } from "../oyakataStylePreferences";
 import { Style, BoutTactic } from "../types/combat";
 import { Id } from "../types/common";
+import { BardEngine } from "../narrative/BardEngine";
+import { SeededRNG } from "../rng";
+
+function seededRng(provided?: SeededRNG): SeededRNG {
+  return provided || new SeededRNG("npc_strategy");
+}
 
 /**
  * Decide training intensity from perception bands + persona traits.
@@ -14,8 +20,10 @@ export function decideTrainingIntensity(
   welfareDiscipline: number,
   mood: OyakataMood | undefined,
   complianceCap: TrainingIntensity | undefined,
-  philosophy?: RecruitmentPhilosophy
+  philosophy?: RecruitmentPhilosophy,
+  providedRng?: SeededRNG
 ): { intensity: TrainingIntensity; reason: string } {
+  const rng = seededRng(providedRng);
   const INTENSITY_RANK: TrainingIntensity[] = ["conservative", "balanced", "intensive", "punishing"];
   const rank = (i: TrainingIntensity) => INTENSITY_RANK.indexOf(i);
 
@@ -27,48 +35,49 @@ export function decideTrainingIntensity(
 
   if (perception.welfareRiskBand === "critical") {
     intensity = "conservative";
-    reason = "Focusing on stable survival — forced conservative training due to critical welfare risk.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_risk").text;
   }
   else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
     intensity = "conservative";
-    reason = "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_longevity").text;
   }
   else if (fragileRatio >= 0.4) {
     intensity = "conservative";
-    reason = `Stabilizing the roster — ${fragileCount} wrestlers worn/fragile; reducing intensity to prevent injuries.`;
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_stabilizing", { COUNT: fragileCount }).text;
   }
   else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled") {
     intensity = "balanced";
-    reason = "Managing stable friction — maintaining balanced training to avoid further morale decay.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.balanced_friction").text;
   }
   else if (philosophy === "size_matters" && perception.welfareRiskBand === "safe") {
     intensity = "intensive";
-    reason = "Mass-building specialized regimen — pushing hard to build world-class physical presence.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.intensive_size").text;
   }
   else if (philosophy === "underdog_hunter" || philosophy === "balanced" || philosophy === "innovator") {
     intensity = "balanced";
-    reason = `${philosophy === "underdog_hunter" ? "Strategic development" : philosophy === "innovator" ? "Technical refinement" : "Standard cycle"} — maintaining steady upward trajectory.`;
+    const philLabel = philosophy === "underdog_hunter" ? "Strategic development" : philosophy === "innovator" ? "Technical refinement" : "Standard cycle";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.balanced_standard", { PHILOSOPHY: philLabel }).text;
   }
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
-    reason = "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.punishing_dominance").text;
   }
   else if (riskAppetite > 0.7 && (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")) {
     intensity = "intensive";
-    reason = "Maximum performance output — intensive training to solidify top-tier standing.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.intensive_standard").text;
   }
   else if (mood === "furious" || mood === "obsessed") {
     intensity = "punishing";
-    reason = "Oyakata's emotional state is driving punishing demands on the roster.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.punishing_emotional").text;
   }
   else {
     intensity = "balanced";
-    reason = "Standard operational cycle — maintaining balanced development.";
+    reason = BardEngine.resolve(rng, "npc.strategy.intensity.balanced_operational").text;
   }
 
   if (complianceCap && rank(intensity) > rank(complianceCap)) {
     intensity = complianceCap;
-    reason += ` (capped by sanctions to ${complianceCap})`;
+    reason += " " + BardEngine.resolve(rng, "npc.strategy.intensity.capped", { CAP: intensity }).text;
   }
 
   return { intensity, reason };
@@ -81,37 +90,39 @@ export function decideTrainingFocus(
   perception: PerceptionSnapshot,
   styleBias: Style | "neutral",
   tradition: number,
-  philosophy?: RecruitmentPhilosophy
+  philosophy?: RecruitmentPhilosophy,
+  providedRng?: SeededRNG
 ): { focus: TrainingFocus; reason: string } {
+  const rng = seededRng(providedRng);
   if (philosophy === "size_matters") {
-    return { focus: "power", reason: "Size-obsessed philosophy — power focus to bulk up roster" };
+    return { focus: "power", reason: BardEngine.resolve(rng, "npc.strategy.focus.size_matters").text };
   }
   if (philosophy === "innovator") {
-    return { focus: "speed", reason: "Innovator philosophy — speed & agility focus" };
+    return { focus: "speed", reason: BardEngine.resolve(rng, "npc.strategy.focus.innovator").text };
   }
   if (philosophy === "traditionalist" || (philosophy === "style_purist" && styleBias === "yotsu")) {
-    return { focus: "balance", reason: "Traditional philosophy — balance & fundamentals" };
+    return { focus: "balance", reason: BardEngine.resolve(rng, "npc.strategy.focus.traditionalist").text };
   }
 
   if (tradition >= 75 && styleBias === "yotsu") {
-    return { focus: "balance", reason: "Traditionalist yotsu — emphasizing balance" };
+    return { focus: "balance", reason: BardEngine.resolve(rng, "npc.strategy.focus.traditionalist_yotsu").text };
   }
   if (tradition >= 75) {
-    return { focus: "power", reason: "Traditionalist approach — power focus" };
+    return { focus: "power", reason: BardEngine.resolve(rng, "npc.strategy.focus.traditionalist_power").text };
   }
 
   if (perception.rosterStrengthBand === "developing" || perception.rosterStrengthBand === "weak") {
-    return { focus: "technique", reason: "Developing roster — building technique fundamentals" };
+    return { focus: "technique", reason: BardEngine.resolve(rng, "npc.strategy.focus.developing").text };
   }
 
   if (styleBias === "oshi") {
-    return { focus: "power", reason: "Oshi-biased stable — power focus" };
+    return { focus: "power", reason: BardEngine.resolve(rng, "npc.strategy.focus.oshi_biased").text };
   }
   if (styleBias === "yotsu") {
-    return { focus: "technique", reason: "Yotsu-biased stable — technique focus" };
+    return { focus: "technique", reason: BardEngine.resolve(rng, "npc.strategy.focus.yotsu_biased").text };
   }
 
-  return { focus: "neutral", reason: "Balanced training focus" };
+  return { focus: "neutral", reason: BardEngine.resolve(rng, "npc.strategy.focus.neutral").text };
 }
 
 /**
@@ -119,22 +130,24 @@ export function decideTrainingFocus(
  */
 export function decideRecovery(
   perception: PerceptionSnapshot,
-  welfareDiscipline: number
+  welfareDiscipline: number,
+  providedRng?: SeededRNG
 ): { recovery: RecoveryEmphasis; reason: string } {
+  const rng = seededRng(providedRng);
   const fragileCount = perception.rikishiPerceptions.reduce((acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0), 0);
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
   if (perception.welfareRiskBand === "critical" || fragileRatio >= 0.5) {
-    return { recovery: "high", reason: "Critical health situation — maximum recovery" };
+    return { recovery: "high", reason: BardEngine.resolve(rng, "npc.strategy.recovery.critical").text };
   }
   if (perception.welfareRiskBand === "elevated" || fragileRatio >= 0.3 || welfareDiscipline > 0.7) {
-    return { recovery: "high", reason: "Elevated welfare concern — high recovery" };
+    return { recovery: "high", reason: BardEngine.resolve(rng, "npc.strategy.recovery.elevated").text };
   }
   if (fragileRatio <= 0.1 && perception.welfareRiskBand === "safe") {
-    return { recovery: "low", reason: "Healthy roster — minimal recovery allocation" };
+    return { recovery: "low", reason: BardEngine.resolve(rng, "npc.strategy.recovery.minimal").text };
   }
 
-  return { recovery: "normal", reason: "Standard recovery emphasis" };
+  return { recovery: "normal", reason: BardEngine.resolve(rng, "npc.strategy.recovery.standard").text };
 }
 
 /**
@@ -163,29 +176,31 @@ export function decideBoutTacticOverride(
 export function decideScoutingPriority(
   perception: PerceptionSnapshot,
   ambition: number,
-  hasSleeperScoutQuirk: boolean
+  hasSleeperScoutQuirk: boolean,
+  providedRng?: SeededRNG
 ): { priority: "none" | "passive" | "active" | "aggressive"; reason: string } {
+  const rng = seededRng(providedRng);
   if (perception.runwayBand === "desperate" || perception.runwayBand === "critical") {
-    return { priority: "none", reason: "Financial crisis — scouting suspended" };
+    return { priority: "none", reason: BardEngine.resolve(rng, "npc.strategy.scouting.suspended").text };
   }
 
   if (perception.rosterSize < 8 || perception.rosterStrengthBand === "weak") {
-    return { priority: "aggressive", reason: "Roster needs rebuilding — aggressive scouting" };
+    return { priority: "aggressive", reason: BardEngine.resolve(rng, "npc.strategy.scouting.aggressive").text };
   }
 
   if (hasSleeperScoutQuirk) {
-    return { priority: "active", reason: "Sleeper Scout personality — active scouting" };
+    return { priority: "active", reason: BardEngine.resolve(rng, "npc.strategy.scouting.active_sleeper").text };
   }
 
   if (ambition >= 75 && perception.rosterStrengthBand !== "dominant") {
-    return { priority: "active", reason: "Ambitious manager seeking talent" };
+    return { priority: "active", reason: BardEngine.resolve(rng, "npc.strategy.scouting.active_ambitious").text };
   }
 
   if (perception.rosterStrengthBand === "dominant") {
-    return { priority: "passive", reason: "Dominant roster — passive scouting" };
+    return { priority: "passive", reason: BardEngine.resolve(rng, "npc.strategy.scouting.passive_dominant").text };
   }
 
-  return { priority: "passive", reason: "Standard scouting activity" };
+  return { priority: "passive", reason: BardEngine.resolve(rng, "npc.strategy.scouting.passive_standard").text };
 }
 
 /**
@@ -193,8 +208,10 @@ export function decideScoutingPriority(
  */
 export function identifyProtects(
   perception: PerceptionSnapshot,
-  welfareDiscipline: number
+  welfareDiscipline: number,
+  providedRng?: SeededRNG
 ): { protectIds: Id[]; reason: string } {
+  const rng = seededRng(providedRng);
   const HIGH_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
   const protectIds: Id[] = [];
 
@@ -209,8 +226,8 @@ export function identifyProtects(
   }
 
   const reason = protectIds.length > 0
-    ? `Protecting ${protectIds.length} wrestler(s) due to health concerns`
-    : "No wrestlers require protection";
+    ? BardEngine.resolve(rng, "npc.strategy.protect.active", { COUNT: protectIds.length }).text
+    : BardEngine.resolve(rng, "npc.strategy.protect.none").text;
 
   return { protectIds, reason };
 }

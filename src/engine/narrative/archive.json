@@ -671,14 +671,71 @@
         ]
       }
     },
+    "system": {
+      "descriptors": {
+        "bands": {
+          "stats": {
+            "exceptional": "Exceptional",
+            "outstanding": "Outstanding",
+            "strong": "Strong",
+            "capable": "Capable",
+            "developing": "Developing",
+            "limited": "Limited",
+            "struggling": "Struggling"
+          },
+          "fatigue": {
+            "fresh": "Fresh",
+            "tired": "Tired",
+            "worn": "Worn",
+            "exhausted": "Exhausted"
+          },
+          "potential": {
+            "transcendent": "Transcendent",
+            "elite": "Elite",
+            "high": "High",
+            "average": "Average",
+            "low": "Low",
+            "unknown": "Unknown"
+          }
+        }
+      }
+    },
     "events": {
-      },
       "training": {
         "milestone": [
           "%SHIKONA% is making measurable progress this week.",
           "A strong training cycle for %SHIKONA% — the work is paying off.",
           "%SHIKONA% continues to improve in key areas."
+        ],
+        "breakthrough_title": [
+          "%SHIKONA% Breakthrough",
+          "Major Progress for %SHIKONA%",
+          "%SHIKONA%: Technical Leap"
         ]
+      },
+      "economy": {
+        "kensho_title": ["Kensho prize money"],
+        "kensho_summary": ["%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."],
+        "special_prize_title": ["Special Prize Awarded!"],
+        "special_prize_summary": ["Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."],
+        "insolvency_title": ["Financial Insolvency"],
+        "insolvency_summary": ["%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."]
+      },
+      "rivalry": {
+        "formed_title": ["New rivalry emerges"],
+        "formed_summary": ["%A_NAME% has developed a personal grudge against %B_NAME%."],
+        "escalated_title": ["Rivalry intensifies (%HEAT%)"],
+        "escalated_summary": ["The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."]
+      },
+      "welfare": {
+        "alert_title": ["Welfare Alert"],
+        "alert_summary": ["%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"]
+      },
+      "basho": {
+        "day_title": ["Day %DAY%"],
+        "day_summary": ["Tournament day %DAY% begins."],
+        "bout_title": ["Bout concluded"],
+        "bout_summary": ["Winner decided by %KIMARITE%."]
       },
       "health": {
         "injury_sustained": [
@@ -831,30 +888,46 @@
     "npc": {
       "strategy": {
         "intensity": {
-          "conservative": [
-            "Focusing on stable survival — forced conservative training due to critical welfare risk.",
-            "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach.",
-            "Stabilizing the roster — %COUNT% wrestlers worn/fragile; reducing intensity to prevent injuries."
-          ],
-          "balanced": [
-            "Managing stable friction — maintaining balanced training to avoid further morale decay.",
-            "Standard operational cycle — maintaining balanced development.",
-            "%PHILOSOPHY% cycle — maintaining steady upward trajectory."
-          ],
-          "intensive": [
-            "Mass-building specialized regimen — pushing hard to build world-class physical presence.",
-            "Maximum performance output — intensive training to solidify top-tier standing."
-          ],
-          "punishing": [
-            "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects.",
-            "Oyakata's emotional state is driving punishing demands on the roster."
-          ]
+          "conservative_risk": ["Focusing on stable survival — forced conservative training due to critical welfare risk."],
+          "conservative_longevity": ["Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach."],
+          "conservative_stabilizing": ["Stabilizing the roster — %COUNT% wrestlers worn/fragile; reducing intensity to prevent injuries."],
+          "balanced_friction": ["Managing stable friction — maintaining balanced training to avoid further morale decay."],
+          "intensive_size": ["Mass-building specialized regimen — pushing hard to build world-class physical presence."],
+          "balanced_standard": ["%PHILOSOPHY% cycle — maintaining steady upward trajectory."],
+          "punishing_dominance": ["Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects."],
+          "intensive_standard": ["Maximum performance output — intensive training to solidify top-tier standing."],
+          "punishing_emotional": ["Oyakata's emotional state is driving punishing demands on the roster."],
+          "balanced_operational": ["Standard operational cycle — maintaining balanced development."],
+          "capped": ["(capped by sanctions to %CAP%)"]
         },
         "focus": {
-          "power": "Size-obsessed philosophy — power focus to bulk up roster",
-          "speed": "Innovator philosophy — speed & agility focus",
-          "balance": "Traditional philosophy — balance & fundamentals",
-          "technique": "Developing roster — building technique fundamentals"
+          "size_matters": ["Size-obsessed philosophy — power focus to bulk up roster"],
+          "innovator": ["Innovator philosophy — speed & agility focus"],
+          "traditionalist": ["Traditional philosophy — balance & fundamentals"],
+          "traditionalist_yotsu": ["Traditionalist yotsu — emphasizing balance"],
+          "traditionalist_power": ["Traditionalist approach — power focus"],
+          "developing": ["Developing roster — building technique fundamentals"],
+          "oshi_biased": ["Oshi-biased stable — power focus"],
+          "yotsu_biased": ["Yotsu-biased stable — technique focus"],
+          "neutral": ["Balanced training focus"]
+        },
+        "recovery": {
+          "critical": ["Critical health situation — maximum recovery"],
+          "elevated": ["Elevated welfare concern — high recovery"],
+          "minimal": ["Healthy roster — minimal recovery allocation"],
+          "standard": ["Standard recovery emphasis"]
+        },
+        "scouting": {
+          "suspended": ["Financial crisis — scouting suspended"],
+          "aggressive": ["Roster needs rebuilding — aggressive scouting"],
+          "active_sleeper": ["Sleeper Scout personality — active scouting"],
+          "active_ambitious": ["Ambitious manager seeking talent"],
+          "passive_dominant": ["Dominant roster — passive scouting"],
+          "passive_standard": ["Standard scouting activity"]
+        },
+        "protect": {
+          "active": ["Protecting %COUNT% wrestler(s) due to health concerns"],
+          "none": ["No wrestlers require protection"]
         }
       }
     },
@@ -863,7 +936,8 @@
         "status": {
           "injured": "%SHIKONA% injured",
           "no_events": "No major events recorded this week.",
-          "basho_day": "Basho Day %DAY%: %DETAIL%"
+          "basho_day": "Basho Day %DAY%: %DETAIL%",
+          "healthy": "Healthy"
         },
         "promotion": {
           "ozeki_run": {
@@ -883,6 +957,20 @@
           "demoted": "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
           "cleared": "Cleared Kadoban. Retains Ozeki rank.",
           "danger": "In danger of falling to Kadoban status with another losing record."
+        }
+      },
+      "labels": {
+        "kimarite": {
+          "rookie": "Unknown (Rookie)",
+          "display_format": "%NAME% (%PCT%%)"
+        },
+        "injury": {
+          "severity": {
+            "minor": "Minor",
+            "moderate": "Moderate",
+            "severe": "Severe"
+          },
+          "summary_format": "%SEV%%LOC% (%WEEKS%w)"
         }
       }
     },
@@ -907,11 +995,53 @@
         "%P1% enters the ring confident, having won the last %STREAK% meetings against %P2%.",
         "%P1% is desperate to snap a %STREAK%-bout losing streak against %P2%."
       ],
-        "recent": [
-          "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
-          "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
-          "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
-        ]
+      "recent": [
+        "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
+        "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
+        "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
+      ]
+    },
+    "training": {
+      "intensity": {
+        "conservative": ["Conservative"],
+        "balanced": ["Balanced"],
+        "intensive": ["Intensive"],
+        "punishing": ["Punishing"]
+      },
+      "focus": {
+        "power": ["Power"],
+        "speed": ["Speed"],
+        "technique": ["Technique"],
+        "balance": ["Balance"],
+        "neutral": ["Neutral"]
+      },
+      "recovery": {
+        "low": ["Low"],
+        "normal": ["Normal"],
+        "high": ["High"]
+      },
+      "mode": {
+        "develop": ["Develop"],
+        "push": ["Push"],
+        "protect": ["Protect"],
+        "rebuild": ["Rebuild"]
+      }
+    },
+    "oyakata": {
+      "quirks": {
+        "Old-School Stickler": ["Old-School Stickler"],
+        "Gambler's Instinct": ["Gambler's Instinct"],
+        "Welfare Hawk": ["Welfare Hawk"],
+        "Discipline Hawk": ["Discipline Hawk"],
+        "Media Operator": ["Media Operator"],
+        "Sleeper Scout": ["Sleeper Scout"],
+        "Nepotist": ["Nepotist"],
+        "Weight-Cutter": ["Weight-Cutter"],
+        "Keiko Romantic": ["Keiko Romantic"],
+        "Cold Pragmatist": ["Cold Pragmatist"],
+        "Family First": ["Family First"],
+        "Numbers Guy": ["Numbers Guy"]
+      }
     }
   },
   "vocabulary": {

@@ -9,6 +9,7 @@
 
 import { NarrativeService } from "./systems/narrative/NarrativeService";
 import { RikishiArchetype } from "./types/combat";
+import { SeededRNG } from "./rng";
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/narrative/NarrativeBands";
@@ -66,26 +67,23 @@ export function toTraitBand(value: number, prev?: import("./systems/narrative/Na
 
 /**
  * Public helper: condition (Iki/Koshi) → Japanese DescriptorBand.
- * Input: 0.0–1.0 float (r.condition).
  */
-export function toConditionDescriptor(value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
-  return NarrativeService.getConditionDescriptor(value);
+export function toConditionDescriptor(rng: SeededRNG, value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getConditionDescriptor(rng, value);
 }
 
 /**
  * Public helper: morale (Kiai) → Japanese DescriptorBand.
- * Input: 0.0–1.0 float (r.motivation).
  */
-export function toMoraleDescriptor(value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
-  return NarrativeService.getMoraleDescriptor(value);
+export function toMoraleDescriptor(rng: SeededRNG, value: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getMoraleDescriptor(rng, value);
 }
 
 /**
  * Public helper: potential (Soshitsu) → Japanese DescriptorBand.
- * Input: 0–100 integer (r.talentSeed).
  */
-export function toPotentialDescriptor(talentSeed: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
-  return NarrativeService.getPotentialDescriptor(talentSeed);
+export function toPotentialDescriptor(rng: SeededRNG, talentSeed: number): import("./systems/narrative/NarrativeBands").DescriptorBand {
+  return NarrativeService.getPotentialDescriptor(rng, talentSeed);
 }
 
 /**
@@ -107,7 +105,7 @@ export interface RikishiDescriptor {
 /**
  * To rikishi descriptor (Legacy support).
  */
-export function toRikishiDescriptor(r: any, prev?: any): RikishiDescriptor {
+export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
   return {
     powerBand: NarrativeService.getStatBand(r.power, prev?.powerBand),
     speedBand: NarrativeService.getStatBand(r.speed, prev?.speedBand),
@@ -132,6 +130,7 @@ function getInjuryModifier(r: any): string {
 
 export type DurationBand = "brief" | "short" | "moderate" | "long" | "extended";
 
+/** @deprecated Move to BardEngine.resolve for new narrative strings */
 export const DURATION_LABELS: Record<DurationBand, string> = {
   brief:    "A brief moment",
   short:    "A short while",

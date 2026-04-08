@@ -57,7 +57,7 @@ function generateRandomDrama(world: WorldState): void {
         if (!a.grudges) a.grudges = [];
         if (!a.grudges.includes(b.heyaId)) {
             a.grudges.push(b.heyaId);
-            EventBus.rivalryFormed(world, a.id, b.id, "bitter", `${a.name} has developed a personal grudge against ${b.name}.`);
+            EventBus.rivalryFormed(world, a.id, b.id, a.name, b.name, "bitter");
         }
     }
   }
@@ -67,7 +67,7 @@ function checkTriggeredDrama(world: WorldState): void {
   // Check for financial crisis
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     if (heya.funds < 0 && !heya.riskIndicators?.financial) {
-        EventBus.financialAlert(world, heya.id, "Financial Insolvency", `${heya.name} has run out of funds!`, { insolvency: true });
+        EventBus.financialAlert(world, heya.id, { HEYANAME: heya.name, insolvency: true });
         if (heya.isPlayerOwned) {
             // This would trigger a CrisisModal in the UI
             triggerCrisis(world, heya.id, "BANKRUPTCY_THREAT");

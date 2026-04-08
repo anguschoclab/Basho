@@ -109,9 +109,11 @@ export function applyWeeklyTraining(world: WorldState): void {
           world, 
           rikishi.id, 
           rikishi.heyaId,
-          `${rikishi.shikona || rikishi.name} breakthrough`,
-          `Demonstrated significant improvement in fundamental mechanics.`,
-          { focus: profile.focus, intensity: profile.intensity }
+          { 
+            shikona: rikishi.shikona || rikishi.name,
+            focus: profile.focus, 
+            intensity: profile.intensity 
+          }
         );
       }
     }
