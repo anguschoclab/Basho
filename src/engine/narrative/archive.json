@@ -218,6 +218,142 @@
         "ushiromotare": [
           "An unusual sight here at the Kokugikan! %WINNER% had his back to his opponent but simply leaned back with all his weight, forcing %LOSER% out of the ring. Ushiromotare is the call.",
           "Despite being turned around, %WINNER% maintains his balance and uses his back to push %LOSER% over the straw. A rare backward leaning out for the win."
+        ],
+        "uwatedashinage": [
+          "A superb display of leverage! %WINNER% secures the deep overarm grip and, with a sudden pivot, pulls %LOSER% forward and down to the clay. That is uwatedashinage, the pulling overarm throw.",
+          "The momentum was shifted in an instant. %WINNER% didn't wait for a frontal attack, instead using that outer grip to swing %LOSER% off-balance. A textbook uwatedashinage to end the match."
+        ],
+        "kubinage": [
+          "A desperate but effective maneuver! %WINNER% wraps the arm firmly around the neck and whips %LOSER% down to the dohyo. The neck throw, kubinage, gives %WINNER% the win.",
+          "The grip on the belt wasn't there, so %WINNER% goes for the headlock! A powerful twist of the upper body sends %LOSER% sprawling. The judges confirm the technique as kubinage."
+        ],
+        "koshihineri": [
+          "Incredible strength in the midsection! %WINNER% gets the hips low, hooks the opponent, and uses a powerful twisting motion to rotate %LOSER% over the hip. A rare and impressive koshihineri.",
+          "We don't see the hip-twist throw often in the top division! %WINNER% used the hip as a fulcrum to torque %LOSER% onto the sandy surface. The kimarite is koshihineri."
+        ],
+        "ipponzeoi": [
+          "A spectacular sight at the edge of the ring! %WINNER% traps the arm with both hands and launches %LOSER% over the shoulder. That is the ipponzeoi, a rare one-armed over-the-shoulder throw!",
+          "Pure technical brilliance from %WINNER%! Using %LOSER%'s own forward pressure, %WINNER% executes the shoulder throw to perfection. Ipponzeoi is the official winning technique."
+        ],
+        "nichonage": [
+          "Perfect timing on the lower body! %WINNER% hooks the leg while initiating the throw, taking the foundation right out from under %LOSER%. A beautiful nichonage, the two-point leg sweep throw.",
+          "The legs were the key there. %WINNER% blocks the path and sweeps through, ensuring %LOSER% has nowhere to step. The referee signals for %WINNER% via nichonage."
+        ],
+        "yaguranage": [
+          "A spectacular display of traditional technique! %WINNER% gets the leg deep inside, hoists %LOSER% up onto the hip, and executes a classic yaguranage inner thigh throw.",
+          "Extraordinary leverage from %WINNER%! Using the inner thigh to hoist %LOSER% right off the surface of the dohyo. That is the rarely seen yaguranage, the inner thigh throw!"
+        ],
+        "kakenage": [
+          "The leg is hooked! %WINNER% wraps his limb around the inner thigh of %LOSER% and drives through with a textbook kakenage to finish the bout.",
+          "A battle of balance on the straw, but %WINNER% finds the opening, hooks the leg securely, and sends %LOSER% to the clay with a hooking inner thigh throw."
+        ],
+        "tsukiotoshi": [
+          "%LOSER% was charging forward with a head of steam, but %WINNER% sidesteps and applies a powerful downward thrust! Tsukiotoshi is the winning technique.",
+          "A sudden shift in momentum at the edge! %WINNER% catches the shoulder of %LOSER% and drives him straight down to the sand. A clinical thrust-down victory."
+        ],
+        "tottari": [
+          "He's got the arm! %WINNER% clamps down on the limb of %LOSER% with both hands and pulls him across the ring for a masterful tottari.",
+          "The arm bar is locked in perfectly. %WINNER% uses the forward momentum of %LOSER% against him, pivoting sharply for the tottari arm bar throw."
+        ],
+        "shitatehineri": [
+          "Deep inside with the underarm grip, %WINNER% applies the torque and twists! %LOSER% simply can't stay upright. Shitatehineri, the underarm twist down.",
+          "Superb control from the inside position. %WINNER% rotates his torso, forcing %LOSER% down to the clay with a beautiful shitatehineri."
+        ],
+        "watashikomi": [
+          "A textbook watashikomi! %WINNER% maintains the forward pressure, reaches down to snag the thigh of %LOSER%, and drives him straight onto the clay.",
+          "Watch the hand placement of %WINNER% here; as he pushes forward, he secures the leg and uses that extra leverage to force %LOSER% down. A decisive thigh-grabbing push down."
+        ],
+        "kekaeshi": [
+          "A lightning-fast flick of the foot! %WINNER% employs the kekaeshi to clip the inner ankle of %LOSER%, sending him off balance and down in an instant.",
+          "Beautiful timing on that minor inner-foot sweep. %WINNER% waited for the weight to shift and then kicked the leg out from under %LOSER% just as he was trying to reset."
+        ],
+        "kosotogake": [
+          "He hooks the leg! %WINNER% goes for the kosotogake, wrapping his calf around the outside of %LOSER%'s ankle and driving through with all his weight for the win.",
+          "A classic minor outer leg trip. %WINNER% secures the overarm grip and hooks the leg, leaving %LOSER% with absolutely nowhere to step."
+        ],
+        "komatasukui": [
+          "What a scoop! %WINNER% reaches deep under the thigh for a komatasukui, lifting %LOSER% off his feet and dumping him onto the dohyo in spectacular fashion.",
+          "Superb technical skill from %WINNER%. He caught the inner thigh of %LOSER% as he tried to circle away, executing a perfect over-thigh scooping body drop."
+        ],
+        "chongake": [
+          "The rarest of sights here in the top division! %WINNER% executes a chongake, hooking his own heel around the opposite heel of %LOSER% and pulling him backward to the floor.",
+          "Incredible balance shown by %WINNER%! He hooks the heel from the inside and pulls the rug out; %LOSER% can't find his footing and falls to the hooking heel trip."
+        ],
+        "kawarigake": [
+          "A sudden shift in momentum! %WINNER% switches the angle, hooks the leg from the inside, and down goes %LOSER%! That is kawarigake, the changing-trip, executed with brilliant timing.",
+          "Beautiful agility shown by %WINNER%. As %LOSER% pressed forward, %WINNER% changed his stance, caught the inner leg, and used that leverage to bring his opponent to the clay. Kawarigake is the official technique."
+        ],
+        "susoharai": [
+          "What a spectacular sweep! %WINNER% waits for the exact moment %LOSER% steps forward and brushes the ankle away from the outside. Susoharai, the ankle sweep, brings a quick end to this encounter.",
+          "Precision timing by %WINNER%! He catches the trailing leg of %LOSER% with a sharp sweep, sending him tumbling. That is the susoharai, a rare and skillful display of footwork."
+        ],
+        "kirikaeshi": [
+          "The drive was there for %LOSER%, but %WINNER% sets the trap! He plants the leg behind the knee and twists backward with immense power. Kirikaeshi, the twisting backward knee trip, secures the win.",
+          "A classic defensive maneuver! %WINNER% uses the momentum of %LOSER% against him, hooking the leg and pivoting for a textbook kirikaeshi. The veteran experience really showed in that transition."
+        ],
+        "nimaigeri": [
+          "Incredible footwork on the dohyo! %WINNER% delivers a sharp kick to the ankle while simultaneously applying a downward twist. %LOSER% loses his footing instantly. Nimaigeri is the call from the shimpan.",
+          "A rare display of technical prowess! %WINNER% catches the ankle with a swift kicking motion, unbalancing %LOSER% and forcing the fall. That is nimaigeri, the ankle-kicking twist down."
+        ],
+        "omata": [
+          "%LOSER% overreaches, and %WINNER% is right there to capitalize! He scoops deep under the thigh, lifting and dropping %LOSER% in one fluid motion. That is omata, the thigh-scooping body drop!",
+          "The balance is gone! %WINNER% reaches in to grab the inner thigh of %LOSER% and uses that leverage to force the collapse. A superb execution of the omata to end this bout."
+        ],
+        "susotori": [
+          "A remarkable show of agility as %WINNER% drops level, snatching the ankle of %LOSER% and pulling it upward to send him to the clay. That is the ankle-pick, susotori.",
+          "Watch the replay here; %WINNER% waits for the pivot and then sweeps the trailing leg by the ankle. A perfectly timed susotori to secure the win against %LOSER%."
+        ],
+        "mitokorozeme": [
+          "Unbelievable! We are seeing the rarest of sights! %WINNER% has the leg hooked, the other hand on the thigh, and the head buried in the chest—it's the triple-attack, mitokorozeme! %LOSER% had no escape.",
+          "A technical masterpiece by %WINNER%! He employs the mitokorozeme, attacking three points simultaneously to force %LOSER% over the straw bales. A rare treat for the fans in attendance."
+        ],
+        "kosotogari": [
+          "A subtle but devastating clip to the heel. %WINNER% reaps the outer leg of %LOSER% just as he was shifting his weight. The official kimarite is kosotogari.",
+          "%WINNER% stays low and catches the outside of the ankle. It’s a minor outer reap, kosotogari, and %LOSER% simply couldn't recover his balance in time."
+        ],
+        "tsumatori": [
+          "Incredible reflexes! As %LOSER% stepped forward, %WINNER% reached down and snatched the toe, pulling it back to upend his opponent. Tsumatori is the call from the judges.",
+          "The timing had to be precise, and %WINNER% delivered. He caught the tip of the foot of %LOSER% mid-stride, executing a textbook tsumatori to end the match."
+        ],
+        "izori": [
+          "He's gone under! %WINNER% ducks the charge, grabs the thighs, and arches his back to send %LOSER% flying over his head! A sensational izori backward body drop!",
+          "The crowd is in an absolute frenzy! %WINNER% used %LOSER%'s own momentum against him, diving low for the rare izori. You don't see that technique every day in the top division."
+        ],
+        "kakezori": [
+          "Unbelievable! %WINNER% hooks the leg from the inside, arches his back, and pulls %LOSER% right over the top of him! That is the hooking backward body drop, a rare kakezori!",
+          "A technical marvel here in the Kokugikan! %WINNER% secures the leg, leans back with incredible flexibility, and %LOSER% is sent flying backwards. The judges confirm: kakezori!"
+        ],
+        "shumokuzori": [
+          "I don't believe my eyes! %WINNER% ducks under the arm, hoists %LOSER% across his shoulders like a bell hammer, and drops to the clay! A spectacular shumokuzori, a technique we haven't seen in years!",
+          "History made on the dohyo! %WINNER% carries %LOSER% across the back of his neck and falls backward for the shumokuzori. The crowd is on their feet for that incredible display of strength and technique."
+        ],
+        "sototasukizori": [
+          "Precision from %WINNER%! He reaches around the outside to grab the leg of %LOSER%, ducks his head under the arm, and pulls him over the shoulder. That's the outer tasuki-grip backward body drop, sototasukizori!",
+          "What a maneuver! %WINNER% goes for the outer leg-trip while leaning back, forcing %LOSER% to tumble over him. A textbook execution of sototasukizori by the smaller man!"
+        ],
+        "tasukizori": [
+          "A technical masterpiece! %WINNER% wraps one arm under the leg and the other over the shoulder of %LOSER%, creating that cross-body leverage for a stunning tasukizori!",
+          "%WINNER% uses the reverse hand-grip backward body drop! He pulls %LOSER% across his chest and falls back, making sure his opponent hits the sand first. Tasukizori is the official call."
+        ],
+        "tsutaezori": [
+          "Incredible agility! %WINNER% ducks under the extended arm of %LOSER%, circles around the back while maintaining the arm-lock, and pulls him down. That will be ruled a tsutaezori!",
+          "%WINNER% slides under the charge, shifts his weight, and uses the underarm forward body drop to send %LOSER% to the floor. A brilliant tsutaezori to end the match!"
+        ],
+        "tsukihiza": [
+          "A sudden loss of balance there by %LOSER%. As he tried to adjust his footing, his knee touched the clay before any offensive move was completed. The victory goes to %WINNER% via tsukihiza.",
+          "Oh, a self-inflicted error for %LOSER%! He buckles under his own momentum and his knee hits the sand. %WINNER% didn't have to do much there, but he'll take the win by knee-touchdown."
+        ],
+        "fumidashi": [
+          "Wait, let's look at the feet. %LOSER% was retreating and simply lost track of his position, stepping over the straw bales with no contact from his opponent. %WINNER% wins it by fumidashi.",
+          "A lapse in concentration for %LOSER% as he inadvertently steps outside the ring. That is a rare unforced error, a rear out-of-bounds, handing the match to %WINNER%."
+        ],
+        "fusensho": [
+          "An unfortunate announcement for the fans today as %LOSER% has been forced to withdraw from the tournament. %WINNER% enters the dohyo alone to receive the win by default, or fusensho.",
+          "The white circle is marked on the board for %WINNER% this afternoon. With %LOSER% absent due to injury, this bout is decided by fusensho, a victory by forfeit."
+        ],
+        "hansoku": [
+          "The shinpan are signaling a foul! It appears %LOSER% made illegal contact with the topknot of his opponent. A disqualification is called, and %WINNER% is awarded the win by hansoku.",
+          "A rare and dramatic end to this bout. The judges have ruled that %LOSER% used a prohibited technique, resulting in an immediate loss. %WINNER% takes the match via hansoku."
         ]
       },
       "engagement": {
