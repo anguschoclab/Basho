@@ -14,9 +14,10 @@ import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import type { PbpLine, PbpContext  } from "@/engine/pbp";
+import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
-import { buildPbpFromBoutResult, generateNarrative } from "@/presenters/uiDigest";
+import { generateNarrative } from "@/presenters/uiDigest";
+import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   tactical: { label: "策略", color: "text-primary",        bg: "bg-primary/10 border-primary/20" },
@@ -81,14 +82,9 @@ export function BoutNarrativeModal({
 
   const pbpLines = useMemo<PbpLine[]>(() => {
     try {
-      return buildPbpFromBoutResult({ 
-        result, 
-        east: east as any, 
-        west: west as any, 
-        bashoName, 
-        day, 
-        seed: `${bashoName}-${day}-${east.id}-${west.id}` 
-      }) as any;
+      const seed = `${bashoName}-${day}-${east.id}-${west.id}`;
+      generateBoutNarrative(result, east as any, west as any, bashoName, day, seed);
+      return (result as any).pbpLines ?? [];
     } catch {
       return [];
     }

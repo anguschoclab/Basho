@@ -429,7 +429,6 @@ export { FATIGUE_LABELS, POTENTIAL_LABELS, PRIZE_LABELS, RIVALRY_HEAT_LABELS, SC
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
 export { RANK_HIERARCHY, compareRanks, formatRank, getRankTitleJa, isKachiKoshi, isMakeKoshi } from "../engine/banzuke";
 export { createDefaultMediaState } from "../engine/systems/media/MediaService";
-export { buildPbpFromBoutResult } from "../engine/pbp";
 export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
 export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
 export { clamp, clampInt } from "../engine/utils";

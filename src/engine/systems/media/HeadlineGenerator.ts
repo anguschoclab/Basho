@@ -1,13 +1,12 @@
 /**
  * HeadlineGenerator.ts — Pure logic for constructing deterministic headline text.
+ * All templates are sourced from archive.json via BardEngine.
  */
 
 import { SeededRNG } from "../../rng";
 import { WorldState } from "../../types/world";
-import { Id } from "../../types/common";
 import { HeadlineTier } from "../../types/media";
-import { MEDIA_GENERIC_TEMPLATES } from "./Templates";
-import { seededPick } from "../../utils/random";
+import { BardEngine } from "../../narrative/BardEngine";
 
 export function generateBoutHeadline(args: {
   rng: SeededRNG;
@@ -19,29 +18,27 @@ export function generateBoutHeadline(args: {
   tier: HeadlineTier;
 }): { title: string; subtitle?: string } {
   const { rng, world, winnerId, loserId, kimariteName, upset, tier } = args;
-  
+
   const winner = world.rikishi.get(winnerId)?.shikona ?? "Unknown";
   const loser = world.rikishi.get(loserId)?.shikona ?? "Unknown";
+  const ctx = { winner, loser, kimarite: kimariteName };
 
-  let titleTemplate: string;
+  let titlePath: string;
   if (upset) {
-    titleTemplate = seededPick(rng, MEDIA_GENERIC_TEMPLATES.bout.upset);
+    titlePath = "media.bout.upset";
   } else if (tier === "main_event" && rng.next() < 0.4) {
-    titleTemplate = seededPick(rng, MEDIA_GENERIC_TEMPLATES.bout.mainEvent);
+    titlePath = "media.bout.mainEvent";
   } else {
-    titleTemplate = seededPick(rng, MEDIA_GENERIC_TEMPLATES.bout.standard);
+    titlePath = "media.bout.standard";
   }
 
-  const title = titleTemplate
-    .replace(/{winner}/g, winner)
-    .replace(/{loser}/g, loser)
-    .replace(/{kimarite}/g, kimariteName);
+  const title = BardEngine.resolve(rng, titlePath, ctx).text;
 
   let subtitle: string | undefined;
   if (upset) {
-    subtitle = seededPick(rng, MEDIA_GENERIC_TEMPLATES.bout.subtitles.upset);
+    subtitle = BardEngine.resolve(rng, "media.bout.subtitles.upset", ctx).text;
   } else if (tier === "main_event") {
-    subtitle = seededPick(rng, MEDIA_GENERIC_TEMPLATES.bout.subtitles.mainEvent);
+    subtitle = BardEngine.resolve(rng, "media.bout.subtitles.mainEvent", ctx).text;
   }
 
   return { title, subtitle };
@@ -53,24 +50,22 @@ export function generateStreakHeadline(args: {
   streak: number;
 }): { title: string; subtitle: string } {
   const { rng, shikona, streak } = args;
-  
-  let pool: string[];
+  const ctx = { shikona, streak };
+
+  let titlePath: string;
   let subtitle: string;
 
   if (streak >= 10) {
-    pool = MEDIA_GENERIC_TEMPLATES.streaks.legendary;
+    titlePath = "media.streaks.legendary";
     subtitle = "The entire division is watching. This is history in the making.";
   } else if (streak >= 8) {
-    pool = MEDIA_GENERIC_TEMPLATES.streaks.hot;
+    titlePath = "media.streaks.hot";
     subtitle = "A kachi-koshi secured — but the momentum says there's more to come.";
   } else {
-    pool = MEDIA_GENERIC_TEMPLATES.streaks.notable;
+    titlePath = "media.streaks.notable";
     subtitle = "Consistency is building into something the press can't ignore.";
   }
 
-  const title = seededPick(rng, pool)
-    .replace(/{shikona}/g, shikona)
-    .replace(/{streak}/g, streak.toString());
-
+  const title = BardEngine.resolve(rng, titlePath, ctx).text;
   return { title, subtitle };
 }

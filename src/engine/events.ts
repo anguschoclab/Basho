@@ -303,8 +303,10 @@ export const EventBus = {
     }),
 
   // --- Lifecycle ---
-  retirement: (world: WorldState, rikishiId: Id, heyaId: Id, name: string, reason: string) =>
-    logEngineEvent(world, {
+  retirement: (world: WorldState, rikishiId: Id, heyaId: Id, name: string, reason: string) => {
+    const rng = rngFromSeed(`retirement-${rikishiId}-${world.year}-${world.week}`, "narrative", "event");
+    const summary = BardEngine.resolve(rng, "events.lifecycle.retirement", { name, reason }).text;
+    return logEngineEvent(world, {
       type: "RETIREMENT",
       category: "career",
       importance: "major",
@@ -313,13 +315,16 @@ export const EventBus = {
       rikishiId,
       heyaId,
       title: `${name} retires`,
-      summary: `Retirement reason: ${reason}.`,
+      summary,
       data: { reason },
       tags: ["lifecycle", "retirement"]
-    }),
+    });
+  },
 
-  rookieDebut: (world: WorldState, rikishiId: Id, heyaId: Id, name: string) =>
-    logEngineEvent(world, {
+  rookieDebut: (world: WorldState, rikishiId: Id, heyaId: Id, name: string) => {
+    const rng = rngFromSeed(`debut-${rikishiId}-${world.year}-${world.week}`, "narrative", "event");
+    const summary = BardEngine.resolve(rng, "events.lifecycle.debut", { name }).text;
+    return logEngineEvent(world, {
       type: "ROOKIE_DEBUT",
       category: "career",
       importance: "notable",
@@ -327,9 +332,10 @@ export const EventBus = {
       rikishiId,
       heyaId,
       title: `${name} debuts`,
-      summary: `A new rikishi joins the ranks.`,
+      summary,
       tags: ["lifecycle", "debut"]
-    }),
+    });
+  },
 
   // --- Scouting ---
   scoutingInvestmentChanged: (world: WorldState, rikishiId: Id, level: string) =>
@@ -346,31 +352,37 @@ export const EventBus = {
     }),
 
   // --- Basho lifecycle ---
-  bashoStarted: (world: WorldState, bashoName: string) =>
-    logEngineEvent(world, {
+  bashoStarted: (world: WorldState, bashoName: string) => {
+    const rng = rngFromSeed(`basho-start-${bashoName}-${world.year}`, "narrative", "event");
+    const summary = BardEngine.resolve(rng, "events.basho.started", { bashoname: bashoName }).text;
+    return logEngineEvent(world, {
       type: "BASHO_STARTED",
       category: "basho",
       importance: "headline",
       phase: "basho_day",
       scope: "world",
       title: `${bashoName.charAt(0).toUpperCase() + bashoName.slice(1)} Basho begins`,
-      summary: `The ${bashoName} tournament has officially started.`,
+      summary,
       data: { bashoName },
       tags: ["basho"]
-    }),
+    });
+  },
 
-  bashoEnded: (world: WorldState, bashoName: string, yushoId: Id, yushoName: string) =>
-    logEngineEvent(world, {
+  bashoEnded: (world: WorldState, bashoName: string, yushoId: Id, yushoName: string) => {
+    const rng = rngFromSeed(`basho-end-${bashoName}-${world.year}`, "narrative", "event");
+    const summary = BardEngine.resolve(rng, "events.basho.ended", { bashoname: bashoName, yushoname: yushoName }).text;
+    return logEngineEvent(world, {
       type: "BASHO_ENDED",
       category: "basho",
       importance: "headline",
       phase: "basho_wrap",
       scope: "world",
       title: `${bashoName.charAt(0).toUpperCase() + bashoName.slice(1)} Basho concludes`,
-      summary: `${yushoName} wins the Emperor's Cup.`,
+      summary,
       data: { bashoName, yushoId, yushoName },
       tags: ["basho", "yusho"]
-    }),
+    });
+  },
 
   bashoDay: (world: WorldState, day: number) =>
     logEngineEvent(world, {

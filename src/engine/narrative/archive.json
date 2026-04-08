@@ -527,6 +527,48 @@
             "Textbook Sumo: %WINNER% Dispatches %LOSER%"
           ]
         }
+      },
+      "welfare": {
+        "watch_started": [
+          "%HEYANAME% has been placed under regulatory watch for welfare concerns.",
+          "Regulators are monitoring %HEYANAME% following welfare compliance concerns.",
+          "%HEYANAME% enters formal oversight — the JSA Welfare Committee is watching."
+        ],
+        "watch_negligence": [
+          "%HEYANAME% placed under watch. Regulators suspect negligence.",
+          "Negligence concerns prompt formal review of %HEYANAME%.",
+          "%HEYANAME% under scrutiny — regulators flag suspected negligence."
+        ],
+        "investigation_opened": [
+          "Regulators open a formal investigation into %HEYANAME%.",
+          "A full welfare investigation begins at %HEYANAME%.",
+          "%HEYANAME% faces a formal inquiry from the JSA Welfare Committee."
+        ],
+        "cleared": [
+          "%HEYANAME% returns to good standing after sustained improvement.",
+          "The watch on %HEYANAME% has been lifted. Compliance restored.",
+          "%HEYANAME% clears the regulatory threshold — formal watch ends."
+        ],
+        "sanctioned": [
+          "%HEYANAME% has been sanctioned for welfare violations.",
+          "Sanctions issued: %HEYANAME% faces recruitment freeze and financial penalty.",
+          "The JSA imposes formal sanctions on %HEYANAME% for welfare failings."
+        ],
+        "investigation_closed": [
+          "%HEYANAME% meets remediation requirements. Investigation concludes.",
+          "The investigation into %HEYANAME% is closed following compliance improvements.",
+          "%HEYANAME% satisfies regulators — formal inquiry ends."
+        ],
+        "sanctions_lifted": [
+          "%HEYANAME% has served its sanctions and returns to watch status.",
+          "Sanction period complete for %HEYANAME%. Compliance review continues.",
+          "%HEYANAME% exits the sanctions phase — the road back to standing begins."
+        ],
+        "risk_update": [
+          "%HEYANAME% welfare risk has shifted significantly this week.",
+          "Welfare monitoring update: %HEYANAME% shows a notable risk movement.",
+          "A material change in %HEYANAME%'s welfare risk profile."
+        ]
       }
     },
     "world": {
@@ -544,6 +586,154 @@
         "summer": [
           "Heat shimmers over the dohyo in the height of summer.",
           "Fans wave uchiwa as the temperature rises with the action."
+        ]
+      }
+    },
+    "media": {
+      "bout": {
+        "upset": [
+          "%WINNER% Stuns %LOSER%",
+          "%WINNER% Shocks the Arena Against %LOSER%",
+          "%LOSER% Falls — %WINNER% Seizes the Moment",
+          "Massive Upset! %WINNER% Topples %LOSER%",
+          "Unbelievable Scene: %WINNER% Defeats %LOSER%",
+          "%LOSER% Caught Off Guard by a Resilient %WINNER%",
+          "A Stunner in Tokyo! %WINNER% Beats %LOSER%",
+          "David Defeats Goliath: %WINNER% Outlasts %LOSER%",
+          "The Unthinkable Happens! %WINNER% Takes Down %LOSER%",
+          "A Giant Falls: %WINNER% Secures the Ultimate Upset Against %LOSER%",
+          "Nobody Predicted This! %WINNER% Topples %LOSER%",
+          "The Biggest Shock of the Basho! %WINNER% Defeats %LOSER%",
+          "Chaos in the Rankings! %LOSER% Upset by %WINNER%",
+          "%WINNER% Silences the Critics with a Stunning Victory Over %LOSER%",
+          "%WINNER% Defies the Odds, Stunning %LOSER%!",
+          "A Tactical Masterclass: %WINNER% Dismantles %LOSER%"
+        ],
+        "standard": [
+          "%WINNER% Defeats %LOSER% by %KIMARITE%",
+          "%WINNER% Overcomes %LOSER%",
+          "%WINNER% Turns Back %LOSER%",
+          "%WINNER% Proves Too Strong for %LOSER%",
+          "Textbook Sumo: %WINNER% Dispatches %LOSER%",
+          "%WINNER% Shows Superior Form Against %LOSER%",
+          "%WINNER% Takes the Win with a Solid %KIMARITE%",
+          "A Dominant Display as %WINNER% Beats %LOSER%",
+          "%LOSER% Falls Short Against a Ready %WINNER%",
+          "The Execution is Flawless — %WINNER% Dispatches %LOSER%",
+          "A Masterclass by %WINNER% Against %LOSER%",
+          "%WINNER% Comfortably Beats %LOSER% with %KIMARITE%",
+          "No Surprises Here: %WINNER% Handles %LOSER%",
+          "%WINNER% Stays Focused and Defeats %LOSER%",
+          "A Solid Performance Earns %WINNER% the Victory Over %LOSER%",
+          "Business as Usual: %WINNER% Cruises Past %LOSER%",
+          "%WINNER% Shows Championship Form in Win Over %LOSER%",
+          "A Methodical Takedown by %WINNER% Against %LOSER%",
+          "%WINNER% Secures a Hard-Fought Win Against %LOSER%",
+          "No Mistakes Made: %WINNER% Bests %LOSER%"
+        ],
+        "mainEvent": [
+          "%WINNER% Delivers in the Spotlight",
+          "The Main Event Goes to %WINNER%",
+          "%WINNER% Closes Out the Day with a Bang",
+          "%WINNER% Proves They Belong in the Main Event",
+          "A Spectacular Finale: %WINNER% Prevails",
+          "%WINNER% Shines Brightest on the Grand Stage",
+          "The Pressure Fails to Crack %WINNER% in the Main Event"
+        ],
+        "subtitles": {
+          "upset": [
+            "A momentum swing that changes the conversation.",
+            "The crowd roars as the script flips.",
+            "A result that won't be forgotten soon.",
+            "The Kokugikan roof nearly blew off after that finish.",
+            "Is this a fluke, or the beginning of a true crisis?"
+          ],
+          "mainEvent": [
+            "A crisp finish that keeps the pressure on.",
+            "No hesitation — just execution.",
+            "The race tightens with every day."
+          ]
+        }
+      },
+      "streaks": {
+        "legendary": [
+          "%SHIKONA% Is Unstoppable — %STREAK% Straight Wins",
+          "%STREAK%-0: %SHIKONA% Rewrites the Narrative"
+        ],
+        "hot": [
+          "%SHIKONA% Surges to %STREAK% Consecutive Victories",
+          "%STREAK% and Counting for %SHIKONA%"
+        ],
+        "notable": [
+          "%SHIKONA% Extends Win Streak to %STREAK%",
+          "Hot Streak: %SHIKONA% Now %STREAK%-0",
+          "%STREAK% Wins! %SHIKONA% Keeps Rolling"
+        ]
+      }
+    },
+    "events": {
+      "lifecycle": {
+        "debut": [
+          "A new face appears on the dohyo — %NAME% enters competition.",
+          "%NAME% steps onto the clay for the first time. The journey begins.",
+          "The rikishi community welcomes %NAME%, a new addition to the ranks.",
+          "%NAME% makes their professional debut today."
+        ],
+        "retirement": [
+          "%NAME% hangs up the mawashi.",
+          "The sumo world bids farewell to %NAME%.",
+          "Retirement announced: %NAME% steps away from the dohyo.",
+          "%NAME% concludes a distinguished career."
+        ]
+      },
+      "basho": {
+        "started": [
+          "The %BASHONAME% tournament officially begins.",
+          "Fifteen days of competition commence — %BASHONAME% is underway.",
+          "The clay is ready. %BASHONAME% Basho opens today.",
+          "Another basho, another opportunity. %BASHONAME% gets underway."
+        ],
+        "ended": [
+          "%YUSHONAME% claims the Emperor's Cup.",
+          "%YUSHONAME% stands alone at the end of fifteen days.",
+          "Tournament complete — %YUSHONAME% takes the yusho.",
+          "The %BASHONAME% basho ends. %YUSHONAME% emerges victorious."
+        ]
+      },
+      "training": {
+        "milestone": [
+          "%SHIKONA% is making measurable progress this week.",
+          "A strong training cycle for %SHIKONA% — the work is paying off.",
+          "%SHIKONA% continues to improve in key areas."
+        ]
+      },
+      "health": {
+        "injury_sustained": [
+          "%SHIKONA% leaves training with an injury. Recovery timeline pending.",
+          "Concern in the heya: %SHIKONA% has sustained an injury.",
+          "%SHIKONA% will be sidelined. The medical staff is evaluating."
+        ],
+        "financial_crisis": [
+          "%HEYANAME% is operating at a deficit. Immediate action required.",
+          "Financial pressure mounts at %HEYANAME%. Training capacity may be affected.",
+          "%HEYANAME% faces a funding shortfall this period."
+        ]
+      },
+      "milestone": {
+        "hof_induction": [
+          "%SHIKONA% is inducted into the Hall of Fame as a %CATEGORY%.",
+          "Hall of Fame: %SHIKONA% joins the immortals of sumo as a %CATEGORY%.",
+          "A legend enshrined: %SHIKONA% receives the highest honour, inducted as %CATEGORY%."
+        ],
+        "year_boundary": [
+          "The sumo world enters year %YEAR%.",
+          "Year %YEAR% dawns. The rankings reset, the goals remain.",
+          "A new year begins — year %YEAR% in the sumo calendar."
+        ],
+        "decade_boundary": [
+          "A new decade dawns in year %YEAR%. The era evolves.",
+          "Year %YEAR% marks a generational shift. A decade turns.",
+          "Ten years pass. Year %YEAR% opens a new chapter."
         ]
       }
     }
