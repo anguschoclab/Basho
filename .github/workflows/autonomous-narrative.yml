@@ -23,7 +23,7 @@ jobs:
       - name: Run Narrative Audit & Fill
         env:
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
-        run: npx ts-node scripts/audit-and-fill.ts
+        run: npm run narrative:audit
 
       - name: Commit and Push Changes
         run: |

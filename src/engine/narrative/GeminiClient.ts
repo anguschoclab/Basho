@@ -11,7 +11,7 @@ export class GeminiClient {
   constructor(apiKey: string) {
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash", // Using 2.5-flash as requested by the user
+      model: "gemini-3-flash-preview", // Upgraded to Gemini 3 for superior instruction following
       generationConfig: {
           temperature: 0.7,
           topP: 0.95,

@@ -29,7 +29,24 @@ async function run() {
   // 1. Audit Kimarite
   // We'll use a subset for this demonstration, or ideally extract from combat.ts
   const allKimarite = [
-    'yorikiri', 'oshidashi', 'oshitaoshi', 'yoritaoshi', 'tsukidashi'
+    'yorikiri', 'oshidashi', 'oshitaoshi', 'yoritaoshi', 'tsukidashi',
+    'tsukitaoshi', 'abisetaoshi', 'hatakikomi', 'hikiotoshi', 'okuridashi',
+    'tsuriotoshi', 'tsuridashi', 'utchari', 'okuritaoshi', 'katasukashi',
+    'sokubiotoshi', 'okurigake', 'okurihikiotoshi', 'waridashi', 'okurinage',
+    'tsukaminage', 'okuritsuridashi', 'okuritsuriotoshi', 'yobimodoshi', 'ushiromotare',
+    'uwatenage', 'sukuinage', 'shitatenage', 'kotenage', 'shitatedashinage',
+    'uwatedashinage', 'kubinage', 'koshihineri', 'ipponzeoi', 'nichonage',
+    'yaguranage', 'kakenage', 'tsukiotoshi', 'tottari', 'shitatehineri',
+    'uwatehineri', 'kotehineri', 'amiuchi', 'kainahineri', 'zubuneri',
+    'sakatottari', 'kubiotoshi', 'gasshohineri', 'harimanage', 'osakate',
+    'sabaori', 'sotokomata_hinerite', 'tokkurinage', 'makiotoshi', 'uchimuso',
+    'sotomuso', 'ashitori', 'sotogake', 'uchigake', 'ketaguri',
+    'watashikomi', 'kekaeshi', 'kosotogake', 'komatasukui', 'chongake',
+    'kawarigake', 'susoharai', 'kirikaeshi', 'nimaigeri', 'omata',
+    'susotori', 'mitokorozeme', 'kosotogari', 'tsumatori', 'izori',
+    'kakezori', 'shumokuzori', 'sototasukizori', 'tasukizori', 'tsutaezori',
+    'kimedashi', 'kimetaoshi', 'isamiashi', 'koshikudake', 'tsukite',
+    'tsukihiza', 'fumidashi', 'fusensho', 'hansoku'
   ];
 
   for (const id of allKimarite) {
@@ -39,11 +56,24 @@ async function run() {
   }
 
   if (missingKimarite.length > 0) {
-    console.log(`Found ${missingKimarite.length} hollow kimarite paths. Requesting AI fill...`);
-    const suggestions = await client.suggestedFill(missingKimarite);
+    console.log(`Found ${missingKimarite.length} hollow kimarite paths. Requesting AI fill in batches...`);
     
-    for (const [id, strings] of Object.entries(suggestions)) {
-      archive.domains.combat.kimarite[id] = strings;
+    // Batch processing to avoid truncation/limits
+    const batchSize = 5;
+    for (let i = 0; i < missingKimarite.length; i += batchSize) {
+      const batch = missingKimarite.slice(i, i + batchSize);
+      console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(missingKimarite.length / batchSize)}...`);
+      
+      try {
+        const suggestions = await client.suggestedFill(batch);
+        for (const [id, strings] of Object.entries(suggestions)) {
+          archive.domains.combat.kimarite[id] = strings;
+        }
+        // Save incrementally in case of crash
+        fs.writeFileSync(ARCHIVE_PATH, JSON.stringify(archive, null, 2));
+      } catch (err) {
+        console.error(`Batch ${i} failed:`, err);
+      }
     }
   }
 
