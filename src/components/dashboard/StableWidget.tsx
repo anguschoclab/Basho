@@ -65,10 +65,13 @@ export function StableWidget() {
 
   if (!p) return null;
 
-  const headerAction = useMemo(() => ({
-    label: "Manage",
-    onClick: () => navigate({ to: "/stable" as any })
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Manage",
+      onClick: () => navigate({ to: "/stable" as any }),
+    }),
+    [navigate],
+  );
 
   return (
     <BaseWidget

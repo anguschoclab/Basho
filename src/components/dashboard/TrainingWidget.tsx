@@ -155,11 +155,15 @@ const MultiplierBar = React.memo(
 export function TrainingWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();
-  const headerAction = useMemo(() => ({
-    label: "Full Plan",
-    onClick: () => navigate({ to: "/stable/training" as any }),
-    tooltip: "Design and implement comprehensive training regimens for your rikishi"
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Full Plan",
+      onClick: () => navigate({ to: "/stable/training" as any }),
+      tooltip:
+        "Design and implement comprehensive training regimens for your rikishi",
+    }),
+    [navigate],
+  );
   const world = state.world;
   const [expanded, setExpanded] = useState(false);
 
@@ -225,11 +229,7 @@ export function TrainingWidget() {
   );
 
   return (
-    <BaseWidget
-      title="Training"
-      icon={Dumbbell}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Training" icon={Dumbbell} headerAction={headerAction}>
       {/* Current profile */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="secondary" className="text-[10px] gap-1">

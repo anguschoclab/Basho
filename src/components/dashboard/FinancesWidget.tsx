@@ -81,18 +81,17 @@ export function FinancesWidget() {
     [heya.funds],
   );
 
-  const headerAction = useMemo(() => ({
-    label: "Deep Dive",
-    onClick: () => navigate({ to: "/office/finances" as any }),
-    tooltip: "Analyze stable financial health and project future runway"
-  }), [navigate]);
+  const headerAction = useMemo(
+    () => ({
+      label: "Deep Dive",
+      onClick: () => navigate({ to: "/office/finances" as any }),
+      tooltip: "Analyze stable financial health and project future runway",
+    }),
+    [navigate],
+  );
 
   return (
-    <BaseWidget
-      title="Finances"
-      icon={Coins}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Finances" icon={Coins} headerAction={headerAction}>
       <div className="space-y-4">
         {/* Top: Status & Runway */}
         <div className="flex items-center justify-between">
