@@ -163,7 +163,7 @@ describe("events.ts - Helpers & Cleanup", () => {
     it("wraps logEngineEvent correctly for standard domains", () => {
       const world = createMockWorld();
 
-      const injuryEvent = EventBus.injury(world, "r1", "Hurt", "He hurt his leg", { severity: "serious" });
+      const injuryEvent = EventBus.injury(world, "r1", { severity: "serious" });
       expect(injuryEvent.category).toBe("injury");
       expect(injuryEvent.importance).toBe("headline");
 
@@ -182,35 +182,35 @@ describe("events.ts - Helpers & Cleanup", () => {
 
       // 1. Very old, minor, non-career -> Should be trimmed
       world.events!.log.push({
-        id: "evt-1", type: "OLD_MINOR", category: "training", importance: "minor",
+        id: "evt-1", type: "TRAINING_MILESTONE", category: "training", importance: "minor",
         year: 2020, week: 1, month: 1, phase: "weekly", scope: "world",
         title: "Old", summary: "Old", data: {}, tags: [], truthLevel: "public"
       });
-      world.events!.dedupe["2020|1|OLD_MINOR|world|||Old"] = true;
+      world.events!.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"] = true;
 
       // 2. Very old, but headline -> Should be kept
       world.events!.log.push({
-        id: "evt-2", type: "OLD_HEADLINE", category: "economy", importance: "headline",
+        id: "evt-2", type: "FINANCIAL_ALERT", category: "economy", importance: "headline",
         year: 2020, week: 1, month: 1, phase: "weekly", scope: "world",
         title: "Old Headline", summary: "Old", data: {}, tags: [], truthLevel: "public"
       });
-      world.events!.dedupe["2020|1|OLD_HEADLINE|world|||Old Headline"] = true;
+      world.events!.dedupe["2020|1|FINANCIAL_ALERT|world|||Old Headline"] = true;
 
       // 3. Very old, but career -> Should be kept
       world.events!.log.push({
-        id: "evt-3", type: "OLD_CAREER", category: "career", importance: "minor",
+        id: "evt-3", type: "RETIREMENT", category: "career", importance: "minor",
         year: 2020, week: 1, month: 1, phase: "weekly", scope: "world",
         title: "Old Career", summary: "Old", data: {}, tags: [], truthLevel: "public"
       });
-      world.events!.dedupe["2020|1|OLD_CAREER|world|||Old Career"] = true;
+      world.events!.dedupe["2020|1|RETIREMENT|world|||Old Career"] = true;
 
       // 4. Recent minor -> Should be kept
       world.events!.log.push({
-        id: "evt-4", type: "RECENT_MINOR", category: "training", importance: "minor",
+        id: "evt-4", type: "TRAINING_MILESTONE", category: "training", importance: "minor",
         year: 2025, week: 1, month: 1, phase: "weekly", scope: "world", // Same as current year
         title: "Recent", summary: "Recent", data: {}, tags: [], truthLevel: "public"
       });
-      world.events!.dedupe["2025|1|RECENT_MINOR|world|||Recent"] = true;
+      world.events!.dedupe["2025|1|TRAINING_MILESTONE|world|||Recent"] = true;
 
       const trimmed = tickWeekEvents(world);
 
@@ -222,9 +222,7 @@ describe("events.ts - Helpers & Cleanup", () => {
       expect(world.events!.log.find(e => e.id === "evt-4")).toBeDefined();
 
       // Check dedupe cleanup
-      expect(world.events!.dedupe["2020|1|OLD_MINOR|world|||Old"]).toBeUndefined();
-      // Even though we keep headline/career, dedupe keys might still get cleaned depending on implementation logic.
-      // But it definitely cleans the trimmed one.
+      expect(world.events!.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"]).toBeUndefined();
     });
   });
 });

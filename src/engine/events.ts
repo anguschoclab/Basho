@@ -13,6 +13,8 @@ import type { WorldState } from "./types/world";
 import type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope, EngineEventType } from "./types/events";
 export type { EngineEvent, EventsState, EventCategory, EventPhase, EventImportance, EventScope } from "./types/events";
 import type { Id } from "./types/common";
+import { BardEngine } from "./narrative/BardEngine";
+import { rngFromSeed } from "./rng";
 
 
 
@@ -148,18 +150,26 @@ export function queryEvents(
 /** Convenience factories — one per subsystem domain */
 export const EventBus = {
   // --- Injury ---
-  injury: (world: WorldState, rikishiId: Id, title: string, summary: string, data: Record<string, any>) =>
-    logEngineEvent(world, {
+  injury: (world: WorldState, rikishiId: Id, data: Record<string, any>) => {
+    const importance = data?.severity === "serious" ? "headline" : data?.severity === "moderate" ? "major" : "notable";
+    const intensity = BardEngine.calculateIntensity(importance === "headline" ? 3 : importance === "major" ? 2 : 1, [1, 3]);
+    const seed = `injury-${rikishiId}-${world.year}-${world.week}`;
+    const rng = rngFromSeed(seed, "narrative", "event");
+    
+    const res = BardEngine.resolve(rng, "combat.phases.injury", { ...data, intensity });
+
+    return logEngineEvent(world, {
       type: "INJURY_OCCURRED",
       category: "injury",
-      importance: data?.severity === "serious" ? "headline" : data?.severity === "moderate" ? "major" : "notable",
+      importance,
       scope: "rikishi",
       rikishiId,
-      title,
-      summary,
+      title: "Medical Report",
+      summary: res.text,
       data,
       tags: ["injury"]
-    }),
+    });
+  },
 
   recovery: (world: WorldState, rikishiId: Id, heyaId: Id | undefined, summary: string) =>
     logEngineEvent(world, {
@@ -175,18 +185,26 @@ export const EventBus = {
     }),
 
   // --- Governance ---
-  governance: (world: WorldState, heyaId: Id, title: string, summary: string, data: Record<string, any>, importance: EventImportance = "major") =>
-    logEngineEvent(world, {
+  governance: (world: WorldState, heyaId: Id, data: Record<string, any>, importance: EventImportance = "major") => {
+    const intensity = BardEngine.calculateIntensity(importance === "headline" ? 3 : importance === "major" ? 2 : 1, [1, 3]);
+    const seed = `gov-${heyaId}-${world.year}-${world.week}-${importance}`;
+    const rng = rngFromSeed(seed, "narrative", "event");
+    
+    const titleRes = BardEngine.resolve(rng, "institutional.governance.headlines", { ...data, intensity });
+    const summaryRes = BardEngine.resolve(rng, "institutional.governance.threats", { ...data, intensity });
+
+    return logEngineEvent(world, {
       type: "GOVERNANCE_RULING",
       category: "discipline",
       importance,
       scope: "heya",
       heyaId,
-      title,
-      summary,
+      title: titleRes.text,
+      summary: summaryRes.text,
       data,
       tags: ["governance"]
-    }),
+    });
+  },
 
   // --- Training ---
   trainingMilestone: (world: WorldState, rikishiId: Id, heyaId: Id, title: string, summary: string, data: Record<string, any> = {}) =>

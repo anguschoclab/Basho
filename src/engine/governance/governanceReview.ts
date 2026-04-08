@@ -36,16 +36,11 @@ export function runGovernanceReview(world: WorldState): void {
       heya.riskIndicators.financial = true;
       governance.reportScandal(world, heya.id, "minor", "Financial insolvency at basho end");
 
-      logEngineEvent(world, {
-        type: "INSOLVENCY_WARNING",
-        category: "economy",
-        importance: "headline",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} facing insolvency`,
-        summary: `${heya.name} ended the basho with negative funds and desperate runway. The Association may intervene.`,
-        data: { funds: heya.funds, runway: heya.runwayBand }
-      });
+      EventBus.governance(world, heya.id, { 
+        reason: "Financial insolvency", 
+        funds: heya.funds, 
+        runway: heya.runwayBand 
+      }, "headline");
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
       if (heya.funds < -5_000_000) {
@@ -146,44 +141,18 @@ export function runGovernanceReview(world: WorldState): void {
     const rosterSize = getStableRikishi(world, heya.id).length;
     if (rosterSize < 3) {
       if (heya.id !== world.playerHeyaId) {
-        logEngineEvent(world, {
-          type: "CLOSURE_PRESSURE",
-          category: "discipline",
-          importance: "major",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `${heya.name} under closure pressure`,
-          summary: `${heya.name} has fewer than 3 wrestlers — the Association is reviewing viability.`,
-          data: { rosterSize }
-        });
-
-        generateGovernanceHeadline(
-          world,
-          heya.id,
-          "major",
-          `${heya.name} has dropped below 3 wrestlers, triggering a viability review by the Association.`
-        );
+        EventBus.governance(world, heya.id, { 
+          reason: "Roster size critically low", 
+          rosterSize 
+        }, "major");
 
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (rosterSize <= 1) {
-          logEngineEvent(world, {
-            type: "FORCED_MERGER_CANDIDATE",
-            category: "discipline",
-            importance: "headline",
-            scope: "heya",
-            heyaId: heya.id,
-            title: `${heya.name} merger imminent`,
-            summary: `With only ${rosterSize} wrestler(s), ${heya.name} faces forced merger into another stable.`,
-            data: { rosterSize }
-          });
-
-          generateGovernanceHeadline(
-            world,
-            heya.id,
-            "critical",
-            `Due to critically low recruitment (${rosterSize} active wrestlers), ${heya.name} faces a forced merger.`
-          );
+          EventBus.governance(world, heya.id, { 
+            reason: "Critically low recruitment", 
+            rosterSize 
+          }, "headline");
 
 
           // Execute actual merger
@@ -210,18 +179,11 @@ export function runGovernanceReview(world: WorldState): void {
     // === Succession check — aging oyakata ===
     const oyakata = world.oyakata.get(heya.oyakataId);
     if (oyakata && oyakata.age >= 63) {
-      logEngineEvent(world, {
-        type: "SUCCESSION_UPCOMING",
-        category: "career",
-        importance: oyakata.age >= 65 ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} succession looming`,
-        summary: `Oyakata ${oyakata.name} (age ${oyakata.age}) ${
-          oyakata.age >= 65 ? "must retire soon — succession is urgent." : "is approaching mandatory retirement age."
-        }`,
-        data: { oyakataAge: oyakata.age, oyakataName: oyakata.name }
-      });
+      EventBus.governance(world, heya.id, { 
+        name: oyakata.name, 
+        age: oyakata.age,
+        reason: oyakata.age >= 65 ? "Mandatory retirement imminent" : "Approaching retirement age"
+      }, oyakata.age >= 65 ? "major" : "notable");
     }
 
     // === Post-basho scandal score decay reward for clean basho ===

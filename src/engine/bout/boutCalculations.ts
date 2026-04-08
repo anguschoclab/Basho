@@ -1,8 +1,25 @@
 import { SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
-import type { CombatAction, TacticalFamily, TacticalArchetype, KimariteClass } from "../types/combat";
+import type { CombatAction, TacticalFamily, TacticalArchetype, KimariteClass, CombatArchetype } from "../types/combat";
 import { ARCHETYPE_PROFILES } from "../types/combat";
 import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
+
+/**
+ * Canonical mapping from CombatArchetype (physics layer) to TacticalArchetype
+ * (ARCHETYPE_PROFILES key). Fixes the confirmed cast bug in pickMoveFromClass
+ * where `archetype as TacticalArchetype` always resolved to undefined and fell
+ * back to all_rounder.
+ */
+export const ARCHETYPE_MAP: Record<CombatArchetype, TacticalArchetype> = {
+  oshi:      'oshi_specialist',
+  yotsu:     'yotsu_specialist',
+  trickster: 'trickster',
+  speedster: 'speedster',
+  giant:     'yotsu_specialist',   // mass-dominant — belt profile closest behavioral match
+  hybrid:    'hybrid_oshi_yotsu',
+  tsuppari:  'oshi_specialist',    // high-push variant; mapped until tsuppari profile added to ARCHETYPE_PROFILES
+  defensive: 'counter_specialist', // read-react; maps to counter_specialist profile
+};
 
 /** State used for physics engine, simplified here for calculation purposes. */
 export interface CalculationState {
@@ -182,7 +199,7 @@ export function pickMoveFromClass(rng: SeededRNG, moveClass: KimariteClass | und
     if (possible.length === 0) return KIMARITE_REGISTRY[0]; 
   }
 
-  const arch = ARCHETYPE_PROFILES[attacker.combatProfile.archetype as TacticalArchetype] || ARCHETYPE_PROFILES.all_rounder;
+  const arch = ARCHETYPE_PROFILES[ARCHETYPE_MAP[attacker.combatProfile.archetype as CombatArchetype]] ?? ARCHETYPE_PROFILES.all_rounder;
   const favored = attacker.combatProfile.favoredKimarite || [];
 
   const weights = possible.map(m => {

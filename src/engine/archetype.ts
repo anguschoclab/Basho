@@ -4,6 +4,8 @@ import { SeededRNG } from "./rng";
 
 /**
  * Legacy support for archetype derivation based on stats.
+ * @deprecated Use combatProfile.archetype as the canonical archetype.
+ * Retained only for generating derivedArchetype UI labels on existing rikishi.
  */
 export function deriveArchetype(stats: RikishiStats, physicals: { height: number, weight: number }, style: Style): RikishiArchetype {
   if (style === "oshi" && stats.speed >= 70) return "Explosive_Blitzer";
@@ -28,7 +30,7 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, 'archet
   },
   yotsu: {
     familyPreferences: { push: 15, belt: 75, trick: 5, speed: 5 },
-    preferredGrip: 'migi', // Default for yotsu, can be randomized later
+    preferredGrip: 'migi',
     preferredGripDepth: 'standard',
     statModifiers: { strength: 1.15, weight: 1.1, speed: 0.85 }
   },
@@ -49,20 +51,46 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, 'archet
     preferredGrip: 'none',
     preferredGripDepth: 'standard',
     statModifiers: { strength: 1.05, technique: 1.05, weight: 1.05 }
-  }
+  },
+  /**
+   * Tsuppari — rapid open-palm thrusting (Takakeisho style).
+   * High aggression, no belt contact, tires quickly under grappling.
+   */
+  tsuppari: {
+    familyPreferences: { push: 85, belt: 2, trick: 8, speed: 5 },
+    preferredGrip: 'none',
+    preferredGripDepth: 'standard',
+    statModifiers: { strength: 1.15, speed: 1.05, stamina: 0.85, technique: 0.9 },
+    favoredKimarite: ['tsukidashi', 'tsukitaoshi', 'tsukiotoshi', 'oshidashi', 'hatakikomi'],
+  },
+  /**
+   * Defensive — counter-wrestler archetype.
+   * Low tachiai investment; reads and punishes opponent's aggression.
+   */
+  defensive: {
+    familyPreferences: { push: 10, belt: 35, trick: 40, speed: 15 },
+    preferredGrip: 'none',
+    preferredGripDepth: 'standard',
+    statModifiers: { technique: 1.2, speed: 1.1, strength: 0.9, balance: 1.15, weight: 0.95 },
+    favoredKimarite: ['hatakikomi', 'hikiotoshi', 'tsukiotoshi', 'uwatenage', 'ketaguri', 'katasukashi'],
+  },
 };
 
 /**
- * Randomly assign an archetype based on a global distribution.
+ * Randomly assign an archetype based on a realistic population distribution.
+ * Oshi and yotsu together ~57% (dominates real makuuchi).
+ * Tsuppari 7%, defensive 6% added for gameplay variety.
  */
 export function rollArchetype(rng: SeededRNG): CombatArchetype {
   const roll = rng.next();
-  if (roll < 0.35) return 'oshi';
-  if (roll < 0.70) return 'yotsu';
-  if (roll < 0.80) return 'trickster';
-  if (roll < 0.90) return 'speedster';
-  if (roll < 0.95) return 'giant';
-  return 'hybrid';
+  if (roll < 0.30) return 'oshi';
+  if (roll < 0.57) return 'yotsu';
+  if (roll < 0.65) return 'trickster';
+  if (roll < 0.73) return 'speedster';
+  if (roll < 0.80) return 'tsuppari';   // 7%
+  if (roll < 0.86) return 'defensive';  // 6%
+  if (roll < 0.92) return 'giant';      // 6%
+  return 'hybrid';                       // 8%
 }
 
 /**
@@ -73,20 +101,4 @@ export function buildCombatProfile(archetype: CombatArchetype): CombatProfile {
     archetype,
     ...ARCHETYPE_DEFINITIONS[archetype]
   };
-}
-
-/**
- * Legacy support for label generation.
- * Maps the new archetypes to the old descriptive labels for UI consistency if needed.
- */
-function getArchetypeLabel(archetype: CombatArchetype): string {
-  switch (archetype) {
-    case 'oshi': return "Explosive_Blitzer";
-    case 'yotsu': return "Defensive_Stalwart";
-    case 'trickster': return "Acrobatic_Trickster";
-    case 'giant': return "Immovable_Mountain";
-    case 'speedster': return "Explosive_Blitzer"; // Or a new label
-    case 'hybrid': return "All_Rounder";
-    default: return "All_Rounder";
-  }
 }

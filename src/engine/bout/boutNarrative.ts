@@ -1,15 +1,15 @@
-import { VOCABULARY, SENTENCE_TEMPLATES } from './grammarDefinitions';
 import { TickResolutionEvent } from '../types/combat';
 import { generateNarrative } from "../narrative";
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoName } from "../types/basho";
+import { BardEngine } from '../narrative/BardEngine';
 
 export type PbpLine = { text: string; id: string };
 
 /**
  * Pure translator function. Consumes raw physics frames and maps them
- * to event tokens defined in grammarDefinitions.ts and pbp.ts, and generates narrative.
+ * to the Bard Engine for narrative generation.
  */
 export function generateBoutNarrative(
   result: BoutResult,
@@ -19,157 +19,63 @@ export function generateBoutNarrative(
   day: number,
   seed: string
 ): void {
-  // Map log entries to narrative context
-  const pbpLines = result.log.map((entry, idx) => {
+  const pbpLines: PbpLine[] = [];
+
+  // 1. Initial Narrative (Ritual)
+  if (result.log.length > 0) {
+      const ritualRng = rngFromSeed(seed, "pbp", "ritual");
+      pbpLines.push({
+          text: BardEngine.resolve(ritualRng, "combat.phases.ritual.entrance", { east: east.shikona, west: west.shikona }).text,
+          id: `${result.boutId}-ritual-1`
+      });
+      pbpLines.push({
+          text: BardEngine.resolve(ritualRng, "combat.phases.ritual.shikiri", {}).text,
+          id: `${result.boutId}-ritual-2`
+      });
+  }
+
+  // 2. Process Log Frames
+  result.log.forEach((entry, idx) => {
+    const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
+    const rng = rngFromSeed(tickSeed, "pbp", "tick");
+
     if ((entry.phase === 'engagement' || entry.phase === 'tachiai') && entry.data?.tickResolutionEvent) {
-      const tickSeed = `${seed}-tick-${(entry.data.tick as number) || 0}-${idx}`;
-      return {
-        text: synthesizeTickNarrative(entry.data.tickResolutionEvent as import('../types/combat').TickResolutionEvent, tickSeed),
-        id: `${result.boutId}-${entry.data.tick || 't'}`
-      };
+      const event = entry.data.tickResolutionEvent as TickResolutionEvent;
+      // Using powerDifferential as a proxy for intensity if momentum is not explicit
+      const intensity = BardEngine.calculateIntensity(event.powerDifferential ?? 0.5);
+      
+      const path = entry.phase === 'tachiai' ? "combat.phases.tachiai" : `combat.phases.engagement.${event.action.family}`;
+      
+      const res = BardEngine.resolve(rng, path, {
+          attacker: event.attacker.shikona,
+          defender: event.defender.shikona,
+          winner: event.attacker.shikona, // For tachiai win
+          intensity,
+          ...event.context
+      });
+
+      pbpLines.push({ text: res.text, id: `${result.boutId}-${idx}` });
     }
+    
     if (entry.phase === 'tachiai' && entry.data?.event === 'henka_success') {
-      return {
-        text: "HENKA! The crowd roars as the opponent flys past!",
+      pbpLines.push({
+        text: BardEngine.resolve(rng, "combat.phases.tachiai.henka", { attacker: east.shikona, defender: west.shikona }).text,
         id: `${result.boutId}-henka`
-      };
+      });
     }
-    // Fallback for other phases or legacy entries
-    return {
-      text: entry.description || '',
-      id: `${result.boutId}-${entry.phase}`
-    };
-  }).filter(l => l.text);
+  });
   
-  if (result.awardFact === 'kinboshi') {
+  // 3. Special Awards
+  if (result.awardFact === 'kinboshi' || result.awardFact === 'ginboshi') {
+    const awardRng = rngFromSeed(seed, "pbp", "award");
+    const winnerName = result.winner === 'east' ? east.shikona : west.shikona;
     pbpLines.push({
-      text: VOCABULARY.ZABUTON_RAIN as string,
-      id: `${result.boutId}-kinboshi`
-    });
-  } else if (result.awardFact === 'ginboshi') {
-    pbpLines.push({
-      text: VOCABULARY.GINBOSHI_REACTION as string,
-      id: `${result.boutId}-ginboshi`
+      text: BardEngine.resolve(awardRng, `combat.finish.${result.awardFact}`, { winner: winnerName }).text,
+      id: `${result.boutId}-${result.awardFact}`
     });
   }
 
   result.pbpLines = pbpLines;
   result.pbp = pbpLines.map((l) => l.text);
   result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, day) : [];
-}
-
-export function synthesizeTickNarrative(event: TickResolutionEvent, tickSeed?: string): string {
-    const { action, context } = event;
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tick") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tick");
-
-    const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
-
-    // 1. Select the correct template bucket based on the action family
-    let templateBucket = SENTENCE_TEMPLATES[`${action.family}_success`] || SENTENCE_TEMPLATES['push_success'];
-    
-    // 2. Memory Override: If the action is repeated, use a specific memory template
-    if (context.isRepeatedAction) {
-        templateBucket = SENTENCE_TEMPLATES['repeated_action'];
-    }
-
-    // 3. Pick a random template from the valid bucket
-    const rawString = pick(templateBucket);
-
-    // 4. Token Resolution Pass (The Gen-AI style compilation)
-    return resolveTokens(rawString, event, tickSeed);
-}
-
-function resolveTokens(template: string, event: TickResolutionEvent, tickSeed?: string): string {
-    const rng = tickSeed ? rngFromSeed(tickSeed, "pbp", "tokens") : rngFromSeed(event.action.moveId || "fallback", "pbp", "tokens");
-    const pick = <T>(arr: T[]): T => arr[Math.floor(rng.next() * arr.length)];
-
-    // Replace [Attacker] with Shikona
-    let output = template.replace(/\[Attacker\]/g, event.attacker.shikona);
-    output = output.replace(/\[Defender\]/g, event.defender.shikona);
-    
-    // Replace Adverbs based on Archetype/Stats
-    if (template.includes('[adverbs_heavy]')) {
-        output = output.replace(/\[adverbs_heavy\]/g, pick(VOCABULARY.adverbs_heavy));
-    }
-    if (template.includes('[adverbs_fast]')) {
-        output = output.replace(/\[adverbs_fast\]/g, pick(VOCABULARY.adverbs_fast));
-    }
-    if (template.includes('[adverbs_technical]')) {
-        output = output.replace(/\[adverbs_technical\]/g, pick(VOCABULARY.adverbs_technical));
-    }
-
-    // Replace Verbs based on family
-    const family = event.action.family;
-    const verbToken = `[verbs_${family}]`;
-    if (template.includes(verbToken)) {
-        const verbList = VOCABULARY[`verbs_${family}` as keyof typeof VOCABULARY] as string[];
-        if (verbList) {
-            output = output.replace(new RegExp(`\\[verbs_${family}\\]`, 'g'), pick(verbList));
-        }
-    }
-
-    // Action name for repeated templates
-    if (template.includes('[action_name]')) {
-        output = output.replace(/\[action_name\]/g, event.action.family + " attack");
-    }
-    
-    // Conditional Decorators: Only render if context allows
-    if (template.includes('[decorator_exhausted?]')) {
-        const replacement = event.context.attackerFatigueLevel === 'exhausted' 
-            ? `, ${pick(VOCABULARY.decorator_exhausted)},` 
-            : ''; // Render nothing if not exhausted
-        output = output.replace(/\[decorator_exhausted\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_gasping?]')) {
-        const replacement = event.context.attackerFatigueLevel === 'gasping'
-            ? `, ${pick(VOCABULARY.decorator_gasping)},`
-            : '';
-        output = output.replace(/\[decorator_gasping\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_wobbling?]')) {
-        const replacement = event.context.defenderBalanceLevel === 'wobbling'
-            ? `, ${pick(VOCABULARY.decorator_wobbling)},`
-            : '';
-        output = output.replace(/\[decorator_wobbling\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_critical?]')) {
-        const replacement = event.context.defenderBalanceLevel === 'critical'
-            ? `, ${pick(VOCABULARY.decorator_critical)},`
-            : '';
-        output = output.replace(/\[decorator_critical\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_reversal?]')) {
-        const replacement = event.context.isReversal
-            ? `${pick(VOCABULARY.decorator_reversal)} `
-            : '';
-        output = output.replace(/\[decorator_reversal\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_edge?]')) {
-        const replacement = event.context.isEdgeOfRing
-            ? `, ${pick(VOCABULARY.decorator_edge)},`
-            : '';
-        output = output.replace(/\[decorator_edge\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_rivalry?]')) {
-        const replacement = event.context.isRivalry
-            ? `${pick(VOCABULARY.decorator_rivalry)} `
-            : '';
-        output = output.replace(/\[decorator_rivalry\?\]/g, replacement);
-    }
-
-    if (template.includes('[decorator_championship?]')) {
-        const replacement = event.context.isChampionshipBout
-            ? `${pick(VOCABULARY.decorator_championship)} `
-            : '';
-        output = output.replace(/\[decorator_championship\?\]/g, replacement);
-    }
-    
-    // Clean up double spaces or bad punctuation from empty conditionals
-    return output.replace(/\s+/g, ' ').replace(/ ,/g, ',').trim();
 }
