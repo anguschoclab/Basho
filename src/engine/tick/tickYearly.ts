@@ -4,6 +4,8 @@ import { processYearEndInduction, HOF_CATEGORY_LABELS } from "../hallOfFame";
 import * as talentpool from "../systems/generation/TalentPoolService";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 import * as npcAI from "../npcAI";
+import { BardEngine } from "../narrative/BardEngine";
+import { rngFromSeed } from "../rng";
 
 /**
  * Year boundary tick — Constitution A3.5.
@@ -24,6 +26,8 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
 
         for (const inductee of inductees) {
           const catLabel = HOF_CATEGORY_LABELS[inductee.category]?.name || inductee.category;
+          const hofRng = rngFromSeed(`hof-${inductee.rikishiId}-${newYear}`, "narrative", "event");
+          const hofSummary = BardEngine.resolve(hofRng, "events.milestone.hof_induction", { shikona: inductee.shikona, category: catLabel }).text;
           logEngineEvent(w, {
             type: "HOF_INDUCTION",
             category: "milestone",
@@ -31,7 +35,7 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
             scope: "world",
             rikishiId: inductee.rikishiId,
             title: `Hall of Fame: ${inductee.shikona}`,
-            summary: `${inductee.shikona} has been inducted into the Hall of Fame as a ${catLabel}.`,
+            summary: hofSummary,
             data: {
               category: inductee.category,
               year: newYear,
@@ -53,15 +57,17 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
   // Era label check (every 10 years)
   const isDecadeBoundary = newYear % 10 === 0;
 
+  const yearRng = rngFromSeed(`year-boundary-${newYear}`, "narrative", "event");
+  const yearPath = isDecadeBoundary ? "events.milestone.decade_boundary" : "events.milestone.year_boundary";
+  const yearSummary = BardEngine.resolve(yearRng, yearPath, { year: newYear }).text
+    + (hofInductees.length > 0 ? " HoF: " + hofInductees.join(", ") + "." : "");
   logEngineEvent(world, {
     type: "YEAR_BOUNDARY",
     category: "milestone",
     importance: isDecadeBoundary ? "headline" : "major",
     scope: "world",
     title: `Year ${newYear} begins`,
-    summary: isDecadeBoundary
-      ? "A new decade dawns. " + (hofInductees.length > 0 ? "Hall of Fame inductees: " + hofInductees.join(", ") + "." : "No new Hall of Fame inductees this year.")
-      : "The sumo world enters year " + newYear + "." + (hofInductees.length > 0 ? " HoF: " + hofInductees.join(", ") + "." : ""),
+    summary: yearSummary,
     data: { year: newYear, hofInductees: hofInductees.length, isDecade: isDecadeBoundary },
     tags: ["boundary", "year"]
   });

@@ -64,6 +64,8 @@ export function tickWeekGovernance(world: WorldState): void {
     }
     // Alert if crossing critical threshold (player only)
     if (heya.scandalScore && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
+      const warnRng = rngFromSeed(`gov-warn-${heya.id}-${world.year}-${world.week}`, "narrative", "event");
+      const warnSummary = BardEngine.resolve(warnRng, "institutional.governance.threats", { heya: heya.name, scandalScore: heya.scandalScore }).text;
       logEngineEvent(world, {
         type: "GOVERNANCE_WARNING",
         category: "discipline",
@@ -71,7 +73,7 @@ export function tickWeekGovernance(world: WorldState): void {
         scope: "heya",
         heyaId: heya.id,
         title: `JSA Warning: ${heya.name}`,
-        summary: `Your stable's scandal score has reached critical levels (${heya.scandalScore}). JSA review imminent.`,
+        summary: warnSummary,
         data: { scandalScore: heya.scandalScore },
         tags: ["governance", "warning"]
       });
@@ -88,6 +90,8 @@ export function tickWeekGovernance(world: WorldState): void {
     if (heya.governanceStatus !== newStatus) {
       const prevStatus = heya.governanceStatus;
       heya.governanceStatus = newStatus;
+      const statusRng = rngFromSeed(`gov-status-${heya.id}-${world.year}-${world.week}-${newStatus}`, "narrative", "event");
+      const statusSummary = BardEngine.resolve(statusRng, "institutional.governance.sanction", { heya: heya.name, prevStatus, newStatus }).text;
       logEngineEvent(world, {
         type: "GOVERNANCE_STATUS_CHANGED",
         category: "discipline",
@@ -95,7 +99,7 @@ export function tickWeekGovernance(world: WorldState): void {
         scope: "heya",
         heyaId: heya.id,
         title: `${heya.name}: governance status → ${newStatus}`,
-        summary: `${heya.name} governance standing changed from ${prevStatus} to ${newStatus} (scandal score: ${Math.floor(score)}).`,
+        summary: statusSummary,
         data: { prevStatus, newStatus, scandalScore: Math.floor(score) }
       });
       if (newStatus === "sanctioned" || newStatus === "probation") {

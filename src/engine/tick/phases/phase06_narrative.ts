@@ -17,6 +17,8 @@
 
 import type { WorldState } from "../../types/world";
 import { logEngineEvent } from "../../events";
+import { BardEngine } from "../../narrative/BardEngine";
+import { rngFromSeed } from "../../rng";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -31,6 +33,8 @@ export function phase06_narrative(world: WorldState): WorldState {
   for (const rId of deltas.injuriesSustained) {
     const r = world.rikishi.get(rId);
     if (!r) continue;
+    const injRng = rngFromSeed(`injury-phase6-${rId}-${world.year}-${world.week}`, "narrative", "event");
+    const injSummary = BardEngine.resolve(injRng, "events.health.injury_sustained", { shikona: r.shikona }).text;
     logEngineEvent(next, {
       type: "INJURY_SUSTAINED",
       category: "health",
@@ -39,7 +43,7 @@ export function phase06_narrative(world: WorldState): WorldState {
       rikishiId: rId,
       heyaId: r.heyaId,
       title: `${r.shikona} injured`,
-      summary: `${r.shikona} has sustained an injury and will be out for ${r.injuryWeeksRemaining ?? "?"} week(s).`,
+      summary: injSummary,
       data: { weeksOut: r.injuryWeeksRemaining },
       tags: ["injury"],
     });
@@ -50,6 +54,8 @@ export function phase06_narrative(world: WorldState): WorldState {
     const playerHeyaId = world.playerHeyaId;
     const heya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
     if (heya && heya.funds < 0) {
+      const finRng = rngFromSeed(`financial-crisis-${playerHeyaId}-${world.year}-${world.week}`, "narrative", "event");
+      const finSummary = BardEngine.resolve(finRng, "events.health.financial_crisis", { heyaname: heya.name ?? heya.id }).text;
       logEngineEvent(next, {
         type: "FINANCIAL_CRISIS",
         category: "economy",
@@ -57,7 +63,7 @@ export function phase06_narrative(world: WorldState): WorldState {
         scope: "heya",
         heyaId: playerHeyaId,
         title: "Stable in financial distress",
-        summary: `${heya.name ?? heya.id} is running a deficit. Training effectiveness is reduced until the balance recovers.`,
+        summary: finSummary,
         data: { funds: heya.funds, revenue: deltas.revenue, expenses: deltas.expenses },
         tags: ["finance", "crisis"],
       });
@@ -70,9 +76,9 @@ export function phase06_narrative(world: WorldState): WorldState {
     if (bigGains.length === 0) continue;
     const r = world.rikishi.get(rId);
     if (!r) continue;
-    const gainStr = bigGains
-      .map((c) => `+${c.amount.toFixed(1)} ${c.stat}`)
-      .join(", ");
+    const gainStr = bigGains.map((c) => `+${c.amount.toFixed(1)} ${c.stat}`).join(", ");
+    const trainRng = rngFromSeed(`training-milestone-${rId}-${world.year}-${world.week}`, "narrative", "event");
+    const trainSummary = BardEngine.resolve(trainRng, "events.training.milestone", { shikona: r.shikona }).text + ` (${gainStr})`;
     logEngineEvent(next, {
       type: "TRAINING_MILESTONE",
       category: "training",
@@ -81,7 +87,7 @@ export function phase06_narrative(world: WorldState): WorldState {
       rikishiId: rId,
       heyaId: r.heyaId,
       title: `${r.shikona} made notable gains`,
-      summary: `${r.shikona} improved this week: ${gainStr}.`,
+      summary: trainSummary,
       data: { gains: bigGains },
       tags: ["training", "milestone"],
     });

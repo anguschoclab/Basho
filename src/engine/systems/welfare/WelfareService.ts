@@ -20,6 +20,8 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
 import { clamp } from "../../utils/math";
 import { logEngineEvent } from "../../events";
+import { BardEngine } from "../../narrative/BardEngine";
+import { rngFromSeed } from "../../rng";
 import { 
   calculateWeeklyWelfareDelta, 
   computeInjuryPressure 
@@ -75,6 +77,8 @@ export const WelfareService = {
       // 4. Material Shift logging
       const riskUp = state.welfareRisk - beforeRisk;
       if (Math.abs(riskUp) >= 8) {
+        const riskRng = rngFromSeed(`welfare-risk-${heya.id}-${week}`, "narrative", "welfare");
+        const riskSummary = BardEngine.resolve(riskRng, "institutional.welfare.risk_update", { heyaname: heya.name }).text;
         logEngineEvent(world, {
           type: "WELFARE_RISK_UPDATE",
           category: "discipline",
@@ -82,7 +86,7 @@ export const WelfareService = {
           scope: "heya",
           heyaId: heya.id,
           title: "Welfare Risk Shift",
-          summary: `${heya.name} welfare risk is now ${state.welfareRisk}.`,
+          summary: riskSummary,
           data: { welfareRisk: state.welfareRisk, delta: riskUp, reasons: reasons.join("|") }
         });
       }
@@ -102,6 +106,9 @@ export const WelfareService = {
         const watchThreshold = hasNegligence ? 30 : 45;
         if (state.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && state.welfareRisk >= 20)) {
           this.setComplianceState(state, "watch");
+          const watchPath = hasNegligence ? "institutional.welfare.watch_negligence" : "institutional.welfare.watch_started";
+          const watchRng = rngFromSeed(`welfare-watch-${heya.id}-${week}`, "narrative", "welfare");
+          const watchSummary = BardEngine.resolve(watchRng, watchPath, { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_WATCH",
             category: "discipline",
@@ -109,9 +116,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: hasNegligence ? "Compliance Watch — Negligence Suspected" : "Compliance Watch",
-            summary: hasNegligence
-                ? `${heya.name} placed under watch. Regulators suspect negligence.`
-                : `${heya.name} placed under watch for welfare concerns.`,
+            summary: watchSummary,
             data: { welfareRisk: state.welfareRisk, negligenceCount, reasons: reasons.join("|") }
           });
 
@@ -132,6 +137,8 @@ export const WelfareService = {
             triggers: reasons,
             progress: 0
           };
+          const invOpenRng = rngFromSeed(`welfare-inv-open-${heya.id}-${week}`, "narrative", "welfare");
+          const invOpenSummary = BardEngine.resolve(invOpenRng, "institutional.welfare.investigation_opened", { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_INVESTIGATION_OPENED",
             category: "discipline",
@@ -139,7 +146,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Investigation Opened",
-            summary: `Regulators open an investigation into ${heya.name}.`,
+            summary: invOpenSummary,
             data: { welfareRisk: state.welfareRisk }
           });
 
@@ -150,6 +157,8 @@ export const WelfareService = {
           }
         } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
           this.setComplianceState(state, "compliant");
+          const clearedRng = rngFromSeed(`welfare-cleared-${heya.id}-${week}`, "narrative", "welfare");
+          const clearedSummary = BardEngine.resolve(clearedRng, "institutional.welfare.cleared", { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_CLEARED",
             category: "discipline",
@@ -157,7 +166,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Watch Lifted",
-            summary: `${heya.name} returns to good standing.`,
+            summary: clearedSummary,
             data: { welfareRisk: state.welfareRisk }
           });
         }
@@ -180,6 +189,8 @@ export const WelfareService = {
           // Enforce: debit fine immediately from heya treasury
           heya.funds = (heya.funds ?? 0) - fineYen;
 
+          const sanctionRng = rngFromSeed(`welfare-sanction-${heya.id}-${week}`, "narrative", "welfare");
+          const sanctionSummary = BardEngine.resolve(sanctionRng, "institutional.welfare.sanctioned", { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_SANCTIONED",
             category: "discipline",
@@ -187,7 +198,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Sanctions Issued",
-            summary: `${heya.name} sanctioned for welfare violations. ¥${fineYen.toLocaleString()} fine levied.`,
+            summary: sanctionSummary,
             data: { welfareRisk: state.welfareRisk, fineYen, newFunds: heya.funds }
           });
 
@@ -199,6 +210,8 @@ export const WelfareService = {
         } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
+          const invCloseRng = rngFromSeed(`welfare-inv-close-${heya.id}-${week}`, "narrative", "welfare");
+          const invCloseSummary = BardEngine.resolve(invCloseRng, "institutional.welfare.investigation_closed", { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_INVESTIGATION_CLOSED",
             category: "discipline",
@@ -206,7 +219,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Investigation Closed",
-            summary: `${heya.name} meets remediation requirements.`,
+            summary: invCloseSummary,
             data: { welfareRisk: state.welfareRisk }
           });
         }
@@ -220,6 +233,8 @@ export const WelfareService = {
         if (freezeDone && state.welfareRisk <= 45 && state.weeksInState >= 4) {
           this.setComplianceState(state, "watch");
           state.sanctions = undefined;
+          const liftRng = rngFromSeed(`welfare-lift-${heya.id}-${week}`, "narrative", "welfare");
+          const liftSummary = BardEngine.resolve(liftRng, "institutional.welfare.sanctions_lifted", { heyaname: heya.name }).text;
           logEngineEvent(world, {
             type: "COMPLIANCE_SANCTIONS_LIFTED",
             category: "discipline",
@@ -227,7 +242,7 @@ export const WelfareService = {
             scope: "heya",
             heyaId: heya.id,
             title: "Sanctions Lifted",
-            summary: `${heya.name} served sanctions and returns to watch.`,
+            summary: liftSummary,
             data: { welfareRisk: state.welfareRisk }
           });
         }
