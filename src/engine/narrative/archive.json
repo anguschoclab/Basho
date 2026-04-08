@@ -138,6 +138,86 @@
         "tsukidashi": [
           "%WINNER% unleashed a barrage of rapid thrusts, effectively driving %LOSER% straight back and out of the ring for a swift tsukidashi.",
           "A flurry of powerful tsuppari from %WINNER% overwhelmed %LOSER%, propelling them over the straw bales for a quick tsukidashi victory."
+        ],
+        "tsukitaoshi": [
+          "A powerful finishing blow from %WINNER%! He delivers a final, decisive thrust to the chest that sends %LOSER% tumbling backwards off the dohyo. The kimarite is tsukitaoshi.",
+          "Steady pressure from %WINNER% culminates in a sharp thrust, leaving %LOSER% with no footing as he falls back onto the clay. That is tsukitaoshi, the thrust down."
+        ],
+        "abisetaoshi": [
+          "In a pure test of weight and leverage, %WINNER% leans his entire frame into the smaller man, forcing %LOSER% straight back under the pressure. Abisetaoshi is the winning technique.",
+          "No way out for %LOSER% there; %WINNER% kept the belt grip and used his momentum to overbalance his opponent, crushing him down to the straw. A textbook abisetaoshi."
+        ],
+        "hatakikomi": [
+          "%LOSER% came in with a low, aggressive charge, but %WINNER% was ready with the sidestep and a sharp slap to the shoulder. Down goes %LOSER% to the dirt! Hatakikomi.",
+          "A quick-thinking reaction at the tachiai by %WINNER%. He avoids the initial contact and slaps %LOSER% down to the surface. Hatakikomi, the slap down."
+        ],
+        "hikiotoshi": [
+          "The momentum of %LOSER% was his own undoing. %WINNER% retreats slightly, catches the arm, and pulls his opponent forward into the clay. Hikiotoshi is the call.",
+          "A swift downward pull by %WINNER% catches %LOSER% off balance. He can't get his feet underneath him and hits the dirt. Hand pull down—hikiotoshi."
+        ],
+        "okuridashi": [
+          "A brilliant maneuver to take the back! %WINNER% spins his opponent around and shoves %LOSER% out over the straw from behind. Okuridashi.",
+          "%LOSER% is caught completely out of position, and %WINNER% wastes no time, driving him out of the ring from the rear. That's okuridashi, the rear push out."
+        ],
+        "tsuriotoshi": [
+          "A display of sheer brute strength! %WINNER% gets deep on the mawashi, hoists %LOSER% completely off the clay, and slams him down for a clinical tsuriotoshi.",
+          "Incredible power from %WINNER%! He lifts %LOSER% clear into the air and drops him right where he stands. That is a rare and dominant lifting body slam."
+        ],
+        "tsuridashi": [
+          "The crane-crush! %WINNER% secures the double inside grip, lifts %LOSER% off the ground, and carries him over the straw bales for the win.",
+          "There is the lift we were looking for! %WINNER% shows his superior leverage, hoisting %LOSER% into the air and depositing him safely outside the ring."
+        ],
+        "utchari": [
+          "What a spectacular reversal at the edge! %WINNER% was on the very brink of defeat, but he leans back and twists %LOSER% over in a classic utchari!",
+          "A miracle on the tawara! %WINNER% uses the circular momentum of the ring to spin %LOSER% out just as he was being pushed toward the cushions."
+        ],
+        "okuritaoshi": [
+          "%WINNER% manages to get behind his opponent, and with a firm shove to the back, sends %LOSER% sprawling forward onto the clay.",
+          "The rear-push down! %WINNER% skillfully takes the back of %LOSER% and drives him down for a textbook okuritaoshi."
+        ],
+        "katasukashi": [
+          "A brilliant technical move! %WINNER% ducks under the arm, grabs the far shoulder, and pulls %LOSER% down to the dirt in one fluid motion.",
+          "The under-shoulder swing down! %WINNER% uses %LOSER%'s own forward momentum against him, slipping under the attack and guiding him to the floor."
+        ],
+        "sokubiotoshi": [
+          "A sudden downward thrust by %WINNER%! He gripped the back of the neck and snapped %LOSER% down to the clay before he could react. Sokubiotoshi, the head-neck pull-down.",
+          "And %LOSER% was leaning in just a bit too far. %WINNER% takes advantage, grabbing the head and pulling it straight down to the sand. That is sokubiotoshi, a textbook execution."
+        ],
+        "okurigake": [
+          "%WINNER% maneuvers beautifully to the rear, and there is the trip! %LOSER% is caught off balance as %WINNER% hooks the leg from behind. Okurigake, the rear leg trip.",
+          "He’s behind him! %WINNER% secures the back and deftly trips the leg of %LOSER%, sending him tumbling. A rare and skillful okurigake to end this bout."
+        ],
+        "okurihikiotoshi": [
+          "%WINNER% secures the back and simply pulls %LOSER% down from behind. A clinical okurihikiotoshi to finish it here in the upper divisions.",
+          "Total loss of balance for %LOSER% as %WINNER% gets behind and applies the downward pressure. The kimarite is okurihikiotoshi, the rear pull-down."
+        ],
+        "waridashi": [
+          "Powerful work by %WINNER%, using that deep grip on the upper arm to force %LOSER% out of the ring. That will be ruled a waridashi, the upper-arm force out.",
+          "%WINNER% wedges the arm and drives forward with immense pressure, ushering %LOSER% over the straw bales. A classic waridashi, showing great technical strength."
+        ],
+        "okurinage": [
+          "He’s taken the back! %WINNER% lifts and swings %LOSER% down to the dirt with a powerful rotation. A spectacular okurinage, the rear throw.",
+          "No chance for %LOSER% once %WINNER% got behind him. A quick pivot and a throw from the rear—okurinage is the winning technique."
+        ],
+        "tsukaminage": [
+          "An incredible display of raw strength! %WINNER% gets a deep grip on the mawashi, hoists %LOSER% completely off the clay, and flings him down. That is the rare lifting throw, tsukaminage!",
+          "We haven't seen this in the top division for years! %WINNER% simply overpowered his opponent, lifting %LOSER% by the belt and swinging him to the dirt. A spectacular tsukaminage victory."
+        ],
+        "okuritsuridashi": [
+          "%WINNER% works his way to the back, secures a firm grip, and hoists %LOSER% into the air, carrying him safely over the straw bales. Okuritsuridashi is the official technique.",
+          "Total dominance from behind as %WINNER% lifts %LOSER% off his feet and steps out of the ring. A textbook rear lift-out to end this encounter."
+        ],
+        "okuritsuriotoshi": [
+          "A powerful finish! %WINNER% takes the back, lifts %LOSER% high, and slams him directly down onto the sand. The judges rule that an okuritsuriotoshi.",
+          "He had him airborne! %WINNER% moved behind his opponent, executed the lift, and then dropped %LOSER% to the floor. That's the rear lift-down throw, okuritsuriotoshi."
+        ],
+        "yobimodoshi": [
+          "The ultimate counter-throw! %WINNER% lures his opponent in, reacts to the charge, and uses %LOSER%'s own momentum to pull him down. A classic yobimodoshi!",
+          "Beautifully executed! %WINNER% pulls %LOSER% toward him and swings him down in one fluid motion. The 'call-back' throw, yobimodoshi, brings the crowd to their feet."
+        ],
+        "ushiromotare": [
+          "An unusual sight here at the Kokugikan! %WINNER% had his back to his opponent but simply leaned back with all his weight, forcing %LOSER% out of the ring. Ushiromotare is the call.",
+          "Despite being turned around, %WINNER% maintains his balance and uses his back to push %LOSER% over the straw. A rare backward leaning out for the win."
         ]
       },
       "engagement": {
