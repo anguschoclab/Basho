@@ -84,7 +84,7 @@ export class BardEngine {
   private static interpolate(text: string, context: NarrativeContext): string {
     let result = text;
     for (const [key, value] of Object.entries(context)) {
-      if (value === undefined) continue;
+      if (value === undefined || value === null) continue;
       const displayValue = value.toString();
       
       // Support %TOKEN%, %token%, and {{token}}
