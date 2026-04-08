@@ -45,7 +45,6 @@ export * from './npcAI';
 export * from './overflow';
 export * from './oyakataPersonalities';
 export * from './oyakataStylePreferences';
-export * from './pbp';
 export * from './perception';
 export { getCurrentBasho } from './queries'; 
 export * from './queries';
