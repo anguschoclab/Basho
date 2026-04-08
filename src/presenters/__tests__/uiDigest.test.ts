@@ -257,6 +257,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
       const r2 = generateMockRikishi('r2', { shikona: 'West1' });
 
       const mockWorld = {
+        week: 2,
         cyclePhase: "active_basho",
         week: 2, // Must be > 1 to include matchups
         currentBasho: {
