@@ -34,6 +34,7 @@ import { needsScheduleForDay } from "../schedule";
 import { resetBashoMediaTracking } from "../systems/media/MediaService";
 
 import { toRikishiDescriptor } from "../descriptorBands";
+import { RNGRegistry } from "../core/RNGRegistry";
 
 import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
@@ -261,7 +262,7 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
 
   for (const r of stableSort(activeRikishi, x => x.id)) {
     // Persist descriptor for UI hysteresis buffer
-    r.descriptor = toRikishiDescriptor(r, r.descriptor);
+    r.descriptor = toRikishiDescriptor(RNGRegistry.getSystemRNG(world, "daily_tick", r.id), r, r.descriptor);
 
     // Diet effects
     const diet = heyaDietCache.get(r.heyaId);

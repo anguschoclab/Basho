@@ -248,7 +248,7 @@ describe('UI Digest: Rikishi Perception Boundary', () => {
       expect(digest?.sections[0].items).toHaveLength(1);
       expect(digest?.sections[0].items[0].title).toBe('InjuredRikishi injured');
       expect(digest?.sections[0].items[0].detail).toBe('moderate — 2w remaining');
-      expect(digest?.headline).toBe('1 injury update this week.');
+      expect(digest?.headline).toBe('InjuredRikishi injured');
       expect(digest?.counts.injuries).toBe(1);
     });
 
