@@ -32,9 +32,7 @@ function estimateKensho(east: Rikishi, west: Rikishi, day: number, rng: SeededRN
   if (day >= 13) { baseChance = Math.min(1, baseChance + 0.2); baseCount = Math.floor(baseCount * 1.3); }
 
   const hasKensho = rng.next() < baseChance;
-  // TODO: Move Kensho sponsors to archive.json and resolve via BardEngine
-  const sponsors = ["Nagatanien", "Morinaga", "Yaokin", "Kirin"];
-  const sponsorName = hasKensho ? sponsors[Math.floor(rng.next() * sponsors.length)] : null;
+  const sponsorName = hasKensho ? BardEngine.resolve(rng, "institutional.kensho_sponsors").text : null;
   return { hasKensho, count: hasKensho ? baseCount : 0, sponsorName };
 }
 

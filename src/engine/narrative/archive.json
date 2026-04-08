@@ -47,6 +47,11 @@
             "%WINNER% explodes off the mark! A perfect, punishing tachi-ai!",
             "Tremendous impact! %WINNER% dictates the terms immediately!",
             "Like a freight train! %WINNER% bowls into his opponent!"
+          ],
+          "henka": [
+            "HENKA! %ATTACKER% sidesteps the charge and the crowd erupts!",
+            "A sudden evasion! %ATTACKER% redirects the momentum, leaving %DEFENDER% to tumble past.",
+            "Technical surprise — %ATTACKER% slips the hit and the hall gasps."
           ]
         },
         "clinch": {
@@ -94,6 +99,14 @@
             "The hall buzzes with the electricity of that encounter.",
             "%WINNER% accepts the win with stoic grace. A true warrior.",
             "An unforgettable finish! %WINNER% cements his legacy today!"
+          ],
+          "kinboshi": [
+            "A historic kinboshi! The arena erupts into chaos as a rain of purple zabuton floods the dohyo!",
+            "The Maegashira has toppled the Yokozuna! A golden star is born today."
+          ],
+          "ginboshi": [
+            "An upset for the ages! The Maegashira has taken a silver star from the Ozeki!",
+            "Institutional shock! %WINNER% overcomes the Ozeki with a stunning performance."
           ]
         }
       },
@@ -105,14 +118,167 @@
         "yori-kiri": [
           "%WINNER% maintains the grip and walks %LOSER% over the limit.",
           "A classic yorikiri finish for %WINNER%."
+        ],
+        "yorikiri": [
+          "With a firm grip on the mawashi, %WINNER% demonstrated exceptional power and technique, steadily driving %LOSER% out of the ring for a decisive yorikiri.",
+          "%WINNER% maintained relentless forward pressure, never letting go of %LOSER%'s mawashi, eventually forcing %LOSER% over the edge in a masterful display of yorikiri."
+        ],
+        "oshidashi": [
+          "%WINNER% delivered a series of powerful shoves, pushing %LOSER% directly backward and out of the dohyo for an oshidashi victory.",
+          "A strong initial charge from %WINNER% quickly transitioned into a relentless push, sending %LOSER% out of the ring with an impressive oshidashi."
+        ],
+        "oshitaoshi": [
+          "%WINNER% executed a powerful, driving push, causing %LOSER% to lose balance and fall forward onto the dohyo for an oshitaoshi.",
+          "After a sustained forward drive, %WINNER% applied the final decisive push, sending %LOSER% tumbling to the clay in a convincing oshitaoshi."
+        ],
+        "yoritaoshi": [
+          "Securing a deep mawashi grip, %WINNER% applied immense pressure, forcing %LOSER% down onto the dohyo surface for a clear yoritaoshi.",
+          "Maintaining a powerful hold, %WINNER% expertly leveraged %LOSER%'s position at the edge, bringing %LOSER% crashing down for a well-executed yoritaoshi."
+        ],
+        "tsukidashi": [
+          "%WINNER% unleashed a barrage of rapid thrusts, effectively driving %LOSER% straight back and out of the ring for a swift tsukidashi.",
+          "A flurry of powerful tsuppari from %WINNER% overwhelmed %LOSER%, propelling them over the straw bales for a quick tsukidashi victory."
+        ]
+      },
+      "engagement": {
+        "push": {
+          "intensity_1": [
+            "%ATTACKER% moves forward with cautious thrusts.",
+            "Standard oshi-zumo as %ATTACKER% maintains distance.",
+            "%ATTACKER% probes the defense with steady pushing."
+          ],
+          "intensity_2": [
+            "Heavy thrusts from %ATTACKER% begin to tell.",
+            "Professional pressure! %ATTACKER% dictates terms with the palms.",
+            "%ATTACKER% finds a rhythm with the tsuppari, driving forward."
+          ],
+          "intensity_3": [
+            "Thunderous oshi-zumo! %ATTACKER% detonates against the chest!",
+            "Relentless, piston-like thrusts from %ATTACKER%! Total dominance!",
+            "%ATTACKER% overwhelms the defense with a ferocious barrage!"
+          ]
+        },
+        "belt": {
+          "intensity_1": [
+            "They lock up on the belt. A steady test of strength.",
+            "%ATTACKER% secures a standard grip and settles in.",
+            "A technical battle for leverage begins on the mawashi."
+          ],
+          "intensity_2": [
+            "Resolute yotsu-zumo! %ATTACKER% commands the position.",
+            "%ATTACKER% secures the favored grip and begins to drive.",
+            "Professional grappling. %ATTACKER% establishes iron control."
+          ],
+          "intensity_3": [
+            "A monumental struggle! %ATTACKER% wrenches the belt with extraordinary force!",
+            "Deep moro-zashi established! %ATTACKER% is decimated the defense!",
+            "Total control! %ATTACKER% anchors onto the mawashi and dictates every move!"
+          ]
+        },
+        "trick": {
+          "intensity_1": [
+            "%ATTACKER% probes with a subtle feint.",
+            "A calculated pull-down attempt by %ATTACKER%.",
+            "Technical maneuver — %ATTACKER% looks to redirect the momentum."
+          ],
+          "intensity_2": [
+            "Brilliant ring sense! %ATTACKER% executes a sharp parry.",
+            "%ATTACKER% neutralizes the charge with expert timing.",
+            "Masterful redirection. %ATTACKER% outmaneuvers the opponent."
+          ],
+          "intensity_3": [
+            "Incredible sleight of hand! %ATTACKER% shatters the momentum!",
+            "Electric agility! %ATTACKER% vanishes from the line of fire!",
+            "A spectacular technical reversal! %ATTACKER% conquers with pure savvy!"
+          ]
+        },
+        "speed": {
+          "intensity_1": [
+            "%ATTACKER% shuffles laterally, looking for an opening.",
+            "Steady footwork from %ATTACKER% at the center.",
+            "%ATTACKER% probes the angle with quick movement."
+          ],
+          "intensity_2": [
+            "Blistering pace! %ATTACKER% commands the dohyo with speed.",
+            "%ATTACKER% finds the better of the angles with a sharp pivot.",
+            "Professional footwork. %ATTACKER% dictates the perimeter."
+          ],
+          "intensity_3": [
+            "Unstoppable velocity! %ATTACKER% flickers around the defense!",
+            "%ATTACKER% explodes into the blind spot with extraordinary quickness!",
+            "Lightning speed! %ATTACKER% decimates the posture with a rapid flank!"
+          ]
+        }
+      }
+    },
+    "medical": {
+      "injury": {
+        "sprain": [
+          "A %SEVERITY% sprain slows %SHIKONA% down.",
+          "Medical staff confirms a painful sprain to the joint.",
+          "%SHIKONA% is nursing a %SEVERITY% sprain following that encounter."
+        ],
+        "strain": [
+          "An overextension leads to a %SEVERITY% muscle strain.",
+          "%SHIKONA% favors the limb, clearly suffering a deep strain.",
+          "Persistent strain will definitely affect the next outing."
+        ],
+        "contusion": [
+          "A brutal impact results in a %SEVERITY% contusion.",
+          "Strategic concern: %SHIKONA% absorbs a heavy blow, causing deep bruising.",
+          "Blunt force trauma results in a visible contusion."
+        ],
+        "tear": [
+          "A %SEVERITY% tear requires immediate professional attention.",
+          "Institutional setback: %SHIKONA% has suffered a muscle tear.",
+          "Diagnostic review confirms a structural tear to the soft tissue."
+        ],
+        "fracture": [
+          "A clean %SEVERITY% fracture to the bone. Exceptional misfortune.",
+          "The impact has resulted in a structural fracture.",
+          "%SHIKONA% is sidelined following a confirmed bone fracture."
+        ],
+        "generic": [
+          "%SHIKONA% withdraws with an undisclosed %SEVERITY% injury.",
+          "Medical review in progress for a %SEVERITY% ailment.",
+          "Physical condition downgraded following the last bout."
         ]
       }
     },
     "institutional": {
+      "kensho_sponsors": [
+        "Nagatanien",
+        "Morinaga",
+        "Yaokin",
+        "Kirin Brewery",
+        "Suntory",
+        "Takashimaya",
+        "Mitsukoshi",
+        "Asahi Breweries",
+        "Pocari Sweat",
+        "Meiji Holdings",
+        "Yamazaki Baking",
+        "Ajinomoto",
+        "Nihon Shokken",
+        "Nikkan Sports",
+        "Shiseido",
+        "Itoham Foods",
+        "Maruha Nichiro"
+      ],
       "governance": {
+        "headlines": [
+          "Official Statement from the JSA",
+          "Institutional Review Concludes",
+          "Governance Ruling Announced",
+          "Formal Sanction Issued",
+          "Association ruling on %REASON%",
+          "Governance review: %REASON% at %HEYA_NAME%",
+          "Official statement on %REASON% case"
+        ],
         "sanction": [
           "The Sumo Association has issued a formal sanction against %HEYA_NAME%.",
-          "Institutional review results in disciplinary measures for %HEYA_NAME%."
+          "Institutional review results in disciplinary measures for %HEYA_NAME%.",
+          "Following review, the JSA has formalized sanctions against %HEYA_NAME%."
         ],
         "merger": [
           "Following a viability review, %HEYA_NAME% is slated for merger.",
@@ -121,7 +287,15 @@
         "threats": [
           "%HEYA_NAME% Faces Closure Threat",
           "Association Reviews %HEYA_NAME% Viability",
-          "End of an Era? %HEYA_NAME% Struggles to Stay Open"
+          "End of an Era? %HEYA_NAME% Struggles to Stay Open",
+          "The governing council has issued a %INTENSITY_LABEL% warning to %HEYA_NAME%.",
+          "%HEYA_NAME% faces major sanctions following the %REASON% review.",
+          "Institutional stability at %HEYA_NAME% is being questioned by the council."
+        ],
+        "scandal": [
+          "A conduct-related incident involving %SHIKONA% has been brought to light.",
+          "The Association is reviewing reports of curfew violations within %HEYA_NAME%.",
+          "Professional standards review initiated following reports from %HEYA_NAME%."
         ]
       },
       "media": {
@@ -160,17 +334,46 @@
   },
   "vocabulary": {
     "intensity_1": {
-      "adjectives": ["standard", "routine", "steady", "calculated"],
-      "verbs": ["moves", "drives", "wins", "finishes"]
+      "adjectives": [
+        "standard",
+        "routine",
+        "steady",
+        "calculated"
+      ],
+      "verbs": [
+        "moves",
+        "drives",
+        "wins",
+        "finishes"
+      ]
     },
     "intensity_2": {
-      "adjectives": ["professional", "dominant", "resolute", "technical"],
-      "verbs": ["executes", "dictates", "neutralizes", "commands"]
+      "adjectives": [
+        "professional",
+        "dominant",
+        "resolute",
+        "technical"
+      ],
+      "verbs": [
+        "executes",
+        "dictates",
+        "neutralizes",
+        "commands"
+      ]
     },
     "intensity_3": {
-      "adjectives": ["thunderous", "electric", "unstoppable", "extraordinary"],
-      "verbs": ["detonates", "decimates", "shatters", "conquers"]
+      "adjectives": [
+        "thunderous",
+        "electric",
+        "unstoppable",
+        "extraordinary"
+      ],
+      "verbs": [
+        "detonates",
+        "decimates",
+        "shatters",
+        "conquers"
+      ]
     }
   }
 }
-

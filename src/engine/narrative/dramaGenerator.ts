@@ -45,7 +45,7 @@ function generateRandomDrama(world: WorldState): void {
     const rikishis = stableSort(world.rikishi.values(), x => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
-        EventBus.governance(world, target.heyaId, "Conduct Scandal", `${target.shikona} was spotted breaking curfew.`, { rikishiId: target.id }, "notable");
+        EventBus.governance(world, target.heyaId, { rikishiId: target.id, shikona: target.shikona, incident: "curfew_violation" }, "notable");
     }
   } else if (eventType === 1) {
     // Grudge formation
