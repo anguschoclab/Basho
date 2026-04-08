@@ -6,7 +6,8 @@ import { WorldState } from "../types/world";
 import { logEngineEvent } from "../events";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
-import { rngForWorld } from "../rng";
+import { rngForWorld, rngFromSeed } from "../rng";
+import { BardEngine } from "../narrative/BardEngine";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -35,6 +36,8 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
   };
   world.governanceLog.push(ruling);
 
+  const scandalRng = rngFromSeed(`scandal-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
+  const scandalSummary = BardEngine.resolve(scandalRng, "institutional.governance.scandal", { heya: heya.name, severity, reason }).text;
   logEngineEvent(world, {
     type: "GOVERNANCE_SCANDAL_REPORTED",
     category: "discipline",
@@ -42,7 +45,7 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
     scope: "heya",
     heyaId,
     title: `Scandal reported: ${heya.name}`,
-    summary: `Institutionally reported ${severity} conduct issue: ${reason}.`,
+    summary: scandalSummary,
     data: { severity, reason, scoreBump, totalScore: heya.scandalScore, rulingId: ruling.id }
   });
 
