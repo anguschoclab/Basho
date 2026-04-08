@@ -4,28 +4,42 @@
  * Post-physics kimarite override. After resolveBoutPhysics() determines a
  * winner, determineKimarite() evaluates every KimariteStrategy condition
  * against a FinalBoutState constructed from the bout's EngineSnapshot and
- * the rikishi attribute values, then returns the highest-weight matching
- * technique ID.
+ * the rikishi attribute values, then returns a stochastic weighted selection
+ * from the top-N matching techniques.
+ *
+ * v4.1 fixes:
+ *   - loser.forwardMomentum now reflects actual over-commitment (was hardcoded 0)
+ *   - offensiveOutput is now fractional 0-1 (was binary — broke passive-win kimarite)
+ *   - edgeDistance now derived from real balance ratios (not bout duration proxy)
+ *   - determineKimarite uses seeded weighted draw (was always highest-weight-wins)
+ *   - EngineSnapshot enriched with position, advantage streak, loser action data
  */
 
 import type { BoutResult } from "../types/basho";
 import type { Rikishi } from "../types/rikishi";
-import type { Stance, GrappleState } from "../types/combat";
+import type { Stance, GrappleState, TacticalFamily } from "../types/combat";
+import type { Position, Advantage } from "./boutPhysics";
 import type { FinalBoutState } from "../types/kimariteStrategy";
 import { KIMARITE_STRATEGIES } from "./kimariteStrategy";
-import { KIMARITE_REGISTRY } from "../kimarite";
+import { rngFromSeed } from "../rng";
 
 // ── EngineSnapshot ─────────────────────────────────────────────────────────
 
 /**
- * Minimal slice of EngineState that kimariteEvaluator needs.
- * Extracted from resolveBoutPhysics before the result is returned.
+ * Enriched slice of EngineState extracted by resolveBoutPhysics.
+ * All fields needed by kimariteEvaluator to produce a realistic distribution.
  */
 export interface EngineSnapshot {
   stance: Stance;
   grappleState: GrappleState;
   balanceEast: number;
   balanceWest: number;
+  // v4.1 additions:
+  position: Position;
+  advantage: Advantage;
+  winnerConsecutiveAdvantage: number; // ticks where winner held continuous advantage
+  loserLastActionFamily?: TacticalFamily; // push/speed = over-committing
+  finalLoserBalanceDrain: number;         // damage on fatal tick
 }
 
 // ── Grip derivation ────────────────────────────────────────────────────────
@@ -56,15 +70,21 @@ function deriveGrip(
 
 // ── Edge-distance estimate ─────────────────────────────────────────────────
 
-/** Returns 0 if the current kimarite is a force-out type, otherwise a rough
- *  center-distance estimate derived from bout duration. */
-function estimateEdgeDistance(boutResult: BoutResult): number {
-  const k = KIMARITE_REGISTRY.find((k) => k.id === boutResult.kimarite);
-  const isForceOut =
-    k?.kimariteClass === "force_out" || k?.kimariteClass === "slap_pull";
-  if (isForceOut) return 0;
-  // Longer bouts drift toward the center; cap at 15 (units match strategy thresholds)
-  return Math.min(boutResult.duration * 0.5, 15);
+/**
+ * Derives edge distance from remaining balance ratios rather than the old
+ * `duration * 0.5` proxy (which produced wildly incorrect values).
+ *
+ * Low remaining loser balance → at edge (being pushed out).
+ * High remaining loser balance → center ring (threw or dominated from center).
+ */
+function estimateEdgeDistance(
+  loserBalance: number,
+  winnerBalance: number
+): number {
+  // Loser balance at/near 0 = being driven to edge. Higher = center win.
+  // Scale: 0 (at tawara) to 15+ (center ring).
+  const loserPct = Math.max(0, loserBalance) / 100; // normalize to 0-1
+  return Math.min(15, loserPct * 20); // 0 balance → 0 distance, 75+ balance → 15
 }
 
 // ── FinalBoutState builder ─────────────────────────────────────────────────
@@ -78,18 +98,77 @@ function buildFinalBoutState(
 ): FinalBoutState {
   const runtimeBalance =
     side === "east" ? snapshot.balanceEast : snapshot.balanceWest;
+  const opponentBalance =
+    side === "east" ? snapshot.balanceWest : snapshot.balanceEast;
+
+  // over-committing: loser was attacking (push/speed family) when they lost
+  const loserWasOverCommitting =
+    !isWinner &&
+    (snapshot.loserLastActionFamily === "push" ||
+      snapshot.loserLastActionFamily === "speed");
+
+  // passive win: winner's advantage was minimal (< 2 ticks consecutive)
+  const wasPassiveWin =
+    isWinner && snapshot.winnerConsecutiveAdvantage <= 2;
 
   return {
     grip: deriveGrip(side, snapshot.stance, snapshot.grappleState),
     style: rikishi.style,
     power: rikishi.power ?? 50,
     balanceResistance: rikishi.balance ?? 50,
-    forwardMomentum: isWinner ? boutResult.duration : 0,
-    offensiveOutput: isWinner ? 1 : 0,
+
+    // forwardMomentum: winner gets streak count; loser gets 1 if they were pushing, else 0
+    forwardMomentum: isWinner
+      ? snapshot.winnerConsecutiveAdvantage
+      : loserWasOverCommitting ? 1 : 0,
+
+    // offensiveOutput: 0 = passive win (utchari, isamiashi eligible), 1 = dominant
+    offensiveOutput: isWinner
+      ? wasPassiveWin ? 0 : Math.min(1, snapshot.winnerConsecutiveAdvantage / 5)
+      : 0,
+
     balance: isWinner ? Math.max(runtimeBalance, 1) : 0,
-    stamina: Math.max(0, 1 - (rikishi.fatigue ?? 0) / 100),
-    edgeDistance: estimateEdgeDistance(boutResult),
+    stamina: Math.max(0, 1 - ((rikishi.fatigue ?? 0) / 100)),
+
+    // edgeDistance: derived from actual balance (not duration guess)
+    edgeDistance: estimateEdgeDistance(
+      isWinner ? opponentBalance : runtimeBalance,
+      isWinner ? runtimeBalance : opponentBalance
+    ),
   };
+}
+
+// ── Seeded stochastic selection ───────────────────────────────────────────
+
+/**
+ * Weighted random draw from eligible kimarite strategies using a seeded RNG
+ * derived from the boutId. Fully deterministic but produces variety across
+ * different bouts rather than always returning highest-weight.
+ *
+ * Pulls from the top 5 eligible strategies to keep selection meaningful.
+ */
+function stochasticKimariteSelect(
+  eligible: typeof KIMARITE_STRATEGIES,
+  boutId: string
+): string {
+  if (eligible.length === 0) return "";
+
+  // Sort by weight and take top 5
+  const sorted = [...eligible].sort((a, b) => b.weight - a.weight);
+  const top = sorted.slice(0, Math.min(5, sorted.length));
+
+  const totalWeight = top.reduce((s, k) => s + k.weight, 0);
+
+  // Seeded draw — deterministic per boutId but varied across bouts
+  const rng = rngFromSeed(boutId, "kimarite", "select");
+  const roll = rng.next() * totalWeight;
+
+  let cumulative = 0;
+  for (const k of top) {
+    cumulative += k.weight;
+    if (roll < cumulative) return k.id;
+  }
+  return top[0].id;
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────
@@ -143,7 +222,7 @@ export function determineKimarite(
 
   if (eligible.length === 0) return boutResult.kimarite;
 
-  // Return the highest-weight matching strategy
-  eligible.sort((a, b) => b.weight - a.weight);
-  return eligible[0].id;
+  // Stochastic weighted draw (seeded by boutId for determinism)
+  const selectedId = stochasticKimariteSelect(eligible, boutResult.boutId);
+  return selectedId || boutResult.kimarite;
 }

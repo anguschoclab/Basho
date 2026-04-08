@@ -210,9 +210,14 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const rankLabel = rankInfo?.en ?? r.rank;
   const styleInfo = STYLE_NAMES[r.style];
   const styleName = styleInfo?.label ?? r.style;
-  const archInfo = (ARCHETYPE_NAMES as any)[r.archetype];
-  const archetypeName = archInfo?.label ?? r.archetype;
 
+  // Single consolidated archetype label — sourced from CombatArchetype (the canonical type)
+  // Falls back to TacticalArchetype key lookup for pre-migration rikishi
+  const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
+  const archetypeEntry = (ARCHETYPE_NAMES as any)[combatArchetype];
+  const archetypeName = archetypeEntry?.label ?? String(combatArchetype ?? 'Unknown');
+
+  // derivedArchetype kept for backward-compat UI display only
   const derivedArchetype = r.derivedArchetype || ("All_Rounder" as any);
   const derivedArchetypeName = (ARCHETYPE_LABELS as any)[derivedArchetype]?.label ?? "All-Rounder";
 

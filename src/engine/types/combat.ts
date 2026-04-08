@@ -4,7 +4,15 @@ import { Rikishi, RikishiStats } from "./rikishi";
  * Combat / Style Types
  */
 
-export type CombatArchetype = 'oshi' | 'yotsu' | 'trickster' | 'speedster' | 'hybrid' | 'giant';
+export type CombatArchetype =
+  | 'oshi'        // Push/thrust dominant
+  | 'yotsu'       // Belt specialist
+  | 'trickster'   // Pulldowns, feints, unconventional
+  | 'speedster'   // Angle-based, quick feet
+  | 'hybrid'      // Balanced push/belt approach
+  | 'giant'       // Mass-dominant
+  | 'tsuppari'    // Rapid open-palm thrusting (no belt contact)
+  | 'defensive';  // Counter-wrestler — absorbs pressure, punishes commitment
 
 export type GripPreference = 'migi' | 'hidari' | 'none'; // Right-inside, Left-inside, or no preference
 export type GripDepthPreference = 'maemitsu' | 'deep' | 'standard'; // Front-belt, Deep-back, or Standard
@@ -74,7 +82,10 @@ export type Stance =
   | "belt-dominant"
   | "push-dominant";
 
-/** Type representing tactical archetype. */
+/**
+ * @deprecated Use CombatArchetype directly. TacticalArchetype is kept only as
+ * an ARCHETYPE_PROFILES key type — do not store on Rikishi objects.
+ */
 export type TacticalArchetype =
   | "oshi_specialist"
   | "yotsu_specialist"
@@ -84,7 +95,10 @@ export type TacticalArchetype =
   | "hybrid_oshi_yotsu"
   | "counter_specialist";
 
-/** Primary Rikishi Archetype (Derived) */
+/**
+ * @deprecated Use CombatArchetype for the physics layer.
+ * RikishiArchetype is kept only for legacy UI label lookups.
+ */
 export type RikishiArchetype =
   | "Defensive_Stalwart"
   | "Explosive_Blitzer"
@@ -287,6 +301,33 @@ export const ARCHETYPE_PROFILES: Record<
     familyBias: { OSHI: 0.9, YOTSU: 1.0, THROW: 1.1, TRIP: 1.1, PULLDOWN: 0.9, REVERSAL: 1.5, SPECIAL: 1.05 },
     actionPreferences: { trick: 0.40, belt: 0.30, push: 0.20, speed: 0.10 }
   }
+};
+
+/**
+ * Extended profiles for tsuppari and defensive CombatArchetype values.
+ * Referenced via ARCHETYPE_MAP in boutCalculations.ts and boutPhysics.ts.
+ */
+export const EXTENDED_ARCHETYPE_PROFILES: Partial<Record<CombatArchetype, (typeof ARCHETYPE_PROFILES)[keyof typeof ARCHETYPE_PROFILES]>> = {
+  tsuppari: {
+    tachiaiBonus: 7,
+    gripPreference: -0.8,
+    preferredClasses: ["thrust", "push", "slap_pull"],
+    volatility: 0.35,
+    counterBonus: 0,
+    baseRisk: 0.70,
+    familyBias: { OSHI: 1.6, YOTSU: 0.5, THROW: 0.7, TRIP: 0.9, PULLDOWN: 0.9, REVERSAL: 0.8, SPECIAL: 0.7 },
+    actionPreferences: { push: 0.90, belt: 0.02, trick: 0.05, speed: 0.03 }
+  },
+  defensive: {
+    tachiaiBonus: -4,
+    gripPreference: 0.2,
+    preferredClasses: ["slap_pull", "trip", "throw"],
+    volatility: 0.40,
+    counterBonus: 18,
+    baseRisk: 0.42,
+    familyBias: { OSHI: 0.75, YOTSU: 1.1, THROW: 1.2, TRIP: 1.3, PULLDOWN: 1.5, REVERSAL: 1.6, SPECIAL: 1.1 },
+    actionPreferences: { trick: 0.50, belt: 0.30, push: 0.10, speed: 0.10 }
+  },
 };
 
 /** Type representing bout tactic. */

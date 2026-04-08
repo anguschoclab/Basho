@@ -80,8 +80,8 @@ export function establishAsymmetricGrip(rng: SeededRNG, east: Rikishi, west: Rik
  */
 export function establishMessyGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): GrappleState {
   const roll = rng.next();
-  if (roll < 0.1) {
-    // Rare Moro-zashi!
+  if (roll < 0.03) {
+    // Rare Moro-zashi (reduced from 10% → 3% to match real JSA rate)
     const winner = rng.next() < 0.5 ? 'east' : 'west';
     return {
       east: { rightHand: winner === 'east' ? 'inside' : 'blocked', leftHand: winner === 'east' ? 'inside' : 'blocked', depth: 'deep' },
@@ -94,4 +94,72 @@ export function establishMessyGrip(rng: SeededRNG, east: Rikishi, west: Rikishi)
     west: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
     gripAdvantage: 'neutral'
   };
+}
+
+/**
+ * Evolves grip depth and hand positions per engagement tick.
+ *
+ * Called every tick during belt-dominant stances instead of re-rolling from
+ * scratch, giving realistic per-tick grip contest evolution. A significant
+ * technique differential shifts the winning side's grip progressively deeper.
+ *
+ * Depth progression: standard → deep → maemitsu
+ * Hand progression: outside → inside (requires margin > 15)
+ */
+export function contestGripTick(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  current: GrappleState
+): GrappleState {
+  const eastTech = stat(east, 'technique') + (rng.next() - 0.5) * 8;
+  const westTech = stat(west, 'technique') + (rng.next() - 0.5) * 8;
+  const margin = Math.abs(eastTech - westTech);
+
+  // Small margins (< 12) — stalemate, grip unchanged
+  if (margin < 12) return current;
+
+  const winner: 'east' | 'west' = eastTech > westTech ? 'east' : 'west';
+  const next: GrappleState = {
+    east: { ...current.east },
+    west: { ...current.west },
+    gripAdvantage: current.gripAdvantage,
+  };
+
+  const winningSide = next[winner];
+
+  // Depth evolution: requires increasingly larger margins
+  if (margin > 20 && winningSide.depth === 'standard') {
+    winningSide.depth = 'deep';
+  } else if (margin > 30 && winningSide.depth === 'deep') {
+    winningSide.depth = 'maemitsu';
+  }
+
+  // Hand position improvement: outside → inside (probabilistic, requires margin > 15)
+  if (margin > 15) {
+    if (winningSide.rightHand === 'outside' && rng.next() < 0.30) {
+      winningSide.rightHand = 'inside';
+    }
+    if (winningSide.leftHand === 'outside' && rng.next() < 0.30) {
+      winningSide.leftHand = 'inside';
+    }
+  }
+
+  // Recompute grip advantage based on inside hands
+  const eastInside = (next.east.rightHand === 'inside' ? 1 : 0) + (next.east.leftHand === 'inside' ? 1 : 0);
+  const westInside = (next.west.rightHand === 'inside' ? 1 : 0) + (next.west.leftHand === 'inside' ? 1 : 0);
+
+  if (eastInside === 2 && westInside < 2) {
+    next.gripAdvantage = 'moro_zashi_east';
+  } else if (westInside === 2 && eastInside < 2) {
+    next.gripAdvantage = 'moro_zashi_west';
+  } else if (eastInside > westInside) {
+    next.gripAdvantage = 'east_strong';
+  } else if (westInside > eastInside) {
+    next.gripAdvantage = 'west_strong';
+  } else {
+    next.gripAdvantage = 'neutral';
+  }
+
+  return next;
 }

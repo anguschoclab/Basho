@@ -1,6 +1,6 @@
 // src/engine/bout/boutPhysics.ts
 // =======================================================
-// Deterministic Bout Simulation Engine (v4.0 - Modular)
+// Deterministic Bout Simulation Engine (v4.1 - Modular)
 // =======================================================
 
 import { rngFromSeed, SeededRNG } from "../rng";
@@ -12,8 +12,12 @@ import {
   TacticalFamily,
   TACTICAL_MATRIX,
   CombatAction,
+  ARCHETYPE_PROFILES,
+  EXTENDED_ARCHETYPE_PROFILES,
 } from "../types/combat";
+import type { CombatArchetype } from "../types/combat";
 import type { EngineSnapshot } from "./kimariteEvaluator";
+import { ARCHETYPE_MAP } from "./boutCalculations";
 
 import { RANK_HIERARCHY } from "../types/banzuke";
 import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
@@ -25,7 +29,8 @@ import {
 import { 
   establishSymmetricGrip, 
   establishAsymmetricGrip, 
-  establishMessyGrip 
+  establishMessyGrip,
+  contestGripTick,
 } from "./boutGrip";
 
 /** Engine position vocabulary */
@@ -56,7 +61,8 @@ export interface EngineState extends CalculationState {
   playerSide?: import("../types/banzuke").Side;
   playerTactic?: import("../types/combat").BoutTactic;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
-  
+  nodawaActive: boolean;       // east blocked west's belt attempt at tachiai
+
   // Memory for narrative
   lastActionFamilyEast?: TacticalFamily;
   lastActionFamilyWest?: TacticalFamily;
@@ -64,6 +70,11 @@ export interface EngineState extends CalculationState {
   day: number;
   eastTacticalPivotTick?: number;
   westTacticalPivotTick?: number;
+
+  // Kimarite evaluator signals
+  winnerConsecutiveAdvantage: number; // ticks where current advantage holder held it
+  loserLastActionFamily?: TacticalFamily; // what family the eventual loser used on fatal tick
+  finalLoserBalanceDrain: number;       // damage taken on the losing tick
 }
 
 /** Safe read stat helper */
@@ -224,25 +235,58 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
   if (TACTICAL_MATRIX[eastAction.family].includes(westAction.family)) eastLeverage += 0.4;
   else if (TACTICAL_MATRIX[westAction.family].includes(eastAction.family)) westLeverage += 0.4;
 
-  const finalEast = calculateActionPower(east, eastAction, west, st) * eastLeverage + jitter(rng, 5);
-  const finalWest = calculateActionPower(west, westAction, east, st) * westLeverage + jitter(rng, 5);
+  // Wire in archetype tachiaiBonus (was defined but never applied — confirmed dead code).
+  // Check EXTENDED_ARCHETYPE_PROFILES first (tsuppari: +7, defensive: -4),
+  // then fall through to ARCHETYPE_PROFILES via ARCHETYPE_MAP.
+  const eastArch =
+    EXTENDED_ARCHETYPE_PROFILES[east.combatProfile?.archetype as CombatArchetype] ??
+    ARCHETYPE_PROFILES[ARCHETYPE_MAP[east.combatProfile?.archetype as CombatArchetype]] ??
+    ARCHETYPE_PROFILES.all_rounder;
+  const westArch =
+    EXTENDED_ARCHETYPE_PROFILES[west.combatProfile?.archetype as CombatArchetype] ??
+    ARCHETYPE_PROFILES[ARCHETYPE_MAP[west.combatProfile?.archetype as CombatArchetype]] ??
+    ARCHETYPE_PROFILES.all_rounder;
+
+  const finalEast = calculateActionPower(east, eastAction, west, st) * eastLeverage
+    + eastArch.tachiaiBonus
+    + jitter(rng, 5);
+  const finalWest = calculateActionPower(west, westAction, east, st) * westLeverage
+    + westArch.tachiaiBonus
+    + jitter(rng, 5);
 
   const winner = finalEast >= finalWest ? "east" : "west";
   const margin = Math.abs(finalEast - finalWest);
 
   st.tachiaiWinner = winner;
   st.advantage = winner;
+  st.winnerConsecutiveAdvantage = 1;
   st.position = "front";
   st.timeSeconds += 1 + rng.next();
 
+  // Tachiai impact: losing the tachiai delivers an opening balance shock
+  // (brings average bout duration closer to real makuuchi ~7s)
+  const tachiaiImpact = 8 + Math.min(12, margin * 0.3);
+  if (winner === "east") st.balanceWest -= tachiaiImpact;
+  else st.balanceEast -= tachiaiImpact;
+
+  // Belt action at tachiai — establish grip; check for nodowa (push blocks grab)
   if (eastAction.family === 'belt' || westAction.family === 'belt') {
-    resolveGripClash(rng, east, west, st);
-    st.stance = "belt-dominant";
+    // Nodowa: oshi/tsuppari wins tachiai against belt-seeking opponent
+    if (eastAction.family === 'push' && westAction.family === 'belt' && winner === 'east') {
+      st.nodawaActive = true;
+      st.log.push({ phase: 'tachiai', data: { event: 'nodowa', side: 'east' } });
+    } else if (westAction.family === 'push' && eastAction.family === 'belt' && winner === 'west') {
+      st.nodawaActive = true;
+      st.log.push({ phase: 'tachiai', data: { event: 'nodowa', side: 'west' } });
+    } else {
+      resolveGripClash(rng, east, west, st);
+      st.stance = "belt-dominant";
+    }
   }
 
   st.log.push({
     phase: "tachiai",
-    data: { winner, eastAction, westAction, eastPower: Math.round(finalEast), westPower: Math.round(finalWest), margin }
+    data: { winner, eastAction, westAction, eastPower: Math.round(finalEast), westPower: Math.round(finalWest), margin, tachiaiImpact }
   });
 }
 
@@ -253,11 +297,19 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   st.tick += 1;
   st.timeSeconds += 2;
 
-  const eastAction = selectAction(rng, east, st, west);
-  const westAction = selectAction(rng, west, st, east);
+  let eastAction = selectAction(rng, east, st, west);
+  let westAction = selectAction(rng, west, st, east);
+
+  // Nodowa expiry: blocks belt action for one tick
+  if (st.nodawaActive) {
+    if (eastAction.family === 'belt') eastAction = { ...eastAction, family: 'push' };
+    if (westAction.family === 'belt') westAction = { ...westAction, family: 'push' };
+    st.nodawaActive = false;
+  }
 
   if (st.stance === "belt-dominant" || eastAction.family === 'belt' || westAction.family === 'belt') {
-    resolveGripClash(rng, east, west, st);
+    // Evolve grip per-tick instead of re-rolling from scratch
+    st.grappleState = contestGripTick(rng, east, west, st.grappleState);
     if (st.stance !== "belt-dominant") st.stance = "belt-dominant";
   } else if (eastAction.family === 'push' && westAction.family === 'push') {
     st.stance = "push-dominant";
@@ -268,8 +320,13 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   if (TACTICAL_MATRIX[eastAction.family].includes(westAction.family)) eastRelLev += 0.4;
   else if (TACTICAL_MATRIX[westAction.family].includes(eastAction.family)) westRelLev += 0.4;
 
-  const eastPower = calculateActionPower(east, eastAction, west, st) * eastRelLev + jitter(rng, 5);
-  const westPower = calculateActionPower(west, westAction, east, st) * westRelLev + jitter(rng, 5);
+  // Within-bout stamina curve: bouts beyond tick 8 get progressively decisive
+  const staminaMult = st.tick > 8
+    ? Math.max(0.6, 1 - (st.tick - 8) * 0.03)
+    : 1.0;
+
+  const eastPower = calculateActionPower(east, eastAction, west, st) * eastRelLev * staminaMult + jitter(rng, 5);
+  const westPower = calculateActionPower(west, westAction, east, st) * westRelLev * staminaMult + jitter(rng, 5);
 
   const eastSoak = stat(east, 'balance') / 20;
   const westSoak = stat(west, 'balance') / 20;
@@ -284,12 +341,29 @@ function resolveActionTick(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Eng
   st.balanceEast -= eastDamage;
   st.balanceWest -= westDamage;
 
+  // Track last action families for kimarite evaluator
+  st.lastActionFamilyEast = eastAction.family;
+  st.lastActionFamilyWest = westAction.family;
+
+  // Track consecutive advantage streak
+  const tickAdvantage: Advantage = eastDamage > westDamage ? "west" : westDamage > eastDamage ? "east" : st.advantage;
+  if (tickAdvantage !== "none" && tickAdvantage === st.advantage) {
+    st.winnerConsecutiveAdvantage += 1;
+  } else if (tickAdvantage !== "none") {
+    st.advantage = tickAdvantage;
+    st.winnerConsecutiveAdvantage = 1;
+  }
+
   // Victory check
   if (st.balanceWest <= 0) {
+    st.loserLastActionFamily = westAction.family;
+    st.finalLoserBalanceDrain = westDamage;
     const move = pickMoveFromClass(rng, eastAction.targetKimariteClass, east, west, st, eastAction.family, eastAction.moveId);
     st.advantage = "east";
     return { winner: "east", kimarite: move };
   } else if (st.balanceEast <= 0) {
+    st.loserLastActionFamily = eastAction.family;
+    st.finalLoserBalanceDrain = eastDamage;
     const move = pickMoveFromClass(rng, westAction.targetKimariteClass, west, east, st, westAction.family, westAction.moveId);
     st.advantage = "west";
     return { winner: "west", kimarite: move };
@@ -324,9 +398,13 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     westId: west.id,
     log: [],
     mizuiriDeclared: false,
+    nodawaActive: false,
     playerSide: bout.playerSide,
     playerTactic: bout.playerTactic,
     cpuTacticOverride: bout.cpuTacticOverride,
+    winnerConsecutiveAdvantage: 0,
+    loserLastActionFamily: undefined,
+    finalLoserBalanceDrain: 0,
     grappleState: {
       east: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
       west: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
@@ -389,6 +467,11 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     grappleState: st.grappleState,
     balanceEast: st.balanceEast,
     balanceWest: st.balanceWest,
+    position: st.position,
+    advantage: st.advantage,
+    winnerConsecutiveAdvantage: st.winnerConsecutiveAdvantage,
+    loserLastActionFamily: st.loserLastActionFamily,
+    finalLoserBalanceDrain: st.finalLoserBalanceDrain,
   };
 
   return { result, engineSnapshot };
