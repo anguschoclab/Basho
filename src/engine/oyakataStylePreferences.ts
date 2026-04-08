@@ -60,7 +60,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
       const styleBias = (oyakata.traits?.tradition ?? 50) >= 60 ? "yotsu" : "oshi";
       return {
         philosophy,
-        preferredArchetypes: styleBias === "yotsu" ? ["yotsu"] : ["oshi"],
+        preferredArchetypes: styleBias === "yotsu" ? ["yotsu"] : ["oshi", "tsuppari"],
         preferredStyle: styleBias as Style,
         statWeights: { power: 0.7, speed: 0.4, technique: 0.9, size: 0.5, potential: 0.6 },
         description: `Exclusively recruits ${styleBias} wrestlers. Refuses to train other styles.`,
@@ -88,7 +88,7 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     case "innovator":
       return {
         philosophy,
-        preferredArchetypes: ["speedster", "trickster"],
+        preferredArchetypes: ["speedster", "trickster", "defensive"],
         preferredStyle: "any",
         statWeights: { power: 0.3, speed: 0.9, technique: 0.8, size: 0.2, potential: 0.9 },
         description: "Seeks unconventional wrestlers who can outthink and outmaneuver opponents.",

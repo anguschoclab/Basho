@@ -439,3 +439,67 @@ describe("buildSwissTorikumi — full 15-day schedule", () => {
     expect(pairings.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Kadoban pressure scoring
+// ---------------------------------------------------------------------------
+
+describe("scorePairing — kadoban pressure", () => {
+  it("boosts score for an ozeki with < 8 wins on day 11", () => {
+    const ozeki = createRikishi({ id: "ozeki-kadoban", rank: "ozeki", heyaId: "heya-a" });
+    const opponent = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1, heyaId: "heya-b" });
+
+    const bashoKadoban = makeMockBasho({ day: 11 });
+    setStandings(bashoKadoban, {
+      "ozeki-kadoban": { wins: 5, losses: 5 },
+      m1: { wins: 7, losses: 3 },
+    });
+
+    const bashoSafe = makeMockBasho({ day: 11 });
+    setStandings(bashoSafe, {
+      "ozeki-kadoban": { wins: 8, losses: 2 }, // already has kachi-koshi
+      m1: { wins: 7, losses: 3 },
+    });
+
+    const pairingKadoban = scorePairing({ basho: bashoKadoban, a: ozeki, b: opponent });
+    const pairingSafe = scorePairing({ basho: bashoSafe, a: ozeki, b: opponent });
+
+    expect(pairingKadoban).not.toBeNull();
+    expect(pairingSafe).not.toBeNull();
+    // Kadoban situation should produce higher score
+    expect(pairingKadoban!.score).toBeGreaterThan(pairingSafe!.score);
+    expect(pairingKadoban!.reasons).toContain("kadoban_pressure");
+  });
+
+  it("does not apply kadoban bonus before day 10", () => {
+    const ozeki = createRikishi({ id: "ozeki-early", rank: "ozeki", heyaId: "heya-a" });
+    const m1 = createRikishi({ id: "m1-early", rank: "maegashira", rankNumber: 1, heyaId: "heya-b" });
+
+    const bashoEarly = makeMockBasho({ day: 7 });
+    setStandings(bashoEarly, {
+      "ozeki-early": { wins: 2, losses: 5 },
+      "m1-early": { wins: 4, losses: 3 },
+    });
+
+    const pairing = scorePairing({ basho: bashoEarly, a: ozeki, b: m1 });
+
+    expect(pairing).not.toBeNull();
+    expect(pairing!.reasons).not.toContain("kadoban_pressure");
+  });
+
+  it("applies kadoban bonus when opponent is the ozeki (not just a)", () => {
+    const m5 = createRikishi({ id: "m5-opp", rank: "maegashira", rankNumber: 5, heyaId: "heya-x" });
+    const ozeki = createRikishi({ id: "ozeki-b", rank: "ozeki", heyaId: "heya-y" });
+
+    const basho = makeMockBasho({ day: 12 });
+    setStandings(basho, {
+      "m5-opp": { wins: 6, losses: 5 },
+      "ozeki-b": { wins: 6, losses: 5 },
+    });
+
+    const pairing = scorePairing({ basho, a: m5, b: ozeki });
+
+    expect(pairing).not.toBeNull();
+    expect(pairing!.reasons).toContain("kadoban_pressure");
+  });
+});

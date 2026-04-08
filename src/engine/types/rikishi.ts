@@ -101,11 +101,13 @@ export interface Rikishi {
   style: Style;
   trainingFocus?: string;
   combatProfile: CombatProfile;
-  
-  archetype: TacticalArchetype;
-  derivedArchetype: RikishiArchetype;
 
-  tacticalArchetypePrimary: CombatArchetype;
+  /** @deprecated Use combatProfile.archetype. Retained for legacy save compatibility. */
+  archetype?: TacticalArchetype;
+  /** @deprecated Use combatProfile.archetype for label lookups via ARCHETYPE_NAMES. */
+  derivedArchetype?: RikishiArchetype;
+  /** @deprecated Use combatProfile.archetype. */
+  tacticalArchetypePrimary?: CombatArchetype;
   tacticalArchetypeSecondary?: CombatArchetype;
   archetypeEvidence: ArchetypeEvidence;
 

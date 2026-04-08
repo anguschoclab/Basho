@@ -246,6 +246,20 @@ export function scorePairing(args: {
     reasons.push("repeat_forced");
   }
 
+  // Kadoban pressure: late-tournament ozeki still chasing kachi-koshi (8 wins)
+  // Boost pairing score to surface high-stakes survival bouts in the schedule.
+  const day = basho.day || 1;
+  if (day > 10) {
+    const ra = getRecord(basho, a.id);
+    const rb = getRecord(basho, b.id);
+    const aKadoban = a.rank === "ozeki" && ra.wins < 8;
+    const bKadoban = b.rank === "ozeki" && rb.wins < 8;
+    if (aKadoban || bKadoban) {
+      score *= 1.4;
+      reasons.push("kadoban_pressure");
+    }
+  }
+
   // Side assignment
   const side = assignSides(a, b, rules.honorExistingSide);
   score += side.bonus;

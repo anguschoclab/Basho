@@ -2,6 +2,7 @@ import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
+import type { Side } from "../types/banzuke";
 // We import the new cleaned physics runner
 import { resolveBoutPhysics } from "./boutPhysics";
 // We import the pure narrative translator
@@ -14,6 +15,44 @@ import { EntityCollection } from "../core/EntityCollection";
 import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 
+/**
+ * Pre-physics fusensho check.
+ * If either rikishi is injured/absent, return a walkover result immediately
+ * without running the physics simulation.
+ */
+function tryFusensho(
+  bout: BoutContext,
+  east: Rikishi,
+  west: Rikishi,
+  basho: BashoState
+): BoutResult | null {
+  const eastAbsent = east.injured || east.isRetired;
+  const westAbsent = west.injured || west.isRetired;
+
+  if (!eastAbsent && !westAbsent) return null;
+
+  // If both absent (very rare), east wins by convention
+  const winnerSide: Side = westAbsent ? "east" : "west";
+  const winner = winnerSide === "east" ? east : west;
+  const loser = winnerSide === "east" ? west : east;
+
+  return {
+    boutId: bout.id,
+    winner: winnerSide,
+    winnerRikishiId: winner.id,
+    loserRikishiId: loser.id,
+    kimarite: "fusensho",
+    kimariteName: "Fusenshō",
+    stance: "no-grip",
+    tachiaiWinner: winnerSide,
+    duration: 0,
+    upset: false,
+    isKinboshi: false,
+    log: [{ phase: "finish", data: { event: "fusensho", absent: loser.id } }],
+    kenshoEnvelopes: 0,
+  };
+}
+
 export function resolveBout(
   bout: BoutContext,
   east: Rikishi,
@@ -22,6 +61,10 @@ export function resolveBout(
   playerTactic?: import("../types/combat").BoutTactic,
   world?: WorldState
 ): BoutResult {
+  // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
+  const fusenshoResult = tryFusensho(bout, east, west, basho);
+  if (fusenshoResult) return fusenshoResult;
+
   const ctxWithTactic = { ...bout, playerTactic };
 
   // --- PHASE 3: RIVALRY CONNECTIVITY ---
@@ -111,11 +154,26 @@ export function resolveBout(
     loser.stats.achievements.ginboshiConceded++;
   }
 
-  // 3. Update Rivalry State
+  // 3. Henka prestige penalty
+  // Using henka wins the bout but costs momentum — crowd disapproval and
+  // psychological debt from a dishonorable tachiai carry into the next bout.
+  const tacticUsed = bout.playerTactic ?? (bout as any).cpuTacticOverride;
+  if (tacticUsed === 'HENKA') {
+    const henkaWinnerSide = bout.playerSide === 'east' ? east : west;
+    // Only penalise the side that actually used it and won
+    const winnerUsedHenka =
+      (result.winner === 'east' && (bout.playerSide === 'east' || (bout as any).cpuTacticOverride !== undefined && result.winner !== bout.playerSide)) ||
+      (result.winner === 'west' && (bout.playerSide === 'west' || (bout as any).cpuTacticOverride !== undefined && result.winner !== bout.playerSide));
+    if (winnerUsedHenka) {
+      winner.momentum = clamp((winner.momentum ?? 50) - 15, 0, 100);
+    }
+  }
+
+  // 4. Update Rivalry State
   if (world) {
-    RivalryService.onBoutResolved(world, { 
-      result, 
-      day: bout.day 
+    RivalryService.onBoutResolved(world, {
+      result,
+      day: bout.day
     });
   }
 

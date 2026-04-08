@@ -49,9 +49,11 @@ export interface UIRikishi {
   side: Side;
   style: Style;
   styleName: string;
-  archetype: TacticalArchetype;
   archetypeName: string;
-  derivedArchetype: RikishiArchetype;
+  /** @deprecated retained for legacy display only; prefer archetypeName */
+  archetype?: TacticalArchetype;
+  /** @deprecated retained for legacy display only; prefer archetypeName */
+  derivedArchetype?: RikishiArchetype;
   derivedArchetypeName: string;
   isRetired: boolean;
   isInjured: boolean;
@@ -241,9 +243,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     side: r.side,
     style: r.style,
     styleName,
-    archetype: r.archetype,
     archetypeName,
-    derivedArchetype,
     derivedArchetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
@@ -383,7 +383,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     balanceBand: toStatBand(r.balance ?? 50),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
-    archetypeLabel: r.derivedArchetype ? (ARCHETYPE_LABELS as any)[r.derivedArchetype]?.label : undefined,
+    archetypeLabel: r.combatProfile?.archetype ? (ARCHETYPE_NAMES as any)[r.combatProfile.archetype]?.label : undefined,
     rankDelta,
   };
 

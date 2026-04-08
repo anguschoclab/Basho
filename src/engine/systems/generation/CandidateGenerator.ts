@@ -2,7 +2,7 @@ import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
 import { RikishiStats, Rikishi } from "../../types/rikishi";
 import { Rank, Division, Side } from "../../types/banzuke";
-import { CombatProfile, Style } from "../../types/combat";
+import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
 import { clamp, clampInt } from "../../utils/math";
 import { generateRikishiName } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
@@ -162,13 +162,19 @@ function createBaseInfo(
   };
 }
 
+function deriveStyle(archetype: CombatArchetype): Style {
+  if (archetype === "oshi" || archetype === "tsuppari") return "oshi";
+  if (archetype === "yotsu" || archetype === "giant") return "yotsu";
+  return "hybrid";
+}
+
 function createCombatStats(
   rikishiStats: RikishiStats, division: Division,
-  archetype: any, profile: CombatProfile
+  archetype: CombatArchetype, profile: CombatProfile
 ) {
   return {
     stats: rikishiStats,
-    
+
     // Flattened accessors for performance/legacy compatibility
     power: rikishiStats.strength,
     speed: rikishiStats.speed,
@@ -178,27 +184,25 @@ function createCombatStats(
     stamina: rikishiStats.stamina,
     adaptability: rikishiStats.adaptability,
     experience: division === "makuuchi" ? 40 : 10,
-    
+
     momentum: 50,
     fatigue: 0,
     condition: 100,
     motivation: 70,
-    
+
     injured: false,
     injuryWeeksRemaining: 0,
     injuryStatus: { type: "none" as const, isInjured: false, severity: "none" as InjurySeverity, location: undefined, weeksRemaining: 0, weeksToHeal: 0 },
-    
-    style: (archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid") as Style,
+
+    style: deriveStyle(archetype),
     combatProfile: profile,
-    archetype,
-    derivedArchetype: archetype,
-    tacticalArchetypePrimary: archetype, // Mapping needed?
+    // Legacy fields omitted — combatProfile.archetype is the canonical source
     archetypeEvidence: {
       push: { success: 0, fail: 0 },
       grapple: { success: 0, fail: 0 },
       evade: { success: 0, fail: 0 }
     },
-    
+
     favoredKimarite: [],
     weakAgainstStyles: [],
   };

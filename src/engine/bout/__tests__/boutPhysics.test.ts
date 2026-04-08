@@ -133,6 +133,81 @@ describe("resolveBoutPhysics — aggression modifier", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Archetype starting balance multiplier
+// ---------------------------------------------------------------------------
+
+describe("resolveBoutPhysics — archetype starting balance multiplier", () => {
+  it("oshi archetype rikishi can still win bouts (0.8x balance doesn't break engine)", () => {
+    const east = mockRikishi("r-east", { power: 80, balance: 70 });
+    const west = mockRikishi("r-west", { power: 60, balance: 70 });
+    (east as any).combatProfile = {
+      archetype: "oshi",
+      familyPreferences: { push: 80, belt: 5, trick: 5, speed: 10 },
+      preferredGrip: "none",
+      preferredGripDepth: "standard",
+      statModifiers: {},
+    };
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
+    expect(["east", "west"]).toContain(result.winner);
+    expect(result.kimarite).toBeTruthy();
+  });
+
+  it("tsuppari archetype rikishi completes a bout with 0.8x starting balance", () => {
+    const east = mockRikishi("r-east", { power: 75, balance: 65 });
+    const west = mockRikishi("r-west", { power: 65, balance: 65 });
+    (east as any).combatProfile = {
+      archetype: "tsuppari",
+      familyPreferences: { push: 90, belt: 2, trick: 5, speed: 3 },
+      preferredGrip: "none",
+      preferredGripDepth: "standard",
+      statModifiers: {},
+    };
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
+    expect(["east", "west"]).toContain(result.winner);
+  });
+
+  it("giant archetype (1.15x balance) rikishi completes a bout", () => {
+    const east = mockRikishi("r-east", { power: 60, balance: 70 });
+    const west = mockRikishi("r-west", { power: 85, balance: 55 });
+    (east as any).combatProfile = {
+      archetype: "giant",
+      familyPreferences: { push: 30, belt: 60, trick: 5, speed: 5 },
+      preferredGrip: "migi",
+      preferredGripDepth: "deep",
+      statModifiers: {},
+    };
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
+    expect(["east", "west"]).toContain(result.winner);
+  });
+
+  it("defensive archetype (1.1x balance) rikishi completes a bout", () => {
+    const east = mockRikishi("r-east", { power: 55, balance: 75, technique: 80 });
+    const west = mockRikishi("r-west", { power: 70, balance: 60 });
+    (east as any).combatProfile = {
+      archetype: "defensive",
+      familyPreferences: { push: 10, belt: 30, trick: 50, speed: 10 },
+      preferredGrip: "none",
+      preferredGripDepth: "standard",
+      statModifiers: {},
+    };
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const { result } = resolveBoutPhysics(ctx, east, west, basho);
+    expect(["east", "west"]).toContain(result.winner);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Output structure
 // ---------------------------------------------------------------------------
 

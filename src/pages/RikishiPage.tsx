@@ -195,8 +195,9 @@ export default function RikishiPage() {
               )}
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-                <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50 max-w-sm">
+                <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50 max-w-lg">
                   <TabsTrigger value="profile" className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white">Profile</TabsTrigger>
+                  <TabsTrigger value="combat" className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white">Combat</TabsTrigger>
                   <TabsTrigger value="history" className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white">Career Archives</TabsTrigger>
                 </TabsList>
 
@@ -249,6 +250,114 @@ export default function RikishiPage() {
                          </div>
                       </div>
                    </div>
+                </TabsContent>
+
+                {/* ═══ COMBAT PROFILE TAB ═══ */}
+                <TabsContent value="combat" className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* Archetype card */}
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                        <Shield className="h-5 w-5 text-primary" /> Combat Archetype
+                      </h3>
+                      <div className="bg-muted/30 border-2 border-border/50 rounded-2xl p-6 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <Badge className="text-[11px] font-black uppercase tracking-widest px-3 h-7 bg-primary/80">
+                            {rikishi.archetypeName}
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest h-7">
+                            {rikishi.styleName}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                          <div className="bg-muted/40 rounded-xl p-3 space-y-1">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Preferred Grip</p>
+                            <p className="text-sm font-display font-black capitalize">{rikishi.preferredGrip === 'none' ? 'No Preference' : rikishi.preferredGrip}</p>
+                          </div>
+                          <div className="bg-muted/40 rounded-xl p-3 space-y-1">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Grip Depth</p>
+                            <p className="text-sm font-display font-black capitalize">{rikishi.preferredGripDepth}</p>
+                          </div>
+                        </div>
+                        {rikishi.favoredKimariteDetailed.length > 0 && (
+                          <div className="pt-2 space-y-2">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Signature Techniques</p>
+                            <div className="flex flex-wrap gap-2">
+                              {rikishi.favoredKimariteDetailed.slice(0, 5).map((k, i) => (
+                                <TooltipWrap key={i} content={`${k.percentage}% of wins`} side="top">
+                                  <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-widest cursor-help">
+                                    {k.kimarite} <span className="text-muted-foreground ml-1">{k.percentage}%</span>
+                                  </Badge>
+                                </TooltipWrap>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Family preferences radar */}
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                        <Target className="h-5 w-5 text-primary" /> Tactical Tendencies
+                      </h3>
+                      <div className="space-y-3">
+                        {([
+                          { label: "Push / Thrust", key: "push", color: "bg-amber-500" },
+                          { label: "Belt / Grapple", key: "belt", color: "bg-blue-500" },
+                          { label: "Trick / Evasion", key: "trick", color: "bg-purple-500" },
+                          { label: "Speed / Angle", key: "speed", color: "bg-emerald-500" },
+                        ] as const).map(({ label, key, color }) => {
+                          const rawPref = (rawRikishi.combatProfile?.familyPreferences as any)?.[key] ?? 25;
+                          const total = Object.values(rawRikishi.combatProfile?.familyPreferences ?? { push: 25, belt: 25, trick: 25, speed: 25 }).reduce((a: number, b) => a + (b as number), 0);
+                          const pct = total > 0 ? Math.round((rawPref / total) * 100) : 25;
+                          return (
+                            <TooltipWrap key={key} content={`${pct}% tendency toward ${label.toLowerCase()} actions`} side="right">
+                              <div className="space-y-1 cursor-help">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                                  <span>{label}</span>
+                                  <span>{pct}%</span>
+                                </div>
+                                <Progress value={pct} className={cn("h-2", color)} />
+                              </div>
+                            </TooltipWrap>
+                          );
+                        })}
+                      </div>
+
+                      {/* Condition / Morale snapshot */}
+                      <div className="pt-4 grid grid-cols-2 gap-3">
+                        <div className="bg-muted/30 rounded-xl p-3 space-y-1 border border-border/40">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Condition</p>
+                          <p className="text-lg font-display font-black">{rikishi.conditionDescriptor}</p>
+                        </div>
+                        <div className="bg-muted/30 rounded-xl p-3 space-y-1 border border-border/40">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Morale</p>
+                          <p className="text-lg font-display font-black">{rikishi.moraleDescriptor}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* H2H Rivals */}
+                  {rikishi.topRivals.length > 0 && (
+                    <div className="space-y-4 pt-4 border-t border-dashed border-border">
+                      <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                        <Zap className="h-5 w-5 text-amber-500" /> Top Rivals
+                      </h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {rikishi.topRivals.map((rival, i) => (
+                          <div key={i} className="bg-muted/20 border border-border/40 rounded-xl p-4 space-y-2 hover:border-primary/30 transition-colors">
+                            <p className="text-sm font-display font-black uppercase tracking-tight truncate">{rival.opponentShikona}</p>
+                            <div className="flex items-center gap-2">
+                              <span className={cn("text-xl font-display font-black", rival.wins >= rival.losses ? "text-emerald-500" : "text-amber-500")}>{rival.record}</span>
+                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{rival.totalBouts} bouts</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-8 animate-in fade-in slide-in-from-right-2 duration-300">

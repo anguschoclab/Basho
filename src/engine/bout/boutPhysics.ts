@@ -382,6 +382,17 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
   const seed = `${basho.id || "basho"}-${basho.year || 0}-${bout.day}-${east.id}-${west.id}`;
   const rng = rngFromSeed(seed, "bout", "root");
 
+  // Archetype-based starting balance multiplier.
+  // Oshi/tsuppari fighters commit forward aggressively — less stable at rest.
+  // Defensive/giant fighters are immovable — harder to budge.
+  function archetypeBalanceMult(r: Rikishi): number {
+    const arch = r.combatProfile?.archetype as CombatArchetype | undefined;
+    if (arch === 'oshi' || arch === 'tsuppari') return 0.80;
+    if (arch === 'defensive') return 1.10;
+    if (arch === 'giant') return 1.15;
+    return 1.0;
+  }
+
   const st: EngineState = {
     tick: 0,
     timeSeconds: 0,
@@ -392,8 +403,8 @@ export function resolveBoutPhysics(bout: BoutContext, east: Rikishi, west: Rikis
     fatigueEast: 0,
     fatigueWest: 0,
     day: bout.day,
-    balanceEast: stat(east, 'balance'),
-    balanceWest: stat(west, 'balance'),
+    balanceEast: stat(east, 'balance') * archetypeBalanceMult(east),
+    balanceWest: stat(west, 'balance') * archetypeBalanceMult(west),
     eastId: east.id,
     westId: west.id,
     log: [],
