@@ -672,33 +672,6 @@
       }
     },
     "events": {
-      "lifecycle": {
-        "debut": [
-          "A new face appears on the dohyo — %NAME% enters competition.",
-          "%NAME% steps onto the clay for the first time. The journey begins.",
-          "The rikishi community welcomes %NAME%, a new addition to the ranks.",
-          "%NAME% makes their professional debut today."
-        ],
-        "retirement": [
-          "%NAME% hangs up the mawashi.",
-          "The sumo world bids farewell to %NAME%.",
-          "Retirement announced: %NAME% steps away from the dohyo.",
-          "%NAME% concludes a distinguished career."
-        ]
-      },
-      "basho": {
-        "started": [
-          "The %BASHONAME% tournament officially begins.",
-          "Fifteen days of competition commence — %BASHONAME% is underway.",
-          "The clay is ready. %BASHONAME% Basho opens today.",
-          "Another basho, another opportunity. %BASHONAME% gets underway."
-        ],
-        "ended": [
-          "%YUSHONAME% claims the Emperor's Cup.",
-          "%YUSHONAME% stands alone at the end of fifteen days.",
-          "Tournament complete — %YUSHONAME% takes the yusho.",
-          "The %BASHONAME% basho ends. %YUSHONAME% emerges victorious."
-        ]
       },
       "training": {
         "milestone": [
@@ -736,6 +709,209 @@
           "Ten years pass. Year %YEAR% opens a new chapter."
         ]
       }
+    },
+    "rikishi": {
+      "stats": {
+        "power": {
+          "exceptional": "His raw strength is fearsome — opponents buckle on first contact as if struck by a massive wall of concrete. He can dismantle defenses on sheer power alone.",
+          "outstanding": "A powerful frame that most men at this level simply cannot withstand for long. When he commits forward, the earth seems to tremble.",
+          "strong": "Solid, reliable strength. Enough to move most men and severely punish any passive opponents who try to stall the bout.",
+          "capable": "Adequate power for his rank. He won't effortlessly overwhelm anyone, but holds his own comfortably in the clinch.",
+          "developing": "Still building the deep muscle and leverage his rank demands. The raw potential is there, and improvement is visible.",
+          "limited": "Noticeably outpowered by most opponents. He relies heavily on technique, positioning, and speed to compensate for the strength gap.",
+          "struggling": "Physically overmatched in most contests. His raw strength is a distinct liability at this level of sumo."
+        },
+        "speed": {
+          "exceptional": "Lightning quick — his first step and reaction time verge on the preternatural. By the time opponents set their feet, he is already executing his offense.",
+          "outstanding": "Fast enough to regularly catch opponents flat-footed before they can establish their grips or defensive posture.",
+          "strong": "Quick on his feet, able to exploit fleeting openings that slower, more deliberate men would miss entirely.",
+          "capable": "Moves adequately for his preferred style. His speed is neither a pronounced liability nor a primary weapon.",
+          "developing": "Could be quicker. His timing is still maturing, and momentary opportunities are occasionally left unexploited on the clay.",
+          "limited": "Noticeably sluggish compared to his peers. Opponents frequently dictate the pace, and he struggles to adjust laterally.",
+          "struggling": "Painfully slow to react and extremely easy to outmaneuver. Speed is a consistent, glaring weakness at this level."
+        },
+        "balance": {
+          "exceptional": "His root is the stuff of legend — opponents describe pushing him as trying to shove a mountain. His center of gravity is an unbreakable anchor.",
+          "outstanding": "Exceptionally stable under immense pressure. He rarely loses footing, even in the most desperate, tangled scrambles.",
+          "strong": "Well-grounded and composed. He recovers remarkably well from disadvantaged positions and awkward angles.",
+          "capable": "Adequate balance for competitive sumo. He holds steady in most standard grappling situations without issue.",
+          "developing": "Sometimes caught leaning or off-angle. His balance is a work in progress and can fail under sustained, heavy pressure.",
+          "limited": "Unsteady under serious pressure. He is noticeably vulnerable to throws, pull-downs, and sudden shifts in momentum.",
+          "struggling": "Falls far too easily. Fundamental stability issues severely limit what he can attempt both offensively and defensively."
+        },
+        "technique": {
+          "exceptional": "A transcendent master technician. Every grip, every angle, and every timing read is deliberate, precise, and flawlessly executed.",
+          "outstanding": "Highly skilled and deeply intuitive. He reads complex situations instantly and executes with the crisp clarity of a seasoned veteran.",
+          "strong": "A remarkably good technical foundation, featuring highly reliable execution of his preferred throwing and twisting techniques.",
+          "capable": "Sound fundamental basics. He can execute his core moves cleanly when the correct opportunity presents itself.",
+          "developing": "His technique is slowly improving but remains frustratingly inconsistent, particularly when he is put under heavy pressure.",
+          "limited": "Relies almost entirely on raw physicality over craft. Technical sophistication is a massive, gaping hole in his sumo game.",
+          "struggling": "Severely lacks the technical repertoire required to compete effectively. Opponents routinely exploit his sheer predictability."
+        }
+      },
+      "archetypes": {
+        "Defensive_Stalwart": {
+          "label": "Defensive Stalwart",
+          "description": "Calm, grounded, and almost impossible to rush. He absorbs pressure and turns it into opportunity, waiting for the moment his opponent overcommits."
+        },
+        "Explosive_Blitzer": {
+          "label": "Explosive Blitzer",
+          "description": "The tachiai is his weapon. He ends fights in seconds — or he doesn't end them at all. Longer bouts expose a stamina cliff that opponents try desperately to reach."
+        },
+        "Acrobatic_Trickster": {
+          "label": "Acrobatic Trickster",
+          "description": "Slippery, inventive, and infuriating to fight. He uses unpredictable angles, impeccable timing, and clever misdirection to make heavier, stronger opponents look completely foolish."
+        },
+        "Immovable_Mountain": {
+          "label": "Immovable Mountain",
+          "description": "Once he plants himself, he is not going anywhere. His center of gravity is almost inhumanly low, and his patience is unlimited."
+        },
+        "All_Rounder": {
+          "label": "All-Rounder",
+          "description": "No obvious weaknesses, no single predictable style. He adapts to whatever the bout demands — which is what makes him so difficult to game-plan against."
+        }
+      },
+      "descriptors": {
+        "condition": {
+          "Zekkouchou": {
+            "label": "Zekkouchou (絶好調)",
+            "tooltip": "Legs are deeply rooted; lungs are full. Maximum resistance to late-bout fatigue and throws."
+          },
+          "Bachi-bachi": {
+            "label": "Bachi-bachi (ばちばち)",
+            "tooltip": "Moving with snap and vigor. Capable of sustained pushing attacks."
+          },
+          "Iki-girashite": {
+            "label": "Iki-girashite (息を切らして)",
+            "tooltip": "Starting to breathe heavily. Susceptible to fatigue in extended grappling (Yotsu) bouts."
+          },
+          "Koshi-kudake": {
+            "label": "Koshi-kudake (腰砕け)",
+            "tooltip": "Legs are entirely gone. Highly vulnerable to pull-downs (Hikiotoshi) and slap-downs."
+          }
+        },
+        "morale": {
+          "Shin-Gi-Tai": {
+            "label": "Shin-Gi-Tai (心技体)",
+            "tooltip": "Mind, technique, and body are aligned. Highly resistant to Henka (sidesteps) and pressure."
+          },
+          "Kiai juubun": {
+            "label": "Kiai juubun (気合十分)",
+            "tooltip": "Focused and aggressive. Likely to initiate a strong, forward-moving tachiai (initial charge)."
+          },
+          "Mayoi": {
+            "label": "Mayoi (迷い)",
+            "tooltip": "Second-guessing their sumo. Tachiai may lack power; prone to being pushed back early."
+          },
+          "Fugainai": {
+            "label": "Fugainai (不甲斐ない)",
+            "tooltip": "Completely demoralized. Prone to easy mistakes, false starts (Matta), and yielding the belt."
+          }
+        },
+        "potential": {
+          "Taiki Bansei": {
+            "label": "Taiki Bansei (大器晩成)",
+            "tooltip": "A generational talent capable of reaching Yokozuna. Exceptional stat growth ceilings."
+          },
+          "Soshitsu Ari": {
+            "label": "Soshitsu Ari (素質あり)",
+            "tooltip": "Strong fundamentals. A definite San'yaku (champion) candidate if trained rigorously."
+          },
+          "Mikan no Taiki": {
+            "label": "Mikan no Taiki (未完の大器)",
+            "tooltip": "Average prospect. Will require specialized, intense training to survive the top division."
+          },
+          "Genkai": {
+            "label": "Genkai (限界)",
+            "tooltip": "Physical limits are apparent. Best suited as a reliable lower-division stable pillar."
+          }
+        }
+      }
+    },
+    "npc": {
+      "strategy": {
+        "intensity": {
+          "conservative": [
+            "Focusing on stable survival — forced conservative training due to critical welfare risk.",
+            "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach.",
+            "Stabilizing the roster — %COUNT% wrestlers worn/fragile; reducing intensity to prevent injuries."
+          ],
+          "balanced": [
+            "Managing stable friction — maintaining balanced training to avoid further morale decay.",
+            "Standard operational cycle — maintaining balanced development.",
+            "%PHILOSOPHY% cycle — maintaining steady upward trajectory."
+          ],
+          "intensive": [
+            "Mass-building specialized regimen — pushing hard to build world-class physical presence.",
+            "Maximum performance output — intensive training to solidify top-tier standing."
+          ],
+          "punishing": [
+            "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects.",
+            "Oyakata's emotional state is driving punishing demands on the roster."
+          ]
+        },
+        "focus": {
+          "power": "Size-obsessed philosophy — power focus to bulk up roster",
+          "speed": "Innovator philosophy — speed & agility focus",
+          "balance": "Traditional philosophy — balance & fundamentals",
+          "technique": "Developing roster — building technique fundamentals"
+        }
+      }
+    },
+    "ui": {
+      "digest": {
+        "status": {
+          "injured": "%SHIKONA% injured",
+          "no_events": "No major events recorded this week.",
+          "basho_day": "Basho Day %DAY%: %DETAIL%"
+        },
+        "promotion": {
+          "ozeki_run": {
+            "imminent": "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
+            "brink": "On the brink. A few more wins will secure the rank.",
+            "building": "Building a solid case, but needs a spectacular finish."
+          },
+          "yokozuna_run": {
+            "standard": "Requires two consecutive yusho for promotion.",
+            "unanimous": "Unanimous Yokozuna Deliberation Council recommendation expected.",
+            "borderline": "Borderline case. The Council will scrutinize the quality of sumo.",
+            "partial": "Secured one Yusho. Must win the current basho to complete the run."
+          }
+        },
+        "kadoban": {
+          "fighting": "Fighting for survival as Kadoban Ozeki.",
+          "demoted": "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
+          "cleared": "Cleared Kadoban. Retains Ozeki rank.",
+          "danger": "In danger of falling to Kadoban status with another losing record."
+        }
+      }
+    },
+    "h2h": {
+      "first_meeting": [
+        "These two are meeting for the very first time in the ring.",
+        "A fresh matchup today; no prior history between these two.",
+        "The crowd leans forward for this first-ever encounter.",
+        "No data exists for this matchup - it's a complete unknown."
+      ],
+      "domination": [
+        "%P1% has absolutely dominated this matchup, leading the series %WINS%-%LOSSES%.",
+        "%P2% has struggled historically here, winning only %LOSSES% of their %TOTAL% meetings.",
+        "History is heavily on %P1%'s side today with a commanding %WINS%-%LOSSES% record."
+      ],
+      "deadlock": [
+        "This is as close as it gets—a %WINS%-%LOSSES% career split between them.",
+        "A true rivalry! The record stands at %WINS% wins to %LOSSES%.",
+        "Neither man has been able to gain a decisive edge in this series."
+      ],
+      "streak": [
+        "%P1% enters the ring confident, having won the last %STREAK% meetings against %P2%.",
+        "%P1% is desperate to snap a %STREAK%-bout losing streak against %P2%."
+      ],
+        "recent": [
+          "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
+          "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
+          "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
+        ]
     }
   },
   "vocabulary": {
