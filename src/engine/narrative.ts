@@ -1,4 +1,3 @@
-import { pick } from "./utils";
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { BoutResult, BoutLogEntry, BashoName } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
@@ -8,17 +7,16 @@ import { RANK_HIERARCHY } from "./banzuke";
 
 import { 
   NarrativeContext, 
-  CrowdStyle, 
   VoiceStyle, 
   VENUE_PROFILES 
 } from "./narrative/narrativeContext";
 
-import * as T from "./narrative/narrativeTemplates";
+import { BardEngine } from "./narrative/BardEngine";
 
-function getVoiceStyle(day: number, isHighStakes: boolean): VoiceStyle {
-  if (day >= 13 || isHighStakes) return "dramatic";
-  if (day <= 5) return "understated";
-  return "formal";
+function getIntensity(voiceStyle: VoiceStyle): number {
+  if (voiceStyle === "dramatic") return 3;
+  if (voiceStyle === "understated") return 1;
+  return 2;
 }
 
 function estimateKensho(east: Rikishi, west: Rikishi, day: number, rng: SeededRNG): { hasKensho: boolean; count: number; sponsorName: string | null } {
@@ -34,83 +32,101 @@ function estimateKensho(east: Rikishi, west: Rikishi, day: number, rng: SeededRN
   if (day >= 13) { baseChance = Math.min(1, baseChance + 0.2); baseCount = Math.floor(baseCount * 1.3); }
 
   const hasKensho = rng.next() < baseChance;
-  const sponsorName = hasKensho ? pick(T.KENSHO_SPONSORS, () => rng.next()) : null;
+  // TODO: Move Kensho sponsors to archive.json and resolve via BardEngine
+  const sponsors = ["Nagatanien", "Morinaga", "Yaokin", "Kirin"];
+  const sponsorName = hasKensho ? sponsors[Math.floor(rng.next() * sponsors.length)] : null;
   return { hasKensho, count: hasKensho ? baseCount : 0, sponsorName };
 }
 
 function generateVenueFraming(ctx: NarrativeContext): string[] {
-  const { day, venueShortName, voiceStyle } = ctx;
-  if (voiceStyle === "dramatic") {
-    if (day === 15) return [`Day Fifteen—senshuraku—here in ${venueShortName}. The air is electric.`];
-    return [`Day ${day} in ${venueShortName}, and the crowd is already alive.`];
-  }
-  return [voiceStyle === "understated" ? `Day ${day} in ${venueShortName}. The early basho rhythm continues.` : `Day ${day} at ${venueShortName}.` ];
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
+  const location = ctx.location as string;
+  const path = `world.venues.${location}.entrance`;
+  
+  const result = BardEngine.resolve(ctx.rng as SeededRNG, path, { 
+    ...ctx, 
+    intensity 
+  });
+  
+  return [result.text];
 }
 
 function generateRingEntrance(ctx: NarrativeContext): string[] {
-  const { east, west, crowdStyle, isHighStakes } = ctx;
-  if (crowdStyle === "intimate") return [`${east.shikona} steps onto the dohyo—greeted warmly.`, `${west.shikona} follows, expression tight.`];
-  if (isHighStakes) return [`${east.shikona} approaches the dohyo. The hall stirs.`, `${west.shikona} rises. A ripple of anticipation.`];
-  return [`${east.shikona} and ${west.shikona} take their marks.`];
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
+  const resultEast = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.entrance", { 
+    ...ctx, 
+    shikona: (ctx.east as Rikishi).shikona,
+    intensity 
+  });
+  const resultWest = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.entrance", { 
+    ...ctx, 
+    shikona: (ctx.west as Rikishi).shikona,
+    intensity 
+  });
+  return [resultEast.text, resultWest.text];
 }
 
 function generateRitualElements(ctx: NarrativeContext): string[] {
-  const { east, west, voiceStyle, rng } = ctx;
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const lines: string[] = [];
-  if (voiceStyle !== "understated" || rng.next() < 0.5) {
-    lines.push(`${east.shikona} casts the salt high.`);
-    lines.push(`${west.shikona} follows suit.`);
+  if (ctx.voiceStyle !== "understated" || (ctx.rng as SeededRNG).next() < 0.5) {
+    lines.push(BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.salt", { ...ctx, intensity, rikishi: (ctx.east as Rikishi).shikona }).text);
+    lines.push(BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.salt", { ...ctx, intensity, rikishi: (ctx.west as Rikishi).shikona }).text);
   }
   return lines;
 }
 
 function generateTachiai(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
-  const { voiceStyle, east, west, rng } = ctx;
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const winnerSide = (entry.data?.winner as "east" | "west") ?? "east";
-  const winnerName = winnerSide === "east" ? east.shikona : west.shikona;
-  const loserName = winnerSide === "east" ? west.shikona : east.shikona;
-  const margin = (entry.data?.margin as number) ?? 0;
+  const winnerName = winnerSide === "east" ? (ctx.east as Rikishi).shikona : (ctx.west as Rikishi).shikona;
+  const loserName = winnerSide === "east" ? (ctx.west as Rikishi).shikona : (ctx.east as Rikishi).shikona;
 
-  if (voiceStyle === "dramatic") {
-    const lines = ["The fan drops—*tachiai!*"];
-    if (margin > 10) {
-      lines.push(pick(T.TACHIAI_WINNER_PHRASES, () => rng.next()).replace("%WINNER%", winnerName).replace("%LOSER%", loserName));
-      lines.push(pick(T.TACHIAI_LOSER_PHRASES, () => rng.next()).replace("%LOSER%", loserName));
-    } else {
-      lines.push(`${winnerName} finds the better of it.`);
-    }
-    return lines;
-  }
-  return ["The fan drops.", `${winnerName} wins the tachiai.`];
+  const result = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.tachiai", {
+    ...ctx,
+    winner: winnerName,
+    loser: loserName,
+    intensity
+  });
+  
+  return [result.text];
 }
 
 function generateClinch(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
-  const { voiceStyle, east, west, rng } = ctx;
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const stance = (entry.data?.stance as Stance) ?? "no-grip";
-  if (stance === "belt-dominant") {
-    return [voiceStyle === "dramatic" ? pick(T.CLINCH_BELT_PHRASES, () => rng.next()) : "They secure the mawashi. Deep grip established."];
-  }
-  return [stance === "push-dominant" ? "Hands at the chest—pure oshi-zumo!" : "They struggle for position."];
+  const path = stance === "belt-dominant" ? "combat.phases.clinch.belt" : "combat.phases.clinch.oshi";
+  
+  const result = BardEngine.resolve(ctx.rng as SeededRNG, path, { ...ctx, intensity });
+  return [result.text];
 }
 
 function generateMomentum(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
-  const { voiceStyle, east, west, result, rng } = ctx;
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const recovery = (entry.data?.recovery as boolean) ?? false;
-  const winnerName = result.winner === "east" ? east.shikona : west.shikona;
-  const loserName = result.winner === "east" ? west.shikona : east.shikona;
+  const path = recovery ? "combat.phases.momentum.recovery" : "combat.phases.momentum.pressure";
+  const winnerName = (ctx.result as BoutResult).winner === "east" ? (ctx.east as Rikishi).shikona : (ctx.west as Rikishi).shikona;
+  const loserName = (ctx.result as BoutResult).winner === "east" ? (ctx.west as Rikishi).shikona : (ctx.east as Rikishi).shikona;
+  
+  const name = recovery ? loserName : winnerName;
 
-  if (recovery) {
-    return [voiceStyle === "dramatic" ? pick(T.MOMENTUM_RECOVERY_PHRASES, () => rng.next()).replace("%NAME%", loserName) : `${loserName} survives the pressure.`];
-  }
-  return [voiceStyle === "dramatic" ? pick(T.MOMENTUM_PRESSURE_PHRASES, () => rng.next()).replace("%NAME%", winnerName) : `${winnerName} maintains pressure.`];
+  const result = BardEngine.resolve(ctx.rng as SeededRNG, path, { ...ctx, name, intensity });
+  return [result.text];
 }
 
 function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
-  const { voiceStyle, east, west, result } = ctx;
-  const winnerSide = (entry.data?.winner as "east" | "west") ?? result.winner;
-  const winnerName = winnerSide === "east" ? east.shikona : west.shikona;
-  const kimarite = entry.data?.kimariteName || result.kimariteName;
-  return [voiceStyle === "dramatic" ? `${winnerName} drives through with **a textbook ${kimarite}!** Out!` : `${winnerName} executes by ${kimarite}.`];
+  const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
+  const winnerSide = (entry.data?.winner as "east" | "west") ?? (ctx.result as BoutResult).winner;
+  const winnerName = winnerSide === "east" ? (ctx.east as Rikishi).shikona : (ctx.west as Rikishi).shikona;
+  const kimarite = entry.data?.kimariteName || (ctx.result as BoutResult).kimariteName;
+  
+  const result = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.finish.common", { 
+    ...ctx, 
+    winner: winnerName, 
+    kimarite,
+    intensity 
+  });
+  return [result.text];
 }
 
 export function generateNarrative(east: Rikishi, west: Rikishi, result: BoutResult, bashoName: BashoName, day: number, opts?: { hasKensho?: boolean; kenshoCount?: number; sponsorName?: string | null; }): string[] {
@@ -118,7 +134,7 @@ export function generateNarrative(east: Rikishi, west: Rikishi, result: BoutResu
   const location = bashoInfo?.location ?? "Tokyo";
   const venueProfile = VENUE_PROFILES[location] ?? VENUE_PROFILES["Tokyo"];
   const isHighStakes = RANK_HIERARCHY[east.rank].tier <= 2 || RANK_HIERARCHY[west.rank].tier <= 2 || day >= 13 || !!result.upset;
-  const voiceStyle = getVoiceStyle(day, isHighStakes);
+  const voiceStyle = (day >= 13 || isHighStakes) ? "dramatic" : (day <= 5 ? "understated" : "formal");
   const boutSeed = `${bashoName}-${day}-${east.id}-${west.id}-${result.kimarite}`;
   const rng = rngFromSeed(boutSeed, "narrative", "bout");
   const kensho = typeof opts?.hasKensho === "boolean" ? { hasKensho: opts.hasKensho, count: Math.floor(opts.kenshoCount ?? 0), sponsorName: opts.sponsorName ?? null } : estimateKensho(east, west, day, rng);
@@ -138,6 +154,14 @@ export function generateNarrative(east: Rikishi, west: Rikishi, result: BoutResu
     else if (entry.phase === "finish") narrative.push(...generateFinish(ctx, entry));
   });
 
-  narrative.push(pick(T.CLOSING_PHRASES, () => rng.next()).replace("%WINNER%", result.winner === "east" ? east.shikona : west.shikona).replace("%LOSER%", result.winner === "east" ? west.shikona : east.shikona));
+  const intensity = getIntensity(voiceStyle);
+  const closingResult = BardEngine.resolve(rng, "combat.phases.finish.dramatic", {
+    ...ctx,
+    winner: result.winner === "east" ? east.shikona : west.shikona,
+    loser: result.winner === "east" ? west.shikona : east.shikona,
+    intensity
+  });
+  
+  narrative.push(closingResult.text);
   return narrative;
 }

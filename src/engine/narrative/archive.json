@@ -1,0 +1,176 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "tone": "NHK English Commentary",
+    "description": "Centralized narrative data-store for Sumo Manager Pro."
+  },
+  "domains": {
+    "combat": {
+      "phases": {
+        "ritual": {
+          "entrance": [
+            "%EAST% steps onto the dohyo—greeted warmly.",
+            "%WEST% follows, expression tight.",
+            "%EAST% approaches the dohyo. The hall stirs.",
+            "%WEST% rises. A ripple of anticipation.",
+            "%EAST% and %WEST% take their marks."
+          ],
+          "salt": [
+            "%EAST% casts the salt high.",
+            "%WEST% follows suit.",
+            "The traditional purification ritual continues.",
+            "Salt flies across the clay — a moment of centering."
+          ],
+          "shikiri": [
+            "They crouch at the shikiri-sen. The crowd holds its breath.",
+            "They crouch at the shikiri-sen… no hesitation.",
+            "Down to the line. Eyes locked. Waiting.",
+            "At the shikiri-sen now. Fingers to the clay. Silence falls.",
+            "The gyoji's fan rises. Both men settle into the squat. A hush descends."
+          ]
+        },
+        "tachiai": {
+          "intensity_1": [
+            "The fan drops.",
+            "%WINNER% wins the tachiai.",
+            "A cautious tachiai… feeling for position.",
+            "No wild rush — they meet and measure each other."
+          ],
+          "intensity_2": [
+            "The fan drops—*tachiai!*",
+            "%WINNER% finds the better of it.",
+            "They collide — neither gives an inch!",
+            "Solid contact at the tachiai, straight into a battle!"
+          ],
+          "intensity_3": [
+            "A devastating charge from %WINNER%! He connects with terrifying force!",
+            "%WINNER% explodes off the mark! A perfect, punishing tachi-ai!",
+            "Tremendous impact! %WINNER% dictates the terms immediately!",
+            "Like a freight train! %WINNER% bowls into his opponent!"
+          ]
+        },
+        "clinch": {
+          "belt": [
+            "They lock up! A brutal test of pure strength on the belt!",
+            "Deep grips established! It's a grinding battle of attrition now!",
+            "They freeze in a massive embrace—four hands locked on the mawashi!",
+            "A heavy yotsu-zumo battle begins! Neither giving an inch!"
+          ],
+          "oshi": [
+            "Hands at the chest—pure oshi-zumo!",
+            "They struggle for position.",
+            "%NAME% applies relentless forward pressure!",
+            "%NAME% unleashes a vicious flurry of tsuppari!"
+          ],
+          "rear": [
+            "%LEADER% slips to the side — danger from behind!",
+            "Angle taken! %LEADER% has %TRAILER% twisted!",
+            "%LEADER% circles behind — %TRAILER% is in serious trouble!"
+          ]
+        },
+        "momentum": {
+          "recovery": [
+            "Incredible balance! %NAME% dances on the straw to stay alive!",
+            "A desperate parry from %NAME%! He survives the onslaught!",
+            "%NAME% bends backward over the bales but refuses to fall!",
+            "%NAME% survives the pressure."
+          ],
+          "pressure": [
+            "%NAME% maintains pressure.",
+            "The attack continues! %NAME% leaves no room to breathe!",
+            "%NAME% shifts gears, overwhelming the defense!",
+            "%NAME% methodically breaks down his opponent's posture!"
+          ]
+        },
+        "finish": {
+          "common": [
+            "And that is the conclusion. %WINNER% takes the victory.",
+            "Resolution at the rope. %WINNER% is the victor.",
+            "%WINNER% executing by %KIMARITE%.",
+            "%WINNER% drives through with a textbook %KIMARITE%!"
+          ],
+          "dramatic": [
+            "%WINNER% stands tall, chest heaving, as the reality of the victory settles.",
+            "The hall buzzes with the electricity of that encounter.",
+            "%WINNER% accepts the win with stoic grace. A true warrior.",
+            "An unforgettable finish! %WINNER% cements his legacy today!"
+          ]
+        }
+      },
+      "kimarite": {
+        "oshi-dashi": [
+          "%WINNER% drives %LOSER% out of the ring with a standard oshidashi.",
+          "Steady pressure from %WINNER% results in an oshidashi win."
+        ],
+        "yori-kiri": [
+          "%WINNER% maintains the grip and walks %LOSER% over the limit.",
+          "A classic yorikiri finish for %WINNER%."
+        ]
+      }
+    },
+    "institutional": {
+      "governance": {
+        "sanction": [
+          "The Sumo Association has issued a formal sanction against %HEYA_NAME%.",
+          "Institutional review results in disciplinary measures for %HEYA_NAME%."
+        ],
+        "merger": [
+          "Following a viability review, %HEYA_NAME% is slated for merger.",
+          "Strategic consolidation: %HEYA_NAME% to merge with %TARGET_HEYA%."
+        ],
+        "threats": [
+          "%HEYA_NAME% Faces Closure Threat",
+          "Association Reviews %HEYA_NAME% Viability",
+          "End of an Era? %HEYA_NAME% Struggles to Stay Open"
+        ]
+      },
+      "media": {
+        "headlines": {
+          "upset": [
+            "%WINNER% Stuns %LOSER%",
+            "%WINNER% Shocks the Arena Against %LOSER%",
+            "Massive Upset! %WINNER% Topples %LOSER%"
+          ],
+          "standard": [
+            "%WINNER% Defeats %LOSER% by %KIMARITE%",
+            "%WINNER% Overcomes %LOSER%",
+            "Textbook Sumo: %WINNER% Dispatches %LOSER%"
+          ]
+        }
+      }
+    },
+    "world": {
+      "venues": {
+        "Tokyo": {
+          "entrance": "Day %DAY% at the Ryogoku Kokugikan.",
+          "closing": "The sun sets over the Sumida River as the fans depart."
+        }
+      },
+      "seasonal": {
+        "winter": [
+          "Cold winds blow across the Kokugikan as the tournament begins.",
+          "The fresh spirit of the new year fills the arena."
+        ],
+        "summer": [
+          "Heat shimmers over the dohyo in the height of summer.",
+          "Fans wave uchiwa as the temperature rises with the action."
+        ]
+      }
+    }
+  },
+  "vocabulary": {
+    "intensity_1": {
+      "adjectives": ["standard", "routine", "steady", "calculated"],
+      "verbs": ["moves", "drives", "wins", "finishes"]
+    },
+    "intensity_2": {
+      "adjectives": ["professional", "dominant", "resolute", "technical"],
+      "verbs": ["executes", "dictates", "neutralizes", "commands"]
+    },
+    "intensity_3": {
+      "adjectives": ["thunderous", "electric", "unstoppable", "extraordinary"],
+      "verbs": ["detonates", "decimates", "shatters", "conquers"]
+    }
+  }
+}
+
