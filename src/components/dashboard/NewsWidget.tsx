@@ -46,8 +46,8 @@ const CAT_COLOR: Record<string, string> = {
   milestone: "text-gold",
   welfare: "text-warning",
   media_jsa: "text-foreground",
-  media_sports: "text-blue-500",
-  media_tabloid: "text-yellow-500",
+  media_sports: "text-west",
+  media_tabloid: "text-gold",
 };
 
 const NewsEventRow = React.memo(
@@ -59,9 +59,9 @@ const NewsEventRow = React.memo(
     if (e.category === "media" && (e.data as any)?.outlet) {
       const outlet = (e.data as any).outlet;
       if (outlet === "TABLOID") {
-        color = "text-yellow-500 font-bold";
+        color = "text-gold font-bold";
       } else if (outlet === "SPORTS_DAILY") {
-        color = "text-blue-500 font-semibold";
+        color = "text-west font-semibold";
       } else if (outlet === "JSA_OFFICIAL") {
         color =
           "text-foreground font-mono uppercase border-b border-foreground/20";
@@ -77,7 +77,7 @@ const NewsEventRow = React.memo(
           <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
           <div className="flex-1 min-w-0">
             <div
-              className={`font-medium truncate ${e.category === "media" && (e.data as any)?.outlet === "TABLOID" ? "text-yellow-600" : ""}`}
+              className={`font-medium truncate ${e.category === "media" && (e.data as any)?.outlet === "TABLOID" ? "text-gold" : ""}`}
             >
               {e.title}
             </div>

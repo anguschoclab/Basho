@@ -61,7 +61,7 @@ import type { IndividualFocusType, TrainingIntensity, TrainingFocus, RecoveryEmp
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode; color: string }[] = [
   { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" />, color: "bg-blue-500/10 text-blue-500" },
   { value: "push", label: "Push", description: "Maximum growth, higher risk", icon: <Flame className="h-4 w-4" />, color: "bg-orange-500/10 text-orange-500" },
-  { value: "protect", label: "Protect", description: "Lower risk, preserve current form", icon: <Shield className="h-4 w-4" />, color: "bg-emerald-500/10 text-emerald-500" },
+  { value: "protect", label: "Protect", description: "Lower risk, preserve current form", icon: <Shield className="h-4 w-4" />, color: "bg-success/10 text-success" },
   { value: "rebuild", label: "Rebuild", description: "Recovery-focused after injury", icon: <Heart className="h-4 w-4" />, color: "bg-red-500/10 text-red-500" },
 ];
 
@@ -159,7 +159,7 @@ export default function TrainingPage() {
            </div>
            
            <div className="flex gap-4">
-              <div className="dossier-paper p-3 px-6 rounded-xl flex items-center gap-6 shadow-sm">
+              <div className="dossier-paper p-3 px-6 rounded-lg flex items-center gap-6 shadow-sm">
                  <div className="text-center border-r pr-6">
                     <p className="pro-header">Current Regime</p>
                     <p className="font-display font-black text-sm uppercase tracking-tighter text-primary">
@@ -192,7 +192,7 @@ export default function TrainingPage() {
                       <button
                         onClick={() => handleIntensityChange(intensity)}
                         className={cn(
-                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden group w-full",
+                          "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden group w-full",
                           isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
                         )}
                       >
@@ -307,7 +307,7 @@ export default function TrainingPage() {
                              </div>
                              <div className="flex items-center gap-4 text-[9px] uppercase font-black text-muted-foreground tracking-widest">
                                 <span className="flex items-center gap-2">
-                                   <Activity className={cn("h-3 w-3", isExhausted ? "text-red-500 animate-pulse" : "text-emerald-500")} />
+                                   <Activity className={cn("h-3 w-3", isExhausted ? "text-red-500 animate-pulse" : "text-success")} />
                                    {FATIGUE_LABELS[fb]}
                                 </span>
                                 <span className="h-1 w-1 bg-border/40 rounded-full" />

@@ -20,9 +20,9 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
-  inspired: "text-emerald-500",
+  inspired: "text-success",
   content: "text-green-500",
-  safe: "text-emerald-500",
+  safe: "text-success",
   dominant: "text-primary",
   strong: "text-primary/80",
   secure: "text-primary",
@@ -40,9 +40,9 @@ const BAND_COLORS: Record<string, string> = {
   none: "text-muted-foreground",
   developing: "text-muted-foreground",
   warm: "text-muted-foreground",
-  tight: "text-yellow-500",
+  tight: "text-gold",
   disgruntled: "text-orange-500",
-  elevated: "text-yellow-500",
+  elevated: "text-gold",
   weak: "text-destructive/70",
   blazing: "text-destructive",
   fierce: "text-destructive",

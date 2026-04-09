@@ -40,7 +40,7 @@ const RUNWAY_CONFIG: Record<
   secure: {
     label: "Secure Finances",
     description: "Comfortable reserves with room to invest in the future.",
-    color: "text-emerald-400",
+    color: "text-success",
     icon: Shield,
     progressValue: 100
   },
@@ -54,7 +54,7 @@ const RUNWAY_CONFIG: Record<
   tight: {
     label: "Tight Budget",
     description: "Careful management required. Unexpected expenses could cause problems.",
-    color: "text-yellow-400",
+    color: "text-gold",
     icon: Wallet,
     progressValue: 50
   },
@@ -87,7 +87,7 @@ const KOENKAI_CONFIG: Record<
   powerful: {
     label: "Powerful Kōenkai",
     description: "A wide network of patrons and devoted fans provides substantial support.",
-    color: "text-amber-400",
+    color: "text-gold",
     monthlySupport: "Very High"
   },
   strong: {
@@ -486,7 +486,7 @@ export default function EconomyPage() {
           <Card className="paper">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-amber-400" />
+                <Award className="h-5 w-5 text-gold" />
                 Sponsor Draw
               </CardTitle>
               <CardDescription>Who in your heya attracts the most banner attention</CardDescription>
@@ -526,7 +526,7 @@ export default function EconomyPage() {
         <Card className="bg-muted/30 paper">
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-blue-400 mt-0.5" />
+              <Info className="h-5 w-5 text-west mt-0.5" />
               <div className="text-sm text-muted-foreground">
                 <p className="font-medium text-foreground mb-1">About Economy</p>
                 <p>

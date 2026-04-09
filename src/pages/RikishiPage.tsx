@@ -101,7 +101,7 @@ export default function RikishiPage() {
         </Button>
 
         {/* ═══ DOSSIER HEADER ═══ */}
-        <div className="dossier-paper rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/10">
+        <div className="dossier-paper rounded-lg overflow-hidden shadow-2xl border-2 border-primary/10">
            <div className="bg-primary pt-12 pb-10 px-8 relative overflow-hidden text-primary-foreground hero-gradient border-b-4 border-primary">
               <div className="absolute top-0 right-0 p-8 opacity-10 font-display text-9xl font-black pointer-events-none uppercase italic -rotate-12 translate-x-12 -translate-y-8">
                  {rikishi.rankLabel}
@@ -115,7 +115,7 @@ export default function RikishiPage() {
                         </Badge>
                         {isOwned && <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-bold h-6 uppercase text-[9px] tracking-widest">Active Roster</Badge>}
                         {rikishi.nationality !== "Japan" && (
-                          <Badge variant="outline" className="border-amber-400 text-amber-400 bg-amber-400/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest">
+                          <Badge variant="outline" className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest">
                             <Globe className="h-3 w-3" /> Foreign Slot
                           </Badge>
                         )}
@@ -131,9 +131,9 @@ export default function RikishiPage() {
                     </div>
                  </div>
 
-                 <div className="flex gap-4 md:gap-8 shrink-0 bg-black/20 p-6 rounded-2xl backdrop-blur-md border border-white/10 shadow-inner">
+                 <div className="flex gap-4 md:gap-8 shrink-0 bg-black/20 p-6 rounded-lg border border-white/10 shadow-inner">
                     {[
-                      { label: "Current Record", value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`, sub: "This Tournament", color: rikishi.currentBashoWins >= rikishi.currentBashoLosses ? "text-emerald-400" : "text-amber-400", tooltip: "Current tournament win-loss record" },
+                      { label: "Current Record", value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`, sub: "This Tournament", color: rikishi.currentBashoWins >= rikishi.currentBashoLosses ? "text-success" : "text-gold", tooltip: "Current tournament win-loss record" },
                       { label: "Career History", value: `${rikishi.careerWins}-${rikishi.careerLosses}`, sub: "Professional Record", color: "text-white", tooltip: "Lifetime professional record across all tournaments" },
                       { label: "Elite Titles", value: rikishi.careerYusho, sub: "Yūshō Count", color: "text-gold", condition: rikishi.careerYusho > 0, tooltip: "Total top-division championship victories" }
                     ].map((stat, i) => (
@@ -157,7 +157,7 @@ export default function RikishiPage() {
            <div className="p-8">
               {/* Naturalization Progress */}
               {rikishi.nationality !== "Japan" && (
-                <div className="mb-10 p-6 bg-amber-500/5 border-2 border-amber-500/10 rounded-2xl relative overflow-hidden group">
+                <div className="mb-10 p-6 bg-gold/5 border-2 border-gold/10 rounded-lg relative overflow-hidden group">
                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                       <UserPlus className="h-24 w-24 text-amber-600" />
                    </div>
@@ -166,9 +166,9 @@ export default function RikishiPage() {
                         <h3 className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
                           Naturalization Timeline
                         </h3>
-                        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-amber-600/70">Institutional Residency Tracker</p>
+                        <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gold/70">Institutional Residency Tracker</p>
                       </div>
-                      <Badge className={cn("font-black tracking-widest text-[10px] h-6", (rikishi.careerWins >= 400 ? "bg-emerald-500" : "bg-amber-500"))}>
+                      <Badge className={cn("font-black tracking-widest text-[10px] h-6", (rikishi.careerWins >= 400 ? "bg-success" : "bg-gold"))}>
                         {rikishi.careerWins >= 400 ? "ELIGIBLE" : "IN REVIEW"}
                       </Badge>
                    </div>
@@ -185,8 +185,8 @@ export default function RikishiPage() {
                                <span>{p.label}</span>
                                <span>{p.val}%</span>
                              </div>
-                             <Progress value={p.val} className="h-1.5 bg-amber-200/30" />
-                             <p className="text-[9px] font-bold text-amber-600/60 uppercase tracking-widest italic">{p.target} Target</p>
+                             <Progress value={p.val} className="h-1.5 bg-gold/30" />
+                             <p className="text-[9px] font-bold text-gold/60 uppercase tracking-widest italic">{p.target} Target</p>
                           </div>
                         </TooltipWrap>
                       ))}
@@ -209,13 +209,13 @@ export default function RikishiPage() {
                          </h3>
                          <div className="grid grid-cols-2 gap-4">
                             {[
-                               { label: "Forcefulness", key: "strength", val: rikishi.perceivedStats.strength, raw: rawRikishi.stats?.strength ?? 50, color: "bg-amber-500", icon: <Zap className="h-3.5 w-3.5" /> },
-                               { label: "Agility", key: "speed", val: rikishi.perceivedStats.speed, raw: rawRikishi.stats?.speed ?? 50, color: "bg-blue-500", icon: <TrendingUp className="h-3.5 w-3.5" /> },
-                               { label: "Resilience", key: "stamina", val: rikishi.perceivedStats.stamina, raw: rawRikishi.stats?.stamina ?? 50, color: "bg-emerald-500", icon: <Shield className="h-3.5 w-3.5" /> },
+                               { label: "Forcefulness", key: "strength", val: rikishi.perceivedStats.strength, raw: rawRikishi.stats?.strength ?? 50, color: "bg-gold", icon: <Zap className="h-3.5 w-3.5" /> },
+                               { label: "Agility", key: "speed", val: rikishi.perceivedStats.speed, raw: rawRikishi.stats?.speed ?? 50, color: "bg-west", icon: <TrendingUp className="h-3.5 w-3.5" /> },
+                               { label: "Resilience", key: "stamina", val: rikishi.perceivedStats.stamina, raw: rawRikishi.stats?.stamina ?? 50, color: "bg-success", icon: <Shield className="h-3.5 w-3.5" /> },
                                { label: "Precision", key: "technique", val: rikishi.perceivedStats.technique, raw: rawRikishi.stats?.technique ?? 50, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" /> }
                              ].map((stat, i) => (
                                <TooltipWrap key={i} content={NarrativeService.describeAttribute(stat.key, stat.raw)} side="top">
-                                 <div className="bg-muted/30 p-4 rounded-xl border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
+                                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
                                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
                                        {stat.icon} {stat.label}
                                     </div>
@@ -233,7 +233,7 @@ export default function RikishiPage() {
                          <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
                             <AwardIcon className="h-5 w-5 text-primary" /> Narrative Notes
                          </h3>
-                         <div className="bg-muted/20 border-2 border-dashed rounded-2xl p-6 space-y-4 opacity-70">
+                         <div className="bg-muted/20 border-2 border-dashed rounded-lg p-6 space-y-4 opacity-70">
                             <div className="flex items-start gap-4">
                                <div className="h-10 w-10 bg-muted rounded-full flex items-center justify-center shrink-0">
                                   <Info className="h-5 w-5 text-muted-foreground" />

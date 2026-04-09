@@ -47,21 +47,21 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
       {/* ═══ YŪSHŌ CHAMPION ═══ */}
       {champion && (
         <section className="relative group">
-           <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/20 via-gold/10 to-amber-500/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition duration-1000" />
-           <Card className="dossier-paper border-2 border-amber-500/20 relative overflow-hidden bg-amber-500/[0.02]">
+           <div className="absolute -inset-1 bg-gradient-to-r from-gold/20 via-gold/10 to-gold/20 rounded-lg blur-xl opacity-50 group-hover:opacity-100 transition duration-1000" />
+           <Card className="dossier-paper border-2 border-gold/20 relative overflow-hidden bg-gold/[0.02]">
               <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-9xl font-black italic pointer-events-none -rotate-6">
                  CHAMPION
               </div>
               
               <CardHeader className="pb-2">
                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-1 bg-amber-500 rounded-full" />
+                    <div className="h-10 w-1 bg-gold rounded-full" />
                     <div>
                        <CardTitle className="text-3xl font-display font-black tracking-tighter flex items-center gap-2 uppercase">
-                          <Crown className="h-7 w-7 text-amber-500" />
+                          <Crown className="h-7 w-7 text-gold" />
                           {lastBasho.bashoName} Tournament Champion
                        </CardTitle>
-                       <p className="text-[10px] uppercase font-black tracking-[0.3em] text-amber-600/60">Association Hall of Records Entry</p>
+                       <p className="text-[10px] uppercase font-black tracking-[0.3em] text-gold/60">Association Hall of Records Entry</p>
                     </div>
                  </div>
               </CardHeader>

@@ -30,9 +30,9 @@ const RUNWAY_CONFIG: Record<
 > = {
   secure: {
     label: "Secure",
-    color: "text-emerald-500",
+    color: "text-success",
     icon: TrendingUp,
-    bgAccent: "bg-emerald-500/10",
+    bgAccent: "bg-success/10",
   },
   comfortable: {
     label: "Comfortable",
@@ -42,9 +42,9 @@ const RUNWAY_CONFIG: Record<
   },
   tight: {
     label: "Tight",
-    color: "text-yellow-500",
+    color: "text-gold",
     icon: Minus,
-    bgAccent: "bg-yellow-500/10",
+    bgAccent: "bg-gold/10",
   },
   critical: {
     label: "Critical",
@@ -153,7 +153,7 @@ export function FinancesWidget() {
         <div className="grid grid-cols-2 gap-3">
           <div className="p-2 rounded-md bg-muted/30 border border-border/50">
             <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
-              <ArrowUpRight className="h-3 w-3 text-emerald-500" />
+              <ArrowUpRight className="h-3 w-3 text-success" />
               Monthly Revenue
             </div>
             <div className="text-sm font-bold">¥1,250,000</div>

@@ -41,14 +41,14 @@ interface NarrativeSummaryProps {
 function EventCard({ title, summary, isPromotion, isRetirement, icon: Icon }: { title: string; summary: string; isPromotion?: boolean; isRetirement?: boolean; icon: any }) {
   const isDemotion = isPromotion === false;
   return (
-    <div className={cn("dossier-paper p-4 rounded-xl flex items-center gap-4 border-l-4",
-      isPromotion ? "border-l-emerald-500" : isDemotion ? "border-l-amber-500" : "border-l-red-500 bg-red-500/[0.02]"
+    <div className={cn("dossier-paper p-4 rounded-lg flex items-center gap-4 border-l-4",
+      isPromotion ? "border-l-success" : isDemotion ? "border-l-gold" : "border-l-red-500 bg-red-500/[0.02]"
     )}>
       <div className={cn("h-10 w-10 rounded-full flex items-center justify-center shrink-0",
-        isPromotion ? "bg-emerald-500/10" : isDemotion ? "bg-amber-500/10" : "bg-red-500/10"
+        isPromotion ? "bg-success/10" : isDemotion ? "bg-gold/10" : "bg-red-500/10"
       )}>
         <Icon className={cn("h-5 w-5",
-          isPromotion ? "text-emerald-500" : isDemotion ? "text-amber-500" : "text-red-500"
+          isPromotion ? "text-success" : isDemotion ? "text-gold" : "text-red-500"
         )} />
       </div>
       <div className="flex-1">
@@ -60,7 +60,7 @@ function EventCard({ title, summary, isPromotion, isRetirement, icon: Icon }: { 
           <Badge variant="secondary" className="text-[8px] font-black uppercase tracking-widest bg-red-500/10 text-red-700">INTAI</Badge>
         ) : (
           <Badge variant="outline" className={cn("text-[8px] font-black uppercase tracking-widest",
-            isPromotion ? "border-emerald-500/30 text-emerald-600" : "border-amber-500/30 text-amber-600"
+            isPromotion ? "border-success/30 text-success" : "border-gold/30 text-gold"
           )}>
             {isPromotion ? "PROMOTION" : "DEMOTION"}
           </Badge>
@@ -89,7 +89,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
            
            <div className="grid gap-4 md:grid-cols-2">
               {prestigeChanges.map((item, i) => (
-                <div key={i} className="dossier-paper p-5 rounded-xl border-l-4 border-l-primary flex items-start gap-4 hover:border-primary/40 transition-colors">
+                <div key={i} className="dossier-paper p-5 rounded-lg border-l-4 border-l-primary flex items-start gap-4 hover:border-primary/40 transition-colors">
                    <div className="h-10 w-10 bg-primary/5 rounded-lg flex items-center justify-center shrink-0">
                       <Building2 className="h-5 w-5 text-primary" />
                    </div>
@@ -176,7 +176,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
                  <CardContent>
                     <div className="space-y-4">
                        {(groupedEvents.governance ?? []).map((e, i) => (
-                          <div key={i} className="flex gap-4 p-3 bg-white/50 border-2 border-indigo-500/10 rounded-xl">
+                          <div key={i} className="flex gap-4 p-3 bg-white/50 border-2 border-indigo-500/10 rounded-lg">
                              <div className="h-8 w-8 bg-indigo-500/10 rounded-full flex items-center justify-center shrink-0">
                                 <Info className="h-4 w-4 text-indigo-500" />
                              </div>
@@ -215,7 +215,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
 
       {/* ═══ PRESS CONFERENCE ═══ */}
       <section className="pt-12 flex justify-center">
-         <div className="max-w-2xl w-full dossier-paper p-10 rounded-3xl border-2 border-dashed border-primary/20 text-center space-y-6 bg-primary/[0.01]">
+         <div className="max-w-2xl w-full dossier-paper p-10 rounded-lg border-2 border-dashed border-primary/20 text-center space-y-6 bg-primary/[0.01]">
             <div className="h-16 w-16 bg-primary/5 rounded-full mx-auto flex items-center justify-center">
                <History className="h-8 w-8 text-primary opacity-30" />
             </div>
@@ -223,7 +223,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
                <h3 className="text-3xl font-display font-black tracking-tighter uppercase italic">Association Wrap-up</h3>
                <p className="text-sm text-muted-foreground max-w-md mx-auto italic font-display">"The Association has ratified another successful tournament. The Banzuke committee will now begin deliberations for the coming year."</p>
             </div>
-            <div className="bg-primary/5 p-4 rounded-2xl flex items-center justify-center gap-12">
+            <div className="bg-primary/5 p-4 rounded-lg flex items-center justify-center gap-12">
                <div className="text-center">
                   <div className="text-2xl font-display font-black text-primary">{world.year}</div>
                   <div className="text-[8px] uppercase font-black opacity-40">Association Year</div>

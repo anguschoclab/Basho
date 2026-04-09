@@ -13,8 +13,8 @@ import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 function getSeverityColor(severity: string): string {
   switch (severity) {
     case "serious": return "text-destructive";
-    case "moderate": return "text-amber-500";
-    case "minor": return "text-yellow-500";
+    case "moderate": return "text-gold";
+    case "minor": return "text-gold";
     default: return "text-muted-foreground";
   }
 }
@@ -25,7 +25,7 @@ function getSeverityColor(severity: string): string {
 function getSeverityBadge(severity: string) {
   switch (severity) {
     case "serious": return <Badge variant="destructive">Serious</Badge>;
-    case "moderate": return <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30">Moderate</Badge>;
+    case "moderate": return <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>;
     case "minor": return <Badge variant="secondary">Minor</Badge>;
     default: return <Badge variant="outline">Unknown</Badge>;
   }
@@ -68,7 +68,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
       {injuredRikishi.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
-            <Shield className="h-8 w-8 text-emerald-500 mx-auto mb-3" />
+            <Shield className="h-8 w-8 text-success mx-auto mb-3" />
             <p className="font-medium">All Clear</p>
             <p className="text-sm text-muted-foreground mt-1">No injuries in your stable. Keep training smart.</p>
           </CardContent>
@@ -115,13 +115,13 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                         </div>
 
                         {info.facilityBonus > 0 && (
-                          <p className="text-xs text-emerald-500 mt-2 flex items-center gap-1">
+                          <p className="text-xs text-success mt-2 flex items-center gap-1">
                             <Thermometer className="h-3 w-3" />
                             Recovery facilities providing healing bonus
                           </p>
                         )}
                         {info.facilityBonus < 0 && (
-                          <p className="text-xs text-amber-500 mt-2 flex items-center gap-1">
+                          <p className="text-xs text-gold mt-2 flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             Poor facilities slowing recovery
                           </p>
@@ -130,7 +130,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
 
                       <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${
                         info.severity === "serious" ? "bg-destructive/10" :
-                        info.severity === "moderate" ? "bg-amber-500/10" : "bg-yellow-500/10"
+                        info.severity === "moderate" ? "bg-gold/10" : "bg-gold/10"
                       }`}>
                         <AlertTriangle className={`h-5 w-5 ${getSeverityColor(info.severity)}`} />
                       </div>

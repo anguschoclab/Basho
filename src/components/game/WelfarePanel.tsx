@@ -8,21 +8,21 @@ import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
 const COMPLIANCE_DISPLAY: Record<string, { label: string; color: string; description: string; icon: React.ElementType }> = {
-  compliant: { label: "Compliant", color: "text-emerald-400", description: "No concerns from the JSA. Your stable operates within regulations.", icon: CheckCircle },
-  watch: { label: "Under Watch", color: "text-yellow-400", description: "The JSA has flagged minor concerns. Improve conditions to avoid escalation.", icon: AlertTriangle },
+  compliant: { label: "Compliant", color: "text-success", description: "No concerns from the JSA. Your stable operates within regulations.", icon: CheckCircle },
+  watch: { label: "Under Watch", color: "text-gold", description: "The JSA has flagged minor concerns. Improve conditions to avoid escalation.", icon: AlertTriangle },
   investigation: { label: "Investigation", color: "text-orange-400", description: "An active investigation is underway. Serious consequences may follow.", icon: Shield },
   sanctioned: { label: "Sanctioned", color: "text-destructive", description: "The JSA has imposed sanctions. Financial penalties and reputation damage are in effect.", icon: AlertTriangle },
 };
 
 const WELFARE_RISK_DISPLAY: Record<string, { label: string; color: string }> = {
-  safe: { label: "Safe", color: "text-emerald-400" },
-  cautious: { label: "Cautious", color: "text-yellow-400" },
+  safe: { label: "Safe", color: "text-success" },
+  cautious: { label: "Cautious", color: "text-gold" },
   elevated: { label: "Elevated", color: "text-orange-400" },
   critical: { label: "Critical", color: "text-destructive" },
 };
 
 const MORALE_DISPLAY: Record<string, { label: string; color: string }> = {
-  inspired: { label: "Inspired", color: "text-emerald-400" },
+  inspired: { label: "Inspired", color: "text-success" },
   content: { label: "Content", color: "text-green-400" },
   neutral: { label: "Neutral", color: "text-muted-foreground" },
   disgruntled: { label: "Disgruntled", color: "text-orange-400" },
@@ -37,10 +37,10 @@ const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: str
 };
 
 const ROSTER_DISPLAY: Record<string, { label: string; color: string }> = {
-  dominant: { label: "Dominant", color: "text-amber-400" },
-  strong: { label: "Strong", color: "text-emerald-400" },
+  dominant: { label: "Dominant", color: "text-gold" },
+  strong: { label: "Strong", color: "text-success" },
   competitive: { label: "Competitive", color: "text-primary" },
-  developing: { label: "Developing", color: "text-yellow-400" },
+  developing: { label: "Developing", color: "text-gold" },
   weak: { label: "Weak", color: "text-muted-foreground" },
 };
 
@@ -180,9 +180,9 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
             <div className="space-y-2">
               {perception.rikishiHealthPerceptions.slice(0, 12).map(rp => {
                 const healthColors: Record<string, string> = {
-                  peak: "text-emerald-400",
+                  peak: "text-success",
                   good: "text-green-400",
-                  fair: "text-yellow-400",
+                  fair: "text-gold",
                   worn: "text-orange-400",
                   fragile: "text-destructive",
                 };
@@ -196,7 +196,7 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
                       {rp.healthBand}
                     </Badge>
                     <span className={`text-[10px] capitalize ${
-                      rp.momentum === "rising" ? "text-emerald-400" :
+                      rp.momentum === "rising" ? "text-success" :
                       rp.momentum === "declining" ? "text-destructive" : "text-muted-foreground"
                     }`}>
                       {rp.momentum}
