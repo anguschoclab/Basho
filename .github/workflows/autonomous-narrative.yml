@@ -26,8 +26,19 @@ jobs:
         run: bun install
 
       - name: Execute Bard Engine
-        # Points to the new dedicated execution script
-        run: bun run scripts/generate-narrative.ts
+        # Points to the new dedicated execution script with a fallback retry loop
+        run: |
+          for i in {1..3}; do
+            bun run scripts/generate-narrative.ts && break || {
+              if [ $i -lt 3 ]; then
+                echo "Attempt $i failed (likely 503 High Demand). Retrying in 60 seconds..."
+                sleep 60
+              else
+                echo "All 3 attempts failed. Exiting."
+                exit 1
+              fi
+            }
+          done
         env:
           # Securely pull the API key from GitHub Repository Secrets
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
