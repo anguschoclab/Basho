@@ -28,6 +28,7 @@ import ScoutingPage from './pages/ScoutingPage'
 import GovernancePage from './pages/GovernancePage'
 import MyosekiMarketPage from './pages/MyosekiMarketPage'
 import NotFound from './pages/NotFound'
+import { HistoryDashboard } from './pages/HistoryDashboard'
 
 
 // Root route
@@ -81,6 +82,7 @@ const rivalriesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/ri
 
 // --- ARCHIVES SECTION ---
 const historyRoute = createRoute({ getParentRoute: () => rootRoute, path: '/history', component: HistoryPage })
+const museumRoute = createRoute({ getParentRoute: () => rootRoute, path: '/museum', component: HistoryDashboard })
 const almanacRoute = createRoute({ getParentRoute: () => rootRoute, path: '/almanac', component: AlmanacPage })
 const mediaRoute = createRoute({ getParentRoute: () => rootRoute, path: '/media', component: MediaPage })
 const hallOfFameRoute = createRoute({ getParentRoute: () => rootRoute, path: '/hall-of-fame', component: HallOfFamePage })
@@ -143,6 +145,7 @@ const routeTree = rootRoute.addChildren([
 
   // Archives
   historyRoute,
+  museumRoute,
   almanacRoute,
   mediaRoute,
   hallOfFameRoute,

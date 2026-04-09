@@ -1,171 +1,56 @@
 // economics.ts
 // Institutional Economy & Finance Engine
-// Manages Money, Solvency, Salaries, and Support.
-// Aligned with Institutional Economy V2.0 Spec.
+// Bout rewards (Kensho), insolvency handling, and sponsor churn.
+//
+// NOTE: Weekly finance calculation (salary burn, koenkai income) is handled
+// by the pipeline at src/engine/tick/phases/phase01_economy.ts,
+// which uses FinanceCalculator.ts for the pure math.
 
 import { RNGRegistry } from "./core/RNGRegistry";
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { BoutResult, MatchSchedule } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
-import type { Id } from "./types/common";
 import { reportScandal } from "./governance/GovernanceService";
-import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
-import { getHeyaStaffBonuses } from "./staff";
 import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
-
-import { 
-  calculateKoenkaiIncome, 
+import {
   processSponsorChurn as runSponsorChurnService,
   selectBenefactor
 } from "./systems/economics/SponsorshipService";
+import {
+  DEBT_LIMIT,
+  BENEFACTOR_BAILOUT_AMOUNT,
+  KENSHO_AMOUNT_PER_ENVELOPE,
+} from "./constants/EconomicConstants";
 
-// === CONSTANTS ===
-
-const BASE_FACILITY_COST = 50_000; // Base weekly upkeep per facility point
-const OYAKATA_SALARY_MONTHLY = 1_200_000; // Standard salary
-const RECRUITMENT_BUDGET_WEEKLY = 100_000; // Baseline scouting burn
-
-// Reputation -> Weekly Supporter Income Multiplier
-// Removed: logic now centralized in SponsorshipService.ts
-// const SUPPORTER_INCOME_FACTOR = 15_000; 
-
-// === CORE LOGIC ===
+// === INSOLVENCY HANDLER ===
 
 /**
- * Process weekly economic updates.
- * - Deduct burn (Salaries, Facilities)
- * - Add income (Koenkai)
- * - Check Solvency
+ * Called after weekly funds update when heya.funds < 0.
+ * Attempts a benefactor bailout at extreme debt; reports scandal if none available.
+ * STATEFUL: mutates heya.funds directly.
  */
-export function tickWeekEconomics(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
-    processHeyaFinances(heya, world);
-  }
-}
+export function handleInsolvency(heya: Heya, world: WorldState): void {
+  if (heya.funds >= DEBT_LIMIT) return;
 
+  const pool = world.sponsorPool;
+  const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
+  const rng = RNGRegistry.getSystemRNG(world, "economics", `bailout-${heya.id}-${world.dayIndexGlobal}`);
 
-/**
- * Process heya finances.
- *  * @param heya - The Heya.
- *  * @param world - The World.
- */
-function processHeyaFinances(heya: Heya, world: WorldState): void {
-  // 1. Calculate Expenses (Weekly Burn)
-  
-  // A. Rikishi Salaries (Monthly -> Weekly approx)
-  let rikishiSalaries = 0;
-  for (const rId of (heya.rikishiIds || [])) {
-    const rikishi = world.rikishi.get(rId);
-    if (rikishi) {
-      const info = RANK_HIERARCHY[rikishi.rank];
-      if (info.isSekitori) {
-        rikishiSalaries += (info.salary / 4); // Weekly slice
-      } else {
-        // Allowance for non-sekitori
-        rikishiSalaries += 15_000; // Small allowance
-      }
-    }
-  }
+  const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
 
-  // B. Staff & Facilities
-  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
-
-  // Facility maintenance scales with quality
-  const facilityUpkeepRaw = !heya.facilities ? 0 :
-    (heya.facilities.training * 1000) + 
-    (heya.facilities.recovery * 1000) + 
-    (heya.facilities.nutrition * 2000); // Food is expensive!
-
-  const staffCount = heya.staffIds?.length || 0;
-  const staffUpkeepRaw = staffCount * 6000;
-
-  // Apply administration discount (Administrator role)
-  const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
-  const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
-
-  const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
-  // Essential burn must be paid (roster, staff, facilities)
-  const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
-
-  // Overhead (Oyakata salary, recruitment) is supplementary
-  const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
-
-  // 2. Calculate Income (Koenkai / Supporters)
-  // Constitution: Support is disbursed weekly.
-  const monthlyKoenkaiIncome = calculateKoenkaiIncome(heya.koenkaiBand || "none");
-  const supporterIncome = monthlyKoenkaiIncome / 4; // Weekly slice
-
-  // KŌENKAI TIER-1 SURVIVAL FLOOR (Constitution §A6 & C2.4):
-  // Guarantees minimum base funding that covers staff/roster costs for new heya
-  // without sekitori. Formula: (5 * ¥2000) + (3 * ¥6000) = ¥28,000.
-  const KOENKAI_SURVIVAL_FLOOR = 28_000; 
-  const effectiveIncome = Math.max(supporterIncome, KOENKAI_SURVIVAL_FLOOR);
-
-  // If a stable is deeply unprofitable, overhead (Oyakata salary, recruitment) is paused
-  // to prevent instant insolvency, but base roster costs must always be paid.
-  let effectiveBurn = totalBurn;
-  if (effectiveIncome < totalBurn && effectiveIncome <= KOENKAI_SURVIVAL_FLOOR) {
-      effectiveBurn = Math.max(baseBurn, effectiveIncome);
-  } else if (effectiveIncome < totalBurn) {
-      // Can afford some overhead but not all
-      effectiveBurn = effectiveIncome; 
-  }
-
-  // 3. Apply to Funds
-  const net = effectiveIncome - effectiveBurn;
-  heya.funds += net;
-
-  // 4. Runway calculation
-  const monthlyBurn = totalBurn * 4;
-  const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 999;
-
-  // 5. Solvency Check (Bankruptcy)
-  if (heya.funds < 0) {
-    handleInsolvency(heya, world);
-    EventBus.financialAlert(world, heya.id, "Financial distress", `${heya.name ?? heya.id} is running a deficit.`, { funds: heya.funds, runwayMonths: Math.floor(runwayMonths) });
-  }
-
-  // 6. Update Financial Risk Indicator
-  heya.riskIndicators.financial = heya.funds < 0 || (runwayMonths < 2);
-}
-
-/**
- * Handle insolvency.
- *  * @param heya - The Heya.
- *  * @param world - The World.
- */
-function handleInsolvency(heya: Heya, world: WorldState): void {
-  // If funds are negative, we are in trouble.
-  // The JSA (Governance) steps in if it gets too deep.
-  
-  const DEBT_LIMIT = -20_000_000; // 20m Yen debt limit
-
-  if (heya.funds < DEBT_LIMIT) {
-    // 1. Attempt Benefactor Bailout (Constitution Addendum D.4)
-    const pool = world.sponsorPool;
-    const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
-    const rng = RNGRegistry.getSystemRNG(world, "economics", `bailout-${heya.id}-${world.dayIndexGlobal}`);
-    
-    const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
-    
-    if (benefactor) {
-      const bailoutAmount = 10_000_000; // Standard Pillar bailout
-      heya.funds += bailoutAmount;
-      
-      EventBus.financialAlert(world, heya.id, 
-        "Benefactor Bailout", 
-        `${benefactor.displayName} has provided a ¥10M emergency infusion to stabilize ${heya.name}.`,
-        { benefactorId: benefactor.sponsorId, amount: bailoutAmount }
-      );
-    } else if (heya.governanceStatus !== "sanctioned") {
-      // 2. Regular Governance Scandal for Insolvency
-      reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
-      
-      // Cap debt so math doesn't spiral into infinity
-      heya.funds = DEBT_LIMIT; 
-    }
+  if (benefactor) {
+    heya.funds += BENEFACTOR_BAILOUT_AMOUNT;
+    EventBus.financialAlert(world, heya.id,
+      "Benefactor Bailout",
+      `${benefactor.displayName} has provided a ¥${(BENEFACTOR_BAILOUT_AMOUNT / 1_000_000).toFixed(0)}M emergency infusion to stabilize ${heya.name}.`,
+      { benefactorId: benefactor.sponsorId, amount: BENEFACTOR_BAILOUT_AMOUNT }
+    );
+  } else if (heya.governanceStatus !== "sanctioned") {
+    reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
+    // Cap debt so math doesn't spiral into infinity
+    heya.funds = DEBT_LIMIT;
   }
 }
 
@@ -180,9 +65,8 @@ export function onBoutResolvedEconomics(
   world: WorldState,
   context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): void {
-
   const { result, east, west } = context;
-  
+
   // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return;
 
@@ -192,11 +76,8 @@ export function onBoutResolvedEconomics(
   if (!winner.economics) {
     winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
   }
-  
-  // 1. Determine Kensho count (Envelopes) per User Spec
-  // 2. Award Windfalls (v2 Spec)
-  // 1. Determine Kensho count (Envelopes) from result (assigned by boutResolver)
-  // Fallback to calculation if not already set
+
+  // Use envelope count from boutResolver if already set; otherwise calculate
   let kenshoCount = result.kenshoEnvelopes ?? 0;
   if (!result.kenshoEnvelopes && result.kenshoEnvelopes !== 0) {
     const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${winner.id}-${world.dayIndexGlobal}`);
@@ -204,24 +85,16 @@ export function onBoutResolvedEconomics(
     result.kenshoEnvelopes = kenshoCount;
   }
 
-  // 2. Marketability Shift (Permanent)
-  if (!winner.stats) {
-     winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } } };
-  }
-  
+  // Marketability shift for kinboshi/ginboshi
   const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;
   if (marketabilityScale > 0) {
     if ((winner as any).marketability === undefined) (winner as any).marketability = 50;
     (winner as any).marketability += marketabilityScale;
-    
-    // Also sync with popularity (presentation layer)
     winner.economics.popularity = Math.min(100, winner.economics.popularity + (marketabilityScale * 2));
   }
 
   if (kenshoCount > 0 && winnerHeya) {
-    // Constitution: ¥70,000 per banner
-    const AMOUNT_PER_KENSHO = 70_000;
-    const total = kenshoCount * AMOUNT_PER_KENSHO;
+    const total = kenshoCount * KENSHO_AMOUNT_PER_ENVELOPE;
 
     // Constitution: 50/50 split rikishi/heya
     const rikishiGross = total * 0.5;
@@ -239,7 +112,6 @@ export function onBoutResolvedEconomics(
 
     winnerHeya.funds += stableShare;
 
-    // Emit kensho event
     EventBus.kenshoAwarded(world, winner.id, winnerHeya.id, total, kenshoCount);
   }
 }
@@ -253,5 +125,3 @@ export function onBoutResolvedEconomics(
 export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
   return runSponsorChurnService(world);
 }
-
-// computeStarPower removed (centralized in SponsorshipService.ts)

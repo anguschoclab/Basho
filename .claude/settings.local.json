@@ -23,7 +23,9 @@
       "Read(//tmp/**)",
       "Bash(find \"/c/Users/amauricia/onedrive - ubisoft/documents/github/sumo-manager-pro/src\" -type f \\\\\\( -name \"*.test.ts\" -o -name \"*.test.tsx\" \\\\\\) ! -path \"*/node_modules/*\" -exec wc -l {} +)",
       "Bash(wc -l \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\pages\"/*.tsx)",
-      "Bash(find \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\components\" -name \"*.tsx\" -type f -exec wc -l {} +)"
+      "Bash(find \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\components\" -name \"*.tsx\" -type f -exec wc -l {} +)",
+      "Bash(grep -v \"\\\\.tsx$\")",
+      "Bash(npm test:*)"
     ]
   },
   "outputStyle": "default"

@@ -20,14 +20,16 @@ import { RANK_HIERARCHY } from "../../banzuke";
 import { calculateKoenkaiIncome } from "../../systems/economics/SponsorshipService";
 import { getHeyaStaffBonuses } from "../../staff";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
-
-
-// ── Constants (mirrors economics.ts — single source kept here for the pipeline) ──
-
-const OYAKATA_SALARY_MONTHLY = 1_200_000;
-const RECRUITMENT_BUDGET_WEEKLY = 100_000;
-const NON_SEKITORI_ALLOWANCE = 15_000;
-const KOENKAI_SURVIVAL_FLOOR = 28_000;
+// NOTE: Extreme insolvency (debt limit / benefactor bailout) is handled by
+// economics.handleInsolvency(), called from governanceReview.ts post-pipeline.
+import {
+  OYAKATA_SALARY_MONTHLY,
+  RECRUITMENT_BUDGET_WEEKLY,
+  NON_SEKITORI_ALLOWANCE,
+  KOENKAI_SURVIVAL_FLOOR,
+  FACILITY_UPKEEP,
+  STAFF_UPKEEP_PER_MEMBER,
+} from "../../constants/EconomicConstants";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -88,12 +90,12 @@ function processHeyaFinances(
   const staffBonuses = getHeyaStaffBonuses(world, heya.id);
 
   const facilityUpkeepRaw = heya.facilities
-    ? heya.facilities.training * 1_000 +
-      heya.facilities.recovery * 1_000 +
-      heya.facilities.nutrition * 2_000
+    ? heya.facilities.training * FACILITY_UPKEEP.training +
+      heya.facilities.recovery * FACILITY_UPKEEP.recovery +
+      heya.facilities.nutrition * FACILITY_UPKEEP.nutrition
     : 0;
 
-  const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * 6_000;
+  const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
 
   // Apply administration discount (Administrator role)
   const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;

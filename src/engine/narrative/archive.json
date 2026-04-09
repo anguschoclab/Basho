@@ -488,30 +488,30 @@
           "Governance Ruling Announced",
           "Formal Sanction Issued",
           "Association ruling on %REASON%",
-          "Governance review: %REASON% at %HEYA_NAME%",
+          "Governance review: %REASON% at %HEYA%",
           "Official statement on %REASON% case"
         ],
         "sanction": [
-          "The Sumo Association has issued a formal sanction against %HEYA_NAME%.",
-          "Institutional review results in disciplinary measures for %HEYA_NAME%.",
-          "Following review, the JSA has formalized sanctions against %HEYA_NAME%."
+          "The Sumo Association has issued a formal sanction against %HEYA%.",
+          "Institutional review results in disciplinary measures for %HEYA%.",
+          "Following review, the JSA has formalized sanctions against %HEYA%."
         ],
         "merger": [
-          "Following a viability review, %HEYA_NAME% is slated for merger.",
-          "Strategic consolidation: %HEYA_NAME% to merge with %TARGET_HEYA%."
+          "Following a viability review, %HEYA% is slated for merger.",
+          "Strategic consolidation: %HEYA% to merge with a rival stable."
         ],
         "threats": [
-          "%HEYA_NAME% Faces Closure Threat",
-          "Association Reviews %HEYA_NAME% Viability",
-          "End of an Era? %HEYA_NAME% Struggles to Stay Open",
-          "The governing council has issued a %INTENSITY_LABEL% warning to %HEYA_NAME%.",
-          "%HEYA_NAME% faces major sanctions following the %REASON% review.",
-          "Institutional stability at %HEYA_NAME% is being questioned by the council."
+          "%HEYA% Faces Closure Threat",
+          "Association Reviews %HEYA% Viability",
+          "End of an Era? %HEYA% Struggles to Stay Open",
+          "The governing council has issued a formal warning to %HEYA%.",
+          "%HEYA% faces major sanctions following the recent review.",
+          "Institutional stability at %HEYA% is being questioned by the council."
         ],
         "scandal": [
-          "A conduct-related incident involving %SHIKONA% has been brought to light.",
-          "The Association is reviewing reports of curfew violations within %HEYA_NAME%.",
-          "Professional standards review initiated following reports from %HEYA_NAME%."
+          "A conduct-related incident at %HEYA% has been brought to light.",
+          "The Association is reviewing reports of curfew violations within %HEYA%.",
+          "Professional standards review initiated following reports from %HEYA%."
         ]
       },
       "media": {

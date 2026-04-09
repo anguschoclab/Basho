@@ -37,7 +37,6 @@ import { rngFromSeed } from "../rng";
 
 import { toRikishiDescriptor } from "../descriptorBands";
 
-import { tickWeeklySubsystems } from "./tickWeekly";
 import { tickMonthlyBoundary } from "./tickMonthly";
 import { tickYearBoundary } from "./tickYearly";
 import { assertNever } from "../utils/types";
