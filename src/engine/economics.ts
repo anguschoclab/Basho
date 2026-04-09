@@ -12,7 +12,9 @@ import type { Id } from "./types/common";
 import { reportScandal } from "./governance/GovernanceService";
 import { RANK_HIERARCHY } from "./banzuke";
 import { EventBus } from "./events";
+import { getHeyaStaffBonuses } from "./staff";
 import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
+
 import { 
   calculateKoenkaiIncome, 
   processSponsorChurn as runSponsorChurnService,
@@ -68,18 +70,25 @@ function processHeyaFinances(heya: Heya, world: WorldState): void {
   }
 
   // B. Staff & Facilities
+  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
+
   // Facility maintenance scales with quality
-  const facilityUpkeep = !heya.facilities ? 0 :
+  const facilityUpkeepRaw = !heya.facilities ? 0 :
     (heya.facilities.training * 1000) + 
     (heya.facilities.recovery * 1000) + 
     (heya.facilities.nutrition * 2000); // Food is expensive!
 
   const staffCount = heya.staffIds?.length || 0;
-  const staffUpkeep = staffCount * 6000;
+  const staffUpkeepRaw = staffCount * 6000;
+
+  // Apply administration discount (Administrator role)
+  const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
+  const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
 
   const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
   // Essential burn must be paid (roster, staff, facilities)
   const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
+
   // Overhead (Oyakata salary, recruitment) is supplementary
   const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
@@ -186,10 +195,15 @@ export function onBoutResolvedEconomics(
   
   // 1. Determine Kensho count (Envelopes) per User Spec
   // 2. Award Windfalls (v2 Spec)
-  // 1. Determine Kensho count (Envelopes) per User Spec (Phase 3.2: Media Connectivity)
-  const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${winner.id}-${world.dayIndexGlobal}`);
-  const kenshoCount = calculateKenshoEnvelopes(world, winner, result.awardFact ?? undefined, kenshoRng);
-  result.kenshoEnvelopes = kenshoCount;
+  // 1. Determine Kensho count (Envelopes) from result (assigned by boutResolver)
+  // Fallback to calculation if not already set
+  let kenshoCount = result.kenshoEnvelopes ?? 0;
+  if (!result.kenshoEnvelopes && result.kenshoEnvelopes !== 0) {
+    const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${winner.id}-${world.dayIndexGlobal}`);
+    kenshoCount = calculateKenshoEnvelopes(world, winner, result.awardFact ?? undefined, kenshoRng);
+    result.kenshoEnvelopes = kenshoCount;
+  }
+
   // 2. Marketability Shift (Permanent)
   if (!winner.stats) {
      winner.stats = { strength: 50, technique: 50, speed: 50, weight: 150, stamina: 50, mental: 50, adaptability: 50, balance: 50, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } } };

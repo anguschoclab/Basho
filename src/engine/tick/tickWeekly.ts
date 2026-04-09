@@ -15,6 +15,8 @@ import { processWeeklyMediaBoundary, createDefaultMediaState, evaluateScandals }
 import { stableSort } from "../utils/sort";
 import { runTickPipeline, safeCall, type TickStep } from "./tickOrchestrator";
 import { opfsArchiveService } from "../storage/opfsArchive";
+import { BardEngine } from "../narrative/BardEngine";
+import { rngFromSeed } from "../rng";
 
 /**
  * Weekly subsystem tick — called once every 7 daily ticks.
@@ -39,13 +41,16 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
     { label: "npcAI", run: (w) => { npcAI.tickWeekNPC?.(w); } },
     { label: "training", run: (w) => { training.tickWeekTraining(w); } },
     { label: "injuries", run: (w) => { injuries.tickWeekInjury(w); } },
+    { label: "recovery", run: (w) => { injuries.tickWeekRecovery(w); } },
     { label: "economics_weekly", run: (w) => { economics.tickWeekEconomics(w); } },
+
     { label: "welfare", run: (w) => { welfare.tickWeekWelfare(w); } },
     { label: "governance", run: (w) => { governance.tickWeekGovernance(w); } },
     { label: "rivalries", run: (w) => { rivalries.tickWeekRivalries(w); } },
     { label: "events", run: (w) => { events.tickWeekEvents(w); } },
     { label: "scouting", run: (w) => { scoutingStore.tickWeekScouting(w); } },
     { label: "talentpool", run: (w) => { talentpool.tickWeekTalentPool(w); } },
+    { label: "staff", run: (w) => { import("../staff").then(m => m.tickStaffWeek(w)); } },
 
     {
       label: "gazette_archive",
@@ -119,14 +124,18 @@ function tickRecruitmentWindowClose(world: WorldState): void {
     rw.isOpen = false;
 
     if (world.playerHeyaId) {
+      const rng = rngFromSeed(`recruit-close-${world.week}`, "narrative", "event");
+      const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_WINDOW_CLOSED").text;
+      const summary = `The ${rw.phase === "post_basho" ? "post-basho" : "mid-interim"} recruitment window has closed.`;
+
       logEngineEvent(world, {
         type: "RECRUITMENT_WINDOW_CLOSED",
         category: "career",
         importance: "notable",
         scope: "heya",
         heyaId: world.playerHeyaId,
-        title: "Recruitment window closed",
-        summary: `The ${rw.phase === "post_basho" ? "post-basho" : "mid-interim"} recruitment window has closed.`,
+        title,
+        summary,
         data: { phase: rw.phase, openedAtWeek: rw.openedAtWeek, closedAtWeek: world.week }
       });
     }
@@ -153,14 +162,18 @@ function tickMidInterimRecruitment(world: WorldState): void {
 
   // Block recruitment if welfare sanctions are active (Constitution A6.3)
   if (playerHeya?.welfareState?.complianceState === "sanctioned") {
+    const rng = rngFromSeed(`recruit-blocked-${world.week}`, "narrative", "event");
+    const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_BLOCKED_SANCTIONS").text;
+    const summary = `${playerHeya.name} cannot open a recruitment window while under JSA welfare sanctions.`;
+
     logEngineEvent(world, {
       type: "RECRUITMENT_BLOCKED_SANCTIONS",
       category: "discipline",
       importance: "major",
       scope: "heya",
       heyaId: playerHeya.id,
-      title: "Recruitment blocked by sanctions",
-      summary: `${playerHeya.name} cannot open a recruitment window while under JSA welfare sanctions.`,
+      title,
+      summary,
       data: { complianceState: "sanctioned", welfareRisk: playerHeya.welfareState?.welfareRisk ?? 0 }
     });
     return;
@@ -181,7 +194,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
       importance: "notable",
       scope: "heya",
       heyaId: playerHeya.id,
-      title: "Mid-interim recruitment window",
+      title: BardEngine.resolve(rngFromSeed(`recruit-open-${world.week}`, "narrative", "event"), "events.titles.RECRUITMENT_WINDOW_OPEN").text,
       summary: "A brief mid-interim recruitment window opens. Scout and sign for 2 weeks.",
       data: {
         rosterSize: (playerHeya.rikishiIds ?? []).length,

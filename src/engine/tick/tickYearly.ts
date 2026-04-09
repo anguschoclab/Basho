@@ -50,7 +50,9 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
     },
     { label: "talentpool_yearly", run: (w) => { talentpool.tickYear(w); } },
     { label: "npcAI_yearly", run: (w) => { npcAI.tickYear(w); } },
+    { label: "staff_yearly", run: (w) => { import("../staff").then(m => m.tickStaffYear(w)); } },
   ];
+
 
   runTickPipeline(world, subs, steps, { autosave: true });
 
@@ -59,14 +61,20 @@ export function tickYearBoundary(world: WorldState, subs: string[]): void {
 
   const yearRng = rngFromSeed(`year-boundary-${newYear}`, "narrative", "event");
   const yearPath = isDecadeBoundary ? "events.milestone.decade_boundary" : "events.milestone.year_boundary";
-  const yearSummary = BardEngine.resolve(yearRng, yearPath, { year: newYear }).text
-    + (hofInductees.length > 0 ? " HoF: " + hofInductees.join(", ") + "." : "");
+  
+  // Use Bard for the main year summary
+  let yearSummary = BardEngine.resolve(yearRng, yearPath, { 
+    year: newYear,
+    hof_count: hofInductees.length,
+    hof_list: hofInductees.join(", ")
+  }).text;
+
   logEngineEvent(world, {
     type: "YEAR_BOUNDARY",
     category: "milestone",
     importance: isDecadeBoundary ? "headline" : "major",
     scope: "world",
-    title: `Year ${newYear} begins`,
+    title: BardEngine.resolve(yearRng, "events.titles.YEAR_BOUNDARY", { YEAR: newYear }).text,
     summary: yearSummary,
     data: { year: newYear, hofInductees: hofInductees.length, isDecade: isDecadeBoundary },
     tags: ["boundary", "year"]

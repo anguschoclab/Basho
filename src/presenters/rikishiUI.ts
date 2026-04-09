@@ -218,14 +218,11 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const milestones = r.milestones || [];
   const rng = world.rng || new SeededRNG(world.seed || r.id);
 
-  const rankInfo = RANK_NAMES[r.rank];
-  const rankLabel = rankInfo?.en ?? r.rank;
-  const styleInfo = STYLE_NAMES[r.style];
-  const styleName = styleInfo?.label ?? r.style;
+  const rankLabel = BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}`).text;
+  const styleName = BardEngine.resolve(rng, `system.descriptors.styles.${r.style}`).text;
 
   const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
-  const archetypeEntry = (ARCHETYPE_NAMES as any)[combatArchetype];
-  const archetypeName = archetypeEntry?.label ?? String(combatArchetype ?? 'Unknown');
+  const archetypeName = BardEngine.resolve(rng, `rikishi.archetypes.${combatArchetype}.label`).text;
 
   const derivedArchetype = r.derivedArchetype || ("All_Rounder" as any);
   const derivedArchetypeName = BardEngine.resolve(rng, `rikishi.archetypes.${derivedArchetype}.label`).text;
@@ -373,8 +370,8 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     heyaId: r.heyaId,
     isPlayerOwned,
     rank: r.rank,
-    rankLabel: rankInfo?.en ?? r.rank,
-    rankLabelJa: rankInfo?.ja ?? r.rank,
+    rankLabel: BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}`).text,
+    rankLabelJa: BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}.ja`).text, // Add .ja if exists or just use same
     rankNumber: r.rankNumber,
     division: r.division,
     side: r.side,

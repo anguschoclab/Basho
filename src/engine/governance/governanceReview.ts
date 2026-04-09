@@ -20,7 +20,8 @@ import { checkRetirement } from "../lifecycle";
 import { generateOyakata } from "../oyakataPersonalities";
 import { onRikishiRetired } from "../records";
 import { recordOyakataHandover } from "../lineage";
-import { rngForWorld } from "../rng";
+import { rngForWorld, rngFromSeed } from "../rng";
+import { BardEngine } from "../narrative/BardEngine";
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,
@@ -58,13 +59,14 @@ export function runGovernanceReview(world: WorldState): void {
             benefactor.funds -= giftAmount;
             heya.funds += giftAmount;
 
+            const bailoutRng = rngFromSeed(`bailout-${heya.id}-${world.week}`, "narrative", "event");
             logEngineEvent(world, {
                type: "GOVERNANCE_FACTION_BAILOUT",
                category: "economy",
                importance: "major",
                scope: "world",
                heyaId: heya.id,
-               title: `Faction solidarity at ${heya.name}`,
+               title: BardEngine.resolve(bailoutRng, "events.titles.GOVERNANCE_WARNING").text, // Map to warning or add specific title
                summary: `The ${heya.ichimon} Ichimon has provided a ¥${giftAmount.toLocaleString()} Traditional Gift to ${heya.name} to stabilize their accounts.`,
                data: { benefactorId: benefactor.id, ichimon: heya.ichimon, amount: giftAmount }
             });
@@ -77,13 +79,14 @@ export function runGovernanceReview(world: WorldState): void {
 
     // === Welfare review escalation ===
     if (welfareState && welfareState.complianceState === "sanctioned") {
+      const reviewRng = rngFromSeed(`welfare-review-${heya.id}-${world.week}`, "narrative", "event");
       logEngineEvent(world, {
         type: "POST_BASHO_WELFARE_REVIEW",
         category: "welfare",
         importance: "major",
         scope: "heya",
         heyaId: heya.id,
-        title: `${heya.name} welfare review`,
+        title: BardEngine.resolve(reviewRng, "events.titles.GOVERNANCE_STATUS_CHANGED").text,
         summary: `Post-basho institutional review: ${heya.name} remains under sanctions for welfare violations.`,
         data: { complianceState: welfareState.complianceState, welfareRisk: welfareState.welfareRisk }
       });
@@ -101,13 +104,14 @@ export function runGovernanceReview(world: WorldState): void {
       if (currentIdx > 0) {
         const newBand = PRESTIGE_ORDER[currentIdx - 1];
         heya.prestigeBand = newBand;
+        const shiftRng = rngFromSeed(`prestige-shift-${heya.id}-${world.week}`, "narrative", "event");
         logEngineEvent(world, {
           type: "PRESTIGE_SHIFT",
           category: "discipline",
           importance: "notable",
           scope: "heya",
           heyaId: heya.id,
-          title: `${heya.name} prestige damaged by sanctions`,
+          title: BardEngine.resolve(shiftRng, "events.titles.GOVERNANCE_STATUS_CHANGED").text, // Map to status change or add new
           summary: `Ongoing sanctions erode ${heya.name}'s standing in the sumo world.`,
           data: { from: PRESTIGE_ORDER[currentIdx], to: newBand, reason: "sanctions" }
         });
@@ -117,13 +121,14 @@ export function runGovernanceReview(world: WorldState): void {
     // === Council scandal reaction ===
     if (scandalScore >= 40) {
       const severityLabel = scandalScore >= 80 ? "severe" : scandalScore >= 60 ? "significant" : "concerning";
+      const councilRng = rngFromSeed(`council-review-${heya.id}-${world.week}`, "narrative", "event");
       logEngineEvent(world, {
         type: "COUNCIL_SCANDAL_REVIEW",
         category: "discipline",
         importance: scandalScore >= 60 ? "major" : "notable",
         scope: "heya",
         heyaId: heya.id,
-        title: `Council reviews ${heya.name}`,
+        title: BardEngine.resolve(councilRng, "events.titles.GOVERNANCE_WARNING").text,
         summary: `The Sumo Association council notes ${severityLabel} conduct issues at ${heya.name}. Score: ${Math.floor(scandalScore)}.`,
         data: { scandalScore: Math.floor(scandalScore), governanceStatus: heya.governanceStatus }
       });
@@ -163,13 +168,14 @@ export function runGovernanceReview(world: WorldState): void {
         }
       } else {
         // Player stable — warn but don't force closure
+        const rostRng = rngFromSeed(`roster-warn-${heya.id}-${world.week}`, "narrative", "event");
         logEngineEvent(world, {
           type: "ROSTER_WARNING",
           category: "career",
           importance: "major",
           scope: "heya",
           heyaId: heya.id,
-          title: "Roster critically low",
+          title: BardEngine.resolve(rostRng, "events.titles.GOVERNANCE_WARNING").text,
           summary: `Your stable has fewer than 3 wrestlers. Recruit urgently or face Association review.`,
           data: { rosterSize }
         });
@@ -223,12 +229,13 @@ export function runAIMetaDrift(world: WorldState): void {
   };
 
   if (metaBias !== "neutral") {
+    const metaRng = rngFromSeed(`meta-shift-${world.week}`, "narrative", "event");
     logEngineEvent(world, {
       type: "META_SHIFT_OBSERVED",
       category: "basho",
       importance: "minor",
       scope: "world",
-      title: `Meta trend: ${metaBias} style dominance`,
+      title: BardEngine.resolve(metaRng, "events.titles.ARCHETYPE_DRIFT").text,
       summary: `${metaBias === "oshi" ? "Pushing" : "Belt"} specialists dominated this basho. NPC managers may adjust.`,
       data: { metaBias, oshiWins, yotsuWins }
     });
@@ -279,13 +286,14 @@ export function runRetirements(world: WorldState): Record<string, number> {
 
             world.oyakata.set(newOyakataId, newOyakata);
 
+            const oyaRng = rngFromSeed(`new-oya-${id}`, "narrative", "event");
             logEngineEvent(world, {
               type: "NEW_OYAKATA",
               category: "career",
               importance: "major",
               scope: "heya",
               heyaId: r.heyaId,
-              title: `${r.shikona ?? r.name} acquires Elder Stock`,
+              title: BardEngine.resolve(oyaRng, "events.titles.HOF_INDUCTION", { SHIKONA: r.shikona ?? r.name }).text, // reuse induction for Elder Stock acquisition
               summary: `Retired accomplished rikishi ${r.shikona ?? r.name} has acquired the ${availableStock.name} elder stock and become an Oyakata.`,
               data: { rikishiId: id, oyakataId: newOyakataId, myosekiName: availableStock.name }
             });

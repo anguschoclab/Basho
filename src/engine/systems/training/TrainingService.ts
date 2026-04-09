@@ -22,6 +22,8 @@ import {
   calculateFatigueDelta, 
   calculateGrowthVector 
 } from "./TrainingMath";
+import { getHeyaStaffBonuses } from "../../staff";
+
 
 /**
  * Factory for default state.
@@ -78,19 +80,34 @@ export function applyWeeklyTraining(world: WorldState): void {
     // 2. Growth Logic (Skip if injured)
     if (!rikishi.injured) {
       const heya = EntityCollection.getHeya(world, rikishi.heyaId);
+      const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
       const growth = calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
+
+      // Apply staff bonuses (Stacking multipliers)
+      // Technique bonus applies to technique and mental
+      // Conditioning bonus applies to strength, speed, balance, stamina
+      const finalGrowth = {
+        strength: growth.strength * staffBonuses.conditioning,
+        speed: growth.speed * staffBonuses.conditioning,
+        technique: growth.technique * staffBonuses.technique,
+        balance: growth.balance * staffBonuses.conditioning,
+        stamina: growth.stamina * staffBonuses.conditioning,
+        adaptability: growth.adaptability,
+        mental: growth.mental * staffBonuses.technique
+      };
 
       // Pre-snapshot for milestone checks
       const prevPower = rikishi.power || 50;
 
       // Apply Growth
-      rikishi.power = Math.min(100, (rikishi.power || 50) + growth.strength);
-      rikishi.speed = Math.min(100, (rikishi.speed || 50) + growth.speed);
-      rikishi.technique = Math.min(100, (rikishi.technique || 50) + growth.technique);
-      rikishi.balance = Math.min(100, (rikishi.balance || 50) + growth.balance);
-      rikishi.stamina = Math.min(100, (rikishi.stamina || 50) + growth.stamina);
-      rikishi.adaptability = Math.min(100, (rikishi.adaptability || 50) + growth.adaptability);
-      rikishi.experience = Math.min(100, (rikishi.experience || 0) + (growth.mental * 0.5));
+      rikishi.power = Math.min(100, (rikishi.power || 50) + finalGrowth.strength);
+      rikishi.speed = Math.min(100, (rikishi.speed || 50) + finalGrowth.speed);
+      rikishi.technique = Math.min(100, (rikishi.technique || 50) + finalGrowth.technique);
+      rikishi.balance = Math.min(100, (rikishi.balance || 50) + finalGrowth.balance);
+      rikishi.stamina = Math.min(100, (rikishi.stamina || 50) + finalGrowth.stamina);
+      rikishi.adaptability = Math.min(100, (rikishi.adaptability || 50) + finalGrowth.adaptability);
+      rikishi.experience = Math.min(100, (rikishi.experience || 0) + (finalGrowth.mental * 0.5));
+
 
       // Sync flattened UI stats
       if (!rikishi.stats) rikishi.stats = {} as any;

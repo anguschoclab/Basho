@@ -1,4 +1,6 @@
 import { logEngineEvent } from "../events";
+import { BardEngine } from "../narrative/BardEngine";
+import { rngFromSeed } from "../rng";
 import { getStableRikishi, getActiveRikishi } from "../queries";
 import * as talentpool from "../systems/generation/TalentPoolService";
 import { safeCall } from "../utils/safe";
@@ -35,13 +37,14 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
       phase: "post_basho"
     };
 
+    const rng = rngFromSeed(`recruit-open-${world.week}`, "narrative", "event");
     logEngineEvent(world, {
       type: "RECRUITMENT_WINDOW_OPEN",
       category: "career",
       importance: playerVacancies > 0 ? "major" : "notable",
       scope: "heya",
       heyaId: playerHeya.id,
-      title: "Recruitment window open",
+      title: BardEngine.resolve(rng, "events.titles.RECRUITMENT_WINDOW_OPEN").text,
       summary: playerVacancies > 0
         ? `${playerVacancies} spot(s) opened due to retirements. You have 4 weeks to recruit from the talent pools.`
         : "The post-basho recruitment window is open for 4 weeks. Scout and sign new talent.",
@@ -63,12 +66,13 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
   }
 
   if (totalNPCVacancies > 0) {
+    const totalRng = rngFromSeed(`npc-recruit-${world.week}`, "narrative", "event");
     logEngineEvent(world, {
       type: "NPC_RECRUITMENT_SUMMARY",
       category: "career",
       importance: "minor",
       scope: "world",
-      title: "NPC stables recruit",
+      title: BardEngine.resolve(totalRng, "events.titles.NPC_RECRUITMENT_SUMMARY").text,
       summary: `${totalNPCVacancies} recruit(s) signed across rival stables during the post-basho window.`,
       data: { totalVacanciesFilled: totalNPCVacancies }
     });
@@ -108,6 +112,7 @@ export function runCareerJournalUpdates(world: WorldState): void {
 
     // HoF eligibility flag (yokozuna with 500+ wins)
     if (r.rank === "yokozuna" && r.careerWins >= 500) {
+      const hofERng = rngFromSeed(`hof-eligible-${r.id}`, "narrative", "event");
       logEngineEvent(world, {
         type: "HOF_ELIGIBLE",
         category: "milestone",
@@ -115,7 +120,7 @@ export function runCareerJournalUpdates(world: WorldState): void {
         scope: "rikishi",
         rikishiId: r.id,
         heyaId: r.heyaId,
-        title: `${r.shikona ?? r.name} eligible for Hall of Fame`,
+        title: BardEngine.resolve(hofERng, "events.titles.HOF_ELIGIBLE", { SHIKONA: r.shikona ?? r.name }).text,
         summary: `With ${r.careerWins} career wins, ${r.shikona ?? r.name} has reached Hall of Fame eligibility.`,
         data: { careerWins: r.careerWins }
       });
@@ -124,6 +129,7 @@ export function runCareerJournalUpdates(world: WorldState): void {
     // Milestone events
     const milestones = [100, 200, 300, 500];
     if (milestones.includes(r.careerWins ?? 0)) {
+       const mileRng = rngFromSeed(`milestone-${r.id}-${r.careerWins}`, "narrative", "event");
        logEngineEvent(world, {
           type: "CAREER_WINS_MILESTONE",
           category: "milestone",
@@ -131,7 +137,7 @@ export function runCareerJournalUpdates(world: WorldState): void {
           scope: "rikishi",
           rikishiId: r.id,
           heyaId: r.heyaId,
-          title: `${r.shikona ?? r.name} reaches ${r.careerWins} career wins`,
+          title: BardEngine.resolve(mileRng, "events.titles.CAREER_WINS_MILESTONE", { SHIKONA: r.shikona ?? r.name, WINS: r.careerWins }).text,
           summary: `A distinguished milestone for ${r.shikona ?? r.name}.`,
           data: { careerWins: r.careerWins ?? 0 }
        });

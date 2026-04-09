@@ -18,7 +18,9 @@ import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import { RANK_HIERARCHY } from "../../banzuke";
 import { calculateKoenkaiIncome } from "../../systems/economics/SponsorshipService";
+import { getHeyaStaffBonuses } from "../../staff";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
+
 
 // ── Constants (mirrors economics.ts — single source kept here for the pipeline) ──
 
@@ -83,16 +85,24 @@ function processHeyaFinances(
       : NON_SEKITORI_ALLOWANCE;
   }
 
-  const facilityUpkeep = heya.facilities
+  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
+
+  const facilityUpkeepRaw = heya.facilities
     ? heya.facilities.training * 1_000 +
       heya.facilities.recovery * 1_000 +
       heya.facilities.nutrition * 2_000
     : 0;
 
-  const staffUpkeep = (heya.staffIds?.length ?? 0) * 6_000;
+  const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * 6_000;
+
+  // Apply administration discount (Administrator role)
+  const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
+  const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
+
   const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
 
   const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
+
   const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
 
   // Solvency: overhead is paused at the survival floor

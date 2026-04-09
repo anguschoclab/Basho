@@ -52,10 +52,12 @@ export interface Sponsor {
 
   // Dynamic state
   active: boolean;
+  satisfaction: number; // 0..100 sentiment
   createdAtTick: number;
   lastSeenTick: number;
   relationships: SponsorRelationship[];
 }
+
 
 /** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";

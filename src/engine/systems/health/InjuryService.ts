@@ -112,6 +112,36 @@ export function tickWeekInjury(world: WorldState): void {
   }
 }
 
+import { tickRikishiRecovery } from "./RecoveryService";
+import { getHeyaStaffBonuses } from "../../staff";
+
+/**
+ * Weekly recovery tick: advanced recovery for all injured rikishi.
+ * Staff bonuses (Medical Staff) are applied here.
+ */
+export function tickWeekRecovery(world: WorldState): void {
+  for (const rikishi of world.rikishi.values()) {
+    if (rikishi.isRetired || !rikishi.injured) continue;
+
+    const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
+    const recovered = tickRikishiRecovery(rikishi, staffBonuses.medical);
+
+    if (recovered) {
+      logEngineEvent(world, {
+        type: "RECOVERY",
+        category: "welfare",
+        importance: "notable",
+        scope: "rikishi",
+        rikishiId: rikishi.id,
+        heyaId: rikishi.heyaId,
+        title: `${rikishi.shikona || rikishi.name} recovered`,
+        summary: `${rikishi.shikona || rikishi.name} has completed their rehabilitation and is fit to return to training.`
+      });
+    }
+  }
+}
+
+
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
  */

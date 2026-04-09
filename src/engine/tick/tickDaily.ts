@@ -32,6 +32,8 @@ import { WelfareService } from "../systems/welfare/WelfareService";
 import * as schedule from "../schedule";
 import { needsScheduleForDay } from "../schedule";
 import { resetBashoMediaTracking } from "../systems/media/MediaService";
+import { BardEngine } from "../narrative/BardEngine";
+import { rngFromSeed } from "../rng";
 
 import { toRikishiDescriptor } from "../descriptorBands";
 
@@ -55,239 +57,8 @@ export interface DailyTickReport {
   yearBoundary?: boolean;
 }
 
-// ====
-// CALENDAR HELPERS
-// ====
+// Migration complete: daily micro-logic moved to phases/phase01_daily_*.ts
 
-/** Days per month (non-leap for simplicity; deterministic) */
-const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-/**
- * Days in month.
- *  * @param month - The Month.
- *  * @param _year - The _year.
- *  * @returns The result.
- */
-function daysInMonth(month: number, _year: number): number {
-  return DAYS_IN_MONTH[(month - 1) % 12] || 30;
-}
-
-/**
- * Advance the calendar by one day, updating month/year as needed.
- * Returns flags for month and year boundaries crossed.
- */
-function advanceCalendarDay(world: WorldState): { monthBoundary: boolean; yearBoundary: boolean } {
-  const cal = world.calendar;
-  let monthBoundary = false;
-  let yearBoundary = false;
-
-  cal.currentDay = (cal.currentDay ?? 1) + 1;
-
-  const maxDay = daysInMonth(cal.month, cal.year);
-  if (cal.currentDay > maxDay) {
-    cal.currentDay = 1;
-    cal.month += 1;
-    monthBoundary = true;
-
-    if (cal.month > 12) {
-      cal.month = 1;
-      cal.year += 1;
-      yearBoundary = true;
-    }
-  }
-
-  return { monthBoundary, yearBoundary };
-}
-
-// ====
-// PHASE TRANSITION LOGIC
-// ====
-
-/**
- * Get interim days total.
- *  * @returns The result.
- */
-function getInterimDaysTotal(): number {
-  return getInterimWeeks("hatsu", "haru") * 7; // Always 42 per canon
-}
-
-/**
- * Check phase transition.
- *  * @param world - The World.
- *  * @returns The result.
- */
-function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CyclePhase } | undefined {
-  const prev = world.cyclePhase;
-
-  switch (world.cyclePhase) {
-    case "pre_basho": {
-      const remaining = world._interimDaysRemaining ?? 0;
-      if (remaining <= 0) {
-        // Auto-start the basho inline (avoid circular import with world.ts)
-        const bashoName = world.currentBashoName || "hatsu";
-        const basho = initializeBasho(world, bashoName);
-        world.currentBasho = basho;
-        world.cyclePhase = "active_basho";
-
-        // Generate day 1 schedule (guard with needsScheduleForDay)
-        try {
-          if (needsScheduleForDay("makuuchi", 1) && typeof schedule.generateDaySchedule === "function") {
-            schedule.generateDaySchedule(world, basho, 1, world.seed);
-          }
-        } catch (_) { /* schedule optional */ }
-
-        // Reset basho-scoped media tracking
-        if (world.mediaState) {
-          world.mediaState = resetBashoMediaTracking(world.mediaState);
-        }
-
-        EventBus.bashoStarted(world, bashoName);
-
-        logEngineEvent(world, {
-          type: "PHASE_TRANSITION",
-          category: "basho",
-          importance: "major",
-          scope: "world",
-          title: "Basho begins automatically",
-          summary: "The tournament is now underway.",
-          data: { from: prev, to: world.cyclePhase },
-          tags: ["phase"]
-        });
-        return { from: prev, to: world.cyclePhase };
-      }
-      break;
-    }
-
-    case "active_basho": {
-      // Basho lasts 15 days; transition handled by endBasho in world.ts
-      break;
-    }
-
-    case "post_basho": {
-      const remaining = world._postBashoDays ?? 7;
-      if (remaining <= 0) {
-        world.cyclePhase = "interim";
-        world._interimDaysRemaining = getInterimDaysTotal() - 7;
-        logEngineEvent(world, {
-          type: "PHASE_TRANSITION",
-          category: "basho",
-          importance: "notable",
-          scope: "world",
-          title: "Post-basho period ends",
-          summary: "The inter-basho period begins.",
-          data: { from: prev, to: world.cyclePhase },
-          tags: ["phase"]
-        });
-        return { from: prev, to: world.cyclePhase };
-      }
-      break;
-    }
-
-    case "interim": {
-      const remaining = world._interimDaysRemaining ?? 0;
-      // Banzuke reveal starts 14 days before the basho (JSA §1.2)
-      if (remaining <= 14) {
-        world.cyclePhase = "banzuke_reveal";
-        world._interimDaysRemaining = 14;
-        logEngineEvent(world, {
-          type: "BANZUKE_REVEAL",
-          category: "basho",
-          importance: "major",
-          scope: "world",
-          title: "Banzuke Hatsu-Dashi — The Rankings Are Revealed",
-          summary: `The official banzuke for the ${world.currentBashoName ?? "upcoming basho"} has been published.`,
-          data: {
-            from: prev,
-            to: world.cyclePhase,
-            bashoName: world.currentBashoName,
-            // Attach current banzuke snapshot so UI and MediaImpactService can
-            // process promotion/demotion fame shifts.
-            banzukeSnapshot: world.currentBanzuke ?? null,
-          },
-          tags: ["phase", "banzuke", "promotion"],
-        });
-        return { from: prev, to: world.cyclePhase };
-      }
-      break;
-    }
-
-    case "banzuke_reveal": {
-      // The reveal phase lasts 7 days; then normal pre-basho preparation begins.
-      const remaining = world._interimDaysRemaining ?? 0;
-      if (remaining <= 7) {
-        world.cyclePhase = "pre_basho";
-        world._interimDaysRemaining = 7;
-        logEngineEvent(world, {
-          type: "PHASE_TRANSITION",
-          category: "basho",
-          importance: "notable",
-          scope: "world",
-          title: "Pre-basho preparation begins",
-          summary: `Stables begin final preparations for the upcoming ${world.currentBashoName ?? "basho"}.`,
-          data: { from: prev, to: world.cyclePhase, bashoName: world.currentBashoName },
-          tags: ["phase"],
-        });
-        return { from: prev, to: world.cyclePhase };
-      }
-      break;
-    }
-
-      default: assertNever(world.cyclePhase);
-
-  }
-
-  return undefined;
-}
-
-// ====
-// SUBSYSTEM TICKS
-// ====
-
-/**
- * Daily micro-effects (fatigue recovery, daily food already handled in main pipeline).
- */
-function tickDailyCommon(world: WorldState, subs: string[]): void {
-  // Pre-calculate heya diet states to avoid repeated lookups per rikishi (O(H) instead of O(R))
-  const heyaDietCache = new Map<string, "austerity" | "maintenance" | "heavy_bulk" | "premium">();
-  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
-    heyaDietCache.set(heya.id, WelfareService.ensureHeyaWelfareState(heya).activeDiet || "maintenance");
-  }
-
-  // ⚡ Bolt: filter retired rikishi BEFORE O(N log N) stableSort to drastically reduce sorting overhead
-  const activeRikishi = [];
-  for (const r of world.rikishi.values()) {
-    if (!r.isRetired) activeRikishi.push(r);
-  }
-
-  for (const r of stableSort(activeRikishi, x => x.id)) {
-    // Persist descriptor for UI hysteresis buffer
-    r.descriptor = toRikishiDescriptor(r, r.descriptor);
-
-    // Diet effects
-    const diet = heyaDietCache.get(r.heyaId);
-    if (diet) {
-
-      if (diet === "austerity") {
-        r.weight = Math.max(70, r.weight - 0.05);
-        if (r.stats) r.stats.mental = Math.max(1, (r.stats.mental || 50) - 0.5);
-      } else if (diet === "heavy_bulk") {
-        r.weight += 0.1;
-        if (r.stats) r.stats.mental = Math.max(1, (r.stats.mental || 50) - 0.2);
-      } else if (diet === "premium") {
-        r.weight += 0.08;
-        if (r.stats) r.stats.mental = Math.min(100, (r.stats.mental || 50) + 0.5);
-        if (!r.injured && r.fatigue > 0) {
-          r.fatigue = Math.max(0, r.fatigue - 1); // bonus recovery
-        }
-      }
-    }
-
-    if (!r.injured && r.fatigue > 0) {
-      r.fatigue = Math.max(0, r.fatigue - 0.3);
-    }
-  }
-  subs.push("daily_fatigue");
-}
 
 // ====
 // MAIN PIPELINE: AdvanceOneDay()
@@ -308,90 +79,83 @@ function tickDailyCommon(world: WorldState, subs: string[]): void {
  *   8) Year tick gate (on year boundary)
  *   9) UI digest batch
  */
+import { runPipeline, emptyDeltas, defaultActiveModifiers } from "./pipelineRunner";
+import * as phases from "./phases";
+import { bashoPipeline } from "./pipelines/bashoPipeline";
+import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
+
+/**
+ * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
+ * Now fully migrated to the Strict Pipeline Architecture.
+ */
 export function advanceOneDay(world: WorldState): DailyTickReport {
-  const subsystemsRun: string[] = [];
+  // 1. Determine which phases to run
+  const activePhases: import("./pipelineRunner").PipelinePhase[] = [
+    phases.phase00_preflight,
+    phases.phase01_daily_economy,
+    phases.phase01_daily_welfare,
+    phases.phase01_daily_sponsors,
+    phases.phase01_monthly_market,
+  ];
 
-  // 0) Preflight — advance global day index
-  world.dayIndexGlobal = (world.dayIndexGlobal ?? 0) + 1;
 
-  // Advance calendar (month, dayOfMonth, year)
-  const { monthBoundary, yearBoundary } = advanceCalendarDay(world);
 
-  // Decrement phase-specific day counters
-  if (world._interimDaysRemaining != null) {
-    world._interimDaysRemaining -= 1;
-  }
-  if (world._postBashoDays != null) {
-    world._postBashoDays -= 1;
-  }
-
-  // 0.5) Enforce Weekly Boundary (C3.3) before Basho Torikumi 
-  // Constitution C3.3: Training injuries must lock in before Day 1 Torikumi.
-  // If we are about to transition to active_basho, or 7 days have passed, trigger the weekly tick.
+  // 2. Logic to determine if we run the full weekly sub-pipeline
+  // Constitution: Weekly gate runs every 7 days OR when about to start a basho.
   const aboutToStartBasho =
     (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
     (world._interimDaysRemaining || 0) <= 0;
-  world._daysSinceLastWeeklyTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
   
-  if (world._daysSinceLastWeeklyTick >= 7 || aboutToStartBasho) {
-    tickWeeklySubsystems(world, subsystemsRun);
-    world._daysSinceLastWeeklyTick = 0;
+  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
+  const isWeeklyTick = daysSinceTick >= 7 || aboutToStartBasho;
+
+  if (isWeeklyTick) {
+    if (world.cyclePhase === "active_basho") {
+      activePhases.push(...bashoPipeline);
+    } else {
+      activePhases.push(...offSeasonPipeline);
+    }
+    // Note: Monthly and Yearly gates are checked within the specific boundary phases
+    // or we can add them here if needed.
   }
 
-  // Phase transition check
-  const transition = checkPhaseTransition(world);
+  // 3. Execution
+  const nextWorld = runPipeline(world, activePhases);
 
-  const report: DailyTickReport = {
-    dayIndexGlobal: world.dayIndexGlobal,
-    phase: world.cyclePhase,
-    phaseTransition: transition,
-    subsystemsRun,
-    monthBoundary,
-    yearBoundary,
-  };
-
-  // 1) Scheduled institutional events
-  subsystemsRun.push("scheduled_events");
-
-  // 2) Training & welfare micro-effects (daily)
-  tickDailyCommon(world, subsystemsRun);
-
-  // 3) Basho tournament day — driven by game UI flow externally
-  if (world.cyclePhase === "active_basho" && world.currentBasho) {
-    report.bashoDay = world.currentBasho.day;
+  // 4. Update Weekly Tick Counter
+  if (isWeeklyTick) {
+    nextWorld._daysSinceLastWeeklyTick = 0;
+  } else {
+    nextWorld._daysSinceLastWeeklyTick = daysSinceTick;
   }
 
-  // 5) Daily economy micro-tick (food costs)
-  const costMap: Record<string, number> = {
-    austerity: 1000,
-    maintenance: 3000,
-    heavy_bulk: 6000,
-    premium: 10000
-  };
-
-  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
-    const welfare = WelfareService.ensureHeyaWelfareState(heya);
-    const diet = welfare.activeDiet || "maintenance";
-    const costPerRikishi = costMap[diet as string] ?? 3000;
-    const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * costPerRikishi;
-    heya.funds -= dailyFoodCost;
+  // 5. Special Boundary Gates (Legacy catch-all for year-end HoF etc until fully phased)
+  const report = buildDailyReport(nextWorld, isWeeklyTick);
+  
+  if (report.monthBoundary) {
+    tickMonthlyBoundary(nextWorld, report.subsystemsRun);
   }
-  subsystemsRun.push("daily_economy");
-
-
-
-  // 7) Monthly tick gate
-  if (monthBoundary) {
-    tickMonthlyBoundary(world, subsystemsRun);
+  if (report.yearBoundary) {
+    tickYearBoundary(nextWorld, report.subsystemsRun);
   }
 
-  // 8) Year tick gate
-  if (yearBoundary) {
-    tickYearBoundary(world, subsystemsRun);
-  }
+  // 6. Mutate in-place to support legacy synchronous callers (e.g. advanceInterim)
+  Object.assign(world, nextWorld);
 
   return report;
 }
+
+function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport {
+  const boundaries = (world as any).transientContext?.boundaries || { monthBoundary: false, yearBoundary: false };
+  return {
+    dayIndexGlobal: world.dayIndexGlobal,
+    phase: world.cyclePhase,
+    subsystemsRun: isWeekly ? ["weekly_pipeline"] : ["daily_micro"],
+    monthBoundary: boundaries.monthBoundary,
+    yearBoundary: boundaries.yearBoundary,
+  };
+}
+
 
 // ====
 // CONVENIENCE: Advance multiple days

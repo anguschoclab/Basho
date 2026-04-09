@@ -114,3 +114,84 @@ export function fireStaff(world: WorldState, heyaId: Id, staffId: string): boole
   return true;
 }
 
+
+/**
+ * Calculate aggregate staff bonuses for a heya.
+ * Rules:
+ * - Bonuses stack: Total = 1 + sum(bonuses)
+ * - Different roles provide different base bonuses.
+ */
+export interface StaffBonuses {
+  technique: number;     // e.g. 1.15
+  conditioning: number;  // e.g. 1.10
+  medical: number;       // e.g. 1.20
+  scouting: number;      // e.g. 1.10
+  administration: number;// e.g. 0.90 (cost reduction)
+}
+
+export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
+  const heya = world.heyas.get(heyaId);
+  const bonuses: StaffBonuses = {
+    technique: 1.0,
+    conditioning: 1.0,
+    medical: 1.0,
+    scouting: 1.0,
+    administration: 1.0
+  };
+
+  if (!heya || !heya.staffIds || !world.staff) return bonuses;
+
+  const BAND_VALUES: Record<CompetenceBand, number> = {
+    feeble: 0.01,
+    limited: 0.05,
+    serviceable: 0.10,
+    strong: 0.15,
+    great: 0.20,
+    dominant: 0.30,
+    monstrous: 0.50
+  };
+
+  for (const staffId of heya.staffIds) {
+    const staff = world.staff.get(staffId);
+    if (!staff || staff.careerPhase === "retired") continue;
+
+    // Fatigue penalty: staff efficiency drops as they get tired
+    const fatigueMult = Math.max(0.5, 1 - (staff.fatigue / 200)); 
+    const primaryBonus = BAND_VALUES[staff.competenceBands.primary] * fatigueMult;
+    const secondaryBonus = staff.competenceBands.secondary 
+      ? BAND_VALUES[staff.competenceBands.secondary] * 0.4 * fatigueMult 
+      : 0;
+    
+    const totalStaffBonus = primaryBonus + secondaryBonus;
+
+    switch (staff.role) {
+      case "technique_coach":
+        bonuses.technique += totalStaffBonus;
+        break;
+      case "conditioning_coach":
+        bonuses.conditioning += totalStaffBonus;
+        break;
+      case "medical_staff":
+        bonuses.medical += totalStaffBonus;
+        break;
+      case "scout":
+        bonuses.scouting += totalStaffBonus;
+        break;
+      case "administrator":
+        // Administration reduces costs, so we subtract from the multiplier
+        bonuses.administration -= (totalStaffBonus * 0.5); 
+        break;
+      case "assistant_oyakata":
+        // Generalist: provides small boost to everything
+        bonuses.technique += totalStaffBonus * 0.2;
+        bonuses.conditioning += totalStaffBonus * 0.2;
+        bonuses.medical += totalStaffBonus * 0.2;
+        break;
+    }
+  }
+
+  // Clamping
+  bonuses.administration = Math.max(0.7, bonuses.administration); // Max 30% discount
+
+  return bonuses;
+}

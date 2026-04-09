@@ -18,6 +18,8 @@ import type { Rikishi } from "../../types/rikishi";
 import { calculateGains, calculateFatigueDelta } from "../../systems/training/TrainingMath";
 import { ensureHeyaTrainingState } from "../../systems/training/TrainingService";
 import { stableSort } from "../../utils/sort";
+import { getHeyaStaffBonuses } from "../../staff";
+
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -49,19 +51,35 @@ export function phase03_progression(world: WorldState): WorldState {
 
     // Apply gains using pure math + active modifiers
     const gains = calculateGains(r, activeModifiers, profile, focus);
+    const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
     const fatigueDelta = calculateFatigueDelta(profile, focus);
 
     const changes: { stat: string; amount: number }[] = [];
     const nextStats = { ...(r.stats ?? {}) } as any;
 
+    const statStaffMap: Record<string, keyof import("../../staff").StaffBonuses> = {
+      strength: "conditioning",
+      speed: "conditioning",
+      technique: "technique",
+      balance: "conditioning",
+      stamina: "conditioning",
+      adaptability: "technique", // small help
+      mental: "technique"
+    };
+
     for (const [stat, delta] of Object.entries(gains)) {
       if (delta === 0) continue;
-      const rounded = Math.round(delta * 100) / 100; // keep 2dp precision
+      
+      const mult = (staffBonuses as any)[statStaffMap[stat]] || 1.0;
+      const finalDelta = delta * mult;
+
+      const rounded = Math.round(finalDelta * 100) / 100; // keep 2dp precision
       if (nextStats[stat] !== undefined) {
         nextStats[stat] = Math.min(99, Math.max(0, nextStats[stat] + rounded));
       }
       changes.push({ stat, amount: rounded });
     }
+
 
     const nextFatigue = Math.min(100, Math.max(0, (r.fatigue ?? 0) + fatigueDelta));
 

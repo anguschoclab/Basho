@@ -55,7 +55,8 @@ export function decideTrainingIntensity(
   }
   else if (philosophy === "underdog_hunter" || philosophy === "balanced" || philosophy === "innovator") {
     intensity = "balanced";
-    const philLabel = philosophy === "underdog_hunter" ? "Strategic development" : philosophy === "innovator" ? "Technical refinement" : "Standard cycle";
+    const philKey = philosophy === "underdog_hunter" ? "experimental" : philosophy === "innovator" ? "aggressive" : "balanced";
+    const philLabel = BardEngine.resolve(rng, `strategy.philosophies.${philKey}`).text;
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.balanced_standard", { PHILOSOPHY: philLabel }).text;
   }
   else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {

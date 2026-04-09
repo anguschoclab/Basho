@@ -44,7 +44,7 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
     importance: severity === "minor" ? "notable" : "major",
     scope: "heya",
     heyaId,
-    title: `Scandal reported: ${heya.name}`,
+    title: BardEngine.resolve(scandalRng, "events.titles.GOVERNANCE_SCANDAL_REPORTED").text,
     summary: scandalSummary,
     data: { severity, reason, scoreBump, totalScore: heya.scandalScore, rulingId: ruling.id }
   });
@@ -72,7 +72,7 @@ export function tickWeekGovernance(world: WorldState): void {
         importance: "major",
         scope: "heya",
         heyaId: heya.id,
-        title: `JSA Warning: ${heya.name}`,
+        title: BardEngine.resolve(warnRng, "events.titles.GOVERNANCE_WARNING").text,
         summary: warnSummary,
         data: { scandalScore: heya.scandalScore },
         tags: ["governance", "warning"]
@@ -98,7 +98,7 @@ export function tickWeekGovernance(world: WorldState): void {
         importance: newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable",
         scope: "heya",
         heyaId: heya.id,
-        title: `${heya.name}: governance status → ${newStatus}`,
+        title: BardEngine.resolve(statusRng, "events.titles.GOVERNANCE_STATUS_CHANGED").text,
         summary: statusSummary,
         data: { prevStatus, newStatus, scandalScore: Math.floor(score) }
       });
@@ -135,7 +135,7 @@ export function runElections(world: WorldState): void {
       category: "discipline",
       importance: "notable",
       scope: "world",
-      title: `JSA Board Election: ${ichimon} faction`,
+      title: BardEngine.resolve(rngFromSeed(`election-${ichimon}`, "narrative", "event"), "events.titles.JSA_ELECTION").text,
       summary: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
       data: { ichimon, heyaCount: heyaIds.length },
       tags: ["governance", "elections"]
@@ -159,14 +159,15 @@ export function getStatusColor(status: string): string {
 /**
  * Returns a display label for a governance status band.
  */
-export function getStatusLabel(status: string): string {
-  switch (status) {
-    case "clean": return "Clean Record";
-    case "warning": return "Under Review";
-    case "probation": return "On Probation";
-    case "critical": return "Critical Scrutiny";
-    default: return status;
-  }
+export function getStatusLabel(world: WorldState, status: string): string {
+  const rng = rngFromSeed(`gov-label-${status}`, "narrative", "metadata");
+  let path = status;
+  if (status === "good_standing") path = "clean";
+  if (status === "warning")       path = "whispers";
+  if (status === "probation")     path = "notable";
+  if (status === "sanctioned")    path = "severe";
+
+  return BardEngine.resolve(rng, `system.descriptors.bands.scandal.${path}`).text;
 }
 
 /**

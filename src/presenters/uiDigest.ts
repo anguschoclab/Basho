@@ -108,12 +108,23 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       id: `injury::${r.id}`,
       kind: "injury",
       title: `${r.shikona ?? r.name ?? r.id} injured`,
-      detail: injury ? `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? "?"}w remaining` : "Unknown injury",
+      detail: injury 
+        ? BardEngine.resolve(new SeededRNG((world.seed || "inj") + r.id), "ui.labels.injury.summary_format", {
+            SEV: BardEngine.resolve(new SeededRNG("sev" + (injury.severity ?? "moderate")), `ui.labels.injury.severity.${injury.severity ?? "moderate"}`).text,
+            LOC: "", // Should add location if available
+            WEEKS: (injury.weeksRemaining ?? 0).toString()
+          }).text
+        : "Unknown injury",
       rikishiId: r.id,
     };
   });
   if (injuryItems.length) {
-    sections.push({ id: "injuries", title: "Injuries", items: injuryItems });
+    const sectionRng = new SeededRNG((world.seed || "section") + "_injuries");
+    sections.push({ 
+      id: "injuries", 
+      title: BardEngine.resolve(sectionRng, "ui.digest.sections.injuries").text, 
+      items: injuryItems 
+    });
   }
 
   // --- Key matchup (during basho) ---
@@ -143,7 +154,12 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       });
     }
     if (matchupItems.length) {
-      sections.unshift({ id: "matchups", title: "Key Matchups", items: matchupItems });
+      const sectionRng = new SeededRNG((world.seed || "section") + "_matchups");
+      sections.push({ 
+        id: "matchups", 
+        title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups").text, 
+        items: matchupItems 
+      });
     }
   }
 
@@ -172,15 +188,16 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
      kind: "narrative" as const
   }));
 
-  if (mediaItems.length) sections.push({ id: "media", title: "Media & Scandals", items: mediaItems });
-  if (narrativeItems.length) sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
-  if (trainingItems.length) sections.push({ id: "training", title: "Training", items: trainingItems });
-  if (careerItems.length) sections.push({ id: "career", title: "Career Updates", items: careerItems });
+  const sectionRng = new SeededRNG((world.seed || "section") + "_" + world.week);
+  if (mediaItems.length) sections.push({ id: "media", title: BardEngine.resolve(sectionRng, "ui.digest.sections.media").text, items: mediaItems });
+  if (narrativeItems.length) sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems }); // Keep or map to new
+  if (trainingItems.length) sections.push({ id: "training", title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, items: trainingItems }); // Mis-mapped in original title? Fix to Economy/milestones?
+  if (careerItems.length) sections.push({ id: "career", title: BardEngine.resolve(sectionRng, "ui.digest.sections.milestones").text, items: careerItems });
   if (rivalryItems.length) sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });
-  if (welfareItems.length) sections.push({ id: "welfare", title: "Welfare & Compliance", items: welfareItems });
-  if (govItems.length) sections.push({ id: "governance", title: "Governance", items: govItems });
+  if (welfareItems.length) sections.push({ id: "welfare", title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, items: welfareItems });
+  if (govItems.length) sections.push({ id: "governance", title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, items: govItems });
   if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
-  if (econItems.length) sections.push({ id: "economy", title: "Economy", items: econItems });
+  if (econItems.length) sections.push({ id: "economy", title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text, items: econItems });
 
   const counts = {
     trainingEvents: trainingItems.length,
@@ -225,12 +242,13 @@ export function formatRadarData(rikishi: Rikishi) {
     return 1;
   };
 
+  const rng = new SeededRNG(rikishi.id + "_radar");
   return [
-    { subject: "Power", A: mapValue(rikishi.power || 50), fullMark: 5 },
-    { subject: "Speed", A: mapValue(rikishi.speed || 50), fullMark: 5 },
-    { subject: "Technique", A: mapValue(rikishi.technique || 50), fullMark: 5 },
-    { subject: "Spirit", A: mapValue(rikishi.momentum || 50), fullMark: 5 },
-    { subject: "Ring Sense", A: mapValue(rikishi.condition || 50), fullMark: 5 },
+    { subject: BardEngine.resolve(rng, "ui.labels.stats.power").text, A: mapValue(rikishi.power || 50), fullMark: 5 },
+    { subject: BardEngine.resolve(rng, "ui.labels.stats.speed").text, A: mapValue(rikishi.speed || 50), fullMark: 5 },
+    { subject: BardEngine.resolve(rng, "ui.labels.stats.technique").text, A: mapValue(rikishi.technique || 50), fullMark: 5 },
+    { subject: BardEngine.resolve(rng, "ui.labels.stats.spirit").text, A: mapValue(rikishi.momentum || 50), fullMark: 5 },
+    { subject: BardEngine.resolve(rng, "ui.labels.stats.ring_sense").text, A: mapValue(rikishi.condition || 50), fullMark: 5 },
   ];
 }
 

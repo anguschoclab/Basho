@@ -222,6 +222,27 @@ export default function StaffPage() {
 function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => void }) {
   const primaryColor = BAND_COLORS[staff.competenceBands.primary.toLowerCase()] || "text-muted-foreground";
   
+  const bonusText = useMemo(() => {
+    const roleDescriptions: Record<StaffRole, string> = {
+      oyakata: "Stable Management",
+      assistant_oyakata: "All-rounder training support",
+      technique_coach: "Accelerates Skill/Technique gains",
+      conditioning_coach: "Accelerates Physical/Stamina gains",
+      nutritionist: "Weight management & Health",
+      medical_staff: "Accelerates Injury recovery",
+      scout: "Improved talent discovery",
+      administrator: "Reduces overhead costs",
+    };
+
+    const competenceLabels: Record<string, string> = {
+      monstrous: "+50%", dominant: "+30%", great: "+20%", 
+      strong: "+15%", serviceable: "+10%", limited: "+5%", feeble: "+1%"
+    };
+
+    const value = competenceLabels[staff.competenceBands.primary.toLowerCase()] || "??";
+    return `${roleDescriptions[staff.role]}: ${value}`;
+  }, [staff]);
+
   return (
     <Card className="paper relative overflow-hidden group">
       <div className={cn("absolute top-0 left-0 w-1 h-full", primaryColor.replace("text-", "bg-"))} />
@@ -256,14 +277,16 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-3">
-             <div className="space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 flex items-center gap-1.5">
-                  <Zap className="h-3 w-3" /> Competence
-                </span>
-                <div className={cn("text-xs font-bold leading-none", primaryColor)}>
-                  {staff.competenceBands.primary.toUpperCase()}
-                </div>
-             </div>
+             <TooltipWrap content={bonusText}>
+               <div className="space-y-1 cursor-help">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 flex items-center gap-1.5">
+                    <Zap className="h-3 w-3" /> Competence
+                  </span>
+                  <div className={cn("text-xs font-bold leading-none", primaryColor)}>
+                    {staff.competenceBands.primary.toUpperCase()}
+                  </div>
+               </div>
+             </TooltipWrap>
              <div className="space-y-1">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 flex items-center gap-1.5">
                   <Award className="h-3 w-3" /> Reputation
@@ -273,6 +296,7 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
                 </div>
              </div>
           </div>
+
 
           <div className="space-y-3">
              <div className="space-y-1">

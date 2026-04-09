@@ -44,7 +44,7 @@ export function getFatigueLabel(rng: SeededRNG, band: FatigueBand): string {
 
 // === Momentum Labels ===
 export function getMomentumLabel(rng: SeededRNG, band: MomentumBand): string {
-  return BardEngine.resolve(rng, `ui.digest.status.${band}`, { intensity: 1 }).text;
+  return BardEngine.resolve(rng, `system.descriptors.bands.momentum.${band}`).text;
 }
 
 // === Potential Labels & Prose ===
@@ -54,35 +54,33 @@ export function getPotentialInfo(rng: SeededRNG, band: PotentialBand): { label: 
   if (band === "generational") path = "Taiki Bansei";
   if (band === "star")         path = "Soshitsu Ari";
   if (band === "solid")        path = "Mikan no Taiki";
-  if (band === "average")      path = "Mikan no Taiki"; // Consolidating
+  if (band === "average")      path = "Mikan no Taiki"; 
   if (band === "limited")      path = "Genkai";
   
-  const label = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.label`).text;
-  const description = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.tooltip`).text;
+  const label = BardEngine.resolve(rng, `system.descriptors.bands.potential.${path}.label`).text;
+  const description = BardEngine.resolve(rng, `system.descriptors.bands.potential.${path}.tooltip`).text;
   
   return { label, description };
 }
 
 // === Rivalry Heat Labels ===
 export function getRivalryHeatLabel(rng: SeededRNG, band: RivalryHeatBand): string {
-  // Use H2H paths or generic bands if we add them. 
-  // For now, returning capitalized band as fallback if not in archive
-  return band.charAt(0).toUpperCase() + band.slice(1);
+  return BardEngine.resolve(rng, `system.descriptors.bands.rivalry.${band}`).text;
 }
 
 // === Scandal Labels ===
 export function getScandalLabel(rng: SeededRNG, band: ScandalBand): string {
-  return band.charAt(0).toUpperCase() + band.slice(1);
+  return BardEngine.resolve(rng, `system.descriptors.bands.scandal.${band}`).text;
 }
 
 // === Prize Labels ===
 export function getPrizeLabel(rng: SeededRNG, band: PrizeBand): string {
-  return band.charAt(0).toUpperCase() + band.slice(1);
+  return BardEngine.resolve(rng, `system.descriptors.bands.prizes.${band}`).text;
 }
 
 // === Trait Labels ===
 export function getTraitLabel(rng: SeededRNG, band: TraitBand): string {
-  return band.charAt(0).toUpperCase() + band.slice(1);
+  return BardEngine.resolve(rng, `system.descriptors.bands.traits.${band}`).text;
 }
 
 // === Archetype Info ===
@@ -91,4 +89,18 @@ export function getArchetypeInfo(rng: SeededRNG, archetype: RikishiArchetype): {
   const description = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.description`).text;
   
   return { label, description };
+}
+
+/**
+ * Hydrates a raw descriptor band (condition, morale, potential) with 
+ * resolved labels and tooltips.
+ */
+export function hydrateDescriptor(
+  rng: SeededRNG, 
+  group: "condition" | "morale" | "potential", 
+  bandId: string
+): { label: string; tooltip: string } {
+  const label = BardEngine.resolve(rng, `system.descriptors.${group}.${bandId}.label`).text;
+  const tooltip = BardEngine.resolve(rng, `system.descriptors.${group}.${bandId}.tooltip`).text;
+  return { label, tooltip };
 }

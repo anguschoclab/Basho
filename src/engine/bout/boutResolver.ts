@@ -9,9 +9,11 @@ import { resolveBoutPhysics } from "./boutPhysics";
 import { generateBoutNarrative } from "./boutNarrative";
 import { determineKimarite } from "./kimariteEvaluator";
 import { KIMARITE_REGISTRY } from "../kimarite";
-// Note: injuries module doesn't currently apply per-bout injuries.
 import { RivalryService } from "../systems/narrative/RivalryService";
+import { RNGRegistry } from "../core/RNGRegistry";
+import { calculateKenshoEnvelopes, assignKenshoBanners } from "../systems/economics/KenshoService";
 import { EntityCollection } from "../core/EntityCollection";
+
 import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 
@@ -175,10 +177,19 @@ export function resolveBout(
       result,
       day: bout.day
     });
+
+    // 5. Kensho (Prize Banners)
+    const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);
+    const banners = assignKenshoBanners(world, winner, loser, kenshoRng);
+    (result as any).kenshoBanners = banners;
+
+    const awardFact = result.awardFact ?? undefined;
+    result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, awardFact, kenshoRng);
   }
 
   return result;
 }
+
 
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {
   const fakeBasho: BashoState = {

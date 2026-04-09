@@ -18,6 +18,8 @@ import { rollWeeklyInjury } from "../../systems/health/InjuryService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { stableSort } from "../../utils/sort";
 import { clamp } from "../../utils";
+import { getHeyaStaffBonuses } from "../../staff";
+
 
 const BASE_STAMINA_RECOVERY = 12; // Stamina points recovered per week at 1.0×
 const INJURY_HEAL_PER_WEEK = 1;   // Weeks of injury healed per week (normally 1:1)
@@ -46,16 +48,18 @@ export function phase04_welfare(world: WorldState): WorldState {
 
     if (r.injured && (r.injuryWeeksRemaining ?? 0) > 0) {
       // Progress healing
+      const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
       const healed = Math.max(
         0,
         (r.injuryWeeksRemaining ?? 0) -
-          INJURY_HEAL_PER_WEEK * activeModifiers.recoveryMultiplier,
+          INJURY_HEAL_PER_WEEK * activeModifiers.recoveryMultiplier * staffBonuses.medical,
       );
       next = {
         ...next,
         injuryWeeksRemaining: Math.ceil(healed),
         injured: healed > 0,
       };
+
     } else if (!r.injured) {
       // Recover stamina
       const recoveryGain =

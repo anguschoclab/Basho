@@ -22,6 +22,8 @@ import { rollArchetype, buildCombatProfile } from "../../archetype";
 import { generateCandidate } from "./CandidateGenerator";
 import { clampInt } from "../../utils/math";
 import { logEngineEvent } from "../../events";
+import { BardEngine } from "../../narrative/BardEngine";
+import { rngFromSeed } from "../../rng";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -177,11 +179,13 @@ export function offerCandidate(
   const candidate = tp.candidates[candidateId];
   if (!candidate) return { ok: false, reason: "Candidate not found" };
 
+  const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
+
   // 1. Validation: Foreigner limit
   if ((candidate.nationality ?? "Japan") !== "Japan") {
     const foreignCount = getForeignCountInHeya(world, heyaId);
     if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
-      return { ok: false, reason: "Heya already at foreigner limit (1)." };
+      return { ok: false, reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.foreigner_limit").text };
     }
   }
 
@@ -190,7 +194,7 @@ export function offerCandidate(
     candidate.availabilityState !== "available" &&
     candidate.availabilityState !== "in_talks"
   ) {
-    return { ok: false, reason: "Candidate is no longer accepting offers." };
+    return { ok: false, reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.unavailable").text };
   }
 
   // 3. Register suitor
@@ -248,13 +252,14 @@ export function tickWeekTalentPool(world: WorldState): void {
       const heya = world.heyas.get(winner.heyaId);
       if (heya) {
         heya.reputation = Math.min(100, (heya.reputation ?? 50) + 5);
+        const signRng = rngFromSeed(`talent-sign-${candidate.candidateId}`, "narrative", "event");
         logEngineEvent(world, {
           type: 'HIGH_TALENT_SIGNED',
           category: 'scouting',
           importance: 'major',
           scope: 'heya',
           heyaId: winner.heyaId,
-          title: `Elite prospect joins ${heya.name}`,
+          title: BardEngine.resolve(signRng, "events.titles.HIGH_TALENT_SIGNED", { shikona: candidate.name, heya: heya.name }).text,
           summary: `${candidate.name} (talent ${candidate.talentSeed}) has committed to ${heya.name}, boosting stable prestige.`,
           data: { talentSeed: candidate.talentSeed, candidateId: candidate.candidateId },
         });
@@ -462,7 +467,7 @@ export function reinjectToTalentPool(
     importance: "minor",
     scope: "world",
     rikishiId: rikishi.id,
-    title: `${rikishi.shikona ?? rikishi.name} re-enters the talent pool`,
+    title: BardEngine.resolve(rngFromSeed(`reinject-evt-${rikishi.id}`, "narrative", "event"), "events.titles.TALENT_POOL_REINJECTION", { shikona: rikishi.shikona ?? rikishi.name }).text,
     summary: `${rikishi.shikona ?? rikishi.name} was released and is now available to all stables.`,
     tags: ["talent_pool", "roster_overflow"],
   });

@@ -196,7 +196,7 @@ export const WelfareService = {
             importance: "major",
             scope: "heya",
             heyaId: heya.id,
-            title: "Sanctions Lifted",
+            title: BardEngine.resolve(liftRng, "events.titles.COMPLIANCE_SANCTIONS_LIFTED").text,
             summary: liftSummary,
             data: { welfareRisk: state.welfareRisk }
           });

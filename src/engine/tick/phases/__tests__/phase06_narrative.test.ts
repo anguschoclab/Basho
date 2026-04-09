@@ -50,7 +50,7 @@ describe('Phase 6: Narrative', () => {
       expect.objectContaining({
         type: 'INJURY_SUSTAINED',
         rikishiId: 'r1',
-        title: 'Wrestler 1 injured',
+        title: expect.any(String),
       })
     );
   });
@@ -100,7 +100,7 @@ describe('Phase 6: Narrative', () => {
       expect.objectContaining({
         type: 'TRAINING_MILESTONE',
         rikishiId: 'r1',
-        title: 'Wrestler 1 made notable gains',
+        title: expect.any(String),
       })
     );
   });

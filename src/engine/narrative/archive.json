@@ -673,6 +673,23 @@
     },
     "system": {
       "descriptors": {
+        "ranks": {
+          "yokozuna": { "text": "Yokozuna", "ja": "横綱" },
+          "ozeki": { "text": "Ozeki", "ja": "大関" },
+          "sekiwake": { "text": "Sekiwake", "ja": "関脇" },
+          "komusubi": { "text": "Komusubi", "ja": "小結" },
+          "maegashira": { "text": "Maegashira", "ja": "前頭" },
+          "juryo": { "text": "Juryo", "ja": "十両" },
+          "makushita": { "text": "Makushita", "ja": "幕下" },
+          "sandanme": { "text": "Sandanme", "ja": "三段目" },
+          "jonidan": { "text": "Jonidan", "ja": "序二段" },
+          "jonokuchi": { "text": "Jonokuchi", "ja": "序ノ口" }
+        },
+        "styles": {
+          "oshi": { "text": "Oshi (Pushing)" },
+          "yotsu": { "text": "Yotsu (Belt)" },
+          "hybrid": { "text": "Hybrid" }
+        },
         "bands": {
           "stats": {
             "exceptional": "Exceptional",
@@ -765,6 +782,30 @@
           "Year %YEAR% marks a generational shift. A decade turns.",
           "Ten years pass. Year %YEAR% opens a new chapter."
         ]
+      },
+      "titles": {
+        "RECRUITMENT_WINDOW_CLOSED": ["Recruitment window closed"],
+        "RECRUITMENT_BLOCKED_SANCTIONS": ["Recruitment blocked by sanctions"],
+        "RECRUITMENT_WINDOW_OPEN": ["Recruitment window open"],
+        "PHASE_TRANSITION": ["Phase transition"],
+        "BANZUKE_REVEAL": ["Banzuke Hatsu-Dashi"],
+        "MONTHLY_BOUNDARY": ["Financial cycle complete"],
+        "MONTHLY_DEFICIT": ["Operating deficit"],
+        "ARCHETYPE_DRIFT": ["Tactical shift"],
+        "YEAR_BOUNDARY": ["Year %YEAR% begins"],
+        "HOF_INDUCTION": ["Hall of Fame: %SHIKONA%"],
+        "CAREER_WINS_MILESTONE": ["%SHIKONA% reaches %WINS% wins"],
+        "HOF_ELIGIBLE": ["Hall of Fame eligibility reached"],
+        "NPC_RECRUITMENT_SUMMARY": ["NPC stables recruit"],
+        "TALENT_POOL_REINJECTION": ["Wrestler re-enters talent pool"],
+        "HIGH_TALENT_SIGNED": ["Elite prospect signed"],
+        "GOVERNANCE_SCANDAL_REPORTED": ["Scandal reported"],
+        "GOVERNANCE_WARNING": ["JSA Warning"],
+        "GOVERNANCE_STATUS_CHANGED": ["Governance status change"],
+        "COMPLIANCE_SANCTIONS_LIFTED": ["Sanctions lifted"],
+        "JSA_ELECTION": ["JSA Board Election"],
+        "INJURY_SUSTAINED": ["%SHIKONA% Injured"],
+        "GOVERNANCE_BAILOUT": ["Ichimon Bailout"]
       }
     },
     "rikishi": {
@@ -882,6 +923,38 @@
             "label": "Genkai (限界)",
             "tooltip": "Physical limits are apparent. Best suited as a reliable lower-division stable pillar."
           }
+        },
+        "momentum": {
+          "surging": "Surging",
+          "rising": "Rising",
+          "steady": "Steady",
+          "fading": "Fading",
+          "frozen": "Frozen"
+        },
+        "rivalry": {
+          "none": "Neutral",
+          "simmering": "Simmering",
+          "heated": "Heated",
+          "boiling": "Boiling",
+          "legendary": "Legendary"
+        },
+        "scandal": {
+          "none": "Clean Record",
+          "whispers": "Whispers",
+          "notable": "Under Review",
+          "severe": "On Probation",
+          "critical": "Critical Scrutiny"
+        },
+        "prizes": {
+          "none": "None",
+          "shukun": "Shukun-shō",
+          "kanto": "Kantō-shō",
+          "gino": "Ginō-shō"
+        },
+        "traits": {
+          "positive": "Gifted",
+          "negative": "Flawed",
+          "neutral": "Balanced"
         }
       }
     },
@@ -957,6 +1030,14 @@
           "demoted": "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
           "cleared": "Cleared Kadoban. Retains Ozeki rank.",
           "danger": "In danger of falling to Kadoban status with another losing record."
+        },
+        "sections": {
+          "injuries": "Injuries",
+          "economy": "Economy & Finance",
+          "matchups": "Key Matchups",
+          "governance": "Governance & Compliance",
+          "milestones": "Milestones & Awards",
+          "media": "Media & Headlines"
         }
       },
       "labels": {
@@ -971,6 +1052,20 @@
             "severe": "Severe"
           },
           "summary_format": "%SEV%%LOC% (%WEEKS%w)"
+        },
+        "scouting": {
+          "reasons": {
+            "foreigner_limit": "Heya already at foreigner limit (1).",
+            "unavailable": "Candidate is no longer accepting offers.",
+            "not_found": "Candidate not found"
+          }
+        },
+        "stats": {
+          "power": "Power",
+          "speed": "Speed",
+          "technique": "Technique",
+          "spirit": "Spirit",
+          "ring_sense": "Ring Sense"
         }
       }
     },
@@ -1041,6 +1136,14 @@
         "Cold Pragmatist": ["Cold Pragmatist"],
         "Family First": ["Family First"],
         "Numbers Guy": ["Numbers Guy"]
+      }
+    },
+    "strategy": {
+      "philosophies": {
+        "balanced": "Balanced Growth",
+        "aggressive": "Aggressive Development",
+        "conservative": "Risk Aversion",
+        "experimental": "Experimental Training"
       }
     }
   },

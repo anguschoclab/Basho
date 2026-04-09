@@ -1,4 +1,6 @@
 import { UIRosterEntry, rankScore } from "./rikishiUI";
+import { BardEngine } from "../engine/narrative/BardEngine";
+import { SeededRNG } from "../engine/rng";
 
 export interface UIRankRow {
   rankLabel: string;
@@ -75,9 +77,9 @@ export function buildBanzukeRows(entries: UIRosterEntry[], division: string, sea
     const rank = sample?.rank ?? "unknown";
     const rankNumber = sample?.rankNumber ?? 1;
     const isSanyaku = rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
-    const rankLabel = isSanyaku
-      ? rank.charAt(0).toUpperCase() + rank.slice(1)
-      : `${rank.charAt(0).toUpperCase() + rank.slice(1)} #${rankNumber}`;
+    const rng = new SeededRNG(key + "_" + division);
+    const baseLabel = BardEngine.resolve(rng, `system.descriptors.ranks.${rank}`).text;
+    const rankLabel = isSanyaku ? baseLabel : `${baseLabel} #${rankNumber}`;
 
     result.push({
       rankLabel,
