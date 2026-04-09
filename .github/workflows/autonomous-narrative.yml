@@ -30,24 +30,22 @@ jobs:
       - name: Install Dependencies
         run: bun install
 
-      - name: Run Narrative Generation
+      - name: Run Narrative Orchestration
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL_PRIMARY: ${{ github.event.inputs.model || 'gemini-3-flash-preview' }}
           GEMINI_MODEL_FALLBACK: "gemini-2.5-flash"
-        run: bun run scripts/generate-narrative.ts
+        run: bun run scripts/bard-orchestrator.ts
 
-      - name: Validate Templates
+      - name: Validate Archive
         run: |
-          # Simple validation to ensure files are still valid JSON and have content
           if ! jq . src/engine/narrative/archive.json > /dev/null; then echo "Invalid archive.json"; exit 1; fi
-          if ! jq . src/engine/pbp_voice_matrix.json > /dev/null; then echo "Invalid matrix.json"; exit 1; fi
 
       - name: Commit and Push Changes
         if: success()
         run: |
           git config --global user.name "BardEngine-Bot"
           git config --global user.email "bard-bot@sumo-manager.pro"
-          git add src/engine/narrative/archive.json src/engine/pbp_voice_matrix.json
-          git commit -m "Auto-generated narrative content [skip ci]" || echo "No changes to commit"
+          git add src/engine/narrative/archive.json
+          git commit -m "Auto-generated narrative expansion [skip ci]" || echo "No changes to commit"
           git push

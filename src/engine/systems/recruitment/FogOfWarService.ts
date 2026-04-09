@@ -12,8 +12,9 @@
  */
 
 import { clamp, clampInt } from "../../utils/math";
-import { rngFromSeed } from "../../rng";
+import { rngFromSeed, SeededRNG } from "../../rng";
 import { NarrativeService } from "../narrative/NarrativeService";
+import { BardEngine } from "../narrative/BardEngine";
 import { 
   type ConfidenceLevel, 
   type ScoutingInvestment, 
@@ -106,9 +107,15 @@ export function resolveScoutedAttribute(
   seed: string,
   range: { min: number; max: number } = { min: 0, max: 100 }
 ): { value: string; confidence: ConfidenceLevel; narrative: string } {
+  const rng = new SeededRNG(seed);
+  
   if (confidence === "unknown") {
-    return { value: "Unknown", confidence: "unknown", narrative: "Insufficient observation" };
+    const { text: value } = BardEngine.resolve(rng, "scouting.confidence.unknown");
+    const { text: narrative } = BardEngine.resolve(rng, "scouting.qualifiers.unknown_narrative", { attr: attributeName });
+    return { value, confidence: "unknown", narrative };
   }
+
+  const { text: confidenceLabel } = BardEngine.resolve(rng, `scouting.confidence.${confidence}`);
 
   if (confidence === "certain") {
     const label = NarrativeService.describeAttribute(attributeName, trueValue);
@@ -118,14 +125,10 @@ export function resolveScoutedAttribute(
   const estimated = getEstimatedValue(trueValue, confidence, seed, range);
   const label = NarrativeService.describeAttribute(attributeName, estimated);
   
-  const qualifiers: Record<Exclude<ConfidenceLevel, "certain" | "unknown">, string> = {
-    high: "Well-observed",
-    medium: "Moderately scouted",
-    low: "Limited observation"
-  };
+  const qKey = confidence === "medium" ? "appears" : "may_be";
+  const { text: qLabel } = BardEngine.resolve(rng, `scouting.qualifiers.${qKey}`);
+  
+  const desc = `${qLabel} ${label.toLowerCase()}`;
 
-  const q = confidence === "medium" ? "appears" : confidence === "low" ? "may be" : "";
-  const desc = q ? `${q} ${label.toLowerCase()}` : label;
-
-  return { value: label, confidence, narrative: `${qualifiers[confidence]}: ${desc}` };
+  return { value: label, confidence, narrative: `${confidenceLabel}: ${desc}` };
 }
