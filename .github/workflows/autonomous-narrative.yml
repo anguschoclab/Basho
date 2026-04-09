@@ -26,20 +26,38 @@ jobs:
         run: bun install
 
       - name: Execute Bard Engine
-        # Points to the new dedicated execution script with a fallback retry loop
+        # Fallback strategy: Try Gemini 3.0 Flash 3x, then Gemini 2.5 Flash 3x.
         run: |
-          for i in {1..3}; do
-            bun run scripts/generate-narrative.ts && break || {
-              if [ $i -lt 3 ]; then
-                echo "Attempt $i failed (likely 503 High Demand). Retrying in 60 seconds..."
-                sleep 60
-              else
-                echo "All 3 attempts failed due to prolonged API demand."
-                echo "Gracefully skipping today's narrative generation so the workflow doesn't fail."
-                exit 0
-              fi
-            }
-          done
+          run_with_model() {
+            local model=$1
+            echo "======================================================="
+            echo "Attempting narrative generation with model: $model"
+            echo "======================================================="
+            export GEMINI_MODEL=$model
+            
+            for i in {1..3}; do
+              bun run scripts/generate-narrative.ts && return 0 || {
+                if [ $i -lt 3 ]; then
+                  echo "Attempt $i with $model failed (likely 503 High Demand). Retrying in 60 seconds..."
+                  sleep 60
+                else
+                  echo "All 3 attempts with $model failed."
+                  return 1
+                fi
+              }
+            done
+          }
+
+          if run_with_model "gemini-3.0-flash"; then
+            echo "Success: Narrative generated with gemini-3.0-flash."
+          elif run_with_model "gemini-2.5-flash"; then
+            echo "Success: Narrative generated with gemini-2.5-flash."
+          else
+            echo "======================================================="
+            echo "All 3 attempts on BOTH models failed due to prolonged API demand."
+            echo "Gracefully skipping today's narrative generation so the workflow doesn't fail."
+            exit 0
+          fi
         env:
           # Securely pull the API key from GitHub Repository Secrets
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
