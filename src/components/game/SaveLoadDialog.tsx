@@ -382,14 +382,14 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
               <input
                 type="file"
                 accept=".json"
-                className="hidden"
+                className="sr-only peer"
                 onChange={handleImport}
                 disabled={isImporting}
               />
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5"
+                className="gap-1.5 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2"
                 asChild
                 tooltip={
                   isImporting
