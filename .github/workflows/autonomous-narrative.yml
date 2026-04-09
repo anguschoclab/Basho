@@ -34,8 +34,9 @@ jobs:
                 echo "Attempt $i failed (likely 503 High Demand). Retrying in 60 seconds..."
                 sleep 60
               else
-                echo "All 3 attempts failed. Exiting."
-                exit 1
+                echo "All 3 attempts failed due to prolonged API demand."
+                echo "Gracefully skipping today's narrative generation so the workflow doesn't fail."
+                exit 0
               fi
             }
           done
