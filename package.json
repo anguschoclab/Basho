@@ -13,6 +13,7 @@
     "check:engine-rng": "node scripts/check-determinism.mjs",
     "test:e2e": "playwright test",
     "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "narrative:audit": "tsx scripts/audit-and-fill.ts"
   },
   "dependencies": {

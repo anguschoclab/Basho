@@ -49,5 +49,15 @@ export default defineConfig({
         inline: ["seedrandom"],
       },
     },
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: ["src/engine/**/*.ts", "src/presenters/**/*.ts"],
+      exclude: ["src/engine/**/__tests__/**", "src/engine/**/*.test.ts"],
+      thresholds: {
+        lines: 60,
+        branches: 50,
+      },
+    },
   },
 });

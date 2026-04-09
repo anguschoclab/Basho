@@ -84,7 +84,8 @@ describe("resolveBoutPhysics — henka tactic", () => {
 
     const { result } = resolveBoutPhysics(ctx, east, west, basho);
     expect(["east", "west"]).toContain(result.winner);
-    expect(result.kimariteName).toBeTruthy();
+    expect(typeof result.kimariteName).toBe("string");
+    expect(result.kimariteName.length).toBeGreaterThan(0);
   });
 });
 
@@ -110,7 +111,8 @@ describe("resolveBoutPhysics — aggression modifier", () => {
 
     const { result } = resolveBoutPhysics(ctx, east, west, basho);
     expect(["east", "west"]).toContain(result.winner);
-    expect(result.kimarite).toBeTruthy();
+    expect(typeof result.kimarite).toBe("string");
+    expect(result.kimarite.length).toBeGreaterThan(0);
   });
 
   it("aggression=90 and aggression=10 produce valid but potentially different bouts", () => {
@@ -152,7 +154,8 @@ describe("resolveBoutPhysics — archetype starting balance multiplier", () => {
 
     const { result } = resolveBoutPhysics(ctx, east, west, basho);
     expect(["east", "west"]).toContain(result.winner);
-    expect(result.kimarite).toBeTruthy();
+    expect(typeof result.kimarite).toBe("string");
+    expect(result.kimarite.length).toBeGreaterThan(0);
   });
 
   it("tsuppari archetype rikishi completes a bout with 0.8x starting balance", () => {
@@ -220,12 +223,15 @@ describe("resolveBoutPhysics — output structure", () => {
 
     const { result } = resolveBoutPhysics(ctx, east, west, basho);
 
-    expect(result.boutId).toBeTruthy();
+    expect(result.boutId).toBe("bout-test-001");
     expect(["east", "west"]).toContain(result.winner);
-    expect(result.winnerRikishiId).toBeTruthy();
-    expect(result.loserRikishiId).toBeTruthy();
-    expect(result.kimarite).toBeTruthy();
-    expect(result.kimariteName).toBeTruthy();
+    expect(["r-east", "r-west"]).toContain(result.winnerRikishiId);
+    expect(["r-east", "r-west"]).toContain(result.loserRikishiId);
+    expect(result.winnerRikishiId).not.toBe(result.loserRikishiId);
+    expect(typeof result.kimarite).toBe("string");
+    expect(result.kimarite.length).toBeGreaterThan(0);
+    expect(typeof result.kimariteName).toBe("string");
+    expect(result.kimariteName.length).toBeGreaterThan(0);
     expect(typeof result.duration).toBe("number");
     expect(typeof result.upset).toBe("boolean");
     expect(Array.isArray(result.log)).toBe(true);

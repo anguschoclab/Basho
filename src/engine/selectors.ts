@@ -82,3 +82,45 @@ export function getStableFinances(world: WorldState, heyaId: Id): number {
   const h = world.heyas.get(heyaId);
   return h?.funds ?? 0;
 }
+
+/**
+ * Returns all retired rikishi from the active roster map.
+ * (Historically retired rikishi live in world.historicalRikishi.)
+ */
+export function selectRetiredRikishi(world: WorldState): Rikishi[] {
+  const result: Rikishi[] = [];
+  for (const r of world.rikishi.values()) {
+    if (r.isRetired) result.push(r);
+  }
+  return result;
+}
+
+/**
+ * Returns heyas with critical welfare risk.
+ * Triggered when welfareRisk >= 55 (investigation threshold) or
+ * complianceState is "investigation" / "sanctioned".
+ */
+export function selectHeyasWithCriticalWelfare(world: WorldState): Heya[] {
+  const result: Heya[] = [];
+  for (const h of world.heyas.values()) {
+    const ws = h.welfareState;
+    if (!ws) continue;
+    const criticalCompliance = ws.complianceState === "investigation" || ws.complianceState === "sanctioned";
+    if (ws.welfareRisk >= 55 || criticalCompliance) result.push(h);
+  }
+  return result;
+}
+
+/**
+ * Returns heyas that are candidates for merger:
+ * negative funds (net debt) AND a roster of 3 or fewer active rikishi.
+ */
+export function selectMergerCandidates(world: WorldState): Heya[] {
+  const result: Heya[] = [];
+  for (const h of world.heyas.values()) {
+    const isInDebt = h.funds < 0;
+    const hasSmallRoster = (h.rikishiIds?.length ?? 0) <= 3;
+    if (isInDebt && hasSmallRoster) result.push(h);
+  }
+  return result;
+}

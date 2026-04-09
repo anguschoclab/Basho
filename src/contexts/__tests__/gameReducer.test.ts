@@ -12,15 +12,13 @@ describe('Game Reducer Purity', () => {
       world: generateInitialWorld('test-purity'),
     };
 
-    expect(() => {
-      gameReducer(initialState, { type: 'TICK_DAY' } as unknown as GameAction);
-    }).not.toThrow();
-
     const nextState = gameReducer(initialState, { type: 'TICK_DAY' } as unknown as GameAction);
 
-    // Verify a new object reference was returned
+    // Verify a new object reference was returned (if reducer threw, the test fails with the real error)
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
+    // Verify calendar advanced by exactly one day
+    expect(nextState.world.dayIndexGlobal).toBe(initialState.world.dayIndexGlobal + 1);
   });
 });
 

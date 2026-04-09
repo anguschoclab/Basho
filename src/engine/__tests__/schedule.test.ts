@@ -109,11 +109,15 @@ describe("scheduleDivisionDay", () => {
     expect(scheduled.length).toBeGreaterThan(0);
 
     // Check structure
+    const seenBoutIds = new Set<string>();
     for (const match of scheduled) {
-      expect(match.boutId).toBeTruthy();
+      expect(typeof match.boutId).toBe("string");
+      expect(match.boutId.length).toBeGreaterThan(0);
+      expect(seenBoutIds.has(match.boutId)).toBe(false); // boutIds must be unique
+      seenBoutIds.add(match.boutId);
       expect(match.day).toBe(1);
-      expect(match.eastRikishiId).toBeTruthy();
-      expect(match.westRikishiId).toBeTruthy();
+      expect(typeof match.eastRikishiId).toBe("string");
+      expect(typeof match.westRikishiId).toBe("string");
       expect(match.eastRikishiId).not.toBe(match.westRikishiId);
     }
   });
