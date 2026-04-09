@@ -5,7 +5,7 @@ import * as path from "path";
 /**
  * CI/CD Entry Point for the Autonomous Narrative Generation
  * This script initializes the environment, dynamically finds the correct 
- * BardEngine execution method, and saves the generated output to the local archive.
+ * BardEngine execution method (static or instance), and saves the output.
  */
 async function generateNarrative() {
   console.log("Initializing Bard Engine...");
@@ -21,9 +21,10 @@ async function generateNarrative() {
   
   // 2. Dynamically hunt for the correct method name
   let methodToCall: string | null = null;
+  let isStatic = false;
   const commonMethods = ["run", "generate", "process", "execute", "generateDrama", "generateNarrative", "create", "tick"];
   
-  // Check against common names first
+  // A. Check common instance methods
   for (const name of commonMethods) {
     if (typeof (engine as any)[name] === "function") {
       methodToCall = name;
@@ -31,23 +32,52 @@ async function generateNarrative() {
     }
   }
 
-  // Fallback: If not a common name, grab the first available custom method on the prototype
+  // B. Check common static methods
   if (!methodToCall) {
-    const availableMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(engine))
-      .filter(prop => typeof (engine as any)[prop] === "function" && prop !== "constructor");
-    
-    if (availableMethods.length > 0) {
-      methodToCall = availableMethods[0];
-      console.log(`Fallback: Using discovered method '${methodToCall}'...`);
-    } else {
-      throw new Error("Could not find any callable methods on the BardEngine instance.");
+    for (const name of commonMethods) {
+      if (typeof (BardEngine as any)[name] === "function") {
+        methodToCall = name;
+        isStatic = true;
+        break;
+      }
     }
   }
 
-  console.log(`Executing narrative generation via engine.${methodToCall}()...`);
+  // C. Fallback: Deep introspection for any custom named function
+  if (!methodToCall) {
+    const protoMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(engine));
+    const instanceMethods = Object.keys(engine);
+    const staticMethods = Object.getOwnPropertyNames(BardEngine);
+
+    const allCallable = [...new Set([...protoMethods, ...instanceMethods])]
+      .filter(p => typeof (engine as any)[p] === "function" && p !== "constructor");
+    
+    const allStaticCallable = staticMethods
+      .filter(p => typeof (BardEngine as any)[p] === "function" && !["constructor", "name", "length", "prototype"].includes(p));
+
+    if (allCallable.length > 0) {
+      methodToCall = allCallable[0];
+      console.log(`Fallback: Discovered custom instance method '${methodToCall}'...`);
+    } else if (allStaticCallable.length > 0) {
+      methodToCall = allStaticCallable[0];
+      isStatic = true;
+      console.log(`Fallback: Discovered custom static method '${methodToCall}'...`);
+    } else {
+      console.error("\n--- DEBUG INFO: BARD ENGINE STRUCTURE ---");
+      console.error("Instance Properties:", instanceMethods);
+      console.error("Prototype Properties:", protoMethods);
+      console.error("Static Properties:", staticMethods);
+      console.error("-----------------------------------------\n");
+      throw new Error("Could not find any callable methods on the BardEngine instance or class. Check the debug logs above.");
+    }
+  }
+
+  const callType = isStatic ? "BardEngine" : "engine";
+  console.log(`Executing narrative generation via ${callType}.${methodToCall}()...`);
   
   // Execute the discovered method
-  const newEntries = await (engine as any)[methodToCall]();
+  const target = isStatic ? BardEngine : engine;
+  const newEntries = await (target as any)[methodToCall]();
 
   // 3. Persist the results to ensure git detects a file change
   const archivePath = path.resolve(__dirname, "../src/engine/narrative/archive.json");
