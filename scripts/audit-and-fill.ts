@@ -18,7 +18,10 @@ if (!API_KEY) {
   process.exit(1);
 }
 
-const client = new GeminiClient(API_KEY);
+const client = new GeminiClient(API_KEY, {
+  primary: process.env.GEMINI_MODEL_PRIMARY,
+  fallback: process.env.GEMINI_MODEL_FALLBACK,
+});
 
 async function run() {
   console.log("Starting Narrative Audit...");

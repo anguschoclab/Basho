@@ -6,19 +6,53 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  */
 export class GeminiClient {
   private genAI: GoogleGenerativeAI;
-  private model: any;
+  private primaryModel: string;
+  private fallbackModel: string;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, options: { primary?: string; fallback?: string } = {}) {
     this.genAI = new GoogleGenerativeAI(apiKey);
-    this.model = this.genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview", // Upgraded to Gemini 3 for superior instruction following
-      generationConfig: {
-          temperature: 0.7,
-          topP: 0.95,
-          topK: 40,
-          maxOutputTokens: 2048,
+    this.primaryModel = options.primary || "gemini-3-flash-preview";
+    this.fallbackModel = options.fallback || "gemini-2.5-flash";
+  }
+
+  /**
+   * Internal helper to execute a generation with 3x retry on primary, then 3x on fallback.
+   */
+  private async runWithFallback(prompt: string, responseMimeType: "application/json" | "text/plain" = "application/json"): Promise<string> {
+    const models = [this.primaryModel, this.fallbackModel];
+    
+    for (const modelId of models) {
+      console.log(`  [GeminiClient] Attempting model: ${modelId}`);
+      for (let i = 1; i <= 3; i++) {
+        try {
+          const model = this.genAI.getGenerativeModel({ 
+            model: modelId,
+            generationConfig: {
+              temperature: 0.7,
+              topP: 0.95,
+              topK: 40,
+              maxOutputTokens: 2048,
+              responseMimeType: responseMimeType as any
+            }
+          });
+
+          const result = await model.generateContent(prompt);
+          const response = await result.response;
+          const text = response.text();
+          if (!text) throw new Error("Empty response from Gemini.");
+          return text;
+        } catch (err: any) {
+          console.warn(`    [GeminiClient] ${modelId} Attempt ${i}/3 FAILED: ${err.message}`);
+          if (i === 3) {
+            if (modelId === this.fallbackModel) throw err;
+            console.warn(`  [GeminiClient] Primary exhausted. Switching to fallback...`);
+          } else {
+            await new Promise(r => setTimeout(r, 1000 * i));
+          }
+        }
       }
-    });
+    }
+    throw new Error("All models and retries exhausted.");
   }
 
   /**
@@ -48,18 +82,14 @@ export class GeminiClient {
     `;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      // Extract JSON array
+      const text = await this.runWithFallback(prompt, "application/json");
       const jsonMatch = text.match(/\[.*\]/s);
       if (jsonMatch) {
           return JSON.parse(jsonMatch[0]);
       }
       return [];
     } catch (error) {
-      console.error("GeminiClient Error:", error);
+      console.error("GeminiClient generateVariations Error:", error);
       return [];
     }
   }
@@ -83,11 +113,7 @@ export class GeminiClient {
     `;
 
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      // Remove markdown code blocks if present
+      const text = await this.runWithFallback(prompt, "application/json");
       const cleanText = text.replace(/```json|```/g, '').trim();
       const jsonMatch = cleanText.match(/\{.*?\}/s);
       
