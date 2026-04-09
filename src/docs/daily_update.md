@@ -12,5 +12,5 @@ The current focus appears to be fleshing out the daily and weekly pipeline orche
 
 📄 Proposed Documentation Updates:
 src/docs/daily_update.md: Add a new entry summarizing the implementation of the tick pipeline architecture and `overflow.ts` constraints.
-Code Paths Covered: `src/engine/tick/`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`
+Code Paths Covered: `src/engine/tick/`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/descriptorBands.ts`
 Key Knowledge Gaps Addressed: Documents that the fundamental pipeline execution order is established, while flagging the need to complete the C5.4 injury modifier hooks within the narrative presentation layer.
