@@ -1,3 +1,3 @@
-## 2024-03-24 - Accessibility on Custom Triggers
-**Learning:** Raw icon-only div triggers for tooltips (e.g. `<div cursor-help><Keyboard /></div>`) are inaccessible to screen readers and keyboard navigation (tabbing).
-**Action:** Always refactor raw `div` triggers for tooltips into semantic `<Button variant="outline" size="icon" aria-label="...">` to ensure they are focusable, accessible, and provide proper context to screen readers, while leveraging the centralized `TooltipWrap` component.
+## 2024-04-09 - Accessible File Input Buttons
+**Learning:** Hiding file inputs with `display: none` (`className="hidden"`) completely removes them from the tab order, stranding keyboard users when the input is wrapped in a custom UI component like a `<Button asChild>`.
+**Action:** Always visually hide file inputs using `sr-only` instead of `hidden`, and use Tailwind's `peer` along with `peer-focus-visible` classes on the adjacent visible button to properly render a focus ring.
