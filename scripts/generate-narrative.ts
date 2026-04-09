@@ -1,6 +1,5 @@
 import { BardEngine } from "../src/engine/narrative/BardEngine";
 import { WorldFactory } from "../src/engine/systems/generation/WorldFactory";
-import { GameEvent, EventType } from "../src/engine/types/events";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -24,25 +23,15 @@ async function generateNarrative() {
   console.log("Bootstrapping world state for narrative context...");
   const worldState = WorldFactory.createNewWorld();
 
-  // 3. Create some dummy events for the Bard to report on
-  // In a real scenario, you might read these from a queued JSON file,
-  // but for the daily chron job, we'll give it the "dawn of a new era" context.
-  const dummyEvents: GameEvent[] = [
-    {
-      id: `evt_${Date.now()}`,
-      type: EventType.NEWS_ARTICLE,
-      timestamp: worldState.time.timestamp,
-      description: "A new era begins in the Sumo world as the latest banzuke is prepared.",
-      severity: 'info'
-    }
-  ];
-
   console.log("Executing engine.generateDailyDigest()...");
   
-  // 4. Execute the specific method with the required arguments
-  const dailyDigest = await engine.generateDailyDigest(worldState, dummyEvents);
+  // 3. Execute the specific method without dummy events.
+  // Passing an empty array forces the BardEngine to analyze the baseline 
+  // worldState (roster, current date, etc.) and generate a general status 
+  // update, natively filling out its JSON categories without fake inputs.
+  const dailyDigest = await engine.generateDailyDigest(worldState, []);
 
-  // 5. Persist the results
+  // 4. Persist the results
   const archivePath = path.resolve(__dirname, "../src/engine/narrative/archive.json");
   
   let archive: any[] = [];
