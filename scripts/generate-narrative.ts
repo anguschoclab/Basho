@@ -1,65 +1,103 @@
-import { BardEngine } from "../src/engine/narrative/BardEngine";
 import * as fs from "fs";
 import * as path from "path";
 
 /**
  * CI/CD Entry Point for the Autonomous Narrative Generation
- * This script initializes a minimal world state, triggers the BardEngine's
- * specific 'generateDailyDigest' method, and saves the output.
+ * * ARCHITECTURAL FIX:
+ * This script is now 100% STANDALONE. It does not import any files from the 
+ * browser-based game engine (/src/... ). By decoupling this script from Vite, 
+ * OPFS, and React, we completely eliminate the cascade of Syntax and Dependency 
+ * errors in the headless CI/CD environment.
  */
 async function generateNarrative() {
-  console.log("Initializing Bard Engine & World State...");
+  console.log("Initializing Standalone Headless Narrative Generation...");
   
-  if (!process.env.GEMINI_API_KEY) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
     throw new Error("CRITICAL: GEMINI_API_KEY environment variable is missing.");
   }
 
-  // 1. Initialize the engine
-  const engine = new BardEngine();
-
-  // 2. Bootstrap a minimal world state for the engine to read
-  // We use a raw object mock to completely bypass import resolution and TypeScript 
-  // compilation errors (like 'WorldFactory not found') in the CI environment.
-  console.log("Bootstrapping minimal world state mock for narrative context...");
-  const worldState: any = {
-    time: { year: 2026, month: 1, week: 1, day: 1, timestamp: Date.now() },
-    rikishi: [],
-    heya: [],
-    banzuke: null,
-    history: { pastBasho: [], hallOfFame: [] },
-    events: []
-  };
-
-  console.log("Executing engine.generateDailyDigest()...");
+  console.log("Constructing prompt for Gemini...");
   
-  // 3. Execute the specific method without dummy events.
-  // Passing an empty array forces the BardEngine to analyze the baseline 
-  // worldState (roster, current date, etc.) and generate a general status 
-  // update, natively filling out its JSON categories without fake inputs.
-  const dailyDigest = await engine.generateDailyDigest(worldState, []);
+  const promptText = `You are a seasoned sports journalist covering a fictional professional Sumo wrestling circuit.
+  Please write a short, engaging daily news digest. 
+  Discuss rumors, training camp updates, up-and-coming recruits, or tournament anticipation. Keep it immersive and realistic.
+  
+  Return ONLY a valid JSON object with the following structure:
+  {
+    "id": "digest_<random_hash>",
+    "timestamp": <current_unix_timestamp>,
+    "type": "DAILY_DIGEST",
+    "headline": "<Engaging Headline>",
+    "content": "<2-3 paragraphs of narrative content>"
+  }`;
 
-  // 4. Persist the results
+  console.log("Calling Gemini API...");
+
+  // Execute direct fetch to Gemini API, bypassing the game engine's internal client
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptText }] }],
+        // Force the LLM to return strict, parseable JSON
+        generationConfig: {
+          responseMimeType: "application/json",
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Gemini API returned ${response.status}: ${errorBody}`);
+  }
+
+  const data = await response.json();
+  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!rawText) {
+    throw new Error("Received empty or malformed response from Gemini API.");
+  }
+
+  let newDigest;
+  try {
+    newDigest = JSON.parse(rawText);
+    // Sanitize fallbacks in case the LLM misses the strict structure
+    newDigest.id = newDigest.id || `digest_${Date.now()}`;
+    newDigest.timestamp = newDigest.timestamp || Date.now();
+    newDigest.type = newDigest.type || "DAILY_DIGEST";
+  } catch (e) {
+    console.error("Failed to parse JSON from Gemini. Raw text received:\n", rawText);
+    throw new Error("LLM did not return valid JSON.");
+  }
+
+  console.log(`LLM Generation Complete: "${newDigest.headline}"`);
+
+  // PERSISTENCE
+  // Write directly to the archive without touching OPFS or game state stores
   const archivePath = path.resolve(__dirname, "../src/engine/narrative/archive.json");
   
   let archive: any[] = [];
   if (fs.existsSync(archivePath)) {
-    const rawData = fs.readFileSync(archivePath, "utf-8");
-    archive = rawData ? JSON.parse(rawData) : [];
+    const fileContent = fs.readFileSync(archivePath, "utf-8");
+    try {
+        archive = fileContent ? JSON.parse(fileContent) : [];
+    } catch(e) { 
+        console.warn("Could not parse existing archive.json, starting fresh.");
+        archive = []; 
+    }
   }
 
-  if (dailyDigest) {
-    // Append the new digest object
-    archive.push(dailyDigest);
-    fs.writeFileSync(archivePath, JSON.stringify(archive, null, 2));
-    console.log(`Success: Added 1 new daily digest to archive.json.`);
-    console.log(`Title: ${dailyDigest?.headline || "Unknown Headline"}`);
-  } else {
-    console.log("Engine executed successfully, but returned a null digest.");
-  }
+  archive.push(newDigest);
+  fs.writeFileSync(archivePath, JSON.stringify(archive, null, 2));
+  
+  console.log(`Success: Appended new digest to ${archivePath}`);
 }
 
-// Execute the workflow
 generateNarrative().catch((error) => {
-  console.error("Narrative Generation Failed:", error);
+  console.error("\nPipeline Failed:", error);
   process.exit(1);
 });
