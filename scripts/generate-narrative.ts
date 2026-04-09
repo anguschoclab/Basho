@@ -17,7 +17,10 @@ async function generateNarrative() {
     throw new Error("CRITICAL: GEMINI_API_KEY environment variable is missing.");
   }
 
-  console.log("Constructing prompt for Gemini...");
+  // Grab the model from the environment variable set by the bash loop, fallback to 2.5
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+
+  console.log(`Constructing prompt for Gemini (Model: ${model})...`);
   
   const promptText = `You are a seasoned sports journalist covering a fictional professional Sumo wrestling circuit.
   Please write a short, engaging daily news digest. 
@@ -36,7 +39,7 @@ async function generateNarrative() {
 
   // Execute direct fetch to Gemini API, bypassing the game engine's internal client
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
