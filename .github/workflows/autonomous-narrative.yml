@@ -1,33 +1,40 @@
-name: Autonomous Bard Narrative Expansion
+name: Autonomous Narrative
 
 on:
   schedule:
-    - cron: '0 0 * * 1,3,5' # Runs at 00:00 every Monday, Wednesday, and Friday
-  workflow_dispatch: # Allows manual triggering
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
 
 jobs:
-  expand-narrative:
+  run-bard-engine:
+    name: Run Narrative Generation
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
+          bun-version: latest
 
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        # Using bun install resolves the lockfile natively and ignores cross-platform optional dependency mismatches
+        run: bun install
 
-      - name: Run Narrative Audit & Fill
+      - name: Execute Bard Engine
+        # Replace this with the specific package.json script if one is defined (e.g., bun run bard)
+        run: bun run src/engine/narrative/BardEngine.ts
         env:
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
-        run: npm run narrative:audit
+          # Ensure your Gemini API key is mapped from GitHub repository secrets
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
 
-      - name: Commit and Push Changes
+      - name: Commit and Push Narrative Updates
         run: |
-          git config --global user.name "BardEngine-Bot"
-          git config --global user.email "bard-engine@antigravity.ai"
-          git add src/engine/narrative/archive.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: autonomous narrative expansion [skip ci]" && git push)
+          git config --global user.name "Basho-Bot"
+          git config --global user.email "bot@basho-engine.local"
+          git add .
+          # Only commit if there are changes to avoid action failures
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore(narrative): auto-generate new bard entries"
+          git push
