@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { getHeyaStaffBonuses } from "../staff";
-import { createWorldState } from "../systems/generation/WorldFactory";
+import { makeMockWorld } from "./utils";
 import type { Staff, StaffRole } from "../types/staff";
 
 describe("Staff System Integration", () => {
   it("should calculate aggregate stacking bonuses for multiple staff", () => {
-    const world = createWorldState();
+    const world = makeMockWorld();
     const heyaId = "test-heya";
-    
+
     // Create 2 Technique Coaches with 'strong' competence (+0.15 each)
     const staff1: Staff = {
       id: "s1", name: "Coach A", role: "technique_coach", 
@@ -36,9 +36,9 @@ describe("Staff System Integration", () => {
   });
 
   it("should penalize bonuses based on staff fatigue", () => {
-    const world = createWorldState();
+    const world = makeMockWorld();
     const heyaId = "test-heya";
-    
+
     const staff1: Staff = {
       id: "s1", name: "Tired Coach", role: "conditioning_coach", 
       fatigue: 100, // 100% fatigue = 50% effectiveness
@@ -52,7 +52,7 @@ describe("Staff System Integration", () => {
 
     const bonuses = getHeyaStaffBonuses(world, heyaId);
     
-    // Expected: 1.0 + (0.3 * 0.5) = 1.15
-    expect(bonuses.conditioning).toBeCloseTo(1.15);
+    // Expected: 1.0 + (0.3 * 0.4) = 1.12 — fatigue > 80 applies 0.4 efficiency factor
+    expect(bonuses.conditioning).toBeCloseTo(1.12);
   });
 });

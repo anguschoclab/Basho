@@ -1,6 +1,4 @@
 import { UIRosterEntry, rankScore } from "./rikishiUI";
-import { BardEngine } from "../engine/narrative/BardEngine";
-import { SeededRNG } from "../engine/rng";
 
 export interface UIRankRow {
   rankLabel: string;
@@ -79,8 +77,12 @@ export function buildBanzukeRows(entries: UIRosterEntry[], division: string, sea
     const rank = sample?.rank ?? "unknown";
     const rankNumber = sample?.rankNumber ?? 1;
     const isSanyaku = rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
-    const rng = new SeededRNG(key + "_" + division);
-    const baseLabel = BardEngine.resolve(rng, `system.descriptors.ranks.${rank}`).text;
+    const RANK_DISPLAY_NAMES: Record<string, string> = {
+      yokozuna: "Yokozuna", ozeki: "Ozeki", sekiwake: "Sekiwake", komusubi: "Komusubi",
+      maegashira: "Maegashira", juryo: "Juryo", makushita: "Makushita",
+      sandanme: "Sandanme", jonidan: "Jonidan", jonokuchi: "Jonokuchi",
+    };
+    const baseLabel = RANK_DISPLAY_NAMES[rank] ?? (rank.charAt(0).toUpperCase() + rank.slice(1));
     const rankLabel = isSanyaku ? baseLabel : `${baseLabel} #${rankNumber}`;
 
     // Calculate Japanese title

@@ -108,12 +108,8 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       id: `injury::${r.id}`,
       kind: "injury",
       title: `${r.shikona ?? r.name ?? r.id} injured`,
-      detail: injury 
-        ? BardEngine.resolve(new SeededRNG((world.seed || "inj") + r.id), "ui.labels.injury.summary_format", {
-            SEV: BardEngine.resolve(new SeededRNG("sev" + (injury.severity ?? "moderate")), `ui.labels.injury.severity.${injury.severity ?? "moderate"}`).text,
-            LOC: "", // Should add location if available
-            WEEKS: (injury.weeksRemaining ?? 0).toString()
-          }).text
+      detail: injury
+        ? `${injury.severity ?? "unknown"} — ${injury.weeksRemaining ?? 0}w remaining`
         : "Unknown injury",
       rikishiId: r.id,
     };
@@ -216,8 +212,8 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
           DETAIL: matchupItems.length ? "Key matchups highlighted." : "Tournament in progress." 
         }).text
       : injuryItems.length
-        ? BardEngine.resolve(rng, "ui.digest.status.injured", { 
-            SHIKONA: injuryItems[0].title.split(" ")[0] // Simplified extract
+        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
+            INJURY_COUNT: injuryItems.length.toString()
           }).text
         : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
 

@@ -1030,7 +1030,7 @@
     "ui": {
       "digest": {
         "status": {
-          "injured": "%SHIKONA% injured",
+          "injured": "%INJURY_COUNT% injury update this week.",
           "no_events": "No major events recorded this week.",
           "basho_day": "Basho Day %DAY%: %DETAIL%",
           "healthy": "Healthy"
