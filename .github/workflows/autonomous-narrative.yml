@@ -26,11 +26,11 @@ jobs:
         run: bun install
 
       - name: Execute Bard Engine
-        # Replace this with the specific package.json script if one is defined (e.g., bun run bard)
-        run: bun run src/engine/narrative/BardEngine.ts
+        # Points to the new dedicated execution script
+        run: bun run scripts/generate-narrative.ts
         env:
-          # Ensure your Gemini API key is mapped from GitHub repository secrets
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
+          # Hardcoded API Key as requested (WARNING: Ensure repository is private)
+          GEMINI_API_KEY: AIzaSyCEu6sSxrpU6b6fVk_E883laH_7GW0P78E
 
       - name: Commit and Push Narrative Updates
         run: |
