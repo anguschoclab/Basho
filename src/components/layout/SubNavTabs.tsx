@@ -1,89 +1,88 @@
-// SubNavTabs — FM-style page-level sub-navigation tabs
-// Sits between the top nav bar and the main content area
-
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
-/** Defines the structure for sub nav tab. */
 export interface SubNavTab {
   id: string;
   label: string;
-  /** If provided, clicking navigates to this URL instead of using the tab id */
   href?: string;
 }
 
-/** Defines the structure for sub nav tabs props. */
 interface SubNavTabsProps {
   tabs: SubNavTab[];
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
-  /** Page title shown left of tabs */
   pageTitle?: string;
   className?: string;
 }
 
-/**
- * sub nav tabs.
- * FM-inspired sub-navigation for deep-dives.
- */
 export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className }: SubNavTabsProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <div className={cn("border-b border-border/50 bg-card/30 backdrop-blur-md sticky top-0 z-30", className)}>
-      <div className="flex items-center h-12 px-6 max-w-[1600px] mx-auto gap-8">
-        {/* Page title */}
-        {pageTitle && (
-          <div className="flex items-center gap-3 shrink-0 py-1">
-            <h1 className="font-bold text-sm uppercase tracking-tight text-foreground">
-              {pageTitle}
-            </h1>
-            <div className="h-4 w-[1px] bg-border/60" />
-          </div>
-        )}
-        
-        {/* Tabs */}
-        <nav className="flex items-center h-full gap-1 overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
-            return (
-              <TooltipWrap key={tab.id} content={`View ${tab.label} section`} side="bottom">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    if (tab.href) {
-                      navigate({ to: tab.href as any });
-                    } else {
-                      onTabChange?.(tab.id);
-                    }
-                  }}
-                  className={cn(
-                    "relative h-full px-4 flex items-center text-xs font-bold transition-all duration-200 group hover:bg-transparent rounded-none",
-                    isActive
-                      ? "text-primary hover:text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <span className="relative z-10">{tab.label.toUpperCase()}</span>
-                  
-                  {/* Hover effect background */}
-                  {!isActive && (
-                    <div className="absolute inset-x-1 inset-y-2 rounded-md bg-muted/0 group-hover:bg-muted/50 transition-colors duration-200" />
-                  )}
+    <div className={cn("flex items-center h-11 gap-0 overflow-x-auto no-scrollbar", className)}>
+      {/* Optional page title */}
+      {pageTitle && (
+        <div className="flex items-center gap-3 shrink-0 pr-5">
+          <h1
+            className="font-semibold text-[11px] uppercase text-[hsl(var(--muted-foreground))]"
+            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.18em" }}
+          >
+            {pageTitle}
+          </h1>
+          <div className="h-4 w-px bg-[hsl(var(--border))]" />
+        </div>
+      )}
 
-                  {/* Active indicator bar */}
-                  {isActive && (
-                    <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary animate-in fade-in slide-in-from-bottom-1 duration-300 shadow-[0_-2px_10px_rgba(var(--primary),0.3)]" />
-                  )}
-                </Button>
-              </TooltipWrap>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Tabs */}
+      <nav className="flex items-center h-full">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
+          return (
+            <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
+              <button
+                onClick={() => {
+                  if (tab.href) {
+                    navigate({ to: tab.href as any });
+                  } else {
+                    onTabChange?.(tab.id);
+                  }
+                }}
+                className={cn(
+                  "relative h-full px-4 flex items-center transition-all duration-150 group",
+                  isActive
+                    ? "text-[hsl(var(--primary))]"
+                    : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+                )}
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                <span className="text-[11px] font-semibold tracking-wider uppercase relative z-10">
+                  {tab.label}
+                </span>
+
+                {/* Hover background */}
+                {!isActive && (
+                  <span className="absolute inset-x-1 inset-y-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-[hsl(var(--muted)/0.5)]" />
+                )}
+
+                {/* Active underline — gold rule */}
+                {isActive && (
+                  <span
+                    className="absolute bottom-0 left-1 right-1 h-[2px] rounded-t"
+                    style={{
+                      background: "linear-gradient(to right, hsl(var(--gold) / 0.6), hsl(var(--primary)), hsl(var(--gold) / 0.6))",
+                      boxShadow: "0 -1px 8px hsl(var(--primary) / 0.3)",
+                      animation: "fadeIn 0.2s ease-out",
+                    }}
+                  />
+                )}
+              </button>
+            </TooltipWrap>
+          );
+        })}
+      </nav>
     </div>
   );
 }

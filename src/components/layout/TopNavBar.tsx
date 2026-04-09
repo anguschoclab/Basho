@@ -5,174 +5,256 @@ import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import {
-  Sun,
-  Moon,
-  ChevronRight,
-  Wallet,
-  Calendar,
-  Settings,
-  Trophy,
-  Clock,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Sun, Moon, ChevronRight, Wallet, Calendar, Settings, Clock } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const RUNWAY_COLORS: Record<string, string> = {
-  secure: "text-emerald-500",
-  comfortable: "text-green-500",
-  tight: "text-yellow-500",
-  critical: "text-destructive",
-  desperate: "text-destructive",
+  secure:      "hsl(var(--success))",
+  comfortable: "hsl(145 55% 48%)",
+  tight:       "hsl(var(--warning))",
+  critical:    "hsl(var(--destructive))",
+  desperate:   "hsl(var(--destructive))",
 };
 
-/**
- * top nav bar.
- * FM-inspired global context bar.
- */
-export function TopNavBar({ eventLogOpen, onToggleEventLog }: { eventLogOpen: boolean; onToggleEventLog: () => void }) {
+const PHASE_LABELS: Record<string, { label: string; color: string }> = {
+  active_basho:   { label: "Tournament",   color: "hsl(var(--gold))" },
+  pre_basho:      { label: "Pre-Basho",    color: "hsl(var(--west))" },
+  post_basho:     { label: "Post-Basho",   color: "hsl(var(--success))" },
+  interim:        { label: "Interim",      color: "hsl(var(--muted-foreground))" },
+  banzuke_reveal: { label: "Banzuke",      color: "hsl(var(--primary))" },
+};
+
+export function TopNavBar({
+  eventLogOpen,
+  onToggleEventLog,
+}: {
+  eventLogOpen: boolean;
+  onToggleEventLog: () => void;
+}) {
   const { state, advanceOneDay } = useGame();
   const { setTheme, resolvedTheme } = useTheme();
   const autosaveStatus = useAutosaveIndicator();
   const navigate = useNavigate();
   const world = state.world;
 
-  const playerHeya = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
-  const inBasho = world?.cyclePhase === "active_basho";
-  const bashoDay = world?.currentBasho?.day ?? 1;
-  const isPreBasho = world?.cyclePhase === "pre_basho";
-  const isPostBasho = world?.cyclePhase === "post_basho";
+  const playerHeya    = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const inBasho       = world?.cyclePhase === "active_basho";
+  const bashoDay      = world?.currentBasho?.day ?? 1;
+  const cyclePhase    = world?.cyclePhase ?? "interim";
+  const phaseMeta     = PHASE_LABELS[cyclePhase] ?? PHASE_LABELS.interim;
 
-  const dateLabel = world
-    ? `Year ${world.calendar?.year ?? world.year} · Week ${world.calendar?.currentWeek ?? world.week}`
-    : "Initializing...";
+  const yearLabel = world ? `Year ${world.calendar?.year ?? world.year}` : "—";
+  const weekLabel = world ? `Wk ${world.calendar?.currentWeek ?? world.week}` : "—";
 
-  const phaseLabel = inBasho
-    ? `Day ${bashoDay} of 15`
-    : isPreBasho
-    ? "Pre-Basho Prep"
-    : isPostBasho
-    ? "Post-Basho Review"
-    : "Training";
-
-  const handleContinue = () => {
-    if (!world) return;
-    advanceOneDay();
-  };
+  const dayLabel  = inBasho ? `Day ${bashoDay} / 15` : null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-card/80 backdrop-blur-xl supports-[backdrop-filter]:bg-card/50">
-      {/* Main bar */}
-      <div className="h-14 flex items-center justify-between px-4">
-        {/* Left: Sidebar trigger + context info */}
-        <div className="flex items-center gap-4">
+    <header
+      className="sticky top-0 z-50 w-full border-b"
+      style={{
+        borderColor: "hsl(var(--border))",
+        background: "hsl(var(--card))",
+        /* Subtle top accent line — championship gold */
+        boxShadow: `inset 0 1px 0 hsl(var(--gold) / 0.15), 0 1px 0 hsl(var(--border))`,
+      }}
+    >
+      <div className="h-12 flex items-center px-3 gap-2">
+        {/* Sidebar toggle */}
+        <TooltipWrap content="Toggle navigation" side="right">
+          <SidebarTrigger className="h-8 w-8 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors" />
+        </TooltipWrap>
+
+        {/* Thin separator */}
+        <div className="w-px h-5 mx-1" style={{ background: "hsl(var(--border))" }} />
+
+        {/* ─ Context Info: Date + Phase ─ */}
+        <div className="hidden lg:flex items-center gap-4 flex-1">
+
+          {/* Date block */}
           <div className="flex items-center gap-2">
-            <TooltipWrap content="Collapse/Expand side navigation" side="right">
-              <SidebarTrigger />
-            </TooltipWrap>
-            <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
-          </div>
-
-          <div className="hidden lg:flex items-center gap-6">
-            {/* Date / Phase */}
             <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">{dateLabel}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold leading-tight">{phaseLabel}</span>
-                {inBasho && (
-                  <Badge variant="outline" className="h-4 text-[9px] px-1 border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10">
-                    Tournament
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            {/* Funds */}
-            {playerHeya && (
-              <TooltipWrap
-                content={
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold">Balance: ¥{playerHeya.funds.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Runway: {playerHeya.runwayBand}</p>
-                  </div>
-                }
-                side="bottom"
+              <span
+                className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+                style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
               >
-                <div className="flex flex-col cursor-help">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Wallet className="h-3 w-3" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Funds</span>
-                  </div>
-                  <span className={`text-sm font-bold leading-tight ${playerHeya.funds < 0 ? "text-destructive" : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "text-foreground")}`}>
-                    ¥{playerHeya.funds.toLocaleString()}
-                  </span>
-                </div>
-              </TooltipWrap>
-            )}
+                Date
+              </span>
+              <span
+                className="text-[12px] font-semibold text-[hsl(var(--foreground)/0.85)] leading-tight tabular-nums"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                {yearLabel} · {weekLabel}
+              </span>
+            </div>
           </div>
+
+          {/* Phase block */}
+          <div
+            className="h-7 px-2.5 rounded flex items-center gap-2"
+            style={{
+              background: `${phaseMeta.color}18`,
+              border: `1px solid ${phaseMeta.color}35`,
+            }}
+          >
+            <div
+              className="w-1.5 h-1.5 rounded-full"
+              style={{
+                background: phaseMeta.color,
+                boxShadow: `0 0 5px ${phaseMeta.color}`,
+              }}
+            />
+            <span
+              className="text-[11px] font-semibold leading-none"
+              style={{
+                fontFamily: "var(--font-mono)",
+                letterSpacing: "0.05em",
+                color: phaseMeta.color,
+              }}
+            >
+              {inBasho ? `Day ${bashoDay}` : phaseMeta.label}
+            </span>
+          </div>
+
+          {/* Funds block */}
+          {playerHeya && (
+            <TooltipWrap
+              content={
+                <div className="text-xs space-y-0.5">
+                  <p className="font-semibold">¥{playerHeya.funds.toLocaleString()}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                    Runway · {playerHeya.runwayBand}
+                  </p>
+                </div>
+              }
+              side="bottom"
+            >
+              <div className="flex flex-col cursor-help">
+                <span
+                  className="text-[9px] uppercase text-[hsl(var(--muted-foreground))]"
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.15em" }}
+                >
+                  Funds
+                </span>
+                <span
+                  className="text-[12px] font-semibold leading-tight tabular-nums"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: playerHeya.funds < 0
+                      ? "hsl(var(--destructive))"
+                      : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "hsl(var(--foreground))"),
+                  }}
+                >
+                  ¥{playerHeya.funds >= 0
+                    ? playerHeya.funds.toLocaleString()
+                    : `-${Math.abs(playerHeya.funds).toLocaleString()}`}
+                </span>
+              </div>
+            </TooltipWrap>
+          )}
         </div>
 
-        {/* Right: controls + Continue button */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 mr-2 px-3 border-r border-border/50 h-6 hidden sm:flex">
-            {world && autosaveStatus !== "idle" && (
-              <div className={`h-2 w-2 rounded-full mr-2 ${autosaveStatus === "saving" ? "bg-primary animate-pulse" : "bg-emerald-500"}`} />
-            )}
-            <SaveLoadDialog />
+        {/* Spacer on mobile */}
+        <div className="flex-1 lg:hidden" />
+
+        {/* ─ Right Controls ─ */}
+        <div className="flex items-center gap-1.5">
+          {/* Autosave indicator */}
+          {world && autosaveStatus !== "idle" && (
+            <div
+              className="w-1.5 h-1.5 rounded-full"
+              style={{
+                background: autosaveStatus === "saving"
+                  ? "hsl(var(--primary))"
+                  : "hsl(var(--success))",
+                animation: autosaveStatus === "saving" ? "pulse 1s ease-in-out infinite" : "none",
+              }}
+            />
+          )}
+
+          <SaveLoadDialog />
+
+          <TooltipWrap content={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`} side="bottom">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              tooltip={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-              tooltipSide="bottom"
               aria-label="Toggle theme"
             >
-              {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {resolvedTheme === "dark"
+                ? <Sun className="h-3.5 w-3.5" />
+                : <Moon className="h-3.5 w-3.5" />
+              }
             </Button>
+          </TooltipWrap>
+
+          <TooltipWrap content="Settings" side="bottom">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
               onClick={() => navigate({ to: "/settings" as any })}
-              tooltip="Settings"
-              tooltipSide="bottom"
-              aria-label="Open settings"
+              aria-label="Settings"
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-3.5 w-3.5" />
             </Button>
-          </div>
+          </TooltipWrap>
 
+          {/* Thin separator before the Continue button */}
+          <div className="w-px h-5 mx-1" style={{ background: "hsl(var(--border))" }} />
+
+          {/* ─ CONTINUE BUTTON — The hero action ─ */}
           {world && (
-            <Button
-              size="lg"
-              className={`
-                h-10 px-6 gap-2 font-bold shadow-lg
-                transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
-                ${inBasho
-                  ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
-                  : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"}
-              `}
-              onClick={handleContinue}
-              tooltip={inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"}
-              tooltipSide="left"
+            <TooltipWrap
+              content={inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"}
+              side="left"
             >
-              <span className="hidden sm:inline">{inBasho ? "Next Day" : "Continue"}</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              <button
+                onClick={() => advanceOneDay()}
+                className="relative h-8 px-4 rounded flex items-center gap-2 font-semibold text-[12px] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] overflow-hidden group"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  letterSpacing: "0.08em",
+                  background: inBasho
+                    ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
+                    : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
+                  color: "hsl(222 32% 5%)",
+                  boxShadow: inBasho
+                    ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
+                    : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
+                }}
+              >
+                {/* Shimmer sweep on hover */}
+                <span
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
+                    transform: "skewX(-20deg)",
+                  }}
+                />
+                <span className="relative hidden sm:inline">
+                  {inBasho ? `Day ${bashoDay}` : "Continue"}
+                </span>
+                <ChevronRight className="relative h-3.5 w-3.5" />
+              </button>
+            </TooltipWrap>
           )}
         </div>
       </div>
 
-      {/* Basho progress strip — visible only during active tournament */}
+      {/* ─ Basho Progress Rail ─ */}
       {inBasho && (
-        <div className="h-0.5 w-full bg-border/50">
+        <div
+          className="h-0.5 w-full"
+          style={{ background: "hsl(var(--border))" }}
+        >
           <div
-            className="h-0.5 bg-amber-500 transition-all duration-700"
-            style={{ width: `${(bashoDay / 15) * 100}%` }}
+            className="h-full transition-all duration-700"
+            style={{
+              width: `${(bashoDay / 15) * 100}%`,
+              background: "linear-gradient(to right, hsl(var(--east)), hsl(var(--gold)))",
+              boxShadow: "0 0 4px hsl(var(--gold) / 0.5)",
+            }}
           />
         </div>
       )}
