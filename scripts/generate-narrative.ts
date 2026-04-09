@@ -132,6 +132,7 @@ async function callWithFallback(apiKey: string, primary: string, fallback: strin
 
 function mergeUnique(oldArr: string[] = [], newArr: string[] = []): string[] {
   const combined = [...oldArr, ...newArr];
+  // Simple deduplication based on trimmed content
   return Array.from(new Set(combined.map(s => s.trim()))).filter(s => s.length > 0);
 }
 
@@ -143,12 +144,28 @@ async function main() {
 
   console.log("--- BARD ENGINE v2.2 NHK CONTENT PIPELINE ---");
 
-  // 1. Populate archive.json
+  // 1. Load and Cleanup archive.json
   const archivePath = path.resolve(__dirname, "../src/engine/narrative/archive.json");
   let archive: any = { version: "2.2.0", domains: { events: {} } };
   
   if (fs.existsSync(archivePath)) {
-    try { archive = JSON.parse(fs.readFileSync(archivePath, "utf-8")); } catch (e) {}
+    try { 
+      archive = JSON.parse(fs.readFileSync(archivePath, "utf-8")); 
+      console.log("Archive loaded. Running deduplication cleanup pass...");
+      // Deep cleanup of existing entries
+      if (archive.domains?.events) {
+        for (const domainName in archive.domains.events) {
+          const domain = archive.domains.events[domainName];
+          for (const targetName in domain) {
+            const target = domain[targetName];
+            if (target.common) target.common = mergeUnique(target.common);
+            if (target.intensity_3) target.intensity_3 = mergeUnique(target.intensity_3);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse existing archive. Starting fresh.");
+    }
   }
 
   for (const domain of DOMAINS) {
@@ -191,13 +208,23 @@ async function main() {
   }
 
   fs.writeFileSync(archivePath, JSON.stringify(archive, null, 2));
-  console.log(`\n[SUCCESS] Archive updated (Cumulative): ${archivePath}`);
+  console.log(`\n[SUCCESS] Archive updated (Cumulative & Deduplicated): ${archivePath}`);
 
-  // 2. Populate pbp_voice_matrix.json
+  // 2. Load and Cleanup pbp_voice_matrix.json
   const matrixPath = path.resolve(__dirname, "../src/engine/pbp_voice_matrix.json");
   let existingMatrix: any = {};
   if (fs.existsSync(matrixPath)) {
-    try { existingMatrix = JSON.parse(fs.readFileSync(matrixPath, "utf-8")); } catch (e) {}
+    try { 
+      existingMatrix = JSON.parse(fs.readFileSync(matrixPath, "utf-8")); 
+      console.log("Voice Matrix loaded. Running deduplication cleanup pass...");
+      for (const persona in existingMatrix) {
+        for (const intensity in existingMatrix[persona]) {
+          existingMatrix[persona][intensity] = mergeUnique(existingMatrix[persona][intensity]);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse existing matrix. Starting fresh.");
+    }
   }
   
   console.log("\nVoice Matrix Generation...");
@@ -222,7 +249,7 @@ async function main() {
     }
 
     fs.writeFileSync(matrixPath, JSON.stringify(existingMatrix, null, 2));
-    console.log(`[SUCCESS] Voice Matrix updated (Cumulative): ${matrixPath}`);
+    console.log(`[SUCCESS] Voice Matrix updated (Cumulative & Deduplicated): ${matrixPath}`);
   } catch (err: any) {
      console.error(`CRITICAL: All attempts for Voice Matrix FAILED. Retaining legacy matrix.`);
   }
