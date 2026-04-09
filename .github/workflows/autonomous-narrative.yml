@@ -29,8 +29,8 @@ jobs:
         # Points to the new dedicated execution script
         run: bun run scripts/generate-narrative.ts
         env:
-          # Hardcoded API Key as requested (WARNING: Ensure repository is private)
-          GEMINI_API_KEY: AIzaSyCEu6sSxrpU6b6fVk_E883laH_7GW0P78E
+          # Securely pull the API key from GitHub Repository Secrets
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Commit and Push Narrative Updates
         run: |
