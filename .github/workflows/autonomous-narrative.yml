@@ -9,6 +9,8 @@ jobs:
   run-bard-engine:
     name: Run Narrative Generation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Explicitly grant write permissions to push commits
     
     steps:
       - name: Checkout repository
