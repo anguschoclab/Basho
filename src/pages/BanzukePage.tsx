@@ -4,8 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
-import type { Division, RankPosition, RankInfo } from "@/engine/types/banzuke";
+import type { Division } from "@/engine/types/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react";
@@ -13,7 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import { RANK_HIERARCHY, getRankTitleJa, projectBanzukeUIDigest } from "@/presenters/uiDigest";
+import { RikishiCell } from "@/components/banzuke/RikishiCell";
+import { projectBanzukeUIDigest } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
 
@@ -162,19 +162,10 @@ export default function BanzukePage() {
                               />
                               <td className="p-3 text-center">
                                 <div className="font-display text-muted-foreground text-xs font-medium">{row.rankLabel}</div>
-                                {(() => {
-                                  const sample = row.east || row.west;
-                                  if (!sample) return null;
-                                  const pos: RankPosition = { rank: sample.rank as any, side: (sample.side ?? "east") as any, rankNumber: sample.rankNumber };
-                                  const titleJa = getRankTitleJa(pos);
-                                  const info: RankInfo | undefined = RANK_HIERARCHY[sample.rank as keyof typeof RANK_HIERARCHY];
-                                  return (
-                                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
-                                      {titleJa}
-                                      {info?.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
-                                    </div>
-                                  );
-                                })()}
+                                <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
+                                  {row.rankTitleJa}
+                                  {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
+                                </div>
                               </td>
                               <RikishiCell
                                 entry={row.west}

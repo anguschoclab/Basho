@@ -736,7 +736,13 @@
         "special_prize_title": ["Special Prize Awarded!"],
         "special_prize_summary": ["Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."],
         "insolvency_title": ["Financial Insolvency"],
-        "insolvency_summary": ["%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."]
+        "insolvency_summary": ["%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."],
+        "deficit_title": ["Operating Deficit"],
+        "deficit_summary": [
+          "%HEYANAME% is operating at a ¥%AMOUNT% deficit this month. Reserve funds are depleting.",
+          "Financial pressure mounts: %HEYANAME% loses ¥%AMOUNT% after upkeep and salaries.",
+          "Stability warning: %HEYANAME% spend exceeds income by ¥%AMOUNT%."
+        ]
       },
       "rivalry": {
         "formed_title": ["New rivalry emerges"],
@@ -752,7 +758,24 @@
         "day_title": ["Day %DAY%"],
         "day_summary": ["Tournament day %DAY% begins."],
         "bout_title": ["Bout concluded"],
-        "bout_summary": ["Winner decided by %KIMARITE%."]
+        "bout_summary": ["Winner decided by %KIMARITE%."],
+        "concluded_title": ["%BASHONAME% Basho Concluded"],
+        "concluded_summary": [
+          "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
+          "The Emperor's Cup goes to %SHIKONA% after a historic performance.",
+          "%SHIKONA% stands victorious at the end of the %BASHONAME% basho."
+        ],
+        "playoff_title": ["Playoff Champion: %SHIKONA%"],
+        "playoff_summary": [
+          "%CONTENDERS% rikishi tied at %WINS% wins. %SHIKONA% wins the Cup via playoff victory.",
+          "Drama at the Kokugikan! %SHIKONA% overcomes all rivals in the tie-breaker rounds.",
+          "The tie-break concludes: %SHIKONA% is the last man standing."
+        ],
+        "banzuke_reveal_summary": [
+          "The official rankings have been posted. A new hierarchy takes shape.",
+          "New ranks confirmed. The banzuke reveal shifts the landscape for the coming basho.",
+          "The Association has published the banzuke. All eyes on the new promotions."
+        ]
       },
       "health": {
         "injury_sustained": [
@@ -793,7 +816,7 @@
         "MONTHLY_DEFICIT": ["Operating deficit"],
         "ARCHETYPE_DRIFT": ["Tactical shift"],
         "YEAR_BOUNDARY": ["Year %YEAR% begins"],
-        "HOF_INDUCTION": ["Hall of Fame: %SHIKONA%"],
+"HOF_INDUCTION": ["Hall of Fame: %SHIKONA%"],
         "CAREER_WINS_MILESTONE": ["%SHIKONA% reaches %WINS% wins"],
         "HOF_ELIGIBLE": ["Hall of Fame eligibility reached"],
         "NPC_RECRUITMENT_SUMMARY": ["NPC stables recruit"],

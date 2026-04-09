@@ -63,6 +63,7 @@ export interface Staff {
   loyaltyBand: LoyaltyBand;
   competenceBands: StaffCompetenceBands;
   fatigue: number; // 0 to 100
+  morale: number; // 0 to 100 (New)
   scandalExposure: number; // 0 to 100
   yearsAtBeya: number;
   priorAffiliations: Id[];

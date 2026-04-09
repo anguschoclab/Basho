@@ -126,7 +126,5 @@ export function cloneWorldForTick(world: WorldState): WorldState {
  * Returns a NEW world state to ensure immutability / purity.
  */
 export function tickOrchestrator(world: WorldState): WorldState {
-  const nextWorld = cloneWorldForTick(world);
-  advanceOneDay(nextWorld);
-  return nextWorld;
+  return advanceOneDay(world);
 }

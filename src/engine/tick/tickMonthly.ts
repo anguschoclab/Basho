@@ -9,6 +9,7 @@ import * as loans from "../loans";
 import { runTickPipeline, type TickStep } from "./tickOrchestrator";
 import { BardEngine } from "../narrative/BardEngine";
 import { rngFromSeed } from "../rng";
+import { getHeyaStaffBonuses } from "../staff";
 
 /**
  * Monthly boundary tick — Constitution A3.3.
@@ -77,15 +78,20 @@ export function tickMonthlyEconomics(world: WorldState): void {
       }
     }
 
-    const oyakataSalary = 1_200_000;
-    totalSalaries += oyakataSalary;
+    const oyakataSalaryBase = 1_200_000;
+    
+    // Integrated Finding: Staff Bonuses (Administration) reduce overhead
+    const staffBonuses = getHeyaStaffBonuses(world, heya.id);
+    const oyakataSalary = oyakataSalaryBase * staffBonuses.administration;
 
-    const facilityUpkeep =
+    const facilityUpkeepRaw =
       (heya.facilities.training * 4000) +
       (heya.facilities.recovery * 4000) +
       (heya.facilities.nutrition * 8000);
+    
+    const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
 
-    const totalExpenses = totalSalaries + facilityUpkeep;
+    const totalExpenses = totalSalaries + facilityUpkeep + oyakataSalary;
     heya.funds -= totalExpenses;
 
     const monthlyBurn = Math.max(1, totalExpenses);

@@ -6,6 +6,8 @@ export interface UIRankRow {
   rankLabel: string;
   rankKey: string;
   rankTierClass: string;
+  rankTitleJa: string;
+  isSanyaku: boolean;
   east: UIRosterEntry | null;
   west: UIRosterEntry | null;
 }
@@ -81,10 +83,18 @@ export function buildBanzukeRows(entries: UIRosterEntry[], division: string, sea
     const baseLabel = BardEngine.resolve(rng, `system.descriptors.ranks.${rank}`).text;
     const rankLabel = isSanyaku ? baseLabel : `${baseLabel} #${rankNumber}`;
 
+    // Calculate Japanese title
+    const side = (sample?.side ?? "east") as "east" | "west";
+    const rankTitleJa = (rank === "maegashira" || rank === "juryo" || rank === "makushita" || rank === "sandanme" || rank === "jonidan" || rank === "jonokuchi")
+      ? `${baseLabel.charAt(0)}#${rankNumber}${side === "east" ? "東" : "西"}`
+      : `${baseLabel}${side === "east" ? "東" : "西"}`;
+
     result.push({
       rankLabel,
       rankKey: key,
       rankTierClass: rankRowClass(rank),
+      rankTitleJa,
+      isSanyaku,
       east,
       west,
       _tier: RANK_TIER[rank] ?? 99,

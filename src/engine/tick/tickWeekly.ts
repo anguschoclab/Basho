@@ -51,6 +51,31 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
     { label: "scouting", run: (w) => { scoutingStore.tickWeekScouting(w); } },
     { label: "talentpool", run: (w) => { talentpool.tickWeekTalentPool(w); } },
     { label: "staff", run: (w) => { import("../staff").then(m => m.tickStaffWeek(w)); } },
+    {
+      label: "staff_warnings",
+      run: (w) => {
+        if (!w.staff || !w.playerHeyaId) return;
+        const heya = w.heyas.get(w.playerHeyaId);
+        if (!heya || !heya.staffIds) return;
+        
+        for (const sId of heya.staffIds) {
+          const staff = w.staff.get(sId);
+          if (staff && staff.fatigue > 80) {
+            const rng = rngFromSeed(`staff-burnout-${w.week}-${sId}`, "narrative", "event");
+            logEngineEvent(w, {
+              type: "STAFF_BURNOUT",
+              category: "heya",
+              importance: "major",
+              scope: "heya",
+              heyaId: heya.id,
+              title: "Staff Exhaustion Alert",
+              summary: BardEngine.resolve(rng, "events.staff.burnout", { NAME: staff.name }).text,
+              data: { staffId: sId, fatigue: staff.fatigue }
+            });
+          }
+        }
+      }
+    },
 
     {
       label: "gazette_archive",
@@ -126,7 +151,7 @@ function tickRecruitmentWindowClose(world: WorldState): void {
     if (world.playerHeyaId) {
       const rng = rngFromSeed(`recruit-close-${world.week}`, "narrative", "event");
       const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_WINDOW_CLOSED").text;
-      const summary = `The ${rw.phase === "post_basho" ? "post-basho" : "mid-interim"} recruitment window has closed.`;
+      const summary = BardEngine.resolve(rng, "events.recruitment.closed").text;
 
       logEngineEvent(world, {
         type: "RECRUITMENT_WINDOW_CLOSED",
@@ -164,7 +189,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
   if (playerHeya?.welfareState?.complianceState === "sanctioned") {
     const rng = rngFromSeed(`recruit-blocked-${world.week}`, "narrative", "event");
     const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_BLOCKED_SANCTIONS").text;
-    const summary = `${playerHeya.name} cannot open a recruitment window while under JSA welfare sanctions.`;
+    const summary = BardEngine.resolve(rng, "events.welfare.sanctioned", { HEYANAME: playerHeya.name }).text;
 
     logEngineEvent(world, {
       type: "RECRUITMENT_BLOCKED_SANCTIONS",
@@ -195,7 +220,7 @@ function tickMidInterimRecruitment(world: WorldState): void {
       scope: "heya",
       heyaId: playerHeya.id,
       title: BardEngine.resolve(rngFromSeed(`recruit-open-${world.week}`, "narrative", "event"), "events.titles.RECRUITMENT_WINDOW_OPEN").text,
-      summary: "A brief mid-interim recruitment window opens. Scout and sign for 2 weeks.",
+      summary: BardEngine.resolve(rngFromSeed(`recruit-open-desc-${world.week}`, "narrative", "event"), "events.recruitment.open").text,
       data: {
         rosterSize: (playerHeya.rikishiIds ?? []).length,
         windowDuration: 2,

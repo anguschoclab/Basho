@@ -32,7 +32,7 @@ export function phase01_daily_economy(world: WorldState): WorldState {
   // Record in deltas
   const deltas = {
     ...(world.transientContext?.deltas ?? {}),
-    expenses: (world.transientContext?.deltas.expenses ?? 0) + totalDailyFoodCost
+    expenses: (world.transientContext?.deltas?.expenses ?? 0) + totalDailyFoodCost
   };
 
   return {

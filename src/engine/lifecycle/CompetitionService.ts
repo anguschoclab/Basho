@@ -7,7 +7,8 @@ import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
 import { autosave } from "../saveload";
 import { safeCall } from "../utils/safe";
 import { enterPostBasho } from "../tick/tickDaily";
-import { rngForWorld } from "../rng";
+import { rngForWorld, rngFromSeed } from "../rng";
+import { BardEngine } from "../narrative/BardEngine";
 import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState, BashoResult, MatchSchedule } from "../types/basho";
@@ -173,13 +174,21 @@ function recordBashoHistory(
     if (world.ftue.bashoCompleted >= 1) world.ftue.isActive = false;
   }
 
+  const logRng = rngFromSeed(`basho-concluded-${world.year}-${basho.bashoName}`, "narrative", "history");
+  const narr = BardEngine.resolve(logRng, "events.basho.concluded_summary", {
+    SHIKONA: yushoRikishi?.shikona || 'Unknown',
+    WINS: bestWins,
+    LOSSES: 15 - bestWins,
+    BASHONAME: basho.bashoName.toUpperCase()
+  });
+
   logEngineEvent(world, {
     type: "BASHO_CONCLUDED",
     category: "basho",
     importance: "major",
     scope: "world",
-    title: `${basho.bashoName.toUpperCase()} Basho Concluded`,
-    summary: `${yushoRikishi?.shikona || 'Unknown'} wins with ${bestWins} wins!`,
+    title: BardEngine.resolve(logRng, "events.basho.concluded_title", { BASHONAME: basho.bashoName.toUpperCase() }).text,
+    summary: narr.text,
     data: {
       year: result.year,
       bashoName: result.bashoName,
@@ -217,13 +226,20 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     playoffMatches.push(...playoffResult.matches);
 
     const champ = world.rikishi.get(yusho);
+    const logRng = rngFromSeed(`playoff-${world.year}-${basho.bashoName}`, "narrative", "event");
+    const narr = BardEngine.resolve(logRng, "events.basho.playoff_summary", {
+      SHIKONA: champ?.shikona ?? yusho,
+      CONTENDERS: topCandidates.length,
+      WINS: bestWins
+    });
+
     logEngineEvent(world, {
       type: "PLAYOFF_RESULT",
       category: "basho",
       importance: "headline",
       scope: "world",
-      title: `Playoff Champion: ${champ?.shikona ?? yusho}`,
-      summary: `${topCandidates.length} rikishi tied at ${bestWins} wins. ${champ?.shikona ?? yusho} wins the Emperor's Cup via playoff.`,
+      title: BardEngine.resolve(logRng, "events.basho.playoff_title", { SHIKONA: champ?.shikona ?? yusho }).text,
+      summary: narr.text,
       data: {
         bashoName: basho.bashoName,
         year: world.year,

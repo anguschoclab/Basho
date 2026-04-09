@@ -8,6 +8,7 @@ import type { WorldState } from "../../types/world";
 import { WelfareService } from "../../systems/welfare/WelfareService";
 import { toRikishiDescriptor } from "../../descriptorBands";
 import { clamp } from "../../utils";
+import { rngFromSeed } from "../../rng";
 
 export function phase01_daily_welfare(world: WorldState): WorldState {
   const nextRikishi = new Map(world.rikishi);
@@ -24,7 +25,8 @@ export function phase01_daily_welfare(world: WorldState): WorldState {
     let next = { ...r };
     
     // 1. Sync Descriptor
-    next.descriptor = toRikishiDescriptor(next, next.descriptor);
+    const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
+    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor);
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);

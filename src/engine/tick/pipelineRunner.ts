@@ -34,11 +34,8 @@ export function runPipeline(
   phases: PipelinePhase[],
 ): WorldState {
   return phases.reduce((currentWorld, phase) => {
-    // Snapshot before phase — zero-cost recovery if phase throws
-    const snapshot = structuredClone(currentWorld);
-
     try {
-      const nextWorld = phase(snapshot);
+      const nextWorld = phase(currentWorld);
 
       // Safety check: phase must not wipe core entity maps
       if (!nextWorld || !nextWorld.heyas || !nextWorld.rikishi) {
@@ -54,8 +51,8 @@ export function runPipeline(
         `[PIPELINE FATAL ERROR] in phase: "${phase.name}"`,
         error,
       );
-      // Return the unmutated snapshot so subsequent phases still run
-      return snapshot;
+      // Return the unmutated state on failure to allow subsequent phases to attempt recovery
+      return currentWorld;
     }
   }, initialWorld);
 }

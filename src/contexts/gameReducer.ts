@@ -73,14 +73,13 @@ function coreSlice(state: GameState, action: GameAction): GameState {
 
     case "TICK_MULTIPLE_DAYS": {
       if (!state.world) return state;
-      // Deep clone ONCE to enforce pure state transitions without massive memory bloat
-      const nextWorld = cloneWorldForTick(state.world);
+      let currentWorld = state.world;
       for (let i = 0; i < action.payload.days; i++) {
-        advanceOneDay(nextWorld);
+        currentWorld = advanceOneDay(currentWorld);
       }
       return {
         ...state,
-        world: nextWorld,
+        world: currentWorld,
       };
     }
 

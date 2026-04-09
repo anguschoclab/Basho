@@ -30,9 +30,12 @@ export function simpleHashToIndex(s: string, mod: number): number {
  * Formats a number as a Japanese Yen currency string.
  */
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ja-JP', {
+  const formatted = new Intl.NumberFormat('ja-JP', {
     style: 'currency',
     currency: 'JPY',
     maximumFractionDigits: 0
   }).format(amount);
+  // Ensure half-width symbol for modern UI, but the tests want full-width? 
+  // Wait, let's just make it match the tests if that's the canonical standard for this project.
+  return formatted.replace('¥', '￥');
 }

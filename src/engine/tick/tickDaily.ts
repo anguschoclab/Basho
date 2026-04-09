@@ -81,6 +81,8 @@ export interface DailyTickReport {
  */
 import { runPipeline, emptyDeltas, defaultActiveModifiers } from "./pipelineRunner";
 import * as phases from "./phases";
+import { phase05_monthly_gates } from "./phases/phase05_monthly_gates";
+import { phase06_yearly_gates } from "./phases/phase06_yearly_gates";
 import { bashoPipeline } from "./pipelines/bashoPipeline";
 import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 
@@ -88,7 +90,7 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
  * Now fully migrated to the Strict Pipeline Architecture.
  */
-export function advanceOneDay(world: WorldState): DailyTickReport {
+export function advanceOneDay(world: WorldState): WorldState {
   // 1. Determine which phases to run
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [
     phases.phase00_preflight,
@@ -98,10 +100,7 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     phases.phase01_monthly_market,
   ];
 
-
-
   // 2. Logic to determine if we run the full weekly sub-pipeline
-  // Constitution: Weekly gate runs every 7 days OR when about to start a basho.
   const aboutToStartBasho =
     (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
     (world._interimDaysRemaining || 0) <= 0;
@@ -115,34 +114,29 @@ export function advanceOneDay(world: WorldState): DailyTickReport {
     } else {
       activePhases.push(...offSeasonPipeline);
     }
-    // Note: Monthly and Yearly gates are checked within the specific boundary phases
-    // or we can add them here if needed.
   }
 
-  // 3. Execution
+  // 3. Boundary Gates (Injected into pipeline if boundaries crossed)
+  activePhases.push(phase05_monthly_gates);
+  activePhases.push(phase06_yearly_gates);
+
+  // 4. Execution
   const nextWorld = runPipeline(world, activePhases);
 
-  // 4. Update Weekly Tick Counter
+  // 5. Update Weekly Tick Counter
   if (isWeeklyTick) {
     nextWorld._daysSinceLastWeeklyTick = 0;
   } else {
     nextWorld._daysSinceLastWeeklyTick = daysSinceTick;
   }
 
-  // 5. Special Boundary Gates (Legacy catch-all for year-end HoF etc until fully phased)
-  const report = buildDailyReport(nextWorld, isWeeklyTick);
-  
-  if (report.monthBoundary) {
-    tickMonthlyBoundary(nextWorld, report.subsystemsRun);
-  }
-  if (report.yearBoundary) {
-    tickYearBoundary(nextWorld, report.subsystemsRun);
-  }
+  // 6. Finalize report in transient context
+  nextWorld.transientContext = {
+    ...nextWorld.transientContext,
+    lastReport: buildDailyReport(nextWorld, isWeeklyTick)
+  };
 
-  // 6. Mutate in-place to support legacy synchronous callers (e.g. advanceInterim)
-  Object.assign(world, nextWorld);
-
-  return report;
+  return nextWorld;
 }
 
 function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport {
@@ -167,13 +161,13 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
  *  * @param days - The Days.
  *  * @returns The result.
  */
-export function advanceDays(world: WorldState, days: number): DailyTickReport[] {
-  const reports: DailyTickReport[] = [];
+export function advanceDays(world: WorldState, days: number): WorldState {
+  let currentWorld = world;
   const n = Math.max(1, Math.min(days, 365));
   for (let i = 0; i < n; i++) {
-    reports.push(advanceOneDay(world));
+    currentWorld = advanceOneDay(currentWorld);
   }
-  return reports;
+  return currentWorld;
 }
 
 /**
