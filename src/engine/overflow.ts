@@ -2,7 +2,7 @@ import { WorldState } from "./types/world";
 import { Id } from "./types/common";
 import { Rikishi } from "./types/rikishi";
 import { Heya } from "./types/heya";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 import { getForeignCountInHeya, countsAsForeignFromRikishi, reinjectToTalentPool } from "./systems/generation/TalentPoolService";
 import { stableTieBreak, stableSort } from "./utils/sort";
 
@@ -85,16 +85,11 @@ function releaseRikishiToPool(world: WorldState, heya: Heya, rikishi: Rikishi) {
   rikishi.heyaId = ""; // No longer attached to a stable
 
   // Audit event for the release
-  logEngineEvent(world, {
-    type: "ROSTER_OVERFLOW_RELEASE",
-    category: "career",
-    importance: "major",
-    scope: "heya",
-    heyaId: heya.id,
+  EventBus.rosterEvent(world, heya.id, {
     rikishiId: rikishi.id,
-    title: `Roster Overflow: ${rikishi.shikona} released`,
-    summary: `${heya.name} exceeded the hard cap of ${HARD_CAP_ROSTER_SIZE} and was forced to release ${rikishi.shikona} to the talent pool.`,
-    tags: ["roster_cap", "release"],
+    shikona: rikishi.shikona,
+    heya: heya.name,
+    limit: HARD_CAP_ROSTER_SIZE
   });
 
   // Re-inject into the talent pool as a free agent

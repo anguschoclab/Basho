@@ -9,19 +9,20 @@ import { SeededRNG } from '../rng';
 vi.mock('../events', () => ({
   logEngineEvent: vi.fn(),
   EventBus: {
-    welfareRiskShift: vi.fn(),
-    complianceWatch: vi.fn(),
-    complianceInvestigation: vi.fn(),
-    complianceSanctioned: vi.fn(),
-    complianceCleared: vi.fn(),
-    dietChanged: vi.fn(),
-    retirement: vi.fn(),
-    governance: vi.fn(),
+    recruitDiscovered: vi.fn(),
+    lifecycleEvent: vi.fn(),
+    bashoStatus: vi.fn(),
+    financialAlert: vi.fn(),
+    trainingUpdate: vi.fn(),
+    medicalReportBase: vi.fn(),
+    welfareCompliance: vi.fn(),
   }
 }));
 
+import { EventBus } from '../events';
+
 describe('Bard Engine Integration', () => {
-  it('TalentPoolService logs HIGH_TALENT_SIGNED with dynamic title', () => {
+  it('TalentPoolService logs RECRUIT_DISCOVERED with high_talent_signed status', () => {
     const world = {
       week: 2,
       dayIndexGlobal: 1,
@@ -46,16 +47,16 @@ describe('Bard Engine Integration', () => {
 
     TalentPoolService.tickWeekTalentPool(world);
 
-    expect(logEngineEvent).toHaveBeenCalledWith(
+    expect(EventBus.recruitDiscovered).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
-        type: 'HIGH_TALENT_SIGNED',
-        title: expect.stringMatching(/.+/),
+        status: 'high_talent_signed',
+        rikishiId: 'c1'
       })
     );
   });
 
-  it('RegistryService logs CAREER_WINS_MILESTONE with dynamic title', () => {
+  it('RegistryService logs LIFECYCLE_EVENT with wins_milestone status', () => {
     const world = {
       history: [{}],
       rikishi: new Map([['r1', { id: 'r1', shikona: 'Wrestler 1', careerWins: 99, currentBashoWins: 1 }]]),
@@ -63,11 +64,11 @@ describe('Bard Engine Integration', () => {
 
     RegistryService.runCareerJournalUpdates(world);
 
-    expect(logEngineEvent).toHaveBeenCalledWith(
+    expect(EventBus.lifecycleEvent).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
-        type: 'CAREER_WINS_MILESTONE',
-        title: expect.stringMatching(/.+/),
+        status: 'wins_milestone',
+        rikishiId: 'r1'
       })
     );
   });

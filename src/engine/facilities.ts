@@ -21,7 +21,7 @@ import type { Heya } from "./types/heya";
 import type { Id } from "./types/common";
 import type { FacilitiesBand } from "./types/narrative";
 import type { OyakataTraits } from "./types/oyakata";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 
 // === CONSTANTS ===
 
@@ -120,16 +120,13 @@ export function investInFacility(
   const newLevel = heya.facilities[axis];
   updateFacilitiesBand(heya);
 
-  logEngineEvent(world, {
-    type: "FACILITY_UPGRADED",
-    category: "facility",
-    importance: effectivePoints >= 10 ? "major" : "notable",
-    scope: "heya",
-    heyaId,
-    title: `${heya.name} upgraded ${axis} facilities`,
-    summary: `${heya.name} invested ¥${totalCost.toLocaleString()} to improve ${axis} facilities from ${oldLevel} to ${newLevel}.`,
-    data: { axis, oldLevel, newLevel, cost: totalCost, band: heya.facilitiesBand }
-  });
+  EventBus.facilityUpdate(world, heyaId, { 
+    axis, 
+    oldLevel, 
+    newLevel, 
+    cost: totalCost, 
+    band: heya.facilitiesBand 
+  }, "UPGRADED");
 
   return { success: true, axis, oldLevel, newLevel, cost: totalCost };
 }
@@ -179,22 +176,13 @@ function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): void {
       updateFacilitiesBand(heya);
 
       if (heya.facilitiesBand !== oldBand) {
-        logEngineEvent(world, {
-          type: "FACILITY_DEGRADED",
-          category: "facility",
-          importance: "notable",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `${heya.name} facilities deteriorating`,
-          summary: `${heya.name} couldn't afford maintenance. Facilities degraded from "${oldBand}" to "${heya.facilitiesBand}".`,
-          data: {
-            oldBand,
-            newBand: heya.facilitiesBand,
-            training: heya.facilities.training,
-            recovery: heya.facilities.recovery,
-            nutrition: heya.facilities.nutrition
-          }
-        });
+        EventBus.facilityUpdate(world, heya.id, {
+          oldBand,
+          newBand: heya.facilitiesBand,
+          training: heya.facilities.training,
+          recovery: heya.facilities.recovery,
+          nutrition: heya.facilities.nutrition
+        }, "DEGRADED");
       }
     }
   }

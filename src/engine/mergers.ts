@@ -1,7 +1,7 @@
 import type { Id } from "./types/common";
 import { getStableRikishi } from "./queries";
 import type { WorldState, ClosedHeyaRecord } from "./types/world";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { updateFacilitiesBand } from "./facilities";
 import { rngForWorld } from "./rng";
@@ -26,16 +26,12 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
     if (rikishi) {
       rikishi.heyaId = target.id;
 
-      logEngineEvent(world, {
-        type: "RIKISHI_TRANSFERRED",
-        category: "career",
-        importance: "notable",
-        scope: "rikishi",
+      EventBus.lifecycleEvent(world, {
         rikishiId: rId,
         heyaId: target.id,
-        title: `${rikishi.shikona || rikishi.name} transferred to ${target.name}`,
-        summary: `Following the merger, ${rikishi.shikona || rikishi.name} has moved to ${target.name}.`,
-        data: { oldHeyaId: source.id, newHeyaId: target.id }
+        shikona: rikishi.shikona || rikishi.name,
+        status: "transferred",
+        reason: target.name // context: new heya
       });
     }
   }
@@ -55,16 +51,12 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
   updateFacilitiesBand(target);
 
   // 4. Log the merger
-  logEngineEvent(world, {
-    type: "STABLE_MERGED",
-    category: "discipline",
-    importance: "headline",
-    scope: "heya",
-    heyaId: target.id,
-    title: `${source.name} merges with ${target.name}`,
-    summary: `${source.name} has been formally absorbed into ${target.name}. Reason: ${reason}.`,
-    data: { sourceHeyaId: source.id, targetHeyaId: target.id, reason }
-  });
+  EventBus.governanceRuling(world, target.id, {
+    incident: "stable_merger",
+    heyaname: source.name,
+    heya: target.name,
+    reason
+  }, "headline");
 
   generateGovernanceHeadline({
     world,

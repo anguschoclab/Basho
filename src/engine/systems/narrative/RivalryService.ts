@@ -11,6 +11,7 @@
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
+import { EventBus } from "../../events";
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
 import { EntityCollection } from "../../core/EntityCollection";
@@ -76,6 +77,27 @@ export const RivalryService = {
       isUpset: !!result.upset,
       week
     });
+
+    // Detection for heat spikes (crosses thresholds 25, 50, 75)
+    const oldHeat = existing.heat;
+    const newHeat = next.heat;
+    const thresholds = [25, 50, 75];
+    const thresholdCrossed = thresholds.find(t => oldHeat <= t && newHeat > t);
+
+    if (thresholdCrossed) {
+      const rA = EntityCollection.getRikishiById(world, existing.aId);
+      const rB = EntityCollection.getRikishiById(world, existing.bId);
+      if (rA && rB) {
+        EventBus.rivalryHeatSpike(world, {
+          shikona: rA.shikona,
+          rival: rB.shikona,
+          winner: result.winnerRikishiId === rA.id ? rA.shikona : rB.shikona,
+          loser: result.loserRikishiId === rA.id ? rA.shikona : rB.shikona,
+          heat: newHeat,
+          threshold: thresholdCrossed
+        });
+      }
+    }
 
     // Cull very cold rivalries
     if (next.heat < 10 && next.meetings < 2 && week - next.lastMetWeek > 20) {

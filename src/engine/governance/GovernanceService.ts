@@ -3,7 +3,7 @@
  */
 
 import { WorldState } from "../types/world";
-import { logEngineEvent } from "../events";
+
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
 import { rngForWorld, rngFromSeed } from "../rng";
@@ -36,18 +36,13 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
   };
   world.governanceLog.push(ruling);
 
-  const scandalRng = rngFromSeed(`scandal-${heyaId}-${world.year}-${world.week}`, "narrative", "event");
-  const scandalSummary = BardEngine.resolve(scandalRng, "institutional.governance.scandal", { heya: heya.name, severity, reason }).text;
-  logEngineEvent(world, {
-    type: "GOVERNANCE_SCANDAL_REPORTED",
-    category: "discipline",
-    importance: severity === "minor" ? "notable" : "major",
-    scope: "heya",
-    heyaId,
-    title: BardEngine.resolve(scandalRng, "events.titles.GOVERNANCE_SCANDAL_REPORTED").text,
-    summary: scandalSummary,
-    data: { severity, reason, scoreBump, totalScore: heya.scandalScore, rulingId: ruling.id }
-  });
+  EventBus.governanceRuling(world, heyaId, {
+    status: severity,
+    reason,
+    score: scoreBump,
+    delta: heya.scandalScore,
+    incident: "scandal_reported"
+  }, severity === "minor" ? "notable" : "major");
 
   generateGovernanceHeadline(world, heyaId, severity, reason);
 }
@@ -64,19 +59,11 @@ export function tickWeekGovernance(world: WorldState): void {
     }
     // Alert if crossing critical threshold (player only)
     if (heya.scandalScore && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
-      const warnRng = rngFromSeed(`gov-warn-${heya.id}-${world.year}-${world.week}`, "narrative", "event");
-      const warnSummary = BardEngine.resolve(warnRng, "institutional.governance.threats", { heya: heya.name, scandalScore: heya.scandalScore }).text;
-      logEngineEvent(world, {
-        type: "GOVERNANCE_WARNING",
-        category: "discipline",
-        importance: "major",
-        scope: "heya",
-        heyaId: heya.id,
-        title: BardEngine.resolve(warnRng, "events.titles.GOVERNANCE_WARNING").text,
-        summary: warnSummary,
-        data: { scandalScore: heya.scandalScore },
-        tags: ["governance", "warning"]
-      });
+      EventBus.governanceRuling(world, heya.id, {
+        score: heya.scandalScore,
+        incident: "governance_warning",
+        reason: "Scandal threshold exceeded"
+      }, "major");
     }
 
     // Sync governanceStatus from scandalScore thresholds
@@ -90,18 +77,12 @@ export function tickWeekGovernance(world: WorldState): void {
     if (heya.governanceStatus !== newStatus) {
       const prevStatus = heya.governanceStatus;
       heya.governanceStatus = newStatus;
-      const statusRng = rngFromSeed(`gov-status-${heya.id}-${world.year}-${world.week}-${newStatus}`, "narrative", "event");
-      const statusSummary = BardEngine.resolve(statusRng, "institutional.governance.sanction", { heya: heya.name, prevStatus, newStatus }).text;
-      logEngineEvent(world, {
-        type: "GOVERNANCE_STATUS_CHANGED",
-        category: "discipline",
-        importance: newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: BardEngine.resolve(statusRng, "events.titles.GOVERNANCE_STATUS_CHANGED").text,
-        summary: statusSummary,
-        data: { prevStatus, newStatus, scandalScore: Math.floor(score) }
-      });
+      EventBus.governanceRuling(world, heya.id, {
+        incident: "status_changed",
+        status: newStatus,
+        reason: prevStatus,
+        score: Math.floor(score)
+      }, newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable");
       if (newStatus === "sanctioned" || newStatus === "probation") {
         generateGovernanceHeadline(world, heya.id, newStatus === "sanctioned" ? "critical" : "major",
           `${heya.name} governance status has escalated to ${newStatus}.`);
@@ -130,15 +111,10 @@ export function runElections(world: WorldState): void {
         heya.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
       }
     }
-    logEngineEvent(world, {
-      type: "JSA_ELECTION",
-      category: "discipline",
-      importance: "notable",
-      scope: "world",
-      title: BardEngine.resolve(rngFromSeed(`election-${ichimon}`, "narrative", "event"), "events.titles.JSA_ELECTION").text,
-      summary: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
-      data: { ichimon, heyaCount: heyaIds.length },
-      tags: ["governance", "elections"]
+    EventBus.bashoStatus(world, {
+      status: "phase_transition",
+      incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
+      shikona: ichimon
     });
   }
 }

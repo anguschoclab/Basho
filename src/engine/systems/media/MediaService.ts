@@ -11,7 +11,7 @@ import { rngForWorld } from "../../rng";
 import { Id } from "../../types/common";
 import { getRivalryBoutModifiers, RivalriesState } from "../../rivalries";
 import { clampInt } from "../../utils/math";
-import { logEngineEvent } from "../../events";
+
 import { 
   calculateBoutImpact, 
   determineTier, 
@@ -98,16 +98,14 @@ export function updateMediaFromBout(args: {
 
   // 4. Log significant headlines to world.events.log so UIDigest picks them up
   if (tier === 'main_event' || tier === 'national') {
-    logEngineEvent(world, {
-      type: `MEDIA_HEADLINE_${tier.toUpperCase()}`,
-      category: 'media',
-      importance: tier === 'main_event' ? 'major' : 'notable',
-      scope: 'world',
-      rikishiId: result.winnerRikishiId,
-      title,
-      summary: subtitle || title,
-      data: { tier, beat, tone, impact },
-      tags: ['media', 'bout', beat],
+    EventBus.bashoStatus(world, {
+      status: "meta_shift",
+      incident: title,
+      shikona: winner?.shikona,
+      winner: winner?.shikona,
+      winnerRikishiId: result.winnerRikishiId,
+      day: day,
+      score: impact
     });
   }
 

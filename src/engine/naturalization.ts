@@ -1,6 +1,6 @@
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { stableSort } from "./utils/sort";
 
@@ -51,16 +51,12 @@ export function checkNaturalizations(world: WorldState): void {
 
       const heya = world.heyas.get(r.heyaId);
 
-      logEngineEvent(world, {
-        type: "NATURALIZATION",
-        category: "career",
-        importance: "headline",
-        scope: "rikishi",
+      EventBus.lifecycleEvent(world, {
         rikishiId: r.id,
         heyaId: r.heyaId,
-        title: `${r.shikona || r.name} acquires Japanese citizenship`,
-        summary: `In a major milestone, ${r.shikona || r.name} has formally naturalized as a Japanese citizen. This frees up the foreign slot for ${heya?.name || "their stable"}.`,
-        data: { originalNationality, newNationality: "Japan" }
+        shikona: r.shikona || r.name,
+        status: "naturalization",
+        reason: originalNationality
       });
 
       if (heya) {

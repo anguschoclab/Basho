@@ -122,16 +122,14 @@ export function applyWeeklyTraining(world: WorldState): void {
       // Milestone Events (Threshold crossing)
       const currentPower = Math.floor(rikishi.power);
       if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
-        EventBus.trainingMilestone(
-          world, 
-          rikishi.id, 
-          rikishi.heyaId,
-          { 
-            shikona: rikishi.shikona || rikishi.name,
-            focus: profile.focus, 
-            intensity: profile.intensity 
-          }
-        );
+        EventBus.trainingUpdate(world, { 
+          rikishiId: rikishi.id,
+          heyaId: rikishi.heyaId,
+          shikona: rikishi.shikona || rikishi.name,
+          status: profile.focus, 
+          intensity: profile.intensity,
+          score: currentPower
+        });
       }
     }
   });

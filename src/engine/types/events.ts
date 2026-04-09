@@ -8,24 +8,18 @@ import type { Id } from "./common";
 export type EventScope = "world" | "heya" | "rikishi";
 /** Type representing event phase. */
 export type EngineEventType =
-  | "BASHO_DAY_ADVANCED"
-  | "BASHO_ENDED"
-  | "BASHO_STARTED"
-  | "BOUT_RESULT"
-  | "FINANCIAL_ALERT"
+  | "BOUT_RESOLVED"
+  | "RECRUIT_DISCOVERED"
+  | "MONTHLY_FINANCE_REPORT"
+  | "RIVALRY_HEAT_SPIKE"
+  | "MEDICAL_REPORT"
+  | "TRAINING_UPDATE"
   | "GOVERNANCE_RULING"
-  | "INJURY_OCCURRED"
-  | "INJURY_RECOVERED"
-  | "KENSHO_AWARDED"
-  | "RETIREMENT"
-  | "RIVALRY_ESCALATED"
-  | "RIVALRY_FORMED"
-  | "ROOKIE_DEBUT"
-  | "SCOUTING_INVESTMENT_CHANGED"
-  | "SPECIAL_PRIZES_AWARDED"
-  | "TRAINING_MILESTONE"
-  | "TRAINING_PROFILE_CHANGED"
-  | "WELFARE_ALERT";
+  | "FINANCIAL_ALERT"
+  | "AWARD_CONFERRED"
+  | "LIFECYCLE_EVENT"
+  | "BASHO_STATUS"
+  | "WELFARE_COMPLIANCE";
 
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
 /** Type representing event category. */
@@ -50,6 +44,43 @@ export type EventCategory =
 
 /** Type representing event importance. */
 export type EventImportance = "minor" | "notable" | "major" | "headline";
+
+/** Defines the structure for narrative context (A11 Narrative Contract). */
+export interface NarrativeContext {
+  shikona?: string;
+  rival?: string;
+  rank?: string;
+  heya?: string;
+  winner?: string;
+  loser?: string;
+  kimarite?: string;
+  
+  // Economy
+  money?: number;   // Auto-formatted
+  kensho?: number;  // Auto-formatted
+  cost?: number;    // Auto-formatted
+  revenue?: number;
+  profit?: number;
+  
+  // Physics / Stats
+  rate?: number;    // Auto-formatted %
+  chance?: number;  // Auto-formatted %
+  score?: number;
+  delta?: number;
+  intensity?: "high_stakes" | "technical" | "neutral" | number;
+  
+  // Domain Specific
+  severity?: "minor" | "moderate" | "serious" | "critical";
+  incident?: string;
+  reason?: string;
+  regimen?: string;
+  status?: string;
+  threshold?: number;
+  heat?: number;
+  day?: number;
+  
+  [key: string]: string | number | boolean | undefined;
+}
 
 /** Defines the structure for engine event. */
 export interface EngineEvent {
@@ -78,7 +109,7 @@ export interface EngineEvent {
   summary: string;
 
   // Data Payload
-  data: Record<string, string | number | boolean | null | undefined>;
+  data: NarrativeContext;
 
   truthLevel: "public" | "limited" | "private";
   tags?: string[];

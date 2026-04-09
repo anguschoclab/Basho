@@ -9,7 +9,7 @@ import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
 import type { PrestigeBand } from "../types/narrative";
 import { getHeyaRoster } from "../queries";
-import { logEngineEvent } from "../events";
+import { EventBus } from "../events";
 
 export const PRESTIGE_ORDER: PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
 
@@ -125,18 +125,12 @@ export function runPrestigeDecay(world: WorldState): void {
 
     if (newBand !== heya.prestigeBand) {
       const direction = newIdx > currentIdx ? "rose" : "fell";
-      logEngineEvent(world, {
-        type: "PRESTIGE_SHIFT",
-        category: "milestone",
-        importance: Math.abs(shift) >= 2 ? "major" : "notable",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} prestige ${direction}`,
-        summary: `${heya.name}'s prestige ${direction} to "${newBand}" after the basho.${
-          shift <= -2 ? " A sharp decline — the sumo world takes notice." : ""
-        }`,
-        data: { from: heya.prestigeBand, to: newBand, winRate: Math.round(winRate * 100), shift }
-      });
+      EventBus.governanceRuling(world, heya.id, {
+        incident: "prestige_shift",
+        status: newBand,
+        reason: heya.prestigeBand, // previous band
+        score: Math.round(winRate * 100)
+      }, Math.abs(shift) >= 2 ? "major" : "notable");
       heya.prestigeBand = newBand;
     }
 

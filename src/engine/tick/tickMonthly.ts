@@ -1,5 +1,5 @@
 import type { WorldState } from "../types/world";
-import { logEngineEvent } from "../events";
+
 import * as facilities from "../facilities";
 import { RANK_HIERARCHY } from "../banzuke";
 import { stableSort } from "../utils/sort";
@@ -28,16 +28,11 @@ export function tickMonthlyBoundary(world: WorldState, subs: string[]): void {
 
   runTickPipeline(world, subs, steps, { autosave: true });
 
-  const rng = rngFromSeed(`monthly-bound-${world.calendar.year}-${world.calendar.month}`, "narrative", "event");
-  logEngineEvent(world, {
-    type: "MONTHLY_BOUNDARY",
-    category: "economy",
-    importance: "minor",
-    scope: "world",
-    title: BardEngine.resolve(rng, "events.titles.MONTHLY_BOUNDARY").text,
-    summary: `Monthly salaries, rent, and supporter income processed for month ${world.calendar.month}.`,
-    data: { year: world.calendar.year, month: world.calendar.month },
-    tags: ["economy", "boundary"]
+  EventBus.bashoStatus(world, {
+    status: "meta_shift",
+    incident: "monthly_boundary",
+    day: world.calendar.month,
+    score: world.calendar.year
   });
 }
 
@@ -103,18 +98,12 @@ export function tickMonthlyEconomics(world: WorldState): void {
     else heya.runwayBand = "desperate";
 
     if (heya.id === world.playerHeyaId && heya.funds < 0) {
-      const defRng = rngFromSeed(`monthly-deficit-${heya.id}-${world.calendar.year}-${world.calendar.month}`, "narrative", "event");
-      logEngineEvent(world, {
-        type: "MONTHLY_DEFICIT",
-        category: "economy",
-        importance: "major",
-        scope: "heya",
-        heyaId: heya.id,
-        title: BardEngine.resolve(defRng, "events.titles.MONTHLY_DEFICIT").text,
-        summary: `${heya.name} is operating at a deficit. Runway: ${heya.runwayBand}.`,
-        data: { net: -totalExpenses, runway: heya.runwayBand },
-        tags: ["economy"]
-      });
+      EventBus.financialAlert(world, heya.id, {
+        incident: "monthly_deficit",
+        money: -totalExpenses,
+        status: heya.runwayBand,
+        heyaname: heya.name
+      }, "major");
     }
   }
 }
@@ -189,17 +178,12 @@ export function tickArchetypeDrift(world: WorldState): void {
 
       // If a drift occurred, dispatch event and update
       if (newArchetype !== r.tacticalArchetypePrimary) {
-        const driftRng = rngFromSeed(`archetype-drift-${r.id}-${world.calendar.year}-${world.calendar.month}`, "narrative", "event");
-        logEngineEvent(world, {
-          type: "ARCHETYPE_DRIFT",
-          category: "training",
-          importance: "minor",
-          scope: "rikishi",
+        EventBus.trainingUpdate(world, {
           rikishiId: r.id,
-          title: BardEngine.resolve(driftRng, "events.titles.ARCHETYPE_DRIFT").text,
-          summary: `${r.shikona} has drifted towards a ${newArchetype} style after a successful basho.`,
-          data: { old: r.tacticalArchetypePrimary, new: newArchetype },
-          tags: ["combat", "progression"]
+          shikona: r.shikona,
+          incident: "archetype_drift",
+          status: newArchetype,
+          reason: r.tacticalArchetypePrimary
         });
         r.tacticalArchetypePrimary = newArchetype;
       }

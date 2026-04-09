@@ -2,7 +2,7 @@ import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Loan, LoanType } from "./types/economy";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { rngForWorld } from "./rng";
 import type { SeededRNG } from "./rng";
@@ -121,15 +121,13 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
     heya.scandalScore = Math.min(100, (heya.scandalScore || 0) + 10); // Governance scrutiny
   }
 
-  logEngineEvent(world, {
-    type: "LOAN_ISSUED",
-    category: "economy",
-    importance: terms.loanType === "benefactor" ? "headline" : "major",
-    scope: "heya",
-    heyaId: heya.id,
-    title: `${terms.loanType === "emergency" ? "Emergency Loan" : terms.loanType === "supporter" ? "Supporter Loan" : "Benefactor Bailout"} for ${heya.name}`,
-    summary: `${terms.providerName} provides a ¥${terms.principal.toLocaleString()} loan to prevent ${heya.name}\'s collapse. Strings attached: ${terms.stringsAttached.join(", ")}.`,
-    data: { loanAmount: terms.principal, loanType: terms.loanType, providerName: terms.providerName, interestRate: terms.interestRate }
+  EventBus.financialAlert(world, heya.id, {
+    incident: "loan_issued",
+    status: terms.loanType,
+    money: terms.principal,
+    heyaname: heya.name,
+    heya: terms.providerName,
+    reason: terms.stringsAttached.join("|")
   });
 
   generateGovernanceHeadline({
@@ -162,15 +160,11 @@ export function processMonthlyLoanRepayments(world: WorldState): void {
         remainingLoans.push(loan);
       } else {
         // Loan paid off
-        logEngineEvent(world, {
-          type: "LOAN_PAID_OFF",
-          category: "economy",
-          importance: "notable",
-          scope: "heya",
-          heyaId: heya.id,
-          title: `Loan paid off by ${heya.name}`,
-          summary: `${heya.name} has successfully paid off their ${loan.type} loan from ${loan.providerName}.`,
-          data: { loanId: loan.id }
+        EventBus.financialAlert(world, heya.id, {
+          incident: "loan_paid_off",
+          status: loan.type,
+          heya: loan.providerName,
+          heyaname: heya.name
         });
       }
     }

@@ -7,7 +7,7 @@
 import type { WorldState, CyclePhase } from "../../types/world";
 import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
-import { EventBus, logEngineEvent } from "../../events";
+import { EventBus } from "../../events";
 import { getInterimWeeks } from "../../calendar";
 import { rngFromSeed } from "../../rng";
 import { BardEngine } from "../../narrative/BardEngine";
@@ -83,7 +83,11 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
         world.cyclePhase = nextPhase;
 
         if (world.mediaState) world.mediaState = resetBashoMediaTracking(world.mediaState);
-        EventBus.bashoStarted(world, bashoName);
+        EventBus.bashoStatus(world, { 
+          status: "started", 
+          incident: bashoName,
+          day: 1
+        });
         
         logTransition(world, prev, nextPhase, `The ${bashoName} basho begins!`);
         return { from: prev, to: nextPhase };
@@ -123,15 +127,10 @@ function checkPhaseTransition(world: WorldState): { from: CyclePhase; to: CycleP
 }
 
 function logTransition(world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
-  const rng = rngFromSeed(`phase-start-${world.dayIndexGlobal}`, "narrative", "event");
-  logEngineEvent(world, {
-    type: "PHASE_TRANSITION",
-    category: "basho",
-    importance: "major",
-    scope: "world",
-    title: BardEngine.resolve(rng, "events.titles.PHASE_TRANSITION").text,
-    summary,
-    data: { from, to },
-    tags: ["phase"]
+  EventBus.bashoStatus(world, {
+    status: "phase_transition",
+    incident: summary,
+    shikona: from, // repurposing for debug info or just omit
+    winner: to
   });
 }

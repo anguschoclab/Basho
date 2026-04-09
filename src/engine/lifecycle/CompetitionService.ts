@@ -1,4 +1,4 @@
-import { EventBus, logEngineEvent } from "../events";
+import { EventBus } from "../events";
 import { stableTieBreak } from "../utils/sort";
 import { determineSpecialPrizes } from "../banzuke";
 import { onBashoEnded } from "../records";
@@ -111,7 +111,13 @@ function distributePrizes(world: WorldState, basho: BashoState, yusho: Id) {
           else if (type === 'Gino') sp.ginoSho++;
         }
         
-        EventBus.specialPrizesAwarded(world, r.id, r.heyaId, type as any, SANSHO_PRIZE_AMOUNT);
+        EventBus.awardConferred(world, {
+          rikishiId: r.id,
+          heyaId: r.heyaId,
+          money: SANSHO_PRIZE_AMOUNT,
+          status: "special_prize",
+          regimen: type as string // e.g. 'Shukun'
+        });
         const heya = world.heyas.get(r.heyaId);
         if (heya) heya.funds += SANSHO_PRIZE_AMOUNT;
       }
@@ -161,7 +167,12 @@ function recordBashoHistory(
 
   onBashoEnded(world);
   const yushoRikishi = world.rikishi.get(yusho);
-  EventBus.bashoEnded(world, basho.bashoName, yusho, yushoRikishi?.shikona || 'Unknown');
+  EventBus.bashoStatus(world, {
+    status: "ended",
+    incident: basho.bashoName,
+    winner: yushoRikishi?.shikona || 'Unknown',
+    winnerRikishiId: yusho
+  });
 
   safeCall(() => {
     if (world.mediaState) {
@@ -174,27 +185,12 @@ function recordBashoHistory(
     if (world.ftue.bashoCompleted >= 1) world.ftue.isActive = false;
   }
 
-  const logRng = rngFromSeed(`basho-concluded-${world.year}-${basho.bashoName}`, "narrative", "history");
-  const narr = BardEngine.resolve(logRng, "events.basho.concluded_summary", {
-    SHIKONA: yushoRikishi?.shikona || 'Unknown',
-    WINS: bestWins,
-    LOSSES: 15 - bestWins,
-    BASHONAME: basho.bashoName.toUpperCase()
-  });
-
-  logEngineEvent(world, {
-    type: "BASHO_CONCLUDED",
-    category: "basho",
-    importance: "major",
-    scope: "world",
-    title: BardEngine.resolve(logRng, "events.basho.concluded_title", { BASHONAME: basho.bashoName.toUpperCase() }).text,
-    summary: narr.text,
-    data: {
-      year: result.year,
-      bashoName: result.bashoName,
-      yushoId: result.yusho,
-      wins: bestWins
-    }
+  EventBus.bashoStatus(world, {
+    status: "concluded_summary",
+    incident: basho.bashoName,
+    shikona: yushoRikishi?.shikona || 'Unknown',
+    score: bestWins,
+    delta: 15 - bestWins
   });
 
   enterPostBasho(world);
@@ -226,27 +222,11 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     playoffMatches.push(...playoffResult.matches);
 
     const champ = world.rikishi.get(yusho);
-    const logRng = rngFromSeed(`playoff-${world.year}-${basho.bashoName}`, "narrative", "event");
-    const narr = BardEngine.resolve(logRng, "events.basho.playoff_summary", {
-      SHIKONA: champ?.shikona ?? yusho,
-      CONTENDERS: topCandidates.length,
-      WINS: bestWins
-    });
-
-    logEngineEvent(world, {
-      type: "PLAYOFF_RESULT",
-      category: "basho",
-      importance: "headline",
-      scope: "world",
-      title: BardEngine.resolve(logRng, "events.basho.playoff_title", { SHIKONA: champ?.shikona ?? yusho }).text,
-      summary: narr.text,
-      data: {
-        bashoName: basho.bashoName,
-        year: world.year,
-        contenders: topCandidates.length,
-        boutCount: playoffMatches.length,
-        championId: yusho,
-      },
+    EventBus.bashoStatus(world, {
+      status: "playoff_result",
+      shikona: champ?.shikona ?? yusho,
+      score: topCandidates.length,
+      delta: bestWins
     });
   }
 

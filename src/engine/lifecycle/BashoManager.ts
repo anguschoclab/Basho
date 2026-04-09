@@ -36,6 +36,10 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   // Ensure initial schedule is available
   ensureDaySchedule(world, basho.day);
   
-  EventBus.bashoStarted(world, name);
+  EventBus.bashoStatus(world, { 
+    status: "started", 
+    incident: name,
+    day: 1
+  });
   return world;
 }

@@ -11,10 +11,10 @@ import { GeminiClient } from '../src/engine/narrative/GeminiClient.ts';
  */
 
 const ARCHIVE_PATH = path.resolve(process.cwd(), 'src/engine/narrative/archive.json');
-const API_KEY = process.env.VITE_GEMINI_API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY;
 
 if (!API_KEY) {
-  console.error("Error: VITE_GEMINI_API_KEY environment variable is not set.");
+  console.error("Error: GEMINI_API_KEY environment variable is not set.");
   process.exit(1);
 }
 

@@ -17,7 +17,7 @@ import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
-import { logEngineEvent } from "./events";
+import { EventBus } from "./events";
 
 // Strategies & Personas
 import { getFinanceStrategy } from "./npcFinanceStrategy";
@@ -332,50 +332,23 @@ export function tickWeekNPC(world: WorldState): number {
     }
 
     if (oldMood !== newMood) {
-      logEngineEvent(world, {
-        type: "OYAKATA_MOOD_SHIFT",
-        category: "narrative",
-        importance: "major",
-        scope: "heya",
-        heyaId: heya.id,
-        title: `${heya.name} Oyakata is ${newMood}`,
-        summary: `The master of ${heya.name} is now feeling ${newMood}.`,
-        data: { oldMood, newMood }
-      });
+      EventBus.oyakataMoodShift(world, heya.id, { oldMood, newMood });
     }
 
     scoutingMap[heya.id] = decision.scoutingPriority;
 
-    logEngineEvent(world, {
-      type: "NPC_MANAGER_DECISION",
-      category: "training",
-      importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor",
-      scope: "heya",
-      heyaId: heya.id,
-      title: `${heya.name} Internal Strategy`,
-      summary: decision.reasoning[0] || "Weekly training plan updated",
-      data: {
-        archetype: decision.archetype,
-        intensity: decision.trainingIntensity,
-        focus: decision.trainingFocus,
-        recovery: decision.recovery,
-        scouting: decision.scoutingPriority,
-        protectedCount: decision.individualProtects.length,
-        reasoningLog: decision.reasoning.join(" | ")
-      }
-    });
+    EventBus.managementDecision(world, heya.id, {
+      archetype: decision.archetype,
+      intensity: decision.trainingIntensity,
+      focus: decision.trainingFocus,
+      recovery: decision.recovery,
+      scouting: decision.scoutingPriority,
+      protectedCount: decision.individualProtects.length,
+      reasoningLog: decision.reasoning.join(" | ")
+    }, decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor");
 
     if (decision.trainingIntensity === "punishing") {
-       logEngineEvent(world, {
-          type: "NARRATIVE_STRATEGY_SHIFT",
-          category: "narrative",
-          importance: "major",
-          scope: "world",
-          heyaId: heya.id,
-          title: `Drastic measures at ${heya.name}`,
-          summary: `Reports suggest ${heya.name} has moved to an extremely punishing training cycle, seeking a breakthrough.`,
-          data: { intensity: "punishing", reasoning: decision.reasoning[0] }
-       });
+       EventBus.strategyShift(world, heya.id, { intensity: "punishing", reasoning: decision.reasoning[0] });
     }
   }
 
@@ -435,16 +408,11 @@ export function tickYear(world: WorldState): void {
     const persona = getManagerPersona(world, heya.id);
     
     if (persona.traits.ambition > 70 && persona.perception.rosterStrengthBand === "weak") {
-       logEngineEvent(world, {
-           type: "NPC_YEARLY_STRATEGY",
-           category: "narrative",
-           importance: "minor",
-           scope: "heya",
-           heyaId: heya.id,
-           title: `${heya.name || heya.id} declares rebuilding year`,
-           summary: `The ambitious master of ${heya.name || heya.id} is dissatisfied with the roster's strength and has mandated a strict rebuilding phase for ${world.calendar.year}.`,
-           data: { year: world.calendar.year, strategy: "rebuild" }
-       });
+       EventBus.managementDecision(world, heya.id, { 
+          year: world.calendar.year, 
+          strategy: "rebuild", 
+          ambition: persona.traits.ambition 
+       }, "minor");
     }
   }
 }

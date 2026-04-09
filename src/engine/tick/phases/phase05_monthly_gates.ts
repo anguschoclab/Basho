@@ -9,7 +9,7 @@ import { tickMonthlyEconomics, tickArchetypeDrift } from "../tickMonthly";
 import * as npcAI from "../../npcAI";
 import * as loans from "../../loans";
 import * as facilities from "../../facilities";
-import { logEngineEvent } from "../../events";
+
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 
@@ -36,16 +36,11 @@ export function phase05_monthly_gates(world: WorldState): WorldState {
   if (facilities.tickMonthlyFacilities) facilities.tickMonthlyFacilities(nextWorld);
 
   // 6. Logging
-  const rng = rngFromSeed(`monthly-bound-${nextWorld.calendar.year}-${nextWorld.calendar.month}`, "narrative", "event");
-  logEngineEvent(nextWorld, {
-    type: "MONTHLY_BOUNDARY",
-    category: "economy",
-    importance: "minor",
-    scope: "world",
-    title: BardEngine.resolve(rng, "events.titles.MONTHLY_BOUNDARY").text,
-    summary: `Monthly salaries, rent, and supporter income processed for month ${nextWorld.calendar.month}.`,
-    data: { year: nextWorld.calendar.year, month: nextWorld.calendar.month },
-    tags: ["economy", "boundary"]
+  EventBus.bashoStatus(nextWorld, {
+    status: "meta_shift",
+    incident: "monthly_boundary",
+    day: nextWorld.calendar.month,
+    score: nextWorld.calendar.year
   });
 
   return nextWorld;

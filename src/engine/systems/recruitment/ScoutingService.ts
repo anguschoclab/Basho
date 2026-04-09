@@ -149,14 +149,5 @@ export const ScoutingService = {
     };
   },
 
-  /**
-   * UI helper for scouting levels.
-   */
-  describeScoutingLevel(level: number) {
-    if (level >= 95) return { label: "Complete", description: "Full knowledge", color: "text-primary" };
-    if (level >= 70) return { label: "Well Scouted", description: "Reliable assessment", color: "text-success" };
-    if (level >= 40) return { label: "Moderate Intel", description: "General picture", color: "text-warning" };
-    if (level >= 15) return { label: "Limited", description: "Basic observations", color: "text-orange-500" };
-    return { label: "Unknown", description: "Insufficient data", color: "text-muted-foreground" };
   }
 };

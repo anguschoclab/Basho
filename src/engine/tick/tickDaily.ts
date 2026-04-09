@@ -25,7 +25,7 @@ import { stableSort } from "../utils/sort";
 
 
 import type { WorldState, CyclePhase } from "../types/world";
-import { EventBus, logEngineEvent } from "../events";
+import { EventBus } from "../events";
 import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { WelfareService } from "../systems/welfare/WelfareService";

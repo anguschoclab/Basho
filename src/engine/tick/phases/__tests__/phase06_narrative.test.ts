@@ -2,10 +2,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { phase06_narrative } from '../phase06_narrative';
 import type { WorldState } from '../../../types/world';
 import { mockRikishi } from '../../../__tests__/utils';
-import * as Events from '../../../events';
+import { EventBus } from '../../../events';
 
 vi.mock('../../../events', () => ({
-  logEngineEvent: vi.fn(),
+  EventBus: {
+    medicalEvent: vi.fn(),
+    financialAlert: vi.fn(),
+    trainingUpdate: vi.fn(),
+  },
+  logEngineEvent: vi.fn(), // Keep for robustness but we check EventBus
 }));
 
 describe('Phase 6: Narrative', () => {
@@ -37,20 +42,19 @@ describe('Phase 6: Narrative', () => {
     world.transientContext!.deltas = undefined as any;
     const result = phase06_narrative(world);
     expect(result).toBe(world);
-    expect(Events.logEngineEvent).not.toHaveBeenCalled();
+    expect(EventBus.medicalEvent).not.toHaveBeenCalled();
   });
 
-  it('logs INJURY_SUSTAINED event for new injuries', () => {
+  it('logs INJURY_SUSTAINED event via medicalEvent factory', () => {
     world.transientContext!.deltas.injuriesSustained = ['r1'];
 
     phase06_narrative(world);
 
-    expect(Events.logEngineEvent).toHaveBeenCalledWith(
+    expect(EventBus.medicalEvent).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
-        type: 'INJURY_SUSTAINED',
         rikishiId: 'r1',
-        title: expect.any(String),
+        status: 'injury_sustained'
       })
     );
   });
@@ -62,12 +66,13 @@ describe('Phase 6: Narrative', () => {
 
     phase06_narrative(world);
 
-    expect(Events.logEngineEvent).toHaveBeenCalledWith(
+    expect(EventBus.financialAlert).toHaveBeenCalledWith(
       expect.any(Object),
+      'heya-1',
       expect.objectContaining({
-        type: 'FINANCIAL_CRISIS',
-        heyaId: 'heya-1',
-      })
+        incident: 'financial_crisis'
+      }),
+      'headline'
     );
   });
 
@@ -78,12 +83,7 @@ describe('Phase 6: Narrative', () => {
 
     phase06_narrative(world);
 
-    expect(Events.logEngineEvent).not.toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
-        type: 'FINANCIAL_CRISIS'
-      })
-    );
+    expect(EventBus.financialAlert).not.toHaveBeenCalled();
   });
 
   it('logs TRAINING_MILESTONE for stat changes >= 1.0', () => {
@@ -94,13 +94,12 @@ describe('Phase 6: Narrative', () => {
 
     phase06_narrative(world);
 
-    expect(Events.logEngineEvent).toHaveBeenCalledTimes(1);
-    expect(Events.logEngineEvent).toHaveBeenCalledWith(
+    expect(EventBus.trainingUpdate).toHaveBeenCalledTimes(1);
+    expect(EventBus.trainingUpdate).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
-        type: 'TRAINING_MILESTONE',
         rikishiId: 'r1',
-        title: expect.any(String),
+        incident: 'milestone'
       })
     );
   });

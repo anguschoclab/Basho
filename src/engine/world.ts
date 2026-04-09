@@ -22,7 +22,7 @@ import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout/boutResolver";
 import { stableTieBreak } from "./utils/sort";
 import { updateH2H } from "./h2h";
-import { EventBus, logEngineEvent } from "./events";
+import { EventBus } from "./events";
 import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./tick/tickDaily";
 import { buildAlmanacSnapshot } from "./almanac";
 import { autosave } from "./saveload";
@@ -117,7 +117,10 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   if (nextDay <= 15) ensureDaySchedule(world, nextDay);
 
-  EventBus.bashoDay(world, nextDay);
+  EventBus.bashoStatus(world, { 
+    status: "day_advanced", 
+    day: nextDay 
+  });
   return world;
 }
 

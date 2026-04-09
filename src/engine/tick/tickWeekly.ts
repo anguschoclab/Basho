@@ -1,5 +1,5 @@
 import type { WorldState } from "../types/world";
-import { logEngineEvent } from "../events";
+
 import { buildAllPerceptionSnapshots } from "../perception";
 import * as training from "../training";
 import * as injuries from "../systems/health/InjuryService";
@@ -61,17 +61,12 @@ export function tickWeeklySubsystems(world: WorldState, subs: string[]): void {
         for (const sId of heya.staffIds) {
           const staff = w.staff.get(sId);
           if (staff && staff.fatigue > 80) {
-            const rng = rngFromSeed(`staff-burnout-${w.week}-${sId}`, "narrative", "event");
-            logEngineEvent(w, {
-              type: "STAFF_BURNOUT",
-              category: "heya",
-              importance: "major",
-              scope: "heya",
-              heyaId: heya.id,
-              title: "Staff Exhaustion Alert",
-              summary: BardEngine.resolve(rng, "events.staff.burnout", { NAME: staff.name }).text,
-              data: { staffId: sId, fatigue: staff.fatigue }
-            });
+            EventBus.welfareCompliance(w, heya.id, {
+              rikishiId: sId,
+              shikona: staff.name,
+              status: "burnout",
+              score: staff.fatigue
+            }, "major");
           }
         }
       }
@@ -149,19 +144,11 @@ function tickRecruitmentWindowClose(world: WorldState): void {
     rw.isOpen = false;
 
     if (world.playerHeyaId) {
-      const rng = rngFromSeed(`recruit-close-${world.week}`, "narrative", "event");
-      const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_WINDOW_CLOSED").text;
-      const summary = BardEngine.resolve(rng, "events.recruitment.closed").text;
-
-      logEngineEvent(world, {
-        type: "RECRUITMENT_WINDOW_CLOSED",
-        category: "career",
-        importance: "notable",
-        scope: "heya",
+      EventBus.recruitDiscovered(world, {
+        rikishiId: world.playerHeyaId, 
         heyaId: world.playerHeyaId,
-        title,
-        summary,
-        data: { phase: rw.phase, openedAtWeek: rw.openedAtWeek, closedAtWeek: world.week }
+        status: "window_closed",
+        day: world.week
       });
     }
   }
@@ -187,20 +174,12 @@ function tickMidInterimRecruitment(world: WorldState): void {
 
   // Block recruitment if welfare sanctions are active (Constitution A6.3)
   if (playerHeya?.welfareState?.complianceState === "sanctioned") {
-    const rng = rngFromSeed(`recruit-blocked-${world.week}`, "narrative", "event");
-    const title = BardEngine.resolve(rng, "events.titles.RECRUITMENT_BLOCKED_SANCTIONS").text;
-    const summary = BardEngine.resolve(rng, "events.welfare.sanctioned", { HEYANAME: playerHeya.name }).text;
-
-    logEngineEvent(world, {
-      type: "RECRUITMENT_BLOCKED_SANCTIONS",
-      category: "discipline",
-      importance: "major",
-      scope: "heya",
-      heyaId: playerHeya.id,
-      title,
-      summary,
-      data: { complianceState: "sanctioned", welfareRisk: playerHeya.welfareState?.welfareRisk ?? 0 }
-    });
+    EventBus.welfareCompliance(world, playerHeya.id, {
+      status: "sanctioned",
+      incident: "recruitment_blocked",
+      score: playerHeya.welfareState?.welfareRisk ?? 0,
+      heyaname: playerHeya.name
+    }, "major");
     return;
   }
 
@@ -213,20 +192,12 @@ function tickMidInterimRecruitment(world: WorldState): void {
       phase: "mid_interim"
     };
 
-    logEngineEvent(world, {
-      type: "RECRUITMENT_WINDOW_OPEN",
-      category: "career",
-      importance: "notable",
-      scope: "heya",
+    EventBus.recruitDiscovered(world, {
+      rikishiId: playerHeya.id,
       heyaId: playerHeya.id,
-      title: BardEngine.resolve(rngFromSeed(`recruit-open-${world.week}`, "narrative", "event"), "events.titles.RECRUITMENT_WINDOW_OPEN").text,
-      summary: BardEngine.resolve(rngFromSeed(`recruit-open-desc-${world.week}`, "narrative", "event"), "events.recruitment.open").text,
-      data: {
-        rosterSize: (playerHeya.rikishiIds ?? []).length,
-        windowDuration: 2,
-        closesAtWeek: world.week + 2,
-        phase: "mid_interim"
-      }
+      status: "window_open",
+      day: world.week + 2,
+      incident: "mid_interim"
     });
   }
 

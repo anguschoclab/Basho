@@ -163,13 +163,23 @@ describe("events.ts - Helpers & Cleanup", () => {
     it("wraps logEngineEvent correctly for standard domains", () => {
       const world = createMockWorld();
 
-      const injuryEvent = EventBus.injury(world, "r1", { severity: "serious" });
+      const injuryEvent = EventBus.medicalReportBase(world, { 
+        rikishiId: "r1", 
+        heyaId: "h1",
+        shikona: "Test",
+        status: "injury",
+        score: 5
+      }, "headline");
       expect(injuryEvent.category).toBe("injury");
       expect(injuryEvent.importance).toBe("headline");
 
-      const bashoEvent = EventBus.bashoStarted(world, "hatsu");
-      expect(bashoEvent.type).toBe("BASHO_STARTED");
-      expect(bashoEvent.data?.bashoName).toBe("hatsu");
+      const bashoEvent = EventBus.bashoStatus(world, {
+        status: "started",
+        day: 1,
+        reason: "hatsu"
+      });
+      expect(bashoEvent.type).toBe("BASHO_STATUS");
+      expect(bashoEvent.data?.status).toBe("started");
 
       expect(world.events?.log.length).toBe(2);
     });
@@ -223,6 +233,46 @@ describe("events.ts - Helpers & Cleanup", () => {
 
       // Check dedupe cleanup
       expect(world.events!.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"]).toBeUndefined();
+    });
+  describe("EventBus - Expanded Factories", () => {
+    it("emits OYAKATA_MOOD_SHIFT via oyakataMoodShift factory", () => {
+      const world = createMockWorld();
+      EventBus.oyakataMoodShift(world, "h1", { oldMood: "content", newMood: "furious" });
+      
+      const events = queryEvents(world, { category: "narrative" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("OYAKATA_MOOD_SHIFT");
+      expect(events[0].data?.newMood).toBe("furious");
+    });
+
+    it("emits NPC_MANAGER_DECISION via managementDecision factory", () => {
+      const world = createMockWorld();
+      EventBus.managementDecision(world, "h1", { intensity: "punishing", reasoning: "Test" }, "notable");
+      
+      const events = queryEvents(world, { category: "training" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("NPC_MANAGER_DECISION");
+      expect(events[0].importance).toBe("notable");
+    });
+
+    it("emits FACILITY_UPGRADED via facilityUpdate factory", () => {
+      const world = createMockWorld();
+      EventBus.facilityUpdate(world, "h1", { axis: "training", newLevel: 50 }, "UPGRADED");
+      
+      const events = queryEvents(world, { category: "facility" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("FACILITY_UPGRADED");
+      expect(events[0].data?.axis).toBe("training");
+    });
+
+    it("emits LIFECYCLE_EVENT via lifecycleAction factory", () => {
+      const world = createMockWorld();
+      EventBus.lifecycleAction(world, { rikishiId: "r1", status: "naturalization" }, "naturalization");
+      
+      const events = queryEvents(world, { category: "career" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("LIFECYCLE_EVENT");
+      expect(events[0].data?.status).toBe("naturalization");
     });
   });
 });

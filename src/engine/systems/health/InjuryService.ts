@@ -100,14 +100,22 @@ export function tickWeekInjury(world: WorldState): void {
     if (result) {
       rikishi.injured = true;
       rikishi.injuryWeeksRemaining = result.weeksOut;
-      (rikishi as any).currentInjury = {
-        id: seededRng.uuid('IJ'),
-        severity: result.severity,
-        area: result.area,
-        type: result.type,
-        weeksOut: result.weeksOut,
-        weekOccurred: world.week ?? 0,
-      };
+        (rikishi as any).currentInjury = {
+          id: seededRng.uuid('IJ'),
+          severity: result.severity,
+          area: result.area,
+          type: result.type,
+          weeksOut: result.weeksOut,
+          weekOccurred: world.week ?? 0,
+        };
+        EventBus.lifecycleEvent(world, {
+          rikishiId: rikishi.id,
+          heyaId: rikishi.heyaId,
+          shikona: rikishi.shikona || rikishi.name,
+          status: "injury",
+          reason: result.area,
+          score: result.weeksOut
+        });
     }
   }
 }
@@ -127,15 +135,11 @@ export function tickWeekRecovery(world: WorldState): void {
     const recovered = tickRikishiRecovery(rikishi, staffBonuses.medical);
 
     if (recovered) {
-      logEngineEvent(world, {
-        type: "RECOVERY",
-        category: "welfare",
-        importance: "notable",
-        scope: "rikishi",
+      EventBus.lifecycleEvent(world, {
         rikishiId: rikishi.id,
         heyaId: rikishi.heyaId,
-        title: `${rikishi.shikona || rikishi.name} recovered`,
-        summary: `${rikishi.shikona || rikishi.name} has completed their rehabilitation and is fit to return to training.`
+        shikona: rikishi.shikona || rikishi.name,
+        status: "recovery"
       });
     }
   }
@@ -168,14 +172,22 @@ export function onBoutResolvedInjury(
   if (roll < boutInjuryChance) {
     loser.injured = true;
     loser.injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
-    (loser as any).currentInjury = {
-      id: rngSeed.uuid('IJ'),
-      severity: "minor",
-      area: "other",
-      type: "inflammation",
-      weeksOut: loser.injuryWeeksRemaining,
-      weekOccurred: world.week ?? 0,
-    };
+      (loser as any).currentInjury = {
+        id: rngSeed.uuid('IJ'),
+        severity: "minor",
+        area: "other",
+        type: "inflammation",
+        weeksOut: loser.injuryWeeksRemaining,
+        weekOccurred: world.week ?? 0,
+      };
+      EventBus.lifecycleEvent(world, {
+        rikishiId: loser.id,
+        heyaId: loser.heyaId,
+        shikona: loser.shikona || loser.name,
+        status: "injury_bout",
+        reason: "Bout impact",
+        score: loser.injuryWeeksRemaining
+      });
   }
 }
 

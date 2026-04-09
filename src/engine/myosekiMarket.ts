@@ -192,7 +192,12 @@ export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myos
 
   logMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount);
 
-  EventBus.financialAlert(world, heya.id, "Myoseki Acquired", `${heya.name} acquired the ${stock.name} elder stock for ¥${amount.toLocaleString()}.`);
+  EventBus.financialAlert(world, heya.id, {
+    heyaname: heya.name,
+    incident: "myoseki_acquisition",
+    money: amount,
+    status: stock.name
+  });
 
   return true;
 }

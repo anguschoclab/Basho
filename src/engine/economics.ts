@@ -42,11 +42,12 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
 
   if (benefactor) {
     heya.funds += BENEFACTOR_BAILOUT_AMOUNT;
-    EventBus.financialAlert(world, heya.id,
-      "Benefactor Bailout",
-      `${benefactor.displayName} has provided a ¥${(BENEFACTOR_BAILOUT_AMOUNT / 1_000_000).toFixed(0)}M emergency infusion to stabilize ${heya.name}.`,
-      { benefactorId: benefactor.sponsorId, amount: BENEFACTOR_BAILOUT_AMOUNT }
-    );
+    EventBus.financialAlert(world, heya.id, {
+      heyaname: heya.name,
+      incident: "bailout",
+      money: BENEFACTOR_BAILOUT_AMOUNT,
+      sponsor: benefactor.displayName
+    });
   } else if (heya.governanceStatus !== "sanctioned") {
     reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
     // Cap debt so math doesn't spiral into infinity
@@ -112,7 +113,13 @@ export function onBoutResolvedEconomics(
 
     winnerHeya.funds += stableShare;
 
-    EventBus.kenshoAwarded(world, winner.id, winnerHeya.id, total, kenshoCount);
+    EventBus.awardConferred(world, {
+      rikishiId: winner.id,
+      heyaId: winnerHeya.id,
+      kensho: total,
+      envelopes: kenshoCount,
+      status: "kensho"
+    });
   }
 }
 

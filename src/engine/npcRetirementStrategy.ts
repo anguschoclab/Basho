@@ -28,7 +28,13 @@ export const DefaultRetirementStrategy: RetirementStrategy = {
 
       if (retireReason) {
         // Emit retirement event
-        EventBus.retirement(world, r.id, heya.id, r.shikona || r.name || r.id, retireReason);
+        EventBus.lifecycleEvent(world, {
+          rikishiId: r.id,
+          heyaId: heya.id,
+          shikona: r.shikona || r.name || r.id,
+          status: "retirement",
+          reason: retireReason
+        });
 
         // Remove from heya
         heya.rikishiIds = (heya.rikishiIds ?? []).filter(id => id !== r.id);

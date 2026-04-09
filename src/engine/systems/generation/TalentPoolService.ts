@@ -21,7 +21,7 @@ import { generateRikishiName } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
 import { generateCandidate } from "./CandidateGenerator";
 import { clampInt } from "../../utils/math";
-import { logEngineEvent } from "../../events";
+import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 
@@ -253,15 +253,13 @@ export function tickWeekTalentPool(world: WorldState): void {
       if (heya) {
         heya.reputation = Math.min(100, (heya.reputation ?? 50) + 5);
         const signRng = rngFromSeed(`talent-sign-${candidate.candidateId}`, "narrative", "event");
-        logEngineEvent(world, {
-          type: 'HIGH_TALENT_SIGNED',
-          category: 'scouting',
-          importance: 'major',
-          scope: 'heya',
+        EventBus.recruitDiscovered(world, {
+          rikishiId: candidate.candidateId,
           heyaId: winner.heyaId,
-          title: BardEngine.resolve(signRng, "events.titles.HIGH_TALENT_SIGNED", { shikona: candidate.name, heya: heya.name }).text,
-          summary: `${candidate.name} (talent ${candidate.talentSeed}) has committed to ${heya.name}, boosting stable prestige.`,
-          data: { talentSeed: candidate.talentSeed, candidateId: candidate.candidateId },
+          shikona: candidate.name,
+          heya: heya.name,
+          score: candidate.talentSeed,
+          status: "high_talent_signed"
         });
       }
     }
@@ -461,15 +459,10 @@ export function reinjectToTalentPool(
     tp.pools[poolType].candidatesVisible.push(id);
   }
 
-  logEngineEvent(world, {
-    type: "TALENT_POOL_REINJECTION",
-    category: "career",
-    importance: "minor",
-    scope: "world",
+  EventBus.recruitDiscovered(world, {
     rikishiId: rikishi.id,
-    title: BardEngine.resolve(rngFromSeed(`reinject-evt-${rikishi.id}`, "narrative", "event"), "events.titles.TALENT_POOL_REINJECTION", { shikona: rikishi.shikona ?? rikishi.name }).text,
-    summary: `${rikishi.shikona ?? rikishi.name} was released and is now available to all stables.`,
-    tags: ["talent_pool", "roster_overflow"],
+    shikona: rikishi.shikona ?? rikishi.name ?? id,
+    status: "reinjected"
   });
 }
 

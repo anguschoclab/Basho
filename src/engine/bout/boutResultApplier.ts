@@ -12,6 +12,7 @@ import { EventBus } from "../events";
 import * as injuries from "../systems/health/InjuryService";
 import * as rivalries from "../rivalries";
 import * as economics from "../economics";
+import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
 import { 
   updateMediaFromBout, 
@@ -117,8 +118,38 @@ export function applyBoutResult(
     world.mediaState = state;
   });
 
-  // 6. Emit Canonical Event
-  EventBus.boutResult(world, result.winnerRikishiId, result.loserRikishiId, result.kimarite ?? "unknown", match.day);
+  // 6. Emit Canonical Event (Bard Engine v2.1)
+  const intensity = calculateMatchIntensity(match, result);
+  
+  const ctx: NarrativeContext = {
+    shikona: east.shikona, // default to east for general context
+    winner: winner.shikona,
+    loser: loser.shikona,
+    kimarite: result.kimariteId,
+    duration: result.duration,
+    day: match.day,
+    upset: result.upset,
+    isKinboshi: result.isKinboshi,
+  };
+
+  EventBus.boutResolved(world, ctx);
 
   return world;
+}
+
+/**
+ * Calculates narrative intensity for commentary selection.
+ */
+function calculateMatchIntensity(match: MatchSchedule, result: BoutResult): "high_stakes" | "technical" | "neutral" {
+  if (result.isKinboshi || result.upset || match.day === 15) {
+    return "high_stakes";
+  }
+  
+  // Technical matches are long or have many momentum shifts
+  const momentumShifts = result.log.filter(l => l.phase === 'momentum').length;
+  if (result.duration > 15 || momentumShifts > 3) {
+    return "technical";
+  }
+
+  return "neutral";
 }

@@ -1,12 +1,9 @@
 import archData from './archive.json';
 import { SeededRNG } from '../rng';
+import type { NarrativeContext } from '../types/events';
+import { KIMARITE_REGISTRY } from '../kimarite';
 
 export type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
-
-export interface NarrativeContext {
-  [key: string]: any;
-  intensity?: number; // 1, 2, or 3
-}
 
 export interface BardResult {
   text: string;
@@ -15,10 +12,24 @@ export interface BardResult {
 }
 
 /**
- * The Bard Engine: A Data-Driven Reactive Narrative System.
+ * The Bard Engine v2.2: A Data-Driven Reactive Narrative System.
+ * Ref: Phase 2 exhaustive refactor.
  */
 export class BardEngine {
   private static archive = archData;
+  private static lruCache: string[] = [];
+  private static MAX_CACHE_SIZE = 50;
+
+  private static currencyFormatter = new Intl.NumberFormat('ja-JP', {
+    style: 'currency',
+    currency: 'JPY',
+    maximumFractionDigits: 0
+  });
+
+  private static percentFormatter = new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    maximumFractionDigits: 1
+  });
 
   /**
    * Resolves a narrative path into a final interpolated string.
@@ -28,19 +39,31 @@ export class BardEngine {
     path: ResolutionPath,
     context: NarrativeContext = {}
   ): BardResult {
-    const intensity = context.intensity ?? 2;
-    const options = this.getOptions(path, intensity);
+    const intensityValue = context.intensity ?? 2;
+    const intensity = typeof intensityValue === 'number' ? intensityValue : 2; 
+    
+    let options = this.getOptions(path, intensity);
     
     if (options.length === 0) {
       console.warn(`BardEngine: No options found at path "${path}" (Intensity: ${intensity})`);
-      return { text: `[MISSING_NARRATIVE: ${path}]`, id: 'unknown', path };
+      return { text: `[System Log]: No narrative templates found at ${path}`, id: 'unknown', path };
     }
 
-    const idx = rng.int(0, options.length - 1);
-    const rawTemplate = options[idx];
-    const templateId = `${path}_i${intensity}_${idx}`;
+    // LRU Cache Anti-Repetition Logic
+    let attempts = 0;
+    let idx = 0;
+    let template = "";
+    
+    do {
+      idx = rng.int(0, options.length - 1);
+      template = options[idx];
+      attempts++;
+    } while (this.lruCache.includes(template) && attempts < 3 && options.length > 1);
 
-    const interpolatedText = this.interpolate(rawTemplate, context);
+    this.updateCache(template);
+
+    const templateId = `${path}_i${intensity}_${idx}`;
+    const interpolatedText = this.interpolate(template, context);
 
     return {
       text: interpolatedText,
@@ -54,26 +77,21 @@ export class BardEngine {
    */
   private static getOptions(path: string, intensity: number): string[] {
     const keys = path.split('.');
-    let current: any = this.archive.domains;
+    let current: any = (this.archive as any).domains;
 
     for (const key of keys) {
       if (current[key] === undefined) return [];
       current = current[key];
     }
 
-    // If it's an array, return it directly
     if (Array.isArray(current)) return current;
-
-    // If it's a string, wrap it in an array
     if (typeof current === 'string') return [current];
 
-    // If it's an object, look for intensity blocks or 'common'
     if (typeof current === 'object' && current !== null) {
       const intensityKey = `intensity_${intensity}`;
       if (Array.isArray(current[intensityKey])) return current[intensityKey];
       if (Array.isArray(current.common)) return current.common;
       
-      // Fallback: search for any array
       const firstArrayKey = Object.keys(current).find(k => Array.isArray(current[k]));
       if (firstArrayKey) return current[firstArrayKey];
     }
@@ -82,26 +100,63 @@ export class BardEngine {
   }
 
   /**
-   * Replaces %TOKEN% placeholders with context values.
+   * Zero-Leakage Interpolation with Auto-Formatting and Domain-Specific Logic.
    */
   private static interpolate(text: string, context: NarrativeContext): string {
-    let result = text;
-    for (const [key, value] of Object.entries(context)) {
-      if (value === undefined || value === null) continue;
-      const displayValue = value.toString();
-      
-      // Support %TOKEN%, %token%, and {{token}}
-      const patterns = [
-        new RegExp(`%${key.toUpperCase()}%`, 'g'),
-        new RegExp(`%${key.toLowerCase()}%`, 'g'),
-        new RegExp(`\\{\\{${key}\\}\\}`, 'g')
-      ];
+    const pattern = /%([A-Z0-9_]+)%|\{\{([a-zA-Z0-9_]+)\}\}/g;
+    
+    const result = text.replace(pattern, (match, p1, p2) => {
+      const key = (p1 || p2);
+      const value = context[key] ?? context[key.toLowerCase()];
 
-      for (const pattern of patterns) {
-        result = result.replace(pattern, displayValue);
+      if (value === undefined || value === null) {
+        const errorMsg = `BardEngine Error: Missing token {${key}} in context for template: "${text}"`;
+        if (process.env.NODE_ENV === 'test' || process.env.CI) {
+          throw new Error(errorMsg);
+        }
+        console.error(errorMsg);
+        return `[MISSING: ${key}]`;
       }
+
+      // Special Domain Logic: Kimarite Multi-language ("寄り切り (Yorikiri)")
+      if (key === 'kimarite' && typeof value === 'string') {
+        const entry = KIMARITE_REGISTRY.find(k => k.id === value.toLowerCase() || k.name.toLowerCase() === value.toLowerCase());
+        if (entry && entry.nameJa) {
+          return `${entry.nameJa} (${entry.name})`;
+        }
+      }
+
+      // Auto-Formatting Rules
+      if (typeof value === 'number') {
+        if (key.includes('money') || key.includes('kensho') || key.includes('cost') || key.includes('revenue') || key.includes('profit')) {
+          return this.currencyFormatter.format(value);
+        }
+        if (key.includes('rate') || key.includes('chance')) {
+          return this.percentFormatter.format(value > 1 ? value / 100 : value);
+        }
+      }
+
+      return value.toString();
+    });
+
+    if (result.includes('%') || result.includes('{{') || result.includes('}}')) {
+       const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
+       if (process.env.NODE_ENV === 'test' || process.env.CI) {
+         throw new Error(leakMsg);
+       }
+       console.warn(leakMsg);
     }
+
     return result;
+  }
+  /**
+   * Update the LRU cache with the newest used template.
+   */
+  private static updateCache(template: string) {
+    this.lruCache.push(template);
+    if (this.lruCache.length > this.MAX_CACHE_SIZE) {
+      this.lruCache.shift();
+    }
   }
 
   /**

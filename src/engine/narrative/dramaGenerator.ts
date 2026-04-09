@@ -45,7 +45,11 @@ function generateRandomDrama(world: WorldState): void {
     const rikishis = stableSort(world.rikishi.values(), x => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
-        EventBus.governance(world, target.heyaId, { rikishiId: target.id, shikona: target.shikona, incident: "curfew_violation" }, "notable");
+        EventBus.governanceRuling(world, target.heyaId, { 
+          rikishiId: target.id, 
+          shikona: target.shikona, 
+          incident: "curfew_violation" 
+        }, "notable");
     }
   } else if (eventType === 1) {
     // Grudge formation
@@ -57,7 +61,14 @@ function generateRandomDrama(world: WorldState): void {
         if (!a.grudges) a.grudges = [];
         if (!a.grudges.includes(b.heyaId)) {
             a.grudges.push(b.heyaId);
-            EventBus.rivalryFormed(world, a.id, b.id, a.name, b.name, "bitter");
+            EventBus.rivalryHeatSpike(world, { 
+              winnerRikishiId: a.id, 
+              loserRikishiId: b.id, 
+              winner: a.name, 
+              loser: b.name, 
+              status: "formed",
+              heat: 15
+            });
         }
     }
   }
@@ -67,7 +78,11 @@ function checkTriggeredDrama(world: WorldState): void {
   // Check for financial crisis
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     if (heya.funds < 0 && !heya.riskIndicators?.financial) {
-        EventBus.financialAlert(world, heya.id, { HEYANAME: heya.name, insolvency: true });
+        EventBus.financialAlert(world, heya.id, { 
+          heyaname: heya.name, 
+          incident: "insolvency",
+          money: heya.funds
+        });
         if (heya.isPlayerOwned) {
             // This would trigger a CrisisModal in the UI
             triggerCrisis(world, heya.id, "BANKRUPTCY_THREAT");
