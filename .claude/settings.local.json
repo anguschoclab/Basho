@@ -21,7 +21,8 @@
       "Bash(node update_archive.cjs)",
       "Bash(rm update_archive.cjs)",
       "Read(//tmp/**)",
-      "Bash(find \"/c/Users/amauricia/onedrive - ubisoft/documents/github/sumo-manager-pro/src\" -type f \\\\\\( -name \"*.test.ts\" -o -name \"*.test.tsx\" \\\\\\) ! -path \"*/node_modules/*\" -exec wc -l {} +)"
+      "Bash(find \"/c/Users/amauricia/onedrive - ubisoft/documents/github/sumo-manager-pro/src\" -type f \\\\\\( -name \"*.test.ts\" -o -name \"*.test.tsx\" \\\\\\) ! -path \"*/node_modules/*\" -exec wc -l {} +)",
+      "Bash(wc -l \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\pages\"/*.tsx)"
     ]
   },
   "outputStyle": "default"
