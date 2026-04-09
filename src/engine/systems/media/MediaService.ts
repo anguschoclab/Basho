@@ -309,39 +309,51 @@ export function createDefaultMediaState(): MediaState {
 }
 
 /**
- * Generates a headline for a governance event (scandal, review, merger, loan, etc).
- * Accepts either positional args (world, heyaId, severity, reason) or a single options object.
+ * Generates a headline for a governance or welfare event using the BardEngine.
  */
-export function generateGovernanceHeadline(
-  worldOrOpts: WorldState | { world: WorldState; heyaId: string; type?: string; severity?: string; description?: string },
-  heyaId?: string,
-  severity?: string,
-  reason?: string
-): void {
-  let world: WorldState;
-  let resolvedHeyaId: string;
-  let resolvedSeverity: string;
-  let resolvedReason: string;
+export function generateGovernanceHeadline(args: {
+  world: WorldState;
+  heyaId: string;
+  templatePath: string; // e.g., 'institutional.welfare.watch_headline'
+  severity?: HeadlineTier;
+}): void {
+  const { world, heyaId, templatePath, severity = 'minor' } = args;
+  if (!world.mediaState) return;
 
-  if (worldOrOpts && 'heyas' in worldOrOpts) {
-    // Positional form: (world, heyaId, severity, reason)
-    world = worldOrOpts as WorldState;
-    resolvedHeyaId = heyaId ?? '';
-    resolvedSeverity = severity ?? 'minor';
-    resolvedReason = reason ?? '';
-  } else {
-    // Object form: { world, heyaId, type, severity, description }
-    const opts = worldOrOpts as { world: WorldState; heyaId: string; type?: string; severity?: string; description?: string };
-    world = opts.world;
-    resolvedHeyaId = opts.heyaId;
-    resolvedSeverity = opts.severity ?? 'minor';
-    resolvedReason = opts.description ?? opts.type ?? '';
-  }
+  const heya = world.heyas.get(heyaId);
+  const context = {
+    heyaname: heya?.name ?? 'Heya',
+    heya: heya?.name ?? 'Heya'
+  };
 
-  const heya = world.heyas.get(resolvedHeyaId);
-  const heyaName = heya?.name ?? 'Heya';
-  console.log(`MediaService: Governance headline for ${heyaName}: ${resolvedSeverity} - ${resolvedReason}`);
-  // Full headline generation will be implemented when headline templates are migrated.
+  const week = world.week ?? 0;
+  const rng = rngForWorld(world, "media", `gov::${heyaId}::${templatePath}::${week}`);
+  
+  // Resolve title from archive
+  const { text: title } = BardEngine.resolve(rng, templatePath, context);
+
+  const headline: MediaHeadline = {
+    id: rng.uuid('MH'),
+    week,
+    tier: severity,
+    beat: templatePath.includes('welfare') ? 'discipline' : 'media',
+    tone: severity === 'critical' || severity === 'major' ? 'controversy' : 'neutral',
+    rikishiIds: [],
+    heyaIds: [heyaId],
+    title,
+    subtitle: "", // Optional for now
+    impact: severity === 'critical' ? 60 : severity === 'major' ? 40 : 20,
+    tags: ["governance", "institutional"],
+  };
+
+  // Log to media state
+  world.mediaState.headlines.push(headline);
+  if (world.mediaState.headlines.length > 250) world.mediaState.headlines.shift();
+
+  // Apply visual pressure
+  world.mediaState.heyaPressure[heyaId] = Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + (headline.impact / 2));
+
+  console.log(`MediaService: Generated Governance Headline: ${title}`);
 }
 
 /**

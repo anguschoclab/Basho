@@ -73,11 +73,29 @@ export class BardEngine {
   }
 
   /**
+   * Retrieves a raw registry entry (metadata object) from the archive.
+   * Useful for the UI/Presenters to get 'label', 'labelJa', and 'description'.
+   */
+  public static getRegistryEntry(domain: string, id: string): any {
+    const registry = (this.archive as any).registry;
+    if (!registry || !registry[domain]) return null;
+    return registry[domain][id] || null;
+  }
+
+  /**
    * Internal helper to traverse the JSON archive.
    */
   private static getOptions(path: string, intensity: number): string[] {
     const keys = path.split('.');
-    let current: any = (this.archive as any).domains;
+    let current: any = this.archive;
+
+    // Check if path starts with root-level keys (registry, matrix, digests)
+    const isRootKey = ['registry', 'matrix', 'digests'].includes(keys[0]);
+    
+    if (!isRootKey && keys[0] !== 'domains') {
+        // Legacy support: auto-prefix with 'domains' if not explicitly provided
+        current = (this.archive as any).domains;
+    }
 
     for (const key of keys) {
       if (current[key] === undefined) return [];
@@ -88,10 +106,17 @@ export class BardEngine {
     if (typeof current === 'string') return [current];
 
     if (typeof current === 'object' && current !== null) {
+      // If we are looking for a specific intensity variant
       const intensityKey = `intensity_${intensity}`;
       if (Array.isArray(current[intensityKey])) return current[intensityKey];
       if (Array.isArray(current.common)) return current.common;
       
+      // If we are looking at a Registry entry (e.g., registry.kimarite.yorikiri)
+      // Standardized to prioritize .label, with fallbacks to .name or .description
+      if (current.label && typeof current.label === 'string') return [current.label];
+      if (current.name && typeof current.name === 'string') return [current.name];
+      if (current.description && typeof current.description === 'string') return [current.description];
+
       const firstArrayKey = Object.keys(current).find(k => Array.isArray(current[k]));
       if (firstArrayKey) return current[firstArrayKey];
     }

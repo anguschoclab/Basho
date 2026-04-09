@@ -4,6 +4,582 @@
     "tone": "NHK English Commentary",
     "description": "Centralized narrative data-store for Sumo Manager Pro."
   },
+  "digests": [],
+  "registry": {
+    "ranks": {
+      "yokozuna": { "labelJa": "横綱", "label": "Yokozuna" },
+      "ozeki": { "labelJa": "大関", "label": "Ōzeki" },
+      "sekiwake": { "labelJa": "関脇", "label": "Sekiwake" },
+      "komusubi": { "labelJa": "小結", "label": "Komusubi" },
+      "maegashira": { "labelJa": "前頭", "label": "Maegashira" },
+      "juryo": { "labelJa": "十両", "label": "Jūryō" },
+      "makushita": { "labelJa": "幕下", "label": "Makushita" },
+      "sandanme": { "labelJa": "三段目", "label": "Sandanme" },
+      "jonidan": { "labelJa": "序二段", "label": "Jonidan" },
+      "jonokuchi": { "labelJa": "序ノ口", "label": "Jonokuchi" }
+    },
+    "styles": {
+      "oshi": { "label": "Oshi", "labelJa": "押し", "description": "Pushing/thrusting sumo—drive forward with hands and pressure rather than securing the belt." },
+      "yotsu": { "label": "Yotsu", "labelJa": "四つ", "description": "Belt-focused sumo—seek a grip, control the hips, and win with throws or force-outs." },
+      "hybrid": { "label": "Hybrid", "labelJa": "万能", "description": "A mixed approach—comfortable switching between pushing and belt fighting depending on the matchup." }
+    },
+    "archetypes": {
+      "oshi_specialist": { "label": "Oshi Specialist", "labelJa": "押し型", "description": "Relentless forward pressure, strong tachiai." },
+      "yotsu_specialist": { "label": "Yotsu Specialist", "labelJa": "四つ型", "description": "Belt technician—hunts grips, controls the clinch." },
+      "speedster": { "label": "Speedster", "labelJa": "俊敏", "description": "Quick feet and angles—wins with movement." },
+      "trickster": { "label": "Trickster", "labelJa": "奇策", "description": "Unorthodox and volatile—pulls and feints." },
+      "all_rounder": { "label": "All-Rounder", "labelJa": "総合", "description": "Solid fundamentals everywhere." },
+      "hybrid_oshi_yotsu": { "label": "Hybrid Oshi/Yotsu", "labelJa": "押し四つ", "description": "Blends pushing and belt fighting." },
+      "counter_specialist": { "label": "Counter Specialist", "labelJa": "受け", "description": "Reads pressure and punishes mistakes." },
+      "giant": { "label": "Giant", "labelJa": "大型", "description": "Immovable mass—wins through weight and strength dominance." },
+      "tsuppari": { "label": "Tsuppari", "labelJa": "突っ張り", "description": "High-velocity open-palm thrusting. Explosive but tires quickly." },
+      "defensive": { "label": "Counter Fighter", "labelJa": "受け身", "description": "Absorbs pressure. Wins by using the opponent's weight against them." }
+    },
+    "kimarite": {
+      "yorikiri": {
+        "label": "Yorikiri",
+        "labelJa": "寄り切り",
+        "description": "Classic force out by gripping the opponent"
+      },
+      "oshidashi": {
+        "label": "Oshidashi",
+        "labelJa": "押し出し",
+        "description": "Frontal push out using a barrage of powerful hand thrusts to march the opponent out of the ring without touching the belt. A pure demonstration of oshi-zumo."
+      },
+      "oshitaoshi": {
+        "label": "Oshitaoshi",
+        "labelJa": "押し倒し",
+        "description": "Overwhelming frontal push down that crushes the opponent directly into the clay."
+      },
+      "yoritaoshi": {
+        "label": "Yoritaoshi",
+        "labelJa": "寄り倒し",
+        "description": "Devastating frontal force down, collapsing the opponent backward while maintaining a solid belt grip."
+      },
+      "tsukidashi": {
+        "label": "Tsukidashi",
+        "labelJa": "突き出し",
+        "description": "Violent thrust out, using rapid open-palm strikes to send the opponent reeling across the boundary."
+      },
+      "tsukitaoshi": {
+        "label": "Tsukitaoshi",
+        "labelJa": "突き倒し",
+        "description": "Ferocious thrust down that knocks the opponent completely off their feet."
+      },
+      "abisetaoshi": {
+        "label": "Abisetaoshi",
+        "labelJa": "浴びせ倒し",
+        "description": "Backward force down where the attacker leans heavily, using their entire body weight to flatten the defender into the clay."
+      },
+      "hatakikomi": {
+        "label": "Hatakikomi",
+        "labelJa": "叩き込み",
+        "description": "Slap down using the opponent\\"
+      },
+      "hikiotoshi": {
+        "label": "Hikiotoshi",
+        "labelJa": "引き落とし",
+        "description": "Hand pull down"
+      },
+      "okuridashi": {
+        "label": "Okuridashi",
+        "labelJa": "送り出し",
+        "description": "Rear push out"
+      },
+      "tsuriotoshi": {
+        "label": "Tsuriotoshi",
+        "labelJa": "吊り落とし",
+        "description": "Lift-and-drop"
+      },
+      "tsuridashi": {
+        "label": "Tsuridashi",
+        "labelJa": "吊り出し",
+        "description": "Lift out"
+      },
+      "utchari": {
+        "label": "Utchari",
+        "labelJa": "打っ棄り",
+        "description": "Pivot sweep throw"
+      },
+      "okuritaoshi": {
+        "label": "Okuritaoshi",
+        "labelJa": "送り倒し",
+        "description": "Rear push down"
+      },
+      "katasukashi": {
+        "label": "Katasukashi",
+        "labelJa": "肩すかし",
+        "description": "Under-shoulder swing down"
+      },
+      "sokubiotoshi": {
+        "label": "Sokubiotoshi",
+        "labelJa": "素首落とし",
+        "description": "Neck-slap down"
+      },
+      "okurigake": {
+        "label": "Okurigake",
+        "labelJa": "送り掛け",
+        "description": "Rear leg trip"
+      },
+      "okurihikiotoshi": {
+        "label": "Okurihikiotoshi",
+        "labelJa": "送り引き落とし",
+        "description": "Rear pull down"
+      },
+      "waridashi": {
+        "label": "Waridashi",
+        "labelJa": "割り出し",
+        "description": "Upper-arm frontal push out"
+      },
+      "okurinage": {
+        "label": "Okurinage",
+        "labelJa": "送り投げ",
+        "description": "Rear throw"
+      },
+      "tsukaminage": {
+        "label": "Tsukaminage",
+        "labelJa": "つかみ投げ",
+        "description": "Grabbing throw"
+      },
+      "okuritsuridashi": {
+        "label": "Okuritsuridashi",
+        "labelJa": "送り吊り出し",
+        "description": "Rear lift out"
+      },
+      "okuritsuriotoshi": {
+        "label": "Okuritsuriotoshi",
+        "labelJa": "送り吊り落とし",
+        "description": "Rear lift and drop"
+      },
+      "yobimodoshi": {
+        "label": "Yobimodoshi",
+        "labelJa": "呼び戻し",
+        "description": "Pulling body slam"
+      },
+      "ushiromotare": {
+        "label": "Ushiromotare",
+        "labelJa": "後ろもたれ",
+        "description": "Backward leaning out"
+      },
+      "uwatenage": {
+        "label": "Uwatenage",
+        "labelJa": "上手投げ",
+        "description": "A magnificent overarm throw, leveraging an outside belt grip to hurl the opponent to the dirt."
+      },
+      "sukuinage": {
+        "label": "Sukuinage",
+        "labelJa": "掬い投げ",
+        "description": "A swift beltless arm throw, scooping the opponent under their arm and tossing them down."
+      },
+      "shitatenage": {
+        "label": "Shitatenage",
+        "labelJa": "下手投げ",
+        "description": "A sharp underarm throw that uses an inside belt grip to pivot and drop the opponent."
+      },
+      "kotenage": {
+        "label": "Kotenage",
+        "labelJa": "小手投げ",
+        "description": "Armlock throw"
+      },
+      "shitatedashinage": {
+        "label": "Shitatedashinage",
+        "labelJa": "下手出し投げ",
+        "description": "Pulling underarm throw"
+      },
+      "uwatedashinage": {
+        "label": "Uwatedashinage",
+        "labelJa": "上手出し投げ",
+        "description": "Pulling overarm throw"
+      },
+      "kubinage": {
+        "label": "Kubinage",
+        "labelJa": "首投げ",
+        "description": "Headlock throw"
+      },
+      "koshihineri": {
+        "label": "Koshihineri",
+        "labelJa": "腰捻り",
+        "description": "Hip twist throw"
+      },
+      "ipponzeoi": {
+        "label": "Ipponzeoi",
+        "labelJa": "一本背負い",
+        "description": "One-armed shoulder throw"
+      },
+      "nichonage": {
+        "label": "Nichonage",
+        "labelJa": "二丁投げ",
+        "description": "Two-handed arm throw"
+      },
+      "yaguranage": {
+        "label": "Yaguranage",
+        "labelJa": "櫓投げ",
+        "description": "Inner thigh throw"
+      },
+      "kakenage": {
+        "label": "Kakenage",
+        "labelJa": "掛け投げ",
+        "description": "Hooking throw"
+      },
+      "tsukiotoshi": {
+        "label": "Tsukiotoshi",
+        "labelJa": "突き落とし",
+        "description": "A lightning-fast twisting thrust down, redirecting the opponent\\"
+      },
+      "tottari": {
+        "label": "Tottari",
+        "labelJa": "とったり",
+        "description": "Arm bar throw"
+      },
+      "shitatehineri": {
+        "label": "Shitatehineri",
+        "labelJa": "下手捻り",
+        "description": "Underarm twisting throw"
+      },
+      "uwatehineri": {
+        "label": "Uwatehineri",
+        "labelJa": "上手捻り",
+        "description": "Overarm twisting throw"
+      },
+      "kotehineri": {
+        "label": "Kotehineri",
+        "labelJa": "小手捻り",
+        "description": "Armlock twisting throw"
+      },
+      "amiuchi": {
+        "label": "Amiuchi",
+        "labelJa": "網打ち",
+        "description": "Fisherman\\"
+      },
+      "kainahineri": {
+        "label": "Kainahineri",
+        "labelJa": "腕捻り",
+        "description": "Two-arm twisting throw"
+      },
+      "zubuneri": {
+        "label": "Zubuneri",
+        "labelJa": "頭捻り",
+        "description": "Head-propping twisting throw"
+      },
+      "sakatottari": {
+        "label": "Sakatottari",
+        "labelJa": "逆取ったり",
+        "description": "Wrapped arm throw"
+      },
+      "kubiotoshi": {
+        "label": "Kubiotoshi",
+        "labelJa": "首落とし",
+        "description": "Neck-twisting throw"
+      },
+      "gasshohineri": {
+        "label": "Gasshohineri",
+        "labelJa": "合掌捻り",
+        "description": "Clasped-hand twisting throw"
+      },
+      "harimanage": {
+        "label": "Harimanage",
+        "labelJa": "波離間投げ",
+        "description": "Backward belt throw"
+      },
+      "osakate": {
+        "label": "Osakate",
+        "labelJa": "大逆手",
+        "description": "Overarm leg-trip throw"
+      },
+      "sabaori": {
+        "label": "Sabaori",
+        "labelJa": "鯖折り",
+        "description": "Forward force down"
+      },
+      "sotokomata_hinerite": {
+        "label": "Sotokomata",
+        "labelJa": "外小股",
+        "description": "Outside thigh-scooping throw"
+      },
+      "tokkurinage": {
+        "label": "Tokkurinage",
+        "labelJa": "徳利投げ",
+        "description": "Two-hand head-twisting throw"
+      },
+      "makiotoshi": {
+        "label": "Makiotoshi",
+        "labelJa": "巻き落とし",
+        "description": "Twisting pull down"
+      },
+      "uchimuso": {
+        "label": "Uchimuso",
+        "labelJa": "内無双",
+        "description": "Inner thigh-propping twist"
+      },
+      "sotomuso": {
+        "label": "Sotomuso",
+        "labelJa": "外無双",
+        "description": "Outer thigh-propping twist"
+      },
+      "ashitori": {
+        "label": "Ashitori",
+        "labelJa": "足取り",
+        "description": "Leg pick"
+      },
+      "sotogake": {
+        "label": "Sotogake",
+        "labelJa": "外掛け",
+        "description": "Outside leg trip"
+      },
+      "uchigake": {
+        "label": "Uchigake",
+        "labelJa": "内掛け",
+        "description": "Inside leg trip"
+      },
+      "ketaguri": {
+        "label": "Ketaguri",
+        "labelJa": "蹴手繰り",
+        "description": "Ankle kick sweep"
+      },
+      "watashikomi": {
+        "label": "Watashikomi",
+        "labelJa": "渡し込み",
+        "description": "Thigh-hook body drop"
+      },
+      "kekaeshi": {
+        "label": "Kekaeshi",
+        "labelJa": "蹴返し",
+        "description": "Kicking back the leg"
+      },
+      "kosotogake": {
+        "label": "Kosotogake",
+        "labelJa": "小外掛け",
+        "description": "Minor outside leg trip"
+      },
+      "komatasukui": {
+        "label": "Komatasukui",
+        "labelJa": "小股掬い",
+        "description": "Over-thigh scooping throw"
+      },
+      "chongake": {
+        "label": "Chongake",
+        "labelJa": "ちょん掛け",
+        "description": "Hooking heel trip"
+      },
+      "kawarigake": {
+        "label": "Kawarigake",
+        "labelJa": "河津掛け",
+        "description": "Hooking backward trip"
+      },
+      "susoharai": {
+        "label": "Susoharai",
+        "labelJa": "裾払い",
+        "description": "Ankle sweep"
+      },
+      "kirikaeshi": {
+        "label": "Kirikaeshi",
+        "labelJa": "切り返し",
+        "description": "Twisting backward trip"
+      },
+      "nimaigeri": {
+        "label": "Nimaigeri",
+        "labelJa": "二枚蹴り",
+        "description": "Ankle kick sweep"
+      },
+      "omata": {
+        "label": "Omata",
+        "labelJa": "大股",
+        "description": "Thigh-scooping throw"
+      },
+      "susotori": {
+        "label": "Susotori",
+        "labelJa": "裾取り",
+        "description": "Ankle pick"
+      },
+      "mitokorozeme": {
+        "label": "Mitokorozeme",
+        "labelJa": "三所攻め",
+        "description": "Triple-point attack"
+      },
+      "kosotogari": {
+        "label": "Kosotogari",
+        "labelJa": "小外刈",
+        "description": "Minor outside reap"
+      },
+      "tsumatori": {
+        "label": "Tsumatori",
+        "labelJa": "褄取り",
+        "description": "Rear toe pick"
+      },
+      "izori": {
+        "label": "Izori",
+        "labelJa": "居反り",
+        "description": "Backwards body drop"
+      },
+      "kakezori": {
+        "label": "Kakezori",
+        "labelJa": "掛け反り",
+        "description": "Hooking back drop"
+      },
+      "shumokuzori": {
+        "label": "Shumokuzori",
+        "labelJa": "撞木反り",
+        "description": "Bell-clapper back drop"
+      },
+      "sototasukizori": {
+        "label": "Sototasukizori",
+        "labelJa": "外たすき反り",
+        "description": "Outer kimono-string back drop"
+      },
+      "tasukizori": {
+        "label": "Tasukizori",
+        "labelJa": "たすき反り",
+        "description": "Kimono-string back drop"
+      },
+      "tsutaezori": {
+        "label": "Tsutaezori",
+        "labelJa": "伝え反り",
+        "description": "Underarm back drop"
+      },
+      "kimedashi": {
+        "label": "Kimedashi",
+        "labelJa": "極め出し",
+        "description": "Arm-barring force out"
+      },
+      "kimetaoshi": {
+        "label": "Kimetaoshi",
+        "labelJa": "極め倒し",
+        "description": "Arm-barring force down"
+      },
+      "isamiashi": {
+        "label": "Isamiashi",
+        "labelJa": "勇み足",
+        "description": "Inadvertent step out"
+      },
+      "koshikudake": {
+        "label": "Koshikudake",
+        "labelJa": "腰砕け",
+        "description": "Collapsing"
+      },
+      "tsukite": {
+        "label": "Tsukite",
+        "labelJa": "つき手",
+        "description": "Hand touch down"
+      },
+      "tsukihiza": {
+        "label": "Tsukihiza",
+        "labelJa": "つきひざ",
+        "description": "Knee touch down"
+      },
+      "fumidashi": {
+        "label": "Fumidashi",
+        "labelJa": "踏み出し",
+        "description": "Stepping out"
+      },
+      "fusensho": {
+        "label": "Fusensho",
+        "labelJa": "不戦勝",
+        "description": "Win by default"
+      },
+      "hansoku": {
+        "label": "Hansoku",
+        "labelJa": "反則",
+        "description": "Win by disqualification"
+      }
+    },
+    "styles": {},
+    "archetypes": {}
+  },
+  "matrix": {
+    "voices": [
+      "neutral",
+      "dramatic",
+      "clinical",
+      "folk",
+      "tabloid"
+    ],
+    "intensity_levels": [
+      "T0",
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6"
+    ],
+    "dimensions": {
+      "context": [
+        "ritual_open",
+        "tachiai",
+        "center_control",
+        "edge_pressure",
+        "grip_battle",
+        "stance_broken",
+        "recovery",
+        "turning_point",
+        "throw_attempt",
+        "trip_attempt",
+        "slap_pull_attempt",
+        "counter_window",
+        "ring_escape",
+        "finish",
+        "ceremony_close"
+      ],
+      "stance": [
+        "square",
+        "bladed",
+        "twisted",
+        "broken",
+        "unknown"
+      ],
+      "ring_state": [
+        "center",
+        "near_edge",
+        "at_edge",
+        "outside",
+        "unknown"
+      ],
+      "moment": [
+        "setup",
+        "contact",
+        "surge",
+        "stall",
+        "swing",
+        "resolve"
+      ]
+    },
+    "entries": [
+      {
+        "id": "edge_pressure_T4_dramatic_001",
+        "context": "edge_pressure",
+        "intensity": "T4",
+        "voice": "dramatic",
+        "filters": {
+          "stance": [
+            "broken",
+            "twisted",
+            "unknown"
+          ],
+          "ring_state": [
+            "near_edge",
+            "at_edge"
+          ],
+          "moment": [
+            "swing",
+            "resolve"
+          ]
+        },
+        "cooldown": {
+          "scope": "basho",
+          "min_days": 3
+        },
+        "phrases": [
+          "Phrase 1 for testing.",
+          "Phrase 2 for testing."
+        ],
+        "tags": {
+          "allowed_metaphor": true,
+          "allowed_crowd_beat": true,
+          "requires_fact_anchor": true
+        }
+      }
+    ]
+  },
   "domains": {
     "combat": {
       "phases": {
@@ -461,7 +1037,50 @@
         ]
       }
     },
+    "scouting": {
+      "confidence": {
+        "unknown": ["Unknown", "Undiscovered", "No data"],
+        "low": ["Limited observation", "Rough estimate", "Preliminary data"],
+        "medium": ["Moderately scouted", "Fair observation", "Grounded estimate"],
+        "high": ["Well-observed", "In-depth scouting", "Robust data"],
+        "certain": ["Certain", "Verified", "Fact-checked"]
+      },
+      "qualifiers": {
+        "appears": ["appears", "seems to be", "looks like"],
+        "may_be": ["may be", "could be", "possibly"],
+        "unknown_narrative": ["Insufficient observation to determine %attr%."]
+      }
+    },
     "institutional": {
+      "welfare": {
+        "watch_headline": [
+          "Heya placed under regulatory watch for welfare concerns.",
+          "Official: %heyaname% enters regulatory observation period.",
+          "Welfare standards review initiated for %heyaname%."
+        ],
+        "investigation_headline": [
+          "Full-scale investigation opened into %heyaname%.",
+          "Regulatory body launches probe into %heyaname% welfare practices.",
+          "Critical Inquiry: %heyaname% oversight intensified."
+        ],
+        "sanction_headline": [
+          "%heyaname% sanctioned for severe welfare violations.",
+          "Sanctions imposed on %heyaname% following welfare audit.",
+          "Disciplinary action confirmed for %heyaname%."
+        ]
+      },
+      "governance": {
+        "insolvency_headline": [
+          "Financial insolvency reported at %heyaname%.",
+          "Economic crisis at %heyaname% triggers governance review.",
+          "Monetary collapse: %heyaname% enters administration."
+        ],
+        "low_roster_headline": [
+          "Roster size critically low at %heyaname%.",
+          "Manpower crisis: %heyaname% warns of unsustainable roster.",
+          "Concerns mount as %heyaname% numbers dwindling."
+        ]
+      },
       "kensho_sponsors": [
         "Nagatanien",
         "Morinaga",
@@ -674,21 +1293,57 @@
     "system": {
       "descriptors": {
         "ranks": {
-          "yokozuna": { "text": "Yokozuna", "ja": "横綱" },
-          "ozeki": { "text": "Ozeki", "ja": "大関" },
-          "sekiwake": { "text": "Sekiwake", "ja": "関脇" },
-          "komusubi": { "text": "Komusubi", "ja": "小結" },
-          "maegashira": { "text": "Maegashira", "ja": "前頭" },
-          "juryo": { "text": "Juryo", "ja": "十両" },
-          "makushita": { "text": "Makushita", "ja": "幕下" },
-          "sandanme": { "text": "Sandanme", "ja": "三段目" },
-          "jonidan": { "text": "Jonidan", "ja": "序二段" },
-          "jonokuchi": { "text": "Jonokuchi", "ja": "序ノ口" }
+          "yokozuna": {
+            "text": "Yokozuna",
+            "ja": "横綱"
+          },
+          "ozeki": {
+            "text": "Ozeki",
+            "ja": "大関"
+          },
+          "sekiwake": {
+            "text": "Sekiwake",
+            "ja": "関脇"
+          },
+          "komusubi": {
+            "text": "Komusubi",
+            "ja": "小結"
+          },
+          "maegashira": {
+            "text": "Maegashira",
+            "ja": "前頭"
+          },
+          "juryo": {
+            "text": "Juryo",
+            "ja": "十両"
+          },
+          "makushita": {
+            "text": "Makushita",
+            "ja": "幕下"
+          },
+          "sandanme": {
+            "text": "Sandanme",
+            "ja": "三段目"
+          },
+          "jonidan": {
+            "text": "Jonidan",
+            "ja": "序二段"
+          },
+          "jonokuchi": {
+            "text": "Jonokuchi",
+            "ja": "序ノ口"
+          }
         },
         "styles": {
-          "oshi": { "text": "Oshi (Pushing)" },
-          "yotsu": { "text": "Yotsu (Belt)" },
-          "hybrid": { "text": "Hybrid" }
+          "oshi": {
+            "text": "Oshi (Pushing)"
+          },
+          "yotsu": {
+            "text": "Yotsu (Belt)"
+          },
+          "hybrid": {
+            "text": "Hybrid"
+          }
         },
         "bands": {
           "stats": {
@@ -731,13 +1386,27 @@
         ]
       },
       "economy": {
-        "kensho_title": ["Kensho prize money"],
-        "kensho_summary": ["%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."],
-        "special_prize_title": ["Special Prize Awarded!"],
-        "special_prize_summary": ["Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."],
-        "insolvency_title": ["Financial Insolvency"],
-        "insolvency_summary": ["%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."],
-        "deficit_title": ["Operating Deficit"],
+        "kensho_title": [
+          "Kensho prize money"
+        ],
+        "kensho_summary": [
+          "%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."
+        ],
+        "special_prize_title": [
+          "Special Prize Awarded!"
+        ],
+        "special_prize_summary": [
+          "Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."
+        ],
+        "insolvency_title": [
+          "Financial Insolvency"
+        ],
+        "insolvency_summary": [
+          "%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."
+        ],
+        "deficit_title": [
+          "Operating Deficit"
+        ],
         "deficit_summary": [
           "%HEYANAME% is operating at a ¥%AMOUNT% deficit this month. Reserve funds are depleting.",
           "Financial pressure mounts: %HEYANAME% loses ¥%AMOUNT% after upkeep and salaries.",
@@ -745,27 +1414,51 @@
         ]
       },
       "rivalry": {
-        "formed_title": ["New rivalry emerges"],
-        "formed_summary": ["%A_NAME% has developed a personal grudge against %B_NAME%."],
-        "escalated_title": ["Rivalry intensifies (%HEAT%)"],
-        "escalated_summary": ["The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."]
+        "formed_title": [
+          "New rivalry emerges"
+        ],
+        "formed_summary": [
+          "%A_NAME% has developed a personal grudge against %B_NAME%."
+        ],
+        "escalated_title": [
+          "Rivalry intensifies (%HEAT%)"
+        ],
+        "escalated_summary": [
+          "The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."
+        ]
       },
       "welfare": {
-        "alert_title": ["Welfare Alert"],
-        "alert_summary": ["%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"]
+        "alert_title": [
+          "Welfare Alert"
+        ],
+        "alert_summary": [
+          "%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"
+        ]
       },
       "basho": {
-        "day_title": ["Day %DAY%"],
-        "day_summary": ["Tournament day %DAY% begins."],
-        "bout_title": ["Bout concluded"],
-        "bout_summary": ["Winner decided by %KIMARITE%."],
-        "concluded_title": ["%BASHONAME% Basho Concluded"],
+        "day_title": [
+          "Day %DAY%"
+        ],
+        "day_summary": [
+          "Tournament day %DAY% begins."
+        ],
+        "bout_title": [
+          "Bout concluded"
+        ],
+        "bout_summary": [
+          "Winner decided by %KIMARITE%."
+        ],
+        "concluded_title": [
+          "%BASHONAME% Basho Concluded"
+        ],
         "concluded_summary": [
           "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
           "The Emperor's Cup goes to %SHIKONA% after a historic performance.",
           "%SHIKONA% stands victorious at the end of the %BASHONAME% basho."
         ],
-        "playoff_title": ["Playoff Champion: %SHIKONA%"],
+        "playoff_title": [
+          "Playoff Champion: %SHIKONA%"
+        ],
         "playoff_summary": [
           "%CONTENDERS% rikishi tied at %WINS% wins. %SHIKONA% wins the Cup via playoff victory.",
           "Drama at the Kokugikan! %SHIKONA% overcomes all rivals in the tie-breaker rounds.",
@@ -807,28 +1500,72 @@
         ]
       },
       "titles": {
-        "RECRUITMENT_WINDOW_CLOSED": ["Recruitment window closed"],
-        "RECRUITMENT_BLOCKED_SANCTIONS": ["Recruitment blocked by sanctions"],
-        "RECRUITMENT_WINDOW_OPEN": ["Recruitment window open"],
-        "PHASE_TRANSITION": ["Phase transition"],
-        "BANZUKE_REVEAL": ["Banzuke Hatsu-Dashi"],
-        "MONTHLY_BOUNDARY": ["Financial cycle complete"],
-        "MONTHLY_DEFICIT": ["Operating deficit"],
-        "ARCHETYPE_DRIFT": ["Tactical shift"],
-        "YEAR_BOUNDARY": ["Year %YEAR% begins"],
-"HOF_INDUCTION": ["Hall of Fame: %SHIKONA%"],
-        "CAREER_WINS_MILESTONE": ["%SHIKONA% reaches %WINS% wins"],
-        "HOF_ELIGIBLE": ["Hall of Fame eligibility reached"],
-        "NPC_RECRUITMENT_SUMMARY": ["NPC stables recruit"],
-        "TALENT_POOL_REINJECTION": ["Wrestler re-enters talent pool"],
-        "HIGH_TALENT_SIGNED": ["Elite prospect signed"],
-        "GOVERNANCE_SCANDAL_REPORTED": ["Scandal reported"],
-        "GOVERNANCE_WARNING": ["JSA Warning"],
-        "GOVERNANCE_STATUS_CHANGED": ["Governance status change"],
-        "COMPLIANCE_SANCTIONS_LIFTED": ["Sanctions lifted"],
-        "JSA_ELECTION": ["JSA Board Election"],
-        "INJURY_SUSTAINED": ["%SHIKONA% Injured"],
-        "GOVERNANCE_BAILOUT": ["Ichimon Bailout"]
+        "RECRUITMENT_WINDOW_CLOSED": [
+          "Recruitment window closed"
+        ],
+        "RECRUITMENT_BLOCKED_SANCTIONS": [
+          "Recruitment blocked by sanctions"
+        ],
+        "RECRUITMENT_WINDOW_OPEN": [
+          "Recruitment window open"
+        ],
+        "PHASE_TRANSITION": [
+          "Phase transition"
+        ],
+        "BANZUKE_REVEAL": [
+          "Banzuke Hatsu-Dashi"
+        ],
+        "MONTHLY_BOUNDARY": [
+          "Financial cycle complete"
+        ],
+        "MONTHLY_DEFICIT": [
+          "Operating deficit"
+        ],
+        "ARCHETYPE_DRIFT": [
+          "Tactical shift"
+        ],
+        "YEAR_BOUNDARY": [
+          "Year %YEAR% begins"
+        ],
+        "HOF_INDUCTION": [
+          "Hall of Fame: %SHIKONA%"
+        ],
+        "CAREER_WINS_MILESTONE": [
+          "%SHIKONA% reaches %WINS% wins"
+        ],
+        "HOF_ELIGIBLE": [
+          "Hall of Fame eligibility reached"
+        ],
+        "NPC_RECRUITMENT_SUMMARY": [
+          "NPC stables recruit"
+        ],
+        "TALENT_POOL_REINJECTION": [
+          "Wrestler re-enters talent pool"
+        ],
+        "HIGH_TALENT_SIGNED": [
+          "Elite prospect signed"
+        ],
+        "GOVERNANCE_SCANDAL_REPORTED": [
+          "Scandal reported"
+        ],
+        "GOVERNANCE_WARNING": [
+          "JSA Warning"
+        ],
+        "GOVERNANCE_STATUS_CHANGED": [
+          "Governance status change"
+        ],
+        "COMPLIANCE_SANCTIONS_LIFTED": [
+          "Sanctions lifted"
+        ],
+        "JSA_ELECTION": [
+          "JSA Board Election"
+        ],
+        "INJURY_SUSTAINED": [
+          "%SHIKONA% Injured"
+        ],
+        "GOVERNANCE_BAILOUT": [
+          "Ichimon Bailout"
+        ]
       }
     },
     "rikishi": {
@@ -984,46 +1721,110 @@
     "npc": {
       "strategy": {
         "intensity": {
-          "conservative_risk": ["Focusing on stable survival — forced conservative training due to critical welfare risk."],
-          "conservative_longevity": ["Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach."],
-          "conservative_stabilizing": ["Stabilizing the roster — %COUNT% wrestlers worn/fragile; reducing intensity to prevent injuries."],
-          "balanced_friction": ["Managing stable friction — maintaining balanced training to avoid further morale decay."],
-          "intensive_size": ["Mass-building specialized regimen — pushing hard to build world-class physical presence."],
-          "balanced_standard": ["%PHILOSOPHY% cycle — maintaining steady upward trajectory."],
-          "punishing_dominance": ["Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects."],
-          "intensive_standard": ["Maximum performance output — intensive training to solidify top-tier standing."],
-          "punishing_emotional": ["Oyakata's emotional state is driving punishing demands on the roster."],
-          "balanced_operational": ["Standard operational cycle — maintaining balanced development."],
-          "capped": ["(capped by sanctions to %CAP%)"]
+          "conservative_risk": [
+            "Focusing on stable survival — forced conservative training due to critical welfare risk."
+          ],
+          "conservative_longevity": [
+            "Prioritizing rikishi longevity — elevated welfare risk requires a cautious approach."
+          ],
+          "conservative_stabilizing": [
+            "Stabilizing the roster — %COUNT% wrestlers worn/fragile; reducing intensity to prevent injuries."
+          ],
+          "balanced_friction": [
+            "Managing stable friction — maintaining balanced training to avoid further morale decay."
+          ],
+          "intensive_size": [
+            "Mass-building specialized regimen — pushing hard to build world-class physical presence."
+          ],
+          "balanced_standard": [
+            "%PHILOSOPHY% cycle — maintaining steady upward trajectory."
+          ],
+          "punishing_dominance": [
+            "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects."
+          ],
+          "intensive_standard": [
+            "Maximum performance output — intensive training to solidify top-tier standing."
+          ],
+          "punishing_emotional": [
+            "Oyakata's emotional state is driving punishing demands on the roster."
+          ],
+          "balanced_operational": [
+            "Standard operational cycle — maintaining balanced development."
+          ],
+          "capped": [
+            "(capped by sanctions to %CAP%)"
+          ]
         },
         "focus": {
-          "size_matters": ["Size-obsessed philosophy — power focus to bulk up roster"],
-          "innovator": ["Innovator philosophy — speed & agility focus"],
-          "traditionalist": ["Traditional philosophy — balance & fundamentals"],
-          "traditionalist_yotsu": ["Traditionalist yotsu — emphasizing balance"],
-          "traditionalist_power": ["Traditionalist approach — power focus"],
-          "developing": ["Developing roster — building technique fundamentals"],
-          "oshi_biased": ["Oshi-biased stable — power focus"],
-          "yotsu_biased": ["Yotsu-biased stable — technique focus"],
-          "neutral": ["Balanced training focus"]
+          "size_matters": [
+            "Size-obsessed philosophy — power focus to bulk up roster"
+          ],
+          "innovator": [
+            "Innovator philosophy — speed & agility focus"
+          ],
+          "traditionalist": [
+            "Traditional philosophy — balance & fundamentals"
+          ],
+          "traditionalist_yotsu": [
+            "Traditionalist yotsu — emphasizing balance"
+          ],
+          "traditionalist_power": [
+            "Traditionalist approach — power focus"
+          ],
+          "developing": [
+            "Developing roster — building technique fundamentals"
+          ],
+          "oshi_biased": [
+            "Oshi-biased stable — power focus"
+          ],
+          "yotsu_biased": [
+            "Yotsu-biased stable — technique focus"
+          ],
+          "neutral": [
+            "Balanced training focus"
+          ]
         },
         "recovery": {
-          "critical": ["Critical health situation — maximum recovery"],
-          "elevated": ["Elevated welfare concern — high recovery"],
-          "minimal": ["Healthy roster — minimal recovery allocation"],
-          "standard": ["Standard recovery emphasis"]
+          "critical": [
+            "Critical health situation — maximum recovery"
+          ],
+          "elevated": [
+            "Elevated welfare concern — high recovery"
+          ],
+          "minimal": [
+            "Healthy roster — minimal recovery allocation"
+          ],
+          "standard": [
+            "Standard recovery emphasis"
+          ]
         },
         "scouting": {
-          "suspended": ["Financial crisis — scouting suspended"],
-          "aggressive": ["Roster needs rebuilding — aggressive scouting"],
-          "active_sleeper": ["Sleeper Scout personality — active scouting"],
-          "active_ambitious": ["Ambitious manager seeking talent"],
-          "passive_dominant": ["Dominant roster — passive scouting"],
-          "passive_standard": ["Standard scouting activity"]
+          "suspended": [
+            "Financial crisis — scouting suspended"
+          ],
+          "aggressive": [
+            "Roster needs rebuilding — aggressive scouting"
+          ],
+          "active_sleeper": [
+            "Sleeper Scout personality — active scouting"
+          ],
+          "active_ambitious": [
+            "Ambitious manager seeking talent"
+          ],
+          "passive_dominant": [
+            "Dominant roster — passive scouting"
+          ],
+          "passive_standard": [
+            "Standard scouting activity"
+          ]
         },
         "protect": {
-          "active": ["Protecting %COUNT% wrestler(s) due to health concerns"],
-          "none": ["No wrestlers require protection"]
+          "active": [
+            "Protecting %COUNT% wrestler(s) due to health concerns"
+          ],
+          "none": [
+            "No wrestlers require protection"
+          ]
         }
       }
     },
@@ -1121,44 +1922,100 @@
     },
     "training": {
       "intensity": {
-        "conservative": ["Conservative"],
-        "balanced": ["Balanced"],
-        "intensive": ["Intensive"],
-        "punishing": ["Punishing"]
+        "conservative": [
+          "Conservative"
+        ],
+        "balanced": [
+          "Balanced"
+        ],
+        "intensive": [
+          "Intensive"
+        ],
+        "punishing": [
+          "Punishing"
+        ]
       },
       "focus": {
-        "power": ["Power"],
-        "speed": ["Speed"],
-        "technique": ["Technique"],
-        "balance": ["Balance"],
-        "neutral": ["Neutral"]
+        "power": [
+          "Power"
+        ],
+        "speed": [
+          "Speed"
+        ],
+        "technique": [
+          "Technique"
+        ],
+        "balance": [
+          "Balance"
+        ],
+        "neutral": [
+          "Neutral"
+        ]
       },
       "recovery": {
-        "low": ["Low"],
-        "normal": ["Normal"],
-        "high": ["High"]
+        "low": [
+          "Low"
+        ],
+        "normal": [
+          "Normal"
+        ],
+        "high": [
+          "High"
+        ]
       },
       "mode": {
-        "develop": ["Develop"],
-        "push": ["Push"],
-        "protect": ["Protect"],
-        "rebuild": ["Rebuild"]
+        "develop": [
+          "Develop"
+        ],
+        "push": [
+          "Push"
+        ],
+        "protect": [
+          "Protect"
+        ],
+        "rebuild": [
+          "Rebuild"
+        ]
       }
     },
     "oyakata": {
       "quirks": {
-        "Old-School Stickler": ["Old-School Stickler"],
-        "Gambler's Instinct": ["Gambler's Instinct"],
-        "Welfare Hawk": ["Welfare Hawk"],
-        "Discipline Hawk": ["Discipline Hawk"],
-        "Media Operator": ["Media Operator"],
-        "Sleeper Scout": ["Sleeper Scout"],
-        "Nepotist": ["Nepotist"],
-        "Weight-Cutter": ["Weight-Cutter"],
-        "Keiko Romantic": ["Keiko Romantic"],
-        "Cold Pragmatist": ["Cold Pragmatist"],
-        "Family First": ["Family First"],
-        "Numbers Guy": ["Numbers Guy"]
+        "Old-School Stickler": [
+          "Old-School Stickler"
+        ],
+        "Gambler's Instinct": [
+          "Gambler's Instinct"
+        ],
+        "Welfare Hawk": [
+          "Welfare Hawk"
+        ],
+        "Discipline Hawk": [
+          "Discipline Hawk"
+        ],
+        "Media Operator": [
+          "Media Operator"
+        ],
+        "Sleeper Scout": [
+          "Sleeper Scout"
+        ],
+        "Nepotist": [
+          "Nepotist"
+        ],
+        "Weight-Cutter": [
+          "Weight-Cutter"
+        ],
+        "Keiko Romantic": [
+          "Keiko Romantic"
+        ],
+        "Cold Pragmatist": [
+          "Cold Pragmatist"
+        ],
+        "Family First": [
+          "Family First"
+        ],
+        "Numbers Guy": [
+          "Numbers Guy"
+        ]
       }
     },
     "strategy": {

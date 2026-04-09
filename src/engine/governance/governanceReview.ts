@@ -95,6 +95,7 @@ export function runGovernanceReview(world: WorldState): void {
           incident: "prestige_erosion",
           status: newBand,
           reason: "Ongoing sanctions"
+          reason: "sanctions_active"
         }, "notable");
       }
     }
@@ -117,16 +118,23 @@ export function runGovernanceReview(world: WorldState): void {
       if (heya.id !== world.playerHeyaId) {
         EventBus.governanceRuling(world, heya.id, { 
           incident: "low_roster_warning",
-          reason: "Roster size critically low", 
+          reason: "roster_critically_low", 
           score: rosterSize 
         }, "major");
 
+        // NEW: Generate Media Headline (Phase 3.4 SSOT)
+        generateGovernanceHeadline({
+          world,
+          heyaId: heya.id,
+          templatePath: 'institutional.governance.low_roster_headline',
+          severity: 'major'
+        });
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (rosterSize <= 1) {
           EventBus.governanceRuling(world, heya.id, { 
             incident: "merger_imminent",
-            reason: "Critically low recruitment", 
+            reason: "recruitment_crisis", 
             score: rosterSize 
           }, "headline");
 
@@ -134,14 +142,14 @@ export function runGovernanceReview(world: WorldState): void {
           // Execute actual merger
           const targetId = findMergerTarget(world, heya.id);
           if (targetId) {
-             executeMerger(world, heya.id, targetId, "Critically low recruitment / Roster size");
+             executeMerger(world, heya.id, targetId, "critically_low_roster");
           }
         }
       } else {
         // Player stable — warn but don't force closure
         EventBus.governanceRuling(world, heya.id, {
           incident: "player_roster_warning",
-          reason: "Fewer than 3 wrestlers",
+          reason: "player_low_roster",
           score: rosterSize
         }, "major");
       }
@@ -154,7 +162,7 @@ export function runGovernanceReview(world: WorldState): void {
         shikona: oyakata.name, 
         threshold: oyakata.age,
         incident: "oyakata_retirement_warning",
-        reason: oyakata.age >= 65 ? "Mandatory retirement imminent" : "Approaching retirement age"
+        reason: oyakata.age >= 65 ? "mandatory_retirement" : "approaching_retirement"
       }, oyakata.age >= 65 ? "major" : "notable");
     }
 

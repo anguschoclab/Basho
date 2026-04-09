@@ -451,7 +451,16 @@ export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
 export { describeAggression, describeAttribute, describeExperience, describeTrainingEffect } from "../engine/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
-export { ARCHETYPE_NAMES, RANK_NAMES, STYLE_NAMES, createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+
+/**
+ * Resolves a localized label for a given registry domain and ID.
+ */
+export function resolveRegistryLabel(domain: string, id: string, useJa: boolean = false): string {
+  const entry = BardEngine.getRegistryEntry(domain, id);
+  if (!entry) return id;
+  return useJa ? entry.labelJa ?? entry.label : entry.label;
+}
 export { FOCUS_BIAS_MATRIX, INTENSITY_MULTIPLIERS, PHASE_EFFECTS, RECOVERY_MULTIPLIERS, createDefaultTrainingState, ensureHeyaTrainingState, getCareerPhase, getFocusLabel, getFocusModeLabel, getIntensityLabel, getRecoveryLabel } from "../engine/training";
 export { BASHO_CALENDAR, getBashoByNumber, getBashoIndex, getDayName, getSeasonalFlavor, isKeyDay } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";

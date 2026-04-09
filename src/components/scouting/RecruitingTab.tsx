@@ -24,7 +24,7 @@ import {
   scoutCandidate, 
   offerCandidate, 
   describeScoutingLevel, 
-  ARCHETYPE_NAMES 
+  resolveRegistryLabel 
 } from "@/presenters/uiDigest";
 
 export function RecruitingTab({
@@ -205,8 +205,7 @@ export function RecruitingTab({
                           {c.archetype && (
                             <span>
                               Style:{" "}
-                              {ARCHETYPE_NAMES[c.archetype as TacticalArchetype]
-                                ?.label ?? c.archetype}
+                              {resolveRegistryLabel('archetypes', c.archetype)}
                             </span>
                           )}
                           {c.scoutLevel >= 65 && c.talentSeed && (

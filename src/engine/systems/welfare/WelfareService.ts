@@ -170,7 +170,12 @@ export const WelfareService = {
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
-          generateGovernanceHeadline(world, heya.id, "critical", `${heya.name} sanctioned for severe welfare violations.`);
+          generateGovernanceHeadline({
+            world, 
+            heyaId: heya.id, 
+            templatePath: 'institutional.welfare.sanction_headline',
+            severity: "critical"
+          });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 50);
           }

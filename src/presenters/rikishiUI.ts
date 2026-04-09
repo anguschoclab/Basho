@@ -11,7 +11,7 @@ import {
   type PotentialBand
 } from "../engine/descriptorBands";
 import { getCareerPhase } from "../engine/training";
-import { RANK_NAMES, STYLE_NAMES, ARCHETYPE_NAMES } from "../engine/scouting";
+import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
@@ -218,14 +218,19 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const milestones = r.milestones || [];
   const rng = world.rng || new SeededRNG(world.seed || r.id);
 
-  const rankLabel = BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}`).text;
-  const styleName = BardEngine.resolve(rng, `system.descriptors.styles.${r.style}`).text;
+  const rankEntry = BardEngine.getRegistryEntry('ranks', r.rank);
+  const rankLabel = rankEntry?.label ?? r.rank;
+
+  const styleEntry = BardEngine.getRegistryEntry('styles', r.style);
+  const styleName = styleEntry?.label ?? r.style;
 
   const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
-  const archetypeName = BardEngine.resolve(rng, `rikishi.archetypes.${combatArchetype}.label`).text;
+  const archEntry = BardEngine.getRegistryEntry('archetypes', combatArchetype);
+  const archetypeName = archEntry?.label ?? combatArchetype;
 
-  const derivedArchetype = r.derivedArchetype || ("All_Rounder" as any);
-  const derivedArchetypeName = BardEngine.resolve(rng, `rikishi.archetypes.${derivedArchetype}.label`).text;
+  const derivedArchetype = r.derivedArchetype || ("all_rounder" as any);
+  const dArchEntry = BardEngine.getRegistryEntry('archetypes', derivedArchetype);
+  const derivedArchetypeName = dArchEntry?.label ?? derivedArchetype;
 
   const favoredKimariteDetailed = calculateMostFrequentKimarite(r.history ?? []);
 
@@ -343,7 +348,7 @@ export function rankScore(rank: string, rankNumber?: number, side?: string): num
 }
 
 export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: number): UIRosterEntry {
-  const rankInfo = RANK_NAMES[r.rank];
+  const rankEntry = BardEngine.getRegistryEntry('ranks', r.rank);
   let rankDelta: UIRankDelta | undefined;
 
   const rng = world?.rng || new SeededRNG(world?.seed || r.id);
@@ -370,8 +375,8 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     heyaId: r.heyaId,
     isPlayerOwned,
     rank: r.rank,
-    rankLabel: BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}`).text,
-    rankLabelJa: BardEngine.resolve(rng, `system.descriptors.ranks.${r.rank}.ja`).text, // Add .ja if exists or just use same
+    rankLabel: rankEntry?.label ?? r.rank,
+    rankLabelJa: rankEntry?.labelJa ?? r.rank,
     rankNumber: r.rankNumber,
     division: r.division,
     side: r.side,
@@ -390,7 +395,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
-    archetypeLabel: r.combatProfile?.archetype ? (ARCHETYPE_NAMES as any)[r.combatProfile.archetype]?.label : undefined,
+    archetypeLabel: r.combatProfile?.archetype ? BardEngine.getRegistryEntry('archetypes', r.combatProfile.archetype)?.label : undefined,
     rankDelta,
   };
 
