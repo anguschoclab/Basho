@@ -334,7 +334,7 @@ export default function NewGameWizard() {
       </main>
 
       {/* Persistence Info Console */}
-      <footer className="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
+      <footer className="fixed bottom-0 w-full bg-background/80 border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
          <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-10">
                <div>

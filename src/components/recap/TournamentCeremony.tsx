@@ -91,7 +91,7 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
                     </div>
                     
                     <div className="flex items-center justify-center md:justify-start gap-4">
-                       <div className="text-center bg-background/50 border border-border/40 px-6 py-2 rounded-xl">
+                       <div className="text-center bg-background/50 border border-border/40 px-6 py-2 rounded-lg">
                           <div className="text-2xl font-display font-black text-gold">{champion.currentBashoWins}-{champion.currentBashoLosses}</div>
                           <div className="text-[8px] uppercase font-black opacity-40">Final Record</div>
                        </div>
@@ -170,7 +170,7 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
                         if (!winner || !loser) return null;
                         
                         return (
-                           <div key={idx} className="p-4 bg-gold/5 border-2 border-gold/10 rounded-xl space-y-3 relative overflow-hidden group">
+                           <div key={idx} className="p-4 bg-gold/5 border-2 border-gold/10 rounded-lg space-y-3 relative overflow-hidden group">
                               <div className="absolute top-0 right-0 p-2 opacity-5 font-black text-2xl">★</div>
                               <div className="flex justify-between items-start">
                                  <div>

@@ -219,7 +219,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
             {error && <div className="p-3 rounded-lg bg-destructive/10 text-sm text-destructive border border-destructive/20">{error}</div>}
 
             {isSyncSimulating && (
-              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
+              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 rounded-lg">
                 <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
                 <p className="text-sm font-medium">Batch Processing...</p>
               </div>

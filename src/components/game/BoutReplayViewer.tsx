@@ -1279,14 +1279,14 @@ export function BoutReplayViewer({
   return (
     <div
       className={cn(
-        "rounded-xl overflow-hidden border border-border bg-card flex flex-col",
+        "rounded-lg overflow-hidden border border-border bg-card flex flex-col",
         className,
       )}
     >
       {/* Header: fighters */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border text-sm">
         <div className="flex items-center gap-2">
-          <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-500" />
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-west" />
           <span className="font-semibold">{eastRikishi.shikona}</span>
           <span className="text-muted-foreground text-xs">
             {eastRikishi.rankLabel}
@@ -1316,7 +1316,7 @@ export function BoutReplayViewer({
 
         {/* Phase badge overlay */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none">
-          <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+          <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1 border border-white/10">
             <span className="text-white/50 text-xs font-medium">
               {label.ja}
             </span>
@@ -1331,9 +1331,9 @@ export function BoutReplayViewer({
         {result.kenshoEnvelopes > 0 &&
           (uiPhase === "finish" || uiPhase === "ceremony") && (
             <div className="absolute top-3 right-3 pointer-events-none">
-              <div className="flex items-center gap-1 bg-yellow-900/80 backdrop-blur-sm rounded px-2 py-1 border border-yellow-600/40">
-                <span className="text-yellow-300 text-xs">¥</span>
-                <span className="text-yellow-200 text-xs font-semibold">
+              <div className="flex items-center gap-1 bg-gold/20 rounded px-2 py-1 border border-gold/40">
+                <span className="text-gold text-xs">¥</span>
+                <span className="text-gold text-xs font-semibold">
                   {result.kenshoEnvelopes} kensho
                 </span>
               </div>
@@ -1349,7 +1349,7 @@ export function BoutReplayViewer({
                 uiPhase === "tachiai" ||
                   uiPhase === "finish" ||
                   uiPhase === "ceremony"
-                  ? "text-yellow-300 bg-black/50"
+                  ? "text-gold bg-black/50"
                   : "text-white/50",
               )}
             >

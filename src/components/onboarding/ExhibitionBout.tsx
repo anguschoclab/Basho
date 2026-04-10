@@ -159,7 +159,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
       </div>
 
       {/* PbP log */}
-      <div className="bg-muted/30 rounded-xl border border-border/40 p-4 min-h-[220px] space-y-2 overflow-y-auto max-h-[280px] custom-scrollbar">
+      <div className="bg-muted/30 rounded-lg border border-border/40 p-4 min-h-[220px] space-y-2 overflow-y-auto max-h-[280px] custom-scrollbar">
         {logLines.slice(0, revealedCount).map((line, i) => (
           <div
             key={i}
@@ -178,7 +178,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
 
       {/* Result banner — shown once fully revealed */}
       {isFullyRevealed && (
-        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-xl p-4 animate-in fade-in duration-500">
+        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg p-4 animate-in fade-in duration-500">
           <Trophy className="h-6 w-6 text-primary shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">Result</p>
