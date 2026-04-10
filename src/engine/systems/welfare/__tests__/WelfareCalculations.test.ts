@@ -114,15 +114,12 @@ describe("computeInjuryPressure", () => {
       injuryStatus: { isInjured: true, severity: "moderate" } as any,
     });
     const heya = makeHeya("h1", { rikishiIds: ["r1"] });
-    const trainingState = {
-      h1: {
-        activeProfile: { intensity: "punishing", recovery: "normal" },
-        focusSlots: [], // no protect focus
-      },
-    };
     const world = makeWorld({
       rikishi: new Map([["r1", r]]),
-      trainingState: trainingState as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "punishing", recovery: "normal" },
+        focusSlots: [],
+      }]]) as any,
     });
     const result = computeInjuryPressure(world, heya);
     expect(result.negligenceCount).toBe(1);
@@ -135,15 +132,12 @@ describe("computeInjuryPressure", () => {
       injuryStatus: { isInjured: true, severity: "moderate" } as any,
     });
     const heya = makeHeya("h1", { rikishiIds: ["r1"] });
-    const trainingState = {
-      h1: {
-        activeProfile: { intensity: "punishing", recovery: "normal" },
-        focusSlots: [{ rikishiId: "r1", focusType: "protect" }],
-      },
-    };
     const world = makeWorld({
       rikishi: new Map([["r1", r]]),
-      trainingState: trainingState as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "punishing", recovery: "normal" },
+        focusSlots: [{ rikishiId: "r1", focusType: "protect" }],
+      }]]) as any,
     });
     const result = computeInjuryPressure(world, heya);
     expect(result.negligenceCount).toBe(0);
@@ -158,12 +152,10 @@ describe("calculateWeeklyWelfareDelta", () => {
   it("returns positive delta for punishing intensity", () => {
     const heya = makeHeya("h1");
     const world = makeWorld({
-      trainingState: {
-        h1: {
-          activeProfile: { intensity: "punishing", recovery: "normal" },
-          focusSlots: [],
-        },
-      } as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "punishing", recovery: "normal" },
+        focusSlots: [],
+      }]]) as any,
     });
     const welfare = makeWelfareState();
     const { delta } = calculateWeeklyWelfareDelta(world, heya, welfare);
@@ -173,12 +165,10 @@ describe("calculateWeeklyWelfareDelta", () => {
   it("delta decreases with premium diet", () => {
     const heya = makeHeya("h1");
     const world = makeWorld({
-      trainingState: {
-        h1: {
-          activeProfile: { intensity: "balanced", recovery: "normal" },
-          focusSlots: [],
-        },
-      } as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "balanced", recovery: "normal" },
+        focusSlots: [],
+      }]]) as any,
     });
     const premiumWelfare = makeWelfareState({ activeDiet: "premium" });
     const maintenanceWelfare = makeWelfareState({ activeDiet: "maintenance" });
@@ -190,12 +180,10 @@ describe("calculateWeeklyWelfareDelta", () => {
   it("includes healthy_drift-2 reason when all-clear conditions met", () => {
     const heya = makeHeya("h1");
     const world = makeWorld({
-      trainingState: {
-        h1: {
-          activeProfile: { intensity: "balanced", recovery: "normal" },
-          focusSlots: [],
-        },
-      } as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "balanced", recovery: "normal" },
+        focusSlots: [],
+      }]]) as any,
     });
     const welfare = makeWelfareState();
     const { reasons } = calculateWeeklyWelfareDelta(world, heya, welfare);
@@ -211,12 +199,10 @@ describe("calculateWeeklyWelfareDelta", () => {
     const heya = makeHeya("h1", { rikishiIds: ["r1"] });
     const world = makeWorld({
       rikishi: new Map([["r1", r]]),
-      trainingState: {
-        h1: {
-          activeProfile: { intensity: "punishing", recovery: "normal" },
-          focusSlots: [],
-        },
-      } as any,
+      trainingState: new Map([["h1", {
+        activeProfile: { intensity: "punishing", recovery: "normal" },
+        focusSlots: [],
+      }]]) as any,
     });
     const welfare = makeWelfareState();
     const { reasons } = calculateWeeklyWelfareDelta(world, heya, welfare);

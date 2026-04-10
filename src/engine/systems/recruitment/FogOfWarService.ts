@@ -14,7 +14,7 @@
 import { clamp, clampInt } from "../../utils/math";
 import { rngFromSeed, SeededRNG } from "../../rng";
 import { NarrativeService } from "../narrative/NarrativeService";
-import { BardEngine } from "../narrative/BardEngine";
+import { BardEngine } from "../../narrative/BardEngine";
 import { 
   type ConfidenceLevel, 
   type ScoutingInvestment, 
