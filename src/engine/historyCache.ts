@@ -70,15 +70,13 @@ class HistoryLRUCache {
   }
 
   /**
-   * Mock / Placeholder for actually loading a full year from OPFS.
-   * In a real implementation, this would aggregate bouts and snapshots.
+   * Loads a full year of historical data from OPFS by aggregating bouts and snapshots.
    */
   private async loadFromOPFS(year: number): Promise<ArchivedYear | null> {
     if (!opfsArchiveService.isSupported()) return null;
 
     try {
-      // This is a simplified fetch — in reality, we'd have a Year-level archive file
-      // or we'd aggregate individual bout logs.
+      // 1. Load Bouts
       const boutIds = await opfsArchiveService.getArchivedBoutIdsForSeason(year);
       if (boutIds.length === 0) return null;
 
@@ -86,11 +84,19 @@ class HistoryLRUCache {
         boutIds.map(id => opfsArchiveService.retrieveBoutLog(year, id))
       );
 
+      // 2. Load Awards
+      const awards = await opfsArchiveService.retrieveAwards(year);
+
+      // 3. Load Banzuke Snapshots (Standard 6 Bashos)
+      const snapshots = await Promise.all(
+        [1, 3, 5, 7, 9, 11].map(m => opfsArchiveService.retrieveBanzuke(year, m))
+      );
+
       return {
         year,
         bouts: bouts.filter((b): b is BoutResult => b !== null),
-        awards: [],
-        banzukeSnapshots: []
+        awards,
+        banzukeSnapshots: snapshots.filter((s): s is BanzukeSnapshot => s !== null)
       };
     } catch (err) {
       console.error(`[HistoryCache] Failed to load year ${year} from OPFS:`, err);

@@ -55,10 +55,9 @@ import { generateOyakata } from "./oyakataPersonalities";
 import { getHeyaRoster, getRikishi, getActiveRikishi, getStableRikishi } from "./queries";
 import { runPrestigeDecay, updateStatureBand } from "./prestige/prestigeSystem";
 import { runGovernanceReview, runRetirements, runAIMetaDrift } from "./governance/governanceReview";
-import { onBashoEnded, onRikishiRetired } from "./records";
+import { onRikishiRetired } from "./records";
 import { runHistoryUpdates } from "./history";
 import { recordOyakataHandover } from "./lineage";
-import { runArchivalPruning } from "./archival";
 import { safeCall } from "./utils/safe";
 
 // New Lifecycle Services
@@ -181,73 +180,6 @@ export function endBasho(world: WorldState): WorldState {
   return competition.concludeBashoCompetition(world);
 }
 
-
-/**
- * runPostBashoResolution
- * Authoritative post-basho pipeline per Constitution A3.4 & §6.3:
- *  1. Prestige decay & recalculation (with Constitution erosion curves)
- *  2. Governance institutional review (council reactions, loans, mergers, succession)
- *  3. AI meta drift seeding (A6.1 — recognition delay)
- *  4. Lifecycle management (retirements)
- *  5. Recruitment windows (NPC vacancy filling + player notification + window state)
- *  6. Sponsor churn (Addendum D — satisfaction-based churn)
- *  7. Records/streaks/career journal updates
- */
-function runPostBashoResolution(world: WorldState): void {
-  // === 1. PRESTIGE DECAY & RECALCULATION ===
-  runPrestigeDecay(world);
-
-  // === 2. GOVERNANCE INSTITUTIONAL REVIEW ===
-  runGovernanceReview(world);
-
-  // === 3. AI META DRIFT SEEDING (A6.1) ===
-  safeCall(() => runAIMetaDrift(world));
-
-  // === 4. LIFECYCLE MANAGEMENT (retirements) ===
-  const vacanciesByHeyaId = runRetirements(world);
-
-  // === 5. RECRUITMENT WINDOWS (NPC stables fill vacancies) ===
-  registry.runRecruitmentWindow(world, vacanciesByHeyaId);
-
-  // === 6. SPONSOR CHURN (Constitution Addendum D) ===
-  safeCall(() => { runSponsorChurn(world); });
-
-  // === 7. RECORDS/STREAKS/CAREER JOURNAL UPDATES ===
-  registry.runCareerJournalUpdates(world);
-  runHistoryUpdates(world);
-
-  // === 7.1 ARCHIVAL PRUNING (Year-end) ===
-  if (world.calendar.month === 11) { // November is the last basho
-    runArchivalPruning(world);
-  }
-
-  // === 8. FUTURE NATURALIZATION ===
-  checkNaturalizations(world);
-}
-
-
-// ─── 1. PRESTIGE DECAY (Constitution A3.4) ─────────────────────
-
-const PRESTIGE_ORDER: import("./types").PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
-const bandIndex = (b: import("./types").PrestigeBand) => PRESTIGE_ORDER.indexOf(b);
-
-/**
- * Prestige decay per A3.4:
- * - Elite stables must maintain performance or erode
- * - Multi-basho stagnation accelerates decay
- * - Yūshō/sanshō provide upward shifts
- * - Small stables face extra fragility
- */
-// runPrestigeDecay moved to prestigeSystem.ts
-
-/**
- * Update stature band based on roster rank composition.
- */
-// updateStatureBand moved to prestigeSystem.ts
-
-// runGovernanceReview, runRetirements, runAIMetaDrift moved to governanceReview.ts
-
-// runAIMetaDrift moved to governanceReview.ts
 
 // runRetirements moved to governanceReview.ts
 

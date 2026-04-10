@@ -753,12 +753,12 @@ export function projectDashboardUIDigest(world: WorldState) {
   // Top 3 rivals (using cached perception to avoid re-calculating)
   const topRivals = selectTopRivals(world).slice(0, 3);
 
-  // Financial summary
+  const deltas = world.transientContext?.deltas;
   const finances = {
     balance: heya.funds,
-    weeklyIncome: 1250000, // Placeholder for actual calc
-    weeklyExpense: 850000, 
-    status: heya.funds > 10000000 ? "stable" : "critical" as const,
+    weeklyIncome: deltas?.revenue ?? 0,
+    weeklyExpense: deltas?.expenses ?? 0, 
+    status: (heya.funds > 10000000 ? "stable" : (heya.funds < 0 ? "critical" : "normal")) as any,
   };
 
   return {

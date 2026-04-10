@@ -69,6 +69,10 @@ export interface ArchiveService {
   archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
+  archiveAwards: (season: number, awards: any[]) => Promise<void>;
+  retrieveAwards: (season: number) => Promise<any[]>;
+  archiveBanzuke: (season: number, bashoNumber: number, snapshot: any) => Promise<void>;
+  retrieveBanzuke: (season: number, bashoNumber: number) => Promise<any | null>;
 }
 
 class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
@@ -164,6 +168,66 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     } catch (e: unknown) {
       if ((e instanceof Error || e instanceof DOMException) && e.name === 'NotFoundError') return null;
       console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
+      return null;
+    }
+  }
+
+  // --- AWARDS ---
+
+  public async archiveAwards(season: number, awards: any[]): Promise<void> {
+    const dir = await this.getDirectoryPath([`season_${season}`]);
+    if (!dir) return;
+
+    try {
+      const fileHandle = await dir.getFileHandle('awards.json', { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(awards));
+      await writable.close();
+    } catch (e) {
+      this.handleQuotaError(e);
+    }
+  }
+
+  public async retrieveAwards(season: number): Promise<any[]> {
+    const dir = await this.getDirectoryPath([`season_${season}`]);
+    if (!dir) return [];
+
+    try {
+      const fileHandle = await dir.getFileHandle('awards.json', { create: false });
+      const file = await fileHandle.getFile();
+      const contents = await file.text();
+      return JSON.parse(contents);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // --- BANZUKE ---
+
+  public async archiveBanzuke(season: number, bashoNumber: number, snapshot: any): Promise<void> {
+    const dir = await this.getDirectoryPath([`season_${season}`, 'banzuke']);
+    if (!dir) return;
+
+    try {
+      const fileHandle = await dir.getFileHandle(`basho_${bashoNumber}.json`, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(snapshot));
+      await writable.close();
+    } catch (e) {
+      this.handleQuotaError(e);
+    }
+  }
+
+  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<any | null> {
+    const dir = await this.getDirectoryPath([`season_${season}`, 'banzuke']);
+    if (!dir) return null;
+
+    try {
+      const fileHandle = await dir.getFileHandle(`basho_${bashoNumber}.json`, { create: false });
+      const file = await fileHandle.getFile();
+      const contents = await file.text();
+      return JSON.parse(contents);
+    } catch (e) {
       return null;
     }
   }
