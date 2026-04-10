@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { parseLLMResponse } from '../utils/jsonParser';
 
 /**
  * GeminiClient: Interfaces with Google's Generative AI to provide 
@@ -84,10 +85,11 @@ export class GeminiClient {
     try {
       const text = await this.runWithFallback(prompt, "application/json");
       const jsonMatch = text.match(/\[.*\]/s);
-      if (jsonMatch) {
-          return JSON.parse(jsonMatch[0]);
-      }
-      return [];
+      
+      // Fallback to full text if match fails, letting parseLLMResponse handle the cleanup
+      const rawJson = jsonMatch ? jsonMatch[0] : text;
+      
+      return parseLLMResponse<string[]>(rawJson);
     } catch (error) {
       console.error("GeminiClient generateVariations Error:", error);
       return [];
@@ -114,16 +116,14 @@ export class GeminiClient {
 
     try {
       const text = await this.runWithFallback(prompt, "application/json");
-      const cleanText = text.replace(/```json|```/g, '').trim();
-      const jsonMatch = cleanText.match(/\{.*?\}/s);
       
-      if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          console.log(`GeminiClient: Successfully parsed ${Object.keys(parsed).length} suggestions.`);
-          return parsed;
-      }
-      console.warn("GeminiClient: No JSON found in response text:", text);
-      return {};
+      // Fixed non-greedy bug: Changed /\{.*?\}/s to /\{.*\}/s so it captures nested objects/arrays properly
+      const jsonMatch = text.match(/\{.*\}/s);
+      const rawJson = jsonMatch ? jsonMatch[0] : text;
+      
+      const parsed = parseLLMResponse<Record<string, string[]>>(rawJson);
+      console.log(`GeminiClient: Successfully parsed ${Object.keys(parsed).length} suggestions.`);
+      return parsed;
     } catch (error) {
       console.error("GeminiClient Audit Error:", error);
       return {};
