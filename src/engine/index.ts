@@ -65,7 +65,6 @@ export type { ScoutedRikishi, PublicRikishiInfo, ScoutedAttributeTruthSnapshot }
 export * from './scoutingStore';
 export * from './shikona';
 export type { KoenkaiBandType, Sponsor, SponsorPool } from './types/sponsors';
-export * from './sponsors';
 export * from './systems/generation/CandidateGenerator';
 export * from './systems/training/TrainingService';
 export type { RecordEntry } from './types/records';

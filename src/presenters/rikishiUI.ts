@@ -10,8 +10,8 @@ import {
   type RikishiDescriptor,
   type PotentialBand
 } from "../engine/descriptorBands";
-import { getCareerPhase } from "../engine/training";
-import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+import { getCareerPhase } from "../engine/systems/training/TrainingMath";
+import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/systems/recruitment/ScoutingService";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";

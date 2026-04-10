@@ -8,10 +8,9 @@ import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
 import {
   type ScoutedRikishi,
-  type ScoutingInvestment,
-  createScoutedView,
-  recordObservation,
-} from "./scouting";
+  ScoutingService
+} from "./systems/recruitment/ScoutingService";
+import { type ScoutingInvestment } from "./systems/recruitment/RecruitmentConstants";
 
 // Local implementations for missing scouting functions
 /**
@@ -140,7 +139,7 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
   const isOwned = truth.heyaId === playerHeyaId;
   const obs = isOwned ? 100 : Math.max(0, baselineObservation);
 
-  const created = createScoutedView(truth, playerHeyaId, obs, "none", currentWeek);
+  const created = ScoutingService.createScoutedView(truth, playerHeyaId, obs, "none", currentWeek);
   table[rikishiId] = created;
   return created;
 }
@@ -160,7 +159,7 @@ export function setScoutingInvestment(world: WorldState, rikishiId: Id, investme
   const truth = getRikishi(world, rikishiId);
   if (!truth) return entry;
 
-  const rebuilt = createScoutedView(truth, playerHeyaId, entry.timesObserved, investment, currentWeek);
+  const rebuilt = ScoutingService.createScoutedView(truth, playerHeyaId, entry.timesObserved, investment, currentWeek);
   // Preserve lastObservedWeek if it's newer than currentWeek (shouldn't happen, but safe)
   rebuilt.lastObservedWeek = Math.max(entry.lastObservedWeek, currentWeek);
 
@@ -181,8 +180,8 @@ function observeBout(world: WorldState, eastId: Id, westId: Id): void {
   const east = getOrCreateScouted(world, eastId);
   const west = getOrCreateScouted(world, westId);
 
-  table[eastId] = recordObservation(east, currentWeek);
-  table[westId] = recordObservation(west, currentWeek);
+  table[eastId] = ScoutingService.recordObservation(east, currentWeek);
+  table[westId] = ScoutingService.recordObservation(west, currentWeek);
 }
 
 /**
