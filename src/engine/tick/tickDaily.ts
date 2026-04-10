@@ -90,7 +90,18 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  * Now fully migrated to the Strict Pipeline Architecture.
  */
 export function advanceOneDay(world: WorldState): WorldState {
-  // 1. Determine which phases to run
+  // 1. Logic to determine if we run the full weekly sub-pipeline
+  // Note: we check boundaries BEFORE running preflight to know if today is a tick day,
+  // OR we look at the state as it was left by the previous day.
+  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
+  
+  const aboutToStartBasho =
+    (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
+    (world._interimDaysRemaining || 0) <= 1; // 1 because preflight will decr it
+  
+  const isWeeklyTick = daysSinceTick >= 7 || aboutToStartBasho;
+
+  // 2. Determine which phases to run
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [
     phases.phase00_preflight,
     phases.phase01_daily_economy,
@@ -98,14 +109,6 @@ export function advanceOneDay(world: WorldState): WorldState {
     phases.phase01_daily_sponsors,
     phases.phase01_monthly_market,
   ];
-
-  // 2. Logic to determine if we run the full weekly sub-pipeline
-  const aboutToStartBasho =
-    (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
-    (world._interimDaysRemaining || 0) <= 0;
-  
-  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
-  const isWeeklyTick = daysSinceTick >= 7 || aboutToStartBasho;
 
   if (isWeeklyTick) {
     if (world.cyclePhase === "active_basho") {
@@ -115,19 +118,19 @@ export function advanceOneDay(world: WorldState): WorldState {
     }
   }
 
-  // 3. Boundary Gates (Injected into pipeline if boundaries crossed)
+  // 3. Boundary Gates (Standardized as phases)
+  // These will internally check world.transientContext.boundaries
   activePhases.push(phase05_monthly_gates);
   activePhases.push(phase06_yearly_gates);
 
   // 4. Execution
-  const nextWorld = runPipeline(world, activePhases);
+  let nextWorld = runPipeline(world, activePhases);
 
-  // 5. Update Weekly Tick Counter
-  if (isWeeklyTick) {
-    nextWorld._daysSinceLastWeeklyTick = 0;
-  } else {
-    nextWorld._daysSinceLastWeeklyTick = daysSinceTick;
-  }
+  // 5. Update Weekly Tick Counter purely
+  nextWorld = {
+    ...nextWorld,
+    _daysSinceLastWeeklyTick: isWeeklyTick ? 0 : daysSinceTick
+  };
 
   // 6. Finalize report in transient context
   nextWorld.transientContext = {
@@ -139,7 +142,7 @@ export function advanceOneDay(world: WorldState): WorldState {
 }
 
 function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport {
-  const boundaries = (world as any).transientContext?.boundaries || { monthBoundary: false, yearBoundary: false };
+  const boundaries = world.transientContext?.boundaries || { monthBoundary: false, yearBoundary: false };
   return {
     dayIndexGlobal: world.dayIndexGlobal,
     phase: world.cyclePhase,
@@ -156,9 +159,9 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
 
 /**
  * Advance days.
- *  * @param world - The World.
- *  * @param days - The Days.
- *  * @returns The result.
+ * @param world - The World.
+ * @param days - The Days.
+ * @returns The result.
  */
 export function advanceDays(world: WorldState, days: number): WorldState {
   let currentWorld = world;
@@ -171,13 +174,13 @@ export function advanceDays(world: WorldState, days: number): WorldState {
 
 /**
  * Advance full interim.
- *  * @param world - The World.
- *  * @returns The result.
+ * @param world - The World.
+ * @returns The result.
  */
-function advanceFullInterim(world: WorldState): DailyTickReport[] {
-  if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return [];
-  const totalDays = getInterimDaysTotal();
-  return advanceDays(world, totalDays);
+export function advanceFullInterim(world: WorldState): WorldState {
+  if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return world;
+  // This would advance until phase transition, but for simplicity we advance by remaining days
+  return advanceDays(world, world._interimDaysRemaining ?? 0);
 }
 
 // ====
@@ -185,19 +188,23 @@ function advanceFullInterim(world: WorldState): DailyTickReport[] {
 // ====
 
 /**
- * Enter post basho.
- *  * @param world - The World.
+ * Enter post basho. Returns a new WorldState.
  */
-export function enterPostBasho(world: WorldState): void {
-  world.cyclePhase = "post_basho";
-  world._postBashoDays = 7;
+export function enterPostBasho(world: WorldState): WorldState {
+  return {
+    ...world,
+    cyclePhase: "post_basho",
+    _postBashoDays: 7
+  };
 }
 
 /**
- * Enter interim.
- *  * @param world - The World.
+ * Enter interim. Returns a new WorldState.
  */
-export function enterInterim(world: WorldState): void {
-  world.cyclePhase = "interim";
-  world._interimDaysRemaining = getInterimDaysTotal();
+export function enterInterim(world: WorldState): WorldState {
+  return {
+    ...world,
+    cyclePhase: "interim",
+    _interimDaysRemaining: 42 // Standard 6-week interim
+  };
 }

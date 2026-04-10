@@ -5,9 +5,9 @@
  *
  * Each pipeline phase is a pure function `(WorldState) => WorldState`.
  * The runner:
- *   1. structuredClone()s the world before each phase (immutability guardrail)
- *   2. Validates the returned state has not been wiped
- *   3. Falls back to the pre-phase snapshot on error (no silent crashes)
+ *   1. Reducer-based sequence execution.
+ *   2. Validates the returned state has not been wiped.
+ *   3. Falls back to the pre-phase snapshot on error (no silent crashes).
  *
  * Zero in-place mutations. Every phase must use spread/clone semantics.
  */
@@ -23,8 +23,7 @@ export type PipelinePhase = (world: WorldState) => WorldState;
 
 /**
  * Run a sequence of pipeline phases as a left-fold reducer.
- * Each phase receives a structuredClone of the previous output, guaranteeing
- * that a buggy phase cannot corrupt the shared world reference.
+ * Each phase must return a new object (no mutation).
  *
  * On phase failure the unmutated pre-phase snapshot is returned, so the
  * remaining phases still execute against a valid (if stale) world.
@@ -40,7 +39,7 @@ export function runPipeline(
       // Safety check: phase must not wipe core entity maps
       if (!nextWorld || !nextWorld.heyas || !nextWorld.rikishi) {
         throw new Error(
-          `[pipelineRunner] Phase "${phase.name}" returned invalid WorldState ` +
+          `[pipelineRunner] Phase "${phase.name || 'anonymous'}" returned invalid WorldState ` +
             `(heyas or rikishi map missing).`,
         );
       }
@@ -48,7 +47,7 @@ export function runPipeline(
       return nextWorld;
     } catch (error) {
       console.error(
-        `[PIPELINE FATAL ERROR] in phase: "${phase.name}"`,
+        `[PIPELINE FATAL ERROR] in phase: "${phase.name || 'anonymous'}"`,
         error,
       );
       // Return the unmutated state on failure to allow subsequent phases to attempt recovery

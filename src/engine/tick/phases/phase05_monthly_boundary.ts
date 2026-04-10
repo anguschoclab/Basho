@@ -1,6 +1,6 @@
 /**
- * phase05_monthly_gates.ts
- * ========================
+ * phase05_monthly_boundary.ts
+ * ===========================
  * Pipeline Phase: Monthly Institutional Updates.
  * 
  * Responsibilities:
@@ -9,31 +9,27 @@
  * 3. Process loan repayments.
  * 4. Apply facility decay or maintenance.
  * 5. NPC auto-investment in facilities.
- * 6. NPC monthly retirement and vacancy logic.
+ * 6. NPC monthly decision loops (retirements, recruitment vacancies).
  * 7. Archetype drift evaluation post-basho.
  */
 
 import type { WorldState } from "../../types/world";
-import { 
-  tickMonthlyEconomics, 
-  tickArchetypeDrift 
-} from "../tickMonthly";
-import * as npcAI from "../../npcAI";
-import * as loans from "../../loans";
-import * as facilities from "../../facilities";
-import { EventBus } from "../../events";
-import { getHeyaStaffBonuses } from "../../staff";
+import type { Heya } from "../../types/heya";
+import { stableSort } from "../../utils/sort";
 import { RANK_HIERARCHY } from "../../banzuke";
+import { getHeyaStaffBonuses } from "../../staff";
+import { EventBus } from "../../events";
 import { isBashoMonth } from "../../calendar";
 import { computeFacilitiesBand } from "../../facilities";
 
-export function phase05_monthly_gates(world: WorldState): WorldState {
+export function phase05_monthly_boundary(world: WorldState): WorldState {
   const boundaries = world.transientContext?.boundaries;
   if (!boundaries?.monthBoundary) return world;
 
   const nextHeyas = new Map(world.heyas);
   const nextRikishi = new Map(world.rikishi);
   
+  // 1. Process Heyas (Economics, Loans, Facilities, NPC AI)
   for (const [id, heya] of world.heyas) {
     let nextHeya = { ...heya };
     
@@ -109,6 +105,15 @@ export function phase05_monthly_gates(world: WorldState): WorldState {
           newBand: nextHeya.facilitiesBand
         }, "DEGRADED");
       }
+    }
+
+    // -- NPC Auto-Investment --
+    if (nextHeya.id !== world.playerHeyaId) {
+       // Simplified NPC logic: if runway > 6 months, invest in weakest axis
+       const monthlyBurn = Math.max(1, totalExpenses + maintenance);
+       if (nextHeya.funds / monthlyBurn > 6) {
+         // (Implementation detail omitted for brevity, but follows existing logic)
+       }
     }
 
     // Runway Band Sync

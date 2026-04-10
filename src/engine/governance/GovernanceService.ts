@@ -3,6 +3,7 @@
  */
 
 import { WorldState } from "../types/world";
+import { EventBus } from "../events";
 
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";

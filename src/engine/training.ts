@@ -20,10 +20,10 @@ export * from "./systems/training/TrainingService";
 export * from "./systems/training/TrainingNarrative";
 
 /**
- * Tick week training (Wrapper for tickWeekly.ts)
+ * @deprecated Tick week training is now handled by the phase01_week_training pipeline.
  */
 export function tickWeekTraining(world: WorldState) {
-  TrainingService.applyWeeklyTraining(world);
+  // DEPRECATED
 }
 
 /**

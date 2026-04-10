@@ -11,7 +11,6 @@
 
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { cloneWorldForTick } from "../tick/tickOrchestrator";
 import { advanceOneDay } from "../tick/tickDaily";
 
 const FIXED_SEED = "determinism-test-seed-v1";
@@ -59,12 +58,11 @@ function worldChecksum(world: ReturnType<typeof generateInitialWorld>): string {
 
 /** Simulate N days, return checksum. */
 function simDays(days: number): string {
-  const world = generateInitialWorld(FIXED_SEED);
-  const cloned = cloneWorldForTick(world);
+  let world = generateInitialWorld(FIXED_SEED);
   for (let i = 0; i < days; i++) {
-    advanceOneDay(cloned);
+    world = advanceOneDay(world);
   }
-  return worldChecksum(cloned);
+  return worldChecksum(world);
 }
 
 // ---------------------------------------------------------------------------
@@ -89,30 +87,26 @@ describe("Simulation determinism", () => {
     const standalone50 = simDays(50);
 
     // Checkpoint mid-way in a 100-day run
-    const world = generateInitialWorld(FIXED_SEED);
-    const cloned = cloneWorldForTick(world);
+    let world = generateInitialWorld(FIXED_SEED);
     for (let i = 0; i < 50; i++) {
-      advanceOneDay(cloned);
+      world = advanceOneDay(world);
     }
-    const checkpoint50 = worldChecksum(cloned);
+    const checkpoint50 = worldChecksum(world);
 
     expect(standalone50).toBe(checkpoint50);
   });
 
   it("different seeds produce different checksums at day 50", () => {
-    const worldA = generateInitialWorld("seed-aaa");
-    const worldB = generateInitialWorld("seed-bbb");
-
-    const clonedA = cloneWorldForTick(worldA);
-    const clonedB = cloneWorldForTick(worldB);
+    let worldA = generateInitialWorld("seed-aaa");
+    let worldB = generateInitialWorld("seed-bbb");
 
     for (let i = 0; i < 50; i++) {
-      advanceOneDay(clonedA);
-      advanceOneDay(clonedB);
+      worldA = advanceOneDay(worldA);
+      worldB = advanceOneDay(worldB);
     }
 
-    const hashA = worldChecksum(clonedA);
-    const hashB = worldChecksum(clonedB);
+    const hashA = worldChecksum(worldA);
+    const hashB = worldChecksum(worldB);
     expect(hashA).not.toBe(hashB);
   });
 });

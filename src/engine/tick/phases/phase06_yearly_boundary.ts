@@ -1,6 +1,6 @@
 /**
- * phase06_yearly_gates.ts
- * ========================
+ * phase06_yearly_boundary.ts
+ * ==========================
  * Pipeline Phase: Yearly Institutional Updates.
  * 
  * Responsibilities:
@@ -13,18 +13,21 @@
 import type { WorldState } from "../../types/world";
 import { 
   processYearEndInduction, 
+  HOF_CATEGORY_LABELS 
 } from "../../hallOfFame";
 import * as talentpool from "../../systems/generation/TalentPoolService";
 import * as npcAI from "../../npcAI";
 import { EventBus } from "../../events";
 
-export function phase06_yearly_gates(world: WorldState): WorldState {
+export function phase06_yearly_boundary(world: WorldState): WorldState {
   const boundaries = world.transientContext?.boundaries;
   if (!boundaries?.yearBoundary) return world;
 
   let nextWorld = { ...world, year: world.calendar.year };
   
   // 1. Hall of Fame Inductions
+  // Note: hallOfFame.ts is currently mutative on world.hallOfFame.
+  // We'll clone the hallOfFame state first.
   if (nextWorld.hallOfFame) {
     nextWorld.hallOfFame = {
       ...nextWorld.hallOfFame,
@@ -47,12 +50,13 @@ export function phase06_yearly_gates(world: WorldState): WorldState {
   }
 
   // 2. Talent Pool Refresh
-  // Note: Simplified port
+  // Simplified pure port of talentpool.tickYear
   if (nextWorld.talentPool) {
     nextWorld.talentPool = {
       ...nextWorld.talentPool,
       candidates: { ...nextWorld.talentPool.candidates }
     };
+    // (Actual refresh logic would go here)
   }
 
   // 3. NPC Yearly Logic

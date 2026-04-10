@@ -114,7 +114,7 @@ export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): Rikishi
     conditionBand: "peak", // Simplified legacy field
     fatigueBand: NarrativeService.getFatigueBand(r.fatigue, prev?.fatigueBand) || ("Fresh" as any),
     momentumBand: NarrativeService.getMomentumBand(r.momentum) || ("Neutral" as any),
-    potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand),
+    potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand) || ("Standard" as any),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],
   };

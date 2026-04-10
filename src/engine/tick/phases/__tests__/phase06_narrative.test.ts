@@ -9,6 +9,7 @@ vi.mock('../../../events', () => ({
     medicalEvent: vi.fn(),
     financialAlert: vi.fn(),
     trainingUpdate: vi.fn(),
+    lifecycleEvent: vi.fn(),
   },
   logEngineEvent: vi.fn(), // Keep for robustness but we check EventBus
 }));
@@ -45,21 +46,21 @@ describe('Phase 6: Narrative', () => {
     expect(EventBus.medicalEvent).not.toHaveBeenCalled();
   });
 
-  it('logs INJURY_SUSTAINED event via medicalEvent factory', () => {
+  it('logs INJURY event via lifecycleEvent', () => {
     world.transientContext!.deltas.injuriesSustained = ['r1'];
 
     phase06_narrative(world);
 
-    expect(EventBus.medicalEvent).toHaveBeenCalledWith(
+    expect(EventBus.lifecycleEvent).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
         rikishiId: 'r1',
-        status: 'injury_sustained'
+        status: 'injury'
       })
     );
   });
 
-  it('logs FINANCIAL_CRISIS event if expenses > revenue AND funds < 0', () => {
+  it('logs insolvency event if expenses > revenue AND funds < 0', () => {
     world.transientContext!.deltas.revenue = 500;
     world.transientContext!.deltas.expenses = 1000;
     world.heyas.get('heya-1')!.funds = -100;
@@ -70,9 +71,9 @@ describe('Phase 6: Narrative', () => {
       expect.any(Object),
       'heya-1',
       expect.objectContaining({
-        incident: 'financial_crisis'
+        incident: 'insolvency'
       }),
-      'headline'
+      'major'
     );
   });
 
