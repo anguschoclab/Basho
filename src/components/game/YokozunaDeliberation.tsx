@@ -63,15 +63,15 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
       onClose={onClose}
       title={
         <>
-          <Crown className="h-5 w-5 text-amber-400" />
+          <Crown className="h-5 w-5 text-gold" />
           横綱審議委員会
         </>
       }
       subtitle="Yokozuna Deliberation Council"
       cardContent={
         <>
-          <div className="h-14 w-14 rounded-full bg-amber-500/20 flex items-center justify-center">
-            <Crown className="h-7 w-7 text-amber-400" />
+          <div className="h-14 w-14 rounded-full bg-gold/20 flex items-center justify-center">
+            <Crown className="h-7 w-7 text-gold" />
           </div>
           <div>
             <p className="text-lg font-display font-bold">
@@ -96,7 +96,7 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
       }
       steps={dialogue.map(d => `"${d}"`)}
       finalVerdictClassName={`p-4 rounded-lg border text-center ${
-        verdict === "promoted" ? "border-amber-500/50 bg-amber-500/10" :
+        verdict === "promoted" ? "border-gold/50 bg-gold/10" :
         verdict === "denied" ? "border-destructive/30 bg-destructive/5" :
         "border-muted bg-muted/30"
       }`}
@@ -108,7 +108,7 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
              "Decision Deferred"}
           </p>
           {isPlayerRikishi && verdict === "promoted" && (
-            <Badge className="mt-2 bg-amber-500 text-black">YOUR RIKISHI BECOMES YOKOZUNA!</Badge>
+            <Badge className="mt-2 bg-gold text-black">YOUR RIKISHI BECOMES YOKOZUNA!</Badge>
           )}
           {reasoning.length > 0 && (
             <div className="mt-3 text-xs text-muted-foreground space-y-1">

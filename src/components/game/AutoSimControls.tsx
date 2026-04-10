@@ -191,7 +191,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
               <div className="space-y-2">
                 {playerHeyaId && (
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm"><Trophy className="h-4 w-4 text-amber-400" />Your stable wins yusho</div>
+                    <div className="flex items-center gap-2 text-sm"><Trophy className="h-4 w-4 text-gold" />Your stable wins yusho</div>
                     <Switch checked={stopOnYusho} onCheckedChange={setStopOnYusho} />
                   </div>
                 )}
@@ -237,7 +237,7 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
 
       <Dialog open={showResult} onOpenChange={setShowResult}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-400" />Simulation Complete</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-gold" />Simulation Complete</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 rounded-lg bg-secondary/50 text-center"><div className="text-2xl font-bold">{bashoSimulated}</div><div className="text-xs text-muted-foreground">Basho</div></div>

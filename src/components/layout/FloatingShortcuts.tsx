@@ -54,7 +54,7 @@ export function FloatingShortcuts({
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 bg-card/80 backdrop-blur shadow-sm border-border/50 hover:bg-accent"
+          className="h-9 w-9 bg-card/80 shadow-sm border-border/50 hover:bg-accent"
           aria-label="Keyboard Shortcuts"
         >
           <Keyboard className="h-4 w-4 text-muted-foreground" />

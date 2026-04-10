@@ -37,10 +37,10 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
     <div className="space-y-4">
       {/* Yokozuna Deliberation */}
       {yokozunaCandidates.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
+        <Card className="border-gold/30 bg-gold/5">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Crown className="h-5 w-5 text-amber-500" />
+              <Crown className="h-5 w-5 text-gold" />
               横綱審議委員会 Yokozuna Deliberation
             </CardTitle>
           </CardHeader>
@@ -53,7 +53,7 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
                       <RikishiName id={c.rikishi.id} name={c.rikishi.shikona} />
                     </span>
                     {c.isStrong && (
-                      <Badge className="bg-amber-500/20 text-amber-500 text-xs">Strong Candidate</Badge>
+                      <Badge className="bg-gold/20 text-gold text-xs">Strong Candidate</Badge>
                     )}
                     {c.rikishi.heyaId === world.playerHeyaId && (
                       <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
@@ -119,7 +119,7 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
           <CardContent className="space-y-3">
             {kadobanDrama.map((entry) => (
               <div key={entry.rikishi.id} className="flex items-start gap-3">
-                <AlertTriangle className={`h-4 w-4 mt-0.5 shrink-0 ${entry.isDemoted ? "text-destructive" : "text-amber-500"}`} />
+                <AlertTriangle className={`h-4 w-4 mt-0.5 shrink-0 ${entry.isDemoted ? "text-destructive" : "text-gold"}`} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-display font-bold">
