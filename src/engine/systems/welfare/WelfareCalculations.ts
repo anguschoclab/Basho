@@ -34,7 +34,7 @@ export function computeInjuryPressure(world: WorldState, heya: Heya): { pressure
   let seriousCount = 0;
   let negligenceCount = 0;
 
-  const trainingState = world.trainingState?.[heya.id];
+  const trainingState = world.trainingState?.get(heya.id);
   const intensity = trainingState?.activeProfile.intensity || "balanced";
   const isHarsh = intensity === "punishing" || intensity === "intensive";
   
@@ -94,7 +94,7 @@ export function calculateWeeklyWelfareDelta(world: WorldState, heya: Heya, state
   }
 
   // Training Context
-  const trainingState = world.trainingState?.[heya.id];
+  const trainingState = world.trainingState?.get(heya.id);
   const intensity = trainingState?.activeProfile.intensity || "balanced";
   const recovery = trainingState?.activeProfile.recovery || "normal";
 

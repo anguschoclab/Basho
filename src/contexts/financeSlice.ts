@@ -1,4 +1,3 @@
-import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 import { investInFacility } from "@/engine/facilities";
 import { hireStaff } from "@/engine/staff";
@@ -11,7 +10,11 @@ export function financeSlice(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case "UPGRADE_HEYA": {
-      const world = cloneWorldForTick(state.world);
+      const world = { 
+        ...state.world, 
+        heyas: new Map(state.world.heyas),
+        staff: new Map(state.world.staff || [])
+      };
       const result = investInFacility(world, action.heyaId, action.axis, action.points || 5);
       
       if (result.success) {
@@ -24,7 +27,11 @@ export function financeSlice(state: GameState, action: GameAction): GameState {
     }
 
     case "RECRUIT_STAFF": {
-      const world = cloneWorldForTick(state.world);
+      const world = { 
+        ...state.world, 
+        heyas: new Map(state.world.heyas),
+        staff: new Map(state.world.staff || [])
+      };
       const result = hireStaff(world, action.heyaId, action.role);
       
       if (result) {

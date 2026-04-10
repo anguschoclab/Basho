@@ -26,7 +26,8 @@ import { EventBus } from "../../events";
 import { enforceHardCapRosterOverflow } from "../../overflow";
 
 export function phase01_week_npc_ai(world: WorldState): WorldState {
-  const nextTrainingStates = new Map(world.trainingState || new Map());
+  // Authorization: trainingState is now a Map per RC stabilization plan.
+  const nextTrainingStates = new Map(world.trainingState || []);
   const nextOyakata = new Map(world.oyakata);
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
   const playerHeyaId = world.playerHeyaId;

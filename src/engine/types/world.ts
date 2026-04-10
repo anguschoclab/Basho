@@ -133,7 +133,7 @@ export interface WorldState {
 
   ozekiKadoban?: OzekiKadobanMap;
 
-  trainingState?: Record<Id, BeyaTrainingState>;
+  trainingState?: IdMapRuntime<BeyaTrainingState>;
 
   talentPool?: TalentPoolWorldState;
   candidatePool?: TalentPoolWorldState;

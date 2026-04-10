@@ -1379,6 +1379,16 @@
           "A strong training cycle for %SHIKONA% — the work is paying off.",
           "%SHIKONA% continues to improve in key areas."
         ],
+        "title": [
+          "Training Update",
+          "%SHIKONA%: Training Progress",
+          "Weekly Training Report"
+        ],
+        "summary": [
+          "%SHIKONA% has completed a successful training cycle.",
+          "Steady improvement observed for %SHIKONA% this week.",
+          "%HEYANAME% reports solid progress for %SHIKONA% on the clay."
+        ],
         "breakthrough_title": [
           "%SHIKONA% Breakthrough",
           "Major Progress for %SHIKONA%",
@@ -1413,6 +1423,38 @@
           "Stability warning: %HEYANAME% spend exceeds income by ¥%AMOUNT%."
         ]
       },
+      "lifecycle": {
+        "title": [
+          "Career Milestone",
+          "Sumo Life Cycle Event"
+        ],
+        "summary": [
+          "A significant event in the career of %SHIKONA%."
+        ],
+        "retirement_title": [
+          "%SHIKONA% Retires",
+          "Intai: %SHIKONA%"
+        ],
+        "retirement_summary": [
+          "After a distinguished career, %SHIKONA% has decided to hang up his mawashi.",
+          "%SHIKONA% announces his retirement from professional sumo."
+        ],
+        "naturalization_title": [
+          "Naturalization: %SHIKONA%",
+          "%SHIKONA% Obtains Citizenship"
+        ],
+        "naturalization_summary": [
+          "%SHIKONA% has officially completed the naturalization process, securing his future in the Association.",
+          "Legal milestone: %SHIKONA% is now a Japanese citizen."
+        ],
+        "merger_title": [
+          "Stable Merger",
+          "Heya Reorganization"
+        ],
+        "merger_summary": [
+          "Administrative shift: %HEYANAME% has completed a merger process."
+        ]
+      },
       "rivalry": {
         "formed_title": [
           "New rivalry emerges"
@@ -1441,6 +1483,14 @@
         ],
         "day_summary": [
           "Tournament day %DAY% begins."
+        ],
+        "status_title": [
+          "%BASHONAME% Basho Update",
+          "Tournament Status: %STATUS%"
+        ],
+        "status_summary": [
+          "Status update from the Kokugikan: %INCIDENT% (Day %DAY%).",
+          "The tournament continues: %INCIDENT%"
         ],
         "bout_title": [
           "Bout concluded"

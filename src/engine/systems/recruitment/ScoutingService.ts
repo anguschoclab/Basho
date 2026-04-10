@@ -147,7 +147,5 @@ export const ScoutingService = {
       aggression: resolve("aggression", attr.aggression, "combat"),
       experience: resolve("experience", attr.experience, "combat")
     };
-  },
-
   }
 };

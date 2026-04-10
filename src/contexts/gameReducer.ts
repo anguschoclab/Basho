@@ -15,8 +15,7 @@ import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { mediaSlice } from "./mediaSlice";
-import { tickOrchestrator, cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
-import { advanceOneDay } from "@/engine/tick/tickDaily";
+import { advanceOneDay } from "@/engine/tick";
 
 /** 
  * Core generic actions that don't fit cleanly into a domain slice 
@@ -68,7 +67,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       if (!state.world) return state;
       return {
         ...state,
-        world: tickOrchestrator(state.world),
+        world: advanceOneDay(state.world),
       };
 
     case "TICK_MULTIPLE_DAYS": {

@@ -395,7 +395,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
-    archetypeLabel: r.combatProfile?.archetype ? BardEngine.getRegistryEntry('archetypes', r.combatProfile.archetype)?.label : undefined,
+    archetypeLabel: BardEngine.getRegistryEntry('archetypes', r.combatProfile?.archetype ?? r.archetype ?? (r as any).derivedArchetype)?.label || "Rikishi",
     rankDelta,
   };
 

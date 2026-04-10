@@ -318,7 +318,7 @@ export function generateGovernanceHeadline(args: {
   severity?: HeadlineTier;
 }): void {
   const { world, heyaId, templatePath, severity = 'minor' } = args;
-  if (!world.mediaState) return;
+  if (!world.mediaState || !world.mediaState.headlines) return;
 
   const heya = world.heyas.get(heyaId);
   const context = {

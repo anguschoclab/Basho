@@ -194,7 +194,8 @@ export function generateInitialWorld(seed: string): WorldState {
     settings: { archiveMode: "standard" },
     planetRating: 50,
     isInitialSeed: true,
-    sponsorPool: generateInitialSponsorPool(seed)
+    sponsorPool: generateInitialSponsorPool(seed),
+    trainingState: new Map()
   } as any;
 
   // 3. Establish Initial Koenkai Relationships (Constitution A6)
