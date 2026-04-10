@@ -10,7 +10,7 @@ import {
   Oyakata,
   Id,
   SerializedSponsorPoolFixed as SerializedSponsorPool
-} from "../types";
+} from "../types/index";
 
 
 import type { SponsorPool } from "../types/sponsors";

@@ -16,8 +16,8 @@ import type {
   TrainingIntensity,
   TrainingFocus,
   RecoveryEmphasis,
-} from "@/engine/training";
-import type { TrainingProfile } from "@/engine/types/training";
+  TrainingProfile 
+} from "@/engine/types/training";
 import {
   INTENSITY_MULTIPLIERS,
   RECOVERY_MULTIPLIERS,
