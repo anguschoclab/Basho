@@ -28,25 +28,35 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
 
 const ProspectRow = React.memo(
   ({
-    c,
+    id,
+    name,
+    visibilityBand,
+    talentSeed,
+    pool,
+    archetype,
     intel,
   }: {
-    c: TalentCandidate & { pool: TalentPoolType };
+    id: string;
+    name: string;
+    visibilityBand: string;
+    talentSeed?: number;
+    pool: TalentPoolType;
+    archetype: string;
     intel: number;
   }) => {
-    const canShowName = c.visibilityBand === "public" || intel >= 65;
-    const potential = toPotentialBand(c.talentSeed);
+    const canShowName = visibilityBand === "public" || intel >= 65;
+    const potential = toPotentialBand(talentSeed);
     const potentialInfo = POTENTIAL_LABELS[potential];
-    const Icon = POOL_ICONS[c.pool as TalentPoolType];
+    const Icon = POOL_ICONS[pool];
 
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
         <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
         <span className="flex-1 font-medium truncate">
-          {canShowName ? c.name : "Unknown Prospect"}
+          {canShowName ? name : "Unknown Prospect"}
         </span>
         <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16">
-          {c.archetype.replace(/_/g, " ")}
+          {archetype.replace(/_/g, " ")}
         </span>
         {(potential === "generational" || potential === "star") && (
           <Sparkles
@@ -153,7 +163,18 @@ export function ScoutingWidget() {
               world,
               c.candidateId,
             );
-            return <ProspectRow key={c.candidateId} c={c} intel={intel} />;
+            return (
+              <ProspectRow
+                key={c.candidateId}
+                id={c.candidateId}
+                name={c.name}
+                visibilityBand={c.visibilityBand}
+                talentSeed={c.talentSeed}
+                pool={c.pool}
+                archetype={c.archetype}
+                intel={intel}
+              />
+            );
           })
         )}
         {prospects.length > 6 && (
