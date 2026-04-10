@@ -29,7 +29,9 @@
       "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); const ui = a?.ui?.labels?.injury; console.log\\(JSON.stringify\\(ui, null, 2\\)\\);\")",
       "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); console.log\\(Object.keys\\(a\\).join\\(', '\\)\\); console.log\\(Object.keys\\(a.ui || {}\\).join\\(', '\\)\\);\")",
       "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); const d = a.domains; console.log\\(Object.keys\\(d || {}\\).join\\(', '\\)\\);\")",
-      "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); const ui = a.domains.ui; console.log\\(JSON.stringify\\(ui, null, 2\\)\\);\")"
+      "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); const ui = a.domains.ui; console.log\\(JSON.stringify\\(ui, null, 2\\)\\);\")",
+      "Bash(python3:*)",
+      "Bash(node:*)"
     ]
   },
   "outputStyle": "default"

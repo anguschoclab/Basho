@@ -168,4 +168,7 @@ export interface Rikishi {
 
   // Used by InjuryService for durability calculation
   durability?: number;
+
+  // Fan appeal score, bumped by kinboshi/ginboshi upsets
+  marketability?: number;
 }

@@ -70,6 +70,18 @@ export function runGovernanceReview(world: WorldState): void {
             }, "major");
          }
       }
+      // === Insolvency-triggered merger for NPC stables with no rescue available ===
+      if (heya.funds < -15_000_000 && heya.id !== world.playerHeyaId) {
+        const targetId = findMergerTarget(world, heya.id);
+        if (targetId) {
+          EventBus.governanceRuling(world, heya.id, {
+            incident: "insolvency_merger",
+            reason: "extreme_debt",
+            money: heya.funds
+          }, "headline");
+          executeMerger(world, heya.id, targetId, "financial_insolvency");
+        }
+      }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Clear financial risk indicator when no longer desperate
       heya.riskIndicators.financial = false;
@@ -94,7 +106,6 @@ export function runGovernanceReview(world: WorldState): void {
         EventBus.governanceRuling(world, heya.id, {
           incident: "prestige_erosion",
           status: newBand,
-          reason: "Ongoing sanctions"
           reason: "sanctions_active"
         }, "notable");
       }

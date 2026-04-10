@@ -3,6 +3,7 @@ import type { WorldState } from "./types/world";
 import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { stableSort } from "./utils/sort";
+import { rngFromSeed } from "./rng";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -35,14 +36,9 @@ export function checkNaturalizations(world: WorldState): void {
     // Needs high momentum or just time for narrative significance
     if (!isEligible) continue;
 
-    // Rare chance (e.g. ~5% per year they are eligible)
-    // To make it deterministic, we hash their ID and year
-    let hash = 0;
-    const seedString = `nat_${r.id}_${world.year}`;
-    for (let i = 0; i < seedString.length; i++) {
-      hash = ((hash << 5) - hash + seedString.charCodeAt(i)) | 0;
-    }
-    const chance = Math.abs(hash) % 100;
+    // Rare chance (~5% per year they are eligible), deterministic via seeded RNG
+    const natRng = rngFromSeed(`nat_${r.id}_${world.year}`, "naturalization", "chance");
+    const chance = natRng.next() * 100;
 
     if (chance < 5) { // 5% chance if eligible
       const originalNationality = r.nationality;

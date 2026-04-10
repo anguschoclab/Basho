@@ -155,6 +155,7 @@ describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
         (p.eastId === r2.id && p.westId === r1.id)
     );
     expect(r1r2Pair).toBeDefined();
+    expect([r1r2Pair!.eastId, r1r2Pair!.westId].sort()).toEqual([r1.id, r2.id].sort());
   });
 
   it("pulls up highest-ranked from lower bucket on day 10 when bucket is odd", () => {

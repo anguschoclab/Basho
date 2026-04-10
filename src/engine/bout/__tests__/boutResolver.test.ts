@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../boutResolver";
 import { mockRikishi } from "../../__tests__/utils";
+import type { KimariteId } from "../../types/combat";
 import type { BoutContext } from "../boutPhysics";
 import type { BashoState } from "../../types/basho";
 
@@ -168,7 +169,9 @@ describe("simulateBout", () => {
     const result = simulateBout(east, west, "test-seed");
 
     expect(["east", "west"]).toContain(result.winner);
-    expect(result.kimarite).toBeTruthy();
+    // kimarite must be a non-empty string from the known set
+    expect(typeof result.kimarite).toBe("string");
+    expect((result.kimarite as string).length).toBeGreaterThan(0);
     expect(result.duration).toBeGreaterThan(0);
   });
 });
