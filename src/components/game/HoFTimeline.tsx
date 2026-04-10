@@ -12,15 +12,15 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import { projectRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
-  champion: "text-amber-400 border-amber-500/40",
-  iron_man: "text-blue-400 border-blue-500/40",
-  technician: "text-emerald-400 border-emerald-500/40",
+  champion: "text-gold border-gold/40",
+  iron_man: "text-west border-west/40",
+  technician: "text-success border-success/40",
 };
 
 const CATEGORY_BG: Record<HoFCategory, string> = {
-  champion: "bg-amber-500/15",
-  iron_man: "bg-blue-500/15",
-  technician: "bg-emerald-500/15",
+  champion: "bg-gold/15",
+  iron_man: "bg-west/15",
+  technician: "bg-success/15",
 };
 
 const CATEGORY_ICON: Record<HoFCategory, React.ElementType> = {
@@ -99,7 +99,7 @@ export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
   }
 
   return (
-    <div className="rounded-xl border bg-card/50 p-4 space-y-2">
+    <div className="rounded-lg border bg-card/50 p-4 space-y-2">
       <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Induction Timeline
       </div>

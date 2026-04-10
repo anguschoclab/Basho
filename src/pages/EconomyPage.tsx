@@ -99,7 +99,7 @@ const KOENKAI_CONFIG: Record<
   moderate: {
     label: "Modest Kōenkai",
     description: "A smaller but loyal supporter base helps cover some expenses.",
-    color: "text-blue-400",
+    color: "text-west",
     monthlySupport: "Moderate"
   },
   weak: {

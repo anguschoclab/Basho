@@ -205,7 +205,7 @@ export default function BashoPage() {
                 Day {day}/{getTotalBashodays("makuuchi")}
               </Badge>
               {isKeyDay(day) && (
-                <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs">Key Day</Badge>
+                <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">

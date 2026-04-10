@@ -101,7 +101,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                      <div className="space-y-1 border-r border-dashed border-border/40 pr-3">
                         <TooltipWrap content="Observed physical power and pushing force" side="top">
                           <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
-                             <Zap className="h-2.5 w-2.5 text-amber-500" /> Power
+                             <Zap className="h-2.5 w-2.5 text-gold" /> Power
                           </div>
                         </TooltipWrap>
                         <div className="font-display font-black text-sm">{r.perceivedStats?.strength || '??'}</div>
@@ -109,7 +109,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                      <div className="space-y-1 pl-1">
                         <TooltipWrap content="Observed match pace and initial reaction speed" side="top">
                           <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-muted-foreground leading-none cursor-help">
-                             <Activity className="h-2.5 w-2.5 text-blue-500" /> Pace
+                             <Activity className="h-2.5 w-2.5 text-west" /> Pace
                           </div>
                         </TooltipWrap>
                         <div className="font-display font-black text-sm">{r.perceivedStats?.speed || '??'}</div>
@@ -129,7 +129,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
         ))}
         
         {rikishiList.length === 0 && (
-           <div className="col-span-full py-32 text-center bg-muted/20 border-2 border-dashed rounded-xl space-y-4">
+           <div className="col-span-full py-32 text-center bg-muted/20 border-2 border-dashed rounded-lg space-y-4">
               <div className="h-12 w-12 bg-muted rounded-full mx-auto flex items-center justify-center">
                  <Zap className="h-6 w-6 text-muted-foreground opacity-30" />
               </div>

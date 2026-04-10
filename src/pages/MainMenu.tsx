@@ -136,8 +136,8 @@ export default function MainMenu() {
            </div>
            
            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-6">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
-                 <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
+                 <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-2xl">
                     <History className="h-10 w-10 text-primary" />
                  </div>
                  <div className="text-left py-2 pr-6 border-r border-white/10">

@@ -155,10 +155,10 @@ export default function HistoryPage() {
                     <div className="grid gap-4 md:grid-cols-2">
                       {/* Yusho Winner */}
                       {yushoRikishi ? (
-                        <div className="p-4 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 border border-amber-200 dark:border-amber-800">
+                        <div className="p-4 rounded-lg bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20">
                           <div className="flex items-center gap-2 mb-2">
-                            <Trophy className="h-5 w-5 text-amber-600" />
-                            <span className="text-sm font-medium text-amber-800 dark:text-amber-400">優勝 Yūshō</span>
+                            <Trophy className="h-5 w-5 text-gold" />
+                            <span className="text-sm font-medium text-gold">優勝 Yūshō</span>
                           </div>
                           <div className="font-display text-xl font-bold">
                             <RikishiName id={yushoRikishi.id} name={yushoRikishi.shikona} />
@@ -211,7 +211,7 @@ export default function HistoryPage() {
                       <div className="md:col-span-2 grid grid-cols-3 gap-3">
                         {/* Shukunsho */}
                         <div className="p-3 rounded-lg bg-secondary/30 text-center">
-                          <Award className="h-4 w-4 mx-auto mb-1 text-amber-500" />
+                          <Award className="h-4 w-4 mx-auto mb-1 text-gold" />
                           <div className="text-xs text-muted-foreground">殊勲賞</div>
                           {shukun ? (
                             <div className="text-sm font-display">
