@@ -16,20 +16,10 @@
 
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
-import { RANK_HIERARCHY } from "../../banzuke";
-import { calculateKoenkaiIncome } from "../../systems/economics/SponsorshipService";
-import { getHeyaStaffBonuses } from "../../staff";
+import { calculateHeyaWeeklyFinances } from "../../systems/economy/FinanceCalculator";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
 // NOTE: Extreme insolvency (debt limit / benefactor bailout) is handled by
 // economics.handleInsolvency(), called from governanceReview.ts post-pipeline.
-import {
-  OYAKATA_SALARY_MONTHLY,
-  RECRUITMENT_BUDGET_WEEKLY,
-  NON_SEKITORI_ALLOWANCE,
-  KOENKAI_SURVIVAL_FLOOR,
-  FACILITY_UPKEEP,
-  STAFF_UPKEEP_PER_MEMBER,
-} from "../../constants/EconomicConstants";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -41,7 +31,7 @@ export function phase01_economy(world: WorldState): WorldState {
   const nextHeyas = new Map(world.heyas);
 
   for (const [id, heya] of world.heyas) {
-    const { revenue, expenses, nextFunds } = processHeyaFinances(heya, world);
+    const { revenue, expenses, nextFunds } = calculateHeyaWeeklyFinances(heya, world);
     totalRevenue += revenue;
     totalExpenses += expenses;
     nextHeyas.set(id, { ...heya, funds: nextFunds });
@@ -65,62 +55,3 @@ export function phase01_economy(world: WorldState): WorldState {
   };
 }
 
-// ── Internal helpers ──────────────────────────────────────────────────────────
-
-function processHeyaFinances(
-  heya: Heya,
-  world: WorldState,
-): { revenue: number; expenses: number; nextFunds: number } {
-  // --- Income ---
-  const monthlyKoenkai = calculateKoenkaiIncome(heya.koenkaiBand ?? "none");
-  const weeklyKoenkai = monthlyKoenkai / 4;
-  const effectiveIncome = Math.max(weeklyKoenkai, KOENKAI_SURVIVAL_FLOOR);
-
-  // --- Expenses ---
-  let rikishiSalaries = 0;
-  for (const rId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rId);
-    if (!r) continue;
-    const info = RANK_HIERARCHY[r.rank];
-    rikishiSalaries += info?.isSekitori
-      ? (info.salary ?? 0) / 4
-      : NON_SEKITORI_ALLOWANCE;
-  }
-
-  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
-
-  const facilityUpkeepRaw = heya.facilities
-    ? heya.facilities.training * FACILITY_UPKEEP.training +
-      heya.facilities.recovery * FACILITY_UPKEEP.recovery +
-      heya.facilities.nutrition * FACILITY_UPKEEP.nutrition
-    : 0;
-
-  const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
-
-  // Apply administration discount (Administrator role)
-  const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
-  const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
-
-  const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
-
-  const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
-
-  const totalBurn = baseBurn + oyakataCost + RECRUITMENT_BUDGET_WEEKLY;
-
-  // Solvency: overhead is paused at the survival floor
-  let effectiveBurn = totalBurn;
-  if (effectiveIncome < totalBurn && effectiveIncome <= KOENKAI_SURVIVAL_FLOOR) {
-    effectiveBurn = Math.max(baseBurn, effectiveIncome);
-  } else if (effectiveIncome < totalBurn) {
-    effectiveBurn = effectiveIncome;
-  }
-
-  const net = effectiveIncome - effectiveBurn;
-  const nextFunds = heya.funds + net;
-
-  return {
-    revenue: effectiveIncome,
-    expenses: effectiveBurn,
-    nextFunds,
-  };
-}
