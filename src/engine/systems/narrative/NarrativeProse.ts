@@ -57,8 +57,8 @@ export function getPotentialInfo(rng: SeededRNG, band: PotentialBand): { label: 
   if (band === "average")      path = "Mikan no Taiki"; 
   if (band === "limited")      path = "Genkai";
   
-  const label = BardEngine.resolve(rng, `system.descriptors.bands.potential.${path}.label`).text;
-  const description = BardEngine.resolve(rng, `system.descriptors.bands.potential.${path}.tooltip`).text;
+  const label = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.label`).text;
+  const description = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.tooltip`).text;
   
   return { label, description };
 }
@@ -100,7 +100,7 @@ export function hydrateDescriptor(
   group: "condition" | "morale" | "potential", 
   bandId: string
 ): { label: string; tooltip: string } {
-  const label = BardEngine.resolve(rng, `system.descriptors.${group}.${bandId}.label`).text;
-  const tooltip = BardEngine.resolve(rng, `system.descriptors.${group}.${bandId}.tooltip`).text;
+  const label = BardEngine.resolve(rng, `rikishi.descriptors.${group}.${bandId}.label`).text;
+  const tooltip = BardEngine.resolve(rng, `rikishi.descriptors.${group}.${bandId}.tooltip`).text;
   return { label, tooltip };
 }

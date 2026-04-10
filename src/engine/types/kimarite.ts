@@ -22,8 +22,6 @@ export interface KimariteRequirements {
 /** Defines the structure for kimarite. */
 export interface Kimarite {
   id: string;
-  name: string;
-  nameJa?: string;
   jsaCategory: JsaCategory;
   tacticalFamily: TacticalFamily;
   baseWeight: number;
@@ -41,7 +39,6 @@ export interface Kimarite {
   requiresBeltGrip?: boolean;
   leverageTarget?: 'high_center_of_gravity' | 'momentum';
 
-  description?: string;
   rarity?: "common" | "uncommon" | "rare" | "legendary";
 }
 

@@ -481,9 +481,7 @@
         "labelJa": "反則",
         "description": "Win by disqualification"
       }
-    },
-    "styles": {},
-    "archetypes": {}
+    }
   },
   "matrix": {
     "voices": [
@@ -1288,63 +1286,29 @@
           "Hot Streak: %SHIKONA% Now %STREAK%-0",
           "%STREAK% Wins! %SHIKONA% Keeps Rolling"
         ]
+      },
+      "subtitles": {
+        "legendary": [
+          "The history books are being rewritten in real-time.",
+          "Is there anyone left who can stand against this momentum?",
+          "The dominance is becoming the only story in the hall."
+        ],
+        "hot": [
+          "Confidence is a physical presence in the ring now.",
+          "The win streak is starting to draw national attention.",
+          "Execution has been flawless for days."
+        ],
+        "notable": [
+          "A solid run that puts the rest of the division on notice.",
+          "Consistency is building into a serious threat.",
+          "The momentum is clearly shifting in one direction."
+        ]
       }
     },
     "system": {
       "descriptors": {
-        "ranks": {
-          "yokozuna": {
-            "text": "Yokozuna",
-            "ja": "横綱"
-          },
-          "ozeki": {
-            "text": "Ozeki",
-            "ja": "大関"
-          },
-          "sekiwake": {
-            "text": "Sekiwake",
-            "ja": "関脇"
-          },
-          "komusubi": {
-            "text": "Komusubi",
-            "ja": "小結"
-          },
-          "maegashira": {
-            "text": "Maegashira",
-            "ja": "前頭"
-          },
-          "juryo": {
-            "text": "Juryo",
-            "ja": "十両"
-          },
-          "makushita": {
-            "text": "Makushita",
-            "ja": "幕下"
-          },
-          "sandanme": {
-            "text": "Sandanme",
-            "ja": "三段目"
-          },
-          "jonidan": {
-            "text": "Jonidan",
-            "ja": "序二段"
-          },
-          "jonokuchi": {
-            "text": "Jonokuchi",
-            "ja": "序ノ口"
-          }
-        },
-        "styles": {
-          "oshi": {
-            "text": "Oshi (Pushing)"
-          },
-          "yotsu": {
-            "text": "Yotsu (Belt)"
-          },
-          "hybrid": {
-            "text": "Hybrid"
-          }
-        },
+
+
         "bands": {
           "stats": {
             "exceptional": "Exceptional",
@@ -1518,6 +1482,16 @@
           "The official rankings have been posted. A new hierarchy takes shape.",
           "New ranks confirmed. The banzuke reveal shifts the landscape for the coming basho.",
           "The Association has published the banzuke. All eyes on the new promotions."
+        ],
+        "status_title": [
+          "Basho Status Update",
+          "Tournament News",
+          "Kokugikan Report"
+        ],
+        "status_summary": [
+          "Tournament progress: %DAY% days concluded. Standing: %SHIKONA% (%WINS%-%LOSSES%).",
+          "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
+          "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
         ]
       },
       "health": {
@@ -1969,6 +1943,30 @@
         "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
         "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
       ]
+    },
+    "institutional": {
+      "welfare": {
+        "watch_headline": [
+          "Heya Placed Under Regulatory Watch",
+          "Compliance Alert: %HEYANAME% Monitored",
+          "Welfare Review Triggered for %HEYANAME%"
+        ],
+        "investigation_headline": [
+          "Full-Scale Investigation Opened: %HEYANAME%",
+          "JSA Launches Probe Into %HEYANAME% Operations",
+          "Governance Crisis: Investigation at %HEYANAME%"
+        ],
+        "sanction_headline": [
+          "Sanctions Imposed on %HEYANAME%",
+          "Association Penalizes %HEYANAME% for Welfare Violations",
+          "Heavy Fines and Recruitment Freeze for %HEYANAME%"
+        ],
+        "cleared_headline": [
+          "Investigation Concluded: %HEYANAME% Cleared",
+          "Regulatory Pressure Lifted for %HEYANAME%",
+          "Heya Restored to Full Compliance Status"
+        ]
+      }
     },
     "training": {
       "intensity": {
