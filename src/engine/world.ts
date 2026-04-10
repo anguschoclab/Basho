@@ -14,7 +14,7 @@ import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult, MatchSchedule, BashoState } from "./types/basho";
 import type { Id } from "./types/common";
-import { toRankPosition, type Side } from "./types";
+import { toRankPosition, type Side } from "./types/index";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import * as talentpool from "./systems/generation/TalentPoolService";
 import { initializeBasho } from "./systems/generation/WorldFactory";
@@ -42,11 +42,11 @@ import * as governance from "./governance/GovernanceService";
 import { executeMerger, findMergerTarget } from "./mergers";
 import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "./loans";
 import { checkNaturalizations } from "./naturalization";
-import * as welfare from "./welfare";
+
 import * as npcAI from "./npcAI";
 import * as scoutingStore from "./scoutingStore";
 import * as historyIndex from "./historyIndex";
-import * as training from "./training"; 
+ 
 import { } from "./systems/generation/CandidateGenerator";
 import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
 import { applyBoutResult } from "./bout/boutResultApplier";

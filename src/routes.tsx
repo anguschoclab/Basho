@@ -74,7 +74,7 @@ const jsaTalentNestedRoute = createRoute({ getParentRoute: () => jsaBaseRoute, p
 const jsaMyosekiRoute = createRoute({ getParentRoute: () => rootRoute, path: '/myoseki', component: MyosekiMarketPage })
 
 // --- TOURNAMENT SECTION ---
-const tournamentBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/tournament' })
+
 const bashoRoute = createRoute({ getParentRoute: () => rootRoute, path: '/basho', component: BashoPage })
 const banzukeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/banzuke', component: BanzukePage })
 const scheduleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/schedule', component: SchedulePage })

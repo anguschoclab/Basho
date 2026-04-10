@@ -15,7 +15,6 @@
     "test:e2e": "playwright test",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "narrative:audit": "tsx scripts/audit-and-fill.ts",
     "electron:dev": "electron-vite dev",
     "electron:build": "electron-vite build && electron-builder --config electron-builder.json5",
     "electron:build:mac": "electron-vite build && electron-builder --mac --config electron-builder.json5",
