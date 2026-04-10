@@ -32,7 +32,8 @@
       "Bash(node -e \"const a = JSON.parse\\(require\\('fs'\\).readFileSync\\('src/engine/narrative/archive.json', 'utf8'\\)\\); const ui = a.domains.ui; console.log\\(JSON.stringify\\(ui, null, 2\\)\\);\")",
       "Bash(python3:*)",
       "Bash(node:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(bun add:*)"
     ]
   },
   "outputStyle": "default"

@@ -1,0 +1,30 @@
+{
+  appId: "com.sumo-manager-pro.app",
+  productName: "Sumo Manager Pro",
+  copyright: "Copyright © 2026",
+  directories: {
+    buildResources: "resources",
+    output: "dist-electron"
+  },
+  files: [
+    "out/**"
+  ],
+  mac: {
+    category: "public.app-category.games",
+    target: [
+      { target: "dmg", arch: ["x64", "arm64"] },
+      { target: "zip", arch: ["x64", "arm64"] }
+    ],
+    icon: "resources/icon.icns"
+  },
+  win: {
+    target: [
+      { target: "nsis", arch: ["x64"] }
+    ],
+    icon: "resources/icon.ico"
+  },
+  nsis: {
+    oneClick: false,
+    allowToChangeInstallationDirectory: true
+  }
+}

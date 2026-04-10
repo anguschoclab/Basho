@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "out/main/index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +15,11 @@
     "test:e2e": "playwright test",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "narrative:audit": "tsx scripts/audit-and-fill.ts"
+    "narrative:audit": "tsx scripts/audit-and-fill.ts",
+    "electron:dev": "electron-vite dev",
+    "electron:build": "electron-vite build && electron-builder --config electron-builder.json5",
+    "electron:build:mac": "electron-vite build && electron-builder --mac --config electron-builder.json5",
+    "electron:build:win": "electron-vite build && electron-builder --win --config electron-builder.json5"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -80,6 +85,8 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
     "@eslint/js": "9",
     "@rollup/rollup-darwin-arm64": "^4.60.1",
     "@types/node": "^22.16.5",
@@ -89,6 +96,9 @@
     "@vitejs/plugin-react-swc": "^3.11.0",
     "@vitest/coverage-v8": "^4.1.2",
     "autoprefixer": "^10.4.21",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
+    "electron-vite": "^5.0.0",
     "eslint": "9",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
