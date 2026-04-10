@@ -1,4 +1,4 @@
-# Logs
+# ─── Logs ──────────────────────────────────────────────────────────────────────
 logs
 *.log
 npm-debug.log*
@@ -7,12 +7,31 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ─── Dependencies ──────────────────────────────────────────────────────────────
 node_modules
+
+# ─── Build outputs ─────────────────────────────────────────────────────────────
+# Vite web/PWA build
 dist
 dist-ssr
-*.local
+# electron-vite build (main + preload + renderer bundles)
+out/
+# electron-builder packaged installers (.dmg, .exe, .zip)
+dist-electron/
 
-# Editor directories and files
+# ─── Environment variables ─────────────────────────────────────────────────────
+.env
+.env.*
+# keep the example template committed
+!.env.example
+
+# ─── Test & coverage output ────────────────────────────────────────────────────
+coverage/
+playwright-report/
+test-results/
+test_failures.txt
+
+# ─── Editor directories and files ──────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,23 +41,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-coverage/
-playwright-report/
-test-results/
+*.local
 
-# AI tool working directories (local to each tool/session)
+# ─── AI tool session directories (local to each tool, not for collaboration) ───
+.gemini/
+.jules/
+.agent/
+.lovable/
 
-# Package manager caches and redundant lock files
+# ─── Package manager caches and redundant lock files ───────────────────────────
 npm_cache/
 package-lock.json
 
-# Patch and diff files
+# ─── Scratch / dev files ───────────────────────────────────────────────────────
+scratch/
+dummy.json
+
+# ─── Patch and diff files ──────────────────────────────────────────────────────
 *.patch
 *.diff
 
-# Benchmark / scratch scripts
+# ─── Benchmark / scratch scripts ───────────────────────────────────────────────
 bench_*.js
 benchmark*.ts
 benchmark*.js
 test-benchmark*.ts
-patch*.js
