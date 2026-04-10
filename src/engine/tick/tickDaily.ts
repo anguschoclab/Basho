@@ -37,8 +37,6 @@ import { rngFromSeed } from "../rng";
 
 import { toRikishiDescriptor } from "../descriptorBands";
 
-import { tickMonthlyBoundary } from "./tickMonthly";
-import { tickYearBoundary } from "./tickYearly";
 import { assertNever } from "../utils/types";
 
 // ====
@@ -80,8 +78,8 @@ export interface DailyTickReport {
  */
 import { runPipeline, emptyDeltas, defaultActiveModifiers } from "./pipelineRunner";
 import * as phases from "./phases";
-import { phase05_monthly_gates } from "./phases/phase05_monthly_gates";
-import { phase06_yearly_gates } from "./phases/phase06_yearly_gates";
+import { phase05_monthly_boundary } from "./phases/phase05_monthly_boundary";
+import { phase06_yearly_boundary } from "./phases/phase06_yearly_boundary";
 import { bashoPipeline } from "./pipelines/bashoPipeline";
 import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 
@@ -120,8 +118,8 @@ export function advanceOneDay(world: WorldState): WorldState {
 
   // 3. Boundary Gates (Standardized as phases)
   // These will internally check world.transientContext.boundaries
-  activePhases.push(phase05_monthly_gates);
-  activePhases.push(phase06_yearly_gates);
+  activePhases.push(phase05_monthly_boundary);
+  activePhases.push(phase06_yearly_boundary);
 
   // 4. Execution
   let nextWorld = runPipeline(world, activePhases);

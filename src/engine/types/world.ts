@@ -47,8 +47,13 @@ export interface TickDeltas {
 
 /** Ephemeral context injected into WorldState for the duration of a tick. */
 export interface TransientContext {
-  activeModifiers: ActiveModifiers;
-  deltas: TickDeltas;
+  activeModifiers?: ActiveModifiers;
+  deltas?: TickDeltas;
+  boundaries?: {
+    monthBoundary: boolean;
+    yearBoundary: boolean;
+  };
+  lastReport?: any;
 }
 
 /** Defines the structure for recruitment window. */

@@ -18,6 +18,6 @@ export * from "./phase02_context";
 export * from "./phase03_progression";
 export * from "./phase04_welfare";
 export * from "./phase05_npcAI";
-export * from "./phase05_monthly_gates";
-export * from "./phase06_yearly_gates";
+export * from "./phase05_monthly_boundary";
+export * from "./phase06_yearly_boundary";
 export * from "./phase06_narrative";
