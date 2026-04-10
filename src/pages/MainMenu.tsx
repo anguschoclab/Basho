@@ -136,7 +136,7 @@ export default function MainMenu() {
            </div>
            
            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-6">
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
+              <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
                  <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-2xl">
                     <History className="h-10 w-10 text-primary" />
                  </div>
@@ -172,7 +172,7 @@ export default function MainMenu() {
         <main className="max-w-6xl w-full px-6 -mt-12 relative z-20 pb-20">
           
           {/* World Settings Console */}
-          <div className="glass rounded-xl p-4 flex items-center justify-between gap-4 mb-8 shadow-2xl animate-in slide-in-from-bottom-5 duration-700 delay-300 fill-mode-both">
+          <div className="glass rounded-lg p-4 flex items-center justify-between gap-4 mb-8 shadow-2xl animate-in slide-in-from-bottom-5 duration-700 delay-300 fill-mode-both">
              <div className="flex items-center gap-6 pl-4 border-l-4 border-primary">
                 <div>
                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">World Generation</p>
@@ -199,7 +199,7 @@ export default function MainMenu() {
 
           {showSeedInput && (
              <div className="flex justify-center mb-10 -mt-6 animate-in slide-in-from-top-4 duration-300">
-                <div className="bg-muted p-2 rounded-xl border-2 flex items-center gap-2 w-full max-w-md shadow-lg">
+                <div className="bg-muted p-2 rounded-lg border-2 flex items-center gap-2 w-full max-w-md shadow-lg">
                    <Input 
                       placeholder="Enter specific world seed..." 
                       value={seed} 
@@ -283,7 +283,7 @@ export default function MainMenu() {
           {/* Footer Sticky Bar */}
           {selectedHeyaId && (
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl px-6 z-50 animate-in slide-in-from-bottom-10 duration-500">
-               <div className="bg-primary p-2 pl-6 rounded-full shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] flex items-center justify-between border border-white/20 backdrop-blur-md">
+               <div className="bg-primary p-2 pl-6 rounded-full shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] flex items-center justify-between border border-white/20">
                   <div className="text-primary-foreground min-w-0 pr-4">
                      <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Ready to begin</p>
                      <p className="font-display text-xl font-black truncate">{stables.find(h => h.id === selectedHeyaId)?.name} Stable</p>

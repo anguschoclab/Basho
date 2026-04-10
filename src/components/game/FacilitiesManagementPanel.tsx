@@ -41,9 +41,9 @@ const AXIS_META: Record<FacilityAxis, { label: string; icon: typeof Building; de
 };
 
 const BAND_COLORS: Record<FacilitiesBand, string> = {
-  world_class: "text-amber-400",
+  world_class: "text-gold",
   excellent: "text-purple-400",
-  adequate: "text-blue-400",
+  adequate: "text-west",
   basic: "text-orange-400",
   minimal: "text-red-400",
 };
@@ -145,7 +145,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
       {lastResult && (
         <div className={`p-3 rounded-lg border text-sm ${
           lastResult.success 
-            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
+            ? "bg-success/10 border-success/30 text-success"
             : "bg-destructive/10 border-destructive/30 text-destructive"
         }`}>
           {lastResult.success
@@ -190,7 +190,7 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <TrendingUp className="h-3 w-3" />
                   <span>{meta.effectLabel}: </span>
-                  <span className={`font-medium ${level >= 50 ? "text-emerald-400" : "text-foreground"}`}>
+                  <span className={`font-medium ${level >= 50 ? "text-success" : "text-foreground"}`}>
                     {getEffectPercent(axis, level)}
                   </span>
                 </div>

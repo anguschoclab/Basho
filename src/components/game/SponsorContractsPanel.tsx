@@ -12,10 +12,10 @@ import { renewSponsorContract, type projectSponsorUIDigest } from "@/presenters/
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
   T1: { label: "Regional", color: "text-foreground" },
-  T2: { label: "Established", color: "text-blue-500" },
+  T2: { label: "Established", color: "text-west" },
   T3: { label: "Major", color: "text-purple-500" },
-  T4: { label: "National", color: "text-amber-500" },
-  T5: { label: "Prestige", color: "text-amber-400" },
+  T4: { label: "National", color: "text-gold" },
+  T5: { label: "Prestige", color: "text-gold" },
 };
 
 /**
@@ -57,10 +57,10 @@ export function SponsorContractsPanel({ digest }: { digest: NonNullable<ReturnTy
             <p className="text-2xl font-bold capitalize">{digest.strength}</p>
           </CardContent>
         </Card>
-        <Card className={digest.expiringCount > 0 ? "border-amber-500/30" : ""}>
+        <Card className={digest.expiringCount > 0 ? "border-gold/30" : ""}>
           <CardContent className="p-3 text-center">
             <p className="text-xs text-muted-foreground">Expiring Soon</p>
-            <p className={`text-2xl font-bold ${digest.expiringCount > 0 ? "text-amber-500" : ""}`}>{digest.expiringCount}</p>
+            <p className={`text-2xl font-bold ${digest.expiringCount > 0 ? "text-gold" : ""}`}>{digest.expiringCount}</p>
           </CardContent>
         </Card>
       </div>
@@ -82,7 +82,7 @@ export function SponsorContractsPanel({ digest }: { digest: NonNullable<ReturnTy
             {digest.activeSponsors.map((s) => {
               const tierInfo = TIER_LABELS[s.tier] || { label: s.tier, color: "" };
               return (
-                <Card key={s.relId} className={`paper ${s.isExpiringSoon ? "border-amber-500/30" : ""}`}>
+                <Card key={s.relId} className={`paper ${s.isExpiringSoon ? "border-gold/30" : ""}`}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export function SponsorContractsPanel({ digest }: { digest: NonNullable<ReturnTy
                             {tierInfo.label}
                           </Badge>
                           {s.isExpiringSoon && (
-                            <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs gap-1">
+                            <Badge className="bg-gold/20 text-gold border-gold/30 text-xs gap-1">
                               <Clock className="h-3 w-3" /> Expiring
                             </Badge>
                           )}
@@ -118,7 +118,7 @@ export function SponsorContractsPanel({ digest }: { digest: NonNullable<ReturnTy
                       <div className="flex flex-col items-end gap-2 shrink-0">
                         <div className="flex items-center gap-1">
                           {Array.from({ length: s.strength }, (_, i) => (
-                            <Star key={i} className="h-3 w-3 text-amber-400" fill="currentColor" />
+                            <Star key={i} className="h-3 w-3 text-gold" fill="currentColor" />
                           ))}
                         </div>
                         {s.isExpiringSoon && (

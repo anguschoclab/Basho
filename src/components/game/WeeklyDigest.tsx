@@ -56,7 +56,7 @@ const KIND_COLORS: Record<string, string> = {
   salary: "text-warning",
   koenkai: "text-purple-400",
   expense: "text-orange-400",
-  economy: "text-blue-400",
+  economy: "text-west",
   scouting: "text-cyan-400",
   generic: "text-muted-foreground",
 };

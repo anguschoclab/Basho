@@ -121,7 +121,7 @@ export default function Dashboard() {
     <AppLayout>
       <div className="space-y-6">
         {/* ═══════════ HEADER ═══════════ */}
-        <div className="glass paper p-6 rounded-xl animate-fade-in relative overflow-hidden">
+        <div className="glass paper p-6 rounded-lg animate-fade-in relative overflow-hidden">
           {/* Subtle background glow based on phase */}
           <div className={cn(
             "absolute inset-0 opacity-5 pointer-events-none transition-all duration-700",
@@ -129,7 +129,7 @@ export default function Dashboard() {
           )} />
 
           <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
-            <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden group">
+            <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden group">
               <span className="text-primary-foreground font-display text-3xl font-bold relative z-10">力</span>
               <div className="absolute inset-0 rank-shimmer" />
             </div>
