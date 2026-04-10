@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShieldAlert, Scale, Gavel, FileWarning, Landmark, Users } from "lucide-react";
+import { ShieldAlert, Scale, Gavel, FileWarning, Landmark, Users, AlertTriangle, ArrowRightLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { GovernanceStatus, GovernanceRuling } from "@/engine/types/economy";
 import type { Heya } from "@/engine/types/heya";
-import { PRIZE_LABELS, SCANDAL_LABELS, formatFinePenalty, getStatusColor, getStatusLabel, spendPoliticalCapital, toPrizeBand, toScandalBand } from "@/presenters/uiDigest";
+import { PRIZE_LABELS, SCANDAL_LABELS, formatFinePenalty, getStatusColor, getStatusLabel, spendPoliticalCapital, toPrizeBand, toScandalBand, projectMergerWarnings } from "@/presenters/uiDigest";
 
 /**
  * Format fine penalty.
@@ -224,6 +224,45 @@ export default function GovernancePage() {
             )}
           </CardContent>
         </Card>
+
+          {/* Merger Candidates Panel */}
+          {(() => {
+            const mergerWarnings = projectMergerWarnings(world);
+            if (mergerWarnings.length === 0) return null;
+            return (
+              <Card className="border-destructive/40">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2 text-destructive">
+                    <ArrowRightLeft className="h-4 w-4" />
+                    Merger Risk — Stables in Crisis
+                  </CardTitle>
+                  <CardDescription>
+                    These stables are in debt with critically small rosters and may face Association-mandated merger.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mergerWarnings.map(w => (
+                      <div key={w.heyaId} className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">{w.heyaName}</p>
+                            <p className="text-xs text-muted-foreground">{w.rosterSize} rikishi — {w.governanceStatus.replace("_", " ")}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-destructive">
+                            ¥{Math.abs(w.funds / 1_000_000).toFixed(1)}M in debt
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
 
           </TabsContent>
 
