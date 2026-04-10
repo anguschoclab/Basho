@@ -30,6 +30,11 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': resolve(__dirname, './src'),
+        // d3-interpolate 3.x has no CJS entry; alias to victory-vendor's bundled copy
+        // which ships both CJS (lib/) and ESM (es/) versions of d3 packages.
+        'd3-interpolate': resolve(__dirname, 'node_modules/victory-vendor/lib/d3-interpolate.js'),
+        'd3-color': resolve(__dirname, 'node_modules/victory-vendor/lib/d3-color.js'),
+        'd3-ease': resolve(__dirname, 'node_modules/victory-vendor/lib/d3-ease.js'),
       },
     },
     build: {
