@@ -33,7 +33,10 @@
       "Bash(python3:*)",
       "Bash(node:*)",
       "Bash(grep:*)",
-      "Bash(bun add:*)"
+      "Bash(bun add:*)",
+      "Bash(bun run:*)",
+      "Bash(npm view:*)",
+      "Bash(npx electron-vite:*)"
     ]
   },
   "outputStyle": "default"

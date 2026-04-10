@@ -34,6 +34,9 @@ export default defineConfig({
     },
     build: {
       outDir: 'out/renderer',
+      rollupOptions: {
+        input: resolve(__dirname, 'index.html'),
+      },
     },
   },
 })
