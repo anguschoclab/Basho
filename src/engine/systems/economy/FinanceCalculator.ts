@@ -12,6 +12,7 @@ import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import { RANK_HIERARCHY } from "../../banzuke";
 import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
+import { getHeyaStaffBonuses } from "../../staff";
 import {
   OYAKATA_SALARY_MONTHLY,
   RECRUITMENT_BUDGET_WEEKLY,
@@ -58,13 +59,20 @@ export function calculateHeyaWeeklyFinances(
       : NON_SEKITORI_ALLOWANCE;
   }
 
-  const facilityUpkeep = heya.facilities
+  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
+
+  const facilityUpkeepRaw = heya.facilities
     ? heya.facilities.training * FACILITY_UPKEEP.training +
       heya.facilities.recovery * FACILITY_UPKEEP.recovery +
       heya.facilities.nutrition * FACILITY_UPKEEP.nutrition
     : 0;
 
-  const staffUpkeep = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
+  const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
+
+  // Apply administration discount (Administrator role)
+  const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
+  const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
+
   const oyakataCost = OYAKATA_SALARY_MONTHLY / 4;
 
   const baseBurn = rikishiSalaries + facilityUpkeep + staffUpkeep;
