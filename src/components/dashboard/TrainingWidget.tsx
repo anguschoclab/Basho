@@ -211,6 +211,34 @@ export function TrainingWidget() {
       ? INTENSITY_RANK.indexOf(CAP_TO_INTENSITY[sanctionCap] ?? "punishing")
       : INTENSITY_RANK.length - 1;
 
+  const intensityOptions = useMemo(
+    () =>
+      INTENSITY_OPTIONS.map((v, i) => ({
+        value: v,
+        label: v.charAt(0).toUpperCase() + v.slice(1),
+        disabled: i > maxIntensityIdx,
+      })),
+    [maxIntensityIdx],
+  );
+
+  const focusOptions = useMemo(
+    () =>
+      FOCUS_OPTIONS.map((v) => ({
+        value: v,
+        label: FOCUS_LABELS[v],
+      })),
+    [],
+  );
+
+  const recoveryOptions = useMemo(
+    () =>
+      RECOVERY_OPTIONS.map((v) => ({
+        value: v,
+        label: RECOVERY_LABELS[v],
+      })),
+    [],
+  );
+
   const updateProfile = React.useCallback(
     (patch: Partial<TrainingProfile>) => {
       if (!world.playerHeyaId) return;
@@ -354,21 +382,23 @@ export function TrainingWidget() {
             icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
             options={intensityOptions}
-            onChange={handleIntensityChange}
+            onChange={(v) =>
+              updateProfile({ intensity: v as TrainingIntensity })
+            }
           />
           <ProfileRow
             label="Focus"
             icon={<Target className="h-3 w-3 text-muted-foreground" />}
             value={profile.focus}
             options={focusOptions}
-            onChange={handleFocusChange}
+            onChange={(v) => updateProfile({ focus: v as TrainingFocus })}
           />
           <ProfileRow
             label="Recovery"
             icon={<Shield className="h-3 w-3 text-muted-foreground" />}
             value={profile.recovery}
             options={recoveryOptions}
-            onChange={handleRecoveryChange}
+            onChange={(v) => updateProfile({ recovery: v as RecoveryEmphasis })}
           />
         </div>
       )}

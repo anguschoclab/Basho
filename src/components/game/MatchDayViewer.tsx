@@ -29,7 +29,14 @@ interface MatchDayViewerProps {
 
 // ── Main Component ─────────────────────────────────────
 
-export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, onTacticChange, playerTactics = {} }: MatchDayViewerProps) {
+export function MatchDayViewer({
+  matches,
+  world,
+  playerRikishiIds,
+  onBoutClick,
+  onTacticChange,
+  playerTactics = {},
+}: MatchDayViewerProps) {
   const [previewBoutId, setPreviewBoutId] = useState<string | null>(null);
 
   const previewData = useMemo(() => {
@@ -47,7 +54,16 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
   };
 
   const sortedMatches = useMemo(() => {
-    return [...matches].sort((a, b) => {
+    const mapped = [...matches].map((m) =>
+      m
+        ? {
+            ...m,
+            east: m.eastRikishi,
+            west: m.westRikishi,
+          }
+        : m,
+    );
+    return mapped.sort((a, b) => {
       if (!a || !b) return 0;
       if (a.isPlayerBout !== b.isPlayerBout) return a.isPlayerBout ? -1 : 1;
       const aHeat = a.rivalry?.heat ?? 0;
@@ -56,8 +72,16 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
       const aPlayed = !!a.result;
       const bPlayed = !!b.result;
       if (aPlayed !== bPlayed) return aPlayed ? 1 : -1;
-      const aPos = { rank: a.eastRikishi.rank, side: a.eastRikishi.side ?? "east", rankNumber: a.eastRikishi.rankNumber };
-      const bPos = { rank: b.eastRikishi.rank, side: b.eastRikishi.side ?? "east", rankNumber: b.eastRikishi.rankNumber };
+      const aPos = {
+        rank: a.eastRikishi.rank,
+        side: a.eastRikishi.side ?? "east",
+        rankNumber: a.eastRikishi.rankNumber,
+      };
+      const bPos = {
+        rank: b.eastRikishi.rank,
+        side: b.eastRikishi.side ?? "east",
+        rankNumber: b.eastRikishi.rankNumber,
+      };
       return compareRanks(aPos as any, bPos as any);
     });
   }, [matches]);
@@ -67,13 +91,18 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
       <Card className="paper">
         <CardContent className="py-12 text-center">
           <CircleDot className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
-          <p className="text-muted-foreground text-sm">No matches scheduled for today.</p>
+          <p className="text-muted-foreground text-sm">
+            No matches scheduled for today.
+          </p>
         </CardContent>
       </Card>
     );
   }
 
-  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  const completedCount = sortedMatches.reduce(
+    (count, m) => count + (m?.result ? 1 : 0),
+    0,
+  );
 
   return (
     <>
@@ -82,7 +111,7 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
           preview={previewData}
           onDismiss={() => setPreviewBoutId(null)}
           onBegin={() => {
-            const match = matches.find(m => m.boutId === previewData.boutId);
+            const match = matches.find((m) => m.boutId === previewData.boutId);
             setPreviewBoutId(null);
             if (match) onBoutClick?.(match);
           }}
@@ -108,25 +137,28 @@ export function MatchDayViewer({ matches, world, playerRikishiIds, onBoutClick, 
           </div>
 
           <div className="divide-y divide-border/50 max-h-[620px] overflow-auto">
-            {sortedMatches.map((match, idx) => {
-              if (!match) return null;
-              // Map the enriched match data to the format BoutCard expects if needed
-              const matchRow = {
-                ...match,
-                east: match.eastRikishi,
-                west: match.westRikishi,
-              };
-              return (
-                <BoutCard
-                  key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
-                  match={matchRow as any}
-                  idx={idx}
-                  onBoutClick={handleBoutClick}
-                  onTacticChange={onTacticChange}
-                  playerTactics={playerTactics}
-                />
-              );
-            })}
+            {(() => {
+              const limit = sortedMatches.length;
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const match = sortedMatches[i];
+                if (!match) continue;
+                nodes[i] = (
+                  <BoutCard
+                    key={
+                      match.boutId ||
+                      `${match.eastRikishiId}-${match.westRikishiId}-${i}`
+                    }
+                    match={match as any}
+                    idx={i}
+                    onBoutClick={handleBoutClick}
+                    onTacticChange={onTacticChange}
+                    playerTactics={playerTactics}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </div>
         </CardContent>
       </Card>

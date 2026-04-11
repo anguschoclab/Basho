@@ -28,20 +28,20 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
 
 const ProspectRow = React.memo(
   ({
-    id,
+    candidateId,
     name,
-    visibilityBand,
+    archetype,
     talentSeed,
     pool,
-    archetype,
+    visibilityBand,
     intel,
   }: {
-    id: string;
+    candidateId: string;
     name: string;
-    visibilityBand: string;
+    archetype: string;
     talentSeed?: number;
     pool: TalentPoolType;
-    archetype: string;
+    visibilityBand: string;
     intel: number;
   }) => {
     const canShowName = visibilityBand === "public" || intel >= 65;
@@ -158,24 +158,30 @@ export function ScoutingWidget() {
             </p>
           </div>
         ) : (
-          topProspects.map((c) => {
-            const intel = talentpool.getCandidateScoutingLevel(
-              world,
-              c.candidateId,
-            );
-            return (
-              <ProspectRow
-                key={c.candidateId}
-                id={c.candidateId}
-                name={c.name}
-                visibilityBand={c.visibilityBand}
-                talentSeed={c.talentSeed}
-                pool={c.pool}
-                archetype={c.archetype}
-                intel={intel}
-              />
-            );
-          })
+          (() => {
+            const limit = topProspects.length;
+            const nodes = new Array(limit);
+            for (let i = 0; i < limit; i++) {
+              const c = topProspects[i];
+              const intel = talentpool.getCandidateScoutingLevel(
+                world,
+                c.candidateId,
+              );
+              nodes[i] = (
+                <ProspectRow
+                  key={c.candidateId}
+                  candidateId={c.candidateId}
+                  name={c.name}
+                  archetype={c.archetype}
+                  talentSeed={c.talentSeed}
+                  pool={c.pool}
+                  visibilityBand={c.visibilityBand}
+                  intel={intel}
+                />
+              );
+            }
+            return nodes;
+          })()
         )}
         {prospects.length > 6 && (
           <Button
