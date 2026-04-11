@@ -946,8 +946,8 @@ export function projectH2HBetweenHeyas(
   const heyaB = world.heyas.get(heyaBId);
   if (!heyaA || !heyaB) return null;
 
-  const rikishiAIds = new Set(heyaA.rikishiIds);
-  const rikishiBIds = new Set(heyaB.rikishiIds);
+  const rikishiAIds = heyaA.rikishiIds || [];
+  const rikishiBIds = heyaB.rikishiIds || [];
 
   let winsA = 0;
   let winsB = 0;
