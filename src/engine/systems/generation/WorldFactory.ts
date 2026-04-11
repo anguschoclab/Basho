@@ -98,8 +98,8 @@ export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): 
   const heyaIds = Array.from(heyaMap.keys());
 
   // 2. Initial Roster Generation (Rank Distribution)
-  // Yokozuna count is variable (1-2) to allow for some variation while ensuring at least one yokozuna exists
-  const yokozunaCount = worldRng.int(1, 2);
+  // Yokozuna count is variable (0-2) to allow for initial gaps, matching real sumo patterns
+  const yokozunaCount = worldRng.int(0, 2);
   const rankConfigs: { rank: Rank; division: Division; count: number }[] = [
     { rank: "yokozuna", division: "makuuchi", count: yokozunaCount },
     { rank: "ozeki", division: "makuuchi", count: 2 },

@@ -232,17 +232,18 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     if (history.kantosho === id) prizePoints += 1;
 
     // Yokozuna promotion logic based on real sumo criteria
-    // Real sumo: 2 consecutive yusho or equivalent exceptional performance at ozeki level
+    // Real sumo: Yokozuna promotion is extremely rare and requires exceptional performance
     let promoteToYokozuna = false;
     if (rikishi?.rank === "ozeki" && stats.wins >= 12) {
       // Track consecutive strong performances for ozeki
       if (!rikishi.consecutiveStrongOzeki) rikishi.consecutiveStrongOzeki = 0;
       rikishi.consecutiveStrongOzeki++;
 
-      // Promotion requires: 2 consecutive yusho OR 3 consecutive 14+ win performances
-      if (isYusho && rikishi.consecutiveStrongOzeki >= 2) {
+      // Promotion requires: 3 consecutive yusho OR 4 consecutive 15+ win performances
+      // This is extremely strict to match real sumo rarity
+      if (isYusho && rikishi.consecutiveStrongOzeki >= 3) {
         promoteToYokozuna = true;
-      } else if (!isYusho && rikishi.consecutiveStrongOzeki >= 3 && stats.wins >= 14) {
+      } else if (!isYusho && rikishi.consecutiveStrongOzeki >= 4 && stats.wins >= 15) {
         promoteToYokozuna = true;
       }
     } else if (rikishi?.rank === "ozeki") {
@@ -252,7 +253,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     // Yokozuna make-koshi tracking for retirement pressure
     // Real sumo: Yokozuna with consecutive losing records face retirement pressure
     if (rikishi?.rank === "yokozuna") {
-      const isMakeKoshi = stats.wins < 8; // Losing record for yokozuna
+      const isMakeKoshi = stats.wins < 10; // Make-koshi threshold for yokozuna (higher than other ranks)
       if (!rikishi.consecutiveMakeKoshi) rikishi.consecutiveMakeKoshi = 0;
       if (isMakeKoshi) {
         rikishi.consecutiveMakeKoshi++;

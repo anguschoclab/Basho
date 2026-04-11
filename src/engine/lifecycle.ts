@@ -31,6 +31,10 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
   // 1. Mandatory Retirement
   if (age >= 45) return "Mandatory Age Retirement";
 
+  // 1.5. Yokozuna Mandatory Retirement (earlier due to intense pressure)
+  // Real sumo: Yokozuna often retire earlier due to the pressure of maintaining their status
+  if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
+
   // 2. Injury Forced Retirement
   const severity = typeof rikishi.injuryStatus?.severity === "number"
     ? rikishi.injuryStatus.severity
