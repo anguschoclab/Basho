@@ -77,31 +77,36 @@ export function RosterWidget() {
   );
   const world = state.world;
 
-  const roster = useMemo<UIRosterEntry[]>(() => {
-    if (!world?.playerHeyaId) return [];
+  const { roster, injuredCount, avgFatigue } = useMemo(() => {
+    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0 };
     const heya = world.heyas.get(world.playerHeyaId);
-    if (!heya) return [];
+    if (!heya) return { roster: [], injuredCount: 0, avgFatigue: 0 };
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: UIRosterEntry[] = [];
+    let injuries = 0;
+    let totalFatigue = 0;
+
     for (const id of heya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
       if (r && !r.isRetired) {
-        entries.push(projectRosterEntry(r));
+        const entry = projectRosterEntry(r);
+        entries.push(entry);
+        if (entry.isInjured) injuries++;
+        totalFatigue += entry.fatigue;
       }
     }
-    return entries.sort((a, b) => b.momentum - a.momentum);
+
+    entries.sort((a, b) => b.momentum - a.momentum);
+
+    return {
+      roster: entries,
+      injuredCount: injuries,
+      avgFatigue: entries.length ? Math.round(totalFatigue / entries.length) : 0,
+    };
   }, [world]);
 
   if (!world) return null;
-
-  const injuredCount = roster.reduce(
-    (count, r) => count + (r.isInjured ? 1 : 0),
-    0,
-  );
-  const avgFatigue = roster.length
-    ? Math.round(roster.reduce((s, r) => s + r.fatigue, 0) / roster.length)
-    : 0;
 
   return (
     <BaseWidget title="My Roster" icon={Users} headerAction={headerAction}>
