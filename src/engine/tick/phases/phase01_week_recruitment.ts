@@ -136,5 +136,9 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
     }
   }
 
+  // 5. Finalize signed candidates into full Rikishi
+  // This converts "signed" candidates (from resolution or NPC fast-path) into real entities.
+  nextWorld = talentpool.finalizeSignedCandidates(nextWorld);
+
   return nextWorld;
 }

@@ -19,7 +19,7 @@ import {
 import { Rikishi } from "../../types/rikishi";
 import { generateRikishiName } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
-import { generateCandidate } from "./CandidateGenerator";
+import { generateCandidate, convertCandidateToRikishi } from "./CandidateGenerator";
 import { clampInt } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
@@ -351,6 +351,77 @@ function refreshAllPools(world: WorldState) {
   });
 
   tp.lastYearlyRefreshYear = world.year;
+}
+
+/**
+ * Finalizes all "signed" candidates by converting them into full Rikishi entities.
+ * This ensures recruits are actually added to stable rosters and the world state.
+ */
+export function finalizeSignedCandidates(world: WorldState): WorldState {
+  const tp = world.talentPool;
+  if (!tp) return world;
+
+  const nextWorld = { ...world };
+  const nextRikishi = new Map(world.rikishi);
+  const nextHeyas = new Map(world.heyas);
+  const nextCandidates = { ...tp.candidates };
+
+  let changed = false;
+
+  for (const [id, candidate] of Object.entries(tp.candidates)) {
+    if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
+      const winner = candidate.competingSuitors[0];
+      const heyaId = winner.heyaId;
+      const heya = nextHeyas.get(heyaId);
+
+      if (heya) {
+        const rng = RNGRegistry.getSystemRNG(world, "scouting", `finalize_${id}`);
+        const rikishi = convertCandidateToRikishi({
+          candidate,
+          rng,
+          currentYear: world.year,
+          heyaId
+        });
+
+        // Add to world
+        nextRikishi.set(rikishi.id, rikishi);
+
+        // Add to heya roster
+        const nextHeya = {
+          ...heya,
+          rikishiIds: [...(heya.rikishiIds ?? []), rikishi.id]
+        };
+        nextHeyas.set(heyaId, nextHeya);
+
+        // Remove from talent pool
+        delete nextCandidates[id];
+
+        changed = true;
+      }
+    }
+  }
+
+  if (changed) {
+    // Re-filter visibility lists to remove converted candidates
+    const nextPools = { ...tp.pools };
+    for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
+      nextPools[pt] = {
+        ...nextPools[pt],
+        candidatesVisible: nextPools[pt].candidatesVisible.filter(cid => nextCandidates[cid]),
+        candidatesHidden: nextPools[pt].candidatesHidden.filter(cid => nextCandidates[cid])
+      };
+    }
+
+    nextWorld.rikishi = nextRikishi;
+    nextWorld.heyas = nextHeyas;
+    nextWorld.talentPool = {
+      ...tp,
+      candidates: nextCandidates,
+      pools: nextPools
+    };
+  }
+
+  return nextWorld;
 }
 
 // ============================================
