@@ -63,15 +63,12 @@ describe('Bard Engine Integration', () => {
       rikishi: new Map([['r1', { id: 'r1', shikona: 'Wrestler 1', careerWins: 99, currentBashoWins: 1 }]]),
     } as any;
 
-    RegistryService.runCareerJournalUpdates(world);
+    const impact = RegistryService.runCareerJournalUpdates(world);
 
-    expect(EventBus.lifecycleEvent).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
-        status: 'wins_milestone',
-        rikishiId: 'r1'
-      })
-    );
+    // runCareerJournalUpdates now returns StateImpact with logged events
+    // Check that the impact contains a wins_milestone event
+    const milestoneEvent = impact.events?.find((e: any) => e.data?.status === 'wins_milestone' && e.data?.rikishiId === 'r1');
+    expect(milestoneEvent).toBeDefined();
   });
 
   it('NPCStrategyService resolves dynamic philosophy labels', () => {

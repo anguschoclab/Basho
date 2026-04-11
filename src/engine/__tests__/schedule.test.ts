@@ -79,7 +79,7 @@ describe("scheduleDivisionDay", () => {
     const r1 = mockRikishi("r1", { division: "makuuchi" });
     world.rikishi.set(r1.id, r1);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -98,7 +98,7 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(r1.id, r1);
     world.rikishi.set(r2.id, r2);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -134,7 +134,7 @@ describe("scheduleDivisionDay", () => {
 
     const initialCount = basho.matches.length;
 
-    scheduleDivisionDay({
+    const { impact } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -142,7 +142,10 @@ describe("scheduleDivisionDay", () => {
       seed: "test-seed",
     });
 
-    expect(basho.matches.length).toBeGreaterThan(initialCount);
+    // scheduleDivisionDay now returns StateImpact with arrayAppends for basho.matches
+    // The impact should contain the scheduled matches
+    const bashoMatchesAppend = impact.arrayAppends?.find((a: any) => a.field === 'basho.matches');
+    expect(bashoMatchesAppend?.items?.length).toBeGreaterThan(0);
   });
 
   it("respects heya block — no stablemate pairings for makuuchi", () => {
@@ -159,7 +162,7 @@ describe("scheduleDivisionDay", () => {
     const r3 = mockRikishi("r3", { division: "makuuchi", heyaId: "other" });
     const r4 = mockRikishi("r4", { division: "makuuchi", heyaId: "other" });
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -187,7 +190,7 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(r1.id, r1);
     world.rikishi.set(r2.id, r2);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -218,7 +221,7 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(m10.id, m10);
     world.rikishi.set(yoko.id, yoko);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -242,7 +245,7 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(r3.id, r3);
     world.rikishi.set(r4.id, r4);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "juryo",
@@ -267,7 +270,7 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(r2.id, r2);
     world.rikishi.set(r3.id, r3);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makushita",
@@ -382,7 +385,7 @@ describe("scheduleDivisionDay — chronological order for makuuchi", () => {
     world.rikishi.set(m14.id, m14);
     world.rikishi.set(m1.id, m1);
 
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -425,7 +428,7 @@ describe("scheduleDivisionDay — basho state mutation", () => {
     } as any);
 
     // Day 2 scheduling should not re-pair r1 vs r2
-    const scheduled = scheduleDivisionDay({
+    const { scheduled } = scheduleDivisionDay({
       world,
       basho,
       division: "makuuchi",
@@ -435,7 +438,7 @@ describe("scheduleDivisionDay — basho state mutation", () => {
 
     const dayTwoMatches = scheduled;
     const hasRematch = dayTwoMatches.some(
-      (m) =>
+      (m: any) =>
         (m.eastRikishiId === r1.id && m.westRikishiId === r2.id) ||
         (m.eastRikishiId === r2.id && m.westRikishiId === r1.id),
     );

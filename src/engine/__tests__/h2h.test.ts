@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { getH2HReport, updateH2H, generateH2HCommentary } from "../h2h";
+import { updateH2H, generateH2HCommentary, getH2HReport } from "../h2h";
 import { mockRikishi } from "./utils";
 import type { MatchResultLog } from "../types/rikishi";
+import { resolveImpacts } from "../core/ImpactResolver";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -173,19 +174,15 @@ describe("updateH2H", () => {
   it("increments winner.h2h[loser.id].wins and sets lastMatch", () => {
     const winner = mockRikishi("w");
     const loser = mockRikishi("l");
-    const result = {
-      boutId: "b-1",
-      winner: "east",
-      winnerRikishiId: "w",
-      loserRikishiId: "l",
-      kimarite: "yorikiri",
-      kimariteName: "Yorikiri",
-      duration: 5,
-      upset: false,
-      log: [],
-    } as any;
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as any;
 
-    updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    if (impact.entities?.rikishiUpdates) {
+      const updateW = impact.entities.rikishiUpdates.get("w");
+      const updateL = impact.entities.rikishiUpdates.get("l");
+      if (updateW?.h2h) winner.h2h = { ...winner.h2h, ...updateW.h2h };
+      if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
+    }
 
     expect(winner.h2h!["l"].wins).toBe(1);
     expect(winner.h2h!["l"].losses).toBe(0);
@@ -193,12 +190,35 @@ describe("updateH2H", () => {
     expect(winner.h2h!["l"].lastMatch?.kimarite).toBe("yorikiri");
   });
 
-  it("increments loser.h2h[winner.id].losses", () => {
+  it("increments winner.h2h[loser.id].wins", () => {
     const winner = mockRikishi("w");
     const loser = mockRikishi("l");
     const result = { boutId: "b-1", kimarite: "oshidashi" } as any;
 
-    updateH2H(winner, loser, result, "basho-2025-01", 2025, 8);
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 8);
+    if (impact.entities?.rikishiUpdates) {
+      const updateW = impact.entities.rikishiUpdates.get("w");
+      const updateL = impact.entities.rikishiUpdates.get("l");
+      if (updateW?.h2h) winner.h2h = { ...winner.h2h, ...updateW.h2h };
+      if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
+    }
+
+    expect(winner.h2h!["l"].wins).toBe(1);
+    expect(winner.h2h!["l"].losses).toBe(0);
+  });
+
+  it("increments loser.h2h[winner.id].losses", () => {
+    const winner = mockRikishi("w");
+    const loser = mockRikishi("l");
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as any;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 8);
+    if (impact.entities?.rikishiUpdates) {
+      const updateW = impact.entities.rikishiUpdates.get("w");
+      const updateL = impact.entities.rikishiUpdates.get("l");
+      if (updateW?.h2h) winner.h2h = { ...winner.h2h, ...updateW.h2h };
+      if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
+    }
 
     expect(loser.h2h!["w"].losses).toBe(1);
     expect(loser.h2h!["w"].wins).toBe(0);
@@ -209,9 +229,29 @@ describe("updateH2H", () => {
     const b = mockRikishi("b");
     const r = { boutId: "b-1", kimarite: "yorikiri" } as any;
 
-    updateH2H(a, b, r, "2025-01", 2025, 1);
-    updateH2H(b, a, r, "2025-03", 2025, 5);
-    updateH2H(a, b, r, "2025-05", 2025, 3);
+    const impact1 = updateH2H(a, b, r, "2025-01", 2025, 1);
+    if (impact1.entities?.rikishiUpdates) {
+      const updateA = impact1.entities.rikishiUpdates.get("a");
+      const updateB = impact1.entities.rikishiUpdates.get("b");
+      if (updateA?.h2h) a.h2h = { ...a.h2h, ...updateA.h2h };
+      if (updateB?.h2h) b.h2h = { ...b.h2h, ...updateB.h2h };
+    }
+
+    const impact2 = updateH2H(b, a, r, "2025-03", 2025, 5);
+    if (impact2.entities?.rikishiUpdates) {
+      const updateA = impact2.entities.rikishiUpdates.get("a");
+      const updateB = impact2.entities.rikishiUpdates.get("b");
+      if (updateA?.h2h) a.h2h = { ...a.h2h, ...updateA.h2h };
+      if (updateB?.h2h) b.h2h = { ...b.h2h, ...updateB.h2h };
+    }
+
+    const impact3 = updateH2H(a, b, r, "2025-05", 2025, 3);
+    if (impact3.entities?.rikishiUpdates) {
+      const updateA = impact3.entities.rikishiUpdates.get("a");
+      const updateB = impact3.entities.rikishiUpdates.get("b");
+      if (updateA?.h2h) a.h2h = { ...a.h2h, ...updateA.h2h };
+      if (updateB?.h2h) b.h2h = { ...b.h2h, ...updateB.h2h };
+    }
 
     expect(a.h2h!["b"].wins).toBe(2);
     expect(a.h2h!["b"].losses).toBe(1);

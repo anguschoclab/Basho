@@ -4,6 +4,7 @@ import { mockRikishi } from "../../__tests__/utils";
 import type { KimariteId } from "../../types/combat";
 import type { BoutContext } from "../boutPhysics";
 import type { BashoState } from "../../types/basho";
+import { resolveImpacts } from "../../core/ImpactResolver";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -119,15 +120,25 @@ describe("resolveBout — henka momentum penalty", () => {
 
     // Run enough times to capture a case where east wins with henka
     // (outcome depends on RNG; we check momentum only when east wins)
-    const { result } = resolveBout(ctx, east, west, basho);
+    const { result, impact } = resolveBout(ctx, east, west, basho);
+
+    // Apply impact updates manually since we're testing with direct rikishi objects
+    if (impact.entities?.rikishiUpdates) {
+      const updateEast = impact.entities.rikishiUpdates.get("r-east");
+      const updateWest = impact.entities.rikishiUpdates.get("r-west");
+      if (updateEast?.momentum !== undefined) east.momentum = updateEast.momentum;
+      if (updateWest?.momentum !== undefined) west.momentum = updateWest.momentum;
+    }
 
     if (result.winner === "east") {
       // Momentum must have been penalised from 70
       expect(east.momentum).toBeLessThan(70);
       expect(east.momentum).toBeLessThanOrEqual(55); // 70 - 15
+    } else {
+      // If west wins, no penalty applied to east (they didn't use henka successfully)
+      // Test still valid — structure is verified
+      expect(east.momentum).toBe(70);
     }
-    // If west wins, no penalty applied to east (they didn't use henka successfully)
-    // Test still valid — structure is verified
     expect(["east", "west"]).toContain(result.winner);
   });
 
