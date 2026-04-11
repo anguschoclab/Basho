@@ -67,55 +67,81 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
 /**
  * Update career records, streaks, and HoF eligibility.
  * Per A3.4: "records/streaks/HoF eligibility recompute (post-lock only)"
+ * Returns StateImpact describing career updates instead of mutating state.
  */
-export function runCareerJournalUpdates(world: WorldState): void {
+export function runCareerJournalUpdates(world: WorldState): StateImpact {
   const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
+  if (!lastBasho) {
+    return createImpactBuilder('careerJournalUpdates').build();
+  }
+
+  const builder = createImpactBuilder('careerJournalUpdates');
 
   for (const r of getActiveRikishi(world)) {
     // Update career totals from basho records
-    r.careerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
-    r.careerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
+    const newCareerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
+    const newCareerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
 
     // Update career record helper
-    r.careerRecord = {
-      wins: r.careerWins,
-      losses: r.careerLosses,
-      yusho: (r.careerRecord?.yusho ?? 0) + (lastBasho.yusho === r.id ? 1 : 0)
-    };
+    const newYushoCount = (r.careerRecord?.yusho ?? 0) + (lastBasho.yusho === r.id ? 1 : 0);
 
     // Momentum update based on basho performance
     const bw = r.currentBashoWins ?? 0;
     const bl = r.currentBashoLosses ?? 0;
+    let newMomentum = r.momentum ?? 0;
     if (bw + bl > 0) {
       const winRate = bw / (bw + bl);
-      if (winRate >= 0.7) r.momentum = Math.min(5, (r.momentum ?? 0) + 2);
-      else if (winRate >= 0.55) r.momentum = Math.min(5, (r.momentum ?? 0) + 1);
-      else if (winRate < 0.35) r.momentum = Math.max(-5, (r.momentum ?? 0) - 2);
-      else if (winRate < 0.45) r.momentum = Math.max(-5, (r.momentum ?? 0) - 1);
+      if (winRate >= 0.7) newMomentum = Math.min(5, newMomentum + 2);
+      else if (winRate >= 0.55) newMomentum = Math.min(5, newMomentum + 1);
+      else if (winRate < 0.35) newMomentum = Math.max(-5, newMomentum - 2);
+      else if (winRate < 0.45) newMomentum = Math.max(-5, newMomentum - 1);
     }
 
+    // Queue rikishi update
+    builder.updateRikishi(r.id, {
+      careerWins: newCareerWins,
+      careerLosses: newCareerLosses,
+      careerRecord: {
+        wins: newCareerWins,
+        losses: newCareerLosses,
+        yusho: newYushoCount
+      },
+      momentum: newMomentum
+    });
+
     // HoF eligibility flag (yokozuna with 500+ wins)
-    if (r.rank === "yokozuna" && r.careerWins >= 500) {
-      EventBus.lifecycleEvent(world, {
-        rikishiId: r.id,
-        heyaId: r.heyaId,
-        shikona: r.shikona ?? r.name,
-        status: "hof_eligible",
-        score: r.careerWins
-      });
+    if (r.rank === "yokozuna" && newCareerWins >= 500) {
+      builder.logEvent(
+        'LIFECYCLE_EVENT',
+        'career',
+        {
+          rikishiId: r.id,
+          heyaId: r.heyaId,
+          shikona: r.shikona ?? r.name,
+          status: "hof_eligible",
+          score: newCareerWins
+        },
+        { rikishiId: r.id, heyaId: r.heyaId, importance: 'major' }
+      );
     }
 
     // Milestone events
     const milestones = [100, 200, 300, 500];
-    if (milestones.includes(r.careerWins ?? 0)) {
-       EventBus.lifecycleEvent(world, {
+    if (milestones.includes(newCareerWins)) {
+       builder.logEvent(
+         'LIFECYCLE_EVENT',
+         'career',
+         {
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona ?? r.name,
           status: "wins_milestone",
-          score: r.careerWins ?? 0
-       });
+          score: newCareerWins
+         },
+         { rikishiId: r.id, heyaId: r.heyaId, importance: 'notable' }
+       );
     }
   }
+
+  return builder.build();
 }
