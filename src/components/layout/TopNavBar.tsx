@@ -209,34 +209,36 @@ export function TopNavBar({
               content={inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"}
               side="left"
             >
-              <button
-                onClick={() => advanceOneDay()}
-                className="relative h-8 px-4 rounded flex items-center gap-2 font-semibold text-[12px] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] overflow-hidden group"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.08em",
-                  background: inBasho
-                    ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
-                    : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
-                  color: "hsl(222 32% 5%)",
-                  boxShadow: inBasho
-                    ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
-                    : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
-                }}
-              >
-                {/* Shimmer sweep on hover */}
-                <span
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
+                <button
+                  onClick={() => advanceOneDay()}
+                  className="relative h-8 px-4 rounded flex items-center gap-2 font-semibold text-[12px] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] overflow-hidden group"
                   style={{
-                    background: "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
-                    transform: "skewX(-20deg)",
+                    fontFamily: "var(--font-mono)",
+                    letterSpacing: "0.08em",
+                    background: inBasho
+                      ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
+                      : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
+                    color: "hsl(222 32% 5%)",
+                    boxShadow: inBasho
+                      ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
+                      : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
                   }}
-                />
-                <span className="relative hidden sm:inline">
-                  {inBasho ? `Day ${bashoDay}` : "Continue"}
-                </span>
-                <ChevronRight className="relative h-3.5 w-3.5" />
-              </button>
+                >
+                  {/* Shimmer sweep on hover */}
+                  <span
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
+                      transform: "skewX(-20deg)",
+                    }}
+                  />
+                  <span className="relative hidden sm:inline">
+                    {inBasho ? `Day ${bashoDay}` : "Continue"}
+                  </span>
+                  <ChevronRight className="relative h-3.5 w-3.5" />
+                </button>
+              </Button>
             </TooltipWrap>
           )}
         </div>

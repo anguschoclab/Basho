@@ -3,12 +3,14 @@ import { bandIndex, PRESTIGE_ORDER, updateStatureBand, runPrestigeDecay } from '
 import type { WorldState } from '../../types/world';
 import type { Heya } from '../../types/heya';
 import { mockRikishi } from '../../__tests__/utils';
+import { clearQueryCaches } from '../../queries';
 
 describe('Prestige System', () => {
   let world: WorldState;
   let heya: Heya;
 
   beforeEach(() => {
+    clearQueryCaches(); // Clear memoization cache between tests
     world = {
       id: 'world-1',
       heyas: new Map(),

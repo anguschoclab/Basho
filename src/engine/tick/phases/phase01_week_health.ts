@@ -21,6 +21,9 @@ import { EventBus } from "../../events";
 export function phase01_week_health(world: WorldState): WorldState {
   const nextRikishi = new Map(world.rikishi);
   
+  // Collect events to fire after loop (avoid mutation during iteration)
+  const events: any[] = [];
+  
   for (const [id, rikishi] of world.rikishi) {
     if (rikishi.isRetired) continue;
 
@@ -34,7 +37,8 @@ export function phase01_week_health(world: WorldState): WorldState {
       changed = true;
 
       if (recovered) {
-        EventBus.lifecycleEvent(world, {
+        events.push({
+          type: 'lifecycleEvent',
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona || r.name,
@@ -62,7 +66,8 @@ export function phase01_week_health(world: WorldState): WorldState {
         };
         changed = true;
 
-        EventBus.lifecycleEvent(world, {
+        events.push({
+          type: 'lifecycleEvent',
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona || r.name,
@@ -78,8 +83,22 @@ export function phase01_week_health(world: WorldState): WorldState {
     }
   }
 
-  return {
+  // Fire all events after loop (on new world state)
+  let nextWorld = {
     ...world,
     rikishi: nextRikishi
   };
+  
+  for (const event of events) {
+    EventBus.lifecycleEvent(nextWorld, {
+      rikishiId: event.rikishiId,
+      heyaId: event.heyaId,
+      shikona: event.shikona,
+      status: event.status,
+      reason: event.reason,
+      score: event.score
+    });
+  }
+
+  return nextWorld;
 }

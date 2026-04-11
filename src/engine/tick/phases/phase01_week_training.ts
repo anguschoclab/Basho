@@ -15,17 +15,23 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { 
   calculateFatigueDelta, 
   calculateGrowthVector 
-  //@ts-ignore - assuming these are exported from TrainingMath
 } from "../../systems/training/TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 import { ensureHeyaTrainingState } from "../../systems/training/TrainingService";
 import { EventBus } from "../../events";
+import type { Id } from "../../types/common";
 
 export function phase01_week_training(world: WorldState): WorldState {
   // 1. Snapshot rikishi to be updated
   const nextRikishi = new Map(world.rikishi);
   
   const activeRikishi = EntityCollection.getActiveRikishi(world);
+  
+  // Collect events to fire after loop (avoid mutation during iteration)
+  const milestoneEvents: any[] = [];
+  
+  // Cache staff bonuses per heya to avoid recalculating for each rikishi
+  const staffBonusCache = new Map<Id, ReturnType<typeof getHeyaStaffBonuses>>();
   
   activeRikishi.forEach(rikishi => {
     // Clone individual rikishi
@@ -50,7 +56,12 @@ export function phase01_week_training(world: WorldState): WorldState {
     // 2. Growth Logic (Skip if injured)
     if (!r.injured) {
       const heya = EntityCollection.getHeya(world, r.heyaId);
-      const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
+      // Use cached staff bonuses or calculate and cache
+      let staffBonuses = staffBonusCache.get(r.heyaId);
+      if (!staffBonuses) {
+        staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
+        staffBonusCache.set(r.heyaId, staffBonuses);
+      }
       const growth = calculateGrowthVector(profile, individualFocus, r, heya, world);
 
       const finalGrowth = {
@@ -83,12 +94,10 @@ export function phase01_week_training(world: WorldState): WorldState {
       r.stats.adaptability = Math.floor(r.adaptability);
       r.stats.mental = Math.floor(r.experience);
 
-      // Milestone Events
+      // Milestone Events (collect for later)
       const currentPower = Math.floor(r.power);
       if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
-        // We log directly to world for now as transitions often happen during the loop.
-        // In a true "World Out" pattern, we'd record these in deltas.
-        EventBus.trainingUpdate(world, { 
+        milestoneEvents.push({
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona || r.name,
@@ -102,8 +111,15 @@ export function phase01_week_training(world: WorldState): WorldState {
     nextRikishi.set(r.id, r);
   });
 
-  return {
+  // Fire all milestone events after loop (on new world state)
+  let nextWorld = {
     ...world,
     rikishi: nextRikishi
   };
+  
+  for (const event of milestoneEvents) {
+    EventBus.trainingUpdate(nextWorld, event);
+  }
+
+  return nextWorld;
 }

@@ -53,17 +53,41 @@ export function getHeyaRosterIds(world: WorldState, heyaId: Id): Id[] {
   return heya?.rikishiIds ?? [];
 }
 
+// Memoization cache for roster queries (cleared when week changes)
+const rosterCache = new Map<string, { week: number; roster: Rikishi[] }>();
+const styleBiasCache = new Map<string, { week: number; bias: Style | "neutral" }>();
+
+/**
+ * Clear memoization caches for roster and style bias queries.
+ * Should be called at the start of each new week to ensure cache invalidation.
+ */
+export function clearQueryCaches(): void {
+  rosterCache.clear();
+  styleBiasCache.clear();
+}
+
 /**
  * Get the resolved Rikishi objects for a heya's roster.
  * Skips any IDs that don't resolve (dangling references).
+ * Memoized per heya per week to avoid redundant lookups.
  */
 export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
+  const cacheKey = `${heyaId}`;
+  const cached = rosterCache.get(cacheKey);
+  const currentWeek = world.week ?? 0;
+  
+  if (cached && cached.week === currentWeek) {
+    return cached.roster;
+  }
+  
   const ids = getHeyaRosterIds(world, heyaId);
   const roster: Rikishi[] = [];
   for (const id of ids) {
     const r = world.rikishi.get(id);
     if (r) roster.push(r);
   }
+  
+  rosterCache.set(cacheKey, { week: currentWeek, roster });
   return roster;
 }
 
@@ -94,8 +118,17 @@ export function getSekitoriInHeya(world: WorldState, heyaId: Id): number {
 /**
  * Determine the style bias (oshi / yotsu / neutral) of a heya's roster.
  * Identical logic that was duplicated in npcAI.ts and perception.ts.
+ * Memoized per heya per week to avoid redundant calculations.
  */
 export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutral" {
+  const cacheKey = `${heyaId}`;
+  const cached = styleBiasCache.get(cacheKey);
+  const currentWeek = world.week ?? 0;
+  
+  if (cached && cached.week === currentWeek) {
+    return cached.bias;
+  }
+  
   const roster = getHeyaRoster(world, heyaId);
   let oshi = 0;
   let yotsu = 0;
@@ -103,8 +136,10 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutra
     if (r.style === "oshi") oshi += 1;
     if (r.style === "yotsu") yotsu += 1;
   }
-  if (oshi === yotsu) return "neutral";
-  return oshi > yotsu ? "oshi" : "yotsu";
+  const bias: Style | "neutral" = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
+  
+  styleBiasCache.set(cacheKey, { week: currentWeek, bias });
+  return bias;
 }
 
 // ─── Cross-Heya Queries ─────────────────────────────────

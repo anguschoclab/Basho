@@ -2,7 +2,7 @@
  * phase01_week_recruitment.ts
  * ===========================
  * Pipeline Phase: Recruitment & Talent Pool.
- * 
+ *
  * Responsibilities:
  * 1. Close player recruitment windows if expired.
  * 2. Open mid-interim recruitment windows.
@@ -25,43 +25,58 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
     nextWorld.talentPool = {
       ...nextWorld.talentPool,
       playerScouting: { ...nextWorld.talentPool.playerScouting },
-      candidates: { ...nextWorld.talentPool.candidates }
+      candidates: { ...nextWorld.talentPool.candidates },
     };
-    
+
     // Intel decay
-    for (const [id, record] of Object.entries(nextWorld.talentPool.playerScouting)) {
-      if (nextWorld.week - record.lastScoutedWeek > 4) {
-        nextWorld.talentPool.playerScouting[id] = {
-           ...record,
-           scoutingLevel: Math.max(0, record.scoutingLevel - 2)
-        };
+    if (nextWorld.talentPool.playerScouting) {
+      for (const [id, record] of Object.entries(
+        nextWorld.talentPool.playerScouting,
+      )) {
+        if (nextWorld.week - record.lastScoutedWeek > 4) {
+          nextWorld.talentPool.playerScouting[id] = {
+            ...record,
+            scoutingLevel: Math.max(0, record.scoutingLevel - 2),
+          };
+        }
       }
     }
-    
+
     // Suitor Resolution (Candidates signing)
     // For now we'll call into the service but try to wrap it purely if possible
     // Since tickWeekTalentPool is legacy mutative, we'll implement the logic here purely
     for (const id in nextWorld.talentPool.candidates) {
       const candidate = { ...nextWorld.talentPool.candidates[id] };
-      if (candidate.availabilityState === 'in_talks' && candidate.competingSuitors.length > 0) {
-        const deadlineExpired = candidate.competingSuitors.some(s => nextWorld.week >= s.deadlineWeek);
+      if (
+        candidate.availabilityState === "in_talks" &&
+        candidate.competingSuitors.length > 0
+      ) {
+        const deadlineExpired = candidate.competingSuitors.some(
+          (s) => nextWorld.week >= s.deadlineWeek,
+        );
         if (deadlineExpired) {
-          const bandRank: Record<string, number> = { all_in: 4, high: 3, medium: 2, low: 1 };
+          const bandRank: Record<string, number> = {
+            all_in: 4,
+            high: 3,
+            medium: 2,
+            low: 1,
+          };
           const winner = [...candidate.competingSuitors].sort(
-            (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
+            (a, b) =>
+              (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
           )[0];
 
-          candidate.availabilityState = 'signed';
+          candidate.availabilityState = "signed";
           candidate.competingSuitors = [winner];
-          
+
           nextWorld.talentPool.candidates[id] = candidate;
-          
+
           // Reputation boost for winner stable
           const heya = nextWorld.heyas.get(winner.heyaId);
           if (heya && candidate.talentSeed >= 80) {
-            const nextHeya = { 
-              ...heya, 
-              reputation: Math.min(100, (heya.reputation ?? 50) + 5) 
+            const nextHeya = {
+              ...heya,
+              reputation: Math.min(100, (heya.reputation ?? 50) + 5),
             };
             const nextHeyas = new Map(nextWorld.heyas);
             nextHeyas.set(nextHeya.id, nextHeya);
@@ -73,7 +88,7 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
               shikona: candidate.name,
               heya: heya.name,
               score: candidate.talentSeed,
-              status: "high_talent_signed"
+              status: "high_talent_signed",
             });
           }
         }
@@ -87,41 +102,51 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
     nextWorld._recruitmentWindow = { ...rw, isOpen: false };
     if (nextWorld.playerHeyaId) {
       EventBus.recruitDiscovered(nextWorld, {
-        rikishiId: nextWorld.playerHeyaId, 
+        rikishiId: nextWorld.playerHeyaId,
         heyaId: nextWorld.playerHeyaId,
         status: "window_closed",
-        day: nextWorld.week
+        day: nextWorld.week,
       });
     }
   }
 
   // 3. Mid-Interim Openings
   if (nextWorld.cyclePhase === "interim") {
-    const elapsedWeeks = Math.floor((42 - (nextWorld._interimDaysRemaining ?? 0)) / 7);
+    const elapsedWeeks = Math.floor(
+      (42 - (nextWorld._interimDaysRemaining ?? 0)) / 7,
+    );
     if (elapsedWeeks === 3 && !nextWorld._recruitmentWindow?.isOpen) {
-      const playerHeya = nextWorld.playerHeyaId ? nextWorld.heyas.get(nextWorld.playerHeyaId) : null;
-      
-      if (playerHeya && playerHeya.welfareState?.complianceState !== "sanctioned") {
+      const playerHeya = nextWorld.playerHeyaId
+        ? nextWorld.heyas.get(nextWorld.playerHeyaId)
+        : null;
+
+      if (
+        playerHeya &&
+        playerHeya.welfareState?.complianceState !== "sanctioned"
+      ) {
         nextWorld._recruitmentWindow = {
           openedAtWeek: nextWorld.week,
           closesAtWeek: nextWorld.week + 2,
           vacancies: 0,
           isOpen: true,
-          phase: "mid_interim"
+          phase: "mid_interim",
         };
         EventBus.recruitDiscovered(nextWorld, {
           rikishiId: playerHeya.id,
           heyaId: playerHeya.id,
           status: "window_open",
           day: nextWorld.week + 2,
-          incident: "mid_interim"
+          incident: "mid_interim",
         });
       }
     }
   }
 
   // 4. NPC Opportunistic Recruitment
-  if (nextWorld.cyclePhase === "interim" && Math.floor((42 - (nextWorld._interimDaysRemaining ?? 0)) / 7) === 3) {
+  if (
+    nextWorld.cyclePhase === "interim" &&
+    Math.floor((42 - (nextWorld._interimDaysRemaining ?? 0)) / 7) === 3
+  ) {
     const smallStables: Record<string, number> = {};
     let hasItems = false;
     for (const h of nextWorld.heyas.values()) {
@@ -131,7 +156,8 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
       }
     }
     if (hasItems) {
-      // NPC recruitment typically mutates, but we'll assume it's safe to call or we wrap it
+      // fillVacanciesForNPC mutates world, so we need to accept that and return the mutated world
+      // This is a known mutative service that would require a larger refactor to make pure
       talentpool.fillVacanciesForNPC(nextWorld, smallStables);
     }
   }

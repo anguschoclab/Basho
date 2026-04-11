@@ -294,8 +294,10 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
 
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
 
-  // Build per-rikishi perceptions
+  // Cache roster to avoid redundant getHeyaRoster calls (called 3-4 times per heya)
   const roster = getHeyaRoster(world, heyaId);
+  
+  // Build per-rikishi perceptions using cached roster
   const rikishiPerceptions: RikishiPerception[] = roster
     .map(r => ({
       rikishiId: r.id,
@@ -307,8 +309,14 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
       momentum: bandRikishiMomentum(r.momentum ?? 0)
     }));
 
-  // Determine style bias
-  const styleBias = getHeyaStyleBias(world, heyaId);
+  // Calculate style bias from cached roster to avoid another getHeyaRoster call
+  let oshi = 0;
+  let yotsu = 0;
+  for (const r of roster) {
+    if (r.style === "oshi") oshi += 1;
+    if (r.style === "yotsu") yotsu += 1;
+  }
+  const styleBias: Style | "neutral" = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
 
   return {
     heyaId,

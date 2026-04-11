@@ -179,13 +179,23 @@ export function offerCandidate(
   const candidate = tp.candidates[candidateId];
   if (!candidate) return { ok: false, reason: "Candidate not found" };
 
-  const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
+  const rng = rngFromSeed(
+    `offer-validate-${candidateId}-${heyaId}`,
+    "narrative",
+    "scouting",
+  );
 
   // 1. Validation: Foreigner limit
   if ((candidate.nationality ?? "Japan") !== "Japan") {
     const foreignCount = getForeignCountInHeya(world, heyaId);
     if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
-      return { ok: false, reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.foreigner_limit").text };
+      return {
+        ok: false,
+        reason: BardEngine.resolve(
+          rng,
+          "ui.labels.scouting.reasons.foreigner_limit",
+        ).text,
+      };
     }
   }
 
@@ -194,7 +204,11 @@ export function offerCandidate(
     candidate.availabilityState !== "available" &&
     candidate.availabilityState !== "in_talks"
   ) {
-    return { ok: false, reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.unavailable").text };
+    return {
+      ok: false,
+      reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.unavailable")
+        .text,
+    };
   }
 
   // 3. Register suitor
@@ -232,19 +246,27 @@ export function tickWeekTalentPool(world: WorldState): void {
 
   // 2. Resolve expired suitor deadlines: pick the winner, fire fame event for high talent
   for (const candidate of Object.values(tp.candidates)) {
-    if (candidate.availabilityState !== 'in_talks') continue;
+    if (candidate.availabilityState !== "in_talks") continue;
     if (!candidate.competingSuitors.length) continue;
 
-    const deadlineExpired = candidate.competingSuitors.some(s => world.week >= s.deadlineWeek);
+    const deadlineExpired = candidate.competingSuitors.some(
+      (s) => world.week >= s.deadlineWeek,
+    );
     if (!deadlineExpired) continue;
 
     // Pick the suitor with the highest interest band
-    const bandRank: Record<string, number> = { all_in: 4, high: 3, medium: 2, low: 1 };
+    const bandRank: Record<string, number> = {
+      all_in: 4,
+      high: 3,
+      medium: 2,
+      low: 1,
+    };
     const winner = [...candidate.competingSuitors].sort(
-      (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
+      (a, b) =>
+        (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
     )[0];
 
-    candidate.availabilityState = 'signed';
+    candidate.availabilityState = "signed";
     candidate.competingSuitors = [winner];
 
     // High-talent signing: fire fame event and give reputation boost to signing stable
@@ -252,14 +274,18 @@ export function tickWeekTalentPool(world: WorldState): void {
       const heya = world.heyas.get(winner.heyaId);
       if (heya) {
         heya.reputation = Math.min(100, (heya.reputation ?? 50) + 5);
-        const signRng = rngFromSeed(`talent-sign-${candidate.candidateId}`, "narrative", "event");
+        const signRng = rngFromSeed(
+          `talent-sign-${candidate.candidateId}`,
+          "narrative",
+          "event",
+        );
         EventBus.recruitDiscovered(world, {
           rikishiId: candidate.candidateId,
           heyaId: winner.heyaId,
           shikona: candidate.name,
           heya: heya.name,
           score: candidate.talentSeed,
-          status: "high_talent_signed"
+          status: "high_talent_signed",
         });
       }
     }
@@ -311,8 +337,15 @@ export function fillVacanciesForNPC(
         if (c && c.availabilityState === "available") {
           // NPC fast-path signing: bypass multi-week negotiation to stabilize world
           c.availabilityState = "signed";
-          c.competingSuitors = [{ heyaId, offerType: "standard", interestBand: "high", deadlineWeek: world.week }];
-          
+          c.competingSuitors = [
+            {
+              heyaId,
+              offerType: "standard",
+              interestBand: "high",
+              deadlineWeek: world.week,
+            },
+          ];
+
           // Materialize immediately for NPCs to keep the banzuke populated
           materializeCandidateToRikishi(world, cId, heyaId);
         }
@@ -333,7 +366,11 @@ export function materializeCandidateToRikishi(
   const candidate = tp.candidates[candidateId];
   if (!candidate) return null;
 
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "scouting",
+    `materialize_${candidateId}`,
+  );
   const rikishi = promoteCandidateToRikishi({ candidate, heyaId, rng });
 
   // 1. Inject into world
@@ -350,12 +387,16 @@ export function materializeCandidateToRikishi(
 
   // 3. Remove from talent pool
   delete tp.candidates[candidateId];
-  
+
   // Cleanup Visible/Hidden lists
   const pool = tp.pools[candidate.poolType as TalentPoolType];
   if (pool) {
-    pool.candidatesVisible = pool.candidatesVisible.filter(id => id !== candidateId);
-    pool.candidatesHidden = pool.candidatesHidden.filter(id => id !== candidateId);
+    pool.candidatesVisible = pool.candidatesVisible.filter(
+      (id) => id !== candidateId,
+    );
+    pool.candidatesHidden = pool.candidatesHidden.filter(
+      (id) => id !== candidateId,
+    );
   }
 
   // 4. Fire event
@@ -364,7 +405,7 @@ export function materializeCandidateToRikishi(
     heyaId: heyaId,
     shikona: rikishi.shikona,
     heya: heya?.name,
-    status: "materialized"
+    status: "materialized",
   });
 
   return rikishi;
@@ -373,13 +414,13 @@ export function materializeCandidateToRikishi(
 /**
  * Materializes all signed candidates in the world (e.g. at the start of a basho).
  */
-export function materializeAllSignedCandidates(world: WorldState): void {
+export function finalizeSignedCandidates(world: WorldState): void {
   const tp = world.talentPool;
   if (!tp) return;
 
   const signedIds = Object.values(tp.candidates)
-    .filter(c => c.availabilityState === "signed")
-    .map(c => c.candidateId);
+    .filter((c) => c.availabilityState === "signed")
+    .map((c) => c.candidateId);
 
   for (const cId of signedIds) {
     const candidate = tp.candidates[cId];
@@ -407,7 +448,7 @@ function refreshAllPools(world: WorldState) {
     const toGenerate = pool.hiddenReserveCap - currentCount;
 
     for (let i = 0; i < toGenerate; i++) {
-      const id = rng.uuid('CD');
+      const id = rng.uuid("CD");
       const candidate = generateCandidate({
         id,
         rng,
@@ -504,7 +545,7 @@ export function fillHiddenCandidates(
   rng: SeededRNG,
   currentYear: number,
   poolType: TalentPoolType,
-  idGenerator: (index: number) => string
+  idGenerator: (index: number) => string,
 ): void {
   for (let i = 0; i < targetCount; i++) {
     const id = idGenerator(i);
@@ -513,7 +554,6 @@ export function fillHiddenCandidates(
     pool.candidatesHidden.push(id);
   }
 }
-
 
 /**
  * Ensures the talent pool state is initialized.
@@ -535,7 +575,7 @@ function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
 function createEmptyPool(type: TalentPoolType, world: WorldState) {
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `pool_init_${type}`);
   return {
-    poolId: rng.uuid('PL'),
+    poolId: rng.uuid("PL"),
     poolType: type,
     refreshCadence: "basho" as const,
     populationCap: 20,
@@ -569,8 +609,12 @@ export function reinjectToTalentPool(
 ): void {
   const tp = ensureTalentPoolState(world);
   // Convert the rikishi to a lightweight candidate object and mark it available
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `reinject_${rikishi.id}`);
-  const id = rng.uuid('CD');
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "scouting",
+    `reinject_${rikishi.id}`,
+  );
+  const id = rng.uuid("CD");
   const isForeginer = countsAsForeignFromRikishi(rikishi);
   const poolType: TalentPoolType = isForeginer ? "foreign" : "high_school";
 
@@ -602,7 +646,7 @@ export function reinjectToTalentPool(
   EventBus.recruitDiscovered(world, {
     rikishiId: rikishi.id,
     shikona: rikishi.shikona ?? rikishi.name ?? id,
-    status: "reinjected"
+    status: "reinjected",
   });
 }
 
@@ -647,15 +691,9 @@ export function tickYear(world: WorldState): void {
       pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 
-      fillHiddenCandidates(
-        pool,
-        tp,
-        toGenerate,
-        rng,
-        currentYear,
-        poolType,
-        () => rng.uuid('CD')
-      );
+    fillHiddenCandidates(pool, tp, toGenerate, rng, currentYear, poolType, () =>
+      rng.uuid("CD"),
+    );
   }
 
   tp.lastYearlyRefreshYear = currentYear;
@@ -672,7 +710,8 @@ function filterAgedOutCandidates(
     // Remove ghost IDs where candidate data is missing
     if (!candidate) return false;
 
-    const estimatedAge = currentYear - (candidate.birthYear ?? currentYear - 20);
+    const estimatedAge =
+      currentYear - (candidate.birthYear ?? currentYear - 20);
     if (estimatedAge > maxAge) {
       delete tp.candidates[id];
       return false;
