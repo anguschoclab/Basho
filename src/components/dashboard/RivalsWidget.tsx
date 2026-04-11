@@ -66,16 +66,24 @@ export function RivalsWidget() {
   return (
     <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
       <div className="space-y-0.5">
-        {rivals.map((r) => (
-          <RivalRow
-            key={r.id}
-            id={r.id}
-            name={r.name}
-            prestige={r.prestige}
-            roster={r.roster}
-            heat={r.heat}
-          />
-        ))}
+        {(() => {
+          const limit = rivals.length;
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const r = rivals[i];
+            nodes[i] = (
+              <RivalRow
+                key={r.id}
+                id={r.id}
+                name={r.name}
+                prestige={r.prestige}
+                roster={r.roster}
+                heat={r.heat}
+              />
+            );
+          }
+          return nodes;
+        })()}
       </div>
     </BaseWidget>
   );

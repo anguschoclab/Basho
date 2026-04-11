@@ -256,34 +256,6 @@ export function TrainingWidget() {
     [world, maxIntensityIdx, updateWorld],
   );
 
-  const intensityOptions = useMemo(
-    () =>
-      INTENSITY_OPTIONS.map((v, i) => ({
-        value: v,
-        label: v.charAt(0).toUpperCase() + v.slice(1),
-        disabled: i > maxIntensityIdx,
-      })),
-    [maxIntensityIdx],
-  );
-
-  const focusOptions = useMemo(
-    () =>
-      FOCUS_OPTIONS.map((v) => ({
-        value: v,
-        label: FOCUS_LABELS[v],
-      })),
-    [],
-  );
-
-  const recoveryOptions = useMemo(
-    () =>
-      RECOVERY_OPTIONS.map((v) => ({
-        value: v,
-        label: RECOVERY_LABELS[v],
-      })),
-    [],
-  );
-
   const handleIntensityChange = React.useCallback(
     (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
     [updateProfile],
@@ -331,35 +303,44 @@ export function TrainingWidget() {
 
       {/* Multiplier bars — Growth uses effectiveGrowthMultiplier from transientContext */}
       <div className="grid grid-cols-3 gap-2 text-[10px]">
-        {[
-          {
-            label: "Growth",
-            value: effectiveGrowthMultiplier,
-            icon: Zap,
-            color: financialPenalty ? "bg-destructive" : "bg-primary",
-          },
-          {
-            label: "Fatigue",
-            value: intensityInfo.fatigue,
-            icon: Activity,
-            color:
-              intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
-          },
-          {
-            label: "Recovery",
-            value: recoveryInfo.fatigueDecay,
-            icon: Shield,
-            color: "bg-success",
-          },
-        ].map((m) => (
-          <MultiplierBar
-            key={m.label}
-            label={m.label}
-            value={m.value}
-            icon={m.icon}
-            color={m.color}
-          />
-        ))}
+        {(() => {
+          const multiplierData = [
+            {
+              label: "Growth",
+              value: effectiveGrowthMultiplier,
+              icon: Zap,
+              color: financialPenalty ? "bg-destructive" : "bg-primary",
+            },
+            {
+              label: "Fatigue",
+              value: intensityInfo.fatigue,
+              icon: Activity,
+              color:
+                intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
+            },
+            {
+              label: "Recovery",
+              value: recoveryInfo.fatigueDecay,
+              icon: Shield,
+              color: "bg-success",
+            },
+          ];
+          const limit = multiplierData.length;
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const m = multiplierData[i];
+            nodes[i] = (
+              <MultiplierBar
+                key={m.label}
+                label={m.label}
+                value={m.value}
+                icon={m.icon}
+                color={m.color}
+              />
+            );
+          }
+          return nodes;
+        })()}
       </div>
 
       <Button
