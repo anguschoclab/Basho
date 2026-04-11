@@ -15,12 +15,11 @@
 
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
-import { stableSort } from "../../utils/sort";
 import { RANK_HIERARCHY } from "../../banzuke";
 import { getHeyaStaffBonuses } from "../../staff";
 import { EventBus } from "../../events";
 import { isBashoMonth } from "../../calendar";
-import { computeFacilitiesBand } from "../../facilities";
+import { computeFacilitiesBand, type FacilityAxis } from "../../facilities";
 
 export function phase05_monthly_boundary(world: WorldState): WorldState {
   const boundaries = world.transientContext?.boundaries;
@@ -109,11 +108,64 @@ export function phase05_monthly_boundary(world: WorldState): WorldState {
 
     // -- NPC Auto-Investment --
     if (nextHeya.id !== world.playerHeyaId) {
-       // Simplified NPC logic: if runway > 6 months, invest in weakest axis
-       const monthlyBurn = Math.max(1, totalExpenses + maintenance);
-       if (nextHeya.funds / monthlyBurn > 6) {
-         // (Implementation detail omitted for brevity, but follows existing logic)
-       }
+      // NPC AI: if runway > 6 months, invest in weakest facility axis
+      const monthlyBurn = Math.max(1, totalExpenses + maintenance);
+      const runway = nextHeya.funds / monthlyBurn;
+      
+      if (runway > 6) {
+        // Find weakest facility axis
+        const facilities = nextHeya.facilities;
+        const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
+        const weakestAxis = axes.reduce((min, axis) => 
+          facilities[axis] < facilities[min] ? axis : min
+        , axes[0]);
+        
+        const currentLevel = facilities[weakestAxis];
+        const maxLevel = 100;
+        
+        // Calculate how many points we can afford (up to 5 points)
+        const maxPoints = 5;
+        const desiredPoints = Math.min(maxPoints, maxLevel - currentLevel);
+        
+        if (desiredPoints > 0) {
+          // Calculate cost per point (scales with level)
+          const baseCost = 200_000;
+          let upgradeCost = 0;
+          let points = 0;
+          
+          for (let i = 0; i < desiredPoints; i++) {
+            const level = currentLevel + i;
+            let cost = baseCost;
+            if (level >= 40) cost = baseCost * 1.5;
+            if (level >= 60) cost = baseCost * 2.5;
+            if (level >= 80) cost = baseCost * 4;
+            
+            if (nextHeya.funds >= upgradeCost + cost) {
+              upgradeCost += cost;
+              points++;
+            } else {
+              break;
+            }
+          }
+          
+          if (points > 0 && upgradeCost > 0) {
+            // Apply upgrade
+            nextHeya.funds -= upgradeCost;
+            facilities[weakestAxis] = Math.min(maxLevel, currentLevel + points);
+            const oldBand = nextHeya.facilitiesBand;
+            nextHeya.facilitiesBand = computeFacilitiesBand(nextHeya);
+            
+            // Emit upgrade event (NPC upgrades use same UPGRADED type as player)
+            EventBus.facilityUpdate(world, nextHeya.id, {
+              axis: weakestAxis,
+              oldLevel: currentLevel,
+              newLevel: facilities[weakestAxis],
+              cost: upgradeCost,
+              band: nextHeya.facilitiesBand
+            }, "UPGRADED");
+          }
+        }
+      }
     }
 
     // Runway Band Sync
