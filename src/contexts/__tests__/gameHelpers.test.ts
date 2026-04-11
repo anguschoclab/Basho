@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { autosaveWithSignal } from "../gameHelpers";
 import { getAutosaveEnabled } from "../../pages/SettingsPage";
-import { generateSaveData, performAutosave } from "../../engine/saveload";
-import { WorldState } from "../../engine/types/save";
+import { autosave, saveGame } from "../../engine/saveload";
+import { WorldState } from "../../engine/types/world";
 
 // Mock dependencies
 vi.mock("../../pages/SettingsPage", () => ({
@@ -10,13 +10,13 @@ vi.mock("../../pages/SettingsPage", () => ({
 }));
 
 vi.mock("../../engine/saveload", () => ({
-  generateSaveData: vi.fn(),
-  performAutosave: vi.fn(),
+  saveGame: vi.fn(),
+  autosave: vi.fn(() => true),
 }));
 
 describe("gameHelpers", () => {
   describe("autosaveWithSignal", () => {
-    const mockWorld = { version: 1 } as WorldState;
+    const mockWorld = { version: 1 } as any;
     const mockSaveData = { world: mockWorld };
 
     beforeEach(() => {
@@ -29,19 +29,17 @@ describe("gameHelpers", () => {
       const result = autosaveWithSignal(mockWorld);
 
       expect(result).toBe(false);
-      expect(generateSaveData).not.toHaveBeenCalled();
-      expect(performAutosave).not.toHaveBeenCalled();
+      expect(saveGame).not.toHaveBeenCalled();
+      expect(autosave).not.toHaveBeenCalled();
     });
 
     it("generates save data and performs autosave when enabled", () => {
       vi.mocked(getAutosaveEnabled).mockReturnValue(true);
-      vi.mocked(generateSaveData).mockReturnValue(mockSaveData);
 
       const result = autosaveWithSignal(mockWorld);
 
       expect(result).toBe(true);
-      expect(generateSaveData).toHaveBeenCalledWith(mockWorld);
-      expect(performAutosave).toHaveBeenCalledWith(mockSaveData);
+      expect(autosave).toHaveBeenCalledWith(mockWorld);
     });
   });
 });

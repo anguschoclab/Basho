@@ -131,7 +131,70 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
     });
   }
 
-function buildMatchupItems(world: WorldState): DigestItem[] {
+  const matchupResult = buildMatchupItems(world);
+  const basho = world.currentBasho;
+
+  if (matchupResult.section) {
+    sections.push(matchupResult.section);
+  }
+
+  // Process events
+  const eventBuckets = selectRecentEvents(world);
+  const mapEventToItem = (e: import("../engine/events").EngineEvent): DigestItem => ({
+    id: e.id,
+    kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
+    title: e.title,
+    detail: e.summary,
+    rikishiId: e.rikishiId,
+    heyaId: e.heyaId,
+  });
+
+  const narrativeItems = queryEvents(world, { category: "narrative" }).map((e) => ({ ...mapEventToItem(e), kind: "narrative" as const }));
+  const trainingItems = eventBuckets.training.map(mapEventToItem);
+  const scoutItems = eventBuckets.scouting.map(mapEventToItem);
+  const econItems = eventBuckets.economy.map(mapEventToItem);
+
+  const sectionRng = new SeededRNG((world.seed || "section") + "_" + world.week);
+  if (narrativeItems.length)
+    sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
+  if (trainingItems.length)
+    sections.push({ id: "training", title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, items: trainingItems });
+  if (scoutItems.length)
+    sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
+  if (econItems.length)
+    sections.push({ id: "economy", title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text, items: econItems });
+
+  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
+
+  const headline =
+    basho && world.cyclePhase === "active_basho"
+      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
+          DAY: (basho.day ?? 1).toString(),
+          DETAIL: matchupResult.items.length
+            ? "Key matchups highlighted."
+            : "Tournament in progress.",
+        }).text
+      : injuryItems.length
+        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
+            INJURY_COUNT: injuryItems.length.toString(),
+          }).text
+        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
+
+  return {
+    time: { label: labelForWorld(world) },
+    headline,
+    counts: {
+      trainingEvents: trainingItems.length,
+      injuries: injuryItems.length,
+      recoveries: 0,
+      economy: econItems.length,
+      scouting: scoutItems.length,
+    },
+    sections,
+  };
+}
+
+function buildMatchupItems(world: WorldState): { items: DigestItem[], section?: DigestSection } {
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
   if (basho && world.cyclePhase === "active_basho" && world.week > 1) {
@@ -159,143 +222,18 @@ function buildMatchupItems(world: WorldState): DigestItem[] {
     }
     if (matchupItems.length) {
       const sectionRng = new SeededRNG((world.seed || "section") + "_matchups");
-      sections.push({
-        id: "matchups",
-        title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups")
-          .text,
+      return {
         items: matchupItems,
-      });
+        section: {
+          id: "matchups",
+          title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups")
+            .text,
+          items: matchupItems,
+        },
+      };
     }
   }
-  return matchupItems;
-}
-
-function buildEventSections(world: WorldState): {
-  eventSections: DigestSection[];
-  trainingCount: number;
-  econCount: number;
-  scoutCount: number;
-} {
-  const eventSections: DigestSection[] = [];
-  const eventBuckets = selectRecentEvents(world);
-
-  const mapEventToItem = (
-    e: import("../engine/events").EngineEvent,
-  ): DigestItem => ({
-    id: e.id,
-    kind:
-      e.category === "scouting"
-        ? "scouting"
-        : e.category === "economy" || e.category === "sponsor"
-          ? "economy"
-          : e.category === "training"
-            ? "training"
-            : "generic",
-    title: e.title,
-    detail: e.summary,
-    rikishiId: e.rikishiId,
-    heyaId: e.heyaId,
-  });
-
-  const mediaItems = eventBuckets.media.map(mapEventToItem);
-  const trainingItems = eventBuckets.training.map(mapEventToItem);
-  const careerItems = eventBuckets.career.map(mapEventToItem);
-  const rivalryItems = eventBuckets.rivalry.map(mapEventToItem);
-  const welfareItems = eventBuckets.welfare.map(mapEventToItem);
-  const govItems = eventBuckets.governance.map(mapEventToItem);
-  const scoutItems = eventBuckets.scouting.map(mapEventToItem);
-  const econItems = eventBuckets.economy.map(mapEventToItem);
-  const narrativeItems = queryEvents(world, { category: "narrative" }).map(
-    (e) => ({
-      ...mapEventToItem(e),
-      kind: "narrative" as const,
-    }),
-  );
-
-  const sectionRng = new SeededRNG(
-    (world.seed || "section") + "_" + world.week,
-  );
-  if (mediaItems.length)
-    sections.push({
-      id: "media",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.media").text,
-      items: mediaItems,
-    });
-  if (narrativeItems.length)
-    sections.push({
-      id: "narrative",
-      title: "Internal Intelligence",
-      items: narrativeItems,
-    }); // Keep or map to new
-  if (trainingItems.length)
-    sections.push({
-      id: "training",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
-        .text,
-      items: trainingItems,
-    }); // Mis-mapped in original title? Fix to Economy/milestones?
-  if (careerItems.length)
-    sections.push({
-      id: "career",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.milestones")
-        .text,
-      items: careerItems,
-    });
-  if (rivalryItems.length)
-    sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });
-  if (welfareItems.length)
-    sections.push({
-      id: "welfare",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
-        .text,
-      items: welfareItems,
-    });
-  if (govItems.length)
-    sections.push({
-      id: "governance",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
-        .text,
-      items: govItems,
-    });
-  if (scoutItems.length)
-    sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
-  if (econItems.length)
-    sections.push({
-      id: "economy",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text,
-      items: econItems,
-    });
-
-  const counts = {
-    trainingEvents: trainingItems.length,
-    injuries: injuryItems.length,
-    recoveries: 0,
-    economy: econItems.length,
-    scouting: scoutItems.length,
-  };
-
-  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
-
-  const headline =
-    basho && world.cyclePhase === "active_basho"
-      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
-          DAY: (basho.day ?? 1).toString(),
-          DETAIL: matchupItems.length
-            ? "Key matchups highlighted."
-            : "Tournament in progress.",
-        }).text
-      : injuryItems.length
-        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
-            INJURY_COUNT: injuryItems.length.toString(),
-          }).text
-        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
-
-  return {
-    eventSections,
-    trainingCount: trainingItems.length,
-    econCount: econItems.length,
-    scoutCount: scoutItems.length,
-  };
+  return { items: matchupItems };
 }
 
 /**

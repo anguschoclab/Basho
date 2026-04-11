@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom/vitest";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
@@ -33,7 +32,7 @@ describe("HistoryPage", () => {
     } as any);
 
     const { container } = render(<HistoryPage />);
-    expect(container).toBeEmptyDOMElement();
+    expect(container.firstChild).toBeNull();
   });
 
   it("renders correctly with empty history", () => {
@@ -43,7 +42,7 @@ describe("HistoryPage", () => {
     } as any);
 
     render(<HistoryPage />);
-    expect(screen.getByText("No History Yet")).toBeInTheDocument();
+    expect(screen.queryByText("No History Yet")).toBeTruthy();
   });
 
   it("renders correctly with partial history record (guard checks)", () => {
@@ -76,16 +75,16 @@ describe("HistoryPage", () => {
     render(<HistoryPage />);
 
     // Check fallback basho name logic (should use default properties when bashoName is missing but getBashoByNumber handles the number)
-    expect(screen.getByText("初場所")).toBeInTheDocument(); // 1 = Hatsu / 初場所
+    expect(screen.queryByText("初場所")).toBeTruthy(); // 1 = Hatsu / 初場所
 
     // Check winner is shown
-    expect(screen.getByText("Mockyama")).toBeInTheDocument();
-    expect(screen.getByText("Mock Stable")).toBeInTheDocument();
+    expect(screen.queryByText("Mockyama")).toBeTruthy();
+    expect(screen.queryByText("Mock Stable")).toBeTruthy();
 
     // Check missing Jun-Yusho guard renders dash
     expect(
-      screen.getByText("—", { selector: ".text-sm.text-muted-foreground" }),
-    ).toBeInTheDocument();
+      screen.queryByText("—", { selector: ".text-sm.text-muted-foreground" }),
+    ).toBeTruthy();
   });
 
   it("handles missing rank in RANK_HIERARCHY gracefully", () => {
@@ -116,6 +115,6 @@ describe("HistoryPage", () => {
     render(<HistoryPage />);
 
     // Should fallback to stringified rank
-    expect(screen.getByText(/99999/)).toBeInTheDocument();
+    expect(screen.queryByText(/99999/)).toBeTruthy();
   });
 });

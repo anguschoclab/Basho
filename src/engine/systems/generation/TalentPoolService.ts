@@ -233,8 +233,7 @@ export function offerCandidate(
  * Weekly maintenance for the talent pool.
  */
 export function tickWeekTalentPool(world: WorldState): WorldState {
-  const tp = world.talentPool;
-  if (!tp) return world;
+  const tp = ensureTalentPoolState(world);
 
   const nextWorld = { ...world };
   const nextCandidates = { ...tp.candidates };
@@ -454,13 +453,22 @@ export function materializeCandidateToRikishi(
 
   // Cleanup Visible/Hidden lists
   const nextPools = { ...tp.pools };
-  const pt = candidate.poolType as TalentPoolType;
-  if (nextPools[pt]) {
-    nextPools[pt] = {
-      ...nextPools[pt],
-      candidatesVisible: nextPools[pt].candidatesVisible.filter(id => id !== candidateId),
-      candidatesHidden: nextPools[pt].candidatesHidden.filter(id => id !== candidateId)
-    };
+  // Find which pool this candidate belongs to
+  const poolTypes: TalentPoolType[] = ['high_school', 'university', 'foreign'];
+  for (const pt of poolTypes) {
+    const pool = nextPools[pt];
+    if (pool) {
+      const wasVisible = pool.candidatesVisible.includes(candidateId);
+      const wasHidden = pool.candidatesHidden.includes(candidateId);
+      if (wasVisible || wasHidden) {
+        nextPools[pt] = {
+          ...pool,
+          candidatesVisible: pool.candidatesVisible.filter(id => id !== candidateId),
+          candidatesHidden: pool.candidatesHidden.filter(id => id !== candidateId)
+        };
+        break; // Candidate can only be in one pool
+      }
+    }
   }
 
   nextWorld.rikishi = nextRikishi;
