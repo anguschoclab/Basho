@@ -54,6 +54,18 @@ export interface StateImpact {
   };
 
   /**
+   * Entity deletions - IDs of entities to remove from the world.
+   */
+  deletedEntities?: {
+    /** Heya IDs to delete */
+    heyaIds?: string[];
+    /** Oyakata IDs to delete */
+    oyakataIds?: string[];
+    /** Rikishi IDs to delete */
+    rikishiIds?: string[];
+  };
+
+  /**
    * Top-level world field updates.
    * Used for scalar fields on WorldState that don't fit entity/collection patterns.
    */
@@ -63,6 +75,7 @@ export interface StateImpact {
     | 'cyclePhase' 
     | '_postBashoMeta' 
     | '_recruitmentWindow'
+    | 'closedHeyas'
   >>;
 
   /**
@@ -107,6 +120,7 @@ export function isStateImpact(value: unknown): value is StateImpact {
   return !!(
     impact.entities ||
     impact.collections ||
+    impact.deletedEntities ||
     impact.worldFields ||
     impact.events
   );
