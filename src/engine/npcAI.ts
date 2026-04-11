@@ -23,6 +23,8 @@ import { EventBus } from "./events";
 import { getFinanceStrategy } from "./npcFinanceStrategy";
 import { getRecruitmentStrategy } from "./npcRecruitmentStrategy";
 import { getRetirementStrategy } from "./npcRetirementStrategy";
+import { getSponsorStrategy } from "./npcSponsorStrategy";
+import { getGovernanceStrategy } from "./npcGovernanceStrategy";
 import { getManagerPersona } from "./systems/NPCPersonaService";
 export { getManagerPersona };
 
@@ -369,6 +371,9 @@ export function tickMonthlyNPC(world: WorldState): void {
       const oyakata = world.oyakata.get(heya.oyakataId)!;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
       financeStrat.evaluateFinances(world, heya as import("./types/heya").Heya, oyakata);
+
+      const sponsorStrat = getSponsorStrategy(oyakata.archetype);
+      sponsorStrat.evaluateSponsorRecruitment(world, heya as import("./types/heya").Heya, oyakata);
     }
   }
 
@@ -384,7 +389,10 @@ export function tickMonthlyNPC(world: WorldState): void {
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const vacancies = recruitmentStrat.evaluateVacancies(world, heya as import("./types/heya").Heya, oyakata);
-    
+
+    const governanceStrat = getGovernanceStrategy(oyakata.archetype);
+    governanceStrat.evaluateGovernanceDecisions(world, heya as import("./types/heya").Heya, oyakata);
+
     if (vacancies > 0) {
       vacanciesByHeyaId[heya.id] = vacancies;
       hasVacancies = true;

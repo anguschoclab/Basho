@@ -257,7 +257,19 @@ export function runRetirements(world: WorldState): Record<string, number> {
             // Become an Oyakata
             const rng = rngForWorld(world, "governance", `retirement_${id}`);
             const newOyakataId = rng.uuid('OY');
-            const newOyakata = generateOyakata(newOyakataId, r.heyaId, r.shikona ?? r.name ?? id, age);
+            const newOyakata = generateOyakata(
+              newOyakataId,
+              r.heyaId,
+              r.shikona ?? r.name ?? id,
+              age,
+              undefined,
+              {
+                aggression: r.aggression,
+                experience: r.experience,
+                adaptability: r.adaptability,
+                momentum: r.momentum
+              }
+            );
 
             availableStock.ownerId = newOyakataId;
             availableStock.holderId = newOyakataId;

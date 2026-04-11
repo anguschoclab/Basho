@@ -224,20 +224,40 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
+    const rikishi = world.rikishi.get(id);
 
     let prizePoints = 0;
     if (history.ginoSho === id) prizePoints += 1;
     if (history.shukunsho === id) prizePoints += 1;
     if (history.kantosho === id) prizePoints += 1;
 
+    // Yokozuna promotion logic based on real sumo criteria
+    // Real sumo: 2 consecutive yusho or equivalent performance at ozeki level
+    let promoteToYokozuna = false;
+    if (rikishi?.rank === "ozeki" && stats.wins >= 12) {
+      // Track consecutive strong performances for ozeki
+      if (!rikishi.consecutiveStrongOzeki) rikishi.consecutiveStrongOzeki = 0;
+      rikishi.consecutiveStrongOzeki++;
+
+      // Promotion requires: 2 consecutive yusho OR 3 consecutive 12+ win performances
+      if (isYusho && rikishi.consecutiveStrongOzeki >= 2) {
+        promoteToYokozuna = true;
+      } else if (!isYusho && rikishi.consecutiveStrongOzeki >= 3 && stats.wins >= 13) {
+        promoteToYokozuna = true;
+      }
+    } else if (rikishi?.rank === "ozeki") {
+      rikishi.consecutiveStrongOzeki = 0;
+    }
+
     performanceList.push({
       rikishiId: id,
       wins: stats.wins,
       losses: stats.losses,
-      absences: 0, 
+      absences: 0,
       yusho: isYusho,
       junYusho: isJunYusho,
-      specialPrizes: prizePoints
+      specialPrizes: prizePoints,
+      promoteToYokozuna
     });
   }
 

@@ -17,6 +17,7 @@ import { generateInitialSponsorPool } from "./SponsorGenerator";
 import { createKoenkai } from "../economics/SponsorshipService";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
+import { generateOyakata } from "../../oyakataPersonalities";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -30,25 +31,11 @@ export function createHeyaWithOyakata(args: {
 }): { heya: Heya, oyakata: Oyakata } {
   const { id, name, rng, tier, currentYear } = args;
   const oyakataId = rng.uuid('OY');
+  const oyakataName = generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng);
+  const archetype = seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]) as any;
+  const age = 45 + rng.int(0, 20);
   
-  const oyakata: Oyakata = {
-    id: oyakataId,
-    heyaId: id,
-    name: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
-    shikona: generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng),
-    age: 45 + rng.int(0, 20),
-    archetype: seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]),
-    traits: {
-      ambition: 50 + rng.next() * 50,
-      patience: 50 + rng.next() * 50,
-      risk: 50 + rng.next() * 50,
-      tradition: 50 + rng.next() * 50,
-      compassion: 50 + rng.next() * 50
-    },
-    yearsInCharge: 1 + rng.int(0, 15),
-    stats: { scouting: 50, training: 50, politics: 50 },
-    personality: "traditionalist" // Default
-  };
+  const oyakata = generateOyakata(oyakataId, id, oyakataName, age, archetype);
 
   const heya: Heya = {
     id,

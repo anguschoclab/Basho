@@ -3,7 +3,7 @@
 // Used to generate diverse and believing opponents.
 
 import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
-import type { Oyakata, OyakataArchetype, OyakataTraits } from "./types/oyakata";
+import type { Oyakata, OyakataArchetype, OyakataTraits, OyakataMood } from "./types/oyakata";
 
 /** o y a k a t a_ a r c h e t y p e s. */
 export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {
@@ -79,6 +79,34 @@ const ARCHETYPE_DESCRIPTIONS: Record<OyakataArchetype, string> = {
 const FORMER_SHIKONA_SUFFIXES = ["yama", "gawa", "fuji", "umi", "kuni", "hime", "maru", "ryu"];
 const FORMER_SHIKONA_PREFIXES = ["Taka", "Waka", "Koto", "Tochi", "Chiyo", "Hoku", "Asa", "Tera"];
 
+const QUIRK_IDS = [
+  "Old-School Stickler",
+  "Gambler's Instinct",
+  "Welfare Hawk",
+  "Discipline Hawk",
+  "Media Operator",
+  "Sleeper Scout",
+  "Nepotist",
+  "Weight-Cutter",
+  "Keiko Romantic",
+  "Cold Pragmatist",
+  "Family First",
+  "Numbers Guy"
+] as const;
+
+/**
+ * Pick unique items from a pool
+ */
+function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
+  const pool = [...items];
+  const out: T[] = [];
+  while (pool.length && out.length < count) {
+    const idx = Math.floor(rng.next() * pool.length);
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
 /**
  * Generate random shikona.
  *  * @param seed - The Seed.
@@ -98,6 +126,7 @@ function generateRandomShikona(seed: string): string {
  *  * @param name - The Name.
  *  * @param age - The Age.
  *  * @param archetype - The Archetype.
+ *  * @param rikishiTraits - Optional rikishi traits to inherit from retiring rikishi.
  *  * @returns The result.
  */
 export function generateOyakata(
@@ -105,7 +134,8 @@ export function generateOyakata(
   heyaId: string,
   name: string,
   age: number,
-  archetype?: OyakataArchetype
+  archetype?: OyakataArchetype,
+  rikishiTraits?: { aggression?: number; experience?: number; adaptability?: number; momentum?: number }
 ): Oyakata {
     const rng = rngFromSeed(id, "oyakata", "personality");
 // Determine archetype randomly if not provided
@@ -117,6 +147,47 @@ export function generateOyakata(
   // Apply small random variance to traits (+/- 10)
   const vary = (val: number) => Math.max(0, Math.min(100, val + ((rng.next() * 20) - 10)));
 
+  // If rikishi traits are provided, blend them with archetype traits (50/50 blend)
+  const blend = (base: number, rikishi?: number) => {
+    if (rikishi === undefined) return vary(base);
+    return Math.max(0, Math.min(100, (base + rikishi) / 2 + ((rng.next() * 10) - 5)));
+  };
+
+  // Map rikishi traits to oyakata traits
+  // aggression -> risk
+  // experience -> patience
+  // adaptability -> tradition (inverse: high adaptability = lower tradition)
+  // momentum -> ambition
+  const traits = {
+    ambition: blend(baseTraits.ambition, rikishiTraits?.momentum),
+    patience: blend(baseTraits.patience, rikishiTraits?.experience),
+    risk: blend(baseTraits.risk, rikishiTraits?.aggression),
+    tradition: blend(baseTraits.tradition, rikishiTraits?.adaptability !== undefined ? 100 - rikishiTraits.adaptability : undefined),
+    compassion: vary(baseTraits.compassion) // No direct rikishi mapping, keep random
+  };
+
+  // Generate quirks (same logic as ensurePersonaForOyakata)
+  const baseCount = type === "tyrant" || type === "gambler" ? 3 : 2;
+  const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
+
+  // Generate manager flags based on quirks and traits
+  const flags = {
+    welfareHawk: quirkIds.includes("Welfare Hawk") || traits.compassion >= 75,
+    disciplineHawk: quirkIds.includes("Discipline Hawk") || type === "tyrant" || traits.tradition >= 80,
+    publicityHawk: quirkIds.includes("Media Operator") || traits.ambition >= 80,
+    nepotist: quirkIds.includes("Nepotist")
+  };
+
+  // Initialize mood
+  const mood: OyakataMood = "content";
+
+  // Initialize memory
+  const memory = {
+    observations: [],
+    coreDirectives: [`Maintain the excellence of stable`, `Prioritize ${type} values`],
+    lastConsolidationTick: 0
+  };
+
   return {
     id,
     heyaId,
@@ -124,13 +195,11 @@ export function generateOyakata(
     shikona: name,
     age,
     archetype: type,
-    traits: {
-      ambition: vary(baseTraits.ambition),
-      patience: vary(baseTraits.patience),
-      risk: vary(baseTraits.risk),
-      tradition: vary(baseTraits.tradition),
-      compassion: vary(baseTraits.compassion)
-    },
+    traits,
+    quirks: quirkIds,
+    managerFlags: flags,
+    mood,
+    memory,
     formerShikona: generateRandomShikona(id),
     highestRank: rng.bool(0.3) ? "Komusubi" : "Maegashira",
     yearsInCharge: rng.int(1, 20)

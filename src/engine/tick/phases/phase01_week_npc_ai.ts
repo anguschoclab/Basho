@@ -24,6 +24,7 @@ import {
 import { TrainingService } from "../../systems/training/TrainingService";
 import { EventBus } from "../../events";
 import { enforceHardCapRosterOverflow } from "../../overflow";
+import { getMediaStrategy } from "../../npcMediaStrategy";
 
 export function phase01_week_npc_ai(world: WorldState): WorldState {
   const nextTrainingStates = new Map(world.trainingState || []);
@@ -50,6 +51,15 @@ export function phase01_week_npc_ai(world: WorldState): WorldState {
       scoutingMap[heya.id] = decision.scoutingPriority;
       collectManagementDecisionEvents(heya.id, decision, events);
       collectStrategyShiftEvents(heya.id, decision, events);
+
+      // Handle media events for NPCs
+      if (world.governanceLog) {
+        const mediaEvents = world.governanceLog.filter(r => r.heyaId === heya.id && !r.playerChoice);
+        const mediaStrat = getMediaStrategy(oyakata.archetype);
+        for (const event of mediaEvents) {
+          mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id);
+        }
+      }
 
       nextOyakata.set(nextOya.id, nextOya);
     }
