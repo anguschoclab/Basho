@@ -40,10 +40,10 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
   }
 
   // 3. Yokozuna Make-Koshi Retirement Pressure
-  // Real sumo: Yokozuna with consecutive losing records face intense retirement pressure
+  // Real sumo: Yokozuna with consecutive losing records face retirement pressure
   if (rikishi.rank === "yokozuna" && rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2) {
-    // 2 consecutive make-koshi = high retirement pressure (like real sumo)
-    if (rng.bool(0.7)) return "Yokozuna Make-Koshi Retirement";
+    // 2 consecutive make-koshi = high retirement pressure (80%)
+    if (rng.bool(0.8)) return "Yokozuna Make-Koshi Retirement";
   }
 
   // 4. Natural Aging Curve (Probability increases with age)
