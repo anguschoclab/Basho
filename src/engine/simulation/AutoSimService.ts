@@ -135,7 +135,7 @@ export function runAutoSim(
   };
 }
 
-function checkStopCondition(
+export function checkStopCondition(
   condition: StopCondition,
   bashoResult: BashoSimResult,
   world: WorldState,
