@@ -6,6 +6,8 @@ import * as talentpool from "../systems/generation/TalentPoolService";
 import { safeCall } from "../utils/safe";
 import type { WorldState } from "../types/world";
 import type { Id } from "../types/common";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Recruitment window — per Constitution, recruitment occurs at:
