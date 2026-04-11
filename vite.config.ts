@@ -16,8 +16,7 @@ export default defineConfig({
       manifest: {
         name: "Sumo Manager Pro",
         short_name: "Sumo Manager",
-        description:
-          "Manage your sumo stable, train rikishi, and compete in basho tournaments.",
+        description: "Manage your sumo stable, train rikishi, and compete in basho tournaments.",
         theme_color: "#0f172a",
         background_color: "#0f172a",
         display: "standalone",
@@ -52,11 +51,22 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
-      include: ["src/engine/**/*.ts", "src/presenters/**/*.ts"],
-      exclude: ["src/engine/**/__tests__/**", "src/engine/**/*.test.ts"],
+      include: [
+        "src/engine/**/*.ts",
+        "src/presenters/**/*.ts",
+        "src/components/**/*.ts",
+        "src/contexts/**/*.ts",
+      ],
+      exclude: [
+        "src/engine/**/__tests__/**",
+        "src/engine/**/*.test.ts",
+        "src/components/**/__tests__/**",
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
+      ],
       thresholds: {
-        lines: 60,
-        branches: 50,
+        lines: 80,
+        branches: 70,
       },
     },
   },
