@@ -13,18 +13,16 @@
  */
 
 import type { PipelinePhase } from "../pipelineRunner";
-import { phase01_economy } from "../phases/phase01_economy";
-import { phase02_context } from "../phases/phase02_context";
-import { phase03_progression } from "../phases/phase03_progression";
-import { phase04_welfare } from "../phases/phase04_welfare";
-import { phase05_npcAI } from "../phases/phase05_npcAI";
-import { phase06_narrative } from "../phases/phase06_narrative";
+import * as phases from "../phases";
 
 export const offSeasonPipeline: PipelinePhase[] = [
-  phase01_economy,
-  phase02_context,
-  phase03_progression,
-  phase04_welfare,
-  phase05_npcAI,
-  phase06_narrative,
+  phases.phase01_week_training,
+  phases.phase01_week_health,
+  phases.phase01_week_welfare,
+  phases.phase02_context, // Derive ActiveModifiers from post-training state
+  phases.phase01_week_governance,
+  phases.phase01_week_npc_ai,
+  phases.phase01_week_recruitment,
+  phases.phase01_week_rivalries,
+  phases.phase06_narrative,
 ];

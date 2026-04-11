@@ -39,3 +39,32 @@ export const FACILITY_UPKEEP = {
 
 /** Staff weekly upkeep per member (¥). */
 export const STAFF_UPKEEP_PER_MEMBER = 6_000;
+
+/** Daily food cost per rikishi by diet regimen (¥). */
+export const DIET_COSTS: Record<string, number> = {
+  austerity: 1_000,
+  maintenance: 3_000,
+  heavy_bulk: 6_000,
+  premium: 10_000
+} as const;
+
+/** Loan issuance threshold (¥) - when funds drop below this, bailouts are considered. */
+export const LOAN_ISSUANCE_THRESHOLD = -5_000_000;
+
+/** Merger threshold (¥) - when funds drop below this, NPC stables are forced to merge. */
+export const MERGER_THRESHOLD = -15_000_000;
+
+/** Faction bailout amount (¥) - gift from wealthy faction-mates. */
+export const FACTION_BAILOUT_AMOUNT = 10_000_000;
+
+/** Faction benefactor threshold (¥) - minimum funds required to provide faction bailout. */
+export const FACTION_BENEFACTOR_THRESHOLD = 60_000_000;
+
+/**
+ * Clamps funds to the debt limit to prevent infinite debt spirals.
+ * @param funds Current funds value
+ * @returns Clamped funds value (never below DEBT_LIMIT)
+ */
+export function clampFundsToDebtLimit(funds: number): number {
+  return Math.max(funds, DEBT_LIMIT);
+}

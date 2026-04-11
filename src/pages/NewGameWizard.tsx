@@ -135,7 +135,7 @@ export default function NewGameWizard() {
          </div>
          
          <div className="relative z-10 space-y-4">
-            <div className="h-14 w-14 bg-white/10 rounded-full mx-auto flex items-center justify-center backdrop-blur-md border border-white/20 animate-in zoom-in duration-500">
+            <div className="h-14 w-14 bg-white/10 rounded-full mx-auto flex items-center justify-center border border-white/20 animate-in zoom-in duration-500">
                <History className="h-7 w-7 text-white" />
             </div>
             <h1 className="text-4xl font-display font-black tracking-tight text-white uppercase sumi-e-ink">Begin Your Legacy</h1>
@@ -152,9 +152,9 @@ export default function NewGameWizard() {
         {/* ── STEP 1: IDENTITY ── */}
         {step === 1 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
-            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+            <div className="glass rounded-lg p-8 shadow-2xl border-2 border-primary/10">
                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-primary/10 rounded-xl">
+                  <div className="p-3 bg-primary/10 rounded-lg">
                      <CircleUser className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -171,7 +171,7 @@ export default function NewGameWizard() {
                       placeholder="e.g. Takanohana"
                       value={oyakataName}
                       onChange={(e) => setOyakataName(e.target.value)}
-                      className="h-16 text-2xl font-display font-black border-2 focus:border-primary px-6 rounded-xl shadow-inner bg-muted/30"
+                      className="h-16 text-2xl font-display font-black border-2 focus:border-primary px-6 rounded-lg shadow-inner bg-muted/30"
                     />
                     <p className="text-xs text-muted-foreground italic font-medium opacity-60">This name will be inscribed in the Association's professional directory.</p>
                   </div>
@@ -186,13 +186,13 @@ export default function NewGameWizard() {
                           <div
                             key={bg.id}
                             className={cn(
-                              "relative dossier-paper p-5 rounded-2xl cursor-pointer transition-all hover:scale-[1.02] overflow-hidden",
+                              "relative dossier-paper p-5 rounded-lg cursor-pointer transition-all hover:scale-[1.02] overflow-hidden",
                               isSelected ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-70 hover:opacity-100"
                             )}
                             onClick={() => setBackground(bg.id)}
                           >
                              <div className="absolute -top-2 -right-2 opacity-5 font-display text-4xl font-black">{bg.labelJa}</div>
-                             <div className="h-10 w-10 bg-muted/50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                             <div className="h-10 w-10 bg-muted/50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
                                 <Icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-muted-foreground")} />
                              </div>
                              <div className="font-display font-black text-lg mb-1">{bg.label}</div>
@@ -210,7 +210,7 @@ export default function NewGameWizard() {
             </div>
 
             <div className="flex justify-end pt-4">
-              <Button onClick={handleNext} disabled={!oyakataName.trim()} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-2xl hover:scale-105 transition-transform">
+              <Button onClick={handleNext} disabled={!oyakataName.trim()} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform">
                 Next Submission <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
@@ -220,9 +220,9 @@ export default function NewGameWizard() {
         {/* ── STEP 2: FACTION ── */}
         {step === 2 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
-            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+            <div className="glass rounded-lg p-8 shadow-2xl border-2 border-primary/10">
                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-primary/10 rounded-xl">
+                  <div className="p-3 bg-primary/10 rounded-lg">
                      <Building2 className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -238,7 +238,7 @@ export default function NewGameWizard() {
                      <div
                        key={faction.id}
                        className={cn(
-                         "dossier-paper p-6 rounded-2xl cursor-pointer transition-all group relative overflow-hidden",
+                         "dossier-paper p-6 rounded-lg cursor-pointer transition-all group relative overflow-hidden",
                          isSelected ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-70 hover:opacity-100"
                        )}
                        onClick={() => setIchimon(faction.id)}
@@ -259,7 +259,7 @@ export default function NewGameWizard() {
               <Button variant="ghost" onClick={handlePrev} className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground">
                 <ArrowLeft className="w-5 h-5" /> Back
               </Button>
-              <Button onClick={handleNext} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-2xl hover:scale-105 transition-transform">
+              <Button onClick={handleNext} className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform">
                 Verify Allegiance <ArrowRight className="w-6 h-6" />
               </Button>
             </div>
@@ -269,9 +269,9 @@ export default function NewGameWizard() {
         {/* ── STEP 3: STABLE ── */}
         {step === 3 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
-            <div className="glass rounded-2xl p-8 shadow-2xl border-2 border-primary/10">
+            <div className="glass rounded-lg p-8 shadow-2xl border-2 border-primary/10">
                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-primary/10 rounded-xl">
+                  <div className="p-3 bg-primary/10 rounded-lg">
                      <Building className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -286,7 +286,7 @@ export default function NewGameWizard() {
                       <div
                         key={heya.id}
                         className={cn(
-                          "dossier-paper p-5 rounded-2xl cursor-pointer transition-all relative overflow-hidden group",
+                          "dossier-paper p-5 rounded-lg cursor-pointer transition-all relative overflow-hidden group",
                           selectedHeyaId === heya.id ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl" : "opacity-80 hover:opacity-100"
                         )}
                         onClick={() => setSelectedHeyaId(heya.id)}
@@ -317,7 +317,7 @@ export default function NewGameWizard() {
               <Button variant="ghost" onClick={handlePrev} className="h-16 px-8 gap-3 font-display font-black uppercase tracking-widest text-muted-foreground">
                 <ArrowLeft className="w-5 h-5" /> Back
               </Button>
-              <Button onClick={handleFinish} disabled={!selectedHeyaId} className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-2xl bg-primary text-white hover:scale-105 transition-transform">
+              <Button onClick={handleFinish} disabled={!selectedHeyaId} className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-lg bg-primary text-white hover:scale-105 transition-transform">
                 Begin Journey <Sparkles className="w-6 h-6" />
               </Button>
             </div>
@@ -326,7 +326,7 @@ export default function NewGameWizard() {
         {/* ── STEP 4: EXHIBITION BOUT ── */}
         {step === 4 && (
           <div className="animate-in fade-in slide-in-from-right-10 duration-700">
-            <div className="glass rounded-2xl shadow-2xl border-2 border-primary/10 overflow-hidden">
+            <div className="glass rounded-lg shadow-2xl border-2 border-primary/10 overflow-hidden">
               <ExhibitionBout onComplete={handleExhibitionComplete} />
             </div>
           </div>
@@ -334,7 +334,7 @@ export default function NewGameWizard() {
       </main>
 
       {/* Persistence Info Console */}
-      <footer className="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
+      <footer className="fixed bottom-0 w-full bg-background/80 border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
          <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-10">
                <div>
@@ -344,7 +344,7 @@ export default function NewGameWizard() {
                <div className="hidden md:block w-px h-6 bg-border/40" />
                <div className="hidden md:block">
                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">Endowment</p>
-                  <p className="font-display font-black text-xs uppercase tracking-tighter text-emerald-600">{formatYenToMan(currentBg.bonuses.funds)}</p>
+                  <p className="font-display font-black text-xs uppercase tracking-tighter text-success">{formatYenToMan(currentBg.bonuses.funds)}</p>
                </div>
                <div className="hidden lg:block w-px h-6 bg-border/40" />
                <div className="hidden lg:block">

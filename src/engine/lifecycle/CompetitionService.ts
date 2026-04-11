@@ -8,6 +8,7 @@ import { autosave } from "../saveload";
 import { safeCall } from "../utils/safe";
 import { enterPostBasho } from "../tick/tickDaily";
 import { rngForWorld, rngFromSeed } from "../rng";
+import { opfsArchiveService } from "../storage/opfsArchive";
 import { BardEngine } from "../narrative/BardEngine";
 import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
@@ -162,7 +163,17 @@ function recordBashoHistory(
     if (snapshot) {
       if (!world.almanacSnapshots) world.almanacSnapshots = [];
       world.almanacSnapshots.push(snapshot);
+      
+      // FM v2.0 Archival: Move to cold storage immediately
+      opfsArchiveService.archiveBanzuke(world.year, basho.bashoNumber, snapshot);
     }
+  });
+
+  // Archive Awards
+  safeCall(() => {
+    // Collect specific prizes from the current result
+    const yearAwards = (world.history || []).filter(h => h.year === world.year);
+    opfsArchiveService.archiveAwards(world.year, yearAwards);
   });
 
   onBashoEnded(world);

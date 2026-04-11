@@ -132,6 +132,8 @@ export function generateFullRikishi(args: {
 }
 
 
+
+
 // --- Refactored Helper Functions ---
 
 function createBaseInfo(
@@ -226,6 +228,66 @@ function createCareerHistory(records: { careerWins: number; careerLosses: number
     history: [],
     h2h: {},
   };
+}
+
+/**
+ * Converts a TalentCandidate into a full Rikishi entity.
+ * This is the final step of the recruitment pipeline.
+ */
+export function convertCandidateToRikishi(args: {
+  candidate: any; // TalentCandidate
+  rng: SeededRNG;
+  currentYear: number;
+  heyaId: string;
+}): Rikishi {
+  const { candidate, rng, currentYear, heyaId } = args;
+
+  // New recruits start at the bottom of the banzuke
+  const rank: Rank = "jonokuchi";
+  const division: Division = "jonokuchi";
+  const side: Side = "east";
+  const rankNumber = 50;
+
+  const statsBase = generateRikishiStats({ rng, rank, profile: candidate.combatProfile });
+
+  const rikishiStats: RikishiStats = {
+    ...statsBase,
+    achievements: {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+    }
+  };
+
+  const rikishi = {
+    ...createBaseInfo(
+      candidate.personId,
+      candidate.name,
+      candidate.birthYear,
+      rank,
+      rankNumber,
+      division,
+      side,
+      statsBase.height,
+      statsBase.weight,
+      rng
+    ),
+    ...createCombatStats(rikishiStats, division, candidate.archetype, candidate.combatProfile),
+    ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }, division),
+    heyaId,
+    nationality: candidate.nationality,
+    origin: candidate.originRegion,
+    talentSeed: candidate.talentSeed,
+    behavior: {
+      discipline: candidate.temperament.discipline,
+      mediaSavvy: 50,
+      stress: 0
+    }
+  } as Rikishi;
+
+  return rikishi;
 }
 
 /**

@@ -19,7 +19,7 @@ export function InboxNewsTicker() {
   if (allItems.length === 0) return null;
 
   return (
-    <div className="w-full bg-background/80 backdrop-blur border-b h-10 flex items-center overflow-hidden px-4">
+    <div className="w-full bg-background/80 border-b h-10 flex items-center overflow-hidden px-4">
       <div className="flex-shrink-0 mr-4 font-bold text-xs uppercase tracking-widest text-muted-foreground">
         Latest News
       </div>

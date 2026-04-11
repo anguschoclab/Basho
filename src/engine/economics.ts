@@ -89,8 +89,8 @@ export function onBoutResolvedEconomics(
   // Marketability shift for kinboshi/ginboshi
   const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;
   if (marketabilityScale > 0) {
-    if ((winner as any).marketability === undefined) (winner as any).marketability = 50;
-    (winner as any).marketability += marketabilityScale;
+    if (winner.marketability === undefined) winner.marketability = 50;
+    winner.marketability += marketabilityScale;
     winner.economics.popularity = Math.min(100, winner.economics.popularity + (marketabilityScale * 2));
   }
 

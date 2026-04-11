@@ -55,8 +55,8 @@ const TIER_STYLE: Record<string, { label: string; class: string }> = {
 };
 
 const TONE_STYLE: Record<string, { label: string; class: string }> = {
-  hype: { label: "Hype", class: "bg-yellow-500/20 text-yellow-400" },
-  praise: { label: "Praise", class: "bg-emerald-500/20 text-emerald-400" },
+  hype: { label: "Hype", class: "bg-gold/20 text-gold" },
+  praise: { label: "Praise", class: "bg-success/20 text-success" },
   concern: { label: "Concern", class: "bg-orange-500/20 text-orange-400" },
   controversy: { label: "Controversy", class: "bg-red-500/20 text-red-400" },
   disrespect: { label: "Disrespect", class: "bg-red-500/20 text-red-300" },
@@ -127,7 +127,7 @@ function HeadlineCard({
         {headline.bout?.upset && (
           <Badge
             variant="outline"
-            className="text-[10px] bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
+            className="text-[10px] bg-gold/10 text-gold border-gold/30"
           >
             <Zap className="h-2.5 w-2.5 mr-0.5" /> Upset
           </Badge>

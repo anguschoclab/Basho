@@ -140,7 +140,7 @@ export default function StablePage() {
                             <div className="flex gap-1 flex-wrap justify-end">
                               {tenure.achievements.titlesWon > 0 && (
                                 <TooltipWrap content="Tournament victories under this master" side="top">
-                                  <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-600 cursor-help">
+                                  <Badge variant="outline" className="text-[10px] border-gold/50 text-gold cursor-help">
                                     <Trophy className="h-2.5 w-2.5 mr-1" /> {tenure.achievements.titlesWon} Yusho
                                   </Badge>
                                 </TooltipWrap>
@@ -173,7 +173,7 @@ export default function StablePage() {
                <Card className="paper h-full">
                  <CardHeader>
                    <CardTitle className="text-base flex items-center gap-2">
-                     <Trophy className="h-5 w-5 text-amber-500" />
+                     <Trophy className="h-5 w-5 text-gold" />
                      Championship Legacy
                    </CardTitle>
                  </CardHeader>

@@ -27,15 +27,16 @@ describe('Bard Engine Integration', () => {
       week: 2,
       dayIndexGlobal: 1,
       heyas: new Map([['heya-1', { id: 'heya-1', name: 'Test Heya', reputation: 50 }]]),
-      talentPool: { 
-        candidates: { 
-          'c1': { 
-            candidateId: 'c1', 
-            name: 'Prospect', 
-            talentSeed: 95, 
+      talentPool: {
+        candidates: {
+          'c1': {
+            candidateId: 'c1',
+            personId: 'c1',
+            name: 'Prospect',
+            talentSeed: 95,
             availabilityState: 'in_talks',
             competingSuitors: [{ heyaId: 'heya-1', interestBand: 'all_in', deadlineWeek: 1 }]
-          } 
+          }
         },
         pools: {
           high_school: { candidatesVisible: ['c1'] },

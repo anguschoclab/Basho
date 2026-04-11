@@ -28,7 +28,7 @@ export const STATURE_CONFIG: Record<
     label: "Legendary",
     labelJa: "伝説",
     difficulty: "Very Easy",
-    color: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    color: "bg-gold/20 text-gold border-gold/30",
     icon: Star
   },
   powerful: {
@@ -42,7 +42,7 @@ export const STATURE_CONFIG: Record<
     label: "Established",
     labelJa: "安定",
     difficulty: "Normal",
-    color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    color: "bg-west/20 text-west border-west/30",
     icon: Building2
   },
   rebuilding: {
@@ -63,7 +63,7 @@ export const STATURE_CONFIG: Record<
     label: "New",
     labelJa: "新規",
     difficulty: "Extreme",
-    color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+    color: "bg-success/20 text-success border-success/30",
     icon: Plus
   }
 };
@@ -138,7 +138,7 @@ export function HeyaCard({ heya, isSelected, onSelect, onPreview, isRecommended,
               </Badge>
             )}
             {governance && (
-              <Badge variant="outline" className="text-[9px] bg-yellow-500/10 text-yellow-600 border-yellow-500/20 font-bold">
+              <Badge variant="outline" className="text-[9px] bg-gold/10 text-gold border-gold/20 font-bold">
                 ⚖️ GOVERNANCE
               </Badge>
             )}

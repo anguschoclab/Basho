@@ -19,14 +19,13 @@
  */
 
 import type { PipelinePhase } from "../pipelineRunner";
-import { phase01_economy } from "../phases/phase01_economy";
-import { phase02_context } from "../phases/phase02_context";
-import { phase05_npcAI } from "../phases/phase05_npcAI";
-import { phase06_narrative } from "../phases/phase06_narrative";
+import * as phases from "../phases";
 
 export const bashoPipeline: PipelinePhase[] = [
-  phase01_economy,
-  phase02_context,
-  phase05_npcAI,
-  phase06_narrative,
+  phases.phase02_context, // Recompute ActiveModifiers (financialPenalty may still hit during basho)
+  phases.phase01_week_governance,
+  phases.phase01_week_npc_ai,
+  phases.phase01_week_recruitment,
+  phases.phase01_week_rivalries,
+  phases.phase06_narrative,
 ];

@@ -59,7 +59,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { IndividualFocusType, TrainingIntensity, TrainingFocus, RecoveryEmphasis, BeyaTrainingState } from "@/engine/types/training";
 
 const FOCUS_MODE_OPTIONS: { value: IndividualFocusType; label: string; description: string; icon: React.ReactNode; color: string }[] = [
-  { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" />, color: "bg-blue-500/10 text-blue-500" },
+  { value: "develop", label: "Develop", description: "Balanced growth for rising talent", icon: <TrendingUp className="h-4 w-4" />, color: "bg-west/10 text-west" },
   { value: "push", label: "Push", description: "Maximum growth, higher risk", icon: <Flame className="h-4 w-4" />, color: "bg-orange-500/10 text-orange-500" },
   { value: "protect", label: "Protect", description: "Lower risk, preserve current form", icon: <Shield className="h-4 w-4" />, color: "bg-success/10 text-success" },
   { value: "rebuild", label: "Rebuild", description: "Recovery-focused after injury", icon: <Heart className="h-4 w-4" />, color: "bg-red-500/10 text-red-500" },
@@ -224,7 +224,7 @@ export default function TrainingPage() {
                       <button
                         onClick={() => handleFocusChange(focus)}
                         className={cn(
-                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden w-full",
+                          "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                           isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
                         )}
                       >
@@ -252,7 +252,7 @@ export default function TrainingPage() {
                       <button
                         onClick={() => handleRecoveryChange(recovery)}
                         className={cn(
-                          "dossier-paper p-4 text-left rounded-xl transition-all relative overflow-hidden w-full",
+                          "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                           isActive ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2" : "opacity-60 hover:opacity-100"
                         )}
                       >
@@ -270,7 +270,7 @@ export default function TrainingPage() {
         {/* ═══ INDIVIDUAL DEVELOPMENT PLANS ═══ */}
         <section className="space-y-6 pt-10 border-t-2 border-dashed">
            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-secondary/10 rounded-xl">
+              <div className="p-3 bg-secondary/10 rounded-lg">
                  <BrainCircuit className="h-6 w-6 text-primary" />
               </div>
               <div>
@@ -290,7 +290,7 @@ export default function TrainingPage() {
                   return (
                     <div 
                       key={rikishi.id} 
-                      className="dossier-paper p-6 rounded-2xl flex flex-col md:flex-row md:items-center gap-8 group hover:border-primary/50 transition-all animate-in slide-in-from-left-4 fill-mode-both"
+                      className="dossier-paper p-6 rounded-lg flex flex-col md:flex-row md:items-center gap-8 group hover:border-primary/50 transition-all animate-in slide-in-from-left-4 fill-mode-both"
                       style={{ animationDelay: `${idx * 50}ms` }}
                     >
                        <div className="flex-1 min-w-0 flex items-center gap-6">
@@ -316,7 +316,7 @@ export default function TrainingPage() {
                           </div>
                        </div>
 
-                       <div className="flex items-center gap-2 shrink-0 bg-muted/30 p-2 rounded-2xl border border-dashed">
+                       <div className="flex items-center gap-2 shrink-0 bg-muted/30 p-2 rounded-lg border border-dashed">
                           {FOCUS_MODE_OPTIONS.map((opt) => {
                              const isActive = focus?.focusType === opt.value;
                              return (
@@ -324,7 +324,7 @@ export default function TrainingPage() {
                                  key={opt.value}
                                  onClick={() => handleIndividualFocusChange(rikishi.id, isActive ? null : opt.value)}
                                  className={cn(
-                                   "flex flex-col items-center justify-center h-14 w-20 rounded-xl transition-all gap-1",
+                                   "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
                                    isActive ? "bg-primary text-white shadow-lg scale-105" : "text-muted-foreground hover:bg-white/50"
                                  )}
                                  title={opt.description}
@@ -341,7 +341,7 @@ export default function TrainingPage() {
               })()}
               
               {rikishiList.length === 0 && (
-                <div className="py-24 text-center dossier-paper rounded-2xl border-dashed opacity-50 space-y-4">
+                <div className="py-24 text-center dossier-paper rounded-lg border-dashed opacity-50 space-y-4">
                    <Users className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
                    <p className="font-display italic text-sm">Review your roster directory to assign professional coaching targets.</p>
                 </div>

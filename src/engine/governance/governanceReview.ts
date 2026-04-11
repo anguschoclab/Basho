@@ -21,6 +21,12 @@ import { onRikishiRetired } from "../records";
 import { recordOyakataHandover } from "../lineage";
 import { rngForWorld, rngFromSeed } from "../rng";
 import { BardEngine } from "../narrative/BardEngine";
+import {
+  LOAN_ISSUANCE_THRESHOLD,
+  MERGER_THRESHOLD,
+  FACTION_BAILOUT_AMOUNT,
+  FACTION_BENEFACTOR_THRESHOLD
+} from "../constants/EconomicConstants";
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,
@@ -44,7 +50,7 @@ export function runGovernanceReview(world: WorldState): void {
       }, "headline");
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
-      if (heya.funds < -5_000_000) {
+      if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
         issueBailoutLoanIfNeeded(world, heya.id);
       }
 
@@ -52,10 +58,10 @@ export function runGovernanceReview(world: WorldState): void {
       if (heya.ichimon && heya.id !== world.playerHeyaId) {
          // Find a wealthy faction-mate to provide a gift
          const allies = Array.from(world.heyas.values()).filter(h => h.ichimon === heya.ichimon && h.id !== heya.id);
-         const benefactor = allies.find(h => h.funds > 60_000_000);
+         const benefactor = allies.find(h => h.funds > FACTION_BENEFACTOR_THRESHOLD);
          
          if (benefactor) {
-            const giftAmount = 10_000_000;
+            const giftAmount = FACTION_BAILOUT_AMOUNT;
             benefactor.funds -= giftAmount;
             heya.funds += giftAmount;
 
@@ -69,6 +75,18 @@ export function runGovernanceReview(world: WorldState): void {
                heyaId: benefactor.id
             }, "major");
          }
+      }
+      // === Insolvency-triggered merger for NPC stables with no rescue available ===
+      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
+        const targetId = findMergerTarget(world, heya.id);
+        if (targetId) {
+          EventBus.governanceRuling(world, heya.id, {
+            incident: "insolvency_merger",
+            reason: "extreme_debt",
+            money: heya.funds
+          }, "headline");
+          executeMerger(world, heya.id, targetId, "financial_insolvency");
+        }
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Clear financial risk indicator when no longer desperate
@@ -94,7 +112,6 @@ export function runGovernanceReview(world: WorldState): void {
         EventBus.governanceRuling(world, heya.id, {
           incident: "prestige_erosion",
           status: newBand,
-          reason: "Ongoing sanctions"
           reason: "sanctions_active"
         }, "notable");
       }
@@ -102,12 +119,10 @@ export function runGovernanceReview(world: WorldState): void {
 
     // === Council scandal reaction ===
     if (scandalScore >= 40) {
-      const severityLabel = scandalScore >= 80 ? "severe" : scandalScore >= 60 ? "significant" : "concerning";
       const councilRng = rngFromSeed(`council-review-${heya.id}-${world.week}`, "narrative", "event");
       EventBus.governanceRuling(world, heya.id, {
         incident: "council_scandal_review",
-        score: Math.floor(scandalScore),
-        severity: severityLabel
+        score: Math.floor(scandalScore)
       }, scandalScore >= 60 ? "major" : "notable");
 
     }
@@ -127,7 +142,7 @@ export function runGovernanceReview(world: WorldState): void {
           world,
           heyaId: heya.id,
           templatePath: 'institutional.governance.low_roster_headline',
-          severity: 'major'
+          severity: 'national'
         });
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)

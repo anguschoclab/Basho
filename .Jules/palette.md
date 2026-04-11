@@ -1,3 +1,3 @@
-## 2024-04-09 - Accessible File Input Buttons
-**Learning:** Hiding file inputs with `display: none` (`className="hidden"`) completely removes them from the tab order, stranding keyboard users when the input is wrapped in a custom UI component like a `<Button asChild>`.
-**Action:** Always visually hide file inputs using `sr-only` instead of `hidden`, and use Tailwind's `peer` along with `peer-focus-visible` classes on the adjacent visible button to properly render a focus ring.
+## 2024-05-18 - Missing TooltipWrap Import
+**Learning:** React files might be using `TooltipWrap` without importing it, likely depending on some global availability which fails during lint/typecheck or causes silent bugs if it's actually not globally available, or perhaps the lint is passing but the import is genuinely missing in some components like FloatingShortcuts.tsx.
+**Action:** Always ensure `TooltipWrap` is explicitly imported from `@/components/ui/tooltip-wrap`.

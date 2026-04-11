@@ -1,4 +1,3 @@
-import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 
 export function heyaSlice(state: GameState, action: GameAction): GameState {
@@ -8,7 +7,7 @@ export function heyaSlice(state: GameState, action: GameAction): GameState {
     
     case "SET_PLAYER_HEYA": {
       if (!state.world) return state;
-      const world = cloneWorldForTick(state.world);
+      const world = { ...state.world, heyas: new Map(state.world.heyas) };
       const heya = world.heyas.get(action.heyaId);
       if (heya) heya.isPlayerOwned = true;
       

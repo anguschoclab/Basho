@@ -1,4 +1,4 @@
-import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router'
+import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet, createHashHistory, createBrowserHistory } from '@tanstack/react-router'
 import App from './App'
 import MainMenu from './pages/MainMenu'
 import NewGameWizard from './pages/NewGameWizard'
@@ -74,7 +74,7 @@ const jsaTalentNestedRoute = createRoute({ getParentRoute: () => jsaBaseRoute, p
 const jsaMyosekiRoute = createRoute({ getParentRoute: () => rootRoute, path: '/myoseki', component: MyosekiMarketPage })
 
 // --- TOURNAMENT SECTION ---
-const tournamentBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: '/tournament' })
+
 const bashoRoute = createRoute({ getParentRoute: () => rootRoute, path: '/basho', component: BashoPage })
 const banzukeRoute = createRoute({ getParentRoute: () => rootRoute, path: '/banzuke', component: BanzukePage })
 const scheduleRoute = createRoute({ getParentRoute: () => rootRoute, path: '/schedule', component: SchedulePage })
@@ -157,7 +157,21 @@ const routeTree = rootRoute.addChildren([
   notFoundRoute,
 ])
 
-export const router = createRouter({ routeTree })
+// In Electron production the app loads from file://, where browser history
+// path traversal fails (e.g. /dashboard → file:///dashboard — not found).
+// Use hash routing (#/dashboard) in that case only.
+// In Electron dev mode ELECTRON_RENDERER_URL is http://localhost:5173 so
+// window.location.href starts with 'http' and browser history is used.
+// In the PWA browser __ELECTRON__ is undefined so browser history is used.
+const isElectronProd =
+  typeof window !== 'undefined' &&
+  (window as unknown as { __ELECTRON__?: boolean }).__ELECTRON__ === true &&
+  !window.location.href.startsWith('http')
+
+export const router = createRouter({
+  routeTree,
+  history: isElectronProd ? createHashHistory() : createBrowserHistory(),
+})
 
 declare module '@tanstack/react-router' {
   interface Register {

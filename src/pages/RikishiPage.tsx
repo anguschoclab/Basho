@@ -159,7 +159,7 @@ export default function RikishiPage() {
               {rikishi.nationality !== "Japan" && (
                 <div className="mb-10 p-6 bg-gold/5 border-2 border-gold/10 rounded-lg relative overflow-hidden group">
                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <UserPlus className="h-24 w-24 text-amber-600" />
+                      <UserPlus className="h-24 w-24 text-gold" />
                    </div>
                    <div className="flex items-center justify-between mb-6 relative z-10">
                       <div>
@@ -235,7 +235,7 @@ export default function RikishiPage() {
                          </h3>
                          <div className="bg-muted/20 border-2 border-dashed rounded-lg p-6 space-y-4 opacity-70">
                             <div className="flex items-start gap-4">
-                               <div className="h-10 w-10 bg-muted rounded-full flex items-center justify-center shrink-0">
+                               <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center shrink-0">
                                   <Info className="h-5 w-5 text-muted-foreground" />
                                </div>
                                <p className="text-sm italic font-display leading-relaxed">
@@ -260,7 +260,7 @@ export default function RikishiPage() {
                       <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
                         <Shield className="h-5 w-5 text-primary" /> Combat Archetype
                       </h3>
-                      <div className="bg-muted/30 border-2 border-border/50 rounded-2xl p-6 space-y-4">
+                      <div className="bg-muted/30 border-2 border-border/50 rounded-lg p-6 space-y-4">
                         <div className="flex items-center gap-3">
                           <Badge className="text-[11px] font-black uppercase tracking-widest px-3 h-7 bg-primary/80">
                             {rikishi.archetypeName}
@@ -270,11 +270,11 @@ export default function RikishiPage() {
                           </Badge>
                         </div>
                         <div className="grid grid-cols-2 gap-3 pt-2">
-                          <div className="bg-muted/40 rounded-xl p-3 space-y-1">
+                          <div className="bg-muted/40 rounded-lg p-3 space-y-1">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Preferred Grip</p>
                             <p className="text-sm font-display font-black capitalize">{rikishi.preferredGrip === 'none' ? 'No Preference' : rikishi.preferredGrip}</p>
                           </div>
-                          <div className="bg-muted/40 rounded-xl p-3 space-y-1">
+                          <div className="bg-muted/40 rounded-lg p-3 space-y-1">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Grip Depth</p>
                             <p className="text-sm font-display font-black capitalize">{rikishi.preferredGripDepth}</p>
                           </div>
@@ -303,10 +303,10 @@ export default function RikishiPage() {
                       </h3>
                       <div className="space-y-3">
                         {([
-                          { label: "Push / Thrust", key: "push", color: "bg-amber-500" },
-                          { label: "Belt / Grapple", key: "belt", color: "bg-blue-500" },
+                          { label: "Push / Thrust", key: "push", color: "bg-gold" },
+                          { label: "Belt / Grapple", key: "belt", color: "bg-west" },
                           { label: "Trick / Evasion", key: "trick", color: "bg-purple-500" },
-                          { label: "Speed / Angle", key: "speed", color: "bg-emerald-500" },
+                          { label: "Speed / Angle", key: "speed", color: "bg-success" },
                         ] as const).map(({ label, key, color }) => {
                           const rawPref = (rawRikishi.combatProfile?.familyPreferences as any)?.[key] ?? 25;
                           const total = Object.values(rawRikishi.combatProfile?.familyPreferences ?? { push: 25, belt: 25, trick: 25, speed: 25 }).reduce((a: number, b) => a + (b as number), 0);
@@ -327,11 +327,11 @@ export default function RikishiPage() {
 
                       {/* Condition / Morale snapshot */}
                       <div className="pt-4 grid grid-cols-2 gap-3">
-                        <div className="bg-muted/30 rounded-xl p-3 space-y-1 border border-border/40">
+                        <div className="bg-muted/30 rounded-lg p-3 space-y-1 border border-border/40">
                           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Condition</p>
                           <p className="text-lg font-display font-black">{rikishi.conditionDescriptor}</p>
                         </div>
-                        <div className="bg-muted/30 rounded-xl p-3 space-y-1 border border-border/40">
+                        <div className="bg-muted/30 rounded-lg p-3 space-y-1 border border-border/40">
                           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Morale</p>
                           <p className="text-lg font-display font-black">{rikishi.moraleDescriptor}</p>
                         </div>
@@ -343,14 +343,14 @@ export default function RikishiPage() {
                   {rikishi.topRivals.length > 0 && (
                     <div className="space-y-4 pt-4 border-t border-dashed border-border">
                       <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
-                        <Zap className="h-5 w-5 text-amber-500" /> Top Rivals
+                        <Zap className="h-5 w-5 text-gold" /> Top Rivals
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {rikishi.topRivals.map((rival, i) => (
-                          <div key={i} className="bg-muted/20 border border-border/40 rounded-xl p-4 space-y-2 hover:border-primary/30 transition-colors">
+                          <div key={i} className="bg-muted/20 border border-border/40 rounded-lg p-4 space-y-2 hover:border-primary/30 transition-colors">
                             <p className="text-sm font-display font-black uppercase tracking-tight truncate">{rival.opponentShikona}</p>
                             <div className="flex items-center gap-2">
-                              <span className={cn("text-xl font-display font-black", rival.wins >= rival.losses ? "text-emerald-500" : "text-amber-500")}>{rival.record}</span>
+                              <span className={cn("text-xl font-display font-black", rival.wins >= rival.losses ? "text-success" : "text-gold")}>{rival.record}</span>
                               <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{rival.totalBouts} bouts</span>
                             </div>
                           </div>
@@ -394,7 +394,7 @@ export default function RikishiPage() {
                                 </td>
                                 <td className="py-4 px-6 text-center tabular-nums">
                                   <div className="flex flex-col items-center">
-                                     <div className={cn("text-lg font-display font-black", snap.wins >= snap.losses ? "text-emerald-500" : "text-amber-500")}>
+                                     <div className={cn("text-lg font-display font-black", snap.wins >= snap.losses ? "text-success" : "text-gold")}>
                                        {snap.wins}-{snap.losses}
                                      </div>
                                      <div className="text-[8px] uppercase font-black opacity-40">{snap.wins >= 8 ? 'Kachi-Koshi' : 'Make-Koshi'}</div>
@@ -403,10 +403,10 @@ export default function RikishiPage() {
                                 <td className="py-4 px-6">
                                    <div className="flex items-center justify-center gap-2">
                                      {snap.isYusho && <TooltipWrap content="Basho Yusho: Tournament Champion"><Trophy className="h-5 w-5 text-gold animate-pulse cursor-help" /></TooltipWrap>}
-                                     {snap.isJunYusho && <TooltipWrap content="Jun-Yusho: Runner-up"><Star className="h-4 w-4 text-amber-300 cursor-help" /></TooltipWrap>}
+                                     {snap.isJunYusho && <TooltipWrap content="Jun-Yusho: Runner-up"><Star className="h-4 w-4 text-gold cursor-help" /></TooltipWrap>}
                                      {snap.specialPrizes.shukunsho && <TooltipWrap content="Shukun-sho: Outstanding Performance Prize"><Medal className="h-4 w-4 text-purple-400 cursor-help" /></TooltipWrap>}
-                                     {snap.specialPrizes.kantosho && <TooltipWrap content="Kanto-sho: Fighting Spirit Prize"><Medal className="h-4 w-4 text-emerald-400 cursor-help" /></TooltipWrap>}
-                                     {snap.specialPrizes.ginosho && <TooltipWrap content="Gino-sho: Technique Prize"><Medal className="h-4 w-4 text-blue-400 cursor-help" /></TooltipWrap>}
+                                     {snap.specialPrizes.kantosho && <TooltipWrap content="Kanto-sho: Fighting Spirit Prize"><Medal className="h-4 w-4 text-success cursor-help" /></TooltipWrap>}
+                                     {snap.specialPrizes.ginosho && <TooltipWrap content="Gino-sho: Technique Prize"><Medal className="h-4 w-4 text-west cursor-help" /></TooltipWrap>}
                                      {!snap.isYusho && !snap.isJunYusho && !Object.values(snap.specialPrizes).some(v => v) && (
                                        <span className="text-muted-foreground text-[10px] font-black opacity-30 tracking-widest">NONE</span>
                                      )}
@@ -439,7 +439,7 @@ export default function RikishiPage() {
                     </h3>
                     <div className="relative pl-10 space-y-12 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-1 before:bg-muted before:rounded-full">
                        {milestones.length === 0 ? (
-                         <div className="py-10 text-center bg-muted/20 border-2 border-dashed rounded-2xl opacity-50">
+                         <div className="py-10 text-center bg-muted/20 border-2 border-dashed rounded-lg opacity-50">
                             <p className="text-sm font-display italic">This rikishi has not yet participated in Association milestones.</p>
                          </div>
                        ) : (

@@ -1,7 +1,7 @@
 import { getStorageProvider, type IStorageProvider } from "../storageProvider";
 import { stableTieBreak } from "../utils/sort";
 import { destr } from "destr";
-import type { SaveGame, SaveVersion, BashoName } from "../types";
+import type { SaveGame, SaveVersion, BashoName } from "../types/index";
 
 const SAVE_KEY_PREFIX = "basho_save_";
 const AUTOSAVE_SLOT_NAME = "autosave";

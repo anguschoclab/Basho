@@ -10,8 +10,8 @@ import {
   type RikishiDescriptor,
   type PotentialBand
 } from "../engine/descriptorBands";
-import { getCareerPhase } from "../engine/training";
-import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+import { getCareerPhase } from "../engine/systems/training/TrainingMath";
+import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/systems/recruitment/ScoutingService";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
@@ -395,7 +395,7 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
-    archetypeLabel: r.combatProfile?.archetype ? BardEngine.getRegistryEntry('archetypes', r.combatProfile.archetype)?.label : undefined,
+    archetypeLabel: BardEngine.getRegistryEntry('archetypes', r.combatProfile?.archetype ?? r.archetype ?? (r as any).derivedArchetype)?.label || "Rikishi",
     rankDelta,
   };
 

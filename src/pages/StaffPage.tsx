@@ -65,16 +65,16 @@ const ROLE_DESCRIPTIONS: Record<StaffRole, string> = {
 const BAND_COLORS: Record<string, string> = {
   monstrous: "text-purple-500",
   dominant: "text-primary",
-  great: "text-emerald-500",
-  strong: "text-green-500",
-  serviceable: "text-blue-500",
+  great: "text-success",
+  strong: "text-success",
+  serviceable: "text-west",
   limited: "text-orange-500",
   feeble: "text-red-500",
-  respectable: "text-emerald-500",
-  respected: "text-emerald-500",
+  respectable: "text-success",
+  respected: "text-success",
   renowned: "text-primary",
   legendary: "text-purple-500",
-  devoted: "text-emerald-500",
+  devoted: "text-success",
   unshakable: "text-purple-500",
 };
 
@@ -166,7 +166,7 @@ export default function StaffPage() {
             <Dialog open={isRecruitOpen} onOpenChange={setIsRecruitOpen}>
               <DialogTrigger asChild>
                 <TooltipWrap content="Hire a new specialist to improve your stable's performance" side="top">
-                  <button className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
+                  <button className="flex flex-col items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
                       <UserPlus className="h-6 w-6 text-primary" />
                     </div>
@@ -249,7 +249,7 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center border border-border/50">
+            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center border border-border/50">
               <Briefcase className="h-6 w-6 text-muted-foreground" />
             </div>
             <div>

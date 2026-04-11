@@ -214,7 +214,7 @@ export function PressConference({ world, open, onClose }: PressConferenceProps) 
 
                 <div className="flex gap-3 text-xs justify-center">
                   {totalEffects.reputation > 0 && (
-                    <Badge variant="outline" className="gap-1 text-emerald-500">
+                    <Badge variant="outline" className="gap-1 text-success">
                       <TrendingUp className="h-3 w-3" /> Rep +{totalEffects.reputation}
                     </Badge>
                   )}
@@ -224,7 +224,7 @@ export function PressConference({ world, open, onClose }: PressConferenceProps) 
                     </Badge>
                   )}
                   {totalEffects.mediaHeat > 5 && (
-                    <Badge variant="outline" className="gap-1 text-amber-500">
+                    <Badge variant="outline" className="gap-1 text-gold">
                       <Newspaper className="h-3 w-3" /> Media Heat +{totalEffects.mediaHeat}
                     </Badge>
                   )}

@@ -169,9 +169,11 @@ export const EventBus = {
   },
 
   governanceRuling: (world: WorldState, heyaId: Id, ctx: NarrativeContext, importance: EventImportance = "major") => {
+    const heya = world.heyas.get(heyaId);
+    const enrichedCtx: NarrativeContext = { heya: heya?.name, heyaname: heya?.name, ...ctx };
     const rng = rngFromSeed(`gov-${heyaId}-${world.year}-${world.week}-${ctx.incident}`, "narrative", "event");
-    const titleRes = BardEngine.resolve(rng, "events.governance.title", ctx);
-    const summaryRes = BardEngine.resolve(rng, "events.governance.summary", ctx);
+    const titleRes = BardEngine.resolve(rng, "events.governance.title", enrichedCtx);
+    const summaryRes = BardEngine.resolve(rng, "events.governance.summary", enrichedCtx);
 
     return logEngineEvent(world, {
       type: "GOVERNANCE_RULING",
@@ -181,7 +183,7 @@ export const EventBus = {
       heyaId,
       title: titleRes.text,
       summary: summaryRes.text,
-      data: ctx,
+      data: enrichedCtx,
       tags: ["governance", "discipline"]
     });
   },

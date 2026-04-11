@@ -2,8 +2,8 @@ import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
 import { runArchivalPruning } from "./archival";
 import { destr } from "destr";
-import type { WorldState, SaveGame, SaveVersion } from "./types";
-import { CURRENT_SAVE_VERSION } from "./types";
+import type { WorldState, SaveGame, SaveVersion } from "./types/index";
+import { CURRENT_SAVE_VERSION } from "./types/index";
 
 export type { SaveSlotInfo };
 

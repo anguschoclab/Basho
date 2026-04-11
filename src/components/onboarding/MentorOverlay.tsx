@@ -62,7 +62,7 @@ export function MentorOverlay({
     <div
       className={cn(
         "absolute bottom-6 left-1/2 -translate-x-1/2 w-[min(90vw,420px)] z-50",
-        "bg-card border-2 border-primary/20 rounded-2xl shadow-2xl p-5",
+        "bg-card border-2 border-primary/20 rounded-lg shadow-2xl p-5",
         "animate-in slide-in-from-bottom-4 fade-in duration-500",
         className
       )}

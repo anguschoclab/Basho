@@ -5,6 +5,7 @@
 
 import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
+import type { Heya } from "../engine/types/heya";
 import type { EngineEvent, EventCategory } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
 import { getCachedPerception } from "./uiDigest";
@@ -150,4 +151,34 @@ export const selectTopRivals = createSelector((world: WorldState) => {
   const order = ["elite", "respected", "modest", "struggling", "unknown"];
   entries.sort((a, b) => order.indexOf(a.prestige) - order.indexOf(b.prestige));
   return entries.slice(0, 6);
+});
+
+/**
+ * Select all retired rikishi (from historicalRikishi).
+ */
+export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
+  return Array.from(world.historicalRikishi.values());
+});
+
+/**
+ * Select heyas with critical welfare risk (welfareRisk >= 55 or non-compliant).
+ */
+export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState): Heya[] => {
+  return Array.from(world.heyas.values()).filter(h => {
+    const ws = h.welfareState;
+    if (!ws) return false;
+    return ws.welfareRisk >= 55 || ws.complianceState === "sanctioned" || ws.complianceState === "non_compliant";
+  });
+});
+
+/**
+ * Select heyas that are merger candidates: in debt with a small roster.
+ * Excludes the player stable.
+ */
+export const selectMergerCandidates = createSelector((world: WorldState): Heya[] => {
+  return Array.from(world.heyas.values()).filter(h => {
+    if (h.id === world.playerHeyaId) return false;
+    const rosterSize = h.rikishiIds?.length ?? 0;
+    return h.funds < 0 && rosterSize <= 3;
+  }).sort((a, b) => a.funds - b.funds); // worst debt first
 });

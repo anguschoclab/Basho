@@ -25,15 +25,15 @@ const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {
 };
 
 const CATEGORY_GRADIENT: Record<HoFCategory, string> = {
-  champion: "from-amber-500/20 to-amber-500/5 border-amber-500/30",
-  iron_man: "from-blue-500/20 to-blue-500/5 border-blue-500/30",
-  technician: "from-emerald-500/20 to-emerald-500/5 border-emerald-500/30",
+  champion: "from-gold/20 to-gold/5 border-gold/30",
+  iron_man: "from-west/20 to-west/5 border-west/30",
+  technician: "from-success/20 to-success/5 border-success/30",
 };
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
-  champion: "text-amber-400",
-  iron_man: "text-blue-400",
-  technician: "text-emerald-400",
+  champion: "text-gold",
+  iron_man: "text-west",
+  technician: "text-success",
 };
 
 const RANK_JA: Record<string, string> = {
@@ -102,13 +102,13 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
             {/* Career Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
               {inductee.stats.yushoCount != null && (
-                <StatBox icon={Trophy} label="Yūshō" value={inductee.stats.yushoCount} accent="text-amber-400" />
+                <StatBox icon={Trophy} label="Yūshō" value={inductee.stats.yushoCount} accent="text-gold" />
               )}
               {inductee.stats.consecutiveBasho != null && (
-                <StatBox icon={Shield} label="Basho Streak" value={inductee.stats.consecutiveBasho} accent="text-blue-400" />
+                <StatBox icon={Shield} label="Basho Streak" value={inductee.stats.consecutiveBasho} accent="text-west" />
               )}
               {inductee.stats.ginoShoCount != null && (
-                <StatBox icon={Target} label="Ginō-shō" value={inductee.stats.ginoShoCount} accent="text-emerald-400" />
+                <StatBox icon={Target} label="Ginō-shō" value={inductee.stats.ginoShoCount} accent="text-success" />
               )}
               {inductee.stats.careerWins != null && (
                 <StatBox icon={TrendingUp} label="Career Record" value={`${inductee.stats.careerWins}-${inductee.stats.careerLosses ?? 0}`} accent="text-foreground" />
@@ -138,7 +138,7 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
                 <div className="space-y-1">
                   {inductee.greatestFights.map((f: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
-                      <span className="text-emerald-400">W</span>
+                      <span className="text-success">W</span>
                       <span className="text-muted-foreground">vs</span>
                       <span className="font-medium">{f.opponentName}</span>
                       <Badge className="text-[9px]">{f.kimarite}</Badge>
@@ -196,7 +196,7 @@ function CategoryTab({ category, inductees }: { category: HoFCategory; inductees
         {byYear.map(([year, inds]) => (
           <div key={year}>
             <div className="flex items-center gap-2 mb-3">
-              <Star className="h-4 w-4 text-amber-400" />
+              <Star className="h-4 w-4 text-gold" />
               <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
               <Badge variant="secondary" className="text-[10px]">{inds.length}</Badge>
             </div>
@@ -241,7 +241,7 @@ function AllInducteesTab({ inductees }: { inductees: any[] }) {
         {byYear.map(([year, inds]) => (
           <div key={year}>
             <div className="flex items-center gap-2 mb-3">
-              <Star className="h-4 w-4 text-amber-400" />
+              <Star className="h-4 w-4 text-gold" />
               <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
               <Separator className="flex-1" />
             </div>
@@ -289,10 +289,10 @@ export default function HallOfFamePage() {
       <Helmet><title>Hall of Fame — Sumo Manager</title></Helmet>
       <div className="space-y-6">
         {/* Hero Header */}
-        <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-amber-500/10 via-background to-primary/5 p-6">
+        <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-gold/10 via-background to-primary/5 p-6">
           <div className="absolute top-2 right-4 text-6xl opacity-10">🏛️</div>
           <div className="flex items-center gap-3">
-            <Award className="h-8 w-8 text-amber-400" />
+            <Award className="h-8 w-8 text-gold" />
             <div>
               <h1 className="text-2xl font-display font-bold">Hall of Fame</h1>
               <p className="text-sm text-muted-foreground mt-0.5">
@@ -306,15 +306,15 @@ export default function HallOfFamePage() {
           {totalInductees > 0 && (
             <div className="flex gap-6 mt-4">
               <div className="text-center">
-                <div className="text-xl font-display font-bold text-amber-400">{byCategory.champion.length}</div>
+                <div className="text-xl font-display font-bold text-gold">{byCategory.champion.length}</div>
                 <div className="text-[10px] text-muted-foreground">Champions</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-display font-bold text-blue-400">{byCategory.iron_man.length}</div>
+                <div className="text-xl font-display font-bold text-west">{byCategory.iron_man.length}</div>
                 <div className="text-[10px] text-muted-foreground">Iron Men</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-display font-bold text-emerald-400">{byCategory.technician.length}</div>
+                <div className="text-xl font-display font-bold text-success">{byCategory.technician.length}</div>
                 <div className="text-[10px] text-muted-foreground">Technicians</div>
               </div>
             </div>

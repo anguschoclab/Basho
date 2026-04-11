@@ -7,9 +7,9 @@ import type { WorldState } from "@/engine/types/world";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
 const CATEGORY_CEREMONY: Record<HoFCategory, { icon: React.ElementType; color: string; titleJa: string }> = {
-  champion: { icon: Trophy, color: "text-amber-400", titleJa: "殿堂入り" },
-  iron_man: { icon: Shield, color: "text-blue-400", titleJa: "鉄人殿堂" },
-  technician: { icon: Target, color: "text-emerald-400", titleJa: "技能殿堂" },
+  champion: { icon: Trophy, color: "text-gold", titleJa: "殿堂入り" },
+  iron_man: { icon: Shield, color: "text-west", titleJa: "鉄人殿堂" },
+  technician: { icon: Target, color: "text-success", titleJa: "技能殿堂" },
 };
 
 const CEREMONY_STEPS: Record<HoFCategory, string[]> = {
@@ -99,7 +99,7 @@ export function HoFInductionCeremony({ inductee, world, open, onClose }: Props) 
         </>
       }
       steps={steps}
-      finalVerdictClassName="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5 text-center"
+      finalVerdictClassName="p-4 rounded-lg border border-gold/30 bg-gold/5 text-center"
       finalVerdictContent={
         <>
           <p className="font-display text-lg font-bold">

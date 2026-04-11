@@ -107,13 +107,13 @@ export interface RikishiDescriptor {
  */
 export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
   return {
-    powerBand: NarrativeService.getStatBand(r.power, prev?.powerBand) || ("Average" as any),
-    speedBand: NarrativeService.getStatBand(r.speed, prev?.speedBand) || ("Average" as any),
-    balanceBand: NarrativeService.getStatBand(r.balance, prev?.balanceBand) || ("Average" as any),
-    techniqueBand: NarrativeService.getStatBand(r.technique, prev?.techniqueBand) || ("Average" as any),
+    powerBand: NarrativeService.getStatBand(r.power, prev?.powerBand),
+    speedBand: NarrativeService.getStatBand(r.speed, prev?.speedBand),
+    balanceBand: NarrativeService.getStatBand(r.balance, prev?.balanceBand),
+    techniqueBand: NarrativeService.getStatBand(r.technique, prev?.techniqueBand),
     conditionBand: "peak", // Simplified legacy field
-    fatigueBand: NarrativeService.getFatigueBand(r.fatigue, prev?.fatigueBand) || ("Fresh" as any),
-    momentumBand: NarrativeService.getMomentumBand(r.momentum) || ("Neutral" as any),
+    fatigueBand: NarrativeService.getFatigueBand(r.fatigue, prev?.fatigueBand),
+    momentumBand: NarrativeService.getMomentumBand(r.momentum),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],

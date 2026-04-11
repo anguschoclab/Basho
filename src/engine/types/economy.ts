@@ -75,6 +75,12 @@ export interface GovernanceRuling {
     prestigePenalty?: number;
     scandalScoreDelta?: number;
   };
+  /** Player's choice when responding to this ruling/event */
+  playerChoice?: string;
+  /** Player's custom response text */
+  playerResponse?: string;
+  /** Severity chosen by player when issuing a ruling */
+  playerSeverity?: "lenient" | "standard" | "harsh";
 }
 
 /** Type representing loan type. */

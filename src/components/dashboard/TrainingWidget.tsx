@@ -16,8 +16,8 @@ import type {
   TrainingIntensity,
   TrainingFocus,
   RecoveryEmphasis,
-} from "@/engine/training";
-import type { TrainingProfile } from "@/engine/types/training";
+  TrainingProfile 
+} from "@/engine/types/training";
 import {
   INTENSITY_MULTIPLIERS,
   RECOVERY_MULTIPLIERS,
@@ -254,6 +254,49 @@ export function TrainingWidget() {
       updateWorld({ ...world });
     },
     [world, maxIntensityIdx, updateWorld],
+  );
+
+  const intensityOptions = useMemo(
+    () =>
+      INTENSITY_OPTIONS.map((v, i) => ({
+        value: v,
+        label: v.charAt(0).toUpperCase() + v.slice(1),
+        disabled: i > maxIntensityIdx,
+      })),
+    [maxIntensityIdx],
+  );
+
+  const focusOptions = useMemo(
+    () =>
+      FOCUS_OPTIONS.map((v) => ({
+        value: v,
+        label: FOCUS_LABELS[v],
+      })),
+    [],
+  );
+
+  const recoveryOptions = useMemo(
+    () =>
+      RECOVERY_OPTIONS.map((v) => ({
+        value: v,
+        label: RECOVERY_LABELS[v],
+      })),
+    [],
+  );
+
+  const handleIntensityChange = React.useCallback(
+    (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
+    [updateProfile],
+  );
+
+  const handleFocusChange = React.useCallback(
+    (v: string) => updateProfile({ focus: v as TrainingFocus }),
+    [updateProfile],
+  );
+
+  const handleRecoveryChange = React.useCallback(
+    (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
+    [updateProfile],
   );
 
   return (

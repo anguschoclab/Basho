@@ -6,6 +6,7 @@
 import { WorldState } from "../../types/world";
 import { MediaState, MediaHeadline, MediaTone, MediaBeat, HeadlineTier } from "../../types/media";
 import { BoutResult, BashoName } from "../../types/basho";
+import type { GovernanceRuling } from "../../types/economy";
 import { Division } from "../../types/banzuke";
 import { rngForWorld } from "../../rng";
 import { Id } from "../../types/common";
@@ -318,7 +319,7 @@ export function generateGovernanceHeadline(args: {
   severity?: HeadlineTier;
 }): void {
   const { world, heyaId, templatePath, severity = 'minor' } = args;
-  if (!world.mediaState) return;
+  if (!world.mediaState || !world.mediaState.headlines) return;
 
   const heya = world.heyas.get(heyaId);
   const context = {
@@ -354,6 +355,39 @@ export function generateGovernanceHeadline(args: {
   world.mediaState.heyaPressure[heyaId] = Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + (headline.impact / 2));
 
   console.log(`MediaService: Generated Governance Headline: ${title}`);
+}
+
+/**
+ * Handles a media event choice and applies its effects.
+ */
+export function handleMediaEvent(world: WorldState, eventId: string, choice: string): void {
+  if (!world.mediaState) return;
+
+  // Find the event in the governance log or media state
+  const eventIndex = world.governanceLog?.findIndex(r => r.id === eventId);
+  if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
+    // Update the ruling with the player's choice
+    const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
+    ruling.playerChoice = choice;
+    ruling.playerResponse = `Player chose: ${choice}`;
+  }
+
+  // Apply choice effects to media state
+  // Different choices could affect heat/pressure differently
+  if (choice === "apologize") {
+    // Apologizing reduces heat but may hurt reputation
+    for (const [id, heat] of Object.entries(world.mediaState.mediaHeat)) {
+      world.mediaState.mediaHeat[id] = Math.max(0, (heat as number) - 5);
+    }
+  } else if (choice === "deny") {
+    // Denying may increase pressure
+    for (const [id, pressure] of Object.entries(world.mediaState.heyaPressure)) {
+      world.mediaState.heyaPressure[id] = Math.min(100, (pressure as number) + 5);
+    }
+  } else if (choice === "ignore") {
+    // Ignoring has no immediate effect but may cause decay
+    // Natural decay will happen in weekly boundary
+  }
 }
 
 /**

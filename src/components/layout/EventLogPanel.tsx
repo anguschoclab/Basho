@@ -39,7 +39,7 @@ const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; label: st
   scouting: { icon: Search, color: "text-primary", label: "Scouting" },
   media: { icon: MessageCircle, color: "text-muted-foreground", label: "Media" },
   milestone: { icon: Star, color: "text-gold", label: "Milestone" },
-  facility: { icon: Wrench, color: "text-blue-400", label: "Facility" },
+  facility: { icon: Wrench, color: "text-west", label: "Facility" },
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 
@@ -265,7 +265,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
           
           {grouped.map((group, gi) => (
             <div key={gi}>
-              <div className="sticky top-0 z-10 px-2 py-1 bg-card/90 backdrop-blur">
+              <div className="sticky top-0 z-10 px-2 py-1 bg-card/90">
                 <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                   {group.label}
                 </span>

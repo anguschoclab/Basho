@@ -46,7 +46,7 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
   return (
     <Dialog open={!!heya} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 border-0 bg-transparent shadow-none">
-        <div className="bg-background rounded-xl border-2 border-primary/20 shadow-2xl overflow-hidden flex flex-col h-full animate-in zoom-in-95 duration-300">
+        <div className="bg-background rounded-lg border-2 border-primary/20 shadow-2xl overflow-hidden flex flex-col h-full animate-in zoom-in-95 duration-300">
           
           {/* Hero Header */}
           <div className="bg-primary pt-8 pb-6 px-6 relative overflow-hidden text-primary-foreground">
@@ -68,7 +68,7 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                    {heya.nameJa && <p className="text-xl font-display opacity-80">{heya.nameJa}</p>}
                 </div>
                 <div className="flex flex-col items-end text-right">
-                   <div className="h-16 w-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
+                   <div className="h-16 w-16 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
                       <Building className="h-8 w-8" />
                    </div>
                    <div className="mt-2 text-[10px] uppercase font-bold tracking-widest opacity-60">Established {heya.id.slice(0, 4)}</div>

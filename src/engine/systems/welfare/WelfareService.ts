@@ -109,7 +109,12 @@ export const WelfareService = {
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
-          generateGovernanceHeadline(world, heya.id, "minor", "Heya placed under regulatory watch for welfare concerns.");
+          generateGovernanceHeadline({
+            world, 
+            heyaId: heya.id, 
+            templatePath: 'institutional.welfare.watch_headline',
+            severity: "minor"
+          });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 15);
           }
@@ -132,7 +137,12 @@ export const WelfareService = {
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
-          generateGovernanceHeadline(world, heya.id, "major", `Full-scale investigation opened into ${heya.name}.`);
+          generateGovernanceHeadline({
+            world, 
+            heyaId: heya.id, 
+            templatePath: 'institutional.welfare.investigation_headline',
+            severity: "major"
+          });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 30);
           }

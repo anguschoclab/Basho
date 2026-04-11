@@ -7,33 +7,115 @@
   "digests": [],
   "registry": {
     "ranks": {
-      "yokozuna": { "labelJa": "横綱", "label": "Yokozuna" },
-      "ozeki": { "labelJa": "大関", "label": "Ōzeki" },
-      "sekiwake": { "labelJa": "関脇", "label": "Sekiwake" },
-      "komusubi": { "labelJa": "小結", "label": "Komusubi" },
-      "maegashira": { "labelJa": "前頭", "label": "Maegashira" },
-      "juryo": { "labelJa": "十両", "label": "Jūryō" },
-      "makushita": { "labelJa": "幕下", "label": "Makushita" },
-      "sandanme": { "labelJa": "三段目", "label": "Sandanme" },
-      "jonidan": { "labelJa": "序二段", "label": "Jonidan" },
-      "jonokuchi": { "labelJa": "序ノ口", "label": "Jonokuchi" }
+      "yokozuna": {
+        "labelJa": "横綱",
+        "label": "Yokozuna"
+      },
+      "ozeki": {
+        "labelJa": "大関",
+        "label": "Ōzeki"
+      },
+      "sekiwake": {
+        "labelJa": "関脇",
+        "label": "Sekiwake"
+      },
+      "komusubi": {
+        "labelJa": "小結",
+        "label": "Komusubi"
+      },
+      "maegashira": {
+        "labelJa": "前頭",
+        "label": "Maegashira"
+      },
+      "juryo": {
+        "labelJa": "十両",
+        "label": "Jūryō"
+      },
+      "makushita": {
+        "labelJa": "幕下",
+        "label": "Makushita"
+      },
+      "sandanme": {
+        "labelJa": "三段目",
+        "label": "Sandanme"
+      },
+      "jonidan": {
+        "labelJa": "序二段",
+        "label": "Jonidan"
+      },
+      "jonokuchi": {
+        "labelJa": "序ノ口",
+        "label": "Jonokuchi"
+      }
     },
     "styles": {
-      "oshi": { "label": "Oshi", "labelJa": "押し", "description": "Pushing/thrusting sumo—drive forward with hands and pressure rather than securing the belt." },
-      "yotsu": { "label": "Yotsu", "labelJa": "四つ", "description": "Belt-focused sumo—seek a grip, control the hips, and win with throws or force-outs." },
-      "hybrid": { "label": "Hybrid", "labelJa": "万能", "description": "A mixed approach—comfortable switching between pushing and belt fighting depending on the matchup." }
+      "oshi": {
+        "label": "Oshi",
+        "labelJa": "押し",
+        "description": "Pushing/thrusting sumo—drive forward with hands and pressure rather than securing the belt."
+      },
+      "yotsu": {
+        "label": "Yotsu",
+        "labelJa": "四つ",
+        "description": "Belt-focused sumo—seek a grip, control the hips, and win with throws or force-outs."
+      },
+      "hybrid": {
+        "label": "Hybrid",
+        "labelJa": "万能",
+        "description": "A mixed approach—comfortable switching between pushing and belt fighting depending on the matchup."
+      }
     },
     "archetypes": {
-      "oshi_specialist": { "label": "Oshi Specialist", "labelJa": "押し型", "description": "Relentless forward pressure, strong tachiai." },
-      "yotsu_specialist": { "label": "Yotsu Specialist", "labelJa": "四つ型", "description": "Belt technician—hunts grips, controls the clinch." },
-      "speedster": { "label": "Speedster", "labelJa": "俊敏", "description": "Quick feet and angles—wins with movement." },
-      "trickster": { "label": "Trickster", "labelJa": "奇策", "description": "Unorthodox and volatile—pulls and feints." },
-      "all_rounder": { "label": "All-Rounder", "labelJa": "総合", "description": "Solid fundamentals everywhere." },
-      "hybrid_oshi_yotsu": { "label": "Hybrid Oshi/Yotsu", "labelJa": "押し四つ", "description": "Blends pushing and belt fighting." },
-      "counter_specialist": { "label": "Counter Specialist", "labelJa": "受け", "description": "Reads pressure and punishes mistakes." },
-      "giant": { "label": "Giant", "labelJa": "大型", "description": "Immovable mass—wins through weight and strength dominance." },
-      "tsuppari": { "label": "Tsuppari", "labelJa": "突っ張り", "description": "High-velocity open-palm thrusting. Explosive but tires quickly." },
-      "defensive": { "label": "Counter Fighter", "labelJa": "受け身", "description": "Absorbs pressure. Wins by using the opponent's weight against them." }
+      "oshi_specialist": {
+        "label": "Oshi Specialist",
+        "labelJa": "押し型",
+        "description": "Relentless forward pressure, strong tachiai."
+      },
+      "yotsu_specialist": {
+        "label": "Yotsu Specialist",
+        "labelJa": "四つ型",
+        "description": "Belt technician—hunts grips, controls the clinch."
+      },
+      "speedster": {
+        "label": "Speedster",
+        "labelJa": "俊敏",
+        "description": "Quick feet and angles—wins with movement."
+      },
+      "trickster": {
+        "label": "Trickster",
+        "labelJa": "奇策",
+        "description": "Unorthodox and volatile—pulls and feints."
+      },
+      "all_rounder": {
+        "label": "All-Rounder",
+        "labelJa": "総合",
+        "description": "Solid fundamentals everywhere."
+      },
+      "hybrid_oshi_yotsu": {
+        "label": "Hybrid Oshi/Yotsu",
+        "labelJa": "押し四つ",
+        "description": "Blends pushing and belt fighting."
+      },
+      "counter_specialist": {
+        "label": "Counter Specialist",
+        "labelJa": "受け",
+        "description": "Reads pressure and punishes mistakes."
+      },
+      "giant": {
+        "label": "Giant",
+        "labelJa": "大型",
+        "description": "Immovable mass—wins through weight and strength dominance."
+      },
+      "tsuppari": {
+        "label": "Tsuppari",
+        "labelJa": "突っ張り",
+        "description": "High-velocity open-palm thrusting. Explosive but tires quickly."
+      },
+      "defensive": {
+        "label": "Counter Fighter",
+        "labelJa": "受け身",
+        "description": "Absorbs pressure. Wins by using the opponent's weight against them."
+      }
     },
     "kimarite": {
       "yorikiri": {
@@ -481,9 +563,7 @@
         "labelJa": "反則",
         "description": "Win by disqualification"
       }
-    },
-    "styles": {},
-    "archetypes": {}
+    }
   },
   "matrix": {
     "voices": [
@@ -1039,154 +1119,69 @@
     },
     "scouting": {
       "confidence": {
-        "unknown": ["Unknown", "Undiscovered", "No data"],
-        "low": ["Limited observation", "Rough estimate", "Preliminary data"],
-        "medium": ["Moderately scouted", "Fair observation", "Grounded estimate"],
-        "high": ["Well-observed", "In-depth scouting", "Robust data"],
-        "certain": ["Certain", "Verified", "Fact-checked"]
+        "unknown": [
+          "Unknown",
+          "Undiscovered",
+          "No data"
+        ],
+        "low": [
+          "Limited observation",
+          "Rough estimate",
+          "Preliminary data"
+        ],
+        "medium": [
+          "Moderately scouted",
+          "Fair observation",
+          "Grounded estimate"
+        ],
+        "high": [
+          "Well-observed",
+          "In-depth scouting",
+          "Robust data"
+        ],
+        "certain": [
+          "Certain",
+          "Verified",
+          "Fact-checked"
+        ]
       },
       "qualifiers": {
-        "appears": ["appears", "seems to be", "looks like"],
-        "may_be": ["may be", "could be", "possibly"],
-        "unknown_narrative": ["Insufficient observation to determine %attr%."]
+        "appears": [
+          "appears",
+          "seems to be",
+          "looks like"
+        ],
+        "may_be": [
+          "may be",
+          "could be",
+          "possibly"
+        ],
+        "unknown_narrative": [
+          "Insufficient observation to determine %attr%."
+        ]
       }
     },
     "institutional": {
       "welfare": {
         "watch_headline": [
-          "Heya placed under regulatory watch for welfare concerns.",
-          "Official: %heyaname% enters regulatory observation period.",
-          "Welfare standards review initiated for %heyaname%."
+          "Heya Placed Under Regulatory Watch",
+          "Compliance Alert: %HEYANAME% Monitored",
+          "Welfare Review Triggered for %HEYANAME%"
         ],
         "investigation_headline": [
-          "Full-scale investigation opened into %heyaname%.",
-          "Regulatory body launches probe into %heyaname% welfare practices.",
-          "Critical Inquiry: %heyaname% oversight intensified."
+          "Full-Scale Investigation Opened: %HEYANAME%",
+          "JSA Launches Probe Into %HEYANAME% Operations",
+          "Governance Crisis: Investigation at %HEYANAME%"
         ],
         "sanction_headline": [
-          "%heyaname% sanctioned for severe welfare violations.",
-          "Sanctions imposed on %heyaname% following welfare audit.",
-          "Disciplinary action confirmed for %heyaname%."
-        ]
-      },
-      "governance": {
-        "insolvency_headline": [
-          "Financial insolvency reported at %heyaname%.",
-          "Economic crisis at %heyaname% triggers governance review.",
-          "Monetary collapse: %heyaname% enters administration."
+          "Sanctions Imposed on %HEYANAME%",
+          "Association Penalizes %HEYANAME% for Welfare Violations",
+          "Heavy Fines and Recruitment Freeze for %HEYANAME%"
         ],
-        "low_roster_headline": [
-          "Roster size critically low at %heyaname%.",
-          "Manpower crisis: %heyaname% warns of unsustainable roster.",
-          "Concerns mount as %heyaname% numbers dwindling."
-        ]
-      },
-      "kensho_sponsors": [
-        "Nagatanien",
-        "Morinaga",
-        "Yaokin",
-        "Kirin Brewery",
-        "Suntory",
-        "Takashimaya",
-        "Mitsukoshi",
-        "Asahi Breweries",
-        "Pocari Sweat",
-        "Meiji Holdings",
-        "Yamazaki Baking",
-        "Ajinomoto",
-        "Nihon Shokken",
-        "Nikkan Sports",
-        "Shiseido",
-        "Itoham Foods",
-        "Maruha Nichiro"
-      ],
-      "governance": {
-        "headlines": [
-          "Official Statement from the JSA",
-          "Institutional Review Concludes",
-          "Governance Ruling Announced",
-          "Formal Sanction Issued",
-          "Association ruling on %REASON%",
-          "Governance review: %REASON% at %HEYA%",
-          "Official statement on %REASON% case"
-        ],
-        "sanction": [
-          "The Sumo Association has issued a formal sanction against %HEYA%.",
-          "Institutional review results in disciplinary measures for %HEYA%.",
-          "Following review, the JSA has formalized sanctions against %HEYA%."
-        ],
-        "merger": [
-          "Following a viability review, %HEYA% is slated for merger.",
-          "Strategic consolidation: %HEYA% to merge with a rival stable."
-        ],
-        "threats": [
-          "%HEYA% Faces Closure Threat",
-          "Association Reviews %HEYA% Viability",
-          "End of an Era? %HEYA% Struggles to Stay Open",
-          "The governing council has issued a formal warning to %HEYA%.",
-          "%HEYA% faces major sanctions following the recent review.",
-          "Institutional stability at %HEYA% is being questioned by the council."
-        ],
-        "scandal": [
-          "A conduct-related incident at %HEYA% has been brought to light.",
-          "The Association is reviewing reports of curfew violations within %HEYA%.",
-          "Professional standards review initiated following reports from %HEYA%."
-        ]
-      },
-      "media": {
-        "headlines": {
-          "upset": [
-            "%WINNER% Stuns %LOSER%",
-            "%WINNER% Shocks the Arena Against %LOSER%",
-            "Massive Upset! %WINNER% Topples %LOSER%"
-          ],
-          "standard": [
-            "%WINNER% Defeats %LOSER% by %KIMARITE%",
-            "%WINNER% Overcomes %LOSER%",
-            "Textbook Sumo: %WINNER% Dispatches %LOSER%"
-          ]
-        }
-      },
-      "welfare": {
-        "watch_started": [
-          "%HEYANAME% has been placed under regulatory watch for welfare concerns.",
-          "Regulators are monitoring %HEYANAME% following welfare compliance concerns.",
-          "%HEYANAME% enters formal oversight — the JSA Welfare Committee is watching."
-        ],
-        "watch_negligence": [
-          "%HEYANAME% placed under watch. Regulators suspect negligence.",
-          "Negligence concerns prompt formal review of %HEYANAME%.",
-          "%HEYANAME% under scrutiny — regulators flag suspected negligence."
-        ],
-        "investigation_opened": [
-          "Regulators open a formal investigation into %HEYANAME%.",
-          "A full welfare investigation begins at %HEYANAME%.",
-          "%HEYANAME% faces a formal inquiry from the JSA Welfare Committee."
-        ],
-        "cleared": [
-          "%HEYANAME% returns to good standing after sustained improvement.",
-          "The watch on %HEYANAME% has been lifted. Compliance restored.",
-          "%HEYANAME% clears the regulatory threshold — formal watch ends."
-        ],
-        "sanctioned": [
-          "%HEYANAME% has been sanctioned for welfare violations.",
-          "Sanctions issued: %HEYANAME% faces recruitment freeze and financial penalty.",
-          "The JSA imposes formal sanctions on %HEYANAME% for welfare failings."
-        ],
-        "investigation_closed": [
-          "%HEYANAME% meets remediation requirements. Investigation concludes.",
-          "The investigation into %HEYANAME% is closed following compliance improvements.",
-          "%HEYANAME% satisfies regulators — formal inquiry ends."
-        ],
-        "sanctions_lifted": [
-          "%HEYANAME% has served its sanctions and returns to watch status.",
-          "Sanction period complete for %HEYANAME%. Compliance review continues.",
-          "%HEYANAME% exits the sanctions phase — the road back to standing begins."
-        ],
-        "risk_update": [
-          "%HEYANAME% welfare risk has shifted significantly this week.",
-          "Welfare monitoring update: %HEYANAME% shows a notable risk movement.",
-          "A material change in %HEYANAME%'s welfare risk profile."
+        "cleared_headline": [
+          "Investigation Concluded: %HEYANAME% Cleared",
+          "Regulatory Pressure Lifted for %HEYANAME%",
+          "Heya Restored to Full Compliance Status"
         ]
       }
     },
@@ -1288,63 +1283,27 @@
           "Hot Streak: %SHIKONA% Now %STREAK%-0",
           "%STREAK% Wins! %SHIKONA% Keeps Rolling"
         ]
+      },
+      "subtitles": {
+        "legendary": [
+          "The history books are being rewritten in real-time.",
+          "Is there anyone left who can stand against this momentum?",
+          "The dominance is becoming the only story in the hall."
+        ],
+        "hot": [
+          "Confidence is a physical presence in the ring now.",
+          "The win streak is starting to draw national attention.",
+          "Execution has been flawless for days."
+        ],
+        "notable": [
+          "A solid run that puts the rest of the division on notice.",
+          "Consistency is building into a serious threat.",
+          "The momentum is clearly shifting in one direction."
+        ]
       }
     },
     "system": {
       "descriptors": {
-        "ranks": {
-          "yokozuna": {
-            "text": "Yokozuna",
-            "ja": "横綱"
-          },
-          "ozeki": {
-            "text": "Ozeki",
-            "ja": "大関"
-          },
-          "sekiwake": {
-            "text": "Sekiwake",
-            "ja": "関脇"
-          },
-          "komusubi": {
-            "text": "Komusubi",
-            "ja": "小結"
-          },
-          "maegashira": {
-            "text": "Maegashira",
-            "ja": "前頭"
-          },
-          "juryo": {
-            "text": "Juryo",
-            "ja": "十両"
-          },
-          "makushita": {
-            "text": "Makushita",
-            "ja": "幕下"
-          },
-          "sandanme": {
-            "text": "Sandanme",
-            "ja": "三段目"
-          },
-          "jonidan": {
-            "text": "Jonidan",
-            "ja": "序二段"
-          },
-          "jonokuchi": {
-            "text": "Jonokuchi",
-            "ja": "序ノ口"
-          }
-        },
-        "styles": {
-          "oshi": {
-            "text": "Oshi (Pushing)"
-          },
-          "yotsu": {
-            "text": "Yotsu (Belt)"
-          },
-          "hybrid": {
-            "text": "Hybrid"
-          }
-        },
         "bands": {
           "stats": {
             "exceptional": "Exceptional",
@@ -1378,6 +1337,16 @@
           "%SHIKONA% is making measurable progress this week.",
           "A strong training cycle for %SHIKONA% — the work is paying off.",
           "%SHIKONA% continues to improve in key areas."
+        ],
+        "title": [
+          "Training Update",
+          "%SHIKONA%: Training Progress",
+          "Weekly Training Report"
+        ],
+        "summary": [
+          "%SHIKONA% has completed a successful training cycle.",
+          "Steady improvement observed for %SHIKONA% this week.",
+          "%HEYANAME% reports solid progress for %SHIKONA% on the clay."
         ],
         "breakthrough_title": [
           "%SHIKONA% Breakthrough",
@@ -1413,6 +1382,38 @@
           "Stability warning: %HEYANAME% spend exceeds income by ¥%AMOUNT%."
         ]
       },
+      "lifecycle": {
+        "title": [
+          "Career Milestone",
+          "Sumo Life Cycle Event"
+        ],
+        "summary": [
+          "A significant event in the career of %SHIKONA%."
+        ],
+        "retirement_title": [
+          "%SHIKONA% Retires",
+          "Intai: %SHIKONA%"
+        ],
+        "retirement_summary": [
+          "After a distinguished career, %SHIKONA% has decided to hang up his mawashi.",
+          "%SHIKONA% announces his retirement from professional sumo."
+        ],
+        "naturalization_title": [
+          "Naturalization: %SHIKONA%",
+          "%SHIKONA% Obtains Citizenship"
+        ],
+        "naturalization_summary": [
+          "%SHIKONA% has officially completed the naturalization process, securing his future in the Association.",
+          "Legal milestone: %SHIKONA% is now a Japanese citizen."
+        ],
+        "merger_title": [
+          "Stable Merger",
+          "Heya Reorganization"
+        ],
+        "merger_summary": [
+          "Administrative shift: %HEYANAME% has completed a merger process."
+        ]
+      },
       "rivalry": {
         "formed_title": [
           "New rivalry emerges"
@@ -1441,6 +1442,16 @@
         ],
         "day_summary": [
           "Tournament day %DAY% begins."
+        ],
+        "status_title": [
+          "Basho Status Update",
+          "Tournament News",
+          "Kokugikan Report"
+        ],
+        "status_summary": [
+          "Tournament progress: %DAY% days concluded. Standing: %SHIKONA% (%WINS%-%LOSSES%).",
+          "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
+          "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
         ],
         "bout_title": [
           "Bout concluded"
@@ -1565,6 +1576,20 @@
         ],
         "GOVERNANCE_BAILOUT": [
           "Ichimon Bailout"
+        ]
+      },
+      "governance": {
+        "title": [
+          "Governance Ruling",
+          "Association Notice",
+          "Institutional Decision",
+          "JSA Ruling Issued"
+        ],
+        "summary": [
+          "A governance ruling has been issued regarding a recent incident.",
+          "The Association has reviewed and responded to a reported matter.",
+          "Institutional oversight has resulted in a formal decision.",
+          "JSA officials have issued a ruling following an internal review."
         ]
       }
     },

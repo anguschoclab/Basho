@@ -64,7 +64,7 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
 
             {/* Right Pane: Event Log (Collapsible) */}
             {eventLogOpen && (
-              <aside className="w-80 border-l border-border bg-card/50 backdrop-blur-sm hidden xl:flex flex-col animate-in slide-in-from-right duration-300">
+              <aside className="w-80 border-l border-border bg-card/50 hidden xl:flex flex-col animate-in slide-in-from-right duration-300">
                 <EventLogPanel className="h-full" />
               </aside>
             )}

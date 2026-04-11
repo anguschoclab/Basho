@@ -37,7 +37,7 @@ export * from './systems/economics/SponsorshipService';
 export * from './systems/generation/SponsorGenerator';
 
 
-export * from './matchmaking';
+export * from './matchmaking/index';
 export * from './systems/media/MediaService';
 export * from './narrative';
 export * from './narrativeDescriptions';
@@ -60,21 +60,18 @@ export {
   createScoutedView,
   getScoutedAttributes,
   describeScoutingLevel,
-} from './scouting';
-export type { ScoutedRikishi, PublicRikishiInfo, ScoutedAttributeTruthSnapshot } from './scouting';
+} from './systems/recruitment/ScoutingService';
+export type { ScoutedRikishi, PublicRikishiInfo, ScoutedAttributeTruthSnapshot } from './systems/recruitment/ScoutingService';
 export * from './scoutingStore';
 export * from './shikona';
 export type { KoenkaiBandType, Sponsor, SponsorPool } from './types/sponsors';
-export * from './sponsors';
 export * from './systems/generation/CandidateGenerator';
-export * from './training';
+export * from './systems/training/TrainingService';
 export type { RecordEntry } from './types/records';
-export * from './types';
-export * from './welfare';
+export * from './types/index';
+export * from './systems/welfare/WelfareService';
 export { advanceBashoDay, simulateBoutForToday } from './world'; 
 export * from './systems/generation/WorldFactory';
 export * from './rng';
 export * from './lineage';
 export * from './myosekiMarket';
-
-

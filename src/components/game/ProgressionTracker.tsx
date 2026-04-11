@@ -188,10 +188,10 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
     <div className="space-y-4">
       {/* Yokozuna Deliberation */}
       {yokozunaCandidates.length > 0 && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
+        <Card className="border-gold/30 bg-gold/5">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Crown className="h-5 w-5 text-amber-500" />
+              <Crown className="h-5 w-5 text-gold" />
               横綱審議委員会 Yokozuna Deliberation
             </CardTitle>
           </CardHeader>

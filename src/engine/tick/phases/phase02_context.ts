@@ -26,34 +26,11 @@ export function phase02_context(world: WorldState): WorldState {
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
 
-  // ── financialPenalty ──────────────────────────────────────────────────────
   const financialPenalty = (playerHeya?.funds ?? 0) < 0;
-
-  // ── Facility multipliers ──────────────────────────────────────────────────
-  // Training facility: 0 = 0.85×, 100 = 1.20×
-  const trainingLevel = clamp(playerHeya?.facilities?.training ?? 50, 0, 100);
-  const facilityTrainingMult = 0.85 + (trainingLevel / 100) * 0.35;
-
-  // Recovery facility: 0 = 0.80×, 100 = 1.20×
-  const recoveryLevel = clamp(playerHeya?.facilities?.recovery ?? 50, 0, 100);
-  const facilityRecoveryMult = 0.80 + (recoveryLevel / 100) * 0.40;
-
-  // Nutrition facility: 0 = 0.92×, 100 = 1.08×
-  const nutritionLevel = clamp(playerHeya?.facilities?.nutrition ?? 50, 0, 100);
-  const nutritionMult = 0.92 + (nutritionLevel / 100) * 0.16;
-
-  // ── moraleBoost ───────────────────────────────────────────────────────────
-  // True if any player rikishi won the last basho (history length check)
+  const facilityMultipliers = calculateFacilityMultipliers(playerHeya);
   const moraleBoost = checkMoraleBoost(world);
-
-  // ── Assemble trainingMultiplier ───────────────────────────────────────────
-  let trainingMultiplier = facilityTrainingMult;
-  if (moraleBoost) trainingMultiplier += 0.15;
-  if (financialPenalty) trainingMultiplier *= 0.5;
-  trainingMultiplier = clamp(trainingMultiplier, 0.1, 2.0);
-
-  // ── Assemble recoveryMultiplier ───────────────────────────────────────────
-  const recoveryMultiplier = clamp(facilityRecoveryMult * nutritionMult, 0.5, 2.0);
+  const trainingMultiplier = calculateTrainingMultiplier(facilityMultipliers.training, moraleBoost, financialPenalty);
+  const recoveryMultiplier = calculateRecoveryMultiplier(facilityMultipliers.recovery, facilityMultipliers.nutrition);
 
   const activeModifiers: ActiveModifiers = {
     trainingMultiplier,
@@ -62,18 +39,50 @@ export function phase02_context(world: WorldState): WorldState {
     moraleBoost,
   };
 
-  // Preserve revenue/expenses written by phase01; reset per-tick change lists
-  const prevDeltas = world.transientContext?.deltas;
-  const deltas = {
-    ...emptyDeltas(),
-    // restore revenue/expenses from phase01 after initialization
-    revenue: prevDeltas?.revenue ?? 0,
-    expenses: prevDeltas?.expenses ?? 0,
-  };
+  const deltas = preserveRevenueExpenses(world);
 
   return {
     ...world,
     transientContext: { activeModifiers, deltas },
+  };
+}
+
+// --- Helper Functions ---
+
+function calculateFacilityMultipliers(playerHeya: any): { training: number; recovery: number; nutrition: number } {
+  const trainingLevel = clamp(playerHeya?.facilities?.training ?? 50, 0, 100);
+  const facilityTrainingMult = 0.85 + (trainingLevel / 100) * 0.35;
+
+  const recoveryLevel = clamp(playerHeya?.facilities?.recovery ?? 50, 0, 100);
+  const facilityRecoveryMult = 0.80 + (recoveryLevel / 100) * 0.40;
+
+  const nutritionLevel = clamp(playerHeya?.facilities?.nutrition ?? 50, 0, 100);
+  const nutritionMult = 0.92 + (nutritionLevel / 100) * 0.16;
+
+  return {
+    training: facilityTrainingMult,
+    recovery: facilityRecoveryMult,
+    nutrition: nutritionMult,
+  };
+}
+
+function calculateTrainingMultiplier(facilityTrainingMult: number, moraleBoost: boolean, financialPenalty: boolean): number {
+  let trainingMultiplier = facilityTrainingMult;
+  if (moraleBoost) trainingMultiplier += 0.15;
+  if (financialPenalty) trainingMultiplier *= 0.5;
+  return clamp(trainingMultiplier, 0.1, 2.0);
+}
+
+function calculateRecoveryMultiplier(facilityRecoveryMult: number, nutritionMult: number): number {
+  return clamp(facilityRecoveryMult * nutritionMult, 0.5, 2.0);
+}
+
+function preserveRevenueExpenses(world: WorldState) {
+  const prevDeltas = world.transientContext?.deltas;
+  return {
+    ...emptyDeltas(),
+    revenue: prevDeltas?.revenue ?? 0,
+    expenses: prevDeltas?.expenses ?? 0,
   };
 }
 

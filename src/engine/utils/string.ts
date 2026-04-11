@@ -10,7 +10,8 @@ export function capitalize(s: string): string {
  * Formats a currency amount (Japanese Yen).
  */
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amount);
+  const formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(amount);
+  return formatted.replace('¥', '￥');
 }
 
 /**

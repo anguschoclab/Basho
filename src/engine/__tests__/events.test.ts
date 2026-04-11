@@ -234,6 +234,8 @@ describe("events.ts - Helpers & Cleanup", () => {
       // Check dedupe cleanup
       expect(world.events!.dedupe["2020|1|TRAINING_MILESTONE|world|||Old"]).toBeUndefined();
     });
+  });
+
   describe("EventBus - Expanded Factories", () => {
     it("emits OYAKATA_MOOD_SHIFT via oyakataMoodShift factory", () => {
       const world = createMockWorld();

@@ -45,47 +45,47 @@ function RikishiSelectorList({
 }
 
 const STATURE_COLOR: Record<string, string> = {
-  legendary: "text-amber-400",
+  legendary: "text-gold",
   powerful: "text-purple-400",
-  established: "text-blue-400",
+  established: "text-west",
   rebuilding: "text-orange-400",
   fragile: "text-destructive",
-  new: "text-emerald-400",
+  new: "text-success",
 };
 
 const ROSTER_COLOR: Record<string, string> = {
-  dominant: "text-amber-400",
-  strong: "text-emerald-400",
+  dominant: "text-gold",
+  strong: "text-success",
   competitive: "text-primary",
-  developing: "text-yellow-400",
+  developing: "text-gold",
   weak: "text-muted-foreground",
 };
 
 const MORALE_COLOR: Record<string, string> = {
-  inspired: "text-emerald-400",
-  content: "text-green-400",
+  inspired: "text-success",
+  content: "text-success",
   neutral: "text-muted-foreground",
   disgruntled: "text-orange-400",
   mutinous: "text-destructive",
 };
 
 const WELFARE_COLOR: Record<string, string> = {
-  safe: "text-emerald-400",
-  cautious: "text-yellow-400",
+  safe: "text-success",
+  cautious: "text-gold",
   elevated: "text-orange-400",
   critical: "text-destructive",
 };
 
 const HEALTH_COLOR: Record<string, string> = {
-  peak: "text-emerald-400",
-  good: "text-green-400",
-  fair: "text-yellow-400",
+  peak: "text-success",
+  good: "text-success",
+  fair: "text-gold",
   worn: "text-orange-400",
   fragile: "text-destructive",
 };
 
 const MOMENTUM_COLOR: Record<string, string> = {
-  rising: "text-emerald-400",
+  rising: "text-success",
   steady: "text-muted-foreground",
   declining: "text-destructive",
 };

@@ -16,7 +16,7 @@
  */
 
 import type { WorldState } from "../../types/world";
-
+import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 

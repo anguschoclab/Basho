@@ -3,6 +3,7 @@
  */
 
 import { WorldState } from "../types/world";
+import { EventBus } from "../events";
 
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
@@ -44,7 +45,7 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
     incident: "scandal_reported"
   }, severity === "minor" ? "notable" : "major");
 
-  generateGovernanceHeadline(world, heyaId, severity, reason);
+  generateGovernanceHeadline({ world, heyaId, templatePath: 'institutional.governance.scandal', severity: severity === "critical" ? "major" : severity as "minor" | "major" });
 }
 
 /**
@@ -84,8 +85,7 @@ export function tickWeekGovernance(world: WorldState): void {
         score: Math.floor(score)
       }, newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable");
       if (newStatus === "sanctioned" || newStatus === "probation") {
-        generateGovernanceHeadline(world, heya.id, newStatus === "sanctioned" ? "critical" : "major",
-          `${heya.name} governance status has escalated to ${newStatus}.`);
+        generateGovernanceHeadline({ world, heyaId: heya.id, templatePath: 'institutional.governance.status_escalation', severity: newStatus === "sanctioned" ? "major" : "major" });
       }
     }
   }
@@ -157,4 +157,33 @@ export function spendPoliticalCapital(world: WorldState, heyaId: string, amount:
   if (current < amount) return false;
   heya.politicalCapital = current - amount;
   return true;
+}
+
+/**
+ * Issues a governance ruling based on player choice.
+ */
+export function issueGovernanceRuling(world: WorldState, rulingId: string, severity: "lenient" | "standard" | "harsh"): void {
+  const rulingIndex = world.governanceLog?.findIndex(r => r.id === rulingId);
+  if (rulingIndex !== undefined && rulingIndex >= 0 && world.governanceLog) {
+    const ruling = world.governanceLog[rulingIndex] as GovernanceRuling;
+    const heya = world.heyas.get(ruling.heyaId);
+
+    if (heya) {
+      const severityMultiplier = severity === "lenient" ? 0.5 : severity === "harsh" ? 1.5 : 1.0;
+      const originalDelta = ruling.effects.scandalScoreDelta || 0;
+      const adjustedDelta = Math.round(originalDelta * severityMultiplier);
+
+      heya.scandalScore = Math.max(0, (heya.scandalScore || 0) - (originalDelta - adjustedDelta));
+
+      ruling.playerSeverity = severity;
+      ruling.playerResponse = `Player issued ${severity} ruling`;
+      ruling.effects.scandalScoreDelta = adjustedDelta;
+
+      if (severity === "lenient") {
+        heya.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
+      } else if (severity === "harsh") {
+        heya.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
+      }
+    }
+  }
 }

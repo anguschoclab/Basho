@@ -1,5 +1,5 @@
 import { stableTieBreak } from "../utils/sort";
-import { rebuildTransientContext } from "../tick/orchestrator";
+import { phase02_context } from "../tick/phases/phase02_context";
 import { 
   WorldState, 
   SerializedWorldState, 
@@ -10,7 +10,7 @@ import {
   Oyakata,
   Id,
   SerializedSponsorPoolFixed as SerializedSponsorPool
-} from "../types";
+} from "../types/index";
 
 
 import type { SponsorPool } from "../types/sponsors";
@@ -115,7 +115,7 @@ export const SerializationService = {
       mediaState: world.mediaState,
       talentPool: world.talentPool,
       candidatePool: world.candidatePool,
-      trainingState: world.trainingState || {},
+      trainingState: this.mapToObject(world.trainingState || new Map()),
       settings: world.settings
     };
   },
@@ -171,7 +171,7 @@ export const SerializationService = {
       sponsorPool: this.deserializeSponsorPool(s.sponsorPool),
       ozekiKadoban: s.ozekiKadoban ?? {},
       mediaState: s.mediaState,
-      trainingState: s.trainingState || {},
+      trainingState: this.objectToMap(s.trainingState || {}),
       settings: s.settings || { archiveMode: "standard" },
       calendar: s.calendar || {
         year: serialized.year,
@@ -184,7 +184,7 @@ export const SerializationService = {
     // Rebuild ephemeral transientContext so the UI has valid activeModifiers
     // immediately after a save is loaded, without requiring an advance.
     try {
-      return rebuildTransientContext(liveWorld);
+      return phase02_context(liveWorld);
     } catch {
       // Non-fatal: UI falls back to raw multipliers if context rebuild fails
       return liveWorld;

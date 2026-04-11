@@ -158,7 +158,7 @@ export default function AlmanacPage() {
                         <h3 className="font-bold text-lg capitalize">{basho.bashoName} {basho.year}</h3>
                         <p className="text-xs text-muted-foreground">Tournament Snapshot</p>
                       </div>
-                      <Trophy className="h-6 w-6 text-amber-400" />
+                      <Trophy className="h-6 w-6 text-gold" />
                     </div>
                     <CardContent className="p-4 grid md:grid-cols-3 gap-4">
                        <div className="space-y-1">
@@ -184,15 +184,15 @@ export default function AlmanacPage() {
           <TabsContent value="records" className="space-y-8">
              <div className="space-y-4">
                <h2 className="text-2xl font-bold flex items-center gap-2">
-                 <Star className="h-6 w-6 text-amber-400" />
+                 <Star className="h-6 w-6 text-gold" />
                  All-Time Records
                </h2>
                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  <LeaderboardWidget title="Total Wins" entries={records.allTime.careerWins} icon={TrendingUp} colorClass="text-emerald-400" />
-                  <LeaderboardWidget title="Makuuchi Wins" entries={records.allTime.makuuchiWins} icon={Users} colorClass="text-blue-400" />
-                  <LeaderboardWidget title="Yūshō Count" entries={records.allTime.yusho} icon={Trophy} colorClass="text-amber-400" />
+                  <LeaderboardWidget title="Total Wins" entries={records.allTime.careerWins} icon={TrendingUp} colorClass="text-success" />
+                  <LeaderboardWidget title="Makuuchi Wins" entries={records.allTime.makuuchiWins} icon={Users} colorClass="text-west" />
+                  <LeaderboardWidget title="Yūshō Count" entries={records.allTime.yusho} icon={Trophy} colorClass="text-gold" />
                   <LeaderboardWidget title="Consecutive Yūshō" entries={records.allTime.consecutiveYusho} icon={Star} colorClass="text-purple-400" />
-                  <LeaderboardWidget title="Giant Slayers" entries={giantSlayers as any} icon={Medal} colorClass="text-yellow-400" />
+                  <LeaderboardWidget title="Giant Slayers" entries={giantSlayers as any} icon={Medal} colorClass="text-gold" />
                </div>
              </div>
 
@@ -202,9 +202,9 @@ export default function AlmanacPage() {
                  Active Leaders
                </h2>
                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  <LeaderboardWidget title="Total Wins" entries={records.active.careerWins} icon={TrendingUp} colorClass="text-emerald-400" />
-                  <LeaderboardWidget title="Makuuchi Wins" entries={records.active.makuuchiWins} icon={Users} colorClass="text-blue-400" />
-                  <LeaderboardWidget title="Yūshō Count" entries={records.active.yusho} icon={Trophy} colorClass="text-amber-400" />
+                  <LeaderboardWidget title="Total Wins" entries={records.active.careerWins} icon={TrendingUp} colorClass="text-success" />
+                  <LeaderboardWidget title="Makuuchi Wins" entries={records.active.makuuchiWins} icon={Users} colorClass="text-west" />
+                  <LeaderboardWidget title="Yūshō Count" entries={records.active.yusho} icon={Trophy} colorClass="text-gold" />
                </div>
              </div>
           </TabsContent>
@@ -212,7 +212,7 @@ export default function AlmanacPage() {
           <TabsContent value="hof">
             <Card className="paper py-12 text-center border-dashed">
               <div className="flex flex-col items-center gap-4">
-                <Award className="h-16 w-16 text-amber-400/50" />
+                <Award className="h-16 w-16 text-gold/50" />
                 <div>
                   <h3 className="text-xl font-bold">The Hall of Fame</h3>
                   <p className="text-muted-foreground max-w-md mx-auto mt-2">
