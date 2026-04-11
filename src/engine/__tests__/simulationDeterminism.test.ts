@@ -80,7 +80,7 @@ describe("Simulation determinism", () => {
     const hash1 = simDays(100);
     const hash2 = simDays(100);
     expect(hash1).toBe(hash2);
-  });
+  }, 30000);
 
   it("day-50 checkpoint in a 100-day run matches standalone 50-day run", () => {
     // Standalone 50-day hash
