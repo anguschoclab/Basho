@@ -33,9 +33,13 @@ export function runPostBashoResolution(world: WorldState): void {
       fn: () => {
         const vacancies = runRetirements(world);
         // Fill vacancies immediately post-basho to ensure stable rosters
-        talentpool.fillVacanciesForNPC(world, vacancies);
+        const worldAfterFill = talentpool.fillVacanciesForNPC(world, vacancies);
         // Materialize any remaining signed candidates (including player recruits)
-        talentpool.finalizeSignedCandidates(world);
+        const finalizedWorld = talentpool.finalizeSignedCandidates(worldAfterFill);
+        
+        // Since this runner is currently designed as a sequence of mutative steps,
+        // we apply the functional changes back to the shared world reference.
+        Object.assign(world, finalizedWorld);
       },
     },
     { name: "Sponsor Churn", fn: () => processSponsorChurn(world) },

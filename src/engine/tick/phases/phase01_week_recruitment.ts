@@ -18,83 +18,9 @@ import * as talentpool from "../../systems/generation/TalentPoolService";
 export function phase01_week_recruitment(world: WorldState): WorldState {
   let nextWorld = { ...world };
 
-  // 1. Talent Pool Weekly Tick (Intel Decay, Suitor deadliness)
-  // Note: we can't easily make the internal talentPool logic pure without a massive refactor,
-  // so we'll clone it and apply the logic if it's currently mutative.
-  if (nextWorld.talentPool) {
-    nextWorld.talentPool = {
-      ...nextWorld.talentPool,
-      playerScouting: { ...nextWorld.talentPool.playerScouting },
-      candidates: { ...nextWorld.talentPool.candidates },
-    };
+  // 1. Talent Pool Weekly Tick (Intel Decay, Suitor resolution)
+  nextWorld = talentpool.tickWeekTalentPool(nextWorld);
 
-    // Intel decay
-    if (nextWorld.talentPool.playerScouting) {
-      for (const [id, record] of Object.entries(
-        nextWorld.talentPool.playerScouting,
-      )) {
-        if (nextWorld.week - record.lastScoutedWeek > 4) {
-          nextWorld.talentPool.playerScouting[id] = {
-            ...record,
-            scoutingLevel: Math.max(0, record.scoutingLevel - 2),
-          };
-        }
-      }
-    }
-
-    // Suitor Resolution (Candidates signing)
-    // For now we'll call into the service but try to wrap it purely if possible
-    // Since tickWeekTalentPool is legacy mutative, we'll implement the logic here purely
-    for (const id in nextWorld.talentPool.candidates) {
-      const candidate = { ...nextWorld.talentPool.candidates[id] };
-      if (
-        candidate.availabilityState === "in_talks" &&
-        candidate.competingSuitors.length > 0
-      ) {
-        const deadlineExpired = candidate.competingSuitors.some(
-          (s) => nextWorld.week >= s.deadlineWeek,
-        );
-        if (deadlineExpired) {
-          const bandRank: Record<string, number> = {
-            all_in: 4,
-            high: 3,
-            medium: 2,
-            low: 1,
-          };
-          const winner = [...candidate.competingSuitors].sort(
-            (a, b) =>
-              (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
-          )[0];
-
-          candidate.availabilityState = "signed";
-          candidate.competingSuitors = [winner];
-
-          nextWorld.talentPool.candidates[id] = candidate;
-
-          // Reputation boost for winner stable
-          const heya = nextWorld.heyas.get(winner.heyaId);
-          if (heya && candidate.talentSeed >= 80) {
-            const nextHeya = {
-              ...heya,
-              reputation: Math.min(100, (heya.reputation ?? 50) + 5),
-            };
-            const nextHeyas = new Map(nextWorld.heyas);
-            nextHeyas.set(nextHeya.id, nextHeya);
-            nextWorld.heyas = nextHeyas;
-
-            EventBus.recruitDiscovered(nextWorld, {
-              rikishiId: candidate.candidateId,
-              heyaId: winner.heyaId,
-              shikona: candidate.name,
-              heya: heya.name,
-              score: candidate.talentSeed,
-              status: "high_talent_signed",
-            });
-          }
-        }
-      }
-    }
-  }
 
   // 2. Window Closing
   const rw = nextWorld._recruitmentWindow;

@@ -23,7 +23,7 @@ import { generateCandidate, convertCandidateToRikishi } from "./CandidateGenerat
 import { clampInt } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
-import { rngFromSeed } from "../../rng";
+import { rngFromSeed, rngForWorld } from "../../rng";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -232,20 +232,27 @@ export function offerCandidate(
 /**
  * Weekly maintenance for the talent pool.
  */
-export function tickWeekTalentPool(world: WorldState): void {
-  const tp = ensureTalentPoolState(world);
+export function tickWeekTalentPool(world: WorldState): WorldState {
+  const tp = world.talentPool;
+  if (!tp) return world;
+
+  const nextWorld = { ...world };
+  const nextCandidates = { ...tp.candidates };
+  const nextScouting = { ...tp.playerScouting };
+  const nextHeyas = new Map(world.heyas);
 
   // 1. Weekly decay of scouting intel
-  if (tp.playerScouting) {
-    for (const [id, record] of Object.entries(tp.playerScouting)) {
-      if (world.week - record.lastScoutedWeek > 4) {
-        record.scoutingLevel = Math.max(0, record.scoutingLevel - 2);
-      }
+  for (const [id, record] of Object.entries(nextScouting)) {
+    if (world.week - record.lastScoutedWeek > 4) {
+      nextScouting[id] = {
+        ...record,
+        scoutingLevel: Math.max(0, record.scoutingLevel - 2),
+      };
     }
   }
 
-  // 2. Resolve expired suitor deadlines: pick the winner, fire fame event for high talent
-  for (const candidate of Object.values(tp.candidates)) {
+  // 2. Resolve suitor deadlines
+  for (const [id, candidate] of Object.entries(nextCandidates)) {
     if (candidate.availabilityState !== "in_talks") continue;
     if (!candidate.competingSuitors.length) continue;
 
@@ -254,52 +261,87 @@ export function tickWeekTalentPool(world: WorldState): void {
     );
     if (!deadlineExpired) continue;
 
-    // Pick the suitor with the highest interest band
-    const bandRank: Record<string, number> = {
-      all_in: 4,
-      high: 3,
-      medium: 2,
-      low: 1,
-    };
-    const winner = [...candidate.competingSuitors].sort(
-      (a, b) =>
-        (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
-    )[0];
-
-    candidate.availabilityState = "signed";
-    candidate.competingSuitors = [winner];
-
-    // High-talent signing: fire fame event and give reputation boost to signing stable
-    if (candidate.talentSeed >= 80) {
-      const heya = world.heyas.get(winner.heyaId);
-      if (heya) {
-        heya.reputation = Math.min(100, (heya.reputation ?? 50) + 5);
-        const signRng = rngFromSeed(
-          `talent-sign-${candidate.candidateId}`,
-          "narrative",
-          "event",
-        );
-        EventBus.recruitDiscovered(world, {
-          rikishiId: candidate.candidateId,
-          heyaId: winner.heyaId,
-          shikona: candidate.name,
-          heya: heya.name,
-          score: candidate.talentSeed,
-          status: "high_talent_signed",
-        });
+    const resolution = resolveCandidateSuitor(nextWorld, candidate);
+    if (resolution.signed) {
+      nextCandidates[id] = resolution.candidate;
+      if (resolution.winnerHeya) {
+        nextHeyas.set(resolution.winnerHeya.id, resolution.winnerHeya);
       }
     }
   }
 
-  // 3. Periodic pool refresh logic (basho cadence)
-  // Check if we are at the start of a basho month (odd months)
+  // 3. Update world state
+  nextWorld.heyas = nextHeyas;
+  nextWorld.talentPool = {
+    ...tp,
+    candidates: nextCandidates,
+    playerScouting: nextScouting,
+  };
+
+  // 4. Periodic pool refresh logic (basho cadence)
   if (
     world.calendar &&
     world.calendar.month % 2 !== 0 &&
     world.calendar.currentDay === 1
   ) {
-    refreshAllPools(world);
+    refreshAllPools(nextWorld);
   }
+
+  return nextWorld;
+}
+
+/**
+ * Pure helper to resolve the winner of a contract negotiation for a candidate.
+ */
+export function resolveCandidateSuitor(
+  world: WorldState,
+  candidate: TalentCandidate,
+): { signed: boolean; candidate: TalentCandidate; winnerHeya?: any } {
+  if (candidate.availabilityState !== "in_talks" || !candidate.competingSuitors.length) {
+    return { signed: false, candidate };
+  }
+
+  const bandRank: Record<string, number> = {
+    all_in: 4,
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const sortedSuitors = [...candidate.competingSuitors].sort(
+    (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
+  );
+
+  const winner = sortedSuitors[0];
+  const nextCandidate = {
+    ...candidate,
+    availabilityState: "signed" as const,
+    competingSuitors: [winner],
+  };
+
+  let winnerHeya = undefined;
+
+  // High-talent signing: fire fame event and give reputation boost
+  if (candidate.talentSeed >= 80) {
+    const heya = world.heyas.get(winner.heyaId);
+    if (heya) {
+      winnerHeya = {
+        ...heya,
+        reputation: Math.min(100, (heya.reputation ?? 50) + 5),
+      };
+
+      EventBus.recruitDiscovered(world, {
+        rikishiId: candidate.personId, // Use personId for proper event tracking
+        heyaId: winner.heyaId,
+        shikona: candidate.name,
+        heya: heya.name,
+        score: candidate.talentSeed,
+        status: "high_talent_signed",
+      });
+    }
+  }
+
+  return { signed: true, candidate: nextCandidate, winnerHeya };
 }
 
 /**
@@ -308,20 +350,23 @@ export function tickWeekTalentPool(world: WorldState): void {
 export function fillVacanciesForNPC(
   world: WorldState,
   targetHeyas: Record<string, number>,
-): void {
-  const tp = ensureTalentPoolState(world);
+): WorldState {
+  let nextWorld = { ...world };
+  const tp = nextWorld.talentPool;
+  if (!tp) return world;
+
   const rng = RNGRegistry.getSystemRNG(
-    world,
+    nextWorld,
     "scouting",
-    `npc_fill_${world.week}`,
+    `npc_fill_${nextWorld.week}`,
   );
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
-    const heya = world.heyas.get(heyaId);
+    const heya = nextWorld.heyas.get(heyaId);
     if (!heya) continue;
 
     for (let i = 0; i < vacancyCount; i++) {
-      // Pick a random visible candidate (or hidden if visibility low)
+      // Pick a random visible candidate
       const poolTypes: TalentPoolType[] = [
         "high_school",
         "university",
@@ -336,71 +381,98 @@ export function fillVacanciesForNPC(
         const c = tp.candidates[cId];
         if (c && c.availabilityState === "available") {
           // NPC fast-path signing: bypass multi-week negotiation to stabilize world
-          c.availabilityState = "signed";
-          c.competingSuitors = [
-            {
-              heyaId,
-              offerType: "standard",
-              interestBand: "high",
-              deadlineWeek: world.week,
-            },
-          ];
+          const updatedCandidate = {
+            ...c,
+            availabilityState: "signed" as const,
+            competingSuitors: [
+              {
+                heyaId,
+                offerType: "standard" as const,
+                interestBand: "high" as const,
+                deadlineWeek: nextWorld.week,
+              },
+            ],
+          };
+          
+          tp.candidates[cId] = updatedCandidate;
 
           // Materialize immediately for NPCs to keep the banzuke populated
-          materializeCandidateToRikishi(world, cId, heyaId);
+          nextWorld = materializeCandidateToRikishi(nextWorld, cId, heyaId);
         }
       }
     }
   }
+
+  return nextWorld;
 }
 
 /**
  * Converts a signed candidate into a full Rikishi entity and adds them to the world.
+ * Standardized pure implementation used for both NPC fast-path and weekly resolution.
  */
 export function materializeCandidateToRikishi(
   world: WorldState,
   candidateId: Id,
   heyaId: Id,
-): Rikishi | null {
-  const tp = ensureTalentPoolState(world);
-  const candidate = tp.candidates[candidateId];
-  if (!candidate) return null;
+): WorldState {
+  const tp = world.talentPool;
+  const candidate = tp?.candidates[candidateId];
+  if (!candidate || !tp) return world;
+
+  const nextWorld = { ...world };
+  const nextRikishi = new Map(world.rikishi);
+  const nextHeyas = new Map(world.heyas);
+  const nextCandidates = { ...tp.candidates };
 
   const rng = RNGRegistry.getSystemRNG(
     world,
     "scouting",
     `materialize_${candidateId}`,
   );
-  const rikishi = promoteCandidateToRikishi({ candidate, heyaId, rng });
+  
+  const rikishi = convertCandidateToRikishi({
+    candidate,
+    rng,
+    currentYear: world.year,
+    heyaId
+  });
 
   // 1. Inject into world
-  world.rikishi.set(rikishi.id, rikishi);
+  nextRikishi.set(rikishi.id, rikishi);
 
   // 2. Link to heya
-  const heya = world.heyas.get(heyaId);
+  const heya = nextHeyas.get(heyaId);
   if (heya) {
-    if (!heya.rikishiIds) heya.rikishiIds = [];
-    if (!heya.rikishiIds.includes(rikishi.id)) {
-      heya.rikishiIds.push(rikishi.id);
-    }
+    nextHeyas.set(heyaId, {
+      ...heya,
+      rikishiIds: [...(heya.rikishiIds ?? []), rikishi.id]
+    });
   }
 
   // 3. Remove from talent pool
-  delete tp.candidates[candidateId];
+  delete nextCandidates[candidateId];
 
   // Cleanup Visible/Hidden lists
-  const pool = tp.pools[candidate.poolType as TalentPoolType];
-  if (pool) {
-    pool.candidatesVisible = pool.candidatesVisible.filter(
-      (id) => id !== candidateId,
-    );
-    pool.candidatesHidden = pool.candidatesHidden.filter(
-      (id) => id !== candidateId,
-    );
+  const nextPools = { ...tp.pools };
+  const pt = candidate.poolType as TalentPoolType;
+  if (nextPools[pt]) {
+    nextPools[pt] = {
+      ...nextPools[pt],
+      candidatesVisible: nextPools[pt].candidatesVisible.filter(id => id !== candidateId),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter(id => id !== candidateId)
+    };
   }
 
+  nextWorld.rikishi = nextRikishi;
+  nextWorld.heyas = nextHeyas;
+  nextWorld.talentPool = {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools
+  };
+
   // 4. Fire event
-  EventBus.recruitDiscovered(world, {
+  EventBus.recruitDiscovered(nextWorld, {
     rikishiId: rikishi.id,
     heyaId: heyaId,
     shikona: rikishi.shikona,
@@ -408,27 +480,7 @@ export function materializeCandidateToRikishi(
     status: "materialized",
   });
 
-  return rikishi;
-}
-
-/**
- * Materializes all signed candidates in the world (e.g. at the start of a basho).
- */
-export function finalizeSignedCandidates(world: WorldState): void {
-  const tp = world.talentPool;
-  if (!tp) return;
-
-  const signedIds = Object.values(tp.candidates)
-    .filter((c) => c.availabilityState === "signed")
-    .map((c) => c.candidateId);
-
-  for (const cId of signedIds) {
-    const candidate = tp.candidates[cId];
-    const suitor = candidate?.competingSuitors?.[0];
-    if (suitor) {
-      materializeCandidateToRikishi(world, cId, suitor.heyaId);
-    }
-  }
+  return nextWorld;
 }
 
 function refreshAllPools(world: WorldState) {
