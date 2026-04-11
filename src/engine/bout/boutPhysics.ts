@@ -368,10 +368,10 @@ function applyTachiaiImpact(winner: Side, margin: number, st: EngineState): void
 function handleBeltActionAtTachiai(eastAction: CombatAction, westAction: CombatAction, winner: Side, rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineState): void {
   if (eastAction.family === 'belt' || westAction.family === 'belt') {
     if (eastAction.family === 'push' && westAction.family === 'belt' && winner === 'east') {
-      st.nodowaActive = true;
+      st.nodawaActive = true;
       st.log.push({ phase: 'tachiai', data: { event: 'nodowa', side: 'east' } });
     } else if (westAction.family === 'push' && eastAction.family === 'belt' && winner === 'west') {
-      st.nodowaActive = true;
+      st.nodawaActive = true;
       st.log.push({ phase: 'tachiai', data: { event: 'nodowa', side: 'west' } });
     } else {
       resolveGripClash(rng, east, west, st);
@@ -409,10 +409,10 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
 }
 
 function applyNodowaExpiry(eastAction: CombatAction, westAction: CombatAction, st: EngineState): { eastAction: CombatAction, westAction: CombatAction } {
-  if (st.nodowaActive) {
+  if (st.nodawaActive) {
     const newEastAction = eastAction.family === 'belt' ? { ...eastAction, family: 'push' as TacticalFamily } : eastAction;
     const newWestAction = westAction.family === 'belt' ? { ...westAction, family: 'push' as TacticalFamily } : westAction;
-    st.nodowaActive = false;
+    st.nodawaActive = false;
     return { eastAction: newEastAction, westAction: newWestAction };
   }
   return { eastAction, westAction };

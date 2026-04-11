@@ -57,7 +57,7 @@ export default function GovernancePage() {
           </p>
           <Badge variant={status === "good_standing" ? "outline" : "destructive"} className="text-lg px-4 py-1">
             <Scale className="mr-2 h-4 w-4" />
-            {getStatusLabel(status)}
+            {getStatusLabel(world, status)}
           </Badge>
         </div>
 
@@ -154,7 +154,7 @@ export default function GovernancePage() {
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${getStatusColor(status)}`}>
-                {getStatusLabel(status)}
+                {getStatusLabel(world, status)}
               </div>
               <p className="text-xs text-muted-foreground mt-2">
                 {status === "good_standing" 

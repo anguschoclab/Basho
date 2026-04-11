@@ -51,13 +51,15 @@ export class BardEngine {
     let idx = 0;
     let template = "";
     
+    const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+    
     do {
       idx = rng.int(0, options.length - 1);
       template = options[idx];
       attempts++;
-    } while (this.lruCache.includes(template) && attempts < 3 && options.length > 1 && process.env.NODE_ENV !== 'test');
+    } while (this.lruCache.includes(template) && attempts < 3 && options.length > 1 && !isTest);
 
-    if (process.env.NODE_ENV !== 'test') {
+    if (!isTest) {
       this.updateCache(template);
     }
 
@@ -152,7 +154,7 @@ export class BardEngine {
       // Auto-Formatting Rules
       if (typeof value === 'number') {
         if (key.includes('money') || key.includes('kensho') || key.includes('cost') || key.includes('revenue') || key.includes('profit')) {
-          return this.currencyFormatter.format(value);
+          return this.formatCurrency(value);
         }
         if (key.includes('rate') || key.includes('chance')) {
           return this.percentFormatter.format(value > 1 ? value / 100 : value);
@@ -164,7 +166,8 @@ export class BardEngine {
 
     if (result.includes('%') || result.includes('{{') || result.includes('}}')) {
        const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
-       if (process.env.NODE_ENV === 'test' || process.env.CI) {
+       const shouldThrow = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || process.env?.CI);
+       if (shouldThrow) {
          throw new Error(leakMsg);
        }
        console.warn(leakMsg);

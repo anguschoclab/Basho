@@ -147,5 +147,22 @@ export const ScoutingService = {
       aggression: resolve("aggression", attr.aggression, "combat"),
       experience: resolve("experience", attr.experience, "combat")
     };
+  },
+
+  /**
+   * Human-readable label for scouting level.
+   */
+  describeScoutingLevel(level: number): string {
+    if (level >= 90) return "Exhaustive";
+    if (level >= 70) return "Professional";
+    if (level >= 45) return "Detailed";
+    if (level >= 20) return "Observation";
+    return "Snapshot";
   }
 };
+
+// Named exports for legacy/external compatibility
+export const createScoutedView = ScoutingService.createScoutedView;
+export const recordObservation = ScoutingService.recordObservation;
+export const getScoutedAttributes = ScoutingService.getScoutedAttributes;
+export const describeScoutingLevel = ScoutingService.describeScoutingLevel;

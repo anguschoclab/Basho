@@ -323,7 +323,7 @@ export default function HallOfFamePage() {
 
         {/* Timeline Visualization */}
         {totalInductees > 0 && (
-          <HoFTimeline inductees={hof?.inductees as any ?? []} />
+          <HoFTimeline world={world} inductees={hof?.inductees as any ?? []} />
         )}
 
         {/* Tabs */}

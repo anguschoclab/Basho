@@ -19,7 +19,13 @@ export type EngineEventType =
   | "AWARD_CONFERRED"
   | "LIFECYCLE_EVENT"
   | "BASHO_STATUS"
-  | "WELFARE_COMPLIANCE";
+  | "WELFARE_COMPLIANCE"
+  | "OYAKATA_MOOD_SHIFT"
+  | "NPC_MANAGER_DECISION"
+  | "NARRATIVE_STRATEGY_SHIFT"
+  | "FACILITY_UPGRADED"
+  | "FACILITY_DEGRADED"
+  | "ROSTER_OVERFLOW_RELEASE";
 
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
 /** Type representing event category. */
@@ -79,7 +85,7 @@ export interface NarrativeContext {
   heat?: number;
   day?: number;
   
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: string | number | boolean | undefined | any;
 }
 
 /** Defines the structure for engine event. */

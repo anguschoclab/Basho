@@ -9,7 +9,7 @@ type KimariteDefinition = Kimarite & { kimariteClass?: KimariteClass };
 
 interface KimariteBaseEntry {
   id: string;
-  name: string;
+  name?: string;
   nameJa?: string;
   jsaCategory: JsaCategory;
   tacticalFamily?: TacticalFamily;
@@ -48,9 +48,15 @@ function defineKimarite(entry: KimariteBaseEntry): KimariteDefinition {
     baseWeight <= 150 ? "uncommon" : "common"
   );
 
+  // Auto-generate name from ID if missing
+  const name = entry.name || entry.id.charAt(0).toUpperCase() + entry.id.slice(1).replace(/_/g, ' ');
+
   return {
     ...defaults,
     ...entry,
+    name,
+    nameJa: entry.nameJa || entry.id, // Fallback to id for Ja if missing
+    description: entry.description || defaults.description || `${name} technique.`,
     statWeights: entry.statWeights ?? defaults.statWeights ?? { strength: 0.2, weight: 0.2, speed: 0.2, technique: 0.2, balance: 0.2 },
     baseWeight,
     rarity,
@@ -164,8 +170,8 @@ export const KIMARITE_REGISTRY: KimariteDefinition[] = [
   K({ id: 'fumidashi', jsaCategory: 'Hiwaza', baseWeight: 1 }),
 
   // === Forfeits & Extras (Engine internal) ===
-  { id: 'fusensho', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', baseWeight: 0, statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, kimariteClass: 'forfeit' },
-  { id: 'hansoku', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', baseWeight: 0, statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, kimariteClass: 'forfeit' },
+  K({ id: 'fusensho', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', baseWeight: 0, statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, kimariteClass: 'forfeit', name: 'Fusensho' }),
+  K({ id: 'hansoku', jsaCategory: 'Tokushuwaza', tacticalFamily: 'trick', baseWeight: 0, statWeights: { strength: 0, weight: 0, speed: 0, technique: 0, balance: 0 }, kimariteClass: 'forfeit', name: 'Hansoku' }),
 ];
 
 // --- High-Performance Lookups ---

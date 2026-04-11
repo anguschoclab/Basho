@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { projectBanzukeUIDigest } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
