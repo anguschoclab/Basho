@@ -44,7 +44,7 @@ export function safeRankSortKey(rank: any): number {
 export function formatYenToMan(amount: number): string {
   if (Math.abs(amount) < 10000) return `¥${amount.toLocaleString("en-US")}`;
   const man = amount / 10000;
-  return `${man.toLocaleString("en-US", { maximumFractionDigits: 1 })}万`;
+  return `¥${man.toLocaleString("en-US", { maximumFractionDigits: 1 })}万`;
 }
 
 /**
