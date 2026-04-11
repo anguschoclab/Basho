@@ -4,6 +4,7 @@ import type { BoutResult } from "@/engine/types/basho";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
 import type { UIDigest } from "@/presenters/uiDigest";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 /** Type representing game phase. */
 export type GamePhase =
@@ -36,6 +37,10 @@ export interface GameState {
   playerHeyaId: string | null;
   isAutoPlaying: boolean;
   boutTactics: Record<string, import("@/engine/types/combat").BoutTactic>;
+  /** Store impacts from last tick for UI visualization and debugging. */
+  lastImpacts?: StateImpact[];
+  /** Historical impact tracking for debugging and analysis. Limited to last 52 weeks. */
+  impactHistory?: Array<{ week: number; impacts: StateImpact[] }>;
 }
 
 /** Type representing game action. */
@@ -68,7 +73,8 @@ export type GameAction =
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
   | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
   | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
-  | { type: "COMPLETE_TUTORIAL" };
+  | { type: "COMPLETE_TUTORIAL" }
+  | { type: "SET_IMPACTS"; impacts: StateImpact[] };
 
 /** Initial game state. */
 export const initialGameState: GameState = {
@@ -82,4 +88,6 @@ export const initialGameState: GameState = {
   playerHeyaId: null,
   isAutoPlaying: false,
   boutTactics: {},
+  lastImpacts: [],
+  impactHistory: [],
 };

@@ -125,6 +125,21 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "SET_IMPACTS": {
+      const currentWeek = state.world?.week ?? 0;
+      const newImpactEntry = { week: currentWeek, impacts: action.impacts };
+      
+      // Limit impact history to last 52 weeks
+      const impactHistory = [...(state.impactHistory || []), newImpactEntry];
+      const limitedHistory = impactHistory.slice(-52);
+      
+      return {
+        ...state,
+        lastImpacts: action.impacts,
+        impactHistory: limitedHistory,
+      };
+    }
+
     default:
       return state;
   }

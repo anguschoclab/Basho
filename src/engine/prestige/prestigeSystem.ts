@@ -10,6 +10,8 @@ import type { Heya } from "../types/heya";
 import type { PrestigeBand } from "../types/narrative";
 import { getHeyaRoster } from "../queries";
 import { EventBus } from "../events";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 export const PRESTIGE_ORDER: PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
 
@@ -56,10 +58,16 @@ export function updateStatureBand(world: WorldState, heya: Heya): void {
  * - Multi-basho stagnation accelerates decay.
  * - Yūshō/sanshō provide upward shifts.
  * - Small stables face extra fragility.
+ * 
+ * Returns StateImpact describing prestige changes instead of mutating state.
  */
-export function runPrestigeDecay(world: WorldState): void {
+export function runPrestigeDecay(world: WorldState): StateImpact {
   const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
+  if (!lastBasho) {
+    return createImpactBuilder('prestigeDecay').build();
+  }
+
+  const builder = createImpactBuilder('prestigeDecay');
 
   for (const heya of world.heyas.values()) {
     let totalWins = 0;
@@ -125,20 +133,59 @@ export function runPrestigeDecay(world: WorldState): void {
 
     if (newBand !== heya.prestigeBand) {
       const direction = newIdx > currentIdx ? "rose" : "fell";
-      EventBus.governanceRuling(world, heya.id, {
-        incident: "prestige_shift",
-        status: newBand,
-        reason: heya.prestigeBand, // previous band
-        score: Math.round(winRate * 100)
-      }, Math.abs(shift) >= 2 ? "major" : "notable");
-      heya.prestigeBand = newBand;
+      // Queue event in impact instead of calling EventBus directly
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'narrative',
+        {
+          incident: "prestige_shift",
+          status: newBand,
+          reason: heya.prestigeBand, // previous band
+          score: Math.round(winRate * 100)
+        },
+        {
+          heyaId: heya.id,
+          importance: Math.abs(shift) >= 2 ? 'major' : 'notable'
+        }
+      );
+      // Queue heya update for prestigeBand
+      builder.updateHeya(heya.id, { prestigeBand: newBand });
     }
 
-    // Update stature band
-    updateStatureBand(world, heya);
+    // Calculate new stature band
+    let newStatureBand = heya.statureBand;
+    let maxRankWeight = 0;
+    let rosterScore = 0;
+    const RANK_WEIGHT: Record<string, number> = {
+      yokozuna: 100, ozeki: 80, sekiwake: 60, komusubi: 50,
+      maegashira: 30, juryo: 15, makushita: 8, sandanme: 4,
+      jonidan: 2, jonokuchi: 1
+    };
+
+    for (const r of roster) {
+      const w = RANK_WEIGHT[r.rank] ?? 5;
+      rosterScore += w;
+      if (w > maxRankWeight) maxRankWeight = w;
+    }
+
+    const avgScore = roster.length > 0 ? rosterScore / roster.length : 0;
+
+    if (maxRankWeight >= 100 && avgScore >= 40) newStatureBand = "legendary";
+    else if (maxRankWeight >= 60 && avgScore >= 30) newStatureBand = "powerful";
+    else if (avgScore >= 20) newStatureBand = "established";
+    else if (avgScore >= 10) newStatureBand = "rebuilding";
+    else if (roster.length >= 3) newStatureBand = "fragile";
+    else newStatureBand = "new";
+
+    // Queue heya update for statureBand
+    builder.updateHeya(heya.id, { statureBand: newStatureBand });
 
     // Reputation drift
     const reputationDelta = shift * 5;
-    heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + reputationDelta));
+    const newReputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + reputationDelta));
+    // Queue heya update for reputation
+    builder.updateHeya(heya.id, { reputation: newReputation });
   }
+
+  return builder.build();
 }
