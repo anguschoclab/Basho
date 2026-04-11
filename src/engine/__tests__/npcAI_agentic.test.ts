@@ -3,6 +3,7 @@ import {
   consolidateOyakataMemory, 
   makeNPCWeeklyDecision 
 } from "../npcAI";
+import { resolveImpacts } from "../core/ImpactResolver";
 import * as PersonaService from "../systems/NPCPersonaService";
 import { WorldState } from "../types/world";
 import { Id } from "../types/common";
@@ -60,15 +61,19 @@ describe("NPC AI Agentic Refactor", () => {
 
   describe("Phase 1: Background Consolidation", () => {
     it("should initialize memory if missing", () => {
-      consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
-      expect(mockOyakata.memory).toBeDefined();
-      expect((mockOyakata.memory as any).coreDirectives).toContain("Prioritize traditionalist values");
+      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
+      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
+      expect(updatedOyakata?.memory).toBeDefined();
+      expect((updatedOyakata?.memory as any).coreDirectives).toContain("Prioritize traditionalist values");
     });
 
     it("should flag skeptical conflicts (e.g. morale drop vs content mood)", () => {
       mockOyakata.mood = "content";
-      consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "mutinous" });
-      const obs = (mockOyakata.memory as any).observations.find((o: any) => o.type === "alignment");
+      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "mutinous" });
+      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
+      const obs = (updatedOyakata?.memory as any).observations.find((o: any) => o.type === "alignment");
       expect(obs).toBeDefined();
       expect(obs.summary).toContain("Unexpected morale collapse");
     });
@@ -82,10 +87,13 @@ describe("NPC AI Agentic Refactor", () => {
       for (let i = 0; i < 15; i++) {
         memory.observations.push({ tick: i, type: "test", summary: `obs ${i}`, importance: i });
       }
-      consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
-      expect(memory.observations.length).toBeLessThanOrEqual(10);
+      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
+      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
+      const updatedMemory = updatedOyakata?.memory as any;
+      expect(updatedMemory.observations.length).toBeLessThanOrEqual(10);
       // Ensure most important remains
-      expect(memory.observations.some((o: any) => o.importance === 14)).toBe(true);
+      expect(updatedMemory.observations.some((o: any) => o.importance === 14)).toBe(true);
     });
   });
 

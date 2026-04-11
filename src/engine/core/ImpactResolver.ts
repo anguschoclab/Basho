@@ -122,9 +122,19 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
     }
   }
 
-  // Apply world field updates
+  // Apply world field updates (preserve entity maps)
   if (impact.worldFields) {
-    result = { ...result, ...impact.worldFields };
+    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } = impact.worldFields as any;
+    result = {
+      ...result,
+      ...otherFields,
+      // Preserve entity maps if they exist in the impact
+      ...(heyas && { heyas }),
+      ...(rikishi && { rikishi }),
+      ...(oyakata && { oyakata }),
+      ...(historicalRikishi && { historicalRikishi }),
+      ...(staff && { staff }),
+    };
   }
 
   // Log events

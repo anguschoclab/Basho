@@ -38,17 +38,19 @@ function worldChecksum(world: ReturnType<typeof generateInitialWorld>): string {
     `year:${world.year}`,
     `week:${world.week}`,
     `dayIdx:${world.dayIndexGlobal}`,
-    `rikishiCount:${world.rikishi.size}`,
-    `heyas:${world.heyas.size}`,
-    `historyLen:${world.history.length}`,
+    `rikishiCount:${world.rikishi?.size ?? 0}`,
+    `heyas:${world.heyas?.size ?? 0}`,
+    `historyLen:${world.history?.length ?? 0}`,
   ];
 
   // Sum of all rikishi power+fatigue as a quick drift detector
   let powerSum = 0;
   let fatigueSum = 0;
-  for (const r of world.rikishi.values()) {
-    powerSum += r.power ?? 0;
-    fatigueSum += r.fatigue ?? 0;
+  if (world.rikishi) {
+    for (const r of world.rikishi.values()) {
+      powerSum += r.power ?? 0;
+      fatigueSum += r.fatigue ?? 0;
+    }
   }
   parts.push(`powerSum:${Math.round(powerSum)}`);
   parts.push(`fatigueSum:${Math.round(fatigueSum)}`);

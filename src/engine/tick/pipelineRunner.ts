@@ -44,20 +44,15 @@ export function runPipeline(
       const result = phase(currentWorld);
 
       // Check if phase returned StateImpact (migrated) or WorldState (legacy)
-      if (result && typeof result === 'object' && 'entityUpdates' in result) {
-        // Phase returned StateImpact - collect it
-        impacts.push(result as StateImpact);
-        // Note: StateImpact will be resolved at the end
+      // StateImpact has metadata, WorldState does not
+      const isStateImpact = result && typeof result === 'object' && 'metadata' in result;
+      
+      if (isStateImpact) {
+        // Phase returned StateImpact - resolve it immediately
+        currentWorld = resolveImpacts(currentWorld, [result as StateImpact]);
       } else {
         // Phase returned WorldState (legacy)
         const nextWorld = result as WorldState;
-
-        // Resolve any pending impacts before applying legacy WorldState
-        if (impacts.length > 0) {
-          currentWorld = resolveImpacts(currentWorld, impacts);
-          impacts.length = 0; // Clear impacts
-        }
-
         currentWorld = nextWorld;
       }
 
@@ -74,7 +69,8 @@ export function runPipeline(
         error,
       );
       // Return the unmutated state on failure to allow subsequent phases to attempt recovery
-      return currentWorld;
+      // Continue to next phase with the current (unmutated) state
+      continue;
     }
   }
 

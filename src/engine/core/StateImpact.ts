@@ -72,6 +72,7 @@ export interface StateImpact {
   worldFields?: Partial<Pick<WorldState,
     | 'year'
     | 'week'
+    | 'dayIndexGlobal'
     | 'cyclePhase'
     | '_postBashoMeta'
     | '_recruitmentWindow'
@@ -80,6 +81,8 @@ export interface StateImpact {
     | 'currentBashoName'
     | 'ozekiKadoban'
     | '_interimDaysRemaining'
+    | '_postBashoDays'
+    | 'calendar'
     | 'history'
     | 'almanacSnapshots'
     | 'mediaState'

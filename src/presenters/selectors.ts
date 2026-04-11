@@ -33,7 +33,7 @@ function createSelector<T>(fn: (world: WorldState) => T) {
  * Memoized selector for all Rikishi as an array.
  */
 const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
-  return Array.from(world.rikishi.values());
+  return world.rikishi ? Array.from(world.rikishi.values()) : [];
 });
 
 /**
@@ -103,6 +103,7 @@ export const selectYokozunaCandidates = createSelector((world: WorldState) => {
 export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[] => {
   const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Rikishi[] = [];
+  if (!world.rikishi) return entries;
   for (const rid in kadobanMap) {
     const r = world.rikishi.get(rid);
     if (r) entries.push(r);
@@ -136,6 +137,7 @@ export const selectRikishiByHeya = createSelector((world: WorldState): Map<strin
 export const selectTopRivals = createSelector((world: WorldState) => {
   const entries: { id: string; name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
   const playerHeyaId = world.playerHeyaId;
+  if (!world.heyas) return entries;
   for (const heya of world.heyas.values()) {
     if (heya.id === playerHeyaId) continue;
     const p = getCachedPerception(world, heya.id);
@@ -157,18 +159,18 @@ export const selectTopRivals = createSelector((world: WorldState) => {
  * Select all retired rikishi (from historicalRikishi).
  */
 export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
-  return Array.from(world.historicalRikishi.values());
+  return world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : [];
 });
 
 /**
  * Select heyas with critical welfare risk (welfareRisk >= 55 or non-compliant).
  */
 export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState): Heya[] => {
-  return Array.from(world.heyas.values()).filter(h => {
+  return world.heyas ? Array.from(world.heyas.values()).filter(h => {
     const ws = h.welfareState;
     if (!ws) return false;
     return ws.welfareRisk >= 55 || ws.complianceState === "sanctioned" || ws.complianceState === "investigation";
-  });
+  }) : [];
 });
 
 /**
@@ -176,9 +178,9 @@ export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState)
  * Excludes the player stable.
  */
 export const selectMergerCandidates = createSelector((world: WorldState): Heya[] => {
-  return Array.from(world.heyas.values()).filter(h => {
+  return world.heyas ? Array.from(world.heyas.values()).filter(h => {
     if (h.id === world.playerHeyaId) return false;
     const rosterSize = h.rikishiIds?.length ?? 0;
     return h.funds < 0 && rosterSize <= 3;
-  }).sort((a, b) => a.funds - b.funds); // worst debt first
+  }).sort((a, b) => a.funds - b.funds) : []; // worst debt first
 });

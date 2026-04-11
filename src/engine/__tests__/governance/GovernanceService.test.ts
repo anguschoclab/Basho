@@ -12,6 +12,7 @@
 
 import { describe, it, expect } from "vitest";
 import { reportScandal, tickWeekGovernance } from "../../governance/GovernanceService";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import { makeMockWorld, makeMockHeya } from "../utils";
 import type { WorldState } from "../../types/world";
 
@@ -30,27 +31,32 @@ function makeWorld(heyaId = "h1", initialScore = 0): WorldState {
 describe("reportScandal — score bumps", () => {
   it("adds 5 for minor severity", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "minor", "misconduct");
-    expect(world.heyas.get("h1")!.scandalScore).toBe(5);
+    const impact = reportScandal(world, "h1", "minor", "misconduct");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(5);
   });
 
   it("adds 15 for major severity", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "major", "betting scandal");
-    expect(world.heyas.get("h1")!.scandalScore).toBe(15);
+    const impact = reportScandal(world, "h1", "major", "betting scandal");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(15);
   });
 
   it("adds 30 for critical severity", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "critical", "match fixing");
-    expect(world.heyas.get("h1")!.scandalScore).toBe(30);
+    const impact = reportScandal(world, "h1", "critical", "match fixing");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(30);
   });
 
   it("accumulates across multiple scandals", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "minor", "incident 1");   // +5
-    reportScandal(world, "h1", "major", "incident 2");   // +15
-    expect(world.heyas.get("h1")!.scandalScore).toBe(20);
+    const impact1 = reportScandal(world, "h1", "minor", "incident 1");   // +5
+    const updatedWorld1 = resolveImpacts(world, [impact1]);
+    const impact2 = reportScandal(updatedWorld1, "h1", "major", "incident 2");   // +15
+    const updatedWorld2 = resolveImpacts(updatedWorld1, [impact2]);
+    expect(updatedWorld2.heyas.get("h1")!.scandalScore).toBe(20);
   });
 
   it("is a no-op for a non-existent heya", () => {
@@ -62,21 +68,24 @@ describe("reportScandal — score bumps", () => {
 describe("reportScandal — governance log", () => {
   it("creates a ruling entry in world.governanceLog", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "major", "betting");
-    expect((world as any).governanceLog).toHaveLength(1);
-    expect((world as any).governanceLog[0].heyaId).toBe("h1");
+    const impact = reportScandal(world, "h1", "major", "betting");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect((updatedWorld as any).governanceLog).toHaveLength(1);
+    expect((updatedWorld as any).governanceLog[0].heyaId).toBe("h1");
   });
 
   it("ruling records the correct scandalScoreDelta", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "critical", "match fixing");
-    expect((world as any).governanceLog[0].effects.scandalScoreDelta).toBe(30);
+    const impact = reportScandal(world, "h1", "critical", "match fixing");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect((updatedWorld as any).governanceLog[0].effects.scandalScoreDelta).toBe(30);
   });
 
   it("ruling severity maps: critical→high, major→medium, minor→low", () => {
     const world = makeWorld();
-    reportScandal(world, "h1", "critical", "critical event");
-    expect((world as any).governanceLog[0].severity).toBe("high");
+    const impact = reportScandal(world, "h1", "critical", "critical event");
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect((updatedWorld as any).governanceLog[0].severity).toBe("high");
   });
 });
 
@@ -85,20 +94,23 @@ describe("reportScandal — governance log", () => {
 describe("tickWeekGovernance — scandal score decay", () => {
   it("decays by 1 per week", () => {
     const world = makeWorld("h1", 10);
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.scandalScore).toBe(9);
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(9);
   });
 
   it("does not decay below 0", () => {
     const world = makeWorld("h1", 0);
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.scandalScore).toBe(0);
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(0);
   });
 
   it("handles score of 1 correctly (floors at 0)", () => {
     const world = makeWorld("h1", 1);
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.scandalScore).toBe(0);
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(0);
   });
 });
 
@@ -109,34 +121,39 @@ describe("tickWeekGovernance — scandal score decay", () => {
 describe("tickWeekGovernance — status threshold transitions", () => {
   it("remains 'good_standing' when post-decay score is 14 (< 15)", () => {
     const world = makeWorld("h1", 15); // decays to 14
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("good_standing");
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("good_standing");
   });
 
   it("transitions to 'warning' when post-decay score is exactly 15", () => {
     const world = makeWorld("h1", 16); // decays to 15
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.scandalScore).toBe(15);
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("warning");
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.scandalScore).toBe(15);
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("warning");
   });
 
   it("transitions to 'probation' when post-decay score is 30", () => {
     const world = makeWorld("h1", 31); // decays to 30
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("probation");
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("probation");
   });
 
   it("transitions to 'sanctioned' when post-decay score is 60", () => {
     const world = makeWorld("h1", 61); // decays to 60
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("sanctioned");
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("sanctioned");
   });
 
   it("does not change status when score remains in same band", () => {
     const world = makeWorld("h1", 5); // decays to 4, still good_standing
     world.heyas.get("h1")!.governanceStatus = "good_standing";
-    tickWeekGovernance(world);
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("good_standing");
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("good_standing");
   });
 
   it("handles multiple heyas independently", () => {
@@ -145,9 +162,10 @@ describe("tickWeekGovernance — status threshold transitions", () => {
     world.heyas.set("h1", makeMockHeya("h1", { scandalScore: 31, governanceStatus: "good_standing" }));
     world.heyas.set("h2", makeMockHeya("h2", { scandalScore: 5, governanceStatus: "good_standing" }));
 
-    tickWeekGovernance(world);
+    const impact = tickWeekGovernance(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
 
-    expect(world.heyas.get("h1")!.governanceStatus).toBe("probation");
-    expect(world.heyas.get("h2")!.governanceStatus).toBe("good_standing");
+    expect(updatedWorld.heyas.get("h1")!.governanceStatus).toBe("probation");
+    expect(updatedWorld.heyas.get("h2")!.governanceStatus).toBe("good_standing");
   });
 });

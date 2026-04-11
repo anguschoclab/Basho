@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { handleMediaEvent } from '../../systems/media/MediaService';
+import { resolveImpacts } from '../../core/ImpactResolver';
 import type { WorldState } from '../../types/world';
 
 describe('handleMediaEvent', () => {
@@ -25,45 +26,51 @@ describe('handleMediaEvent', () => {
   });
 
   it('updates governance log with player choice', () => {
-    handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    const ruling = mockWorld.governanceLog![0];
+    const ruling = updatedWorld.governanceLog![0];
     expect(ruling.playerChoice).toBe('apologize');
     expect(ruling.playerResponse).toBe('Player chose: apologize');
   });
 
   it('decreases heat when apologizing', () => {
-    handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(mockWorld.mediaState!.mediaHeat['rikishi1']).toBe(45);
-    expect(mockWorld.mediaState!.mediaHeat['rikishi2']).toBe(15);
+    expect(updatedWorld.mediaState!.mediaHeat['rikishi1']).toBe(45);
+    expect(updatedWorld.mediaState!.mediaHeat['rikishi2']).toBe(15);
   });
 
   it('does not decrease heat below 0 when apologizing', () => {
     mockWorld.mediaState!.mediaHeat['rikishi1'] = 3;
-    handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'apologize');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(mockWorld.mediaState!.mediaHeat['rikishi1']).toBe(0);
+    expect(updatedWorld.mediaState!.mediaHeat['rikishi1']).toBe(0);
   });
 
   it('increases pressure when denying', () => {
-    handleMediaEvent(mockWorld, 'event1', 'deny');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'deny');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(mockWorld.mediaState!.heyaPressure['heya1']).toBe(65);
-    expect(mockWorld.mediaState!.heyaPressure['heya2']).toBe(15);
+    expect(updatedWorld.mediaState!.heyaPressure['heya1']).toBe(65);
+    expect(updatedWorld.mediaState!.heyaPressure['heya2']).toBe(15);
   });
 
   it('does not increase pressure above 100 when denying', () => {
     mockWorld.mediaState!.heyaPressure['heya1'] = 98;
-    handleMediaEvent(mockWorld, 'event1', 'deny');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'deny');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(mockWorld.mediaState!.heyaPressure['heya1']).toBe(100);
+    expect(updatedWorld.mediaState!.heyaPressure['heya1']).toBe(100);
   });
 
   it('does not immediately change heat or pressure when ignoring', () => {
-    handleMediaEvent(mockWorld, 'event1', 'ignore');
+    const impact = handleMediaEvent(mockWorld, 'event1', 'ignore');
+    const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(mockWorld.mediaState!.mediaHeat['rikishi1']).toBe(50);
-    expect(mockWorld.mediaState!.heyaPressure['heya1']).toBe(60);
+    expect(updatedWorld.mediaState!.mediaHeat['rikishi1']).toBe(50);
+    expect(updatedWorld.mediaState!.heyaPressure['heya1']).toBe(60);
   });
 });

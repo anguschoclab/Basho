@@ -226,6 +226,7 @@ export class ImpactBuilder {
   updateWorldField<K extends keyof Pick<WorldState,
     | 'year'
     | 'week'
+    | 'dayIndexGlobal'
     | 'cyclePhase'
     | '_postBashoMeta'
     | '_recruitmentWindow'
@@ -234,6 +235,8 @@ export class ImpactBuilder {
     | 'currentBashoName'
     | 'ozekiKadoban'
     | '_interimDaysRemaining'
+    | '_postBashoDays'
+    | 'calendar'
     | 'history'
     | 'almanacSnapshots'
     | 'mediaState'
@@ -373,6 +376,7 @@ export function logEventImpact(
 export function updateWorldFieldImpact<K extends keyof Pick<WorldState,
   | 'year'
   | 'week'
+  | 'dayIndexGlobal'
   | 'cyclePhase'
   | '_postBashoMeta'
   | '_recruitmentWindow'
@@ -381,6 +385,8 @@ export function updateWorldFieldImpact<K extends keyof Pick<WorldState,
   | 'currentBashoName'
   | 'ozekiKadoban'
   | '_interimDaysRemaining'
+  | '_postBashoDays'
+  | 'calendar'
   | 'history'
   | 'almanacSnapshots'
   | 'mediaState'

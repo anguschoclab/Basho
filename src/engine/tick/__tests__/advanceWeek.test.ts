@@ -5,6 +5,7 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { TrainingService } from "../../systems/training/TrainingService";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import { mockRikishi } from "../../__tests__/utils";
 import type { WorldState } from "../../types/world";
 import type { BeyaTrainingState, IndividualFocus } from "../../types/training";
@@ -83,9 +84,10 @@ describe("TrainingService.applyWeeklyTraining — injured rikishi on protect foc
       trainingState: makeTrainingState("h1", "balanced", "normal", focusSlots) as any,
     });
 
-    TrainingService.applyWeeklyTraining(world);
+    const impact = TrainingService.applyWeeklyTraining(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
 
-    const updated = world.rikishi.get("r1")!;
+    const updated = updatedWorld.rikishi.get("r1")!;
     expect(updated.fatigue).toBeLessThan(60);
   });
 
@@ -107,9 +109,10 @@ describe("TrainingService.applyWeeklyTraining — injured rikishi on protect foc
       trainingState: makeTrainingState("h1", "balanced", "high", focusSlots) as any,
     });
 
-    TrainingService.applyWeeklyTraining(world);
+    const impact = TrainingService.applyWeeklyTraining(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
 
-    const updated = world.rikishi.get("r1")!;
+    const updated = updatedWorld.rikishi.get("r1")!;
     expect(updated.fatigue).toBeLessThan(70);
   });
 });
@@ -134,9 +137,10 @@ describe("TrainingService.applyWeeklyTraining — injured rikishi with no protec
       trainingState: makeTrainingState("h1", "punishing", "low") as any,
     });
 
-    TrainingService.applyWeeklyTraining(world);
+    const impact = TrainingService.applyWeeklyTraining(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
 
-    const updated = world.rikishi.get("r1")!;
+    const updated = updatedWorld.rikishi.get("r1")!;
     // Fatigue should stay the same or increase — not decrease
     expect(updated.fatigue).toBeGreaterThanOrEqual(60);
   });
@@ -162,8 +166,9 @@ describe("TrainingService.applyWeeklyTraining — healthy rikishi growth", () =>
     });
 
     const powerBefore = rikishi.power;
-    TrainingService.applyWeeklyTraining(world);
-    const updated = world.rikishi.get("r1")!;
+    const impact = TrainingService.applyWeeklyTraining(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    const updated = updatedWorld.rikishi.get("r1")!;
 
     // Power should NOT change for injured rikishi
     expect(updated.power).toBe(powerBefore);
@@ -183,8 +188,9 @@ describe("TrainingService.applyWeeklyTraining — healthy rikishi growth", () =>
       trainingState: makeTrainingState("h1", "punishing", "low") as any,
     });
 
-    TrainingService.applyWeeklyTraining(world);
-    const updated = world.rikishi.get("r1")!;
+    const impact = TrainingService.applyWeeklyTraining(world);
+    const updatedWorld = resolveImpacts(world, [impact]);
+    const updated = updatedWorld.rikishi.get("r1")!;
     expect(updated.fatigue).toBeLessThanOrEqual(100);
     expect(updated.fatigue).toBeGreaterThanOrEqual(0);
   });

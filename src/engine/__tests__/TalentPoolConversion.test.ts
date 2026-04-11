@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { makeMockWorld, makeMockHeya } from './utils';
 import { phase01_week_recruitment } from '../tick/phases/phase01_week_recruitment';
+import { resolveImpacts } from '../core/ImpactResolver';
 import { WorldState } from '../types/world';
 import { TalentCandidate } from '../types/talent';
 
@@ -80,7 +81,8 @@ describe('TalentPoolConversion', () => {
     };
 
     // Run the recruitment phase
-    const nextWorld = phase01_week_recruitment(world);
+    const impact = phase01_week_recruitment(world);
+    const nextWorld = resolveImpacts(world, [impact]);
 
     // Verify candidate is removed from talent pool
     expect(nextWorld.talentPool?.candidates[candidateId]).toBeUndefined();
