@@ -744,6 +744,8 @@ export {
 } from "../engine/systems/generation/TalentPoolService";
 export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
 
+const boutIndexCache = new WeakMap<any, Map<string, any>>();
+
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
  * Returns null if the bout or its participants cannot be found.
