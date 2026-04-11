@@ -109,65 +109,8 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const sections: DigestSection[] = [];
 
-  const injuryItems = buildInjuryItems(world);
-  if (injuryItems.length) {
-    const sectionRng = new SeededRNG((world.seed || "section") + "_injuries");
-    sections.push({
-      id: "injuries",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.injuries").text,
-      items: injuryItems,
-    });
-  }
-
-  const matchupItems = buildMatchupItems(world);
-  if (matchupItems.length) {
-    const sectionRng = new SeededRNG((world.seed || "section") + "_matchups");
-    sections.push({
-      id: "matchups",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups").text,
-      items: matchupItems,
-    });
-  }
-
-  const { eventSections, trainingCount, econCount, scoutCount } =
-    buildEventSections(world);
-  sections.push(...eventSections);
-
-  const counts = {
-    trainingEvents: trainingCount,
-    injuries: injuryItems.length,
-    recoveries: 0,
-    economy: econCount,
-    scouting: scoutCount,
-  };
-
-  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
-  const basho = world.currentBasho;
-
-  const headline =
-    basho && world.cyclePhase === "active_basho"
-      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
-          DAY: (basho.day ?? 1).toString(),
-          DETAIL: matchupItems.length
-            ? "Key matchups highlighted."
-            : "Tournament in progress.",
-        }).text
-      : injuryItems.length
-        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
-            INJURY_COUNT: injuryItems.length.toString(),
-          }).text
-        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
-
-  return {
-    time: { label: labelForWorld(world) },
-    headline,
-    counts,
-    sections,
-  };
-}
-
-function buildInjuryItems(world: WorldState): DigestItem[] {
-  return selectInjuredRikishi(world).map((r) => {
+  // --- Injuries ---
+  const injuryItems: DigestItem[] = selectInjuredRikishi(world).map((r) => {
     const injury = r.injury;
     return {
       id: `injury::${r.id}`,
@@ -179,7 +122,14 @@ function buildInjuryItems(world: WorldState): DigestItem[] {
       rikishiId: r.id,
     };
   });
-}
+  if (injuryItems.length) {
+    const sectionRng = new SeededRNG((world.seed || "section") + "_injuries");
+    sections.push({
+      id: "injuries",
+      title: BardEngine.resolve(sectionRng, "ui.digest.sections.injuries").text,
+      items: injuryItems,
+    });
+  }
 
 function buildMatchupItems(world: WorldState): DigestItem[] {
   const matchupItems: DigestItem[] = [];
@@ -205,6 +155,15 @@ function buildMatchupItems(world: WorldState): DigestItem[] {
         title: `${east.shikona ?? east.name} vs ${west.shikona ?? west.name}`,
         detail: generateH2HCommentary(east, west),
         rikishiId: east.id,
+      });
+    }
+    if (matchupItems.length) {
+      const sectionRng = new SeededRNG((world.seed || "section") + "_matchups");
+      sections.push({
+        id: "matchups",
+        title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups")
+          .text,
+        items: matchupItems,
       });
     }
   }
@@ -257,63 +216,79 @@ function buildEventSections(world: WorldState): {
     (world.seed || "section") + "_" + world.week,
   );
   if (mediaItems.length)
-    eventSections.push({
+    sections.push({
       id: "media",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.media").text,
       items: mediaItems,
     });
   if (narrativeItems.length)
-    eventSections.push({
+    sections.push({
       id: "narrative",
       title: "Internal Intelligence",
       items: narrativeItems,
     }); // Keep or map to new
   if (trainingItems.length)
-    eventSections.push({
+    sections.push({
       id: "training",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
         .text,
       items: trainingItems,
     }); // Mis-mapped in original title? Fix to Economy/milestones?
   if (careerItems.length)
-    eventSections.push({
+    sections.push({
       id: "career",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.milestones")
         .text,
       items: careerItems,
     });
   if (rivalryItems.length)
-    eventSections.push({
-      id: "rivalries",
-      title: "Rivalries",
-      items: rivalryItems,
-    });
+    sections.push({ id: "rivalries", title: "Rivalries", items: rivalryItems });
   if (welfareItems.length)
-    eventSections.push({
+    sections.push({
       id: "welfare",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
         .text,
       items: welfareItems,
     });
   if (govItems.length)
-    eventSections.push({
+    sections.push({
       id: "governance",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance")
         .text,
       items: govItems,
     });
   if (scoutItems.length)
-    eventSections.push({
-      id: "scouting",
-      title: "Scouting",
-      items: scoutItems,
-    });
+    sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
   if (econItems.length)
-    eventSections.push({
+    sections.push({
       id: "economy",
       title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text,
       items: econItems,
     });
+
+  const counts = {
+    trainingEvents: trainingItems.length,
+    injuries: injuryItems.length,
+    recoveries: 0,
+    economy: econItems.length,
+    scouting: scoutItems.length,
+  };
+
+  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
+
+  const headline =
+    basho && world.cyclePhase === "active_basho"
+      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
+          DAY: (basho.day ?? 1).toString(),
+          DETAIL: matchupItems.length
+            ? "Key matchups highlighted."
+            : "Tournament in progress.",
+        }).text
+      : injuryItems.length
+        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
+            INJURY_COUNT: injuryItems.length.toString(),
+          }).text
+        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
 
   return {
     eventSections,
@@ -1126,9 +1101,27 @@ export function projectSponsorUIDigest(world: WorldState) {
 export function renewSponsorContract(
   world: WorldState,
   relId: string,
+  sponsorId?: string,
 ): boolean {
   const pool = world.sponsorPool;
   if (!pool) return false;
+
+  if (sponsorId) {
+    const sponsor = pool.sponsors.get(sponsorId);
+    if (sponsor) {
+      const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);
+      if (relIdx >= 0) {
+        const rel = sponsor.relationships[relIdx];
+        sponsor.relationships[relIdx] = {
+          ...rel,
+          endsAtTick: (world.week ?? 0) + 52,
+          strength: Math.min(5, rel.strength + 1) as any,
+        };
+        sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
+        return true;
+      }
+    }
+  }
 
   for (const sponsor of pool.sponsors.values()) {
     const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);

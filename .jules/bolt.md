@@ -1,3 +1,3 @@
-## 2026-04-11 - Optimize Nested UI Traversal Iteration Over Arrays
-**Learning:** Instantiating a `Set` from an array purely for iteration purposes in a nested loop is a performance anti-pattern in V8. The allocation and insertion cost outpaces array traversal for standard dataset sizes, slowing down UI presenters.
-**Action:** Removed Set instantiation when projecting cross-stable matchups (`projectH2HBetweenHeyas`). Reverted to standard array iteration with a safe empty array fallback `|| []` for potential null inputs to optimize traversal latency without altering underlying logic.
+## 2025-02-26 - Optimize renewSponsorContract performance
+**Learning:** `findIndex` inside a loop iterating over all `.values()` of a large Map is extremely slow when the target's ID can be used for O(1) direct lookup.
+**Action:** When searching for an inner array relationship (`sponsor.relationships`) by its id, pass the parent entity's id (`sponsorId`) when available in the calling context to skip iterating through unrelated entities.
