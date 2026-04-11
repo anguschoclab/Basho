@@ -21,6 +21,5 @@ export function cloneWorldForTick(world: WorldState): WorldState {
  */
 export function tickOrchestrator(world: WorldState): WorldState {
   const next = cloneWorldForTick(world);
-  advanceOneDay(next);
-  return next;
+  return advanceOneDay(next);
 }

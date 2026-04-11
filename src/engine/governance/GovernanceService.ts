@@ -14,17 +14,20 @@ import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
+ * Returns StateImpact describing scandal report instead of mutating state directly.
  */
-export function reportScandal(world: WorldState, heyaId: string, severity: "minor" | "major" | "critical", reason: string): void {
+export function reportScandal(world: WorldState, heyaId: string, severity: "minor" | "major" | "critical", reason: string): StateImpact {
+  const builder = createImpactBuilder('reportScandal');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return;
+  if (!heya) return builder.build();
 
   const impactMap = { minor: 5, major: 15, critical: 30 };
   const scoreBump = impactMap[severity] || 5;
-  heya.scandalScore = (heya.scandalScore ?? 0) + scoreBump;
+  const newScandalScore = (heya.scandalScore ?? 0) + scoreBump;
+
+  builder.updateHeya(heyaId, { scandalScore: newScandalScore });
 
   // Record deterministic ruling
-  if (!world.governanceLog) world.governanceLog = [];
   const rng = rngForWorld(world, "governance", `ruling_${world.dayIndexGlobal}_${heyaId}`);
   const ruling: GovernanceRuling = {
     id: rng.uuid('GR'),
@@ -37,60 +40,121 @@ export function reportScandal(world: WorldState, heyaId: string, severity: "mino
       scandalScoreDelta: scoreBump
     }
   };
+
+  // Note: governanceLog is not a supported world field in ImpactBuilder, so we update it directly
+  // This will be migrated in a future update when ImpactBuilder is extended
+  if (!world.governanceLog) world.governanceLog = [];
   world.governanceLog.push(ruling);
 
-  EventBus.governanceRuling(world, heyaId, {
-    status: severity,
-    reason,
-    score: scoreBump,
-    delta: heya.scandalScore,
-    incident: "scandal_reported"
-  }, severity === "minor" ? "notable" : "major");
+  builder.logEvent(
+    'GOVERNANCE_RULING',
+    'discipline',
+    {
+      status: severity,
+      reason,
+      score: scoreBump,
+      delta: newScandalScore,
+      incident: "scandal_reported"
+    },
+    { heyaId }
+  );
 
-  generateGovernanceHeadline({ world, heyaId, templatePath: 'institutional.governance.scandal', severity: severity === "critical" ? "major" : severity as "minor" | "major" });
+  const headlineImpact = generateGovernanceHeadline({ world, heyaId, templatePath: 'institutional.governance.scandal', severity: severity === "critical" ? "national" : severity === "major" ? "national" : "local" });
+  
+  // Merge headline impact
+  if (headlineImpact.entities?.heyaUpdates) {
+    for (const [id, update] of headlineImpact.entities.heyaUpdates) {
+      builder.updateHeya(id, update);
+    }
+  }
+  if (headlineImpact.worldFields) {
+    for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
+      (builder as any).updateWorldField(field, value);
+    }
+  }
+
+  return builder.build();
 }
 
 /**
  * Weekly governance tick: decay scandal scores, check compliance alerts.
+ * Returns StateImpact describing governance updates instead of mutating state directly.
  */
-export function tickWeekGovernance(world: WorldState): void {
-  for (const heya of world.heyas.values()) {
+export function tickWeekGovernance(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickWeekGovernance');
 
+  for (const heya of world.heyas.values()) {
     // Natural scandal score decay — 1 point per week
-    if (heya.scandalScore && heya.scandalScore > 0) {
-      heya.scandalScore = Math.max(0, heya.scandalScore - 1);
-    }
-    // Alert if crossing critical threshold (player only)
-    if (heya.scandalScore && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
-      EventBus.governanceRuling(world, heya.id, {
-        score: heya.scandalScore,
-        incident: "governance_warning",
-        reason: "Scandal threshold exceeded"
-      }, "major");
-    }
+    const newScandalScore = heya.scandalScore && heya.scandalScore > 0 ? Math.max(0, heya.scandalScore - 1) : heya.scandalScore;
 
     // Sync governanceStatus from scandalScore thresholds
-    const score = heya.scandalScore ?? 0;
+    const score = newScandalScore ?? 0;
     const newStatus: GovernanceStatus =
       score >= 60 ? "sanctioned" :
       score >= 30 ? "probation" :
       score >= 15 ? "warning" :
       "good_standing";
 
+    const updates: any = {};
+    if (heya.scandalScore !== newScandalScore) {
+      updates.scandalScore = newScandalScore;
+    }
+    if (heya.governanceStatus !== newStatus) {
+      updates.governanceStatus = newStatus;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      builder.updateHeya(heya.id, updates);
+    }
+
+    // Alert if crossing critical threshold (player only)
+    if (newScandalScore && newScandalScore >= 30 && heya.id === world.playerHeyaId) {
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'discipline',
+        {
+          score: newScandalScore,
+          incident: "governance_warning",
+          reason: "Scandal threshold exceeded"
+        },
+        { heyaId: heya.id }
+      );
+    }
+
+    // Log status change event
     if (heya.governanceStatus !== newStatus) {
       const prevStatus = heya.governanceStatus;
-      heya.governanceStatus = newStatus;
-      EventBus.governanceRuling(world, heya.id, {
-        incident: "status_changed",
-        status: newStatus,
-        reason: prevStatus,
-        score: Math.floor(score)
-      }, newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable");
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'discipline',
+        {
+          incident: "status_changed",
+          status: newStatus,
+          reason: prevStatus,
+          score: Math.floor(score)
+        },
+        { heyaId: heya.id }
+      );
+
       if (newStatus === "sanctioned" || newStatus === "probation") {
-        generateGovernanceHeadline({ world, heyaId: heya.id, templatePath: 'institutional.governance.status_escalation', severity: newStatus === "sanctioned" ? "major" : "major" });
+        const headlineImpact = generateGovernanceHeadline({ world, heyaId: heya.id, templatePath: 'institutional.governance.status_escalation', severity: "national" });
+        
+        // Merge headline impact
+        if (headlineImpact.entities?.heyaUpdates) {
+          for (const [id, update] of headlineImpact.entities.heyaUpdates) {
+            builder.updateHeya(id, update);
+          }
+        }
+        if (headlineImpact.worldFields) {
+          for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
+            (builder as any).updateWorldField(field, value);
+          }
+        }
       }
     }
   }
+
+  return builder.build();
 }
 
 /**
@@ -159,22 +223,28 @@ export function getStatusLabel(world: WorldState, status: string): string {
 
 /**
  * Spends political capital from a heya's governance account.
- * Returns false if insufficient capital.
+ * Returns StateImpact describing capital spend, or empty impact if insufficient capital.
  */
-export function spendPoliticalCapital(world: WorldState, heyaId: string, amount: number): boolean {
+export function spendPoliticalCapital(world: WorldState, heyaId: string, amount: number): StateImpact {
+  const builder = createImpactBuilder('spendPoliticalCapital');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return false;
+  if (!heya) return builder.build();
   const current = heya.politicalCapital ?? 50;
-  if (current < amount) return false;
-  heya.politicalCapital = current - amount;
-  return true;
+  if (current < amount) return builder.build();
+  
+  builder.updateHeya(heyaId, { politicalCapital: current - amount });
+  
+  return builder.build();
 }
 
 /**
  * Issues a governance ruling based on player choice.
+ * Returns StateImpact describing ruling issuance instead of mutating state directly.
  */
-export function issueGovernanceRuling(world: WorldState, rulingId: string, severity: "lenient" | "standard" | "harsh"): void {
+export function issueGovernanceRuling(world: WorldState, rulingId: string, severity: "lenient" | "standard" | "harsh"): StateImpact {
+  const builder = createImpactBuilder('issueGovernanceRuling');
   const rulingIndex = world.governanceLog?.findIndex(r => r.id === rulingId);
+  
   if (rulingIndex !== undefined && rulingIndex >= 0 && world.governanceLog) {
     const ruling = world.governanceLog[rulingIndex] as GovernanceRuling;
     const heya = world.heyas.get(ruling.heyaId);
@@ -184,17 +254,23 @@ export function issueGovernanceRuling(world: WorldState, rulingId: string, sever
       const originalDelta = ruling.effects.scandalScoreDelta || 0;
       const adjustedDelta = Math.round(originalDelta * severityMultiplier);
 
-      heya.scandalScore = Math.max(0, (heya.scandalScore || 0) - (originalDelta - adjustedDelta));
+      const newScandalScore = Math.max(0, (heya.scandalScore || 0) - (originalDelta - adjustedDelta));
+      const updates: any = { scandalScore: newScandalScore };
 
+      // Note: governanceLog is not a supported world field in ImpactBuilder, so we update it directly
       ruling.playerSeverity = severity;
       ruling.playerResponse = `Player issued ${severity} ruling`;
       ruling.effects.scandalScoreDelta = adjustedDelta;
 
       if (severity === "lenient") {
-        heya.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
+        updates.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
       } else if (severity === "harsh") {
-        heya.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
+        updates.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
       }
+
+      builder.updateHeya(heya.id, updates);
     }
   }
+
+  return builder.build();
 }

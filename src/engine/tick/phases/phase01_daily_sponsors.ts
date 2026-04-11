@@ -8,11 +8,14 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
-export function phase01_daily_sponsors(world: WorldState): WorldState {
+export function phase01_daily_sponsors(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_daily_sponsors');
   const pool = world.sponsorPool;
-  if (!pool?.sponsors) return world;
+  if (!pool?.sponsors) return builder.build();
 
   const rng = RNGRegistry.getSystemRNG(world, "economics", `sponsors-day-${world.dayIndexGlobal}`);
 
@@ -38,11 +41,12 @@ export function phase01_daily_sponsors(world: WorldState): WorldState {
     nextSponsors.set(id, nextSponsor);
   }
 
-  return {
-    ...world,
-    sponsorPool: {
-      ...pool,
-      sponsors: nextSponsors
-    }
+  // Note: sponsorPool updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as sponsorPool is a nested state
+  world.sponsorPool = {
+    ...pool,
+    sponsors: nextSponsors
   };
+
+  return builder.build();
 }

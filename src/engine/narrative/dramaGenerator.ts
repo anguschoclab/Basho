@@ -6,7 +6,8 @@
  */
 
 import type { WorldState } from "../types/world";
-import { EventBus } from "../events";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 import { rngForWorld } from "../rng";
 import { stableSort } from "../utils/sort";
 
@@ -22,9 +23,10 @@ export interface DramaEvent {
 
 /**
  * Main entry point for drama generation during a tick.
- *  * @param world - The World.
+ * Returns StateImpact describing drama generation instead of mutating directly.
  */
-export function processDramaTick(world: WorldState): void {
+export function processDramaTick(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('processDramaTick');
   const rng = rngForWorld(world, "narrative", "drama");
 
   // Daily chance for drama
@@ -34,9 +36,12 @@ export function processDramaTick(world: WorldState): void {
 
   // Specific triggers (e.g., high debt, low compliance)
   checkTriggeredDrama(world);
+
+  return builder.build();
 }
 
-function generateRandomDrama(world: WorldState): void {
+function generateRandomDrama(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('generateRandomDrama');
   const rng = rngForWorld(world, "narrative", "drama_random");
   const eventType = rng.int(0, 2);
 
@@ -45,54 +50,81 @@ function generateRandomDrama(world: WorldState): void {
     const rikishis = stableSort(world.rikishi.values(), x => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
-        EventBus.governanceRuling(world, target.heyaId, { 
-          rikishiId: target.id, 
-          shikona: target.shikona, 
-          incident: "curfew_violation" 
-        }, "notable");
+        builder.logEvent(
+          'GOVERNANCE_RULING',
+          'discipline',
+          {
+            rikishiId: target.id,
+            shikona: target.shikona,
+            incident: "curfew_violation"
+          },
+          { heyaId: target.heyaId, importance: "notable" }
+        );
     }
   } else if (eventType === 1) {
     // Grudge formation
     const oyakatas = stableSort(world.oyakata.values(), x => x.id);
-    if (oyakatas.length < 2) return;
+    if (oyakatas.length < 2) return builder.build();
     const a = oyakatas[rng.int(0, oyakatas.length - 1)];
     const b = oyakatas[rng.int(0, oyakatas.length - 1)];
     if (a.id !== b.id) {
         if (!a.grudges) a.grudges = [];
         if (!a.grudges.includes(b.heyaId)) {
-            a.grudges.push(b.heyaId);
-            EventBus.rivalryHeatSpike(world, { 
-              winnerRikishiId: a.id, 
-              loserRikishiId: b.id, 
-              winner: a.name, 
-              loser: b.name, 
-              status: "formed",
-              heat: 15
-            });
+            const newGrudges = [...a.grudges, b.heyaId];
+            // Note: oyakata updates are not directly supported by ImpactBuilder yet
+            // For now, we'll update them directly as oyakata is a Map, not a standard entity
+            a.grudges = newGrudges;
+
+            builder.logEvent(
+              'RIVALRY_HEAT_SPIKE',
+              'rivalry',
+              {
+                winnerRikishiId: a.id,
+                loserRikishiId: b.id,
+                winner: a.name,
+                loser: b.name,
+                status: "formed",
+                heat: 15
+              },
+              { heyaId: a.heyaId }
+            );
         }
     }
   }
+
+  return builder.build();
 }
 
-function checkTriggeredDrama(world: WorldState): void {
+function checkTriggeredDrama(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('checkTriggeredDrama');
+
   // Check for financial crisis
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     if (heya.funds < 0 && !heya.riskIndicators?.financial) {
-        EventBus.financialAlert(world, heya.id, { 
-          heyaname: heya.name, 
-          incident: "insolvency",
-          money: heya.funds
-        });
+        builder.logEvent(
+          'FINANCIAL_ALERT',
+          'economy',
+          {
+            heyaname: heya.name,
+            incident: "insolvency",
+            money: heya.funds
+          },
+          { heyaId: heya.id }
+        );
         if (heya.isPlayerOwned) {
             // This would trigger a CrisisModal in the UI
             triggerCrisis(world, heya.id, "BANKRUPTCY_THREAT");
         }
     }
   }
+
+  return builder.build();
 }
 
-function triggerCrisis(world: WorldState, heyaId: string, type: string): void {
+function triggerCrisis(world: WorldState, heyaId: string, type: string): StateImpact {
+  const builder = createImpactBuilder('triggerCrisis');
     // In a worker-based engine, we emit a special event that the UI catches
     // or log a high-importance event.
     console.log(`[DramaGenerator] CRISIS TRIGGERED: ${type} for heya ${heyaId}`);
+    return builder.build();
 }

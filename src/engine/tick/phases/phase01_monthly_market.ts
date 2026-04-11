@@ -5,25 +5,34 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
-export function phase01_monthly_market(world: WorldState): WorldState {
+export function phase01_monthly_market(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_monthly_market');
   // Only run on month boundaries
   const boundaries = (world as any).transientContext?.boundaries;
-  if (!boundaries?.monthBoundary) return world;
+  if (!boundaries?.monthBoundary) return builder.build();
 
   const market = world.myosekiMarket;
-  if (!market?.stocks) return world;
+  if (!market?.stocks) return builder.build();
 
   const rng = RNGRegistry.getSystemRNG(world, "economics", `month-${world.year}-${world.calendar.month}`);
 
+  const updatedStocks = { ...market.stocks };
   for (const stock of Object.values(market.stocks)) {
     if (stock.status === "available" && stock.askingPrice) {
       // Monthly jitter: +/- 3% price shift
       const drift = 1 + (rng.next() - 0.5) * 0.06;
-      stock.askingPrice = Math.round(stock.askingPrice * drift / 10000) * 10000; // block round to 10k
+      const updatedStock = { ...stock, askingPrice: Math.round(stock.askingPrice * drift / 10000) * 10000 };
+      updatedStocks[stock.id] = updatedStock;
     }
   }
 
-  return world;
+  // Note: myosekiMarket updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as myosekiMarket is a nested state
+  world.myosekiMarket = { ...market, stocks: updatedStocks };
+
+  return builder.build();
 }

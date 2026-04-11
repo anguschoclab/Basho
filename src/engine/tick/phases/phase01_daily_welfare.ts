@@ -5,13 +5,15 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
 import { toRikishiDescriptor } from "../../descriptorBands";
 import { clamp } from "../../utils";
 import { rngFromSeed } from "../../rng";
 
-export function phase01_daily_welfare(world: WorldState): WorldState {
-  const nextRikishi = new Map(world.rikishi);
+export function phase01_daily_welfare(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_daily_welfare');
   
   // Cache heya diets
   const heyaDietCache = new Map<string, string>();
@@ -55,11 +57,8 @@ export function phase01_daily_welfare(world: WorldState): WorldState {
       next.fatigue = Math.max(0, (next.fatigue ?? 0) - 0.3);
     }
 
-    nextRikishi.set(id, next);
+    builder.updateRikishi(id, next);
   }
 
-  return {
-    ...world,
-    rikishi: nextRikishi
-  };
+  return builder.build();
 }

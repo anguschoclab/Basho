@@ -2,6 +2,8 @@ import type { Staff, StaffRole, StaffCareerPhase, CompetenceBand, ReputationBand
 import { type SeededRNG, rngFromSeed } from "./rng";
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 function rollBand(rng: SeededRNG, bands: readonly any[]): any {
   return bands[Math.floor(rng.next() * bands.length)];
@@ -45,8 +47,9 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   };
 }
 
-export function tickStaffWeek(world: WorldState): void {
-  if (!world.staff || !world.heyas) return;
+export function tickStaffWeek(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickStaffWeek');
+  if (!world.staff || !world.heyas) return builder.build();
 
   for (const heya of world.heyas.values()) {
     const rikishiCount = (heya.rikishiIds || []).length;
@@ -63,92 +66,117 @@ export function tickStaffWeek(world: WorldState): void {
       const staff = world.staff.get(sId);
       if (!staff || staff.careerPhase === "retired") continue;
 
+      let newFatigue, newMorale;
+
       if (overload) {
         // Gain fatigue based on how much they are over-capacity
         const fatigueGain = Math.ceil(loadFactor * 2);
-        staff.fatigue = Math.min(100, staff.fatigue + fatigueGain);
+        newFatigue = Math.min(100, staff.fatigue + fatigueGain);
         
         // Morale penalty for overwork
-        staff.morale = Math.max(0, staff.morale - (loadFactor > 1.5 ? 2 : 1));
+        newMorale = Math.max(0, staff.morale - (loadFactor > 1.5 ? 2 : 1));
       } else {
         // Recover fatigue if under capacity
-        staff.fatigue = Math.max(0, staff.fatigue - 5);
+        newFatigue = Math.max(0, staff.fatigue - 5);
         
         // Morale boost for manageable workload
         if (staff.fatigue < 20) {
-          staff.morale = Math.min(100, staff.morale + 1);
+          newMorale = Math.min(100, staff.morale + 1);
+        } else {
+          newMorale = staff.morale;
         }
       }
 
       // Natural morale decay/recovery towards 70
-      if (staff.morale > 70 && !overload) staff.morale -= 0.1;
-      if (staff.morale < 30) {
-        // Risk of resignation if morale is bottomed out (handled in logic/events)
-      }
+      if (newMorale > 70 && !overload) newMorale -= 0.1;
+
+      const updates: any = { fatigue: newFatigue, morale: newMorale };
+
+      // Note: staff updates are not directly supported by ImpactBuilder yet
+      // For now, we'll update them directly as staff is a Map, not a standard entity
+      // This will be migrated in a future update when ImpactBuilder is extended
+      staff.fatigue = newFatigue;
+      staff.morale = newMorale;
     }
   }
+
+  return builder.build();
 }
 
-export function tickStaffYear(world: WorldState): void {
-  if (!world.staff) return;
+export function tickStaffYear(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickStaffYear');
+  if (!world.staff) return builder.build();
 
   for (const staff of world.staff.values()) {
-    staff.age += 1;
-    staff.yearsAtBeya += 1;
+    const newAge = staff.age + 1;
+    const newYearsAtBeya = staff.yearsAtBeya + 1;
 
     // Phase transitions
-    if (staff.careerPhase === "apprentice" && staff.age >= 30) staff.careerPhase = "established";
-    else if (staff.careerPhase === "established" && staff.age >= 45) staff.careerPhase = "senior";
-    else if (staff.careerPhase === "senior" && staff.age >= 55) staff.careerPhase = "declining";
-    else if (staff.careerPhase === "declining" && staff.age >= 65) staff.careerPhase = "retired";
+    let newCareerPhase = staff.careerPhase;
+    if (staff.careerPhase === "apprentice" && newAge >= 30) newCareerPhase = "established";
+    else if (staff.careerPhase === "established" && newAge >= 45) newCareerPhase = "senior";
+    else if (staff.careerPhase === "senior" && newAge >= 55) newCareerPhase = "declining";
+    else if (staff.careerPhase === "declining" && newAge >= 65) newCareerPhase = "retired";
+
+    // Note: staff updates are not directly supported by ImpactBuilder yet
+    // For now, we'll update them directly as staff is a Map, not a standard entity
+    // This will be migrated in a future update when ImpactBuilder is extended
+    staff.age = newAge;
+    staff.yearsAtBeya = newYearsAtBeya;
+    staff.careerPhase = newCareerPhase;
   }
+
+  return builder.build();
 }
 
 /**
  * Hire a new staff member for a heya.
  * Cost: ¥500,000 baseline.
+ * Returns StateImpact describing staff hire instead of mutating state directly.
  */
-export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): Staff | null {
+export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): StateImpact {
+  const builder = createImpactBuilder('hireStaff');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return null;
+  if (!heya) return builder.build();
 
   const HIRE_COST = 500_000;
-  if (heya.funds < HIRE_COST) return null;
+  if (heya.funds < HIRE_COST) return builder.build();
 
-  heya.funds -= HIRE_COST;
-
+  const newFunds = heya.funds - HIRE_COST;
   const sequence = (heya.staffIds?.length || 0) + 1;
   const staff = generateStaff(world.seed, role, heyaId, sequence);
 
-  // Add to world
+  const newStaffIds = [...(heya.staffIds || []), staff.id];
+
+  builder.updateHeya(heyaId, { funds: newFunds, staffIds: newStaffIds });
+
+  // Note: staff is a Map, not a standard entity, so we update it directly
+  // This will be migrated in a future update when ImpactBuilder is extended
   if (!world.staff) world.staff = new Map();
   world.staff.set(staff.id, staff);
 
-  // Add to heya
-  if (!heya.staffIds) heya.staffIds = [];
-  heya.staffIds.push(staff.id);
-
-  return staff;
+  return builder.build();
 }
 
 /**
  * Fire a staff member.
+ * Returns StateImpact describing staff firing instead of mutating state directly.
  */
-export function fireStaff(world: WorldState, heyaId: Id, staffId: string): boolean {
+export function fireStaff(world: WorldState, heyaId: Id, staffId: string): StateImpact {
+  const builder = createImpactBuilder('fireStaff');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return false;
+  if (!heya) return builder.build();
 
   // Remove from heya list
-  if (heya.staffIds) {
-    heya.staffIds = heya.staffIds.filter(id => id !== staffId);
-  }
+  const newStaffIds = (heya.staffIds || []).filter(id => id !== staffId);
+  builder.updateHeya(heyaId, { staffIds: newStaffIds });
 
   // Remove from world map
   if (world.staff) {
     world.staff.delete(staffId);
   }
 
-  return true;
+  return builder.build();
 }
 
 

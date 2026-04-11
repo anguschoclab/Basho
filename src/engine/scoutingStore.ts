@@ -189,14 +189,25 @@ function observeBout(world: WorldState, eastId: Id, westId: Id): void {
 /**
  * Apply scouting decay across all stored entries.
  * Call once per week tick (between basho weeks, training weeks, etc.).
+ * Returns StateImpact describing scouting decay instead of mutating directly.
  */
-function applyWeeklyScoutingDecay(world: WorldState): void {
+function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('applyWeeklyScoutingDecay');
   const table = ensureScoutingTable(world);
   const currentWeek = getWorldWeek(world);
 
+  const updatedTable: Record<string, ScoutedRikishi> = {};
   for (const id of Object.keys(table)) {
-    table[id] = applyScoutingDecay(table[id], currentWeek);
+    updatedTable[id] = applyScoutingDecay(table[id], currentWeek);
   }
+
+  const currentKnowledge = world.playerKnowledge || {};
+  (builder as any).updateWorldField('playerKnowledge', {
+    ...currentKnowledge,
+    scouting: updatedTable
+  });
+
+  return builder.build();
 }
 
 /**
@@ -269,8 +280,9 @@ export function onBoutResolvedScouting(
 
 /**
  * Weekly tick: apply scouting decay across all stored entries.
+ * Returns StateImpact describing scouting decay instead of mutating directly.
  */
-export function tickWeekScouting(world: WorldState): void {
-  applyWeeklyScoutingDecay(world);
+export function tickWeekScouting(world: WorldState): StateImpact {
+  return applyWeeklyScoutingDecay(world);
 }
 

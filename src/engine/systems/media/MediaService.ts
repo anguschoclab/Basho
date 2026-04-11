@@ -136,14 +136,15 @@ export function updateMediaFromBout(args: {
 }
 
 /**
- * Weekly decay and feature generation.
- * Accepts either a plain MediaState (legacy) or an object with { state, world, rivalries }.
- * Always returns { state: MediaState } for destructuring at call sites.
+ * Weekly media boundary: decay heat/pressure and rotate headlines.
+ * Returns StateImpact describing media boundary updates instead of mutating state directly.
  */
-export function processWeeklyMediaBoundary(
-  input: MediaState | { state: MediaState; world?: WorldState; rivalries?: RivalriesState }
-): { state: MediaState } {
-  const state = 'state' in input ? input.state : input;
+export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('processWeeklyMediaBoundary');
+  
+  if (!world.mediaState) return builder.build();
+
+  const state = world.mediaState;
   const nextHeat: Record<string, number> = {};
   for (const [id, heat] of Object.entries(state.mediaHeat)) {
     const nv = decayHeat(heat as number);
@@ -156,7 +157,13 @@ export function processWeeklyMediaBoundary(
     if (nv > 0) nextPressure[id] = nv;
   }
 
-  return { state: { ...state, mediaHeat: nextHeat, heyaPressure: nextPressure } };
+  builder.updateWorldField('mediaState', {
+    ...state,
+    mediaHeat: nextHeat,
+    heyaPressure: nextPressure
+  });
+
+  return builder.build();
 }
 
 /**
@@ -323,15 +330,18 @@ export function createDefaultMediaState(): MediaState {
 
 /**
  * Generates a headline for a governance or welfare event using the BardEngine.
+ * Returns StateImpact describing headline generation instead of mutating state directly.
  */
 export function generateGovernanceHeadline(args: {
   world: WorldState;
   heyaId: string;
   templatePath: string; // e.g., 'institutional.welfare.watch_headline'
   severity?: HeadlineTier;
-}): void {
+}): StateImpact {
   const { world, heyaId, templatePath, severity = 'local' } = args;
-  if (!world.mediaState || !world.mediaState.headlines) return;
+  const builder = createImpactBuilder('generateGovernanceHeadline');
+
+  if (!world.mediaState || !world.mediaState.headlines) return builder.build();
 
   const heya = world.heyas.get(heyaId);
   const context = {
@@ -349,7 +359,7 @@ export function generateGovernanceHeadline(args: {
     id: rng.uuid('MH'),
     week,
     tier: severity,
-    beat: templatePath.includes('welfare') ? 'discipline' : 'media',
+    beat: templatePath.includes('welfare') ? 'discipline' : 'controversy',
     tone: severity === 'main_event' || severity === 'national' ? 'controversy' : 'neutral',
     rikishiIds: [],
     heyaIds: [heyaId],
@@ -359,26 +369,40 @@ export function generateGovernanceHeadline(args: {
     tags: ["governance", "institutional"],
   };
 
-  // Log to media state
-  world.mediaState.headlines.push(headline);
-  if (world.mediaState.headlines.length > 250) world.mediaState.headlines.shift();
+  // Update media state with new headline
+  const updatedHeadlines = [...world.mediaState.headlines, headline];
+  if (updatedHeadlines.length > 250) updatedHeadlines.shift();
 
-  // Apply visual pressure
-  world.mediaState.heyaPressure[heyaId] = Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + (headline.impact / 2));
+  builder.updateWorldField('mediaState', {
+    ...world.mediaState,
+    headlines: updatedHeadlines,
+    heyaPressure: {
+      ...world.mediaState.heyaPressure,
+      [heyaId]: Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + (headline.impact / 2))
+    }
+  });
 
   console.log(`MediaService: Generated Governance Headline: ${title}`);
+
+  return builder.build();
 }
 
 /**
  * Handles a media event choice and applies its effects.
+ * Returns StateImpact describing event handling instead of mutating state directly.
+ * Note: governanceLog updates are handled separately as it's not a supported world field in ImpactBuilder.
  */
-export function handleMediaEvent(world: WorldState, eventId: string, choice: string): void {
-  if (!world.mediaState) return;
+export function handleMediaEvent(world: WorldState, eventId: string, choice: string): StateImpact {
+  const builder = createImpactBuilder('handleMediaEvent');
+
+  if (!world.mediaState) return builder.build();
 
   // Find the event in the governance log or media state
   const eventIndex = world.governanceLog?.findIndex(r => r.id === eventId);
   if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
     // Update the ruling with the player's choice
+    // Note: governanceLog is not a supported world field in ImpactBuilder, so we update it directly
+    // This will be migrated in a future update when ImpactBuilder is extended
     const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
     ruling.playerChoice = choice;
     ruling.playerResponse = `Player chose: ${choice}`;
@@ -386,39 +410,63 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 
   // Apply choice effects to media state
   // Different choices could affect heat/pressure differently
+  const updatedMediaHeat = { ...world.mediaState.mediaHeat };
+  const updatedHeyaPressure = { ...world.mediaState.heyaPressure };
+
   if (choice === "apologize") {
     // Apologizing reduces heat but may hurt reputation
     for (const [id, heat] of Object.entries(world.mediaState.mediaHeat)) {
-      world.mediaState.mediaHeat[id] = Math.max(0, (heat as number) - 5);
+      updatedMediaHeat[id] = Math.max(0, (heat as number) - 5);
     }
   } else if (choice === "deny") {
     // Denying may increase pressure
     for (const [id, pressure] of Object.entries(world.mediaState.heyaPressure)) {
-      world.mediaState.heyaPressure[id] = Math.min(100, (pressure as number) + 5);
+      updatedHeyaPressure[id] = Math.min(100, (pressure as number) + 5);
     }
   } else if (choice === "ignore") {
     // Ignoring has no immediate effect but may cause decay
     // Natural decay will happen in weekly boundary
   }
+
+  builder.updateWorldField('mediaState', {
+    ...world.mediaState,
+    mediaHeat: updatedMediaHeat,
+    heyaPressure: updatedHeyaPressure
+  });
+
+  return builder.build();
 }
 
 /**
  * Evaluates active scandals and applies ongoing pressure/heat effects.
  * Called every week during the media tick to keep scandal dynamics alive.
+ * Returns StateImpact describing scandal evaluation instead of mutating state directly.
  */
-export function evaluateScandals(world: WorldState): void {
-  if (!world.mediaState) return;
+export function evaluateScandals(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('evaluateScandals');
+
+  if (!world.mediaState) return builder.build();
+
   // Scandal pressure: stables with high scandalScore get persistent heyaPressure bumps
+  const updatedHeyaPressure = { ...world.mediaState.heyaPressure };
+  
   for (const heya of world.heyas.values()) {
     if (!heya.scandalScore || heya.scandalScore <= 0) continue;
     const pressBump = Math.floor(heya.scandalScore / 10); // 0-3 per week
     if (pressBump > 0) {
-      world.mediaState.heyaPressure[heya.id] = Math.min(
+      updatedHeyaPressure[heya.id] = Math.min(
         100,
-        (world.mediaState.heyaPressure[heya.id] ?? 0) + pressBump
+        (updatedHeyaPressure[heya.id] ?? 0) + pressBump
       );
     }
   }
+
+  builder.updateWorldField('mediaState', {
+    ...world.mediaState,
+    heyaPressure: updatedHeyaPressure
+  });
+
+  return builder.build();
 }
 
 /**

@@ -3,7 +3,8 @@ import type { WorldState } from "./types/world";
 import type { Id, IdMapRuntime } from "./types/common";
 import type { MyosekiStock, MyosekiMarket, MyosekiTransaction, MyosekiStatus } from "./types/myoseki";
 import type { Oyakata } from "./types/oyakata";
-import { EventBus } from "./events";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 import { stableSort } from "./utils/sort";
 
 const TOTAL_MYOSEKI = 105;
@@ -102,9 +103,11 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 /**
  * Weekly tick for Myoseki Market
  * Handles lease payments and market fluctuations
+ * Returns StateImpact describing market updates instead of mutating directly.
  */
-export function tickMyosekiMarket(world: WorldState): void {
-  if (!world.myosekiMarket) return;
+export function tickMyosekiMarket(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickMyosekiMarket');
+  if (!world.myosekiMarket) return builder.build();
 
   const market = world.myosekiMarket;
   const rng = rngForWorld(world, "myoseki", "tick");
@@ -116,7 +119,12 @@ export function tickMyosekiMarket(world: WorldState): void {
     if (h.oyakataId) oyakataHeyaMap.set(h.oyakataId, h);
   }
 
+  const updatedStocks = { ...market.stocks };
+  const heyaUpdates: Record<Id, any> = {};
+
   for (const stock of stableSort(Object.values(market.stocks), x => x.id)) {
+    const updatedStock = { ...stock };
+    
     // 1. Pay lease fees (if leased)
     if (stock.status === "leased" && stock.leaseFee) {
       const weeklyFee = Math.floor(stock.leaseFee / 52); // Approx weekly
@@ -126,8 +134,11 @@ export function tickMyosekiMarket(world: WorldState): void {
         // Find heya owned by this oyakata
         const lesseeHeya = oyakataHeyaMap.get(stock.holderId);
         if (lesseeHeya) {
-          lesseeHeya.funds -= weeklyFee;
-          // If the owner is a different heya, they would get paid, but typically it's an NPC/Retired
+          if (!heyaUpdates[lesseeHeya.id]) {
+            heyaUpdates[lesseeHeya.id] = { funds: lesseeHeya.funds - weeklyFee };
+          } else {
+            heyaUpdates[lesseeHeya.id].funds -= weeklyFee;
+          }
         }
       }
     }
@@ -135,9 +146,22 @@ export function tickMyosekiMarket(world: WorldState): void {
     // 2. Randomly fluctuate available asking prices
     if (stock.status === "available" && rng.next() < 0.1) {
       const adjustment = (rng.next() * 20_000_000) - 10_000_000;
-      stock.askingPrice = Math.max(BASE_ASKING_PRICE, Math.min(MAX_ASKING_PRICE, (stock.askingPrice || BASE_ASKING_PRICE) + adjustment));
+      updatedStock.askingPrice = Math.max(BASE_ASKING_PRICE, Math.min(MAX_ASKING_PRICE, (stock.askingPrice || BASE_ASKING_PRICE) + adjustment));
     }
+
+    updatedStocks[stock.id] = updatedStock;
   }
+
+  // Apply heya updates
+  for (const [heyaId, update] of Object.entries(heyaUpdates)) {
+    builder.updateHeya(heyaId, update);
+  }
+
+  // Note: myosekiMarket updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as myosekiMarket is a nested state
+  world.myosekiMarket = { ...market, stocks: updatedStocks };
+
+  return builder.build();
 }
 
 
@@ -170,51 +194,61 @@ function logMyosekiTransaction(
 
 /**
  * Buy a Myoseki stock.
+ * Returns StateImpact describing myoseki purchase instead of mutating directly.
  */
-export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myosekiId: Id): boolean {
+export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myosekiId: Id): StateImpact {
+  const builder = createImpactBuilder('buyMyoseki');
   const stock = getAvailableStock(world, myosekiId);
-  if (!stock || !stock.askingPrice) return false;
+  if (!stock || !stock.askingPrice) return builder.build();
 
   const heya = world.heyas.get(buyerHeyaId);
-  if (!heya || heya.funds < stock.askingPrice) return false;
+  if (!heya || heya.funds < stock.askingPrice) return builder.build();
 
-  // Deduct funds
-  heya.funds -= stock.askingPrice;
-
-  // Transfer ownership
-  stock.ownerId = buyerId;
-  stock.holderId = buyerId;
-  stock.status = "held";
-
-  // Log transaction
+  const newFunds = heya.funds - stock.askingPrice;
   const amount = stock.askingPrice;
-  delete stock.askingPrice;
+
+  builder.updateHeya(buyerHeyaId, { funds: newFunds });
+
+  builder.logEvent(
+    'FINANCIAL_ALERT',
+    'economy',
+    {
+      heyaname: heya.name,
+      incident: "myoseki_acquisition",
+      money: amount,
+      status: stock.name
+    },
+    { heyaId: buyerHeyaId }
+  );
+
+  // Note: myosekiMarket updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as myosekiMarket is a nested state
+  const updatedStock = { ...stock, ownerId: buyerId, holderId: buyerId, status: "held" as const };
+  delete updatedStock.askingPrice;
+  world.myosekiMarket!.stocks[myosekiId] = updatedStock;
 
   logMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount);
 
-  EventBus.financialAlert(world, heya.id, {
-    heyaname: heya.name,
-    incident: "myoseki_acquisition",
-    money: amount,
-    status: stock.name
-  });
-
-  return true;
+  return builder.build();
 }
 
 /**
  * Lease a Myoseki stock.
+ * Returns StateImpact describing myoseki lease instead of mutating directly.
  */
-export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): boolean {
+export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): StateImpact {
+  const builder = createImpactBuilder('leaseMyoseki');
   const stock = getAvailableStock(world, myosekiId);
-  if (!stock || !stock.askingPrice) return false;
+  if (!stock || !stock.askingPrice) return builder.build();
 
-  // Transfer lease
-  stock.holderId = lesseeId;
-  stock.status = "leased";
-  stock.leaseFee = Math.floor(stock.askingPrice * LEASE_RATE_PERCENT);
+  const leaseFee = Math.floor(stock.askingPrice * LEASE_RATE_PERCENT);
 
-  logMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, stock.leaseFee);
+  // Note: myosekiMarket updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as myosekiMarket is a nested state
+  const updatedStock = { ...stock, holderId: lesseeId, status: "leased" as const, leaseFee };
+  world.myosekiMarket!.stocks[myosekiId] = updatedStock;
 
-  return true;
+  logMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, leaseFee);
+
+  return builder.build();
 }

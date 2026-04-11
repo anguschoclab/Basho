@@ -12,6 +12,8 @@
 
 import type { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { EntityCollection } from "../../core/EntityCollection";
 import {
   calculateFatigueDelta,
@@ -19,14 +21,12 @@ import {
 } from "../../systems/training/TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 import { ensureHeyaTrainingState } from "../../systems/training/TrainingService";
-import { EventBus } from "../../events";
 import type { Id } from "../../types/common";
 
-export function phase01_week_training(world: WorldState): WorldState {
-  const nextRikishi = new Map(world.rikishi);
+export function phase01_week_training(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_week_training');
   const activeRikishi = EntityCollection.getActiveRikishi(world);
 
-  const milestoneEvents: any[] = [];
   const staffBonusCache = new Map<Id, ReturnType<typeof getHeyaStaffBonuses>>();
 
   activeRikishi.forEach((rikishi) => {
@@ -55,30 +55,26 @@ export function phase01_week_training(world: WorldState): WorldState {
 
       const currentPower = Math.floor(r.power);
       if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
-        milestoneEvents.push({
-          rikishiId: r.id,
-          heyaId: r.heyaId,
-          shikona: r.shikona || r.name,
-          status: profile.focus,
-          intensity: profile.intensity,
-          score: currentPower,
-        });
+        builder.logEvent(
+          'TRAINING_UPDATE',
+          'training',
+          {
+            rikishiId: r.id,
+            heyaId: r.heyaId,
+            shikona: r.shikona || r.name,
+            status: profile.focus,
+            intensity: profile.intensity,
+            score: currentPower
+          },
+          { rikishiId: r.id, heyaId: r.heyaId }
+        );
       }
     }
 
-    nextRikishi.set(r.id, r);
+    builder.updateRikishi(r.id, r);
   });
 
-  let nextWorld = {
-    ...world,
-    rikishi: nextRikishi,
-  };
-
-  for (const event of milestoneEvents) {
-    EventBus.trainingUpdate(nextWorld, event);
-  }
-
-  return nextWorld;
+  return builder.build();
 }
 
 // --- Helper Functions ---

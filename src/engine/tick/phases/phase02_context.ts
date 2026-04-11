@@ -17,12 +17,15 @@
  */
 
 import type { WorldState, ActiveModifiers } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { emptyDeltas } from "../pipelineRunner";
 import { clamp } from "../../utils";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
-export function phase02_context(world: WorldState): WorldState {
+export function phase02_context(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase02_context');
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
 
@@ -41,10 +44,11 @@ export function phase02_context(world: WorldState): WorldState {
 
   const deltas = preserveRevenueExpenses(world);
 
-  return {
-    ...world,
-    transientContext: { activeModifiers, deltas },
-  };
+  // Note: transientContext updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as transientContext is a nested state
+  world.transientContext = { activeModifiers, deltas };
+
+  return builder.build();
 }
 
 // --- Helper Functions ---

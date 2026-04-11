@@ -10,6 +10,8 @@
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 /** Defines the structure for archived rikishi summary. */
 export interface ArchivedRikishiSummary {
@@ -27,10 +29,15 @@ export interface ArchivedRikishiSummary {
 
 /**
  * Runs the archival process on a world state (usually before save).
- * Mutates the world.historicalRikishi map to 'prune' non-legendary data.
+ * Returns StateImpact describing archival updates instead of mutating state directly.
  */
-export function runArchivalPruning(world: WorldState): void {
-    if (!world.historicalRikishi) return;
+export function runArchivalPruning(world: WorldState): StateImpact {
+    const builder = createImpactBuilder('runArchivalPruning');
+    
+    if (!world.historicalRikishi) return builder.build();
+
+    // Create a map of updated rikishi
+    const updatedHistoricalRikishi = new Map(world.historicalRikishi);
 
     for (const [id, r] of world.historicalRikishi) {
         // If already pruned (is a summary object), skip
@@ -45,12 +52,23 @@ export function runArchivalPruning(world: WorldState): void {
 
         if (tier === 2) {
             // Tier 2: Sekitori. Summarize career but keep milestones.
-            pruneToTier2(r);
+            const prunedRikishi = { ...r };
+            pruneToTier2(prunedRikishi);
+            updatedHistoricalRikishi.set(id, prunedRikishi);
         } else {
             // Tier 3: Clerical. Minimal record.
-            pruneToTier3(r);
+            const prunedRikishi = { ...r };
+            pruneToTier3(prunedRikishi);
+            updatedHistoricalRikishi.set(id, prunedRikishi);
         }
     }
+
+    // Update the historicalRikishi map
+    for (const [id, r] of updatedHistoricalRikishi) {
+        builder.updateRikishi(id, r);
+    }
+
+    return builder.build();
 }
 
 /**

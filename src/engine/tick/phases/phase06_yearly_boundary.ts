@@ -11,58 +11,63 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { 
   processYearEndInduction 
 } from "../../hallOfFame";
 import * as npcAI from "../../npcAI";
-import { EventBus } from "../../events";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import type { CombatArchetype, Style } from "../../types/combat";
 import type { TalentCandidate } from "../../types/talent";
 import { generateRikishiName } from "../../shikona";
 
-export function phase06_yearly_boundary(world: WorldState): WorldState {
+export function phase06_yearly_boundary(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase06_yearly_boundary');
   const boundaries = world.transientContext?.boundaries;
-  if (!boundaries?.yearBoundary) return world;
-
-  let nextWorld = { ...world, year: world.calendar.year };
+  if (!boundaries?.yearBoundary) return builder.build();
   
   // 1. Hall of Fame Inductions
   // Note: hallOfFame.ts is currently mutative on world.hallOfFame.
   // We'll clone the hallOfFame state first.
-  if (nextWorld.hallOfFame) {
-    nextWorld.hallOfFame = {
-      ...nextWorld.hallOfFame,
-      inductees: [...nextWorld.hallOfFame.inductees],
-      inducted: { ...nextWorld.hallOfFame.inducted }
+  if (world.hallOfFame) {
+    world.hallOfFame = {
+      ...world.hallOfFame,
+      inductees: [...world.hallOfFame.inductees],
+      inducted: { ...world.hallOfFame.inducted }
     };
   }
 
-  const inductees = processYearEndInduction(nextWorld);
-  const hofInductees = inductees.map((i) => i.shikona);
+  const inductees = processYearEndInduction(world);
 
   for (const inductee of inductees) {
-    EventBus.lifecycleEvent(nextWorld, {
-      rikishiId: inductee.rikishiId,
-      shikona: inductee.shikona,
-      status: "hof_induction",
-      reason: inductee.category,
-      score: inductee.stats.yushoCount ?? 0
-    });
+    builder.logEvent(
+      'LIFECYCLE_EVENT',
+      'career',
+      {
+        rikishiId: inductee.rikishiId,
+        shikona: inductee.shikona,
+        status: "hof_induction",
+        reason: inductee.category,
+        score: inductee.stats.yushoCount ?? 0
+      },
+      { rikishiId: inductee.rikishiId }
+    );
   }
 
   // 2. Talent Pool Refresh
   // Generate new candidates yearly and age out old unrecruited candidates
-  if (nextWorld.talentPool) {
-    const rng = RNGRegistry.getSystemRNG(nextWorld, "scouting", `year-${nextWorld.year}`);
-    const candidates = { ...nextWorld.talentPool.candidates };
+  if (world.talentPool) {
+    const rng = RNGRegistry.getSystemRNG(world, "scouting", `year-${world.year}`);
+    const candidates = { ...world.talentPool.candidates };
     
     // Age out candidates who weren't recruited (keep for 3 years max)
-    const currentYear = nextWorld.year;
+    const currentYear = world.year;
     for (const [id, candidate] of Object.entries(candidates)) {
-      const age = currentYear - candidate.birthYear;
+      const cand = candidate as TalentCandidate;
+      const age = currentYear - cand.birthYear;
       // Remove if too old (25+) or been in pool for 3+ years
-      if (age >= 25 || candidate.availabilityState === "withdrawn") {
+      if (age >= 25 || cand.availabilityState === "withdrawn") {
         delete candidates[id];
       }
     }
@@ -126,29 +131,35 @@ export function phase06_yearly_boundary(world: WorldState): WorldState {
       
       // Emit discovery event for high-potential candidates
       if (candidate.isAmateurStar || candidate.visibilityBand === "rumored") {
-        EventBus.recruitDiscovered(nextWorld, {
-          rikishiId: candidateId,
-          shikona: candidate.name,
-          origin: candidate.originRegion,
-          archetype: candidate.archetype,
-        });
+        builder.logEvent(
+          'RECRUIT_DISCOVERED',
+          'narrative',
+          {
+            rikishiId: candidateId,
+            shikona: candidate.name,
+            origin: candidate.originRegion,
+            archetype: candidate.archetype,
+          }
+        );
       }
     }
     
-    nextWorld.talentPool = {
-      ...nextWorld.talentPool,
+    // Note: talentPool updates are not directly supported by ImpactBuilder yet
+    world.talentPool = {
+      ...world.talentPool,
       candidates,
       lastYearlyRefreshYear: currentYear,
     };
   }
 
   // 3. NPC Yearly Logic
-  npcAI.tickYear(nextWorld);
+  // Note: tickYear mutates world, we'll call it directly
+  npcAI.tickYear(world);
 
   // 4. Staff Aging
-  if (nextWorld.staff) {
-    const nextStaff = new Map(nextWorld.staff);
-    for (const [id, staff] of nextWorld.staff) {
+  if (world.staff) {
+    const nextStaff = new Map(world.staff);
+    for (const [id, staff] of world.staff) {
       const s = { ...staff };
       s.age += 1;
       s.yearsAtBeya += 1;
@@ -160,19 +171,25 @@ export function phase06_yearly_boundary(world: WorldState): WorldState {
       
       nextStaff.set(id, s);
     }
-    nextWorld.staff = nextStaff;
+    // Note: staff updates are not directly supported by ImpactBuilder yet
+    world.staff = nextStaff;
   }
 
   // 5. Logging & Era Check
-  const newYear = nextWorld.year;
+  const newYear = world.year;
   const isDecadeBoundary = newYear % 10 === 0;
-  EventBus.bashoStatus(nextWorld, {
-    status: "meta_shift",
-    incident: isDecadeBoundary ? "decade_boundary" : "year_boundary",
-    day: newYear,
-    score: hofInductees.length,
-    reason: hofInductees.length > 0 ? hofInductees.join("|") : "None"
-  });
+  const hofInductees = inductees.map((i) => i.shikona);
+  builder.logEvent(
+    'BASHO_STATUS',
+    'narrative',
+    {
+      status: "meta_shift",
+      incident: isDecadeBoundary ? "decade_boundary" : "year_boundary",
+      day: newYear,
+      score: hofInductees.length,
+      reason: hofInductees.length > 0 ? hofInductees.join("|") : "None"
+    }
+  );
 
-  return nextWorld;
+  return builder.build();
 }

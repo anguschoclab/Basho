@@ -17,7 +17,8 @@ import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
-import { EventBus } from "./events";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 // Strategies & Personas
 import { getFinanceStrategy } from "./npcFinanceStrategy";
@@ -175,7 +176,7 @@ function spawnPersonnelWorker(ctx: any) {
       if (!rikishi) continue;
 
       const matchesStyle = ctx.styleProfile.preferredStyle === "any" || rikishi.style === ctx.styleProfile.preferredStyle;
-      const matchesArchetype = (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
+      const matchesArchetype = rikishi.archetype && (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
 
       if (matchesArchetype && matchesStyle) {
         if ((rp.healthBand === "peak" || rp.healthBand === "good") && (ctx.styleProfile.philosophy === "style_purist" || ctx.styleProfile.philosophy === "size_matters")) {
@@ -219,41 +220,41 @@ function rpPerception(p: any) {
  * Phase 1: Background Consolidation
  * Implements Directives: "Skeptical Memory" & "Background Consolidation"
  * Merges current perception with Oyakata's internal memory buffer.
+ * Returns StateImpact describing memory consolidation instead of mutating directly.
  */
-export function consolidateOyakataMemory(world: WorldState, heyaId: Id, perception: any): void {
+export function consolidateOyakataMemory(world: WorldState, heyaId: Id, perception: any): StateImpact {
+  const builder = createImpactBuilder('consolidateOyakataMemory');
   const heya = getHeya(world, heyaId);
   const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
-  if (!oyakata) return;
+  if (!oyakata) return builder.build();
 
-  if (!oyakata.memory) {
-    oyakata.memory = {
-      observations: [],
-      coreDirectives: [`Maintain the excellence of ${heya?.name}`, `Prioritize ${oyakata.archetype} values`],
-      lastConsolidationTick: world.week
-    };
-  }
+  const existingMemory = oyakata.memory || {
+    observations: [],
+    coreDirectives: [`Maintain the excellence of ${heya?.name}`, `Prioritize ${oyakata.archetype} values`],
+    lastConsolidationTick: world.week
+  };
 
-  const memory = oyakata.memory;
+  const memory = { ...existingMemory };
   const tick = world.week;
 
   // Skeptical Check: Does current perception conflict with previous mood/state?
   if (perception.moraleBand === 'mutinous' && oyakata.mood !== 'furious' && oyakata.mood !== 'anxious') {
-    memory.observations.push({
+    memory.observations = [...memory.observations, {
       tick,
       type: 'alignment',
       summary: `Unexpected morale collapse detected. Current banding (${perception.moraleBand}) conflicts with established mood (${oyakata.mood}).`,
       importance: 8
-    });
+    }];
   }
 
   // Record key perception snapshots
   if (perception.runwayBand === 'desperate' || perception.runwayBand === 'critical') {
-    memory.observations.push({
+    memory.observations = [...memory.observations, {
       tick,
       type: 'perception',
       summary: `Financial runway is ${perception.runwayBand}. Consolidation required to prevent insolvency.`,
       importance: 10
-    });
+    }];
   }
 
   // Prune noise (Limit to 10 observations per Canon Directive)
@@ -263,15 +264,24 @@ export function consolidateOyakataMemory(world: WorldState, heyaId: Id, percepti
   }
 
   memory.lastConsolidationTick = tick;
+
+  // Note: oyakata updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as oyakata is a Map, not a standard entity
+  // This will be migrated in a future update when ImpactBuilder is extended
+  oyakata.memory = memory;
+
+  return builder.build();
 }
 
 /**
  * Writes a decision into the world state (training profile + individual focus slots).
+ * Returns StateImpact describing decision application instead of mutating directly.
  */
-export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): void {
+export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): StateImpact {
+  const builder = createImpactBuilder('applyNPCDecision');
   const state = TrainingService.ensureHeyaTrainingState(world, decision.heyaId);
 
-  state.activeProfile = {
+  const newActiveProfile = {
     ...state.activeProfile,
     intensity: decision.trainingIntensity,
     focus: decision.trainingFocus,
@@ -296,18 +306,27 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
     rikishiId: id, focusType: "develop" as const
   }));
 
-  state.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
+  const newFocusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
+
+  // Note: trainingState updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as trainingState is a nested state
+  // This will be migrated in a future update when ImpactBuilder is extended
+  state.activeProfile = newActiveProfile;
+  state.focusSlots = newFocusSlots;
+
+  return builder.build();
 }
 
 /**
  * NPC Manager AI weekly decision loop
+ * Returns StateImpact describing weekly NPC decisions instead of mutating directly.
  */
-export function tickWeekNPC(world: WorldState): number {
+export function tickWeekNPC(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickWeekNPC');
 
   const playerHeyaId = world.playerHeyaId;
   let decisionsApplied = 0;
 
-  if (!world.npcScoutingPriorities) world.npcScoutingPriorities = {};
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
   for (const heya of getAvailableStables(world)) {
@@ -317,53 +336,71 @@ export function tickWeekNPC(world: WorldState): number {
     const perception = buildPerceptionSnapshot(world, heya.id);
     
     // Phase 2: Background Consolidation (Skeptical Memory)
-    consolidateOyakataMemory(world, heya.id, perception);
+    const memoryImpact = consolidateOyakataMemory(world, heya.id, perception);
 
     // Phase 3: Hierarchical Delegation (Decision Logic)
     const decision = makeNPCWeeklyDecision(world, heya.id);
 
-    applyNPCDecision(world, decision);
+    const decisionImpact = applyNPCDecision(world, decision);
     decisionsApplied++;
 
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
     const oldMood = oyakata?.mood ?? "content";
     const newMood = decision.mood;
 
-    if (oyakata && newMood) {
+    if (oyakata && newMood && newMood !== oldMood) {
+      // Note: oyakata updates are not directly supported by ImpactBuilder yet
+      // For now, we'll update them directly as oyakata is a Map, not a standard entity
       oyakata.mood = newMood;
-    }
 
-    if (oldMood !== newMood) {
-      EventBus.oyakataMoodShift(world, heya.id, { oldMood, newMood });
+      builder.logEvent(
+        'OYAKATA_MOOD_SHIFT',
+        'narrative',
+        { oldMood, newMood },
+        { heyaId: heya.id }
+      );
     }
 
     scoutingMap[heya.id] = decision.scoutingPriority;
 
-    EventBus.managementDecision(world, heya.id, {
-      archetype: decision.archetype,
-      intensity: decision.trainingIntensity,
-      focus: decision.trainingFocus,
-      recovery: decision.recovery,
-      scouting: decision.scoutingPriority,
-      protectedCount: decision.individualProtects.length,
-      reasoningLog: decision.reasoning.join(" | ")
-    }, decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor");
+    builder.logEvent(
+      'NPC_MANAGER_DECISION',
+      'narrative',
+      {
+        archetype: decision.archetype,
+        intensity: decision.trainingIntensity,
+        focus: decision.trainingFocus,
+        recovery: decision.recovery,
+        scouting: decision.scoutingPriority,
+        protectedCount: decision.individualProtects.length,
+        reasoningLog: decision.reasoning.join(" | ")
+      },
+      { heyaId: heya.id, importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor" }
+    );
 
     if (decision.trainingIntensity === "punishing") {
-       EventBus.strategyShift(world, heya.id, { intensity: "punishing", reasoning: decision.reasoning[0] });
+      builder.logEvent(
+        'NARRATIVE_STRATEGY_SHIFT',
+        'narrative',
+        { intensity: "punishing", reasoning: decision.reasoning[0] },
+        { heyaId: heya.id }
+      );
     }
   }
 
+  // Note: npcScoutingPriorities is not a supported world field in ImpactBuilder, so we update it directly
   world.npcScoutingPriorities = scoutingMap;
   enforceHardCapRosterOverflow(world);
 
-  return decisionsApplied;
+  return builder.build();
 }
 
 /**
  * NPC Manager AI monthly decision loop
+ * Returns StateImpact describing monthly NPC decisions instead of mutating directly.
  */
-export function tickMonthlyNPC(world: WorldState): void {
+export function tickMonthlyNPC(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickMonthlyNPC');
 
   if (world.myosekiMarket) {
     const candidateHeyas = getAvailableStables(world).filter(h => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId));
@@ -405,22 +442,34 @@ export function tickMonthlyNPC(world: WorldState): void {
       talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId);
     }
   }
+
+  return builder.build();
 }
 
 /**
  * NPC Manager AI yearly decision loop
+ * Returns StateImpact describing yearly NPC decisions instead of mutating directly.
  */
-export function tickYear(world: WorldState): void {
+export function tickYear(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickYear');
+
   for (const heya of getAvailableStables(world)) {
     if (heya.id === world.playerHeyaId) continue;
     const persona = getManagerPersona(world, heya.id);
     
     if (persona.traits.ambition > 70 && persona.perception.rosterStrengthBand === "weak") {
-       EventBus.managementDecision(world, heya.id, { 
-          year: world.calendar.year, 
-          strategy: "rebuild", 
-          ambition: persona.traits.ambition 
-       }, "minor");
+      builder.logEvent(
+        'NPC_MANAGER_DECISION',
+        'narrative',
+        {
+          year: world.calendar.year,
+          strategy: "rebuild",
+          ambition: persona.traits.ambition
+        },
+        { heyaId: heya.id, importance: "minor" }
+      );
     }
   }
+
+  return builder.build();
 }

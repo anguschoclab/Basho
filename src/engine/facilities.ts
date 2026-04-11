@@ -21,7 +21,8 @@ import type { Heya } from "./types/heya";
 import type { Id } from "./types/common";
 import type { FacilitiesBand } from "./types/narrative";
 import type { OyakataTraits } from "./types/oyakata";
-import { EventBus } from "./events";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 // === CONSTANTS ===
 
@@ -88,20 +89,22 @@ export interface UpgradeResult {
 
 /**
  * Player invests funds to upgrade a facility axis by `points` (default 5).
+ * Returns StateImpact describing facility upgrade instead of mutating directly.
  */
 export function investInFacility(
   world: WorldState,
   heyaId: Id,
   axis: FacilityAxis,
   points: number = 5
-): UpgradeResult {
+): StateImpact {
+  const builder = createImpactBuilder('investInFacility');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return { success: false, axis, oldLevel: 0, newLevel: 0, cost: 0, reason: "Heya not found" };
+  if (!heya) return builder.build();
 
   const oldLevel = heya.facilities[axis];
   const effectivePoints = Math.min(points, MAX_FACILITY - oldLevel);
   if (effectivePoints <= 0) {
-    return { success: false, axis, oldLevel, newLevel: oldLevel, cost: 0, reason: "Already at maximum" };
+    return builder.build();
   }
 
   // Calculate total cost for all points
@@ -111,24 +114,31 @@ export function investInFacility(
   }
 
   if (heya.funds < totalCost) {
-    return { success: false, axis, oldLevel, newLevel: oldLevel, cost: totalCost, reason: "Insufficient funds" };
+    return builder.build();
   }
 
   // Apply
-  heya.funds -= totalCost;
-  heya.facilities[axis] = Math.min(MAX_FACILITY, oldLevel + effectivePoints);
-  const newLevel = heya.facilities[axis];
-  updateFacilitiesBand(heya);
+  const newLevel = Math.min(MAX_FACILITY, oldLevel + effectivePoints);
+  const newFacilities = { ...heya.facilities, [axis]: newLevel };
+  const newFunds = heya.funds - totalCost;
+  const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
 
-  EventBus.facilityUpdate(world, heyaId, { 
-    axis, 
-    oldLevel, 
-    newLevel, 
-    cost: totalCost, 
-    band: heya.facilitiesBand 
-  }, "UPGRADED");
+  builder.updateHeya(heyaId, { funds: newFunds, facilities: newFacilities, facilitiesBand: newFacilitiesBand });
 
-  return { success: true, axis, oldLevel, newLevel, cost: totalCost };
+  builder.logEvent(
+    'FACILITY_UPGRADED',
+    'facility',
+    {
+      axis,
+      oldLevel,
+      newLevel,
+      cost: totalCost,
+      band: newFacilitiesBand
+    },
+    { heyaId }
+  );
+
+  return builder.build();
 }
 
 // === MONTHLY TICK: DECAY + NPC INVESTMENT ===
@@ -137,55 +147,84 @@ export function investInFacility(
  * Called at monthly boundary. For each heya:
  *  1. Apply maintenance cost or decay
  *  2. NPC stables auto-invest if they can afford it
+ * Returns StateImpact describing monthly facility updates instead of mutating directly.
  */
-export function tickMonthlyFacilities(world: WorldState): void {
+export function tickMonthlyFacilities(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickMonthlyFacilities');
 
   for (const heya of world.heyas.values()) {
-    applyMonthlyDecayOrMaintenance(world, heya);
+    const decayImpact = applyMonthlyDecayOrMaintenance(world, heya);
+    if (decayImpact.entities?.heyaUpdates) {
+      for (const [id, update] of decayImpact.entities.heyaUpdates) {
+        builder.updateHeya(id, update);
+      }
+    }
+    if (decayImpact.events) {
+      decayImpact.events.forEach(event => {
+        (builder as any).logEvent(event.type, event.category, event.data, { heyaId: heya.id });
+      });
+    }
 
     // NPC auto-investment (skip player heya)
     if (heya.id !== world.playerHeyaId) {
-      npcFacilityInvestment(world, heya);
+      const npcImpact = npcFacilityInvestment(world, heya);
+      if (npcImpact.entities?.heyaUpdates) {
+        for (const [id, update] of npcImpact.entities.heyaUpdates) {
+          builder.updateHeya(id, update);
+        }
+      }
     }
   }
+
+  return builder.build();
 }
 
 /**
  * Apply monthly decay or maintenance.
- *  * @param world - The World.
- *  * @param heya - The Heya.
+ * Returns StateImpact describing decay/maintenance instead of mutating directly.
  */
-function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): void {
+function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): StateImpact {
+  const builder = createImpactBuilder('applyMonthlyDecayOrMaintenance');
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
   const totalMaintenance = axes.reduce((sum, a) => sum + maintenanceCost(heya.facilities[a]), 0);
 
   if (heya.funds >= totalMaintenance) {
     // Pay maintenance — no decay
-    heya.funds -= totalMaintenance;
+    builder.updateHeya(heya.id, { funds: heya.funds - totalMaintenance });
   } else {
     // Can't afford maintenance — facilities decay
+    const newFacilities = { ...heya.facilities };
     let decayed = false;
     for (const axis of axes) {
       const old = heya.facilities[axis];
-      heya.facilities[axis] = Math.max(MIN_FACILITY, old - DECAY_RATE);
-      if (heya.facilities[axis] < old) decayed = true;
+      newFacilities[axis] = Math.max(MIN_FACILITY, old - DECAY_RATE);
+      if (newFacilities[axis] < old) decayed = true;
     }
 
     if (decayed) {
       const oldBand = heya.facilitiesBand;
-      updateFacilitiesBand(heya);
+      const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
 
-      if (heya.facilitiesBand !== oldBand) {
-        EventBus.facilityUpdate(world, heya.id, {
-          oldBand,
-          newBand: heya.facilitiesBand,
-          training: heya.facilities.training,
-          recovery: heya.facilities.recovery,
-          nutrition: heya.facilities.nutrition
-        }, "DEGRADED");
+      if (newFacilitiesBand !== oldBand) {
+        builder.logEvent(
+          'FACILITY_DEGRADED',
+          'facility',
+          {
+            oldBand,
+            newBand: newFacilitiesBand,
+            training: newFacilities.training,
+            recovery: newFacilities.recovery,
+            nutrition: newFacilities.nutrition
+          },
+          { heyaId: heya.id }
+        );
       }
     }
+
+    builder.updateHeya(heya.id, { facilities: newFacilities, facilitiesBand: computeFacilitiesBand({ ...heya, facilities: newFacilities }) });
   }
+
+  return builder.build();
 }
 
 /**
@@ -193,10 +232,12 @@ function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): void {
  * - High-ambition oyakata prioritize training
  * - High-compassion oyakata prioritize recovery
  * - Traditionalists spread evenly
+ * Returns StateImpact describing NPC investment instead of mutating directly.
  */
-function npcFacilityInvestment(world: WorldState, heya: Heya): void {
+function npcFacilityInvestment(world: WorldState, heya: Heya): StateImpact {
+  const builder = createImpactBuilder('npcFacilityInvestment');
   const oyakata = world.oyakata.get(heya.oyakataId);
-  if (!oyakata) return;
+  if (!oyakata) return builder.build();
 
   // Only invest if funds are healthy (> 6 months runway)
   const avgFacility = (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
@@ -204,7 +245,7 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): void {
 
   const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 
-  if (runwayMonths < 6) return; // Too tight to invest
+  if (runwayMonths < 6) return builder.build(); // Too tight to invest
 
   // Determine priority axis
   const traits = oyakata.traits;
@@ -233,17 +274,21 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): void {
   }
 
   // Invest 3-5 points if affordable and below 80
-  if (minLevel >= 80) return;
+  if (minLevel >= 80) return builder.build();
 
   const points = minLevel < 40 ? 5 : 3;
   let cost = 0;
   for (let i = 0; i < points; i++) cost += upgradeCost(minLevel + i);
 
   if (heya.funds >= cost * 2) { // Only if they can afford double (conservative)
-    heya.funds -= cost;
-    heya.facilities[priorityAxis] = Math.min(MAX_FACILITY, heya.facilities[priorityAxis] + points);
-    updateFacilitiesBand(heya);
+    const newFunds = heya.funds - cost;
+    const newFacilities = { ...heya.facilities, [priorityAxis]: Math.min(MAX_FACILITY, heya.facilities[priorityAxis] + points) };
+    const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
+
+    builder.updateHeya(heya.id, { funds: newFunds, facilities: newFacilities, facilitiesBand: newFacilitiesBand });
   }
+
+  return builder.build();
 }
 
 // === QUERY HELPERS (for UI) ===

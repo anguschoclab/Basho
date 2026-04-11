@@ -11,56 +11,67 @@
 
 import type { WorldState } from "../../types/world";
 import type { GovernanceStatus } from "../../types/economy";
-import { EventBus } from "../../events";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline } from "../../systems/media/MediaService";
 
-export function phase01_week_governance(world: WorldState): WorldState {
-  const nextHeyas = new Map(world.heyas);
+export function phase01_week_governance(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_week_governance');
   const isElectionWeek = world.week === 52 && world.year % 2 === 0;
 
   for (const [id, heya] of world.heyas) {
-    const nextHeya = { ...heya };
+    const updates: any = {};
     let changed = false;
 
     // 1. Natural scandal score decay — 1 point per week
-    if (nextHeya.scandalScore && nextHeya.scandalScore > 0) {
-      nextHeya.scandalScore = Math.max(0, nextHeya.scandalScore - 1);
+    if (heya.scandalScore && heya.scandalScore > 0) {
+      updates.scandalScore = Math.max(0, heya.scandalScore - 1);
       changed = true;
     }
 
     // 2. Alert if crossing critical threshold (player only)
-    if (nextHeya.scandalScore != null && nextHeya.scandalScore >= 30 && nextHeya.id === world.playerHeyaId) {
-      EventBus.governanceRuling(world, nextHeya.id, {
-        score: nextHeya.scandalScore,
-        incident: "governance_warning",
-        reason: "Scandal threshold exceeded"
-      }, "major");
+    if (heya.scandalScore != null && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'discipline',
+        {
+          score: heya.scandalScore,
+          incident: "governance_warning",
+          reason: "Scandal threshold exceeded"
+        },
+        { heyaId: heya.id, importance: "major" }
+      );
     }
 
     // 3. Status Transition Logic
-    const score = nextHeya.scandalScore ?? 0;
+    const score = heya.scandalScore ?? 0;
     const newStatus: GovernanceStatus =
       score >= 60 ? "sanctioned" :
       score >= 30 ? "probation" :
       score >= 15 ? "warning" :
       "good_standing";
 
-    if (nextHeya.governanceStatus !== newStatus) {
-      const prevStatus = nextHeya.governanceStatus;
-      nextHeya.governanceStatus = newStatus;
+    if (heya.governanceStatus !== newStatus) {
+      const prevStatus = heya.governanceStatus;
+      updates.governanceStatus = newStatus;
       changed = true;
 
-      EventBus.governanceRuling(world, nextHeya.id, {
-        incident: "status_changed",
-        status: newStatus,
-        reason: prevStatus,
-        score: Math.floor(score)
-      }, newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable");
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'discipline',
+        {
+          incident: "status_changed",
+          status: newStatus,
+          reason: prevStatus,
+          score: Math.floor(score)
+        },
+        { heyaId: heya.id, importance: newStatus === "sanctioned" ? "headline" : newStatus === "probation" ? "major" : "notable" }
+      );
 
       if (newStatus === "sanctioned" || newStatus === "probation") {
         generateGovernanceHeadline({
           world,
-          heyaId: nextHeya.id,
+          heyaId: heya.id,
           templatePath: newStatus === "sanctioned" ? 'institutional.governance.sanction' : 'institutional.governance.probation',
           severity: newStatus === "sanctioned" ? "main_event" : "national"
         });
@@ -68,18 +79,15 @@ export function phase01_week_governance(world: WorldState): WorldState {
     }
 
     // 4. Bi-annual JSA Elections
-    if (isElectionWeek && nextHeya.ichimon) {
-      if (nextHeya.politicalCapital !== undefined) {
-        nextHeya.politicalCapital = Math.min(100, (nextHeya.politicalCapital ?? 50) + 5);
+    if (isElectionWeek && heya.ichimon) {
+      if (heya.politicalCapital !== undefined) {
+        updates.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
         changed = true;
       }
-      // Note: Transition log happens once per ichimon in old service, but we'll do it per stable
-      // or just emit one event elsewhere. Since it's a loop, we'll keep it per stable for simplicity
-      // or use a flag to only log once.
     }
 
     if (changed) {
-      nextHeyas.set(id, nextHeya);
+      builder.updateHeya(id, updates);
     }
   }
 
@@ -88,16 +96,16 @@ export function phase01_week_governance(world: WorldState): WorldState {
     // Collect ichimons
     const ichimons = new Set(Array.from(world.heyas.values()).map(h => h.ichimon).filter(Boolean));
     ichimons.forEach(ichimon => {
-      EventBus.bashoStatus(world, {
-        status: "phase_transition",
-        incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
-        shikona: ichimon as string
-      });
+      builder.logEvent(
+        'BASHO_STATUS',
+        'narrative',
+        {
+          status: "phase_transition",
+          incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`
+        }
+      );
     });
   }
 
-  return {
-    ...world,
-    heyas: nextHeyas
-  };
+  return builder.build();
 }

@@ -17,7 +17,8 @@ import type { BeyaTrainingState } from "../../types/training";
 import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
-import { EventBus } from "../../events";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { 
   calculateFatigueDelta, 
   calculateGrowthVector 
@@ -59,8 +60,10 @@ export function ensureHeyaTrainingState(world: WorldState, beyaId: Id): BeyaTrai
 
 /**
  * Authoritative Weekly Training Tick.
+ * Returns StateImpact describing training updates instead of mutating state directly.
  */
-export function applyWeeklyTraining(world: WorldState): void {
+export function applyWeeklyTraining(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('applyWeeklyTraining');
   const rng = RNGRegistry.getTrainingRNG(world);
   const activeRikishi = EntityCollection.getActiveRikishi(world);
 
@@ -74,12 +77,15 @@ export function applyWeeklyTraining(world: WorldState): void {
     const focusType = individualFocus?.focusType;
     const isOnRecoveryFocus = focusType === 'protect' || focusType === 'rebuild';
 
+    let newFatigue;
     if (rikishi.injured && isOnRecoveryFocus) {
       // Recovery focus flips the delta: injured wrestlers on protect/rebuild shed fatigue
-      rikishi.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) - Math.abs(fatigueDelta)));
+      newFatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) - Math.abs(fatigueDelta)));
     } else {
-      rikishi.fatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) + fatigueDelta));
+      newFatigue = Math.max(0, Math.min(100, (rikishi.fatigue || 0) + fatigueDelta));
     }
+
+    const updates: any = { fatigue: newFatigue };
 
     // 2. Growth Logic (Skip if injured)
     if (!rikishi.injured) {
@@ -104,39 +110,49 @@ export function applyWeeklyTraining(world: WorldState): void {
       const prevPower = rikishi.power || 50;
 
       // Apply Growth
-      rikishi.power = Math.min(100, (rikishi.power || 50) + finalGrowth.strength);
-      rikishi.speed = Math.min(100, (rikishi.speed || 50) + finalGrowth.speed);
-      rikishi.technique = Math.min(100, (rikishi.technique || 50) + finalGrowth.technique);
-      rikishi.balance = Math.min(100, (rikishi.balance || 50) + finalGrowth.balance);
-      rikishi.stamina = Math.min(100, (rikishi.stamina || 50) + finalGrowth.stamina);
-      rikishi.adaptability = Math.min(100, (rikishi.adaptability || 50) + finalGrowth.adaptability);
-      rikishi.experience = Math.min(100, (rikishi.experience || 0) + (finalGrowth.mental * 0.5));
-
+      updates.power = Math.min(100, (rikishi.power || 50) + finalGrowth.strength);
+      updates.speed = Math.min(100, (rikishi.speed || 50) + finalGrowth.speed);
+      updates.technique = Math.min(100, (rikishi.technique || 50) + finalGrowth.technique);
+      updates.balance = Math.min(100, (rikishi.balance || 50) + finalGrowth.balance);
+      updates.stamina = Math.min(100, (rikishi.stamina || 50) + finalGrowth.stamina);
+      updates.adaptability = Math.min(100, (rikishi.adaptability || 50) + finalGrowth.adaptability);
+      updates.experience = Math.min(100, (rikishi.experience || 0) + (finalGrowth.mental * 0.5));
 
       // Sync flattened UI stats
-      if (!rikishi.stats) rikishi.stats = {} as any;
-      rikishi.stats.strength = Math.floor(rikishi.power);
-      rikishi.stats.speed = Math.floor(rikishi.speed);
-      rikishi.stats.technique = Math.floor(rikishi.technique);
-      rikishi.stats.balance = Math.floor(rikishi.balance);
-      rikishi.stats.stamina = Math.floor(rikishi.stamina);
-      rikishi.stats.adaptability = Math.floor(rikishi.adaptability);
-      rikishi.stats.mental = Math.floor(rikishi.experience);
+      updates.stats = {
+        ...(rikishi.stats || {} as any),
+        strength: Math.floor(updates.power),
+        speed: Math.floor(updates.speed),
+        technique: Math.floor(updates.technique),
+        balance: Math.floor(updates.balance),
+        stamina: Math.floor(updates.stamina),
+        adaptability: Math.floor(updates.adaptability),
+        mental: Math.floor(updates.experience)
+      };
 
       // Milestone Events (Threshold crossing)
-      const currentPower = Math.floor(rikishi.power);
+      const currentPower = Math.floor(updates.power);
       if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
-        EventBus.trainingUpdate(world, { 
-          rikishiId: rikishi.id,
-          heyaId: rikishi.heyaId,
-          shikona: rikishi.shikona || rikishi.name,
-          status: profile.focus, 
-          intensity: profile.intensity,
-          score: currentPower
-        });
+        builder.logEvent(
+          'TRAINING_UPDATE',
+          'training',
+          {
+            rikishiId: rikishi.id,
+            heyaId: rikishi.heyaId,
+            shikona: rikishi.shikona || rikishi.name,
+            status: profile.focus,
+            intensity: profile.intensity,
+            score: currentPower
+          },
+          { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
+        );
       }
     }
+
+    builder.updateRikishi(rikishi.id, updates);
   });
+
+  return builder.build();
 }
 
 /**

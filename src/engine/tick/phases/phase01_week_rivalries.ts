@@ -10,21 +10,23 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { type RivalryPairState } from "../../systems/narrative/RivalryConstants";
 import { deriveTone } from "../../systems/narrative/RivalryHeatService";
 import { clamp } from "../../utils/math";
 import { ensureEventsState } from "../../events";
 
-export function phase01_week_rivalries(world: WorldState): WorldState {
-  let nextWorld = { ...world };
+export function phase01_week_rivalries(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_week_rivalries');
   
   // 1. Rivalry Decay
-  if (nextWorld.rivalriesState) {
+  if (world.rivalriesState) {
     const nextPairs: Record<string, RivalryPairState> = {};
-    const week = nextWorld.calendar.currentWeek || 0;
+    const week = world.calendar.currentWeek || 0;
 
-    for (const key in nextWorld.rivalriesState.pairs) {
-      const pair = nextWorld.rivalriesState.pairs[key];
+    for (const key in world.rivalriesState.pairs) {
+      const pair = world.rivalriesState.pairs[key];
       const weeksSince = week - (pair.lastMetWeek || 0);
       
       // Skip decay for already cold pairs (optimization)
@@ -42,17 +44,19 @@ export function phase01_week_rivalries(world: WorldState): WorldState {
       nextPairs[key] = nextPair;
     }
 
-    nextWorld.rivalriesState = {
-      ...nextWorld.rivalriesState,
+    // Note: rivalriesState updates are not directly supported by ImpactBuilder yet
+    // For now, we'll update them directly as rivalriesState is a nested state
+    world.rivalriesState = {
+      ...world.rivalriesState,
       pairs: nextPairs
     };
   }
 
   // 2. Event Log Trimming
-  if (nextWorld.events) {
-    const eventsState = { ...nextWorld.events };
-    const currentYear = nextWorld.calendar?.year ?? nextWorld.year ?? 2025;
-    const currentWeek = nextWorld.calendar?.currentWeek ?? nextWorld.week ?? 0;
+  if (world.events) {
+    const eventsState = { ...world.events };
+    const currentYear = world.calendar?.year ?? world.year ?? 2025;
+    const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
     const MAX_AGE_WEEKS = 52;
     const currentTotalWeeks = currentYear * 52 + currentWeek;
 
@@ -68,11 +72,13 @@ export function phase01_week_rivalries(world: WorldState): WorldState {
 
     // Note: Dedupe cleanup is harder without mutation, so we'll just return the log for now
     // or we can recreate the dedupe set.
-    nextWorld.events = {
+    // Note: events updates are not directly supported by ImpactBuilder yet
+    // For now, we'll update them directly as events is a nested state
+    world.events = {
       ...eventsState,
       log: newLog
     };
   }
 
-  return nextWorld;
+  return builder.build();
 }

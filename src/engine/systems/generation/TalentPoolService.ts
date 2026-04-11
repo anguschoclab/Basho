@@ -6,6 +6,8 @@
 import { SeededRNG } from "../../rng";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
 import {
@@ -29,6 +31,58 @@ import { rngFromSeed, rngForWorld } from "../../rng";
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
 export const BASE_SCOUT_COST = 50000;
 export const REVEAL_COST = 100000;
+
+/**
+ * Ensures the talent pool state is initialized.
+ */
+export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
+  if (!world.talentPool) {
+    world.talentPool = {
+      version: "1.0.0",
+      lastYearlyRefreshYear: world.year ?? 2025,
+      candidates: {},
+      pools: {
+        high_school: {
+          poolId: "high_school",
+          poolType: "high_school",
+          refreshCadence: "yearly",
+          populationCap: 50,
+          hiddenReserveCap: 20,
+          candidatesVisible: [],
+          candidatesHidden: [],
+          lastRefreshWeek: world.week ?? 0,
+          scarcityBand: "normal",
+          qualityBand: "normal",
+        },
+        university: {
+          poolId: "university",
+          poolType: "university",
+          refreshCadence: "yearly",
+          populationCap: 40,
+          hiddenReserveCap: 15,
+          candidatesVisible: [],
+          candidatesHidden: [],
+          lastRefreshWeek: world.week ?? 0,
+          scarcityBand: "normal",
+          qualityBand: "normal",
+        },
+        foreign: {
+          poolId: "foreign",
+          poolType: "foreign",
+          refreshCadence: "yearly",
+          populationCap: 30,
+          hiddenReserveCap: 10,
+          candidatesVisible: [],
+          candidatesHidden: [],
+          lastRefreshWeek: world.week ?? 0,
+          scarcityBand: "normal",
+          qualityBand: "normal",
+        },
+      },
+    };
+  }
+  return world.talentPool!;
+}
 
 // ============================================
 // READ OPERATORS
@@ -345,23 +399,24 @@ export function resolveCandidateSuitor(
 
 /**
  * Automates recruitment for NPC stables.
+ * Returns StateImpact describing NPC recruitment instead of mutating directly.
  */
 export function fillVacanciesForNPC(
   world: WorldState,
   targetHeyas: Record<string, number>,
-): WorldState {
-  let nextWorld = { ...world };
-  const tp = nextWorld.talentPool;
-  if (!tp) return world;
+): StateImpact {
+  const builder = createImpactBuilder('fillVacanciesForNPC');
+  const tp = world.talentPool;
+  if (!tp) return builder.build();
 
   const rng = RNGRegistry.getSystemRNG(
-    nextWorld,
+    world,
     "scouting",
-    `npc_fill_${nextWorld.week}`,
+    `npc_fill_${world.week}`,
   );
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
-    const heya = nextWorld.heyas.get(heyaId);
+    const heya = world.heyas.get(heyaId);
     if (!heya) continue;
 
     for (let i = 0; i < vacancyCount; i++) {
@@ -388,40 +443,49 @@ export function fillVacanciesForNPC(
                 heyaId,
                 offerType: "standard" as const,
                 interestBand: "high" as const,
-                deadlineWeek: nextWorld.week,
+                deadlineWeek: world.week,
               },
             ],
           };
           
+          // Note: talentPool updates are not directly supported by ImpactBuilder yet
+          // For now, we'll update them directly as talentPool is a nested state
           tp.candidates[cId] = updatedCandidate;
 
           // Materialize immediately for NPCs to keep the banzuke populated
-          nextWorld = materializeCandidateToRikishi(nextWorld, cId, heyaId);
+          const materializeImpact = materializeCandidateToRikishi(world, cId, heyaId);
+          if (materializeImpact.entities?.rikishiUpdates) {
+            for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
+              builder.updateRikishi(id, update);
+            }
+          }
+          if (materializeImpact.entities?.heyaUpdates) {
+            for (const [id, update] of materializeImpact.entities.heyaUpdates) {
+              builder.updateHeya(id, update);
+            }
+          }
         }
       }
     }
   }
 
-  return nextWorld;
+  return builder.build();
 }
 
 /**
  * Converts a signed candidate into a full Rikishi entity and adds them to the world.
  * Standardized pure implementation used for both NPC fast-path and weekly resolution.
+ * Returns StateImpact describing rikishi materialization instead of mutating directly.
  */
 export function materializeCandidateToRikishi(
   world: WorldState,
   candidateId: Id,
   heyaId: Id,
-): WorldState {
+): StateImpact {
+  const builder = createImpactBuilder('materializeCandidateToRikishi');
   const tp = world.talentPool;
   const candidate = tp?.candidates[candidateId];
-  if (!candidate || !tp) return world;
-
-  const nextWorld = { ...world };
-  const nextRikishi = new Map(world.rikishi);
-  const nextHeyas = new Map(world.heyas);
-  const nextCandidates = { ...tp.candidates };
+  if (!candidate || !tp) return builder.build();
 
   const rng = RNGRegistry.getSystemRNG(
     world,
@@ -437,58 +501,101 @@ export function materializeCandidateToRikishi(
   });
 
   // 1. Inject into world
-  nextRikishi.set(rikishi.id, rikishi);
+  builder.updateRikishi(rikishi.id, rikishi);
 
   // 2. Link to heya
-  const heya = nextHeyas.get(heyaId);
+  const heya = world.heyas.get(heyaId);
   if (heya) {
-    nextHeyas.set(heyaId, {
-      ...heya,
-      rikishiIds: [...(heya.rikishiIds ?? []), rikishi.id]
-    });
+    const newRikishiIds = [...(heya.rikishiIds || []), rikishi.id];
+    builder.updateHeya(heyaId, { rikishiIds: newRikishiIds });
   }
 
-  // 3. Remove from talent pool
+  // 3. Remove from talent pool (mark as signed)
+  // Note: talentPool updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as talentPool is a nested state
+  const nextCandidates = { ...tp.candidates };
   delete nextCandidates[candidateId];
+  world.talentPool = { ...tp, candidates: nextCandidates };
 
-  // Cleanup Visible/Hidden lists
-  const nextPools = { ...tp.pools };
-  // Find which pool this candidate belongs to
-  const poolTypes: TalentPoolType[] = ['high_school', 'university', 'foreign'];
-  for (const pt of poolTypes) {
-    const pool = nextPools[pt];
-    if (pool) {
-      const wasVisible = pool.candidatesVisible.includes(candidateId);
-      const wasHidden = pool.candidatesHidden.includes(candidateId);
-      if (wasVisible || wasHidden) {
-        nextPools[pt] = {
-          ...pool,
-          candidatesVisible: pool.candidatesVisible.filter(id => id !== candidateId),
-          candidatesHidden: pool.candidatesHidden.filter(id => id !== candidateId)
-        };
-        break; // Candidate can only be in one pool
+  return builder.build();
+}
+
+/**
+ * Finalizes all "signed" candidates by converting them into full Rikishi entities.
+ * This ensures recruits are actually added to stable rosters and the world state.
+ */
+export function finalizeSignedCandidates(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('finalizeSignedCandidates');
+  const tp = world.talentPool;
+  if (!tp) return builder.build();
+
+  const nextCandidates = { ...tp.candidates };
+
+  for (const [id, candidate] of Object.entries(tp.candidates)) {
+    if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
+      const winner = candidate.competingSuitors[0];
+      const heyaId = winner.heyaId;
+      const heya = world.heyas.get(heyaId);
+
+      if (heya) {
+        const rng = RNGRegistry.getSystemRNG(world, "scouting", `finalize_${id}`);
+        const rikishi = convertCandidateToRikishi({
+          candidate,
+          rng,
+          currentYear: world.year,
+          heyaId
+        });
+
+        // Add to world
+        builder.updateRikishi(rikishi.id, rikishi);
+
+        // Add to heya roster
+        const newRikishiIds = [...(heya.rikishiIds || []), rikishi.id];
+        builder.updateHeya(heyaId, { rikishiIds: newRikishiIds });
+
+        // Remove from talent pool
+        delete nextCandidates[id];
       }
     }
   }
 
-  nextWorld.rikishi = nextRikishi;
-  nextWorld.heyas = nextHeyas;
-  nextWorld.talentPool = {
-    ...tp,
-    candidates: nextCandidates,
-    pools: nextPools
-  };
+  // Re-filter visibility lists to remove converted candidates
+  const nextPools = { ...tp.pools };
+  for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
+    nextPools[pt] = {
+      ...nextPools[pt],
+      candidatesVisible: nextPools[pt].candidatesVisible.filter(cid => nextCandidates[cid]),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter(cid => nextCandidates[cid])
+    };
+  }
 
-  // 4. Fire event
-  EventBus.recruitDiscovered(nextWorld, {
-    rikishiId: rikishi.id,
-    heyaId: heyaId,
-    shikona: rikishi.shikona,
-    heya: heya?.name,
-    status: "materialized",
-  });
+  // Note: talentPool updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as talentPool is a nested state
+  world.talentPool = { ...tp, candidates: nextCandidates, pools: nextPools };
 
-  return nextWorld;
+  return builder.build();
+}
+
+function fillHiddenCandidates(
+  pool: TalentPoolState,
+  tp: TalentPoolWorldState,
+  toGenerate: number,
+  rng: SeededRNG,
+  currentYear: number,
+  poolType: TalentPoolType,
+  idGenerator: () => string
+): void {
+  for (let i = 0; i < toGenerate; i++) {
+    const id = idGenerator();
+    const candidate = generateCandidate({
+      id,
+      rng,
+      currentYear,
+      poolType,
+    });
+    tp.candidates[id] = candidate;
+    pool.candidatesHidden.push(id);
+  }
 }
 
 function refreshAllPools(world: WorldState) {
@@ -524,198 +631,13 @@ function refreshAllPools(world: WorldState) {
 }
 
 /**
- * Finalizes all "signed" candidates by converting them into full Rikishi entities.
- * This ensures recruits are actually added to stable rosters and the world state.
- */
-export function finalizeSignedCandidates(world: WorldState): WorldState {
-  const tp = world.talentPool;
-  if (!tp) return world;
-
-  const nextWorld = { ...world };
-  const nextRikishi = new Map(world.rikishi);
-  const nextHeyas = new Map(world.heyas);
-  const nextCandidates = { ...tp.candidates };
-
-  let changed = false;
-
-  for (const [id, candidate] of Object.entries(tp.candidates)) {
-    if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
-      const winner = candidate.competingSuitors[0];
-      const heyaId = winner.heyaId;
-      const heya = nextHeyas.get(heyaId);
-
-      if (heya) {
-        const rng = RNGRegistry.getSystemRNG(world, "scouting", `finalize_${id}`);
-        const rikishi = convertCandidateToRikishi({
-          candidate,
-          rng,
-          currentYear: world.year,
-          heyaId
-        });
-
-        // Add to world
-        nextRikishi.set(rikishi.id, rikishi);
-
-        // Add to heya roster
-        const nextHeya = {
-          ...heya,
-          rikishiIds: [...(heya.rikishiIds ?? []), rikishi.id]
-        };
-        nextHeyas.set(heyaId, nextHeya);
-
-        // Remove from talent pool
-        delete nextCandidates[id];
-
-        changed = true;
-      }
-    }
-  }
-
-  if (changed) {
-    // Re-filter visibility lists to remove converted candidates
-    const nextPools = { ...tp.pools };
-    for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
-      nextPools[pt] = {
-        ...nextPools[pt],
-        candidatesVisible: nextPools[pt].candidatesVisible.filter(cid => nextCandidates[cid]),
-        candidatesHidden: nextPools[pt].candidatesHidden.filter(cid => nextCandidates[cid])
-      };
-    }
-
-    nextWorld.rikishi = nextRikishi;
-    nextWorld.heyas = nextHeyas;
-    nextWorld.talentPool = {
-      ...tp,
-      candidates: nextCandidates,
-      pools: nextPools
-    };
-  }
-
-  return nextWorld;
-}
-
-// ============================================
-// INTERNAL HELPERS
-// ============================================
-
-export function fillHiddenCandidates(
-  pool: TalentPoolState,
-  tp: TalentPoolWorldState,
-  targetCount: number,
-  rng: SeededRNG,
-  currentYear: number,
-  poolType: TalentPoolType,
-  idGenerator: (index: number) => string,
-): void {
-  for (let i = 0; i < targetCount; i++) {
-    const id = idGenerator(i);
-    const candidate = generateCandidate({ id, rng, currentYear, poolType });
-    tp.candidates[id] = candidate;
-    pool.candidatesHidden.push(id);
-  }
-}
-
-/**
- * Ensures the talent pool state is initialized.
- */
-function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
-  return EntityService.ensureState(world, "talentPool", () => ({
-    version: "1.0.0",
-    lastYearlyRefreshYear: world.year,
-    candidates: {},
-    pools: {
-      high_school: createEmptyPool("high_school", world),
-      university: createEmptyPool("university", world),
-      foreign: createEmptyPool("foreign", world),
-    },
-    playerScouting: {},
-  }));
-}
-
-function createEmptyPool(type: TalentPoolType, world: WorldState) {
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `pool_init_${type}`);
-  return {
-    poolId: rng.uuid("PL"),
-    poolType: type,
-    refreshCadence: "basho" as const,
-    populationCap: 20,
-    hiddenReserveCap: 50,
-    candidatesVisible: [],
-    candidatesHidden: [],
-    lastRefreshWeek: 0,
-    scarcityBand: "normal" as const,
-    qualityBand: "normal" as const,
-  };
-}
-
-// ============================================
-// MISSING FUNCTIONS (called by overflow.ts, npcAI.ts, tickYearly.ts)
-// ============================================
-
-/**
- * Returns true if a rikishi counts against the foreign-slot limit.
- */
-export function countsAsForeignFromRikishi(rikishi: Rikishi): boolean {
-  return (rikishi.nationality ?? "Japan") !== "Japan";
-}
-
-/**
- * Re-injects a rikishi back into the talent pool after roster overflow.
- * The rikishi becomes a free-agent candidate available to all stables.
- */
-export function reinjectToTalentPool(
-  world: WorldState,
-  rikishi: Rikishi,
-): void {
-  const tp = ensureTalentPoolState(world);
-  // Convert the rikishi to a lightweight candidate object and mark it available
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `reinject_${rikishi.id}`,
-  );
-  const id = rng.uuid("CD");
-  const isForeginer = countsAsForeignFromRikishi(rikishi);
-  const poolType: TalentPoolType = isForeginer ? "foreign" : "high_school";
-
-  if (!tp.candidates[id]) {
-    const birthYear = world.year - (rikishi.age ?? 20);
-    tp.candidates[id] = {
-      candidateId: id,
-      personId: rikishi.id,
-      name: rikishi.shikona ?? rikishi.name ?? id,
-      nationality: rikishi.nationality ?? "Japan",
-      birthYear,
-      originRegion: "Japan",
-      reputationSeed: 50,
-      tags: ["reinjected"],
-      combatProfile: {} as any,
-      archetype: "balanced" as any,
-      style: "neutral" as any,
-      heightPotentialCm: 175,
-      weightPotentialKg: 150,
-      talentSeed: 50,
-      temperament: { discipline: 50, volatility: 50 },
-      visibilityBand: "public" as VisibilityBand,
-      availabilityState: "available" as CandidateAvailabilityState,
-      competingSuitors: [],
-    };
-    tp.pools[poolType].candidatesVisible.push(id);
-  }
-
-  EventBus.recruitDiscovered(world, {
-    rikishiId: rikishi.id,
-    shikona: rikishi.shikona ?? rikishi.name ?? id,
-    status: "reinjected",
-  });
-}
-
-/**
- * Annual talent pool maintenance:
+ * Yearly talent pool refresh:
  * - Age out stale candidates who have been available too long
  * - Inject a fresh cohort of prospects for the new year
+ * Returns StateImpact describing yearly refresh instead of mutating directly.
  */
-export function tickYear(world: WorldState): void {
+export function tickYear(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickYear');
   const tp = ensureTalentPoolState(world);
   const currentYear = world.year ?? 2025;
   const rng = RNGRegistry.getSystemRNG(
@@ -726,8 +648,10 @@ export function tickYear(world: WorldState): void {
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 
+  const updatedPools = { ...tp.pools };
+
   for (const poolType of poolTypes) {
-    const pool = tp.pools[poolType];
+    const pool = { ...tp.pools[poolType] };
 
     // 1. Age out stale candidates (estimate age from birthYear)
     const maxAge =
@@ -754,9 +678,17 @@ export function tickYear(world: WorldState): void {
     fillHiddenCandidates(pool, tp, toGenerate, rng, currentYear, poolType, () =>
       rng.uuid("CD"),
     );
+
+    updatedPools[poolType] = pool;
   }
 
-  tp.lastYearlyRefreshYear = currentYear;
+  const updatedTalentPool = { ...tp, pools: updatedPools, lastYearlyRefreshYear: currentYear };
+
+  // Note: talentPool updates are not directly supported by ImpactBuilder yet
+  // For now, we'll update them directly as talentPool is a nested state
+  world.talentPool = updatedTalentPool;
+
+  return builder.build();
 }
 
 function filterAgedOutCandidates(

@@ -89,9 +89,11 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
 
 /**
  * Weekly injury tick: rolls for injuries for all active, non-retired rikishi.
- * Applies injury state directly to the rikishi.
+ * Returns StateImpact describing injury updates instead of mutating state directly.
  */
-export function tickWeekInjury(world: WorldState): void {
+export function tickWeekInjury(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickWeekInjury');
+
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || rikishi.injured) continue;
 
@@ -101,26 +103,37 @@ export function tickWeekInjury(world: WorldState): void {
     const result = rollWeeklyInjury({ rng: seededRng, rikishi, fatigue });
 
     if (result) {
-      rikishi.injured = true;
-      rikishi.injuryWeeksRemaining = result.weeksOut;
-        (rikishi as any).currentInjury = {
-          id: seededRng.uuid('IJ'),
-          severity: result.severity,
-          area: result.area,
-          type: result.type,
-          weeksOut: result.weeksOut,
-          weekOccurred: world.week ?? 0,
-        };
-        EventBus.lifecycleEvent(world, {
+      builder.updateRikishi(rikishi.id, {
+        injured: true,
+        injuryWeeksRemaining: result.weeksOut
+      });
+
+      builder.updateRikishiNestedField(rikishi.id, 'currentInjury', {
+        id: seededRng.uuid('IJ'),
+        severity: result.severity,
+        area: result.area,
+        type: result.type,
+        weeksOut: result.weeksOut,
+        weekOccurred: world.week ?? 0,
+      });
+
+      builder.logEvent(
+        'LIFECYCLE_EVENT',
+        'injury',
+        {
           rikishiId: rikishi.id,
           heyaId: rikishi.heyaId,
           shikona: rikishi.shikona || rikishi.name,
           status: "injury",
           reason: result.area,
           score: result.weeksOut
-        });
+        },
+        { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
+      );
     }
   }
+
+  return builder.build();
 }
 
 import { tickRikishiRecovery } from "./RecoveryService";
@@ -129,8 +142,11 @@ import { getHeyaStaffBonuses } from "../../staff";
 /**
  * Weekly recovery tick: advanced recovery for all injured rikishi.
  * Staff bonuses (Medical Staff) are applied here.
+ * Returns StateImpact describing recovery updates instead of mutating state directly.
  */
-export function tickWeekRecovery(world: WorldState): void {
+export function tickWeekRecovery(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('tickWeekRecovery');
+
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || !rikishi.injured) continue;
 
@@ -138,14 +154,28 @@ export function tickWeekRecovery(world: WorldState): void {
     const recovered = tickRikishiRecovery(rikishi, staffBonuses.medical);
 
     if (recovered) {
-      EventBus.lifecycleEvent(world, {
-        rikishiId: rikishi.id,
-        heyaId: rikishi.heyaId,
-        shikona: rikishi.shikona || rikishi.name,
-        status: "recovery"
+      builder.updateRikishi(rikishi.id, {
+        injured: false,
+        injuryWeeksRemaining: 0
       });
+
+      builder.updateRikishiNestedField(rikishi.id, 'currentInjury', undefined);
+
+      builder.logEvent(
+        'LIFECYCLE_EVENT',
+        'injury',
+        {
+          rikishiId: rikishi.id,
+          heyaId: rikishi.heyaId,
+          shikona: rikishi.shikona || rikishi.name,
+          status: "recovery"
+        },
+        { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
+      );
     }
   }
+
+  return builder.build();
 }
 
 
@@ -208,11 +238,19 @@ export function onBoutResolvedInjury(
 
 /**
  * Clears an active injury from a rikishi (UI action: doctor clearance).
+ * Returns StateImpact describing injury clearance instead of mutating state directly.
  */
-export function clearInjury(rikishi: any): void {
-  rikishi.injured = false;
-  rikishi.injuryWeeksRemaining = 0;
-  delete (rikishi as any).currentInjury;
+export function clearInjury(rikishiId: string): StateImpact {
+  const builder = createImpactBuilder('clearInjury');
+
+  builder.updateRikishi(rikishiId, {
+    injured: false,
+    injuryWeeksRemaining: 0
+  });
+
+  builder.updateRikishiNestedField(rikishiId, 'currentInjury', undefined);
+
+  return builder.build();
 }
 
 /**

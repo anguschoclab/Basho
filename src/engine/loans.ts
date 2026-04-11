@@ -167,8 +167,11 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
 
 /**
  * Process monthly loan repayments for all heyas.
+ * Returns StateImpact describing loan repayments instead of mutating state directly.
  */
-export function processMonthlyLoanRepayments(world: WorldState): void {
+export function processMonthlyLoanRepayments(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('processMonthlyLoanRepayments');
+
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     if (!heya.activeLoans || heya.activeLoans.length === 0) continue;
 
@@ -186,20 +189,34 @@ export function processMonthlyLoanRepayments(world: WorldState): void {
         remainingLoans.push(loan);
       } else {
         // Loan paid off
-        EventBus.financialAlert(world, heya.id, {
-          incident: "loan_paid_off",
-          status: loan.type,
-          heya: loan.providerName,
-          heyaname: heya.name
-        });
+        builder.logEvent(
+          'FINANCIAL_ALERT',
+          'economy',
+          {
+            incident: "loan_paid_off",
+            status: loan.type,
+            heya: loan.providerName,
+            heyaname: heya.name
+          },
+          { heyaId: heya.id }
+        );
       }
     }
 
-    heya.activeLoans = remainingLoans;
+    const updates: any = {};
+    
+    if (heya.activeLoans.length !== remainingLoans.length) {
+      updates.activeLoans = remainingLoans;
+    }
 
     if (totalPayment > 0) {
-      heya.funds -= totalPayment;
-      // If payment causes severe insolvency again, bailout logic will catch it next tick/review
+      updates.funds = heya.funds - totalPayment;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      builder.updateHeya(heya.id, updates);
     }
   }
+
+  return builder.build();
 }

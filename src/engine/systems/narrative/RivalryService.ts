@@ -131,26 +131,42 @@ export const RivalryService = {
 
   /**
    * Weekly Decay Tick.
+   * Returns StateImpact describing rivalry decay instead of mutating state directly.
    */
-  applyWeeklyDecay(world: WorldState): void {
+  applyWeeklyDecay(world: WorldState): StateImpact {
+    const builder = createImpactBuilder('applyWeeklyDecay');
     const state = this.ensureRivalriesState(world);
     const week = world.calendar.currentWeek || 0;
+
+    const updatedPairs = { ...state.pairs };
 
     for (const key in state.pairs) {
       const pair = state.pairs[key];
       const weeksSince = week - pair.lastMetWeek;
       const decay = weeksSince <= 4 ? 0.5 : weeksSince <= 12 ? 1.0 : 1.5;
 
-      pair.heat = clamp(pair.heat - decay, 0, 100);
-      pair.closeness = clamp(pair.closeness - 0.25, 0, 100);
-      pair.spite = clamp(pair.spite - 0.35, 0, 100);
-      pair.tone = deriveTone(pair);
+      const updatedPair = {
+        ...pair,
+        heat: clamp(pair.heat - decay, 0, 100),
+        closeness: clamp(pair.closeness - 0.25, 0, 100),
+        spite: clamp(pair.spite - 0.35, 0, 100),
+        tone: deriveTone(pair)
+      };
 
       // Auto-cull
-      if (pair.heat < 5 && pair.meetings < 2 && weeksSince > 30) {
-        delete state.pairs[key];
+      if (updatedPair.heat < 5 && updatedPair.meetings < 2 && weeksSince > 30) {
+        delete updatedPairs[key];
+      } else {
+        updatedPairs[key] = updatedPair;
       }
     }
+
+    (builder as any).updateWorldField('rivalriesState', {
+      version: state.version,
+      pairs: updatedPairs
+    });
+
+    return builder.build();
   },
 
   /**

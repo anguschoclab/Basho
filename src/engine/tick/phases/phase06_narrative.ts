@@ -16,30 +16,34 @@
  */
 
 import type { WorldState } from "../../types/world";
-import { EventBus } from "../../events";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
-export function phase06_narrative(world: WorldState): WorldState {
+export function phase06_narrative(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase06_narrative');
   const deltas = world.transientContext?.deltas;
-  if (!deltas) return world;
-
-  // Work on a shallow clone for the events array
-  const next: WorldState = { ...world };
+  if (!deltas) return builder.build();
 
   // ── Injury headlines ──────────────────────────────────────────────────────
   for (const rId of deltas.injuriesSustained) {
     const r = world.rikishi.get(rId);
     if (!r) continue;
-    EventBus.lifecycleEvent(next, {
-      rikishiId: rId,
-      heyaId: r.heyaId,
-      shikona: r.shikona,
-      status: "injury",
-      score: r.injuryWeeksRemaining
-    });
+    builder.logEvent(
+      'LIFECYCLE_EVENT',
+      'welfare',
+      {
+        rikishiId: rId,
+        heyaId: r.heyaId,
+        shikona: r.shikona,
+        status: "injury",
+        score: r.injuryWeeksRemaining
+      },
+      { rikishiId: rId, heyaId: r.heyaId }
+    );
   }
 
   // ── Financial crisis ──────────────────────────────────────────────────────
@@ -47,11 +51,16 @@ export function phase06_narrative(world: WorldState): WorldState {
     const playerHeyaId = world.playerHeyaId;
     const heya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
     if (heya && heya.funds < 0) {
-      EventBus.financialAlert(next, playerHeyaId!, {
-        incident: "insolvency",
-        money: heya.funds,
-        heyaname: heya.name ?? heya.id
-      });
+      builder.logEvent(
+        'FINANCIAL_ALERT',
+        'economy',
+        {
+          incident: "insolvency",
+          money: heya.funds,
+          heyaname: heya.name ?? heya.id
+        },
+        { heyaId: playerHeyaId! }
+      );
     }
   }
 
@@ -62,15 +71,20 @@ export function phase06_narrative(world: WorldState): WorldState {
     const r = world.rikishi.get(rId);
     if (!r) continue;
     const gainStr = bigGains.map((c) => `+${c.amount.toFixed(1)} ${c.stat}`).join(", ");
-    EventBus.trainingUpdate(next, {
-      rikishiId: rId,
-      heyaId: r.heyaId,
-      shikona: r.shikona,
-      incident: "milestone",
-      status: bigGains[0].stat, // main stat gained
-      score: bigGains[0].amount // main gain amount
-    });
+    builder.logEvent(
+      'TRAINING_UPDATE',
+      'training',
+      {
+        rikishiId: rId,
+        heyaId: r.heyaId,
+        shikona: r.shikona,
+        incident: "milestone",
+        status: bigGains[0].stat, // main stat gained
+        score: bigGains[0].amount // main gain amount
+      },
+      { rikishiId: rId, heyaId: r.heyaId }
+    );
   }
 
-  return next;
+  return builder.build();
 }

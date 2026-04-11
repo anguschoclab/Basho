@@ -1,16 +1,21 @@
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
-import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { stableSort } from "./utils/sort";
 import { rngFromSeed } from "./rng";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import { resolveImpacts } from "./core/ImpactResolver";
+import type { StateImpact } from "./core/StateImpact";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
  * Naturalization is "rare, prestige-gated, narrative-significant".
  * If activated, gaining Japanese citizenship frees the foreign slot.
+ * Returns StateImpact describing naturalization updates instead of mutating state directly.
  */
-export function checkNaturalizations(world: WorldState): void {
+export function checkNaturalizations(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('checkNaturalizations');
+
   // Usually this would be run yearly or post-basho.
   const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
   for (const r of world.rikishi.values()) {
@@ -42,29 +47,49 @@ export function checkNaturalizations(world: WorldState): void {
 
     if (chance < 5) { // 5% chance if eligible
       const originalNationality = r.nationality;
-      // Naturalize
-      r.nationality = "Japan";
+      
+      // Queue rikishi update for nationality
+      builder.updateRikishi(r.id, { nationality: "Japan" });
+
+      // Log event
+      builder.logEvent(
+        'LIFECYCLE_EVENT',
+        'career',
+        {
+          rikishiId: r.id,
+          heyaId: r.heyaId,
+          shikona: r.shikona || r.name,
+          status: "naturalization",
+          reason: originalNationality
+        },
+        { rikishiId: r.id, heyaId: r.heyaId }
+      );
 
       const heya = world.heyas.get(r.heyaId);
-
-      EventBus.lifecycleEvent(world, {
-        rikishiId: r.id,
-        heyaId: r.heyaId,
-        shikona: r.shikona || r.name,
-        status: "naturalization",
-        reason: originalNationality
-      });
-
       if (heya) {
-        generateGovernanceHeadline({
+        // Generate governance headline and merge its impact
+        const headlineImpact = generateGovernanceHeadline({
           world,
           heyaId: heya.id,
-          type: "milestone",
-          severity: "major",
-          description: `${r.shikona || r.name} acquires Japanese citizenship, freeing up ${heya.name}'s foreign slot.`
+          templatePath: 'institutional.governance.naturalization_headline',
+          severity: 'national'
         });
+        
+        // Merge headline impact into main builder
+        if (headlineImpact.entities?.heyaUpdates) {
+          for (const [id, update] of headlineImpact.entities.heyaUpdates) {
+            builder.updateHeya(id, update);
+          }
+        }
+        if (headlineImpact.worldFields) {
+          for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
+            (builder as any).updateWorldField(field, value);
+          }
+        }
       }
     }
   }
+
+  return builder.build();
 }
 

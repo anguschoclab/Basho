@@ -58,6 +58,22 @@ export function runPostBashoResolution(world: WorldState): void {
   const electionImpact = runElections(world);
   impacts.push(electionImpact);
 
+  // Collect impacts from newly migrated functions
+  const naturalizationImpact = checkNaturalizations(world);
+  impacts.push(naturalizationImpact);
+
+  const mediaBoundaryImpact = MediaService.processWeeklyMediaBoundary(world);
+  impacts.push(mediaBoundaryImpact);
+
+  const recordsImpact = onBashoEnded(world);
+  impacts.push(recordsImpact);
+
+  // Only prune at year-end (November Basho)
+  if (world.calendar.month === 11) {
+    const archivalImpact = runArchivalPruning(world);
+    impacts.push(archivalImpact);
+  }
+
   // Resolve all collected impacts atomically
   const resolvedWorld = resolveImpacts(world, impacts);
   
@@ -71,18 +87,4 @@ export function runPostBashoResolution(world: WorldState): void {
   const recruitmentImpact = runRecruitmentWindow(world, vacancies);
   const recruitmentResolved = resolveImpacts(world, [recruitmentImpact]);
   Object.assign(world, recruitmentResolved);
-
-  // Run functions that still mutate directly
-  try {
-    checkNaturalizations(world);
-    MediaService.processWeeklyMediaBoundary(world.mediaState as any);
-    onBashoEnded(world);
-
-    // Only prune at year-end (November Basho)
-    if (world.calendar.month === 11) {
-      runArchivalPruning(world);
-    }
-  } catch (e) {
-    console.error(`SimulationRunner: Error in post-basho resolution`, e);
-  }
 }

@@ -11,86 +11,98 @@
  */
 
 import type { WorldState } from "../../types/world";
-import { EventBus } from "../../events";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { stableSort } from "../../utils/sort";
 import * as talentpool from "../../systems/generation/TalentPoolService";
 
-export function phase01_week_recruitment(world: WorldState): WorldState {
-  let nextWorld = { ...world };
+export function phase01_week_recruitment(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('phase01_week_recruitment');
 
   // 1. Talent Pool Weekly Tick (Intel Decay, Suitor resolution)
-  nextWorld = talentpool.tickWeekTalentPool(nextWorld);
-
+  // Note: tickWeekTalentPool already returns StateImpact and mutates world
+  // We'll call it and it will handle its own state updates
+  talentpool.tickWeekTalentPool(world);
 
   // 2. Window Closing
-  const rw = nextWorld._recruitmentWindow;
-  if (rw?.isOpen && nextWorld.week >= rw.closesAtWeek) {
-    nextWorld._recruitmentWindow = { ...rw, isOpen: false };
-    if (nextWorld.playerHeyaId) {
-      EventBus.recruitDiscovered(nextWorld, {
-        rikishiId: nextWorld.playerHeyaId,
-        heyaId: nextWorld.playerHeyaId,
-        status: "window_closed",
-        day: nextWorld.week,
-      });
+  const rw = world._recruitmentWindow;
+  if (rw?.isOpen && world.week >= rw.closesAtWeek) {
+    world._recruitmentWindow = { ...rw, isOpen: false };
+    if (world.playerHeyaId) {
+      builder.logEvent(
+        'RECRUIT_DISCOVERED',
+        'narrative',
+        {
+          rikishiId: world.playerHeyaId,
+          heyaId: world.playerHeyaId,
+          status: "window_closed",
+          day: world.week,
+        },
+        { heyaId: world.playerHeyaId }
+      );
     }
   }
 
   // 3. Mid-Interim Openings
-  if (nextWorld.cyclePhase === "interim") {
+  if (world.cyclePhase === "interim") {
     const elapsedWeeks = Math.floor(
-      (42 - (nextWorld._interimDaysRemaining ?? 0)) / 7,
+      (42 - (world._interimDaysRemaining ?? 0)) / 7,
     );
-    if (elapsedWeeks === 3 && !nextWorld._recruitmentWindow?.isOpen) {
-      const playerHeya = nextWorld.playerHeyaId
-        ? nextWorld.heyas.get(nextWorld.playerHeyaId)
+    if (elapsedWeeks === 3 && !world._recruitmentWindow?.isOpen) {
+      const playerHeya = world.playerHeyaId
+        ? world.heyas.get(world.playerHeyaId)
         : null;
 
       if (
         playerHeya &&
         playerHeya.welfareState?.complianceState !== "sanctioned"
       ) {
-        nextWorld._recruitmentWindow = {
-          openedAtWeek: nextWorld.week,
-          closesAtWeek: nextWorld.week + 2,
+        world._recruitmentWindow = {
+          openedAtWeek: world.week,
+          closesAtWeek: world.week + 2,
           vacancies: 0,
           isOpen: true,
           phase: "mid_interim",
         };
-        EventBus.recruitDiscovered(nextWorld, {
-          rikishiId: playerHeya.id,
-          heyaId: playerHeya.id,
-          status: "window_open",
-          day: nextWorld.week + 2,
-          incident: "mid_interim",
-        });
+        builder.logEvent(
+          'RECRUIT_DISCOVERED',
+          'narrative',
+          {
+            rikishiId: playerHeya.id,
+            heyaId: playerHeya.id,
+            status: "window_opened",
+            day: world.week,
+            incident: "mid_interim",
+          },
+          { heyaId: playerHeya.id }
+        );
       }
     }
   }
 
   // 4. NPC Opportunistic Recruitment
   if (
-    nextWorld.cyclePhase === "interim" &&
-    Math.floor((42 - (nextWorld._interimDaysRemaining ?? 0)) / 7) === 3
+    world.cyclePhase === "interim" &&
+    Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7) === 3
   ) {
     const smallStables: Record<string, number> = {};
     let hasItems = false;
-    for (const h of nextWorld.heyas.values()) {
-      if (h.id !== nextWorld.playerHeyaId && (h.rikishiIds ?? []).length < 6) {
+    for (const h of world.heyas.values()) {
+      if (h.id !== world.playerHeyaId && (h.rikishiIds ?? []).length < 6) {
         smallStables[h.id] = Math.max(1, 6 - (h.rikishiIds ?? []).length);
         hasItems = true;
       }
     }
     if (hasItems) {
-      // fillVacanciesForNPC mutates world, so we need to accept that and return the mutated world
-      // This is a known mutative service that would require a larger refactor to make pure
-      talentpool.fillVacanciesForNPC(nextWorld, smallStables);
+      // fillVacanciesForNPC mutates world and returns StateImpact
+      talentpool.fillVacanciesForNPC(world, smallStables);
     }
   }
 
   // 5. Finalize signed candidates into full Rikishi
   // This converts "signed" candidates (from resolution or NPC fast-path) into real entities.
-  nextWorld = talentpool.finalizeSignedCandidates(nextWorld);
+  // Note: finalizeSignedCandidates mutates world
+  talentpool.finalizeSignedCandidates(world);
 
-  return nextWorld;
+  return builder.build();
 }
