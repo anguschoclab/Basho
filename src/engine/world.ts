@@ -35,7 +35,8 @@ import {
   updateMediaFromBout, 
   processWeeklyMediaBoundary,
   resetBashoMediaTracking,
-  snapshotMediaHeatForBasho
+  snapshotMediaHeatForBasho,
+  handleMediaEvent
 } from "./systems/media/MediaService";
 import * as economics from "./economics";
 import * as governance from "./governance/GovernanceService";
@@ -48,8 +49,11 @@ import * as scoutingStore from "./scoutingStore";
 import * as historyIndex from "./historyIndex";
  
 import { } from "./systems/generation/CandidateGenerator";
-import { determineSpecialPrizes, updateBanzuke } from "./banzuke"; 
+import { determineSpecialPrizes, updateBanzuke } from "./banzuke";
 import { applyBoutResult } from "./bout/boutResultApplier";
+import { resolveImpacts } from "./core/ImpactResolver";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 import { checkRetirement } from "./lifecycle";
 import { generateOyakata } from "./oyakataPersonalities";
 import { getHeyaRoster, getRikishi, getActiveRikishi, getStableRikishi } from "./queries";
@@ -70,7 +74,8 @@ import { ensureDaySchedule } from "./schedule";
 export { 
   getActiveRikishi, 
   getStableRikishi, 
-  applyBoutResult 
+  applyBoutResult,
+  handleMediaEvent
 };
 
 
@@ -83,6 +88,8 @@ export {
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
+
+export const issueGovernanceRuling = governance.issueGovernanceRuling;
 
 /**
  * Start basho.
@@ -114,11 +121,15 @@ export function advanceBashoDay(world: WorldState): WorldState {
   // Legacy sync
   basho.currentDay = nextDay;
 
-  if (nextDay <= 15) ensureDaySchedule(world, nextDay);
+  if (nextDay <= 15) {
+    const scheduleImpact = ensureDaySchedule(world, nextDay);
+    const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
+    Object.assign(world, resolvedWorld);
+  }
 
-  EventBus.bashoStatus(world, { 
-    status: "day_advanced", 
-    day: nextDay 
+  EventBus.bashoStatus(world, {
+    status: "day_advanced",
+    day: nextDay
   });
   return world;
 }
@@ -163,9 +174,17 @@ export function simulateBoutForToday(
       playerSide
   };
 
-  const result = resolveBout(boutContext, east, west, basho, playerTactic, world);
+  const { result, impact: resolveImpact } = resolveBout(boutContext, east, west, basho, playerTactic, world);
 
-  applyBoutResult(world, match, result);
+  const boutImpact = applyBoutResult(world, match, result);
+  const resolvedWorld = resolveImpacts(world, [resolveImpact, boutImpact]);
+  Object.assign(world, resolvedWorld);
+
+  // Handle standings update from metadata
+  if (boutImpact.metadata?.updatedStandings && world.currentBasho) {
+    world.currentBasho.standings = boutImpact.metadata.updatedStandings;
+  }
+
   return { world, result };
 }
 
@@ -177,7 +196,10 @@ export function simulateBoutForToday(
  *  * @returns The result.
  */
 export function endBasho(world: WorldState): WorldState {
-  return competition.concludeBashoCompetition(world);
+  const impact = competition.concludeBashoCompetition(world);
+  const resolvedWorld = resolveImpacts(world, [impact]);
+  Object.assign(world, resolvedWorld);
+  return world;
 }
 
 
@@ -197,14 +219,28 @@ export function endBasho(world: WorldState): WorldState {
 
 /**
  * Publish banzuke update.
- *  * @param world - The World.
- *  * @returns The result.
+ * Returns StateImpact describing banzuke update instead of mutating state directly.
+ * @param world - The World.
+ * @returns The result.
  */
-export function publishBanzukeUpdate(world: WorldState): WorldState {
-  if (world.cyclePhase !== "post_basho") return world;
+export function publishBanzukeUpdate(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('publishBanzukeUpdate');
+
+  if (world.cyclePhase !== "post_basho") return builder.build();
 
   const lastBasho = getCurrentBasho(world);
-  if (!lastBasho) return world;
+  if (!lastBasho) return builder.build();
+
+  // Standings can be Map or Object depending on the simulation path; normalize here
+  const standings = lastBasho.standings;
+  if (!standings) {
+    console.warn("publishBanzukeUpdate: No standings found in lastBasho!");
+    return builder.build();
+  }
+
+  const standingEntries = (standings instanceof Map)
+    ? Array.from(standings.entries())
+    : Object.entries(standings as any);
 
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const r of world.rikishi.values()) {
@@ -216,55 +252,177 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   }
 
   const performanceList: BashoPerformance[] = [];
-  for (const [id, stats] of lastBasho.standings.entries()) {
+  for (const [id, stats_any] of standingEntries) {
+    const stats = stats_any as { wins: number; losses: number; absences: number };
     const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
+    const rikishi = world.rikishi.get(id);
 
     let prizePoints = 0;
     if (history.ginoSho === id) prizePoints += 1;
     if (history.shukunsho === id) prizePoints += 1;
     if (history.kantosho === id) prizePoints += 1;
 
+    // Yokozuna promotion logic based on real sumo criteria
+    // Standard: 2 consecutive yusho OR 1 yusho + 1 jun-yusho (13+ wins both)
+    let promoteToYokozuna = false;
+    let consecutiveStrongOzeki = rikishi?.consecutiveStrongOzeki || 0;
+
+    if (rikishi?.rank === "ozeki") {
+      const currentWins = stats.wins;
+      const cHistory = rikishi.careerHistory || [];
+      const prevBasho = cHistory[cHistory.length - 1];
+
+      const wonPrevious = prevBasho?.isYusho === true;
+      const wasJunYushoPrevious = prevBasho?.isJunYusho === true;
+      const lastWins = prevBasho?.wins || 0;
+
+      // Promotion Case 1: 2 Consecutive Yusho
+      if (isYusho && wonPrevious) {
+        promoteToYokozuna = true;
+      }
+      // Promotion Case 2: 1 Yusho + 1 Jun-Yusho (13+ wins both)
+      else if ((isYusho && wasJunYushoPrevious && lastWins >= 13) || (isJunYusho && wonPrevious && currentWins >= 13)) {
+        promoteToYokozuna = true;
+      }
+      // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
+      else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
+        promoteToYokozuna = true;
+      }
+
+      // Track consecutive strong performances (12+) for borderline cases
+      if (currentWins >= 12) {
+        consecutiveStrongOzeki = (rikishi.consecutiveStrongOzeki || 0) + 1;
+      } else {
+        consecutiveStrongOzeki = 0;
+      }
+
+      // Narrative: Yokozuna Watch
+      if (isYusho && !promoteToYokozuna) {
+        builder.logEvent(
+          'LIFECYCLE_EVENT',
+          'injury',
+          {
+            status: "yokozuna_watch",
+            description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`
+          },
+          { rikishiId: id, heyaId: rikishi.heyaId }
+        );
+      }
+    }
+
+    // Yokozuna make-koshi and kyujo tracking for retirement pressure
+    // Real sumo: Yokozuna with consecutive losing records face retirement pressure
+    let consecutiveMakeKoshi = rikishi?.consecutiveMakeKoshi || 0;
+    let consecutiveKyujo = rikishi?.consecutiveKyujo || 0;
+    let pressureScore = rikishi?.pressureScore || 0;
+    let councilWarnings = rikishi?.councilWarnings || 0;
+    let statsUpdate: any = {};
+
+    if (rikishi?.rank === "yokozuna") {
+      const isMakeKoshi = stats.wins < 8; // Official make-koshi
+      const isKyujo = stats.absences >= 15; // Full tournament miss
+      const subPar = stats.wins < 10; // Fails to meet "Yokozuna standard"
+
+      if (isMakeKoshi || isKyujo) {
+        consecutiveMakeKoshi = (rikishi.consecutiveMakeKoshi || 0) + 1;
+      } else {
+        consecutiveMakeKoshi = 0;
+      }
+
+      if (isKyujo) {
+        consecutiveKyujo = (rikishi.consecutiveKyujo || 0) + 1;
+      } else {
+        consecutiveKyujo = 0;
+      }
+
+      // Council Recommendation / Warning Logic
+      if (subPar || isKyujo) {
+        pressureScore = (rikishi.pressureScore || 0) + 1;
+
+        // Every 2 "sub-par" performances = 1 Council Warning
+        if (pressureScore % 2 === 0) {
+          councilWarnings = (rikishi.councilWarnings || 0) + 1;
+
+          // Apply Stat Debuff: 10% reduction in Mental and Technique (Dignity loss)
+          const currentMental = rikishi.stats.mental || 50;
+          const currentTechnique = rikishi.stats.technique || 50;
+          statsUpdate = {
+            mental: currentMental * 0.9,
+            technique: currentTechnique * 0.9
+          };
+
+          builder.logEvent(
+            'GOVERNANCE_RULING',
+            'economy',
+            {
+              incident: "yokozuna_deliberation",
+              description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`
+            },
+            { rikishiId: id, heyaId: rikishi.heyaId }
+          );
+        }
+      }
+    }
+
+    // Update rikishi with promotion tracking fields
+    if (rikishi) {
+      builder.updateRikishi(id, {
+        consecutiveStrongOzeki,
+        consecutiveMakeKoshi,
+        consecutiveKyujo,
+        pressureScore,
+        councilWarnings,
+        stats: statsUpdate
+      });
+    }
+
     performanceList.push({
       rikishiId: id,
       wins: stats.wins,
       losses: stats.losses,
-      absences: 0, 
+      absences: 0,
       yusho: isYusho,
       junYusho: isJunYusho,
-      specialPrizes: prizePoints
+      specialPrizes: prizePoints,
+      promoteToYokozuna
     });
   }
 
   const perfMap = new Map(performanceList.map(p => [p.rikishiId, p]));
   const result = updateBanzuke(currentBanzukeList, perfMap, world.ozekiKadoban ?? {}, world.heyas);
-  
-  // Persist updated kadoban state
-  world.ozekiKadoban = result.updatedOzekiKadoban;
+
+  // Update ozekiKadoban world field
+  builder.updateWorldField('ozekiKadoban', result.updatedOzekiKadoban);
 
   for (const newEntry of result.newBanzuke) {
     const rikishi = world.rikishi.get(newEntry.rikishiId);
     if (rikishi) {
-      rikishi.division = newEntry.division;
-      rikishi.rank = newEntry.position.rank;
-      rikishi.rankNumber = newEntry.position.rankNumber;
-      rikishi.side = newEntry.position.side;
-      
-      rikishi.currentBashoWins = 0;
-      rikishi.currentBashoLosses = 0;
+      builder.updateRikishi(newEntry.rikishiId, {
+        division: newEntry.division,
+        rank: newEntry.position.rank,
+        rankNumber: newEntry.position.rankNumber,
+        side: newEntry.position.side,
+        currentBashoWins: 0,
+        currentBashoLosses: 0
+      });
     }
   }
 
   const next = getNextBasho(lastBasho.bashoName);
   const nextYear = next === "hatsu" ? world.year + 1 : world.year;
 
-  world.year = nextYear;
-  world.currentBashoName = next;
-  world.currentBasho = undefined;
-  enterInterim(world);
+  builder.updateWorldField('year', nextYear);
+  builder.updateWorldField('currentBashoName', next);
+  builder.updateWorldField('currentBasho', undefined);
 
-  return world;
+  // Note: enterInterim mutates world state - this would need to be migrated separately
+  // For now, we'll call it directly and let it mutate
+  const interimWorld = { ...world, year: nextYear, currentBashoName: next, currentBasho: undefined };
+  enterInterim(interimWorld);
+
+  return builder.build();
 }
 
 /**
@@ -292,7 +450,7 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
  * Advance a single day in the interim period.
  * Used by UI for granular day-by-day control.
  */
-export function advanceDay(world: WorldState): DailyTickReport | null {
+export function advanceDay(world: WorldState): WorldState | null {
   if (world.cyclePhase === "active_basho") return null;
   return advanceOneDay(world);
 }

@@ -11,6 +11,8 @@ import {
   ScoutingService
 } from "./systems/recruitment/ScoutingService";
 import { type ScoutingInvestment } from "./systems/recruitment/RecruitmentConstants";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 // Local implementations for missing scouting functions
 /**
@@ -218,17 +220,19 @@ export function warmScoutingForRikishiList(world: WorldState, rikishiIds: Id[], 
 /**
  * Hook called after each bout resolution.
  * Auto-observes both participants if the player watched (player bouts are always observed).
+ * Returns StateImpact describing scouting updates instead of mutating state directly.
  */
 export function onBoutResolvedScouting(
   world: WorldState,
   context: { match: any; result: any; east: any; west: any }
-): void {
+): StateImpact {
+  const builder = createImpactBuilder('onBoutResolvedScouting');
   const playerHeyaId = getPlayerHeyaId(world);
-  if (!playerHeyaId) return;
+  if (!playerHeyaId) return builder.build();
 
   const eastId = context.east?.id;
   const westId = context.west?.id;
-  if (!eastId || !westId) return;
+  if (!eastId || !westId) return builder.build();
 
   // Auto-observe if player's rikishi is involved (always watched)
   const eastRikishi = getRikishi(world, eastId);
@@ -237,8 +241,30 @@ export function onBoutResolvedScouting(
     eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
 
   if (isPlayerBout) {
-    observeBout(world, eastId, westId);
+    const table = ensureScoutingTable(world);
+    const currentWeek = getWorldWeek(world);
+
+    const east = getOrCreateScouted(world, eastId);
+    const west = getOrCreateScouted(world, westId);
+
+    const updatedEast = ScoutingService.recordObservation(east, currentWeek);
+    const updatedWest = ScoutingService.recordObservation(west, currentWeek);
+
+    // Update the playerKnowledge.scouting field
+    const updatedTable = {
+      ...table,
+      [eastId]: updatedEast,
+      [westId]: updatedWest
+    };
+
+    const currentKnowledge = world.playerKnowledge || {};
+    (builder as any).updateWorldField('playerKnowledge', {
+      ...currentKnowledge,
+      scouting: updatedTable
+    });
   }
+
+  return builder.build();
 }
 
 /**

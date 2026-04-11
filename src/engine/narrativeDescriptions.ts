@@ -8,7 +8,9 @@
  */
 
 import { NarrativeService } from "./systems/narrative/NarrativeService";
-import { STAT_LABELS, STAT_PROSE, FATIGUE_LABELS } from "./systems/narrative/NarrativeProse";
+import { rngFromSeed } from "./rng";
+
+const DUMMY_RNG = rngFromSeed("static-narrative", "system", "desc");
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/narrative/NarrativeBands";
@@ -20,7 +22,7 @@ export * from "./systems/narrative/NarrativeService";
  */
 export function describeAttribute(value: number): string {
   const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(band);
+  return NarrativeService.getStatLabel(DUMMY_RNG, band);
 }
 
 /**
@@ -28,7 +30,7 @@ export function describeAttribute(value: number): string {
  */
 export function describeAggression(value: number): string {
   const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(band);
+  return NarrativeService.getStatLabel(DUMMY_RNG, band);
 }
 
 /**
@@ -36,7 +38,7 @@ export function describeAggression(value: number): string {
  */
 export function describeExperience(value: number): string {
   const band = NarrativeService.getStatBand(value);
-  return NarrativeService.getStatLabel(band);
+  return NarrativeService.getStatLabel(DUMMY_RNG, band);
 }
 
 /**
@@ -44,7 +46,7 @@ export function describeExperience(value: number): string {
  */
 export function describeFatigue(value: number): string {
     const band = NarrativeService.getFatigueBand(value);
-    return NarrativeService.getFatigueLabel(band);
+    return NarrativeService.getFatigueLabel(DUMMY_RNG, band);
 }
 
 /**

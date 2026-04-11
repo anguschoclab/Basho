@@ -9,6 +9,8 @@ import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
 import { rngForWorld, rngFromSeed } from "../rng";
 import { BardEngine } from "../narrative/BardEngine";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -94,8 +96,10 @@ export function tickWeekGovernance(world: WorldState): void {
 /**
  * Bi-annual JSA Board Elections.
  * Rotates ichimon political capital and emits election narrative events.
+ * Returns StateImpact describing election changes instead of mutating state.
  */
-export function runElections(world: WorldState): void {
+export function runElections(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('elections');
   const ichimonGroups: Record<string, string[]> = {};
   for (const heya of world.heyas.values()) {
     if (!heya.ichimon) continue;
@@ -108,15 +112,22 @@ export function runElections(world: WorldState): void {
     for (const heyaId of heyaIds) {
       const heya = world.heyas.get(heyaId);
       if (heya && heya.politicalCapital !== undefined) {
-        heya.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
+        const newCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
+        builder.updateHeya(heyaId, { politicalCapital: newCapital });
       }
     }
-    EventBus.bashoStatus(world, {
-      status: "phase_transition",
-      incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
-      shikona: ichimon
-    });
+    builder.logEvent(
+      'BASHO_STATUS',
+      'basho',
+      {
+        status: "phase_transition",
+        incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
+        shikona: ichimon
+      }
+    );
   }
+
+  return builder.build();
 }
 
 /**
@@ -157,4 +168,33 @@ export function spendPoliticalCapital(world: WorldState, heyaId: string, amount:
   if (current < amount) return false;
   heya.politicalCapital = current - amount;
   return true;
+}
+
+/**
+ * Issues a governance ruling based on player choice.
+ */
+export function issueGovernanceRuling(world: WorldState, rulingId: string, severity: "lenient" | "standard" | "harsh"): void {
+  const rulingIndex = world.governanceLog?.findIndex(r => r.id === rulingId);
+  if (rulingIndex !== undefined && rulingIndex >= 0 && world.governanceLog) {
+    const ruling = world.governanceLog[rulingIndex] as GovernanceRuling;
+    const heya = world.heyas.get(ruling.heyaId);
+
+    if (heya) {
+      const severityMultiplier = severity === "lenient" ? 0.5 : severity === "harsh" ? 1.5 : 1.0;
+      const originalDelta = ruling.effects.scandalScoreDelta || 0;
+      const adjustedDelta = Math.round(originalDelta * severityMultiplier);
+
+      heya.scandalScore = Math.max(0, (heya.scandalScore || 0) - (originalDelta - adjustedDelta));
+
+      ruling.playerSeverity = severity;
+      ruling.playerResponse = `Player issued ${severity} ruling`;
+      ruling.effects.scandalScoreDelta = adjustedDelta;
+
+      if (severity === "lenient") {
+        heya.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
+      } else if (severity === "harsh") {
+        heya.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
+      }
+    }
+  }
 }

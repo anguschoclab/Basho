@@ -42,8 +42,9 @@ export function safeRankSortKey(rank: any): number {
  * @param amount - The raw currency amount
  */
 export function formatYenToMan(amount: number): string {
-  const man = Math.floor(amount / 10000);
-  return `¥${man.toLocaleString()} Man`;
+  if (Math.abs(amount) < 10000) return `¥${amount}`;
+  const man = amount / 10000;
+  return `${man.toLocaleString("en-US", { maximumFractionDigits: 1 })}万`;
 }
 
 /**

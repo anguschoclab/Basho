@@ -8,6 +8,8 @@ import type {
   SponsorRelationship 
 } from "../../types/sponsors";
 import { EventBus } from "../../events";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 
 
 export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
@@ -143,10 +145,17 @@ export function computeStarPower(heya: import("../../types/heya").Heya, world: W
 /**
  * Process Sponsor Churn (Addendum D).
  * Runs post-basho to evaluate satisfaction and relationship longevity.
+ * Returns StateImpact describing sponsor churn changes instead of mutating state.
+ * Note: sponsorPool mutations are still direct and will be migrated in Phase 4.
  */
-export function processSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
+export function processSponsorChurn(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('sponsorChurn');
   const pool = world.sponsorPool;
-  if (!pool?.sponsors) return { churned: [], retained: 0 };
+  if (!pool?.sponsors) {
+    builder.addMetadata('churned', []);
+    builder.addMetadata('retained', 0);
+    return builder.build();
+  }
 
   const churned: string[] = [];
   let retained = 0;
@@ -176,13 +185,19 @@ export function processSponsorChurn(world: WorldState): { churned: string[]; ret
       const threshold = isLocal ? 20 : isCorporate ? 50 : 70;
 
       if (satisfaction < threshold) {
+        // Still mutate sponsorPool directly - will migrate in Phase 4
         sponsor.active = false;
         churned.push(sponsor.displayName);
 
-        EventBus.financialAlert(world, heya.id,
-          "Sponsor departure",
-          `${sponsor.displayName} has withdrawn support from ${heya.name}.`,
-          { sponsorId: sponsor.sponsorId, satisfaction: Math.round(satisfaction) }
+        // Queue event instead of calling EventBus directly
+        builder.logEvent(
+          'FINANCIAL_ALERT',
+          'economy',
+          {
+            sponsorId: sponsor.sponsorId,
+            satisfaction: Math.round(satisfaction)
+          },
+          { heyaId: heya.id, importance: 'notable' }
         );
         return false;
       }
@@ -190,17 +205,26 @@ export function processSponsorChurn(world: WorldState): { churned: string[]; ret
       return true;
     });
 
+    // Still mutate koenkai.members directly - will migrate in Phase 4
     koenkai.members = survivingMembers;
 
     // Update kōenkai band based on remaining members
     const memberCount = survivingMembers.length;
     const hasPillar = survivingMembers.some((m: SponsorRelationship) => m.role === "koenkai_pillar");
-    if (memberCount === 0) heya.koenkaiBand = "none";
-    else if (memberCount <= 2 && !hasPillar) heya.koenkaiBand = "weak";
-    else if (memberCount <= 4) heya.koenkaiBand = "moderate";
-    else if (memberCount <= 6 || !hasPillar) heya.koenkaiBand = "strong";
-    else heya.koenkaiBand = "powerful";
+    let newKoenkaiBand: KoenkaiBandType = "none";
+    if (memberCount === 0) newKoenkaiBand = "none";
+    else if (memberCount <= 2 && !hasPillar) newKoenkaiBand = "weak";
+    else if (memberCount <= 4) newKoenkaiBand = "moderate";
+    else if (memberCount <= 6 || !hasPillar) newKoenkaiBand = "strong";
+    else newKoenkaiBand = "powerful";
+
+    // Queue heya update for koenkaiBand
+    builder.updateHeya(heya.id, { koenkaiBand: newKoenkaiBand });
   }
 
-  return { churned, retained };
+  // Add churned/retained counts to metadata
+  builder.addMetadata('churned', churned);
+  builder.addMetadata('retained', retained);
+
+  return builder.build();
 }

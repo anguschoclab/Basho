@@ -15,7 +15,7 @@ export function phase01_monthly_market(world: WorldState): WorldState {
   const market = world.myosekiMarket;
   if (!market?.stocks) return world;
 
-  const rng = RNGRegistry.getSystemRNG(world, "market", `month-${world.year}-${world.calendar.month}`);
+  const rng = RNGRegistry.getSystemRNG(world, "economics", `month-${world.year}-${world.calendar.month}`);
 
   for (const stock of Object.values(market.stocks)) {
     if (stock.status === "available" && stock.askingPrice) {

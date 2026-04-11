@@ -1,6 +1,10 @@
 import { rngFromSeed, SeededRNG } from "../rng";
 import type { WorldState } from "../types/world";
-import type { BashoName, BashoSimResult, BanzukeUpdateHook } from "../types/basho";
+import type {
+  BashoName,
+  BashoSimResult,
+  BanzukeUpdateHook,
+} from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
@@ -58,7 +62,7 @@ export function runAutoSim(
   config: AutoSimConfig,
   opts?: {
     banzukeUpdateHook?: BanzukeUpdateHook;
-  }
+  },
 ): AutoSimResult {
   const startYear = world.year;
   let bashoSimulated = 0;
@@ -75,22 +79,30 @@ export function runAutoSim(
     const bashoSeed = `${world.seed}-basho-${world.year}-${bashoName}`;
 
     const bashoResult = simulateEntireBasho(world, bashoName, bashoSeed, {
-      banzukeUpdateHook: opts?.banzukeUpdateHook
+      banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
     bashoSimulated++;
     daysSimulated += 15;
 
     if (bashoResult.yushoWinner.id) {
-      championCounts.set(bashoResult.yushoWinner.id, (championCounts.get(bashoResult.yushoWinner.id) || 0) + 1);
+      championCounts.set(
+        bashoResult.yushoWinner.id,
+        (championCounts.get(bashoResult.yushoWinner.id) || 0) + 1,
+      );
     }
 
     if (config.verbosity !== "minimal") {
-      ChronicleService.addHighlight(chronicle, `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`);
+      ChronicleService.addHighlight(
+        chronicle,
+        `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`,
+      );
     }
 
     for (const condition of config.stopConditions) {
-      if (checkStopCondition(condition, bashoResult, world, config, chronicle)) {
+      if (
+        checkStopCondition(condition, bashoResult, world, config, chronicle)
+      ) {
         stoppedBy = condition;
         break;
       }
@@ -100,7 +112,7 @@ export function runAutoSim(
     // Advance to next basho
     const nextBasho = getNextBasho(bashoName);
     const isNewYear = nextBasho === "hatsu";
-    
+
     // Boundary-aware time skip
     advanceDays(world, 42); // Canon: 6 weeks inter-basho
 
@@ -115,10 +127,23 @@ export function runAutoSim(
       bashoName,
       yusho: bashoResult.yushoWinner.id,
       junYusho: bashoResult.junYusho,
-      prizes: { yushoAmount: 10_000_000, junYushoAmount: 2_000_000, specialPrizes: 2_000_000 }
+      prizes: {
+        yushoAmount: 10_000_000,
+        junYushoAmount: 2_000_000,
+        specialPrizes: 2_000_000,
+      },
     } as any);
 
-    if (config.duration.type === "untilEvent" && checkStopCondition(config.duration.eventType, bashoResult, world, config, chronicle)) {
+    if (
+      config.duration.type === "untilEvent" &&
+      checkStopCondition(
+        config.duration.eventType,
+        bashoResult,
+        world,
+        config,
+        chronicle,
+      )
+    ) {
       stoppedBy = config.duration.eventType;
       break;
     }
@@ -130,55 +155,87 @@ export function runAutoSim(
     bashoSimulated,
     daysSimulated,
     stoppedBy,
-    chronicle: ChronicleService.finalizeReport(world, chronicle, championCounts, startYear),
-    finalWorld: world
+    chronicle: ChronicleService.finalizeReport(
+      world,
+      chronicle,
+      championCounts,
+      startYear,
+    ),
+    finalWorld: world,
   };
 }
 
-function checkStopCondition(
+export function checkStopCondition(
   condition: StopCondition,
   bashoResult: BashoSimResult,
   world: WorldState,
   config: AutoSimConfig,
-  chronicle: ChronicleReport
+  chronicle: ChronicleReport,
 ): boolean {
   const hasPlayer = !config.observerMode && !!config.playerHeyaId;
   const anyWorld = world as any;
 
   switch (condition) {
-    case "yokozunaPromotion": return bashoResult.promotions.some(p => p.to === "yokozuna");
-    case "ozekiPromotion": return bashoResult.promotions.some(p => p.to === "ozeki");
-    case "yusho": return hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId;
-    case "stableInsolvency": return hasPlayer && world.heyas.get(config.playerHeyaId!)?.runwayBand === "desperate";
+    case "yokozunaPromotion":
+      return bashoResult.promotions.some((p) => p.to === "yokozuna");
+    case "ozekiPromotion":
+      return bashoResult.promotions.some((p) => p.to === "ozeki");
+    case "yusho":
+      return (
+        hasPlayer &&
+        world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId ===
+          config.playerHeyaId
+      );
+    case "stableInsolvency":
+      return (
+        hasPlayer &&
+        world.heyas.get(config.playerHeyaId!)?.runwayBand === "desperate"
+      );
     case "scandal": {
-       const scandals: any[] = Array.isArray(anyWorld.scandals) ? anyWorld.scandals : [];
-       const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
-       return scandals.some((s: any) => s?.severity === "major" && s?.year === world.year) || 
-              eventLog.some((e: any) => e?.type === "scandal");
+      const scandals: any[] = Array.isArray(anyWorld.scandals)
+        ? anyWorld.scandals
+        : [];
+      const eventLog: any[] = Array.isArray(anyWorld.eventLog)
+        ? anyWorld.eventLog
+        : [];
+      return (
+        scandals.some(
+          (s: any) => s?.severity === "major" && s?.year === world.year,
+        ) || eventLog.some((e: any) => e?.type === "scandal")
+      );
     }
     case "retirementOfStar": {
-      const retirements: any[] = Array.isArray(anyWorld.retirements) ? anyWorld.retirements : [];
+      const retirements: any[] = Array.isArray(anyWorld.retirements)
+        ? anyWorld.retirements
+        : [];
       return retirements.some((r: any) => {
         const rikishi = world.rikishi.get(r.rikishiId);
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
       });
     }
 
-    default: return false;
+    default:
+      return false;
   }
 }
 
 function computeTargetBasho(duration: SimDuration): number {
   switch (duration.type) {
-    case "days": return Math.max(0, Math.ceil(duration.count / 15));
-    case "weeks": return Math.max(0, Math.ceil(duration.count / 9));
-    case "months": return Math.max(0, Math.ceil(duration.count / 2));
-    case "basho": return Math.max(0, Math.floor(duration.count));
-    case "years": return Math.max(0, Math.floor(duration.count) * 6);
-    case "untilEvent": return 600; // 100-year cap
-      default:
-        assertNever(duration as never);
-        return 0;
+    case "days":
+      return Math.max(0, Math.ceil(duration.count / 15));
+    case "weeks":
+      return Math.max(0, Math.ceil(duration.count / 9));
+    case "months":
+      return Math.max(0, Math.ceil(duration.count / 2));
+    case "basho":
+      return Math.max(0, Math.floor(duration.count));
+    case "years":
+      return Math.max(0, Math.floor(duration.count) * 6);
+    case "untilEvent":
+      return 600; // 100-year cap
+    default:
+      assertNever(duration as never);
+      return 0;
   }
 }
 

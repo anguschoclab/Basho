@@ -47,11 +47,11 @@ export function phase06_narrative(world: WorldState): WorldState {
     const playerHeyaId = world.playerHeyaId;
     const heya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
     if (heya && heya.funds < 0) {
-      EventBus.financialAlert(next, playerHeyaId, {
+      EventBus.financialAlert(next, playerHeyaId!, {
         incident: "insolvency",
         money: heya.funds,
         heyaname: heya.name ?? heya.id
-      }, "major");
+      });
     }
   }
 

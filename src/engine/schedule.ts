@@ -17,6 +17,8 @@ import {
   type MatchPairing,
   type MatchmakingRules,
 } from "./matchmaking/index";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {
@@ -124,7 +126,7 @@ function greedySelectPairs(
  * For all other divisions the legacy candidate-pair / greedy-select path
  * is retained (lower divisions use 7-day schedules, not the Swiss system).
  *
- * Appends matches to basho.matches and returns the new entries.
+ * Returns StateImpact describing scheduled matches instead of mutating basho.matches directly.
  */
 export function scheduleDivisionDay(args: {
   world: WorldState;
@@ -134,20 +136,21 @@ export function scheduleDivisionDay(args: {
   seed: string;
   rules?: ScheduleRules;
   config?: DivisionScheduleConfig;
-}): MatchSchedule[] {
+}): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const { world, basho, division, day } = args;
+  const builder = createImpactBuilder('scheduleDivisionDay');
   const rules = args.rules ?? {};
 
   const roster = activeDivisionRoster(world, division);
   const maxActive = args.config?.maxActiveRikishi;
-  if (!needsScheduleForDay(division, day)) return [];
+  if (!needsScheduleForDay(division, day)) return { scheduled: [], impact: builder.build() };
 
   const pool =
     typeof maxActive === "number"
       ? roster.slice(0, Math.max(0, maxActive))
       : roster;
 
-  if (pool.length < 2) return [];
+  if (pool.length < 2) return { scheduled: [], impact: builder.build() };
 
   let finalPairings: MatchPairing[];
 
@@ -164,7 +167,7 @@ export function scheduleDivisionDay(args: {
   } else {
     // ── Legacy candidate-pair path (all lower divisions) ───────────────────
     const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
-    if (boutsPerDay <= 0) return [];
+    if (boutsPerDay <= 0) return { scheduled: [], impact: builder.build() };
 
     const candidates = buildCandidatePairs(basho, pool, {
       seed: `${args.seed}-cand-${division}-day${day}`,
@@ -204,14 +207,15 @@ export function scheduleDivisionDay(args: {
     westRikishiId: p.westId,
   }));
 
-  // Append to basho state (engine truth source)
-  basho.matches.push(...scheduled);
+  // Append to basho state using ImpactBuilder
+  builder.appendToWorldArray('basho.matches', scheduled);
 
-  return scheduled;
+  return { scheduled, impact: builder.build() };
 }
 
 /**
  * Schedule all divisions for a single day.
+ * Returns StateImpact describing scheduled matches instead of mutating directly.
  */
 function scheduleAllDivisionsDay(args: {
   world: WorldState;
@@ -221,7 +225,7 @@ function scheduleAllDivisionsDay(args: {
   rules?: ScheduleRules;
   /** Override divisions list, otherwise uses all divisions present in types */
   divisions?: Division[];
-}): MatchSchedule[] {
+}): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const divisions: Division[] =
     args.divisions ??
     ([
@@ -233,20 +237,32 @@ function scheduleAllDivisionsDay(args: {
       "makuuchi",
     ] as Division[]);
 
+  const builder = createImpactBuilder('scheduleAllDivisionsDay');
   const out: MatchSchedule[] = [];
   for (const div of divisions) {
-    out.push(
-      ...scheduleDivisionDay({
-        world: args.world,
-        basho: args.basho,
-        division: div,
-        day: args.day,
-        seed: args.seed,
-        rules: args.rules,
-      }),
-    );
+    const { scheduled, impact } = scheduleDivisionDay({
+      world: args.world,
+      basho: args.basho,
+      division: div,
+      day: args.day,
+      seed: args.seed,
+      rules: args.rules,
+    });
+    out.push(...scheduled);
+
+    // Merge the impact
+    if (impact.arrayAppends) {
+      for (const append of impact.arrayAppends) {
+        builder.appendToWorldArray(append.field, append.items);
+      }
+    }
+    if (impact.worldFields) {
+      for (const [field, value] of Object.entries(impact.worldFields)) {
+        (builder as any).updateWorldField(field, value);
+      }
+    }
   }
-  return out;
+  return { scheduled: out, impact: builder.build() };
 }
 
 /**
@@ -255,6 +271,7 @@ function scheduleAllDivisionsDay(args: {
  * Generates ONE day of schedules for all divisions (respecting odd-day-only
  * lower divisions) and appends the resulting `MatchSchedule` entries to
  * `basho.schedule` and `basho.matches`.
+ * Returns StateImpact describing scheduled matches instead of mutating directly.
  */
 export function generateDaySchedule(
   world: WorldState,
@@ -262,13 +279,14 @@ export function generateDaySchedule(
   day: number,
   seed: string,
   rules?: ScheduleRules,
-): MatchSchedule[] {
+): { scheduled: MatchSchedule[]; impact: StateImpact } {
   return scheduleAllDivisionsDay({ world, basho, day, seed, rules });
 }
 
 /**
  * Generate the complete schedule for a basho (all days, all divisions).
  * For lower divisions that only fight 7 days, this only schedules on odd days.
+ * Returns StateImpact describing scheduled matches instead of mutating directly.
  */
 export function generateFullBashoSchedule(args: {
   world: WorldState;
@@ -276,7 +294,8 @@ export function generateFullBashoSchedule(args: {
   seed: string;
   rules?: ScheduleRules;
   divisions?: Division[];
-}): void {
+}): StateImpact {
+  const builder = createImpactBuilder('generateFullBashoSchedule');
   const divisions: Division[] =
     args.divisions ??
     ([
@@ -294,7 +313,7 @@ export function generateFullBashoSchedule(args: {
     for (const div of divisions) {
       if (!needsScheduleForDay(div, day)) continue;
 
-      scheduleDivisionDay({
+      const { impact } = scheduleDivisionDay({
         world: args.world,
         basho: args.basho,
         division: div,
@@ -302,8 +321,22 @@ export function generateFullBashoSchedule(args: {
         seed: args.seed,
         rules: args.rules,
       });
+
+      // Merge the impact
+      if (impact.arrayAppends) {
+        for (const append of impact.arrayAppends) {
+          builder.appendToWorldArray(append.field, append.items);
+        }
+      }
+      if (impact.worldFields) {
+        for (const [field, value] of Object.entries(impact.worldFields)) {
+          (builder as any).updateWorldField(field, value);
+        }
+      }
     }
   }
+
+  return builder.build();
 }
 
 /**
@@ -332,18 +365,34 @@ export function getTotalBashodays(division: Division): number {
 /**
  * Ensure day schedule — checks if a schedule already exists for the day,
  * and generates it if missing.
+ * Returns StateImpact describing scheduled matches instead of mutating directly.
  *
  * @param world WorldState
  * @param day Day number
  */
-export function ensureDaySchedule(world: WorldState, day: number): void {
+export function ensureDaySchedule(world: WorldState, day: number): StateImpact {
+  const builder = createImpactBuilder('ensureDaySchedule');
   const basho = world.currentBasho;
-  if (!basho) return;
+  if (!basho) return builder.build();
 
   const needsMakuuchi = needsScheduleForDay("makuuchi", day);
   const alreadyScheduled = basho.matches.some((m) => m.day === day);
 
   if (needsMakuuchi && !alreadyScheduled) {
-    generateDaySchedule(world, basho, day, world.seed);
+    const { impact } = generateDaySchedule(world, basho, day, world.seed);
+
+    // Merge the impact
+    if (impact.arrayAppends) {
+      for (const append of impact.arrayAppends) {
+        builder.appendToWorldArray(append.field, append.items);
+      }
+    }
+    if (impact.worldFields) {
+      for (const [field, value] of Object.entries(impact.worldFields)) {
+        (builder as any).updateWorldField(field, value);
+      }
+    }
   }
+
+  return builder.build();
 }

@@ -7,6 +7,7 @@ import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { generateFullBashoSchedule, generateDaySchedule } from "../schedule";
 import { stableTieBreak } from "../utils/sort";
+import { resolveImpacts } from "../core/ImpactResolver";
 
 /**
  * High-speed Tournament Simulation.
@@ -38,11 +39,15 @@ export function simulateEntireBasho(
 
   // Pre-generate all 15 days of schedules at once for efficiency
   try {
-    generateFullBashoSchedule({ world, basho, seed });
+    const scheduleImpact = generateFullBashoSchedule({ world, basho, seed });
+    const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
+    Object.assign(world, resolvedWorld);
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      generateDaySchedule(world, basho, day, daySeed);
+      const { impact } = generateDaySchedule(world, basho, day, daySeed);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      Object.assign(world, resolvedWorld);
     }
   }
 
@@ -56,8 +61,28 @@ export function simulateEntireBasho(
       const west = world.rikishi.get(match.westRikishiId);
 
       if (!east || !west) continue;
+      
       if (east.injured || west.injured) {
-        // Fusen-sho/Fusen-paku (standardization point)
+        // Fusen-sho / Fusen-paku (standardization point)
+        const winner = east.injured ? west : east;
+        const loser = east.injured ? east : west;
+        
+        winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
+        loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+
+        const winnerStanding = standings.get(winner.id);
+        const loserStanding = standings.get(loser.id);
+        if (winnerStanding) winnerStanding.wins++;
+        if (loserStanding) loserStanding.losses++;
+        
+        // Add fake bout result for stats consistency
+        match.result = {
+          winner: east.injured ? "west" : "east",
+          kimarite: "fusen", // Special kimarite for default win
+          points: 1,
+          intensity: 0,
+          outcome: "victory"
+        } as any;
         continue;
       }
 

@@ -24,6 +24,10 @@ import {
 } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 
+// Re-exports for UI consumption
+export * from "./TrainingConstants";
+export * from "./TrainingNarrative";
+
 
 /**
  * Factory for default state.
@@ -138,8 +142,13 @@ export function applyWeeklyTraining(world: WorldState): void {
 /**
  * Compatibility object for any legacy callers using TrainingService.*
  */
+import * as Constants from "./TrainingConstants";
+import * as Narrative from "./TrainingNarrative";
+
 export const TrainingService = {
   ensureHeyaTrainingState,
   applyWeeklyTraining,
-  createDefaultTrainingState
+  createDefaultTrainingState,
+  ...Constants,
+  ...Narrative
 };

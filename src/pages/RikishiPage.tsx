@@ -6,7 +6,7 @@
  * Architecturally decomposed to use RosterList for list views.
  */
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -35,6 +35,18 @@ import {
   Target,
   Award as AwardIcon
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  BarChart,
+  Bar
+} from "recharts";
 import { cn } from "@/lib/utils";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { HQ_TABS } from "@/constants/navigation";
@@ -42,6 +54,7 @@ import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { rngFromSeed } from "@/engine/rng";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -84,6 +97,43 @@ export default function RikishiPage() {
   const isOwned = rikishi.heyaId === playerHeyaId;
   const history = rikishi.careerHistory;
   const milestones = rikishi.milestones;
+
+  // Prepare career progression data for chart
+  const careerProgressionData = useMemo(() => {
+    if (!history || history.length === 0) return [];
+    
+    // Rank hierarchy for numerical conversion
+    const rankOrder: Record<string, number> = {
+      'yokozuna': 100,
+      'ozeki': 90,
+      'sekiwake': 80,
+      'komusubi': 70,
+      'maegashira': 60,
+      'juryo': 40,
+      'makushita': 30,
+      'sandanme': 20,
+      'jonidan': 10,
+      'jonokuchi': 5,
+    };
+    
+    return history.slice().reverse().map((snap: any, index: number) => ({
+      basho: `${snap.bashoName} ${snap.year}`,
+      rankValue: (rankOrder[snap.rank] || 0) + (snap.rankNumber || 0),
+      wins: snap.wins,
+      losses: snap.losses,
+      winRate: snap.wins + snap.losses > 0 ? Math.round((snap.wins / (snap.wins + snap.losses)) * 100) : 0,
+    }));
+  }, [history]);
+
+  // Prepare kimarite distribution data for chart
+  const kimariteDistributionData = useMemo(() => {
+    if (!rikishi.favoredKimariteDetailed || rikishi.favoredKimariteDetailed.length === 0) return [];
+    
+    return rikishi.favoredKimariteDetailed.slice(0, 8).map((k: any) => ({
+      kimarite: k.kimarite,
+      percentage: k.percentage,
+    })).sort((a: any, b: any) => b.percentage - a.percentage);
+  }, [rikishi.favoredKimariteDetailed]);
 
   return (
     <AppLayout pageTitle="Rikishi Profile" subNavTabs={HQ_TABS} activeSubTab="roster">
@@ -214,7 +264,7 @@ export default function RikishiPage() {
                                { label: "Resilience", key: "stamina", val: rikishi.perceivedStats.stamina, raw: rawRikishi.stats?.stamina ?? 50, color: "bg-success", icon: <Shield className="h-3.5 w-3.5" /> },
                                { label: "Precision", key: "technique", val: rikishi.perceivedStats.technique, raw: rawRikishi.stats?.technique ?? 50, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" /> }
                              ].map((stat, i) => (
-                               <TooltipWrap key={i} content={NarrativeService.describeAttribute(stat.key, stat.raw)} side="top">
+                               <TooltipWrap key={i} content={NarrativeService.describeAttribute(rngFromSeed(world.seed, "ui", "rikishi-dossier"), stat.key, stat.raw)} side="top">
                                  <div className="bg-muted/30 p-4 rounded-lg border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
                                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
                                        {stat.icon} {stat.label}
@@ -280,8 +330,54 @@ export default function RikishiPage() {
                           </div>
                         </div>
                         {rikishi.favoredKimariteDetailed.length > 0 && (
-                          <div className="pt-2 space-y-2">
+                          <div className="pt-2 space-y-4">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Signature Techniques</p>
+                            
+                            {/* Kimarite Distribution Chart */}
+                            {kimariteDistributionData.length > 0 && (
+                              <div className="h-[200px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <BarChart data={kimariteDistributionData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
+                                    <XAxis 
+                                      type="number"
+                                      tick={{ fontSize: 10, fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                      axisLine={false}
+                                      tickLine={false}
+                                      domain={[0, 100]}
+                                      unit="%"
+                                    />
+                                    <YAxis 
+                                      type="category"
+                                      dataKey="kimarite"
+                                      tick={{ fontSize: 10, fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                      axisLine={false}
+                                      tickLine={false}
+                                      width={80}
+                                    />
+                                    <Tooltip 
+                                      contentStyle={{ 
+                                        backgroundColor: "hsl(var(--card))", 
+                                        borderColor: "hsl(var(--border))",
+                                        fontSize: "11px",
+                                        fontFamily: 'Spectral',
+                                        borderRadius: "8px",
+                                        boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+                                      }}
+                                      labelStyle={{ fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                      formatter={(value: number) => `${value}%`}
+                                    />
+                                    <Bar 
+                                      dataKey="percentage" 
+                                      fill="hsl(var(--primary))" 
+                                      radius={[0, 4, 4, 0]}
+                                    />
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              </div>
+                            )}
+                            
+                            {/* Badge fallback for quick reference */}
                             <div className="flex flex-wrap gap-2">
                               {rikishi.favoredKimariteDetailed.slice(0, 5).map((k, i) => (
                                 <TooltipWrap key={i} content={`${k.percentage}% of wins`} side="top">
@@ -361,6 +457,86 @@ export default function RikishiPage() {
                 </TabsContent>
 
                 <TabsContent value="history" className="space-y-8 animate-in fade-in slide-in-from-right-2 duration-300">
+                  {/* Career Progression Chart */}
+                  {careerProgressionData.length > 0 && (
+                    <Card className="paper">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                          <TrendingUp className="h-5 w-5 text-primary" />
+                          Career Progression
+                        </CardTitle>
+                        <CardDescription className="text-xs uppercase font-black tracking-widest opacity-50">
+                          Rank trajectory and win rate over time
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={careerProgressionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                              <XAxis 
+                                dataKey="basho" 
+                                tick={{ fontSize: 10, fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                axisLine={false}
+                                tickLine={false}
+                                interval="preserveStartEnd"
+                              />
+                              <YAxis 
+                                yAxisId="rank"
+                                orientation="left"
+                                tick={{ fontSize: 10, fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                axisLine={false}
+                                tickLine={false}
+                                reversed
+                              />
+                              <YAxis 
+                                yAxisId="winRate"
+                                orientation="right"
+                                tick={{ fontSize: 10, fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                                axisLine={false}
+                                tickLine={false}
+                                domain={[0, 100]}
+                                unit="%"
+                              />
+                              <Tooltip 
+                                contentStyle={{ 
+                                  backgroundColor: "hsl(var(--card))", 
+                                  borderColor: "hsl(var(--border))",
+                                  fontSize: "12px",
+                                  fontFamily: 'Spectral',
+                                  borderRadius: "8px",
+                                  boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+                                }}
+                                labelStyle={{ fontWeight: 600, fontFamily: 'JetBrains Mono' }}
+                              />
+                              <Legend verticalAlign="top" height={36} iconType="circle" />
+                              <Line 
+                                yAxisId="rank"
+                                type="monotone" 
+                                dataKey="rankValue" 
+                                stroke="hsl(var(--primary))" 
+                                strokeWidth={2}
+                                dot={{ r: 4, fill: "hsl(var(--primary))" }}
+                                activeDot={{ r: 6, fill: "hsl(var(--primary))" }}
+                                name="Rank Value"
+                              />
+                              <Line 
+                                yAxisId="winRate"
+                                type="monotone" 
+                                dataKey="winRate" 
+                                stroke="hsl(var(--success))" 
+                                strokeWidth={2}
+                                dot={{ r: 4, fill: "hsl(var(--success))" }}
+                                activeDot={{ r: 6, fill: "hsl(var(--success))" }}
+                                name="Win Rate %"
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   <Card className="paper border-0 shadow-none bg-transparent overflow-hidden">
                     <CardHeader className="px-0 pb-6 border-b border-dashed border-border mb-6">
                       <CardTitle className="text-2xl font-display font-black flex items-center gap-3 uppercase tracking-tight">

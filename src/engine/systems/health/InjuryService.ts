@@ -8,15 +8,18 @@ import { Rikishi } from "../../types/rikishi";
 import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
 import { clamp, clampInt } from "../../utils/math";
 import { seededPick } from "../../utils/random";
-import { 
-  InjurySeverity, 
-  InjuryBodyArea, 
-  InjuryType, 
+import { EventBus } from "../../events";
+import {
+  InjurySeverity,
+  InjuryBodyArea,
+  InjuryType,
   getBaseWeeksOut,
   BODY_AREA_LABELS,
   INJURY_TYPE_LABELS
 } from "./BodyDefinitions";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 
 /**
  * Calculates a weekly injury chance for a rikishi.
@@ -148,18 +151,20 @@ export function tickWeekRecovery(world: WorldState): void {
 
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
+ * Returns StateImpact describing injury updates instead of mutating state directly.
  */
 export function onBoutResolvedInjury(
   world: WorldState,
   ctx: { match: any; result: any; east: any; west: any }
-): void {
+): StateImpact {
   const { result, east, west } = ctx;
-  if (!result) return;
+  const builder = createImpactBuilder('onBoutResolvedInjury');
 
+  if (!result) return builder.build();
 
   // Only applies to makuuchi/juryo bouts with high-intensity outcomes
   const loser = result.winner === "east" ? west : east;
-  if (!loser || loser.injured) return;
+  if (!loser || loser.injured) return builder.build();
 
   // Bout-induced injury probability based on kimarite violence
   const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
@@ -170,25 +175,35 @@ export function onBoutResolvedInjury(
   const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {
-    loser.injured = true;
-    loser.injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
-      (loser as any).currentInjury = {
-        id: rngSeed.uuid('IJ'),
-        severity: "minor",
-        area: "other",
-        type: "inflammation",
-        weeksOut: loser.injuryWeeksRemaining,
-        weekOccurred: world.week ?? 0,
-      };
-      EventBus.lifecycleEvent(world, {
-        rikishiId: loser.id,
-        heyaId: loser.heyaId,
-        shikona: loser.shikona || loser.name,
+    const injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
+
+    builder.updateRikishi(loser.id, {
+      injured: true,
+      injuryWeeksRemaining
+    });
+
+    builder.updateRikishiNestedField(loser.id, 'currentInjury', {
+      id: rngSeed.uuid('IJ'),
+      severity: "minor",
+      area: "other",
+      type: "inflammation",
+      weeksOut: injuryWeeksRemaining,
+      weekOccurred: world.week ?? 0,
+    });
+
+    builder.logEvent(
+      'LIFECYCLE_EVENT',
+      'injury',
+      {
         status: "injury_bout",
         reason: "Bout impact",
-        score: loser.injuryWeeksRemaining
-      });
+        score: injuryWeeksRemaining
+      },
+      { rikishiId: loser.id, heyaId: loser.heyaId }
+    );
   }
+
+  return builder.build();
 }
 
 /**

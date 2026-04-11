@@ -1,10 +1,10 @@
 /**
  * File Name: src/engine/rivalries.ts
  * Status: REFACTORED / SERVICE-ORIENTED
- * 
+ *
  * This is now a barrel file that orchestrates the Rivalry system.
  * Delegated to specialized sub-services in src/engine/systems/narrative/.
- * 
+ *
  * Goal: No monoliths, high-fidelity modularity.
  */
 
@@ -12,6 +12,7 @@ import { RivalryService } from "./systems/narrative/RivalryService";
 import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { RivalriesState, RivalryPairState, RivalryKey } from "./systems/narrative/RivalryConstants";
+import type { StateImpact } from "./core/StateImpact";
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/narrative/RivalryConstants";
@@ -50,11 +51,12 @@ export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): vo
 
 /**
  * Handle bout resolution for rivalries (Legacy wrapper).
+ * Returns StateImpact describing rivalry updates.
  */
-export function onBoutResolvedRivalries(world: WorldState, context: any): void {
-  RivalryService.onBoutResolved(world, { 
-    result: context.result, 
-    day: context.match?.day 
+export function onBoutResolvedRivalries(world: WorldState, context: any): StateImpact {
+  return RivalryService.onBoutResolved(world, {
+    result: context.result,
+    day: context.match?.day
   });
 }
 

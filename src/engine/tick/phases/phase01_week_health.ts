@@ -2,14 +2,15 @@
  * phase01_week_health.ts
  * ======================
  * Pipeline Phase: Weekly Health Checks.
- * 
+ *
  * Responsibilities:
  * 1. Roll for new injuries for all active rikishi.
  * 2. Advance recovery for already injured rikishi.
  */
 
 import type { WorldState } from "../../types/world";
-import { 
+import type { Rikishi } from "../../types/rikishi";
+import {
   rollWeeklyInjury,
 } from "../../systems/health/InjuryService";
 //@ts-ignore
@@ -20,62 +21,19 @@ import { EventBus } from "../../events";
 
 export function phase01_week_health(world: WorldState): WorldState {
   const nextRikishi = new Map(world.rikishi);
-  
-  // Collect events to fire after loop (avoid mutation during iteration)
+
   const events: any[] = [];
-  
+
   for (const [id, rikishi] of world.rikishi) {
     if (rikishi.isRetired) continue;
 
     const r = { ...rikishi };
     let changed = false;
 
-    // 1. Recovery Logic
     if (r.injured) {
-      const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
-      const recovered = tickRikishiRecovery(r, staffBonuses.medical);
-      changed = true;
-
-      if (recovered) {
-        events.push({
-          type: 'lifecycleEvent',
-          rikishiId: r.id,
-          heyaId: r.heyaId,
-          shikona: r.shikona || r.name,
-          status: "recovery"
-        });
-      }
-    }
-
-    // 2. Injury Logic (only if not already recovering this week)
-    if (!r.injured) {
-      const seededRng = RNGRegistry.getSystemRNG(world, "health", `tick::${r.id}::${world.week}`);
-      const fatigue = (r as any).fatigue ?? 0;
-      const result = rollWeeklyInjury({ rng: seededRng, rikishi: r, fatigue });
-
-      if (result) {
-        r.injured = true;
-        r.injuryWeeksRemaining = result.weeksOut;
-        (r as any).currentInjury = {
-          id: seededRng.uuid('IJ'),
-          severity: result.severity,
-          area: result.area,
-          type: result.type,
-          weeksOut: result.weeksOut,
-          weekOccurred: world.week ?? 0,
-        };
-        changed = true;
-
-        events.push({
-          type: 'lifecycleEvent',
-          rikishiId: r.id,
-          heyaId: r.heyaId,
-          shikona: r.shikona || r.name,
-          status: "injury",
-          reason: result.area,
-          score: result.weeksOut
-        });
-      }
+      changed = processRecovery(world, r, events);
+    } else {
+      changed = processInjuryRoll(world, r, events);
     }
 
     if (changed) {
@@ -83,12 +41,11 @@ export function phase01_week_health(world: WorldState): WorldState {
     }
   }
 
-  // Fire all events after loop (on new world state)
   let nextWorld = {
     ...world,
-    rikishi: nextRikishi
+    rikishi: nextRikishi,
   };
-  
+
   for (const event of events) {
     EventBus.lifecycleEvent(nextWorld, {
       rikishiId: event.rikishiId,
@@ -96,9 +53,61 @@ export function phase01_week_health(world: WorldState): WorldState {
       shikona: event.shikona,
       status: event.status,
       reason: event.reason,
-      score: event.score
+      score: event.score,
     });
   }
 
   return nextWorld;
+}
+
+// --- Helper Functions ---
+
+function processRecovery(world: WorldState, r: Rikishi, events: any[]): boolean {
+  const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
+  const recovered = tickRikishiRecovery(r, staffBonuses.medical);
+
+  if (recovered) {
+    events.push({
+      type: 'lifecycleEvent',
+      rikishiId: r.id,
+      heyaId: r.heyaId,
+      shikona: r.shikona || r.name,
+      status: "recovery",
+    });
+  }
+
+  return true;
+}
+
+function processInjuryRoll(world: WorldState, r: Rikishi, events: any[]): boolean {
+  const seededRng = RNGRegistry.getSystemRNG(world, "health", `tick::${r.id}::${world.week}`);
+  const fatigue = (r as any).fatigue ?? 0;
+  const result = rollWeeklyInjury({ rng: seededRng, rikishi: r, fatigue });
+
+  if (result) {
+    r.injured = true;
+    r.injuryWeeksRemaining = result.weeksOut;
+    (r as any).currentInjury = {
+      id: seededRng.uuid('IJ'),
+      severity: result.severity,
+      area: result.area,
+      type: result.type,
+      weeksOut: result.weeksOut,
+      weekOccurred: world.week ?? 0,
+    };
+
+    events.push({
+      type: 'lifecycleEvent',
+      rikishiId: r.id,
+      heyaId: r.heyaId,
+      shikona: r.shikona || r.name,
+      status: "injury",
+      reason: result.area,
+      score: result.weeksOut,
+    });
+
+    return true;
+  }
+
+  return false;
 }

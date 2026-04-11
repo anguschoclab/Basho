@@ -24,71 +24,41 @@ import {
 import { TrainingService } from "../../systems/training/TrainingService";
 import { EventBus } from "../../events";
 import { enforceHardCapRosterOverflow } from "../../overflow";
+import { getMediaStrategy } from "../../npcMediaStrategy";
 
 export function phase01_week_npc_ai(world: WorldState): WorldState {
-  // Authorization: trainingState is now a Map per RC stabilization plan.
   const nextTrainingStates = new Map(world.trainingState || []);
   const nextOyakata = new Map(world.oyakata);
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
   const playerHeyaId = world.playerHeyaId;
 
-  // Collect events to fire after loop (avoid mutation during iteration)
   const events: any[] = [];
 
   for (const heya of getAvailableStables(world)) {
     if (heya.id === playerHeyaId) continue;
 
-    // 1. Context & Perception
     const perception = buildPerceptionSnapshot(world, heya.id);
-    
-    // 2. Memory Consolidation (Purely updating oyakata memory)
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
+    
     if (oyakata) {
       const nextOya = { ...oyakata };
       consolidateOyakataMemoryPure(world, nextOya, perception);
       
-      // 3. Decision Logic
       const decision = makeNPCWeeklyDecision(world, heya.id);
-
-      // 4. Apply Decisions Purely
       applyNPCDecisionPure(world, nextTrainingStates, decision);
 
-      const oldMood = nextOya.mood ?? "content";
-      const newMood = decision.mood;
-      if (newMood) nextOya.mood = newMood;
-
-      if (oldMood !== newMood) {
-        events.push({
-          type: 'oyakataMoodShift',
-          heyaId: heya.id,
-          oldMood,
-          newMood
-        });
-      }
-
+      processOyakataMood(nextOya, decision, heya.id, events);
       scoutingMap[heya.id] = decision.scoutingPriority;
+      collectManagementDecisionEvents(heya.id, decision, events);
+      collectStrategyShiftEvents(heya.id, decision, events);
 
-      events.push({
-        type: 'managementDecision',
-        heyaId: heya.id,
-        ctx: {
-          archetype: decision.archetype,
-          intensity: decision.trainingIntensity,
-          focus: decision.trainingFocus,
-          recovery: decision.recovery,
-          scouting: decision.scoutingPriority,
-          protectedCount: decision.individualProtects.length,
-          reasoningLog: decision.reasoning.join(" | ")
-        },
-        importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor"
-      });
-
-      if (decision.trainingIntensity === "punishing") {
-        events.push({
-          type: 'strategyShift',
-          heyaId: heya.id,
-          ctx: { intensity: "punishing", reasoning: decision.reasoning[0] }
-        });
+      // Handle media events for NPCs
+      if (world.governanceLog) {
+        const mediaEvents = world.governanceLog.filter(r => r.heyaId === heya.id && !r.playerChoice);
+        const mediaStrat = getMediaStrategy(oyakata.archetype);
+        for (const event of mediaEvents) {
+          mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id);
+        }
       }
 
       nextOyakata.set(nextOya.id, nextOya);
@@ -99,25 +69,69 @@ export function phase01_week_npc_ai(world: WorldState): WorldState {
     ...world,
     trainingState: nextTrainingStates as any,
     oyakata: nextOyakata,
-    npcScoutingPriorities: scoutingMap
+    npcScoutingPriorities: scoutingMap,
   };
 
-  // Fire all events after loop (on new world state)
-  for (const event of events) {
-    if (event.type === 'oyakataMoodShift') {
-      EventBus.oyakataMoodShift(nextWorld, event.heyaId, { oldMood: event.oldMood, newMood: event.newMood });
-    } else if (event.type === 'managementDecision') {
-      EventBus.managementDecision(nextWorld, event.heyaId, event.ctx, event.importance);
-    } else if (event.type === 'strategyShift') {
-      EventBus.strategyShift(nextWorld, event.heyaId, event.ctx);
-    }
-  }
-
-  // 5. Finalize Roster Integrity
-  // Note: hard cap overflow might mutate, but we'll assume it handles maps correctly or we'll wrap it
+  fireNPCEvents(nextWorld, events);
   enforceHardCapRosterOverflow(nextWorld);
 
   return nextWorld;
+}
+
+// --- Helper Functions ---
+
+function processOyakataMood(oyakata: any, decision: any, heyaId: Id, events: any[]): void {
+  const oldMood = oyakata.mood ?? "content";
+  const newMood = decision.mood;
+  if (newMood) oyakata.mood = newMood;
+
+  if (oldMood !== newMood) {
+    events.push({
+      type: 'oyakataMoodShift',
+      heyaId,
+      oldMood,
+      newMood,
+    });
+  }
+}
+
+function collectManagementDecisionEvents(heyaId: Id, decision: any, events: any[]): void {
+  events.push({
+    type: 'managementDecision',
+    heyaId,
+    ctx: {
+      archetype: decision.archetype,
+      intensity: decision.trainingIntensity,
+      focus: decision.trainingFocus,
+      recovery: decision.recovery,
+      scouting: decision.scoutingPriority,
+      protectedCount: decision.individualProtects.length,
+      reasoningLog: decision.reasoning.join(" | "),
+    },
+    importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor",
+  });
+}
+
+function collectStrategyShiftEvents(heyaId: Id, decision: any, events: any[]): void {
+  if (decision.trainingIntensity === "punishing") {
+    events.push({
+      type: 'strategyShift',
+      heyaId,
+      ctx: { intensity: "punishing", reasoning: decision.reasoning[0] },
+    });
+  }
+}
+
+function fireNPCEvents(world: WorldState, events: any[]): void {
+  for (const event of events) {
+    if (event.type === 'oyakataMoodShift') {
+      EventBus.oyakataMoodShift(world, event.heyaId, { oldMood: event.oldMood, newMood: event.newMood });
+    } else if (event.type === 'managementDecision') {
+      EventBus.managementDecision(world, event.heyaId, event.ctx, event.importance);
+    } else if (event.type === 'strategyShift') {
+      EventBus.strategyShift(world, event.heyaId, event.ctx);
+    }
+  }
 }
 
 function consolidateOyakataMemoryPure(world: WorldState, oyakata: any, perception: any): void {

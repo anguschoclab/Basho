@@ -4,6 +4,7 @@ import type { WorldState } from '../../types/world';
 import type { Heya } from '../../types/heya';
 import { mockRikishi } from '../../__tests__/utils';
 import { clearQueryCaches } from '../../queries';
+import { resolveImpacts } from '../../core/ImpactResolver';
 
 describe('Prestige System', () => {
   let world: WorldState;
@@ -108,8 +109,9 @@ describe('Prestige System', () => {
     it('does nothing if there is no basho history', () => {
       world.history = [];
       const initialBand = heya.prestigeBand;
-      runPrestigeDecay(world);
-      expect(heya.prestigeBand).toBe(initialBand);
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      expect(resolvedWorld.heyas.get(heya.id)!.prestigeBand).toBe(initialBand);
     });
 
     it('increases prestige for yusho', () => {
@@ -129,9 +131,11 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
-      expect(heya.prestigeBand).toBe('elite'); // Shift +2: modest(2) -> elite(4)
-      expect(heya.reputation).toBe(60); // 50 + 10
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
+      expect(resolvedHeya.prestigeBand).toBe('elite'); // Shift +2: modest(2) -> elite(4)
+      expect(resolvedHeya.reputation).toBe(60); // 50 + 10
     });
 
     it('increases prestige for jun-yusho', () => {
@@ -151,7 +155,6 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
       // Small roster < 5 penalty applies (-1). Junyusho gives (+1). Net shift: 0
       // Let's add 4 more so small roster penalty doesn't apply
       for(let i=2; i<=5; i++) {
@@ -160,11 +163,14 @@ describe('Prestige System', () => {
         heya.rikishiIds.push(r.id);
       }
       heya.prestigeBand = 'struggling'; // Reset
-      runPrestigeDecay(world);
+
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
 
       // Shift +1: struggling(1) -> modest(2)
       // total bouts = 15 + 4*15 = 75. win rate = 46/75 > 0.55
-      expect(heya.prestigeBand).toBe('modest');
+      expect(resolvedHeya.prestigeBand).toBe('modest');
     });
 
     it('decreases prestige for terrible basho (<0.3 win rate)', () => {
@@ -186,11 +192,14 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
+
       // Win rate: 15 / 75 = 0.2
       // Penalty: < 0.4 (-1), < 0.3 (-1) => -2
-      expect(heya.prestigeBand).toBe('struggling'); // respected(3) -> struggling(1)
-      expect(heya.reputation).toBe(40); // 50 - 10
+      expect(resolvedHeya.prestigeBand).toBe('struggling'); // respected(3) -> struggling(1)
+      expect(resolvedHeya.reputation).toBe(40); // 50 - 10
     });
 
     it('erodes elite prestige for average performance without titles', () => {
@@ -213,10 +222,13 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
+
       // Win rate: 35 / 75 = 0.46
       // < 0.55 (-1) for elite without yusho/jun-yusho
-      expect(heya.prestigeBand).toBe('respected');
+      expect(resolvedHeya.prestigeBand).toBe('respected');
     });
 
     it('severely erodes elite prestige if no sekitori', () => {
@@ -239,10 +251,13 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
+
       // Win rate: 40 / 75 = 0.53
       // Elite penalty: no sekitori (-1), winRate < 0.55 (-1) -> net -2
-      expect(heya.prestigeBand).toBe('modest');
+      expect(resolvedHeya.prestigeBand).toBe('modest');
     });
 
     it('penalizes small rosters', () => {
@@ -265,9 +280,12 @@ describe('Prestige System', () => {
         bouts: []
       } as any];
 
-      runPrestigeDecay(world);
+      const impact = runPrestigeDecay(world);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      const resolvedHeya = resolvedWorld.heyas.get(heya.id)!;
+
       // Small roster < 5 penalty (-1)
-      expect(heya.prestigeBand).toBe('modest');
+      expect(resolvedHeya.prestigeBand).toBe('modest');
     });
   });
 });

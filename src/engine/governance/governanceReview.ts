@@ -21,6 +21,9 @@ import { onRikishiRetired } from "../records";
 import { recordOyakataHandover } from "../lineage";
 import { rngForWorld, rngFromSeed } from "../rng";
 import { BardEngine } from "../narrative/BardEngine";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import { resolveImpacts } from "../core/ImpactResolver";
+import type { StateImpact } from "../core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
@@ -31,27 +34,43 @@ import {
 /**
  * Post-basho governance: institutional sanctions, council reactions,
  * loans/benefactors escalation, succession checks, merger/closure pressure.
+ * Returns StateImpact describing governance changes instead of mutating state.
+ * Note: External function calls (executeMerger, issueBailoutLoanIfNeeded, etc.) 
+ * still mutate directly and will be migrated in Phase 4.
  */
-export function runGovernanceReview(world: WorldState): void {
+export function runGovernanceReview(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('governanceReview');
+
   for (const heya of stableSort(world.heyas.values(), x => x.id)) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
     // === Financial insolvency check ===
     if (heya.funds < 0 && heya.runwayBand === "desperate") {
-      heya.riskIndicators.financial = true;
+      // Queue heya update for riskIndicators
+      builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: true } });
+      
       governance.reportScandal(world, heya.id, "minor", "Financial insolvency at basho end");
 
-      EventBus.governanceRuling(world, heya.id, { 
-        incident: "financial_insolvency",
-        reason: "Stable funds below zero at basho end.", 
-        money: heya.funds, 
-        status: heya.runwayBand 
-      }, "headline");
+      // Queue event instead of calling EventBus directly
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'narrative',
+        { 
+          incident: "financial_insolvency",
+          reason: "Stable funds below zero at basho end.", 
+          money: heya.funds, 
+          status: heya.runwayBand 
+        },
+        { heyaId: heya.id, importance: 'headline' }
+      );
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
       if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
-        issueBailoutLoanIfNeeded(world, heya.id);
+        // Now returns StateImpact - resolve immediately
+        const loanImpact = issueBailoutLoanIfNeeded(world, heya.id);
+        const resolvedWorld = resolveImpacts(world, [loanImpact]);
+        Object.assign(world, resolvedWorld);
       }
 
       // v1.7 Faction Solidarity (Traditional Bailouts)
@@ -62,80 +81,112 @@ export function runGovernanceReview(world: WorldState): void {
          
          if (benefactor) {
             const giftAmount = FACTION_BAILOUT_AMOUNT;
-            benefactor.funds -= giftAmount;
-            heya.funds += giftAmount;
+            // Queue heya updates for funds transfer
+            builder.updateHeya(benefactor.id, { funds: benefactor.funds - giftAmount });
+            builder.updateHeya(heya.id, { funds: heya.funds + giftAmount });
 
             const bailoutRng = rngFromSeed(`bailout-${heya.id}-${world.week}`, "narrative", "event");
-            EventBus.governanceRuling(world, heya.id, {
-               incident: "ichimon_bailout",
-               heyaname: heya.name,
-               heya: heya.name,
-               rival: benefactor.name, // benefactor stable
-               money: giftAmount,
-               heyaId: benefactor.id
-            }, "major");
+            builder.logEvent(
+              'GOVERNANCE_RULING',
+              'narrative',
+              {
+                 incident: "ichimon_bailout",
+                 heyaname: heya.name,
+                 heya: heya.name,
+                 rival: benefactor.name,
+                 money: giftAmount,
+                 heyaId: benefactor.id
+              },
+              { heyaId: heya.id, importance: 'major' }
+            );
          }
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
       if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
-          EventBus.governanceRuling(world, heya.id, {
-            incident: "insolvency_merger",
-            reason: "extreme_debt",
-            money: heya.funds
-          }, "headline");
+          builder.logEvent(
+            'GOVERNANCE_RULING',
+            'narrative',
+            {
+              incident: "insolvency_merger",
+              reason: "extreme_debt",
+              money: heya.funds
+            },
+            { heyaId: heya.id, importance: 'headline' }
+          );
+          // Still call directly - will migrate in Phase 4
           executeMerger(world, heya.id, targetId, "financial_insolvency");
         }
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
-      // Clear financial risk indicator when no longer desperate
-      heya.riskIndicators.financial = false;
+      // Queue heya update to clear financial risk indicator
+      builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
     }
 
     // === Welfare review escalation ===
     if (welfareState && welfareState.complianceState === "sanctioned") {
       const reviewRng = rngFromSeed(`welfare-review-${heya.id}-${world.week}`, "narrative", "event");
-      EventBus.welfareCompliance(world, heya.id, {
-        status: "post_basho_sanction_review",
-        heyaname: heya.name,
-        risk: welfareState.welfareRisk
-      });
-
+      builder.logEvent(
+        'WELFARE_COMPLIANCE',
+        'welfare',
+        {
+          status: "post_basho_sanction_review",
+          heyaname: heya.name,
+          risk: welfareState.welfareRisk
+        },
+        { heyaId: heya.id }
+      );
 
       // Sanctioned stables face additional prestige erosion
       const currentIdx = bandIndex(heya.prestigeBand);
       if (currentIdx > 0) {
         const newBand = PRESTIGE_ORDER[currentIdx - 1];
-        heya.prestigeBand = newBand;
+        // Queue heya update for prestigeBand
+        builder.updateHeya(heya.id, { prestigeBand: newBand });
+        
         const shiftRng = rngFromSeed(`prestige-shift-${heya.id}-${world.week}`, "narrative", "event");
-        EventBus.governanceRuling(world, heya.id, {
-          incident: "prestige_erosion",
-          status: newBand,
-          reason: "sanctions_active"
-        }, "notable");
+        builder.logEvent(
+          'GOVERNANCE_RULING',
+          'narrative',
+          {
+            incident: "prestige_erosion",
+            status: newBand,
+            reason: "sanctions_active"
+          },
+          { heyaId: heya.id, importance: 'notable' }
+        );
       }
     }
 
     // === Council scandal reaction ===
     if (scandalScore >= 40) {
       const councilRng = rngFromSeed(`council-review-${heya.id}-${world.week}`, "narrative", "event");
-      EventBus.governanceRuling(world, heya.id, {
-        incident: "council_scandal_review",
-        score: Math.floor(scandalScore)
-      }, scandalScore >= 60 ? "major" : "notable");
-
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'narrative',
+        {
+          incident: "council_scandal_review",
+          score: Math.floor(scandalScore)
+        },
+        { heyaId: heya.id, importance: scandalScore >= 60 ? 'major' : 'notable' }
+      );
     }
 
     // === Merger/closure pressure for extremely small stables ===
     const rosterSize = getStableRikishi(world, heya.id).length;
     if (rosterSize < 3) {
       if (heya.id !== world.playerHeyaId) {
-        EventBus.governanceRuling(world, heya.id, { 
-          incident: "low_roster_warning",
-          reason: "roster_critically_low", 
-          score: rosterSize 
-        }, "major");
+        builder.logEvent(
+          'GOVERNANCE_RULING',
+          'narrative',
+          { 
+            incident: "low_roster_warning",
+            reason: "roster_critically_low", 
+            score: rosterSize 
+          },
+          { heyaId: heya.id, importance: 'major' }
+        );
 
         // NEW: Generate Media Headline (Phase 3.4 SSOT)
         generateGovernanceHeadline({
@@ -147,55 +198,79 @@ export function runGovernanceReview(world: WorldState): void {
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
         if (rosterSize <= 1) {
-          EventBus.governanceRuling(world, heya.id, { 
-            incident: "merger_imminent",
-            reason: "recruitment_crisis", 
-            score: rosterSize 
-          }, "headline");
-
+          builder.logEvent(
+            'GOVERNANCE_RULING',
+            'narrative',
+            { 
+              incident: "merger_imminent",
+              reason: "recruitment_crisis", 
+              score: rosterSize 
+            },
+            { heyaId: heya.id, importance: 'headline' }
+          );
 
           // Execute actual merger
           const targetId = findMergerTarget(world, heya.id);
           if (targetId) {
-             executeMerger(world, heya.id, targetId, "critically_low_roster");
+            // Execute merger - now returns StateImpact
+            const mergerImpact = executeMerger(world, heya.id, targetId, "critically_low_roster");
+            // Resolve merger impact immediately since it affects the same world state
+            const resolvedWorld = resolveImpacts(world, [mergerImpact]);
+            Object.assign(world, resolvedWorld);
           }
         }
       } else {
         // Player stable — warn but don't force closure
-        EventBus.governanceRuling(world, heya.id, {
-          incident: "player_roster_warning",
-          reason: "player_low_roster",
-          score: rosterSize
-        }, "major");
+        builder.logEvent(
+          'GOVERNANCE_RULING',
+          'narrative',
+          {
+            incident: "player_roster_warning",
+            reason: "player_low_roster",
+            score: rosterSize
+          },
+          { heyaId: heya.id, importance: 'major' }
+        );
       }
     }
 
     // === Succession check — aging oyakata ===
     const oyakata = world.oyakata.get(heya.oyakataId);
     if (oyakata && oyakata.age >= 63) {
-      EventBus.governanceRuling(world, heya.id, { 
-        shikona: oyakata.name, 
-        threshold: oyakata.age,
-        incident: "oyakata_retirement_warning",
-        reason: oyakata.age >= 65 ? "mandatory_retirement" : "approaching_retirement"
-      }, oyakata.age >= 65 ? "major" : "notable");
+      builder.logEvent(
+        'GOVERNANCE_RULING',
+        'narrative',
+        { 
+          shikona: oyakata.name, 
+          threshold: oyakata.age,
+          incident: "oyakata_retirement_warning",
+          reason: oyakata.age >= 65 ? "mandatory_retirement" : "approaching_retirement"
+        },
+        { heyaId: heya.id, importance: oyakata.age >= 65 ? 'major' : 'notable' }
+      );
     }
 
     // === Post-basho scandal score decay reward for clean basho ===
     if (scandalScore > 0 && heya.governanceStatus === "good_standing") {
-      heya.scandalScore = Math.max(0, scandalScore - 2);
+      // Queue heya update for scandalScore
+      builder.updateHeya(heya.id, { scandalScore: Math.max(0, scandalScore - 2) });
     }
   }
+
+  return builder.build();
 }
 
 /**
  * AI Meta Drift recognition delays per A6.1:
  * NPC managers observe public outcomes and can adjust strategy,
  * but only after a recognition delay based on manager profile.
+ * Returns StateImpact with world field update instead of mutating state.
  */
-export function runAIMetaDrift(world: WorldState): void {
+export function runAIMetaDrift(world: WorldState): StateImpact {
   const lastBasho = world.history[world.history.length - 1];
-  if (!lastBasho) return;
+  if (!lastBasho) {
+    return createImpactBuilder('aiMetaDrift').build();
+  }
 
   // Compute basho meta: dominant style this basho
   let oshiWins = 0, yotsuWins = 0;
@@ -209,55 +284,86 @@ export function runAIMetaDrift(world: WorldState): void {
     oshiWins > yotsuWins * 1.3 ? "oshi" : 
     yotsuWins > oshiWins * 1.3 ? "yotsu" : "neutral";
 
-  // Write meta state for NPC AI to consume in future weeks
-  world._postBashoMeta = {
+  const builder = createImpactBuilder('aiMetaDrift');
+
+  // Queue world field update for _postBashoMeta
+  builder.updateWorldField('_postBashoMeta', {
     bashoNumber: lastBasho.bashoNumber,
     metaBias,
     yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
     recognitionEligibleWeek: world.week + 2 // 2-week recognition delay baseline
-  };
+  });
 
   if (metaBias !== "neutral") {
-    EventBus.bashoStatus(world, {
-      status: "meta_shift",
-      incident: metaBias,
-      score: oshiWins,
-      delta: yotsuWins
-    });
+    builder.logEvent(
+      'BASHO_STATUS',
+      'basho',
+      {
+        status: "meta_shift",
+        incident: metaBias,
+        score: oshiWins,
+        delta: yotsuWins
+      }
+    );
   }
+
+  return builder.build();
 }
 
 /**
- * Process retirements and return vacancy counts per heya.
+ * Process retirements and return StateImpact with metadata.
+ * Returns impact containing rikishiToHistorical operations and vacancy count in metadata.
+ * Note: Myoseki market mutations and oyakata creation are still direct and will be migrated in Phase 4.
  */
-export function runRetirements(world: WorldState): Record<string, number> {
+export function runRetirements(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('retirements');
   const vacanciesByHeyaId: Record<string, number> = {};
+  const rikishiToRetire: string[] = [];
 
   for (const r of stableSort(world.rikishi.values(), x => x.id)) {
     const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
-      EventBus.lifecycleEvent(world, {
-        rikishiId: id,
-        heyaId: r.heyaId,
-        shikona: r.shikona ?? r.name ?? id,
-        status: "retirement",
-        reason
-      });
+      builder.logEvent(
+        'LIFECYCLE_EVENT',
+        'career',
+        {
+          rikishiId: id,
+          heyaId: r.heyaId,
+          shikona: r.shikona ?? r.name ?? id,
+          status: "retirement",
+          reason
+        },
+        { heyaId: r.heyaId, rikishiId: id }
+      );
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
+      rikishiToRetire.push(id);
 
       // Constitution 2.3 & 61: Oyakata candidate eligibility
       const age = world.year - r.birthYear;
       const isAccomplished = r.rank === "yokozuna" || r.rank === "ozeki" || r.rank === "sekiwake" || (r.careerWins >= 200);
 
       if (age >= 28 && isAccomplished) {
+        // Still mutate myoseki market directly - will migrate in Phase 4
         if (world.myosekiMarket) {
           const availableStock = Object.values(world.myosekiMarket.stocks).find(s => s.status === "available");
           if (availableStock) {
             // Become an Oyakata
             const rng = rngForWorld(world, "governance", `retirement_${id}`);
             const newOyakataId = rng.uuid('OY');
-            const newOyakata = generateOyakata(newOyakataId, r.heyaId, r.shikona ?? r.name ?? id, age);
+            const newOyakata = generateOyakata(
+              newOyakataId,
+              r.heyaId,
+              r.shikona ?? r.name ?? id,
+              age,
+              undefined,
+              {
+                aggression: r.aggression,
+                experience: r.experience,
+                adaptability: r.adaptability,
+                momentum: r.momentum
+              }
+            );
 
             availableStock.ownerId = newOyakataId;
             availableStock.holderId = newOyakataId;
@@ -277,13 +383,18 @@ export function runRetirements(world: WorldState): Record<string, number> {
 
             world.oyakata.set(newOyakataId, newOyakata);
 
-            EventBus.lifecycleEvent(world, {
-              rikishiId: id,
-              heyaId: r.heyaId,
-              shikona: r.shikona ?? r.name ?? id,
-              status: "elder_stock_acquired",
-              regimen: availableStock.name // myoseki name
-            });
+            builder.logEvent(
+              'LIFECYCLE_EVENT',
+              'career',
+              {
+                rikishiId: id,
+                heyaId: r.heyaId,
+                shikona: r.shikona ?? r.name ?? id,
+                status: "elder_stock_acquired",
+                regimen: availableStock.name // myoseki name
+              },
+              { heyaId: r.heyaId, rikishiId: id }
+            );
 
             recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name);
           }
@@ -291,9 +402,16 @@ export function runRetirements(world: WorldState): Record<string, number> {
       }
 
       onRikishiRetired(world, id);
-      world.historicalRikishi.set(id, r);
     }
   }
 
-  return vacanciesByHeyaId;
+  // Queue collection operation to move rikishi to historical
+  for (const id of rikishiToRetire) {
+    builder.retireRikishi(id);
+  }
+
+  // Add vacancy count to metadata
+  builder.addMetadata('vacanciesByHeyaId', vacanciesByHeyaId);
+
+  return builder.build();
 }

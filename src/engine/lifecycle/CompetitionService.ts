@@ -14,6 +14,8 @@ import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState, BashoResult, MatchSchedule } from "../types/basho";
 import type { Id } from "../types/common";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -48,7 +50,7 @@ function resolvePlayoffs(
         continue;
       }
       const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
-      const result = resolveBout(
+      const { result } = resolveBout(
         { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId },
         east, west, basho, undefined, world
       );
@@ -90,7 +92,8 @@ function calculateStandings(basho: BashoState): { topCandidates: Id[], bestWins:
   return { topCandidates, bestWins, table };
 }
 
-function distributePrizes(world: WorldState, basho: BashoState, yusho: Id) {
+function distributePrizes(world: WorldState, basho: BashoState, yusho: Id): { prizes: any; impact: StateImpact } {
+  const builder = createImpactBuilder('distributePrizes');
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
   const SANSHO_PRIZE_AMOUNT = 2000000;
@@ -105,27 +108,51 @@ function distributePrizes(world: WorldState, basho: BashoState, yusho: Id) {
     if (rikishiId) {
       const r = world.rikishi.get(rikishiId);
       if (r) {
-        if (r.stats?.achievements?.specialPrizes) {
-          const sp = r.stats.achievements.specialPrizes;
-          if (type === 'Shukun') sp.shukunSho++;
-          else if (type === 'Kanto') sp.kantoSho++;
-          else if (type === 'Gino') sp.ginoSho++;
-        }
-        
-        EventBus.awardConferred(world, {
-          rikishiId: r.id,
-          heyaId: r.heyaId,
-          money: SANSHO_PRIZE_AMOUNT,
-          status: "special_prize",
-          regimen: type as string // e.g. 'Shukun'
+        const currentAchievements = r.stats?.achievements || {
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+        };
+        const currentSp = currentAchievements.specialPrizes || { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
+        const updatedSp = { ...currentSp };
+        if (type === 'Shukun') updatedSp.shukunSho++;
+        else if (type === 'Kanto') updatedSp.kantoSho++;
+        else if (type === 'Gino') updatedSp.ginoSho++;
+
+        builder.updateRikishi(rikishiId, {
+          stats: {
+            ...r.stats,
+            achievements: {
+              ...currentAchievements,
+              specialPrizes: updatedSp
+            }
+          }
         });
+
+        builder.logEvent(
+          'AWARD_CONFERRED',
+          'economy',
+          {
+            money: SANSHO_PRIZE_AMOUNT,
+            status: "special_prize",
+            regimen: type as string
+          },
+          { rikishiId: r.id, heyaId: r.heyaId }
+        );
+
         const heya = world.heyas.get(r.heyaId);
-        if (heya) heya.funds += SANSHO_PRIZE_AMOUNT;
+        if (heya) {
+          builder.updateHeya(r.heyaId, {
+            funds: heya.funds + SANSHO_PRIZE_AMOUNT
+          });
+        }
       }
     }
   }
 
-  return prizes;
+  return { prizes, impact: builder.build() };
 }
 
 function recordBashoHistory(
@@ -211,18 +238,19 @@ function recordBashoHistory(
 
 /**
  * Conclude Tournament Competition — handles yusho, prizes, and playoffs.
- * Extracted from world.ts for architectural purity.
+ * Returns StateImpact describing competition conclusion instead of mutating directly.
  *
  * @param world Current WorldState
- * @returns Updated WorldState with BashoResult recorded
+ * @returns StateImpact with BashoResult recorded
  */
-export function concludeBashoCompetition(world: WorldState): WorldState {
+export function concludeBashoCompetition(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('concludeBashoCompetition');
   const basho = world.currentBasho;
-  if (!basho) return world;
+  if (!basho) return builder.build();
 
   const { topCandidates, bestWins } = calculateStandings(basho);
 
-  if (topCandidates.length === 0) return world;
+  if (topCandidates.length === 0) return builder.build();
 
   let yusho = topCandidates[0];
   const playoffMatches: MatchSchedule[] = [];
@@ -233,19 +261,47 @@ export function concludeBashoCompetition(world: WorldState): WorldState {
     playoffMatches.push(...playoffResult.matches);
 
     const champ = world.rikishi.get(yusho);
-    EventBus.bashoStatus(world, {
-      status: "playoff_result",
-      shikona: champ?.shikona ?? yusho,
-      score: topCandidates.length,
-      delta: bestWins
-    });
+    builder.logEvent(
+      'BOUT_RESOLVED',
+      'narrative',
+      {
+        status: "playoff_result",
+        shikona: champ?.shikona ?? yusho,
+        score: topCandidates.length,
+        delta: bestWins
+      },
+      { rikishiId: yusho }
+    );
   }
 
-  const prizes = distributePrizes(world, basho, yusho);
+  const { prizes, impact: prizeImpact } = distributePrizes(world, basho, yusho);
 
+  // Merge prize impact
+  if (prizeImpact.entities?.rikishiUpdates) {
+    for (const [id, update] of prizeImpact.entities.rikishiUpdates) {
+      builder.updateRikishi(id, update);
+    }
+  }
+  if (prizeImpact.entities?.heyaUpdates) {
+    for (const [id, update] of prizeImpact.entities.heyaUpdates) {
+      builder.updateHeya(id, update);
+    }
+  }
+  if (prizeImpact.events) {
+    for (const event of prizeImpact.events) {
+      builder.logEvent(event.type, event.category, event.data, {
+        heyaId: event.heyaId,
+        rikishiId: event.rikishiId,
+        importance: event.importance
+      });
+    }
+  }
+
+  // Record basho history - this needs to be migrated to StateImpact as well
+  // For now, we'll call it directly and let it mutate (will be fixed later)
   recordBashoHistory(world, basho, yusho, topCandidates, playoffMatches, prizes, bestWins);
 
-  return world;
+  return builder.build();
 }
 
 

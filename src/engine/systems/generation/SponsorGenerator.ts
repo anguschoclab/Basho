@@ -111,6 +111,7 @@ export function generateSponsor(rng: SeededRNG, tier: SponsorTier, createdAtTick
     riskAppetite: tier === "T5" ? Math.floor(60 + rng.next() * 40) : Math.floor(20 + rng.next() * 60),
     visibilityPreference: tier === "T5" ? 2 : (Math.floor(rng.next() * 3) as 0 | 1 | 2),
     active: true,
+    satisfaction: 100,
     createdAtTick,
     lastSeenTick: createdAtTick,
     relationships: []

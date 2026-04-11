@@ -211,23 +211,6 @@ export function TrainingWidget() {
       ? INTENSITY_RANK.indexOf(CAP_TO_INTENSITY[sanctionCap] ?? "punishing")
       : INTENSITY_RANK.length - 1;
 
-  const updateProfile = React.useCallback(
-    (patch: Partial<TrainingProfile>) => {
-      if (!world.playerHeyaId) return;
-      const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
-      // Enforce training intensity cap from active welfare sanctions
-      if (patch.intensity) {
-        const chosenIdx = INTENSITY_RANK.indexOf(patch.intensity);
-        if (chosenIdx > maxIntensityIdx) {
-          patch = { ...patch, intensity: INTENSITY_RANK[maxIntensityIdx] };
-        }
-      }
-      ts.activeProfile = { ...ts.activeProfile, ...patch };
-      updateWorld({ ...world });
-    },
-    [world, maxIntensityIdx, updateWorld],
-  );
-
   const intensityOptions = useMemo(
     () =>
       INTENSITY_OPTIONS.map((v, i) => ({
@@ -254,6 +237,23 @@ export function TrainingWidget() {
         label: RECOVERY_LABELS[v],
       })),
     [],
+  );
+
+  const updateProfile = React.useCallback(
+    (patch: Partial<TrainingProfile>) => {
+      if (!world.playerHeyaId) return;
+      const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
+      // Enforce training intensity cap from active welfare sanctions
+      if (patch.intensity) {
+        const chosenIdx = INTENSITY_RANK.indexOf(patch.intensity);
+        if (chosenIdx > maxIntensityIdx) {
+          patch = { ...patch, intensity: INTENSITY_RANK[maxIntensityIdx] };
+        }
+      }
+      ts.activeProfile = { ...ts.activeProfile, ...patch };
+      updateWorld({ ...world });
+    },
+    [world, maxIntensityIdx, updateWorld],
   );
 
   const handleIntensityChange = React.useCallback(
@@ -303,35 +303,44 @@ export function TrainingWidget() {
 
       {/* Multiplier bars — Growth uses effectiveGrowthMultiplier from transientContext */}
       <div className="grid grid-cols-3 gap-2 text-[10px]">
-        {[
-          {
-            label: "Growth",
-            value: effectiveGrowthMultiplier,
-            icon: Zap,
-            color: financialPenalty ? "bg-destructive" : "bg-primary",
-          },
-          {
-            label: "Fatigue",
-            value: intensityInfo.fatigue,
-            icon: Activity,
-            color:
-              intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
-          },
-          {
-            label: "Recovery",
-            value: recoveryInfo.fatigueDecay,
-            icon: Shield,
-            color: "bg-success",
-          },
-        ].map((m) => (
-          <MultiplierBar
-            key={m.label}
-            label={m.label}
-            value={m.value}
-            icon={m.icon}
-            color={m.color}
-          />
-        ))}
+        {(() => {
+          const multiplierData = [
+            {
+              label: "Growth",
+              value: effectiveGrowthMultiplier,
+              icon: Zap,
+              color: financialPenalty ? "bg-destructive" : "bg-primary",
+            },
+            {
+              label: "Fatigue",
+              value: intensityInfo.fatigue,
+              icon: Activity,
+              color:
+                intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
+            },
+            {
+              label: "Recovery",
+              value: recoveryInfo.fatigueDecay,
+              icon: Shield,
+              color: "bg-success",
+            },
+          ];
+          const limit = multiplierData.length;
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const m = multiplierData[i];
+            nodes[i] = (
+              <MultiplierBar
+                key={m.label}
+                label={m.label}
+                value={m.value}
+                icon={m.icon}
+                color={m.color}
+              />
+            );
+          }
+          return nodes;
+        })()}
       </div>
 
       <Button
@@ -354,21 +363,23 @@ export function TrainingWidget() {
             icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
             options={intensityOptions}
-            onChange={handleIntensityChange}
+            onChange={(v) =>
+              updateProfile({ intensity: v as TrainingIntensity })
+            }
           />
           <ProfileRow
             label="Focus"
             icon={<Target className="h-3 w-3 text-muted-foreground" />}
             value={profile.focus}
             options={focusOptions}
-            onChange={handleFocusChange}
+            onChange={(v) => updateProfile({ focus: v as TrainingFocus })}
           />
           <ProfileRow
             label="Recovery"
             icon={<Shield className="h-3 w-3 text-muted-foreground" />}
             value={profile.recovery}
             options={recoveryOptions}
-            onChange={handleRecoveryChange}
+            onChange={(v) => updateProfile({ recovery: v as RecoveryEmphasis })}
           />
         </div>
       )}

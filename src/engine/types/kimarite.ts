@@ -40,6 +40,10 @@ export interface Kimarite {
   leverageTarget?: 'high_center_of_gravity' | 'momentum';
 
   rarity?: "common" | "uncommon" | "rare" | "legendary";
+  
+  name: string;
+  nameJa?: string;
+  description?: string;
 }
 
 /** Type representing kimarite class (for engine grouping). */

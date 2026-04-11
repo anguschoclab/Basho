@@ -51,13 +51,28 @@ const CAT_COLOR: Record<string, string> = {
 };
 
 const NewsEventRow = React.memo(
-  ({ e, isPlayer }: { e: EngineEvent; isPlayer: boolean }) => {
-    let Icon = CAT_ICON[e.category] || Newspaper;
-    let color = CAT_COLOR[e.category] || "text-muted-foreground";
+  ({
+    id,
+    category,
+    title,
+    summary,
+    week,
+    outlet,
+    isPlayer,
+  }: {
+    id: string;
+    category: string;
+    title: string;
+    summary: string;
+    week: number;
+    outlet?: string;
+    isPlayer: boolean;
+  }) => {
+    let Icon = CAT_ICON[category] || Newspaper;
+    let color = CAT_COLOR[category] || "text-muted-foreground";
 
     // Special handling for media outlets
-    if (e.category === "media" && (e.data as any)?.outlet) {
-      const outlet = (e.data as any).outlet;
+    if (category === "media" && outlet) {
       if (outlet === "TABLOID") {
         color = "text-gold font-bold";
       } else if (outlet === "SPORTS_DAILY") {
@@ -77,16 +92,16 @@ const NewsEventRow = React.memo(
           <Icon className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${color}`} />
           <div className="flex-1 min-w-0">
             <div
-              className={`font-medium truncate ${e.category === "media" && (e.data as any)?.outlet === "TABLOID" ? "text-gold" : ""}`}
+              className={`font-medium truncate ${category === "media" && outlet === "TABLOID" ? "text-gold" : ""}`}
             >
-              {e.title}
+              {title}
             </div>
             <div className="text-[11px] text-muted-foreground truncate">
-              {e.summary}
+              {summary}
             </div>
           </div>
           <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">
-            W{e.week}
+            W{week}
           </span>
         </div>
       );
@@ -137,13 +152,26 @@ export function NewsWidget() {
           </div>
         ) : (
           <div className="space-y-0.5 pr-2">
-            {recentEvents.map((e) => (
-              <NewsEventRow
-                key={e.id}
-                e={e}
-                isPlayer={e.heyaId === world?.playerHeyaId}
-              />
-            ))}
+            {(() => {
+              const limit = recentEvents.length;
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const e = recentEvents[i];
+                nodes[i] = (
+                  <NewsEventRow
+                    key={e.id}
+                    id={e.id}
+                    category={e.category}
+                    title={e.title}
+                    summary={e.summary}
+                    week={e.week}
+                    outlet={(e.data as any)?.outlet}
+                    isPlayer={e.heyaId === world?.playerHeyaId}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </div>
         )}
       </ScrollArea>

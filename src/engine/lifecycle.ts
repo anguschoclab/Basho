@@ -27,19 +27,45 @@ import { rollArchetype, buildCombatProfile } from "./archetype";
 export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: string): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
-  
+
   // 1. Mandatory Retirement
   if (age >= 45) return "Mandatory Age Retirement";
 
+  // 1.5. Yokozuna Mandatory Retirement (earlier due to intense pressure)
+  // Real sumo: Yokozuna often retire earlier due to the pressure of maintaining their status
+  if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
+
   // 2. Injury Forced Retirement
-  const severity = typeof rikishi.injuryStatus?.severity === "number" 
-    ? rikishi.injuryStatus.severity 
+  const severity = typeof rikishi.injuryStatus?.severity === "number"
+    ? rikishi.injuryStatus.severity
     : 0;
   if (rikishi.injuryStatus?.isInjured && severity > 90) {
     return "Career-Ending Injury";
   }
 
-  // 3. Natural Aging Curve (Probability increases with age)
+  // 3. Yokozuna Retirement Pressure (Council Recommendations)
+  if (rikishi.rank === "yokozuna") {
+    const warnings = rikishi.councilWarnings || 0;
+    
+    // 3.1 Council Warning Trigger (Binary)
+    // 3 warnings = mandatory retirement
+    if (warnings >= 3) return "Council Forced Retirement (Lack of Dignity)";
+
+    // 3.2 Performance/Kyujo Pressure
+    // Real sumo: Yokozuna who miss 3 consecutive basho or are consistently weak face pressure
+    const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2;
+    const isAbsentTooLong = (rikishi.consecutiveKyujo || 0) >= 3;
+
+    if (isWeak || isAbsentTooLong) {
+      // Base chance increases by 30% per warning level
+      const pressureChance = 0.5 + (warnings * 0.2);
+      if (rng.bool(Math.min(0.95, pressureChance))) {
+        return isAbsentTooLong ? "Yokozuna Chronic Injury Retirement" : "Yokozuna Performance Retirement";
+      }
+    }
+  }
+
+  // 4. Natural Aging Curve (Probability increases with age)
   const baseRetireChance = Math.max(0, (age - 34) * 0.05);
   const roll = rng.next();
 
@@ -47,7 +73,7 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
     return "Age & Fatigue";
   }
 
-  // 4. Performance Drop (Rank-based)
+  // 5. Performance Drop (Rank-based)
   if (rikishi.rank === "jonokuchi" && age > 25) {
     if (rng.bool(0.3)) return "Lack of Performance";
   }

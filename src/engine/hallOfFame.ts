@@ -73,7 +73,11 @@ const TECHNICIAN_GINO_MIN = 3;
 
 // === INDUCTION PIPELINE ===
 
-function tryAddInductee(
+/**
+ * Attempts to add a rikishi to the Hall of Fame for a specific category.
+ * Prevents duplicate inductions for the same rikishi/category pair.
+ */
+export function tryAddInductee(
   world: WorldState,
   hof: HallOfFameState,
   newInductees: HoFInductee[],

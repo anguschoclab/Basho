@@ -16,6 +16,8 @@ import { EntityCollection } from "../core/EntityCollection";
 
 import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Pre-physics fusensho check.
@@ -62,10 +64,12 @@ export function resolveBout(
   basho: BashoState,
   playerTactic?: import("../types/combat").BoutTactic,
   world?: WorldState
-): BoutResult {
+): { result: BoutResult; impact: StateImpact } {
+  const builder = createImpactBuilder('resolveBout');
+
   // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
   const fusenshoResult = tryFusensho(bout, east, west, basho);
-  if (fusenshoResult) return fusenshoResult;
+  if (fusenshoResult) return { result: fusenshoResult, impact: builder.build() };
 
   const ctxWithTactic = { ...bout, playerTactic };
 
@@ -139,22 +143,30 @@ export function resolveBout(
     specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
   });
 
-  if (!winner.stats.achievements) winner.stats.achievements = defaultAchievements();
-  if (!loser.stats.achievements) loser.stats.achievements = defaultAchievements();
+  const winnerAchievements = winner.stats.achievements || defaultAchievements();
+  const loserAchievements = loser.stats.achievements || defaultAchievements();
 
   // Rule: Kinboshi (Gold Star) - Maegashira defeats Yokozuna (excluding Fusensho)
   if (winner.rank === 'maegashira' && loser.rank === 'yokozuna' && result.kimarite !== 'fusensho') {
     result.awardFact = 'kinboshi';
     result.isKinboshi = true;
-    winner.stats.achievements.kinboshiEarned++;
-    loser.stats.achievements.kinboshiConceded++;
-  } 
+    winnerAchievements.kinboshiEarned++;
+    loserAchievements.kinboshiConceded++;
+  }
   // Rule: Ginboshi (Silver Star) - Maegashira defeats Ozeki (excluding Fusensho)
   else if (winner.rank === 'maegashira' && loser.rank === 'ozeki' && result.kimarite !== 'fusensho') {
     result.awardFact = 'ginboshi';
-    winner.stats.achievements.ginboshiEarned++;
-    loser.stats.achievements.ginboshiConceded++;
+    winnerAchievements.ginboshiEarned++;
+    loserAchievements.ginboshiConceded++;
   }
+
+  // Update achievements via StateImpact
+  builder.updateRikishi(winner.id, {
+    stats: { ...winner.stats, achievements: winnerAchievements }
+  });
+  builder.updateRikishi(loser.id, {
+    stats: { ...loser.stats, achievements: loserAchievements }
+  });
 
   // 3. Henka prestige penalty
   // Using henka wins the bout but costs momentum — crowd disapproval and
@@ -167,13 +179,16 @@ export function resolveBout(
       (result.winner === 'east' && (bout.playerSide === 'east' || (bout as any).cpuTacticOverride !== undefined && result.winner !== bout.playerSide)) ||
       (result.winner === 'west' && (bout.playerSide === 'west' || (bout as any).cpuTacticOverride !== undefined && result.winner !== bout.playerSide));
     if (winnerUsedHenka) {
-      winner.momentum = clamp((winner.momentum ?? 50) - 15, 0, 100);
+      builder.updateRikishi(winner.id, {
+        momentum: clamp((winner.momentum ?? 50) - 15, 0, 100)
+      });
     }
   }
 
   // 4. Update Rivalry State
+  let rivalryImpact = createImpactBuilder('rivalry').build();
   if (world) {
-    RivalryService.onBoutResolved(world, {
+    rivalryImpact = RivalryService.onBoutResolved(world, {
       result,
       day: bout.day
     });
@@ -187,7 +202,19 @@ export function resolveBout(
     result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, awardFact, kenshoRng);
   }
 
-  return result;
+  // Merge rivalry impact into main builder
+  if (rivalryImpact.entities?.rikishiUpdates) {
+    for (const [id, update] of rivalryImpact.entities.rikishiUpdates) {
+      builder.updateRikishi(id, update);
+    }
+  }
+  if (rivalryImpact.worldFields) {
+    for (const [field, value] of Object.entries(rivalryImpact.worldFields)) {
+      (builder as any).updateWorldField(field, value);
+    }
+  }
+
+  return { result, impact: builder.build() };
 }
 
 
@@ -203,5 +230,6 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
     isActive: false,
   };
   const bout: BoutContext = { id: `sim-${seed}`, day: 1, rikishiEastId: east.id, rikishiWestId: west.id };
-  return resolveBout(bout, east, west, fakeBasho);
+  const { result } = resolveBout(bout, east, west, fakeBasho);
+  return result;
 }

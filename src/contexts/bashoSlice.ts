@@ -3,6 +3,7 @@ import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
 import { autosaveWithSignal } from "./gameHelpers";
+import { resolveImpacts } from "../engine/core/ImpactResolver";
 
 export function bashoSlice(state: GameState, action: GameAction): GameState {
   if (!state.world) return state;
@@ -63,7 +64,9 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
       worldEngine.endBasho(world);
-      worldEngine.publishBanzukeUpdate(world);
+      const banzukeImpact = worldEngine.publishBanzukeUpdate(world);
+      const resolvedWorld = resolveImpacts(world, [banzukeImpact]);
+      Object.assign(world, resolvedWorld);
       return { ...state, world, phase: "basho_recap", currentBoutIndex: 0, lastBoutResult: null };
     }
 

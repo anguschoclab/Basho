@@ -167,7 +167,7 @@ export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState)
   return Array.from(world.heyas.values()).filter(h => {
     const ws = h.welfareState;
     if (!ws) return false;
-    return ws.welfareRisk >= 55 || ws.complianceState === "sanctioned" || ws.complianceState === "non_compliant";
+    return ws.welfareRisk >= 55 || ws.complianceState === "sanctioned" || ws.complianceState === "investigation";
   });
 });
 

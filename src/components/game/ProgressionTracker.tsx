@@ -5,12 +5,157 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
+import {
+  Crown,
+  ShieldAlert,
+  TrendingUp,
+  Flame,
+  AlertTriangle,
+} from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
-import { OzekiRunCandidate, RANK_HIERARCHY, YokozunaCandidate, getKadobanDrama, getOzekiRunCandidates, getYokozunaCandidates } from "@/presenters/uiDigest";
+import React from "react";
+import {
+  OzekiRunCandidate,
+  RANK_HIERARCHY,
+  YokozunaCandidate,
+  getKadobanDrama,
+  getOzekiRunCandidates,
+  getYokozunaCandidates,
+} from "@/presenters/uiDigest";
+
+const YokozunaRow = React.memo(
+  ({
+    rikishiId,
+    shikona,
+    isStrong,
+    isPlayer,
+    narrative,
+    consecutiveYushos,
+    recentYushos,
+  }: {
+    rikishiId: string;
+    shikona: string;
+    isStrong?: boolean;
+    isPlayer: boolean;
+    narrative: string;
+    consecutiveYushos: number;
+    recentYushos: number;
+  }) => {
+    return (
+      <div className="flex items-start gap-3">
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-bold">
+              <RikishiName id={rikishiId} name={shikona} />
+            </span>
+            {isStrong && (
+              <Badge className="bg-amber-500/20 text-amber-500 text-xs">
+                Strong Candidate
+              </Badge>
+            )}
+            {isPlayer && (
+              <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">{narrative}</p>
+          <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+            <span>Yūshō: {consecutiveYushos}</span>
+            <span>Recent yūshō: {recentYushos}</span>
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+
+const OzekiRow = React.memo(
+  ({
+    rikishiId,
+    shikona,
+    rank,
+    isPlayer,
+    narrative,
+    progress,
+    recentWins,
+    threshold,
+  }: {
+    rikishiId: string;
+    shikona: string;
+    rank: string;
+    isPlayer: boolean;
+    narrative: string;
+    progress: number;
+    recentWins: number;
+    threshold: number;
+  }) => {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="font-display font-bold">
+            <RikishiName id={rikishiId} name={shikona} />
+          </span>
+          <Badge variant="outline" className="capitalize text-xs">
+            {RANK_HIERARCHY[rank]?.nameJa ?? rank}
+          </Badge>
+          {isPlayer && (
+            <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground">{narrative}</p>
+        <div className="flex items-center gap-3">
+          <Progress value={progress} className="flex-1 h-2" />
+          <span className="text-xs font-mono text-muted-foreground">
+            {recentWins}/{threshold}
+          </span>
+        </div>
+      </div>
+    );
+  },
+);
+
+const KadobanRow = React.memo(
+  ({
+    rikishiId,
+    shikona,
+    isDemoted,
+    isPlayer,
+    narrative,
+  }: {
+    rikishiId: string;
+    shikona: string;
+    isDemoted: boolean;
+    isPlayer: boolean;
+    narrative: string;
+  }) => {
+    return (
+      <div className="flex items-start gap-3">
+        <AlertTriangle
+          className={`h-4 w-4 mt-0.5 shrink-0 ${isDemoted ? "text-destructive" : "text-amber-500"}`}
+        />
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-bold">
+              <RikishiName id={rikishiId} name={shikona} />
+            </span>
+            <Badge
+              variant={isDemoted ? "destructive" : "outline"}
+              className="text-xs"
+            >
+              {isDemoted ? "DEMOTED" : "KADOBAN"}
+            </Badge>
+            {isPlayer && (
+              <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">{narrative}</p>
+        </div>
+      </div>
+    );
+  },
+);
 
 /** Defines the structure for progression tracker props. */
 interface ProgressionTrackerProps {
@@ -27,10 +172,16 @@ interface ProgressionTrackerProps {
  */
 export function ProgressionTracker({ world }: ProgressionTrackerProps) {
   const ozekiRuns = useMemo(() => getOzekiRunCandidates(world), [world]);
-  const yokozunaCandidates = useMemo(() => getYokozunaCandidates(world), [world]);
+  const yokozunaCandidates = useMemo(
+    () => getYokozunaCandidates(world),
+    [world],
+  );
   const kadobanDrama = useMemo(() => getKadobanDrama(world), [world]);
 
-  const hasContent = ozekiRuns.length > 0 || yokozunaCandidates.length > 0 || kadobanDrama.length > 0;
+  const hasContent =
+    ozekiRuns.length > 0 ||
+    yokozunaCandidates.length > 0 ||
+    kadobanDrama.length > 0;
   if (!hasContent) return null;
 
   return (
@@ -45,28 +196,26 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {yokozunaCandidates.map((c) => (
-              <div key={c.rikishi.id} className="flex items-start gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-display font-bold">
-                      <RikishiName id={c.rikishi.id} name={c.rikishi.shikona} />
-                    </span>
-                    {c.isStrong && (
-                      <Badge className="bg-gold/20 text-gold text-xs">Strong Candidate</Badge>
-                    )}
-                    {c.rikishi.heyaId === world.playerHeyaId && (
-                      <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{c.narrative}</p>
-                  <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
-                    <span>Yūshō: {c.consecutiveYushos}</span>
-                    <span>Recent yūshō: {c.recentYushos}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {(() => {
+              const limit = yokozunaCandidates.length;
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const c = yokozunaCandidates[i];
+                nodes[i] = (
+                  <YokozunaRow
+                    key={c.rikishi.id}
+                    rikishiId={c.rikishi.id}
+                    shikona={c.rikishi.shikona}
+                    isStrong={c.isStrong}
+                    isPlayer={c.rikishi.heyaId === world.playerHeyaId}
+                    narrative={c.narrative}
+                    consecutiveYushos={c.consecutiveYushos}
+                    recentYushos={c.recentYushos}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </CardContent>
         </Card>
       )}
@@ -81,28 +230,27 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {ozekiRuns.map((c) => (
-              <div key={c.rikishi.id} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-display font-bold">
-                    <RikishiName id={c.rikishi.id} name={c.rikishi.shikona} />
-                  </span>
-                  <Badge variant="outline" className="capitalize text-xs">
-                    {RANK_HIERARCHY[c.rikishi.rank]?.nameJa ?? c.rikishi.rank}
-                  </Badge>
-                  {c.rikishi.heyaId === world.playerHeyaId && (
-                    <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">{c.narrative}</p>
-                <div className="flex items-center gap-3">
-                  <Progress value={c.progress} className="flex-1 h-2" />
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {c.recentWins}/{c.threshold}
-                  </span>
-                </div>
-              </div>
-            ))}
+            {(() => {
+              const limit = ozekiRuns.length;
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const c = ozekiRuns[i];
+                nodes[i] = (
+                  <OzekiRow
+                    key={c.rikishi.id}
+                    rikishiId={c.rikishi.id}
+                    shikona={c.rikishi.shikona}
+                    rank={c.rikishi.rank}
+                    isPlayer={c.rikishi.heyaId === world.playerHeyaId}
+                    narrative={c.narrative}
+                    progress={c.progress}
+                    recentWins={c.recentWins}
+                    threshold={c.threshold}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </CardContent>
         </Card>
       )}
@@ -117,25 +265,24 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {kadobanDrama.map((entry) => (
-              <div key={entry.rikishi.id} className="flex items-start gap-3">
-                <AlertTriangle className={`h-4 w-4 mt-0.5 shrink-0 ${entry.isDemoted ? "text-destructive" : "text-gold"}`} />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-display font-bold">
-                      <RikishiName id={entry.rikishi.id} name={entry.rikishi.shikona} />
-                    </span>
-                    <Badge variant={entry.isDemoted ? "destructive" : "outline"} className="text-xs">
-                      {entry.isDemoted ? "DEMOTED" : "KADOBAN"}
-                    </Badge>
-                    {entry.rikishi.heyaId === world.playerHeyaId && (
-                      <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{entry.narrative}</p>
-                </div>
-              </div>
-            ))}
+            {(() => {
+              const limit = kadobanDrama.length;
+              const nodes = new Array(limit);
+              for (let i = 0; i < limit; i++) {
+                const entry = kadobanDrama[i];
+                nodes[i] = (
+                  <KadobanRow
+                    key={entry.rikishi.id}
+                    rikishiId={entry.rikishi.id}
+                    shikona={entry.rikishi.shikona}
+                    isDemoted={entry.isDemoted}
+                    isPlayer={entry.rikishi.heyaId === world.playerHeyaId}
+                    narrative={entry.narrative}
+                  />
+                );
+              }
+              return nodes;
+            })()}
           </CardContent>
         </Card>
       )}

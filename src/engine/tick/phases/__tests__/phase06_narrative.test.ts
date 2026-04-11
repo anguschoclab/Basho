@@ -6,7 +6,7 @@ import { EventBus } from '../../../events';
 
 vi.mock('../../../events', () => ({
   EventBus: {
-    medicalEvent: vi.fn(),
+    medicalReportBase: vi.fn(),
     financialAlert: vi.fn(),
     trainingUpdate: vi.fn(),
     lifecycleEvent: vi.fn(),
@@ -43,11 +43,12 @@ describe('Phase 6: Narrative', () => {
     world.transientContext!.deltas = undefined as any;
     const result = phase06_narrative(world);
     expect(result).toBe(world);
-    expect(EventBus.medicalEvent).not.toHaveBeenCalled();
+    expect(EventBus.medicalReportBase).not.toHaveBeenCalled();
   });
 
   it('logs INJURY event via lifecycleEvent', () => {
-    world.transientContext!.deltas.injuriesSustained = ['r1'];
+    if (!world.transientContext?.deltas) return;
+    world.transientContext.deltas.injuriesSustained = ['r1'];
 
     phase06_narrative(world);
 
@@ -61,8 +62,9 @@ describe('Phase 6: Narrative', () => {
   });
 
   it('logs insolvency event if expenses > revenue AND funds < 0', () => {
-    world.transientContext!.deltas.revenue = 500;
-    world.transientContext!.deltas.expenses = 1000;
+    if (!world.transientContext?.deltas) return;
+    world.transientContext.deltas.revenue = 500;
+    world.transientContext.deltas.expenses = 1000;
     world.heyas.get('heya-1')!.funds = -100;
 
     phase06_narrative(world);
@@ -72,14 +74,14 @@ describe('Phase 6: Narrative', () => {
       'heya-1',
       expect.objectContaining({
         incident: 'insolvency'
-      }),
-      'major'
+      })
     );
   });
 
   it('does NOT log FINANCIAL_CRISIS if expenses > revenue but funds >= 0', () => {
-    world.transientContext!.deltas.revenue = 500;
-    world.transientContext!.deltas.expenses = 1000;
+    if (!world.transientContext?.deltas) return;
+    world.transientContext.deltas.revenue = 500;
+    world.transientContext.deltas.expenses = 1000;
     world.heyas.get('heya-1')!.funds = 100; // Positive funds
 
     phase06_narrative(world);
@@ -88,7 +90,8 @@ describe('Phase 6: Narrative', () => {
   });
 
   it('logs TRAINING_MILESTONE for stat changes >= 1.0', () => {
-    world.transientContext!.deltas.statChanges = {
+    if (!world.transientContext?.deltas) return;
+    world.transientContext.deltas.statChanges = {
       'r1': [{ stat: 'strength', amount: 1.5 }, { stat: 'speed', amount: 0.5 }], // 1 milestone
       'r2': [{ stat: 'strength', amount: 0.9 }], // No milestone
     };

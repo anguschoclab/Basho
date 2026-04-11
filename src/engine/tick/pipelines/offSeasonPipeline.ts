@@ -19,6 +19,7 @@ export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_training,
   phases.phase01_week_health,
   phases.phase01_week_welfare,
+  phases.phase02_context, // Derive ActiveModifiers from post-training state
   phases.phase01_week_governance,
   phases.phase01_week_npc_ai,
   phases.phase01_week_recruitment,

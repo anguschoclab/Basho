@@ -58,7 +58,7 @@ export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
   calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
     // Traditionalists are conservative with money unless it's a "Traditional" prospect
     let maxBase = heya.funds * 0.10; 
-    const candidate = world.scoutingPool?.find(c => c.id === candidateId);
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(c => c.candidateId === candidateId);
     if (candidate?.style === "yotsu") maxBase *= 1.35; // Value belt-wrestlers
     return maxBase;
   }
@@ -72,7 +72,7 @@ export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
   },
   calculateMaxBid(world, heya, oyakata, candidateId) {
     // Scientists value 'Potential' (talentSeed) above all else
-    const candidate = world.scoutingPool?.find(c => c.id === candidateId);
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(c => c.candidateId === candidateId);
     const potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
     return heya.funds * 0.20 * potentialMultiplier;
   }

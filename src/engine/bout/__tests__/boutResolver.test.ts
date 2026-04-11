@@ -44,7 +44,7 @@ describe("resolveBout — fusensho (walkover)", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     expect(result.kimarite).toBe("fusensho");
     expect(result.winner).toBe("east");
@@ -60,7 +60,7 @@ describe("resolveBout — fusensho (walkover)", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     expect(result.kimarite).toBe("fusensho");
     expect(result.winner).toBe("west");
@@ -74,7 +74,7 @@ describe("resolveBout — fusensho (walkover)", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     expect(result.kimarite).toBe("fusensho");
     expect(result.winner).toBe("west");
@@ -86,7 +86,7 @@ describe("resolveBout — fusensho (walkover)", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     expect(result.kimarite).not.toBe("fusensho");
     expect(result.duration).toBeGreaterThan(0);
@@ -98,7 +98,7 @@ describe("resolveBout — fusensho (walkover)", () => {
     const basho = makeMockBasho();
     const ctx = makeBoutContext();
 
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     expect(result.kimarite).toBe("fusensho");
     expect(result.isKinboshi).toBe(false);
@@ -119,7 +119,7 @@ describe("resolveBout — henka momentum penalty", () => {
 
     // Run enough times to capture a case where east wins with henka
     // (outcome depends on RNG; we check momentum only when east wins)
-    const result = resolveBout(ctx, east, west, basho);
+    const { result } = resolveBout(ctx, east, west, basho);
 
     if (result.winner === "east") {
       // Momentum must have been penalised from 70
