@@ -101,15 +101,7 @@ function labelForWorld(world: WorldState): string {
   return `${year} — Week ${week} (${phase})`;
 }
 
-/**
- * Build weekly digest.
- */
-export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
-  if (!world) return null;
-
-  const sections: DigestSection[] = [];
-
-  // --- Injuries ---
+function buildInjurySection(world: WorldState): DigestSection | null {
   const injuryItems: DigestItem[] = selectInjuredRikishi(world).map((r) => {
     const injury = r.injury;
     return {
@@ -122,23 +114,17 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
       rikishiId: r.id,
     };
   });
-  if (injuryItems.length) {
-    const sectionRng = new SeededRNG((world.seed || "section") + "_injuries");
-    sections.push({
-      id: "injuries",
-      title: BardEngine.resolve(sectionRng, "ui.digest.sections.injuries").text,
-      items: injuryItems,
-    });
-  }
+  if (!injuryItems.length) return null;
+  const sectionRng = new SeededRNG((world.seed || "section") + "_injuries");
+  return {
+    id: "injuries",
+    title: BardEngine.resolve(sectionRng, "ui.digest.sections.injuries").text,
+    items: injuryItems,
+  };
+}
 
-  const matchupResult = buildMatchupItems(world);
-  const basho = world.currentBasho;
-
-  if (matchupResult.section) {
-    sections.push(matchupResult.section);
-  }
-
-  // Process events
+function buildEventSections(world: WorldState): DigestSection[] {
+  const sections: DigestSection[] = [];
   const eventBuckets = selectRecentEvents(world);
   const mapEventToItem = (e: import("../engine/events").EngineEvent): DigestItem => ({
     id: e.id,
@@ -164,31 +150,52 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   if (econItems.length)
     sections.push({ id: "economy", title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text, items: econItems });
 
-  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
+  return sections;
+}
 
-  const headline =
-    basho && world.cyclePhase === "active_basho"
-      ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
-          DAY: (basho.day ?? 1).toString(),
-          DETAIL: matchupResult.items.length
-            ? "Key matchups highlighted."
-            : "Tournament in progress.",
+function buildHeadline(world: WorldState, matchupCount: number, injuryCount: number): string {
+  const rng = world.rng || new SeededRNG(world.seed || "weekly_digest");
+  const basho = world.currentBasho;
+  return basho && world.cyclePhase === "active_basho"
+    ? BardEngine.resolve(rng, "ui.digest.status.basho_day", {
+        DAY: (basho.day ?? 1).toString(),
+        DETAIL: matchupCount ? "Key matchups highlighted." : "Tournament in progress.",
+      }).text
+    : injuryCount
+      ? BardEngine.resolve(rng, "ui.digest.status.injured", {
+          INJURY_COUNT: injuryCount.toString(),
         }).text
-      : injuryItems.length
-        ? BardEngine.resolve(rng, "ui.digest.status.injured", {
-            INJURY_COUNT: injuryItems.length.toString(),
-          }).text
-        : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
+      : BardEngine.resolve(rng, "ui.digest.status.no_events").text;
+}
+
+/**
+ * Build weekly digest.
+ */
+export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
+  if (!world) return null;
+
+  const sections: DigestSection[] = [];
+  const injurySection = buildInjurySection(world);
+  if (injurySection) sections.push(injurySection);
+
+  const matchupResult = buildMatchupItems(world);
+  if (matchupResult.section) sections.push(matchupResult.section);
+
+  const eventSections = buildEventSections(world);
+  sections.push(...eventSections);
+
+  const eventBuckets = selectRecentEvents(world);
+  const headline = buildHeadline(world, matchupResult.items.length, injurySection?.items.length || 0);
 
   return {
     time: { label: labelForWorld(world) },
     headline,
     counts: {
-      trainingEvents: trainingItems.length,
-      injuries: injuryItems.length,
+      trainingEvents: eventBuckets.training.length,
+      injuries: injurySection?.items.length || 0,
       recoveries: 0,
-      economy: econItems.length,
-      scouting: scoutItems.length,
+      economy: eventBuckets.economy.length,
+      scouting: eventBuckets.scouting.length,
     },
     sections,
   };
@@ -847,21 +854,20 @@ export function projectOpponentScoutingUIDigest(
   return { opponents: sliced };
 }
 
-/**
- * Project H2H history between two stables for PerceptionOverview.
- */
-export function projectH2HBetweenHeyas(
-  world: WorldState,
-  heyaAId: string,
-  heyaBId: string,
-) {
-  const heyaA = world.heyas.get(heyaAId);
-  const heyaB = world.heyas.get(heyaBId);
-  if (!heyaA || !heyaB) return null;
+function buildMatchupData(rAId: string, rA: any, rBId: string, rB: any, record: any): any {
+  return {
+    rikishiAId: rAId,
+    rikishiAName: rA.shikona,
+    rikishiBId: rBId,
+    rikishiBName: rB.shikona,
+    aWins: record.wins,
+    bWins: record.losses,
+    lastKimarite: record.lastMatch?.kimarite,
+    lastWinner: record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
+  };
+}
 
-  const rikishiAIds = heyaA.rikishiIds || [];
-  const rikishiBIds = heyaB.rikishiIds || [];
-
+function calculateHeyaMatchups(world: WorldState, rikishiAIds: string[], rikishiBIds: string[]): { winsA: number, winsB: number, matchups: any[] } {
   let winsA = 0;
   let winsB = 0;
   const matchups: any[] = [];
@@ -879,21 +885,29 @@ export function projectH2HBetweenHeyas(
 
       winsA += record.wins;
       winsB += record.losses;
-
-      matchups.push({
-        rikishiAId: rAId,
-        rikishiAName: rA.shikona,
-        rikishiBId: rBId,
-        rikishiBName: rB.shikona,
-        aWins: record.wins,
-        bWins: record.losses,
-        lastKimarite: record.lastMatch?.kimarite,
-        lastWinner:
-          record.lastMatch?.winnerId === rAId ? rA.shikona : rB.shikona,
-      });
+      matchups.push(buildMatchupData(rAId, rA, rBId, rB, record));
     }
   }
 
+  return { winsA, winsB, matchups };
+}
+
+/**
+ * Project H2H history between two stables for PerceptionOverview.
+ */
+export function projectH2HBetweenHeyas(
+  world: WorldState,
+  heyaAId: string,
+  heyaBId: string,
+) {
+  const heyaA = world.heyas.get(heyaAId);
+  const heyaB = world.heyas.get(heyaBId);
+  if (!heyaA || !heyaB) return null;
+
+  const rikishiAIds = heyaA.rikishiIds || [];
+  const rikishiBIds = heyaB.rikishiIds || [];
+
+  const { winsA, winsB, matchups } = calculateHeyaMatchups(world, rikishiAIds, rikishiBIds);
   matchups.sort((a, b) => b.aWins + b.bWins - (a.aWins + a.bWins));
 
   return {
@@ -956,6 +970,59 @@ export function projectDashboardUIDigest(world: WorldState) {
   };
 }
 
+function buildSponsorData(sponsor: any, rel: any, heya: any, world: WorldState): any {
+  const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] * (rel.strength / 3);
+  const satisfactionEstimate = Math.min(
+    100,
+    sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4,
+  );
+  const expiryWeek = rel.endsAtTick ?? null;
+  const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
+
+  return {
+    relId: rel.relId,
+    sponsorId: sponsor.sponsorId,
+    name: sponsor.displayName,
+    tier: sponsor.tier,
+    category: sponsor.category.replace("_", " "),
+    monthlyIncome,
+    satisfaction: satisfactionEstimate,
+    expiryWeek,
+    isExpiringSoon,
+    strength: rel.strength,
+    loyalty: sponsor.loyalty,
+    role: rel.role.replace("_", " "),
+  };
+}
+
+function buildAndSortActiveSponsors(pool: any, playerHeyaId: string, heya: any, world: WorldState): any[] {
+  const activeSponsors: any[] = [];
+  for (const sponsor of pool.sponsors.values()) {
+    if (!sponsor.active) continue;
+    for (const rel of sponsor.relationships) {
+      if (rel.targetId !== playerHeyaId) continue;
+      activeSponsors.push(buildSponsorData(sponsor, rel, heya, world));
+    }
+  }
+
+  const tierOrder: Record<string, number> = {
+    T5: 0,
+    T4: 1,
+    T3: 2,
+    T2: 3,
+    T1: 4,
+    T0: 5,
+  };
+  return activeSponsors.sort((a, b) => (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6));
+}
+
+function calculateKoenkaiIncome(heya: any): number {
+  const koenkaiStrength = heya.koenkaiBand ?? "none";
+  return KOENKAI_MONTHLY_INCOME[
+    koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME
+  ] || 0;
+}
+
 /**
  * Project sponsorship management data.
  */
@@ -968,57 +1035,9 @@ export function projectSponsorUIDigest(world: WorldState) {
   const pool = world.sponsorPool;
   if (!pool) return null;
 
-  const activeSponsors: any[] = [];
-
-  for (const sponsor of pool.sponsors.values()) {
-    if (!sponsor.active) continue;
-    for (const rel of sponsor.relationships) {
-      if (rel.targetId !== playerHeyaId) continue;
-
-      const monthlyIncome =
-        SPONSOR_TIER_INCOME[sponsor.tier] * (rel.strength / 3);
-      const satisfactionEstimate = Math.min(
-        100,
-        sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4,
-      );
-      const expiryWeek = rel.endsAtTick ?? null;
-      const isExpiringSoon =
-        expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
-
-      activeSponsors.push({
-        relId: rel.relId,
-        sponsorId: sponsor.sponsorId,
-        name: sponsor.displayName,
-        tier: sponsor.tier,
-        category: sponsor.category.replace("_", " "),
-        monthlyIncome,
-        satisfaction: satisfactionEstimate,
-        expiryWeek,
-        isExpiringSoon,
-        strength: rel.strength,
-        loyalty: sponsor.loyalty,
-        role: rel.role.replace("_", " "),
-      });
-    }
-  }
-
-  activeSponsors.sort((a, b) => {
-    const tierOrder: Record<string, number> = {
-      T5: 0,
-      T4: 1,
-      T3: 2,
-      T2: 3,
-      T1: 4,
-      T0: 5,
-    };
-    return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
-  });
-
+  const activeSponsors = buildAndSortActiveSponsors(pool, playerHeyaId, heya, world);
+  const koenkaiIncome = calculateKoenkaiIncome(heya);
   const koenkaiStrength = heya.koenkaiBand ?? "none";
-  const koenkaiIncome =
-    KOENKAI_MONTHLY_INCOME[
-      koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME
-    ] || 0;
 
   return {
     koenkaiName: `${heya.name} Supporters Association`,
