@@ -340,12 +340,12 @@ export function generateGovernanceHeadline(args: {
     week,
     tier: severity,
     beat: templatePath.includes('welfare') ? 'discipline' : 'media',
-    tone: severity === 'critical' || severity === 'major' ? 'controversy' : 'neutral',
+    tone: severity === 'main_event' || severity === 'national' ? 'controversy' : 'neutral',
     rikishiIds: [],
     heyaIds: [heyaId],
     title,
     subtitle: "", // Optional for now
-    impact: severity === 'critical' ? 60 : severity === 'major' ? 40 : 20,
+    impact: severity === 'main_event' ? 60 : severity === 'national' ? 40 : 20,
     tags: ["governance", "institutional"],
   };
 
