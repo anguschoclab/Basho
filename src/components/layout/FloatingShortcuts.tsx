@@ -16,7 +16,7 @@ export function FloatingShortcuts({
   return (
     <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2">
       {!eventLogOpen && (
-        <TooltipWrap content="Open Event Log" side="left">
+        <TooltipWrap content="Open Event Log" side="top">
           <Button
             variant="outline"
             size="icon"
