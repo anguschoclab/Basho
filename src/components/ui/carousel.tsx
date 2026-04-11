@@ -111,8 +111,7 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
       scrollNext,
       canScrollPrev,
       canScrollNext,
-      ...props,
-    }), [carouselRef, api, opts, orientation, scrollPrev, scrollNext, canScrollPrev, canScrollNext, props]);
+    } as CarouselContextProps), [carouselRef, api, opts, orientation, scrollPrev, scrollNext, canScrollPrev, canScrollNext]);
 
     return (
       <CarouselContext.Provider value={contextValue}>
