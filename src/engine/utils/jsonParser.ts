@@ -33,7 +33,7 @@ export function parseLLMResponse<T>(rawText: string): T {
   }
 }
 
-export function safeParse<T>(jsonString: string, fallback: T): T {
+export function safeParse<T extends object>(jsonString: string, fallback: T): T {
   try {
     const result = JSON.parse(jsonString);
     if (result !== null && typeof result === 'object') {
