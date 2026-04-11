@@ -123,6 +123,9 @@ export interface Rikishi {
   consecutiveYusho: number;
   consecutiveStrongOzeki?: number; // Tracks consecutive 12+ win performances at ozeki for yokozuna promotion
   consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
+  consecutiveKyujo?: number; // Tracks consecutive tournaments missed entirely
+  councilWarnings?: number; // Number of formal council warnings received (stat debuffs)
+  pressureScore?: number; // Internal score tracking sub-par performances for warnings
 
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];

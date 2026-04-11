@@ -210,6 +210,17 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   const lastBasho = getCurrentBasho(world);
   if (!lastBasho) return world;
 
+  // Standings can be Map or Object depending on the simulation path; normalize here
+  const standings = lastBasho.standings;
+  if (!standings) {
+    console.warn("publishBanzukeUpdate: No standings found in lastBasho!");
+    return world;
+  }
+
+  const standingEntries = (standings instanceof Map) 
+    ? Array.from(standings.entries()) 
+    : Object.entries(standings as any);
+
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const r of world.rikishi.values()) {
     currentBanzukeList.push({
@@ -220,7 +231,8 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
   }
 
   const performanceList: BashoPerformance[] = [];
-  for (const [id, stats] of lastBasho.standings.entries()) {
+  for (const [id, stats_any] of standingEntries) {
+    const stats = stats_any as { wins: number; losses: number; absences: number };
     const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
@@ -236,12 +248,12 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     let promoteToYokozuna = false;
     if (rikishi?.rank === "ozeki") {
       const currentWins = stats.wins;
-      const history = rikishi.history || [];
-      const lastBashoPerf = history[history.length - 1];
+      const cHistory = rikishi.careerHistory || [];
+      const prevBasho = cHistory[cHistory.length - 1];
       
-      const wonPrevious = lastBashoPerf?.yusho === true;
-      const wasJunYushoPrevious = lastBashoPerf?.junYusho === true;
-      const lastWins = lastBashoPerf?.wins || 0;
+      const wonPrevious = prevBasho?.isYusho === true;
+      const wasJunYushoPrevious = prevBasho?.isJunYusho === true;
+      const lastWins = prevBasho?.wins || 0;
 
       // Promotion Case 1: 2 Consecutive Yusho
       if (isYusho && wonPrevious) {
@@ -252,7 +264,7 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
         promoteToYokozuna = true;
       }
       // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
-      else if (rikishi.consecutiveStrongOzeki! >= 3 && (isYusho || wonPrevious)) {
+      else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
         promoteToYokozuna = true;
       }
 
@@ -265,12 +277,10 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
 
       // Narrative: Yokozuna Watch
       if (isYusho && !promoteToYokozuna) {
-        EventBus.mediaEvent(world, {
+        EventBus.lifecycleEvent(world, {
           rikishiId: id,
           heyaId: rikishi.heyaId,
-          type: "narrative",
-          path: "media.yokozuna_watch",
-          severity: "national",
+          status: "yokozuna_watch",
           description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`
         });
       }
@@ -290,9 +300,9 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
       }
 
       if (isKyujo) {
-        (rikishi as any).consecutiveKyujo = ((rikishi as any).consecutiveKyujo || 0) + 1;
+        rikishi.consecutiveKyujo = (rikishi.consecutiveKyujo || 0) + 1;
       } else {
-        (rikishi as any).consecutiveKyujo = 0;
+        rikishi.consecutiveKyujo = 0;
       }
 
       // Council Recommendation / Warning Logic
@@ -300,8 +310,8 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
         rikishi.pressureScore = (rikishi.pressureScore || 0) + 1;
         
         // Every 2 "sub-par" performances = 1 Council Warning
-        if (rikishi.pressureScore % 2 === 0) {
-          (rikishi as any).councilWarnings = ((rikishi as any).councilWarnings || 0) + 1;
+        if ((rikishi.pressureScore || 0) % 2 === 0) {
+          rikishi.councilWarnings = (rikishi.councilWarnings || 0) + 1;
           
           // Apply Stat Debuff: 10% reduction in Mental and Technique (Dignity loss)
           rikishi.stats.mental *= 0.9;
@@ -310,14 +320,11 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
           rikishi.aggression = rikishi.stats.mental;
           rikishi.technique = rikishi.stats.technique;
 
-          EventBus.mediaEvent(world, {
+          EventBus.governanceRuling(world, rikishi.heyaId, {
             rikishiId: id,
-            heyaId: rikishi.heyaId,
-            type: "narrative",
-            path: "media.yokozuna_warning",
-            severity: "national",
+            incident: "yokozuna_deliberation",
             description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`
-          });
+          }, "headline");
         }
       }
     }

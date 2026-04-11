@@ -45,7 +45,7 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
 
   // 3. Yokozuna Retirement Pressure (Council Recommendations)
   if (rikishi.rank === "yokozuna") {
-    const warnings = (rikishi as any).councilWarnings || 0;
+    const warnings = rikishi.councilWarnings || 0;
     
     // 3.1 Council Warning Trigger (Binary)
     // 3 warnings = mandatory retirement
@@ -54,7 +54,7 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
     // 3.2 Performance/Kyujo Pressure
     // Real sumo: Yokozuna who miss 3 consecutive basho or are consistently weak face pressure
     const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2;
-    const isAbsentTooLong = (rikishi as any).consecutiveKyujo >= 3;
+    const isAbsentTooLong = (rikishi.consecutiveKyujo || 0) >= 3;
 
     if (isWeak || isAbsentTooLong) {
       // Base chance increases by 30% per warning level
