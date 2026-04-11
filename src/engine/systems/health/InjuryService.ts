@@ -8,6 +8,7 @@ import { Rikishi } from "../../types/rikishi";
 import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
 import { clamp, clampInt } from "../../utils/math";
 import { seededPick } from "../../utils/random";
+import { EventBus } from "../../events";
 import { 
   InjurySeverity, 
   InjuryBodyArea, 

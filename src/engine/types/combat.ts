@@ -341,7 +341,7 @@ export interface TacticalResult {
   winProbabilityShift: number;
 }
 
-export interface NarrativeContext {
+export interface BoutTickContext {
   // Contextual tags for text decorators
   attackerFatigueLevel: 'fresh' | 'gasping' | 'exhausted';
   defenderBalanceLevel: 'planted' | 'wobbling' | 'critical';
@@ -362,5 +362,5 @@ export interface TickResolutionEvent {
   defender: Rikishi;
   action: CombatAction;
   powerDifferential: number;
-  context: NarrativeContext; // The new payload
+  context: BoutTickContext; // The new payload
 }

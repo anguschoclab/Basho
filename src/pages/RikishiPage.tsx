@@ -54,6 +54,7 @@ import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { rngFromSeed } from "@/engine/rng";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -263,7 +264,7 @@ export default function RikishiPage() {
                                { label: "Resilience", key: "stamina", val: rikishi.perceivedStats.stamina, raw: rawRikishi.stats?.stamina ?? 50, color: "bg-success", icon: <Shield className="h-3.5 w-3.5" /> },
                                { label: "Precision", key: "technique", val: rikishi.perceivedStats.technique, raw: rawRikishi.stats?.technique ?? 50, color: "bg-purple-500", icon: <Target className="h-3.5 w-3.5" /> }
                              ].map((stat, i) => (
-                               <TooltipWrap key={i} content={NarrativeService.describeAttribute(stat.key, stat.raw)} side="top">
+                               <TooltipWrap key={i} content={NarrativeService.describeAttribute(rngFromSeed(world.seed, "ui", "rikishi-dossier"), stat.key, stat.raw)} side="top">
                                  <div className="bg-muted/30 p-4 rounded-lg border border-border/50 space-y-3 hover:border-primary/20 transition-colors cursor-help">
                                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">
                                        {stat.icon} {stat.label}

@@ -11,6 +11,8 @@ import { Division } from "../../types/banzuke";
 import { rngForWorld } from "../../rng";
 import { Id } from "../../types/common";
 import { getRivalryBoutModifiers, RivalriesState } from "../../rivalries";
+import { EventBus } from "../../events";
+import { BardEngine } from "../../narrative/BardEngine";
 import { clampInt } from "../../utils/math";
 
 import { 
@@ -318,7 +320,7 @@ export function generateGovernanceHeadline(args: {
   templatePath: string; // e.g., 'institutional.welfare.watch_headline'
   severity?: HeadlineTier;
 }): void {
-  const { world, heyaId, templatePath, severity = 'minor' } = args;
+  const { world, heyaId, templatePath, severity = 'local' } = args;
   if (!world.mediaState || !world.mediaState.headlines) return;
 
   const heya = world.heyas.get(heyaId);

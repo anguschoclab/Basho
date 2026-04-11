@@ -51,7 +51,7 @@ export function phase06_narrative(world: WorldState): WorldState {
         incident: "insolvency",
         money: heya.funds,
         heyaname: heya.name ?? heya.id
-      }, "major");
+      });
     }
   }
 

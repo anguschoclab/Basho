@@ -396,7 +396,7 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
  * Advance a single day in the interim period.
  * Used by UI for granular day-by-day control.
  */
-export function advanceDay(world: WorldState): DailyTickReport | null {
+export function advanceDay(world: WorldState): WorldState | null {
   if (world.cyclePhase === "active_basho") return null;
   return advanceOneDay(world);
 }

@@ -73,7 +73,7 @@ export interface NarrativeContext {
   chance?: number;  // Auto-formatted %
   score?: number;
   delta?: number;
-  intensity?: "high_stakes" | "technical" | "neutral" | number;
+  intensity?: "high_stakes" | "technical" | "neutral" | "conservative" | "balanced" | "intensive" | "punishing" | "low" | "normal" | "high" | "extreme" | number;
   
   // Domain Specific
   severity?: "minor" | "moderate" | "serious" | "critical";

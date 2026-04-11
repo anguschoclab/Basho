@@ -32,23 +32,22 @@ import { assertNever } from "../../utils/types";
 /**
  * Unified Welfare Service.
  */
+export function ensureHeyaWelfareState(heya: Heya): WelfareState {
+  return EntityService.ensureState(
+    heya, 
+    "welfareState", 
+    () => ({
+      welfareRisk: 10,
+      complianceState: "compliant",
+      weeksInState: 0,
+      lastReviewedWeek: 0,
+      activeDiet: "maintenance"
+    })
+  );
+}
+
 export const WelfareService = {
-  /**
-   * Ensure heya welfare state exists.
-   */
-  ensureHeyaWelfareState(heya: Heya): WelfareState {
-    return EntityService.ensureState(
-      heya, 
-      "welfareState", 
-      () => ({
-        welfareRisk: 10,
-        complianceState: "compliant",
-        weeksInState: 0,
-        lastReviewedWeek: 0,
-        activeDiet: "maintenance"
-      })
-    );
-  },
+  ensureHeyaWelfareState,
 
   /**
    * Authoritative Weekly Welfare Tick.
@@ -113,7 +112,7 @@ export const WelfareService = {
             world, 
             heyaId: heya.id, 
             templatePath: 'institutional.welfare.watch_headline',
-            severity: "minor"
+            severity: "local"
           });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 15);
@@ -141,7 +140,7 @@ export const WelfareService = {
             world, 
             heyaId: heya.id, 
             templatePath: 'institutional.welfare.investigation_headline',
-            severity: "major"
+            severity: "national"
           });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 30);
@@ -184,7 +183,7 @@ export const WelfareService = {
             world, 
             heyaId: heya.id, 
             templatePath: 'institutional.welfare.sanction_headline',
-            severity: "critical"
+            severity: "main_event"
           });
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 50);

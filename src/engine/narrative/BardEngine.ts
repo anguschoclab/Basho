@@ -166,7 +166,8 @@ export class BardEngine {
 
     if (result.includes('%') || result.includes('{{') || result.includes('}}')) {
        const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
-       const shouldThrow = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || process.env?.CI);
+       const proc = (globalThis as any).process;
+       const shouldThrow = typeof proc !== 'undefined' && (proc.env?.NODE_ENV === 'test' || proc.env?.CI);
        if (shouldThrow) {
          throw new Error(leakMsg);
        }
