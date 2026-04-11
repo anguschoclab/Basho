@@ -123,8 +123,10 @@ export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): Rikishi
 function getInjuryModifier(r: any): string {
   const inj = r.currentInjury || r.injuryStatus;
   const severity = inj?.severity;
-  if (severity === "serious" || (typeof severity === "number" && severity >= 70)) return "sidelined";
-  if (severity === "moderate" || (typeof severity === "number" && severity >= 35)) return "hampered";
+
+  if (severity === "serious" || (typeof severity === "number" && severity >= 75)) return "moving_gingerly";
+  if (typeof severity === "number" && severity >= 50) return "favoring_it";
+  if (severity === "moderate" || (typeof severity === "number" && severity >= 25)) return "hampered";
   return "taped_up";
 }
 

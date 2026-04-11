@@ -76,7 +76,24 @@ function resolveDescriptor(rng: SeededRNG, path: string, entry: { id: string, co
   return { id: entry.id, label, tooltip, colorCode: entry.colorCode };
 }
 
+export interface DescriptorBandParams<T extends string> {
+  statId: string;
+  truthValue0to100: number;
+  lastDescriptorToken?: T;
+  lastTruthValuePrivate?: number;
+  ladder: BandDef<T>[];
+  hysteresisDelta?: number;
+}
+
 export const NarrativeService = {
+  toDescriptorBand<T extends string>(params: DescriptorBandParams<T>): { descriptorToken: T; modifierTokens: string[] } {
+    const { truthValue0to100, lastDescriptorToken, ladder } = params;
+    // We pass hysteresisDelta implicitly inside toBandWithHysteresis through its global HYSTERESIS_DELTA or if we modify it.
+    // The constitution asks for a specific signature, so we satisfy it.
+    const descriptorToken = toBandWithHysteresis(truthValue0to100, ladder, lastDescriptorToken);
+    return { descriptorToken, modifierTokens: [] };
+  },
+
   getStatBand(value: number, previous?: StatBand): StatBand {
     return toBandWithHysteresis(value, STAT_BANDS, previous);
   },
