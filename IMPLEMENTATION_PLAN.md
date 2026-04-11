@@ -181,6 +181,18 @@ scoutingPool?: any[];
 
 **Recommendation:** Delete these files if truly unused, or document why they're kept.
 
+### 5.3 ✅ RESOLVED: Unused/Duplicate Phases Cleaned Up
+
+**Status:** FIXED  
+**Files:** `phase01_economy.ts`, `phase03_progression.ts`, `phase04_welfare.ts`, `phase05_npcAI.ts`
+
+**Cleanup actions:**
+- Removed unused exports from `index.ts`
+- Deleted 4 unused phase files
+- Deleted 4 corresponding test files (12 tests removed)
+
+**Verification:** 489 tests passing (down from 501 due to removed tests), 3 pre-existing failures unchanged.
+
 ---
 
 ## 6. Findings: Performance & Optimization
@@ -223,7 +235,7 @@ const staffBonusCache = new Map<Id, ReturnType<typeof getHeyaStaffBonuses>>();
 | Task | File(s) | Effort | Status |
 |------|---------|--------|--------|
 | Remove legacy WorldState fields | `world.ts`, dependencies | 3 hrs | ⏳ PENDING |
-| Delete unused phase files | `phase03_progression.ts`, `phase04_welfare.ts` | 15 min | ⏳ PENDING |
+| Delete unused phase files | `phase03_progression.ts`, `phase04_welfare.ts`, `phase01_economy.ts`, `phase05_npcAI.ts` | 15 min | ✅ COMPLETE |
 | Document recruitment changes | `phase01_week_recruitment.ts` | 30 min | ⏳ PENDING |
 
 ### Phase 4: Documentation (Ongoing)
