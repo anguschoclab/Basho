@@ -29,7 +29,7 @@ import type { HoFInductee } from "../engine/hallOfFame";
 import type { MediaState } from "../engine/types/media";
 import * as talentpool from "../engine/systems/generation/TalentPoolService";
 import { warmScoutingForRikishiList, getOrCreateScouted, getScoutingLevel } from "../engine/scoutingStore";
-import { getScoutedAttributes, describeScoutingLevel } from "../engine/scouting";
+import { getScoutedAttributes, describeScoutingLevel } from "../engine";
 import { RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
 import { getHeyaRoster, getSekitoriInHeya } from "../engine/queries";
 import { buildPerceptionSnapshot } from "../engine/perception";
@@ -451,7 +451,7 @@ export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
 export { describeAggression, describeAttribute, describeExperience, describeTrainingEffect } from "../engine/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
-export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/scouting";
+export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine";
 
 /**
  * Resolves a localized label for a given registry domain and ID.
@@ -461,7 +461,8 @@ export function resolveRegistryLabel(domain: string, id: string, useJa: boolean 
   if (!entry) return id;
   return useJa ? entry.labelJa ?? entry.label : entry.label;
 }
-export { FOCUS_BIAS_MATRIX, INTENSITY_MULTIPLIERS, PHASE_EFFECTS, RECOVERY_MULTIPLIERS, createDefaultTrainingState, ensureHeyaTrainingState, getCareerPhase, getFocusLabel, getFocusModeLabel, getIntensityLabel, getRecoveryLabel } from "../engine/training";
+export { FOCUS_BIAS_MATRIX, INTENSITY_MULTIPLIERS, PHASE_EFFECTS, RECOVERY_MULTIPLIERS, createDefaultTrainingState, ensureHeyaTrainingState, getFocusLabel, getFocusModeLabel, getIntensityLabel, getRecoveryLabel } from "../engine/systems/training/TrainingService";
+export { getCareerPhase } from "../engine/systems/training/TrainingMath";
 export { BASHO_CALENDAR, getBashoByNumber, getBashoIndex, getDayName, getSeasonalFlavor, isKeyDay } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
 export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
@@ -512,7 +513,7 @@ export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
 export { clamp, clampInt } from "../engine/utils";
 export { clearInjury, toInjuryEvent } from "../engine/systems/health/InjuryService";
 export { deleteSave, exportSave, importSave } from "../engine/saveload";
-export { ensureHeyaWelfareState } from "../engine/welfare";
+export { ensureHeyaWelfareState } from "../engine/systems/welfare/WelfareService";
 export { formatEventTime, formatFinePenalty, formatSaveDate, formatStance } from "../engine/utils/formatters";
 export { generateH2HCommentary } from "../engine/h2h";
 export { generateNarrative } from "../engine/narrative";
@@ -753,12 +754,12 @@ export function projectDashboardUIDigest(world: WorldState) {
   // Top 3 rivals (using cached perception to avoid re-calculating)
   const topRivals = selectTopRivals(world).slice(0, 3);
 
-  // Financial summary
+  const deltas = world.transientContext?.deltas;
   const finances = {
     balance: heya.funds,
-    weeklyIncome: 1250000, // Placeholder for actual calc
-    weeklyExpense: 850000, 
-    status: heya.funds > 10000000 ? "stable" : "critical" as const,
+    weeklyIncome: deltas?.revenue ?? 0,
+    weeklyExpense: deltas?.expenses ?? 0, 
+    status: (heya.funds > 10000000 ? "stable" : (heya.funds < 0 ? "critical" : "normal")) as any,
   };
 
   return {

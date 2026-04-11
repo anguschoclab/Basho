@@ -6,24 +6,21 @@
 
 import type { WorldState } from "../../types/world";
 import { WelfareService } from "../../systems/welfare/WelfareService";
-import { stableSort } from "../../utils/sort";
-
-const DIET_COSTS: Record<string, number> = {
-  austerity: 1000,
-  maintenance: 3000,
-  heavy_bulk: 6000,
-  premium: 10000
-};
+import { DIET_COSTS } from "../../constants/EconomicConstants";
 
 export function phase01_daily_economy(world: WorldState): WorldState {
-  const nextHeyas = new Map(world.heyas);
   let totalDailyFoodCost = 0;
+  const nextHeyas = new Map(world.heyas);
 
+  // Only process heyas that have rikishi to deduct food costs
   for (const [id, heya] of world.heyas) {
+    const rikishiCount = heya.rikishiIds?.length ?? 0;
+    if (rikishiCount === 0) continue; // Skip heyas with no rikishi
+
     const welfare = WelfareService.ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = DIET_COSTS[diet] ?? 3000;
-    const dailyFoodCost = (heya.rikishiIds?.length ?? 0) * costPerRikishi;
+    const dailyFoodCost = rikishiCount * costPerRikishi;
     
     totalDailyFoodCost += dailyFoodCost;
     nextHeyas.set(id, { ...heya, funds: heya.funds - dailyFoodCost });

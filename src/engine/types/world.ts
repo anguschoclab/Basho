@@ -47,8 +47,13 @@ export interface TickDeltas {
 
 /** Ephemeral context injected into WorldState for the duration of a tick. */
 export interface TransientContext {
-  activeModifiers: ActiveModifiers;
-  deltas: TickDeltas;
+  activeModifiers?: ActiveModifiers;
+  deltas?: TickDeltas;
+  boundaries?: {
+    monthBoundary: boolean;
+    yearBoundary: boolean;
+  };
+  lastReport?: any;
 }
 
 /** Defines the structure for recruitment window. */
@@ -73,10 +78,10 @@ import type { HallOfFameState } from '../hallOfFame';
 import type { HistoryIndex } from '../historyIndex';
 import type { Staff } from './staff';
 import type { SeededRNG } from '../rng';
-import type { ScoutedRikishi } from '../scouting';
+import type { ScoutedRikishi } from '../systems/recruitment/ScoutingService';
 import type { AlmanacSnapshot } from '../almanac';
 import type { OzekiKadobanMap } from '../banzuke';
-import type { SponsorPool } from '../sponsors';
+import type { SponsorPool } from './sponsors';
 import type { MediaState } from './media';
 import type { PerceptionSnapshot } from '../perception';
 import type { RivalriesState } from '../rivalries';

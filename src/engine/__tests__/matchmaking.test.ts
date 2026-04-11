@@ -4,7 +4,7 @@ import {
   scorePairing,
   buildCandidatePairs,
   type MatchPairing,
-} from "../matchmaking";
+} from "../matchmaking/index";
 import { mockRikishi } from "./utils";
 import type { BashoState } from "../types/basho";
 import type { Rikishi } from "../types/rikishi";

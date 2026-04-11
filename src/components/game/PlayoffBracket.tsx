@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Swords, ChevronRight } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
-import type { MatchSchedule, WorldState } from "@/engine/types";
+import type { MatchSchedule, WorldState } from "@/engine/types/index";
 
 interface PlayoffBracketProps {
   matches: MatchSchedule[];

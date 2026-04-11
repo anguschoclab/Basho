@@ -16,7 +16,7 @@ import {
   buildSwissTorikumi,
   type MatchPairing,
   type MatchmakingRules,
-} from "./matchmaking";
+} from "./matchmaking/index";
 
 /** Defines the structure for division schedule config. */
 export interface DivisionScheduleConfig {

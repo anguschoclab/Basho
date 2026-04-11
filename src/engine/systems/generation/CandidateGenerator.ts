@@ -131,6 +131,56 @@ export function generateFullRikishi(args: {
   } as Rikishi;
 }
 
+/**
+ * Promotes a scouting candidate to a full Rikishi.
+ * Used for both player and NPC materialization.
+ */
+export function promoteCandidateToRikishi(args: {
+  candidate: any; // TalentCandidate
+  heyaId: string;
+  rng: SeededRNG;
+}): Rikishi {
+  const { candidate, heyaId, rng } = args;
+
+  const archetype = candidate.archetype;
+  const profile = candidate.combatProfile;
+  
+  // New recruits start at the very bottom
+  const rank: Rank = "jonokuchi";
+  const division: Division = "jonokuchi";
+  const side: Side = "east";
+  const rankNumber = 20 + rng.int(0, 5); // Bottom of jonokuchi
+
+  // Generate Jonokuchi-level stats based on their potential archetype
+  const statsBase = generateRikishiStats({ rng, rank, profile });
+
+  const rikishiStats: RikishiStats = {
+    ...statsBase,
+    achievements: {
+      kinboshiEarned: 0,
+      ginboshiEarned: 0,
+      kinboshiConceded: 0,
+      ginboshiConceded: 0,
+      specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+    }
+  };
+
+  const name = candidate.name;
+  const birthYear = candidate.birthYear;
+
+  const rikishi = {
+    ...createBaseInfo(candidate.candidateId, name, birthYear, rank, rankNumber, division, side, statsBase.height, statsBase.weight, rng),
+    ...createCombatStats(rikishiStats, division, archetype, profile),
+    ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }, division)
+  } as Rikishi;
+
+  rikishi.heyaId = heyaId;
+  rikishi.nationality = candidate.nationality;
+  rikishi.talentSeed = candidate.talentSeed;
+
+  return rikishi;
+}
+
 
 // --- Refactored Helper Functions ---
 

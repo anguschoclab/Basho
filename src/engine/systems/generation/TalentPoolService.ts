@@ -309,14 +309,83 @@ export function fillVacanciesForNPC(
           pool.candidatesVisible[rng.int(0, pool.candidatesVisible.length - 1)];
         const c = tp.candidates[cId];
         if (c && c.availabilityState === "available") {
-          // DESIGN: NPC fast-path signing.
-          // To ensure NPC world stabilization and prevent roster collapse, NPCs bypass the
-          // multi-week negotiation phase and sign candidates directly. This is the final intended design.
+          // NPC fast-path signing: bypass multi-week negotiation to stabilize world
           c.availabilityState = "signed";
           c.competingSuitors = [{ heyaId, offerType: "standard", interestBand: "high", deadlineWeek: world.week }];
-          // TODO: Ensure the logic for converting this signed Candidate into a full Rikishi correctly triggers before the next basho
+          
+          // Materialize immediately for NPCs to keep the banzuke populated
+          materializeCandidateToRikishi(world, cId, heyaId);
         }
       }
+    }
+  }
+}
+
+/**
+ * Converts a signed candidate into a full Rikishi entity and adds them to the world.
+ */
+export function materializeCandidateToRikishi(
+  world: WorldState,
+  candidateId: Id,
+  heyaId: Id,
+): Rikishi | null {
+  const tp = ensureTalentPoolState(world);
+  const candidate = tp.candidates[candidateId];
+  if (!candidate) return null;
+
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
+  const rikishi = promoteCandidateToRikishi({ candidate, heyaId, rng });
+
+  // 1. Inject into world
+  world.rikishi.set(rikishi.id, rikishi);
+
+  // 2. Link to heya
+  const heya = world.heyas.get(heyaId);
+  if (heya) {
+    if (!heya.rikishiIds) heya.rikishiIds = [];
+    if (!heya.rikishiIds.includes(rikishi.id)) {
+      heya.rikishiIds.push(rikishi.id);
+    }
+  }
+
+  // 3. Remove from talent pool
+  delete tp.candidates[candidateId];
+  
+  // Cleanup Visible/Hidden lists
+  const pool = tp.pools[candidate.poolType as TalentPoolType];
+  if (pool) {
+    pool.candidatesVisible = pool.candidatesVisible.filter(id => id !== candidateId);
+    pool.candidatesHidden = pool.candidatesHidden.filter(id => id !== candidateId);
+  }
+
+  // 4. Fire event
+  EventBus.recruitDiscovered(world, {
+    rikishiId: rikishi.id,
+    heyaId: heyaId,
+    shikona: rikishi.shikona,
+    heya: heya?.name,
+    status: "materialized"
+  });
+
+  return rikishi;
+}
+
+/**
+ * Materializes all signed candidates in the world (e.g. at the start of a basho).
+ */
+export function materializeAllSignedCandidates(world: WorldState): void {
+  const tp = world.talentPool;
+  if (!tp) return;
+
+  const signedIds = Object.values(tp.candidates)
+    .filter(c => c.availabilityState === "signed")
+    .map(c => c.candidateId);
+
+  for (const cId of signedIds) {
+    const candidate = tp.candidates[cId];
+    const suitor = candidate?.competingSuitors?.[0];
+    if (suitor) {
+      materializeCandidateToRikishi(world, cId, suitor.heyaId);
     }
   }
 }

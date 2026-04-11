@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   HandCoins, Crown, Building2, Users, TrendingDown, Star
 } from "lucide-react";
-import type { Sponsor, SponsorRelationship, SponsorTier, Koenkai } from "@/engine/sponsors";
+import type { Sponsor, SponsorRelationship, SponsorTier, Koenkai } from "@/engine/types/sponsors";
 
 const TIER_LABELS: Record<SponsorTier, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
