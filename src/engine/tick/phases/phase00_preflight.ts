@@ -13,6 +13,7 @@ import { rngFromSeed } from "../../rng";
 import { BardEngine } from "../../narrative/BardEngine";
 import * as schedule from "../../schedule";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
+import { clearQueryCaches } from "../../queries";
 
 export function phase00_preflight(world: WorldState): WorldState {
   // 1. Shallow clone for base properties
@@ -27,6 +28,13 @@ export function phase00_preflight(world: WorldState): WorldState {
   // 3. Advance calendar (day) - Purely
   const { calendar, monthBoundary, yearBoundary } = advanceCalendarDay(world);
   nextWorld.calendar = calendar;
+  
+  // Clear memoization caches when week changes
+  const currentWeek = calendar.currentWeek ?? world.week;
+  if (currentWeek !== world.week) {
+    clearQueryCaches();
+  }
+  nextWorld.week = currentWeek;
   
   // Store boundaries and fresh working context in transient context for the pipeline
   nextWorld.transientContext = {

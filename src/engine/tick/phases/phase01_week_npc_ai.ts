@@ -32,6 +32,9 @@ export function phase01_week_npc_ai(world: WorldState): WorldState {
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
   const playerHeyaId = world.playerHeyaId;
 
+  // Collect events to fire after loop (avoid mutation during iteration)
+  const events: any[] = [];
+
   for (const heya of getAvailableStables(world)) {
     if (heya.id === playerHeyaId) continue;
 
@@ -55,23 +58,37 @@ export function phase01_week_npc_ai(world: WorldState): WorldState {
       if (newMood) nextOya.mood = newMood;
 
       if (oldMood !== newMood) {
-        EventBus.oyakataMoodShift(world, heya.id, { oldMood, newMood });
+        events.push({
+          type: 'oyakataMoodShift',
+          heyaId: heya.id,
+          oldMood,
+          newMood
+        });
       }
 
       scoutingMap[heya.id] = decision.scoutingPriority;
 
-      EventBus.managementDecision(world, heya.id, {
-        archetype: decision.archetype,
-        intensity: decision.trainingIntensity,
-        focus: decision.trainingFocus,
-        recovery: decision.recovery,
-        scouting: decision.scoutingPriority,
-        protectedCount: decision.individualProtects.length,
-        reasoningLog: decision.reasoning.join(" | ")
-      }, decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor");
+      events.push({
+        type: 'managementDecision',
+        heyaId: heya.id,
+        ctx: {
+          archetype: decision.archetype,
+          intensity: decision.trainingIntensity,
+          focus: decision.trainingFocus,
+          recovery: decision.recovery,
+          scouting: decision.scoutingPriority,
+          protectedCount: decision.individualProtects.length,
+          reasoningLog: decision.reasoning.join(" | ")
+        },
+        importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor"
+      });
 
       if (decision.trainingIntensity === "punishing") {
-        EventBus.strategyShift(world, heya.id, { intensity: "punishing", reasoning: decision.reasoning[0] });
+        events.push({
+          type: 'strategyShift',
+          heyaId: heya.id,
+          ctx: { intensity: "punishing", reasoning: decision.reasoning[0] }
+        });
       }
 
       nextOyakata.set(nextOya.id, nextOya);
@@ -85,9 +102,20 @@ export function phase01_week_npc_ai(world: WorldState): WorldState {
     npcScoutingPriorities: scoutingMap
   };
 
+  // Fire all events after loop (on new world state)
+  for (const event of events) {
+    if (event.type === 'oyakataMoodShift') {
+      EventBus.oyakataMoodShift(nextWorld, event.heyaId, { oldMood: event.oldMood, newMood: event.newMood });
+    } else if (event.type === 'managementDecision') {
+      EventBus.managementDecision(nextWorld, event.heyaId, event.ctx, event.importance);
+    } else if (event.type === 'strategyShift') {
+      EventBus.strategyShift(nextWorld, event.heyaId, event.ctx);
+    }
+  }
+
   // 5. Finalize Roster Integrity
   // Note: hard cap overflow might mutate, but we'll assume it handles maps correctly or we'll wrap it
-  nextWorld = enforceHardCapRosterOverflow(nextWorld);
+  enforceHardCapRosterOverflow(nextWorld);
 
   return nextWorld;
 }
@@ -124,7 +152,7 @@ function consolidateOyakataMemoryPure(world: WorldState, oyakata: any, perceptio
   }
 
   if (memory.observations.length > 10) {
-    memory.observations.sort((a, b) => b.importance - a.importance);
+    memory.observations.sort((a: any, b: any) => b.importance - a.importance);
     memory.observations = memory.observations.slice(0, 10);
   }
 

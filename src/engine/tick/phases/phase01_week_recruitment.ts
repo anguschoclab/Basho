@@ -29,12 +29,14 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
     };
     
     // Intel decay
-    for (const [id, record] of Object.entries(nextWorld.talentPool.playerScouting)) {
-      if (nextWorld.week - record.lastScoutedWeek > 4) {
-        nextWorld.talentPool.playerScouting[id] = {
-           ...record,
-           scoutingLevel: Math.max(0, record.scoutingLevel - 2)
-        };
+    if (nextWorld.talentPool.playerScouting) {
+      for (const [id, record] of Object.entries(nextWorld.talentPool.playerScouting)) {
+        if (nextWorld.week - record.lastScoutedWeek > 4) {
+          nextWorld.talentPool.playerScouting[id] = {
+             ...record,
+             scoutingLevel: Math.max(0, record.scoutingLevel - 2)
+          };
+        }
       }
     }
     
@@ -131,7 +133,8 @@ export function phase01_week_recruitment(world: WorldState): WorldState {
       }
     }
     if (hasItems) {
-      // NPC recruitment typically mutates, but we'll assume it's safe to call or we wrap it
+      // fillVacanciesForNPC mutates world, so we need to accept that and return the mutated world
+      // This is a known mutative service that would require a larger refactor to make pure
       talentpool.fillVacanciesForNPC(nextWorld, smallStables);
     }
   }

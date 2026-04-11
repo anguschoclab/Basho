@@ -25,6 +25,10 @@ export function phase01_week_welfare(world: WorldState): WorldState {
   const nextHeyas = new Map(world.heyas);
   const week = world.calendar.currentWeek || 0;
 
+  // Collect events and media pressure changes to apply after loop
+  const events: any[] = [];
+  const mediaPressureChanges: Record<string, number> = {};
+
   for (const [id, heya] of world.heyas) {
     const nextHeya = { ...heya };
     
@@ -41,7 +45,7 @@ export function phase01_week_welfare(world: WorldState): WorldState {
     nextState.lastReviewedWeek = week;
 
     // 2. Transition Logic (Inlined/Refactored for purity)
-    orchestrateTransitionsPure(world, nextHeya, nextState, reasons);
+    orchestrateTransitionsPure(world, nextHeya, nextState, reasons, events, mediaPressureChanges);
 
     // 3. Risk indicator Update
     nextHeya.riskIndicators = {
@@ -54,25 +58,65 @@ export function phase01_week_welfare(world: WorldState): WorldState {
     // 4. Material Shift logging
     const riskUp = nextState.welfareRisk - beforeRisk;
     if (Math.abs(riskUp) >= 8) {
-      EventBus.welfareCompliance(world, nextHeya.id, { 
-        heyaname: nextHeya.name, 
+      events.push({
+        type: 'welfareCompliance',
+        heyaId: nextHeya.id,
+        heyaname: nextHeya.name,
         status: "risk_shift",
-        risk: nextState.welfareRisk, 
-        delta: riskUp, 
-        reason: reasons.join("|") 
+        risk: nextState.welfareRisk,
+        delta: riskUp,
+        reason: reasons.join("|")
       });
     }
 
     nextHeyas.set(id, nextHeya);
   }
 
-  return {
+  // Apply collected events and media pressure changes
+  let nextWorld = {
     ...world,
     heyas: nextHeyas
   };
+
+  // Apply media pressure changes
+  if (Object.keys(mediaPressureChanges).length > 0) {
+    const nextMediaState = nextWorld.mediaState 
+      ? { ...nextWorld.mediaState, heyaPressure: { ...nextWorld.mediaState.heyaPressure } as Record<string, number> }
+      : undefined;
+    if (nextMediaState) {
+      for (const [heyaId, delta] of Object.entries(mediaPressureChanges)) {
+        nextMediaState.heyaPressure[heyaId] = Math.min(100, (nextMediaState.heyaPressure[heyaId] ?? 0) + delta);
+      }
+      nextWorld = { ...nextWorld, mediaState: nextMediaState };
+    }
+  }
+
+  // Apply collected events
+  for (const event of events) {
+    if (event.type === 'welfareCompliance') {
+      EventBus.welfareCompliance(nextWorld, event.heyaId, {
+        heyaname: event.heyaname,
+        status: event.status,
+        risk: event.risk,
+        delta: event.delta,
+        reason: event.reason
+      });
+    } else if (event.type === 'welfareComplianceWithImportance') {
+      EventBus.welfareCompliance(nextWorld, event.heyaId, event.ctx);
+    } else if (event.type === 'governanceHeadline') {
+      generateGovernanceHeadline({
+        world: nextWorld,
+        heyaId: event.heyaId,
+        templatePath: 'institutional.governance.welfare_headline',
+        severity: event.severity
+      });
+    }
+  }
+
+  return nextWorld;
 }
 
-function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: WelfareState, reasons: string[]): void {
+function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: WelfareState, reasons: string[], events: any[], mediaPressureChanges: Record<string, number>): void {
   const { seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
   const hasNegligence = negligenceCount > 0;
   const week = world.calendar.currentWeek || 0;
@@ -82,17 +126,25 @@ function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: Welfar
       const watchThreshold = hasNegligence ? 30 : 45;
       if (state.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && state.welfareRisk >= 20)) {
         setComplianceStatePure(state, "watch");
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
-          status: "watch",
-          incident: hasNegligence ? "negligence_suspected" : "standard_watch", 
-          reason: reasons.join("|") 
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            heyaname: heya.name,
+            status: "watch",
+            incident: hasNegligence ? "negligence_suspected" : "standard_watch",
+            reason: reasons.join("|")
+          },
+          importance: "notable"
         });
 
-        generateGovernanceHeadline(world, heya.id, "minor", "Heya placed under regulatory watch for welfare concerns.");
-        if (world.mediaState) {
-          world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 15);
-        }
+        events.push({
+          type: 'governanceHeadline',
+          heyaId: heya.id,
+          severity: "national",
+          message: "Heya placed under regulatory watch for welfare concerns."
+        });
+        mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 15;
       }
       break;
 
@@ -105,22 +157,35 @@ function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: Welfar
           triggers: reasons,
           progress: 0
         };
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
-          status: "investigation_opened",
-          risk: state.welfareRisk 
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            heyaname: heya.name,
+            status: "investigation_opened",
+            risk: state.welfareRisk
+          },
+          importance: "notable"
         });
 
-        generateGovernanceHeadline(world, heya.id, "major", `Full-scale investigation opened into ${heya.name}.`);
-        if (world.mediaState) {
-          world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 30);
-        }
+        events.push({
+          type: 'governanceHeadline',
+          heyaId: heya.id,
+          severity: "national",
+          message: `Full-scale investigation opened into ${heya.name}.`
+        });
+        mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 30;
       } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
         setComplianceStatePure(state, "compliant");
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
-          status: "cleared",
-          risk: state.welfareRisk 
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            heyaname: heya.name,
+            status: "cleared",
+            risk: state.welfareRisk
+          },
+          importance: "notable"
         });
       }
       break;
@@ -141,25 +206,37 @@ function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: Welfar
 
         heya.funds = (heya.funds ?? 0) - fineYen;
 
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
-          status: "sanctioned",
-          risk: state.welfareRisk, 
-          money: fineYen
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            heyaname: heya.name,
+            status: "sanctioned",
+            risk: state.welfareRisk,
+            money: fineYen
+          },
+          importance: "notable"
         });
 
-        // Simplified media call for pure phase
-        generateGovernanceHeadline(world, heya.id, "critical", `Sanctions imposed on ${heya.name} for welfare violations.`);
-        if (world.mediaState) {
-          world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 50);
-        }
+        events.push({
+          type: 'governanceHeadline',
+          heyaId: heya.id,
+          severity: "national",
+          message: `Sanctions imposed on ${heya.name} for welfare violations.`
+        });
+        mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 50;
       } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
         setComplianceStatePure(state, "watch");
         state.investigation = undefined;
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
-          status: "investigation_closed",
-          risk: state.welfareRisk 
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            heyaname: heya.name,
+            status: "investigation_closed",
+            risk: state.welfareRisk
+          },
+          importance: "notable"
         });
       }
       break;
@@ -172,10 +249,15 @@ function orchestrateTransitionsPure(world: WorldState, heya: Heya, state: Welfar
       if (freezeDone && state.welfareRisk <= 45 && state.weeksInState >= 4) {
         setComplianceStatePure(state, "watch");
         state.sanctions = undefined;
-        EventBus.welfareCompliance(world, heya.id, {
-          status: "sanctions_lifted",
-          heyaname: heya.name,
-          risk: state.welfareRisk
+        events.push({
+          type: 'welfareComplianceWithImportance',
+          heyaId: heya.id,
+          ctx: {
+            status: "sanctions_lifted",
+            heyaname: heya.name,
+            risk: state.welfareRisk
+          },
+          importance: "notable"
         });
       }
       break;

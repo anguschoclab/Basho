@@ -24,20 +24,22 @@ export function phase01_week_rivalries(world: WorldState): WorldState {
     const week = nextWorld.calendar.currentWeek || 0;
 
     for (const key in nextWorld.rivalriesState.pairs) {
-      const pair = { ...nextWorld.rivalriesState.pairs[key] };
+      const pair = nextWorld.rivalriesState.pairs[key];
       const weeksSince = week - (pair.lastMetWeek || 0);
+      
+      // Skip decay for already cold pairs (optimization)
+      const isCold = pair.heat < 5 && pair.meetings < 2 && weeksSince > 30;
+      if (isCold) continue;
+
+      const nextPair = { ...pair };
       const decay = weeksSince <= 4 ? 0.5 : weeksSince <= 12 ? 1.0 : 1.5;
 
-      pair.heat = clamp(pair.heat - decay, 0, 100);
-      pair.closeness = clamp(pair.closeness - 0.25, 0, 100);
-      pair.spite = clamp(pair.spite - 0.35, 0, 100);
-      pair.tone = deriveTone(pair);
+      nextPair.heat = clamp(nextPair.heat - decay, 0, 100);
+      nextPair.closeness = clamp(nextPair.closeness - 0.25, 0, 100);
+      nextPair.spite = clamp(nextPair.spite - 0.35, 0, 100);
+      nextPair.tone = deriveTone(nextPair);
 
-      // Auto-cull cold rivalries
-      const isCold = pair.heat < 5 && pair.meetings < 2 && weeksSince > 30;
-      if (!isCold) {
-        nextPairs[key] = pair;
-      }
+      nextPairs[key] = nextPair;
     }
 
     nextWorld.rivalriesState = {
@@ -47,14 +49,14 @@ export function phase01_week_rivalries(world: WorldState): WorldState {
   }
 
   // 2. Event Log Trimming
-  if (nextWorld.eventState) {
-    const eventsState = { ...nextWorld.eventState };
+  if (nextWorld.events) {
+    const eventsState = { ...nextWorld.events };
     const currentYear = nextWorld.calendar?.year ?? nextWorld.year ?? 2025;
     const currentWeek = nextWorld.calendar?.currentWeek ?? nextWorld.week ?? 0;
     const MAX_AGE_WEEKS = 52;
     const currentTotalWeeks = currentYear * 52 + currentWeek;
 
-    const newLog = eventsState.log.filter(ev => {
+    const newLog = eventsState.log.filter((ev: any) => {
       const evTotalWeeks = ev.year * 52 + ev.week;
       const ageWeeks = currentTotalWeeks - evTotalWeeks;
       const isHeadline = ev.importance === "headline";
@@ -66,7 +68,7 @@ export function phase01_week_rivalries(world: WorldState): WorldState {
 
     // Note: Dedupe cleanup is harder without mutation, so we'll just return the log for now
     // or we can recreate the dedupe set.
-    nextWorld.eventState = {
+    nextWorld.events = {
       ...eventsState,
       log: newLog
     };

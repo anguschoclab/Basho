@@ -13,13 +13,11 @@
  */
 
 import type { WorldState } from "../../types/world";
-import * as npcAI from "../../npcAI";
+import { phase01_week_npc_ai } from "./phase01_week_npc_ai";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
 export function phase05_npcAI(world: WorldState): WorldState {
-  // tickWeekNPC mutates world in place — we received a clone from pipelineRunner
-  // so mutation here is safe (the clone IS our "next world")
-  npcAI.tickWeekNPC?.(world);
-  return world;
+  // Delegate to the pure implementation in phase01_week_npc_ai
+  return phase01_week_npc_ai(world);
 }

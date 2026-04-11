@@ -14,11 +14,15 @@ export function phase01_daily_sponsors(world: WorldState): WorldState {
   const pool = world.sponsorPool;
   if (!pool?.sponsors) return world;
 
-  const rng = RNGRegistry.getSystemRNG(world, "sponsors", `day-${world.dayIndexGlobal}`);
+  const rng = RNGRegistry.getSystemRNG(world, "economics", `sponsors-day-${world.dayIndexGlobal}`);
 
-  // iterate through all sponsors and apply micro-shifts
-  for (const sponsor of pool.sponsors.values()) {
-    if (!sponsor.active) continue;
+  // Clone sponsor pool map and sponsors to avoid mutation
+  const nextSponsors = new Map(pool.sponsors);
+  for (const [id, sponsor] of pool.sponsors) {
+    if (!sponsor.active) {
+      nextSponsors.set(id, sponsor);
+      continue;
+    }
 
     // Daily jitter: +/- 0.5% satisfaction
     const jitter = (rng.next() - 0.5) * 1.0;
@@ -27,9 +31,18 @@ export function phase01_daily_sponsors(world: WorldState): WorldState {
     // In a full implementation, we'd check transientContext for recent wins
     
     // For now, let's just use the jitter to simulate an organic pulse
-    sponsor.satisfaction = Math.min(100, Math.max(0, (sponsor.satisfaction ?? 50) + jitter));
+    const nextSponsor = {
+      ...sponsor,
+      satisfaction: Math.min(100, Math.max(0, (sponsor.satisfaction ?? 50) + jitter))
+    };
+    nextSponsors.set(id, nextSponsor);
   }
 
-
-  return world;
+  return {
+    ...world,
+    sponsorPool: {
+      ...pool,
+      sponsors: nextSponsors
+    }
+  };
 }
