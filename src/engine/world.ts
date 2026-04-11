@@ -232,33 +232,93 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
     if (history.kantosho === id) prizePoints += 1;
 
     // Yokozuna promotion logic based on real sumo criteria
-    // Real sumo: Yokozuna promotion is extremely rare and requires exceptional performance
+    // Standard: 2 consecutive yusho OR 1 yusho + 1 jun-yusho (13+ wins both)
     let promoteToYokozuna = false;
-    if (rikishi?.rank === "ozeki" && stats.wins >= 12) {
-      // Track consecutive strong performances for ozeki
-      if (!rikishi.consecutiveStrongOzeki) rikishi.consecutiveStrongOzeki = 0;
-      rikishi.consecutiveStrongOzeki++;
+    if (rikishi?.rank === "ozeki") {
+      const currentWins = stats.wins;
+      const history = rikishi.history || [];
+      const lastBashoPerf = history[history.length - 1];
+      
+      const wonPrevious = lastBashoPerf?.yusho === true;
+      const wasJunYushoPrevious = lastBashoPerf?.junYusho === true;
+      const lastWins = lastBashoPerf?.wins || 0;
 
-      // Promotion requires: 3 consecutive yusho OR 4 consecutive 15+ win performances
-      // This is extremely strict to match real sumo rarity
-      if (isYusho && rikishi.consecutiveStrongOzeki >= 3) {
-        promoteToYokozuna = true;
-      } else if (!isYusho && rikishi.consecutiveStrongOzeki >= 4 && stats.wins >= 15) {
+      // Promotion Case 1: 2 Consecutive Yusho
+      if (isYusho && wonPrevious) {
         promoteToYokozuna = true;
       }
-    } else if (rikishi?.rank === "ozeki") {
-      rikishi.consecutiveStrongOzeki = 0;
+      // Promotion Case 2: 1 Yusho + 1 Jun-Yusho (13+ wins both)
+      else if ((isYusho && wasJunYushoPrevious && lastWins >= 13) || (isJunYusho && wonPrevious && currentWins >= 13)) {
+        promoteToYokozuna = true;
+      }
+      // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
+      else if (rikishi.consecutiveStrongOzeki! >= 3 && (isYusho || wonPrevious)) {
+        promoteToYokozuna = true;
+      }
+
+      // Track consecutive strong performances (12+) for borderline cases
+      if (currentWins >= 12) {
+        rikishi.consecutiveStrongOzeki = (rikishi.consecutiveStrongOzeki || 0) + 1;
+      } else {
+        rikishi.consecutiveStrongOzeki = 0;
+      }
+
+      // Narrative: Yokozuna Watch
+      if (isYusho && !promoteToYokozuna) {
+        EventBus.mediaEvent(world, {
+          rikishiId: id,
+          heyaId: rikishi.heyaId,
+          type: "narrative",
+          path: "media.yokozuna_watch",
+          severity: "national",
+          description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`
+        });
+      }
     }
 
-    // Yokozuna make-koshi tracking for retirement pressure
+    // Yokozuna make-koshi and kyujo tracking for retirement pressure
     // Real sumo: Yokozuna with consecutive losing records face retirement pressure
     if (rikishi?.rank === "yokozuna") {
-      const isMakeKoshi = stats.wins < 10; // Make-koshi threshold for yokozuna (higher than other ranks)
-      if (!rikishi.consecutiveMakeKoshi) rikishi.consecutiveMakeKoshi = 0;
-      if (isMakeKoshi) {
-        rikishi.consecutiveMakeKoshi++;
+      const isMakeKoshi = stats.wins < 8; // Official make-koshi
+      const isKyujo = stats.absences >= 15; // Full tournament miss
+      const subPar = stats.wins < 10; // Fails to meet "Yokozuna standard"
+
+      if (isMakeKoshi || isKyujo) {
+        rikishi.consecutiveMakeKoshi = (rikishi.consecutiveMakeKoshi || 0) + 1;
       } else {
         rikishi.consecutiveMakeKoshi = 0;
+      }
+
+      if (isKyujo) {
+        (rikishi as any).consecutiveKyujo = ((rikishi as any).consecutiveKyujo || 0) + 1;
+      } else {
+        (rikishi as any).consecutiveKyujo = 0;
+      }
+
+      // Council Recommendation / Warning Logic
+      if (subPar || isKyujo) {
+        rikishi.pressureScore = (rikishi.pressureScore || 0) + 1;
+        
+        // Every 2 "sub-par" performances = 1 Council Warning
+        if (rikishi.pressureScore % 2 === 0) {
+          (rikishi as any).councilWarnings = ((rikishi as any).councilWarnings || 0) + 1;
+          
+          // Apply Stat Debuff: 10% reduction in Mental and Technique (Dignity loss)
+          rikishi.stats.mental *= 0.9;
+          rikishi.stats.technique *= 0.9;
+          // Sync flattened fields
+          rikishi.aggression = rikishi.stats.mental;
+          rikishi.technique = rikishi.stats.technique;
+
+          EventBus.mediaEvent(world, {
+            rikishiId: id,
+            heyaId: rikishi.heyaId,
+            type: "narrative",
+            path: "media.yokozuna_warning",
+            severity: "national",
+            description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`
+          });
+        }
       }
     }
 

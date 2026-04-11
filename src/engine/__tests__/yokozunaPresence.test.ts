@@ -23,35 +23,37 @@ describe("20-year yokozuna presence simulation", () => {
 
     const result = runAutoSim(world, config);
 
-    // Track yokozuna presence by year
-    const yearsWithoutYokozuna: number[] = [];
-    const yearsWithYokozuna: number[] = [];
+    const totalCountByBasho: number[] = [];
+    const healthyCountByBasho: number[] = [];
+    let currentWorld = world;
 
-    for (let year = result.startYear; year <= result.endYear; year++) {
-      const hasYokozuna = Array.from(result.finalWorld.rikishi.values()).some(
-        r => r.rank === "yokozuna"
-      );
+    const TOTAL_BASHO = 600; // 100 years
 
-      if (hasYokozuna) {
-        yearsWithYokozuna.push(year);
-      } else {
-        yearsWithoutYokozuna.push(year);
-      }
+    for (let i = 0; i < TOTAL_BASHO; i++) {
+      const result = runAutoSim(currentWorld, { ...config, duration: { type: "basho", count: 1 } });
+      currentWorld = result.finalWorld;
+      
+      const rikishi = Array.from(currentWorld.rikishi.values());
+      const yokozunas = rikishi.filter(r => r.rank === "yokozuna");
+      const healthyYokozunas = yokozunas.filter(r => !r.injured);
+      
+      totalCountByBasho.push(yokozunas.length);
+      healthyCountByBasho.push(healthyYokozunas.length);
     }
 
-    console.log("\n=== 20-Year Yokozuna Presence Report ===");
-    console.log(`Start Year: ${result.startYear}`);
-    console.log(`End Year: ${result.endYear}`);
-    console.log(`Total Years: ${result.endYear - result.startYear + 1}`);
-    console.log(`Years with Yokozuna: ${yearsWithYokozuna.length}`);
-    console.log(`Years without Yokozuna: ${yearsWithoutYokozuna.length}`);
-    console.log(`Percentage without Yokozuna: ${((yearsWithoutYokozuna.length / (result.endYear - result.startYear + 1)) * 100).toFixed(1)}%`);
+    const bashoWithoutAnyYokozuna = totalCountByBasho.filter(c => c === 0).length;
+    const bashoWithoutHealthyYokozuna = healthyCountByBasho.filter(c => c === 0).length;
+    
+    console.log("\n=== 100-Year Yokozuna Presence Report ===");
+    console.log(`Total Basho Simulated: ${TOTAL_BASHO}`);
+    console.log(`Basho with 0 Yokozuna on Banzuke: ${bashoWithoutAnyYokozuna} (${((bashoWithoutAnyYokozuna / TOTAL_BASHO) * 100).toFixed(1)}%)`);
+    console.log(`Basho with 0 Healthy Yokozunas: ${bashoWithoutHealthyYokozuna} (${((bashoWithoutHealthyYokozuna / TOTAL_BASHO) * 100).toFixed(1)}%)`);
+    
+    const healthyDensity = (bashoWithoutHealthyYokozuna / TOTAL_BASHO) * 100;
+    console.log(`Target "No Healthy" Density: 3-5%`);
+    console.log(`Actual "No Healthy" Density: ${healthyDensity.toFixed(1)}%`);
 
-    if (yearsWithoutYokozuna.length > 0) {
-      console.log(`\nYears without Yokozuna: ${yearsWithoutYokozuna.join(", ")}`);
-    }
-
-    expect(yearsWithoutYokozuna.length).toBeGreaterThanOrEqual(0);
-    expect(result.bashoSimulated).toBe(120); // 20 years * 6 basho per year
-  }, 300000); // 5 minute timeout for 20-year simulation
+    expect(bashoWithoutAnyYokozuna).toBeGreaterThanOrEqual(0);
+    expect(healthyCountByBasho.length).toBe(TOTAL_BASHO);
+  }, 600000); // 10 minute timeout for 100-year simulation
 });

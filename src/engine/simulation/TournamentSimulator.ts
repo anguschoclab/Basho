@@ -56,8 +56,28 @@ export function simulateEntireBasho(
       const west = world.rikishi.get(match.westRikishiId);
 
       if (!east || !west) continue;
+      
       if (east.injured || west.injured) {
-        // Fusen-sho/Fusen-paku (standardization point)
+        // Fusen-sho / Fusen-paku (standardization point)
+        const winner = east.injured ? west : east;
+        const loser = east.injured ? east : west;
+        
+        winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
+        loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+
+        const winnerStanding = standings.get(winner.id);
+        const loserStanding = standings.get(loser.id);
+        if (winnerStanding) winnerStanding.wins++;
+        if (loserStanding) loserStanding.losses++;
+        
+        // Add fake bout result for stats consistency
+        match.result = {
+          winner: east.injured ? "west" : "east",
+          kimarite: "fusen", // Special kimarite for default win
+          points: 1,
+          intensity: 0,
+          outcome: "victory"
+        } as any;
         continue;
       }
 

@@ -43,11 +43,26 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
     return "Career-Ending Injury";
   }
 
-  // 3. Yokozuna Make-Koshi Retirement Pressure
-  // Real sumo: Yokozuna with consecutive losing records face retirement pressure
-  if (rikishi.rank === "yokozuna" && rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2) {
-    // 2 consecutive make-koshi = high retirement pressure (80%)
-    if (rng.bool(0.8)) return "Yokozuna Make-Koshi Retirement";
+  // 3. Yokozuna Retirement Pressure (Council Recommendations)
+  if (rikishi.rank === "yokozuna") {
+    const warnings = (rikishi as any).councilWarnings || 0;
+    
+    // 3.1 Council Warning Trigger (Binary)
+    // 3 warnings = mandatory retirement
+    if (warnings >= 3) return "Council Forced Retirement (Lack of Dignity)";
+
+    // 3.2 Performance/Kyujo Pressure
+    // Real sumo: Yokozuna who miss 3 consecutive basho or are consistently weak face pressure
+    const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2;
+    const isAbsentTooLong = (rikishi as any).consecutiveKyujo >= 3;
+
+    if (isWeak || isAbsentTooLong) {
+      // Base chance increases by 30% per warning level
+      const pressureChance = 0.5 + (warnings * 0.2);
+      if (rng.bool(Math.min(0.95, pressureChance))) {
+        return isAbsentTooLong ? "Yokozuna Chronic Injury Retirement" : "Yokozuna Performance Retirement";
+      }
+    }
   }
 
   // 4. Natural Aging Curve (Probability increases with age)
