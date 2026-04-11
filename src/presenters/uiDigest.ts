@@ -524,12 +524,28 @@ export { getStatusColor, getStatusLabel, spendPoliticalCapital } from "../engine
 export { scoutPool, scoutCandidate, offerCandidate, getCandidateScoutingLevel } from "../engine/systems/generation/TalentPoolService";
 export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
 
+const boutIndexCache = new WeakMap<any, Map<string, any>>();
+
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
  * Returns null if the bout or its participants cannot be found.
  */
 export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPreviewUI | null {
-  const match = world.currentBasho?.matches.find(m => m.boutId === boutId);
+  const basho = world.currentBasho;
+  if (!basho) return null;
+
+  let boutMap = boutIndexCache.get(basho.matches);
+  if (!boutMap) {
+    boutMap = new Map();
+    for (const m of basho.matches) {
+      if (m.boutId) {
+        boutMap.set(m.boutId, m);
+      }
+    }
+    boutIndexCache.set(basho.matches, boutMap);
+  }
+
+  const match = boutMap.get(boutId);
   if (!match) return null;
 
   const east = world.rikishi.get(match.eastRikishiId);
