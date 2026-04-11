@@ -150,6 +150,9 @@ export class ImpactBuilder {
     if (!this.impact.deletedEntities) {
       this.impact.deletedEntities = { heyaIds: [], oyakataIds: [], rikishiIds: [] };
     }
+    if (!this.impact.deletedEntities.heyaIds) {
+      this.impact.deletedEntities.heyaIds = [];
+    }
     this.impact.deletedEntities.heyaIds.push(id);
     return this;
   }
