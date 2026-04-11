@@ -13,6 +13,7 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { mergeImpacts } from "../../core/ImpactResolver";
 import { stableSort } from "../../utils/sort";
 import * as talentpool from "../../systems/generation/TalentPoolService";
 
@@ -101,8 +102,8 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
 
   // 5. Finalize signed candidates into full Rikishi
   // This converts "signed" candidates (from resolution or NPC fast-path) into real entities.
-  // Note: finalizeSignedCandidates mutates world
-  talentpool.finalizeSignedCandidates(world);
+  const finalizeImpact = talentpool.finalizeSignedCandidates(world);
 
-  return builder.build();
+  // Merge the finalize impact with the builder's impact
+  return mergeImpacts([builder.build(), finalizeImpact]);
 }
