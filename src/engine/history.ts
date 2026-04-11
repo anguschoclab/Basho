@@ -2,6 +2,8 @@ import { rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { CareerSnapshot } from "./types/history";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 /**
  * Generates a career snapshot for a Rikishi based on their current state and the last basho's results.
@@ -82,16 +84,57 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
 
 /**
  * Updates career history for all active Rikishi.
+ * Returns StateImpact describing history updates instead of mutating state.
  */
-export function runHistoryUpdates(world: WorldState) {
+export function runHistoryUpdates(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('historyUpdates');
+
   for (const rikishi of world.rikishi.values()) {
-    if (!rikishi.careerHistory) rikishi.careerHistory = [];
+    const careerHistory = rikishi.careerHistory || [];
     
-    // Generate and push snapshot
-    rikishi.careerHistory.push(generateCareerSnapshot(world, rikishi));
+    // Generate new snapshot
+    const newSnapshot = generateCareerSnapshot(world, rikishi);
+    const updatedCareerHistory = [...careerHistory, newSnapshot];
     
-    // Check for milestones
-    recordMilestones(world, rikishi);
+    // Record milestones
+    const milestones = rikishi.milestones || [];
+    const year = world.year;
+    const month = world.calendar.month;
+    const lastBasho = world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
+    const rng = rngForWorld(world, "history", `milestone_${rikishi.id}`);
+
+    const updatedMilestones = [...milestones];
+
+    // 1. Yusho Milestone
+    if (lastBasho?.yusho === rikishi.id) {
+      updatedMilestones.push({
+        id: rng.uuid('ML'),
+        type: "yusho",
+        title: "Tournament Champion (優勝)",
+        description: `Won the ${world.currentBashoName || "basho"} with a record of ${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}.`,
+        date: { year, month }
+      });
+    }
+
+    // 2. Career wins milestones (100, 500, etc.)
+    const wins = rikishi.careerWins || 0;
+    if ([100, 500, 700, 1000].includes(wins)) {
+      updatedMilestones.push({
+        id: rng.uuid('ML'),
+        type: "stats_record",
+        title: `${wins} Career Wins`,
+        description: `Reached the landmark of ${wins} career victories.`,
+        date: { year, month }
+      });
+    }
+
+    // Queue rikishi update
+    builder.updateRikishi(rikishi.id, {
+      careerHistory: updatedCareerHistory,
+      milestones: updatedMilestones
+    });
   }
+
+  return builder.build();
 }
 

@@ -16,12 +16,17 @@ import type { StateImpact } from "../core/StateImpact";
  *
  * NPC stables auto-fill from talent pool.
  * Player gets a recruitment window event with duration tracking.
+ * Returns StateImpact describing recruitment window changes instead of mutating state.
+ * Note: talentpool.fillVacanciesForNPC still mutates directly and will be migrated in Phase 4.
  * 
  * @param world Current WorldState
  * @param vacanciesByHeyaId Map of heya IDs to vacancy counts
  */
-export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): void {
+export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): StateImpact {
+  const builder = createImpactBuilder('recruitmentWindow');
+
   // NPC stables auto-fill from talent pool
+  // Still mutates directly - will migrate in Phase 4
   safeCall(() => talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
 
   // Track recruitment window state for player
@@ -30,22 +35,27 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
   const playerVacancies = playerHeyaId ? (vacanciesByHeyaId[playerHeyaId] ?? 0) : 0;
 
   if (playerHeya) {
-    // Set recruitment window state on world (consumed by UI and dailyTick)
-    world._recruitmentWindow = {
+    // Queue world field update for _recruitmentWindow
+    builder.updateWorldField('_recruitmentWindow', {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 4, // 4-week window per Constitution
       vacancies: playerVacancies,
       isOpen: true,
       phase: "post_basho"
-    };
-
-    EventBus.recruitDiscovered(world, {
-      rikishiId: playerHeya.id,
-      heyaId: playerHeya.id,
-      status: "window_open",
-      score: playerVacancies,
-      day: world.week + 4 // closesAtWeek
     });
+
+    builder.logEvent(
+      'RECRUIT_DISCOVERED',
+      'scouting',
+      {
+        rikishiId: playerHeya.id,
+        heyaId: playerHeya.id,
+        status: "window_open",
+        score: playerVacancies,
+        day: world.week + 4 // closesAtWeek
+      },
+      { heyaId: playerHeya.id, importance: 'notable' }
+    );
   }
 
   // Log total NPC recruitment activity
@@ -57,11 +67,17 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
   }
 
   if (totalNPCVacancies > 0) {
-    EventBus.recruitDiscovered(world, {
-      status: "npc_summary",
-      score: totalNPCVacancies
-    });
+    builder.logEvent(
+      'RECRUIT_DISCOVERED',
+      'scouting',
+      {
+        status: "npc_summary",
+        score: totalNPCVacancies
+      }
+    );
   }
+
+  return builder.build();
 }
 
 /**

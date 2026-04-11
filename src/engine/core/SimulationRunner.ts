@@ -21,11 +21,14 @@ import * as talentpool from "../systems/generation/TalentPoolService";
 import { processSponsorChurn } from "../systems/economics/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
+import { runCareerJournalUpdates, runRecruitmentWindow } from "../lifecycle/RegistryService";
+import { runHistoryUpdates } from "../history";
+import { runElections } from "../governance/GovernanceService";
 
 /**
  * Authoritative post-basho pipeline.
  * Collects StateImpact from migrated functions and resolves them atomically.
- * Functions not yet migrated still mutate directly (Phase 4).
+ * Functions not yet migrated still mutate directly (will be migrated later).
  */
 export function runPostBashoResolution(world: WorldState): void {
   const impacts: StateImpact[] = [];
@@ -46,6 +49,15 @@ export function runPostBashoResolution(world: WorldState): void {
   const sponsorImpact = processSponsorChurn(world);
   impacts.push(sponsorImpact);
 
+  const careerJournalImpact = runCareerJournalUpdates(world);
+  impacts.push(careerJournalImpact);
+
+  const historyImpact = runHistoryUpdates(world);
+  impacts.push(historyImpact);
+
+  const electionImpact = runElections(world);
+  impacts.push(electionImpact);
+
   // Resolve all collected impacts atomically
   const resolvedWorld = resolveImpacts(world, impacts);
   
@@ -55,16 +67,13 @@ export function runPostBashoResolution(world: WorldState): void {
   // Extract vacancies from retirement impact metadata for talent pool
   const vacancies = (retirementImpact.metadata as any)?.vacanciesByHeyaId || {};
 
-  // Run functions that still mutate directly (will be migrated in Phase 4)
-  try {
-    // Fill vacancies immediately post-basho to ensure stable rosters
-    const worldAfterFill = talentpool.fillVacanciesForNPC(world, vacancies);
-    // Materialize any remaining signed candidates (including player recruits)
-    const finalizedWorld = talentpool.finalizeSignedCandidates(worldAfterFill);
-    
-    // Apply functional changes back to the shared world reference
-    Object.assign(world, finalizedWorld);
+  // Run recruitment window (now returns StateImpact, but we need to handle its direct mutation)
+  const recruitmentImpact = runRecruitmentWindow(world, vacancies);
+  const recruitmentResolved = resolveImpacts(world, [recruitmentImpact]);
+  Object.assign(world, recruitmentResolved);
 
+  // Run functions that still mutate directly
+  try {
     checkNaturalizations(world);
     MediaService.processWeeklyMediaBoundary(world.mediaState as any);
     onBashoEnded(world);

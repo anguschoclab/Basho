@@ -144,6 +144,17 @@ export class ImpactBuilder {
   }
 
   /**
+   * Delete a heya from the world.
+   */
+  deleteHeya(id: string): ImpactBuilder {
+    if (!this.impact.deletedEntities) {
+      this.impact.deletedEntities = { heyaIds: [], oyakataIds: [], rikishiIds: [] };
+    }
+    this.impact.deletedEntities.heyaIds.push(id);
+    return this;
+  }
+
+  /**
    * Update a top-level world field.
    */
   updateWorldField<K extends keyof Pick<WorldState, 
@@ -152,6 +163,7 @@ export class ImpactBuilder {
     | 'cyclePhase' 
     | '_postBashoMeta' 
     | '_recruitmentWindow'
+    | 'closedHeyas'
   >>(
     field: K,
     value: WorldState[K]
@@ -273,6 +285,7 @@ export function updateWorldFieldImpact<K extends keyof Pick<WorldState,
   | 'cyclePhase' 
   | '_postBashoMeta' 
   | '_recruitmentWindow'
+  | 'closedHeyas'
 >>(
   field: K,
   value: WorldState[K],
