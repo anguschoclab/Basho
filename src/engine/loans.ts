@@ -10,6 +10,11 @@ import { stableSort } from "./utils/sort";
 import { 
   selectBenefactor 
 } from "./systems/economics/SponsorshipService";
+import { 
+  LOAN_ISSUANCE_THRESHOLD,
+  FACTION_BAILOUT_AMOUNT,
+  FACTION_BENEFACTOR_THRESHOLD
+} from "./constants/EconomicConstants";
 
 
 export interface LoanTerms {
@@ -61,7 +66,7 @@ export function determineLoanTerms(world: WorldState, heya: Heya, rng: SeededRNG
   }
 
   // Calculate loan amount (cover deficit + 2M buffer)
-  const principal = deficit + 2_000_000;
+  const principal = deficit + FACTION_BAILOUT_AMOUNT;
   // Determine terms (Emergency: 12 months, Supporter: 24 months, Benefactor: 36 months)
   const months = loanType === "emergency" ? 12 : loanType === "supporter" ? 24 : 36;
 
@@ -96,7 +101,7 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
   const heya = world.heyas.get(heyaId);
   if (!heya) return;
 
-  if (heya.funds >= -5_000_000) return; // Not critical enough for bailout yet
+  if (heya.funds >= LOAN_ISSUANCE_THRESHOLD) return; // Not critical enough for bailout yet
 
   // If they already have a benefactor loan, they might be beyond saving (forced closure/merger)
   if (heya.activeLoans?.some(l => l.type === "benefactor")) {
@@ -133,9 +138,8 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
   generateGovernanceHeadline({
     world,
     heyaId: heya.id,
-    type: terms.loanType === "emergency" ? "emergency_loan" : "scandal",
-    severity: terms.loanType === "benefactor" ? "critical" : "major",
-    description: `${terms.providerName} steps in with a ¥${terms.principal.toLocaleString()} bailout for ${heya.name}, but with heavy stipulations.`
+    templatePath: terms.loanType === "emergency" ? "institutional.governance.emergency_loan" : "institutional.governance.scandal",
+    severity: terms.loanType === "benefactor" ? "main_event" : "national"
   });
 }
 

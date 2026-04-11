@@ -20,6 +20,7 @@ import {
   KOENKAI_SURVIVAL_FLOOR,
   FACILITY_UPKEEP,
   STAFF_UPKEEP_PER_MEMBER,
+  clampFundsToDebtLimit,
 } from "../../constants/EconomicConstants";
 
 export interface HeyaFinanceResult {
@@ -87,7 +88,11 @@ export function calculateHeyaWeeklyFinances(
   }
 
   const net = effectiveIncome - effectiveBurn;
-  const nextFunds = heya.funds + net;
+  let nextFunds = heya.funds + net;
+  
+  // Clamp funds to debt limit to prevent infinite debt spirals
+  nextFunds = clampFundsToDebtLimit(nextFunds);
+  
   const monthlyBurn = totalBurn * 4;
   const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 999;
 
