@@ -2,12 +2,12 @@
  * src/engine/systems/narrative/RivalryService.ts
  * ==============================================
  * Stateful orchestration for the Rivalry System.
- * 
+ *
  * Responsibilities:
  * 1. State Hydration (ensureRivalriesState)
  * 2. Weekly Decay Tick (applyRivalryWeeklyDecay)
  * 3. Bout Hook Orchestration (updateRivalriesFromBout)
- * 
+ *
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
@@ -18,17 +18,19 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
 import { clamp } from "../../utils/math";
-import { 
-  type RivalriesState, 
-  type RivalryPairState, 
+import {
+  type RivalriesState,
+  type RivalryPairState,
   type RivalryKey,
   type RivalryTone,
   type RivalryTrigger
 } from "./RivalryConstants";
-import { 
-  applyBoutToPairState, 
-  deriveTone 
+import {
+  applyBoutToPairState,
+  deriveTone
 } from "./RivalryHeatService";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 
 /**
  * Unified Rivalry Service.
@@ -54,11 +56,15 @@ export const RivalryService = {
 
   /**
    * Authoritative Bout Hook.
+   * Returns StateImpact describing rivalry updates instead of mutating state directly.
    */
-  onBoutResolved(world: WorldState, args: { result: any; day?: number }): void {
+  onBoutResolved(world: WorldState, args: { result: any; day?: number }): StateImpact {
     const { result } = args;
-    if (!result.winnerRikishiId || !result.loserRikishiId) return;
+    if (!result.winnerRikishiId || !result.loserRikishiId) {
+      return createImpactBuilder('onBoutResolvedRivalries').build();
+    }
 
+    const builder = createImpactBuilder('onBoutResolvedRivalries');
     const state = this.ensureRivalriesState(world);
     const key = this.makeRivalryKey(result.winnerRikishiId, result.loserRikishiId);
     const week = world.calendar.currentWeek || 0;
@@ -88,23 +94,39 @@ export const RivalryService = {
       const rA = EntityCollection.getRikishiById(world, existing.aId);
       const rB = EntityCollection.getRikishiById(world, existing.bId);
       if (rA && rB) {
-        EventBus.rivalryHeatSpike(world, {
-          shikona: rA.shikona,
-          rival: rB.shikona,
-          winner: result.winnerRikishiId === rA.id ? rA.shikona : rB.shikona,
-          loser: result.loserRikishiId === rA.id ? rA.shikona : rB.shikona,
-          heat: newHeat,
-          threshold: thresholdCrossed
-        });
+        builder.logEvent(
+          'RIVALRY_HEAT_SPIKE',
+          'rivalry',
+          {
+            shikona: rA.shikona,
+            rival: rB.shikona,
+            winner: result.winnerRikishiId === rA.id ? rA.shikona : rB.shikona,
+            loser: result.loserRikishiId === rA.id ? rA.shikona : rB.shikona,
+            heat: newHeat,
+            threshold: thresholdCrossed
+          },
+          { importance: 'headline' }
+        );
       }
     }
 
+    // Build the updated rivalries state
+    const updatedPairs = { ...state.pairs };
+
     // Cull very cold rivalries
     if (next.heat < 10 && next.meetings < 2 && week - next.lastMetWeek > 20) {
-      delete state.pairs[key];
+      delete updatedPairs[key];
     } else {
-      state.pairs[key] = next;
+      updatedPairs[key] = next;
     }
+
+    // Update the rivalriesState world field
+    (builder as any).updateWorldField('rivalriesState', {
+      version: state.version,
+      pairs: updatedPairs
+    });
+
+    return builder.build();
   },
 
   /**

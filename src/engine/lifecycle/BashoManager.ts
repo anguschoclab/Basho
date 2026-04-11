@@ -3,6 +3,7 @@ import { initializeBasho } from "../systems/generation/WorldFactory";
 import { ensureDaySchedule } from "../schedule";
 import type { WorldState } from "../types/world";
 import type { BashoName, BashoState } from "../types/basho";
+import { resolveImpacts } from "../core/ImpactResolver";
 
 /**
  * Get current basho.
@@ -25,7 +26,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   if (world.cyclePhase === "active_basho") return world;
 
   const name: BashoName =
-    bashoName || world.currentBashoName || "hatsu"; 
+    bashoName || world.currentBashoName || "hatsu";
 
   // Initialize new basho state
   const basho = initializeBasho(world, name);
@@ -34,10 +35,12 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   world.cyclePhase = "active_basho";
 
   // Ensure initial schedule is available
-  ensureDaySchedule(world, basho.day);
-  
-  EventBus.bashoStatus(world, { 
-    status: "started", 
+  const scheduleImpact = ensureDaySchedule(world, basho.day);
+  const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
+  Object.assign(world, resolvedWorld);
+
+  EventBus.bashoStatus(world, {
+    status: "started",
     incident: name,
     day: 1
   });

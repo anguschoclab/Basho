@@ -23,6 +23,8 @@ import {
   BENEFACTOR_BAILOUT_AMOUNT,
   KENSHO_AMOUNT_PER_ENVELOPE,
 } from "./constants/EconomicConstants";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 // === INSOLVENCY HANDLER ===
 
@@ -61,22 +63,32 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
  * Called when a bout concludes to settle Kensho (Prize Money).
  * Constitution §6: ¥70,000/banner, 50/50 rikishi/heya split.
  * 30% of rikishi share → retirement fund.
+ * Returns StateImpact describing economics updates instead of mutating state directly.
  */
 export function onBoutResolvedEconomics(
   world: WorldState,
   context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
-): void {
+): StateImpact {
   const { result, east, west } = context;
+  const builder = createImpactBuilder('onBoutResolvedEconomics');
 
   // Only Makuuchi bouts generate Kensho normally
-  if (east.division !== "makuuchi") return;
+  if (east.division !== "makuuchi") return builder.build();
 
   const winner = result.winner === "east" ? east : west;
   const winnerHeya = world.heyas.get(winner.heyaId);
 
-  if (!winner.economics) {
-    winner.economics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
-  }
+  if (!winnerHeya) return builder.build();
+
+  const existingEconomics = winner.economics || {
+    cash: 0,
+    retirementFund: 0,
+    careerKenshoWon: 0,
+    kinboshiCount: 0,
+    totalEarnings: 0,
+    currentBashoEarnings: 0,
+    popularity: 50
+  };
 
   // Use envelope count from boutResolver if already set; otherwise calculate
   let kenshoCount = result.kenshoEnvelopes ?? 0;
@@ -88,13 +100,9 @@ export function onBoutResolvedEconomics(
 
   // Marketability shift for kinboshi/ginboshi
   const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;
-  if (marketabilityScale > 0) {
-    if (winner.marketability === undefined) winner.marketability = 50;
-    winner.marketability += marketabilityScale;
-    winner.economics.popularity = Math.min(100, winner.economics.popularity + (marketabilityScale * 2));
-  }
+  const existingMarketability = winner.marketability ?? 50;
 
-  if (kenshoCount > 0 && winnerHeya) {
+  if (kenshoCount > 0) {
     const total = kenshoCount * KENSHO_AMOUNT_PER_ENVELOPE;
 
     // Constitution: 50/50 split rikishi/heya
@@ -105,22 +113,47 @@ export function onBoutResolvedEconomics(
     const retirementDiversion = rikishiGross * 0.3;
     const rikishiNet = rikishiGross - retirementDiversion;
 
-    winner.economics.cash += rikishiNet;
-    winner.economics.retirementFund += retirementDiversion;
-    winner.economics.currentBashoEarnings += rikishiNet;
-    winner.economics.careerKenshoWon += kenshoCount;
-    winner.economics.totalEarnings += rikishiNet;
+    const updatedEconomics = {
+      ...existingEconomics,
+      cash: existingEconomics.cash + rikishiNet,
+      retirementFund: existingEconomics.retirementFund + retirementDiversion,
+      currentBashoEarnings: existingEconomics.currentBashoEarnings + rikishiNet,
+      careerKenshoWon: existingEconomics.careerKenshoWon + kenshoCount,
+      totalEarnings: existingEconomics.totalEarnings + rikishiNet,
+      popularity: Math.min(100, existingEconomics.popularity + (marketabilityScale * 2))
+    };
 
-    winnerHeya.funds += stableShare;
+    builder.updateRikishi(winner.id, {
+      economics: updatedEconomics,
+      marketability: existingMarketability + marketabilityScale
+    });
 
-    EventBus.awardConferred(world, {
-      rikishiId: winner.id,
-      heyaId: winnerHeya.id,
-      kensho: total,
-      envelopes: kenshoCount,
-      status: "kensho"
+    builder.updateHeya(winnerHeya.id, {
+      funds: winnerHeya.funds + stableShare
+    });
+
+    builder.logEvent(
+      'AWARD_CONFERRED',
+      'economy',
+      {
+        kensho: total,
+        envelopes: kenshoCount,
+        status: "kensho"
+      },
+      { rikishiId: winner.id, heyaId: winnerHeya.id }
+    );
+  } else if (marketabilityScale > 0) {
+    // Update marketability even without kensho
+    builder.updateRikishi(winner.id, {
+      economics: {
+        ...existingEconomics,
+        popularity: Math.min(100, existingEconomics.popularity + (marketabilityScale * 2))
+      },
+      marketability: existingMarketability + marketabilityScale
     });
   }
+
+  return builder.build();
 }
 
 // === POST-BASHO SPONSOR CHURN (Constitution Addendum D) ===
@@ -128,7 +161,8 @@ export function onBoutResolvedEconomics(
 /**
  * Run post-basho sponsor churn checks per Constitution Addendum D.
  * Delegates to authoritative SponsorshipService.
+ * Returns StateImpact describing sponsor churn updates.
  */
-export function runSponsorChurn(world: WorldState): { churned: string[]; retained: number } {
+export function runSponsorChurn(world: WorldState): StateImpact {
   return runSponsorChurnService(world);
 }

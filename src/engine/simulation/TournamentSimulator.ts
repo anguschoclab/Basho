@@ -7,6 +7,7 @@ import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { generateFullBashoSchedule, generateDaySchedule } from "../schedule";
 import { stableTieBreak } from "../utils/sort";
+import { resolveImpacts } from "../core/ImpactResolver";
 
 /**
  * High-speed Tournament Simulation.
@@ -38,11 +39,15 @@ export function simulateEntireBasho(
 
   // Pre-generate all 15 days of schedules at once for efficiency
   try {
-    generateFullBashoSchedule({ world, basho, seed });
+    const scheduleImpact = generateFullBashoSchedule({ world, basho, seed });
+    const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
+    Object.assign(world, resolvedWorld);
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      generateDaySchedule(world, basho, day, daySeed);
+      const { impact } = generateDaySchedule(world, basho, day, daySeed);
+      const resolvedWorld = resolveImpacts(world, [impact]);
+      Object.assign(world, resolvedWorld);
     }
   }
 

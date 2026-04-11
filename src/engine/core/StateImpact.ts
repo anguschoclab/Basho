@@ -69,14 +69,32 @@ export interface StateImpact {
    * Top-level world field updates.
    * Used for scalar fields on WorldState that don't fit entity/collection patterns.
    */
-  worldFields?: Partial<Pick<WorldState, 
-    | 'year' 
-    | 'week' 
-    | 'cyclePhase' 
-    | '_postBashoMeta' 
+  worldFields?: Partial<Pick<WorldState,
+    | 'year'
+    | 'week'
+    | 'cyclePhase'
+    | '_postBashoMeta'
     | '_recruitmentWindow'
     | 'closedHeyas'
+    | 'currentBasho'
+    | 'currentBashoName'
+    | 'ozekiKadoban'
+    | '_interimDaysRemaining'
+    | 'history'
+    | 'almanacSnapshots'
+    | 'mediaState'
+    | 'ftue'
+    | 'rivalriesState'
   >>;
+
+  /**
+   * Array append operations for world arrays.
+   * Used to append items to world arrays like history, almanacSnapshots, basho.matches.
+   */
+  arrayAppends?: Array<{
+    field: 'history' | 'almanacSnapshots' | 'basho.matches';
+    items: any[];
+  }>;
 
   /**
    * Events to log (deferred from EventBus calls).

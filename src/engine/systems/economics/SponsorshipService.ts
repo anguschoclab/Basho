@@ -149,12 +149,14 @@ export function computeStarPower(heya: import("../../types/heya").Heya, world: W
  * Note: sponsorPool mutations are still direct and will be migrated in Phase 4.
  */
 export function processSponsorChurn(world: WorldState): StateImpact {
+  const builder = createImpactBuilder('sponsorChurn');
   const pool = world.sponsorPool;
   if (!pool?.sponsors) {
-    return createImpactBuilder('sponsorChurn').build();
+    builder.addMetadata('churned', []);
+    builder.addMetadata('retained', 0);
+    return builder.build();
   }
 
-  const builder = createImpactBuilder('sponsorChurn');
   const churned: string[] = [];
   let retained = 0;
 

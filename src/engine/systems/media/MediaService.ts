@@ -15,18 +15,21 @@ import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { clampInt } from "../../utils/math";
 
-import { 
-  calculateBoutImpact, 
-  determineTier, 
-  calculateHeatBump, 
+import {
+  calculateBoutImpact,
+  determineTier,
+  calculateHeatBump,
   calculatePressureBump,
   decayHeat,
   decayPressure
 } from "./MediaImpactService";
 import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 
 /**
  * Main entry point for updating media state from a bout.
+ * Returns StateImpact describing media updates instead of returning updated state directly.
  */
 export function updateMediaFromBout(args: {
   state: MediaState;
@@ -36,8 +39,9 @@ export function updateMediaFromBout(args: {
   bashoName?: BashoName;
   division?: Division;
   rivalries?: RivalriesState;
-}): { state: MediaState; headlines: MediaHeadline[] } {
+}): StateImpact {
   const { state, world, result, day, bashoName, division, rivalries } = args;
+  const builder = createImpactBuilder('updateMediaFromBout');
   const week = world.week ?? 0;
   const rng = rngForWorld(world, "media", `bout::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`);
 
@@ -99,30 +103,36 @@ export function updateMediaFromBout(args: {
   // 3. Apply Effects
   let nextState = applyHeadlineEffects(state, world, headline);
 
-  // 4. Log significant headlines to world.events.log so UIDigest picks them up
+  // 4. Log significant headlines
   if (tier === 'main_event' || tier === 'national') {
-    EventBus.bashoStatus(world, {
-      status: "meta_shift",
-      incident: title,
-      shikona: winner?.shikona,
-      winner: winner?.shikona,
-      winnerRikishiId: result.winnerRikishiId,
-      day: day,
-      score: impact
-    });
+    builder.logEvent(
+      'BOUT_RESOLVED',
+      'training',
+      {
+        status: "meta_shift",
+        incident: title,
+        shikona: winner?.shikona,
+        winner: winner?.shikona,
+        winnerRikishiId: result.winnerRikishiId,
+        day: day,
+        score: impact
+      },
+      { rikishiId: result.winnerRikishiId }
+    );
   }
 
-  // 4. Handle Streaks
-  const extraHeadlines: MediaHeadline[] = [];
+  // 5. Handle Streaks
   const streakResult = processStreak(nextState, world, result.winnerRikishiId, result.loserRikishiId, day, bashoName, rng);
   if (streakResult.headline) {
     nextState = applyHeadlineEffects(streakResult.state, world, streakResult.headline);
-    extraHeadlines.push(streakResult.headline);
   } else {
     nextState = streakResult.state;
   }
 
-  return { state: nextState, headlines: [headline, ...extraHeadlines] };
+  // Update the mediaState world field
+  (builder as any).updateWorldField('mediaState', nextState);
+
+  return builder.build();
 }
 
 /**

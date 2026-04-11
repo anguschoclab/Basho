@@ -13,9 +13,12 @@ import { H2HRecord, H2HReport, H2HRecentMeeting } from "./types/records";
 import { BoutResult } from "./types/basho";
 import type { BoutTactic, TacticalResult } from "./types/combat";
 import { BardEngine } from "./narrative/BardEngine";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.
+ * Returns StateImpact describing the H2H updates instead of mutating state directly.
  */
 export function updateH2H(
   winner: Rikishi,
@@ -24,19 +27,18 @@ export function updateH2H(
   bashoId: string,
   year: number,
   day: number
-): void {
-  // Ensure H2H maps exist
-  if (!winner.h2h) winner.h2h = {};
-  if (!loser.h2h) loser.h2h = {};
+): StateImpact {
+  const builder = createImpactBuilder('updateH2H');
+
+  // Get existing H2H maps or create empty ones
+  const winnerH2h = winner.h2h || {};
+  const loserH2h = loser.h2h || {};
 
   // Update Winner's record against Loser
-  if (!winner.h2h[loser.id]) {
-    winner.h2h[loser.id] = createEmptyH2H();
-  }
-  const winRec = winner.h2h[loser.id];
-  winRec.wins++;
-  winRec.streak = winRec.streak > 0 ? winRec.streak + 1 : 1;
-  winRec.lastMatch = {
+  const winnerRecord = winnerH2h[loser.id] || createEmptyH2H();
+  winnerRecord.wins++;
+  winnerRecord.streak = winnerRecord.streak > 0 ? winnerRecord.streak + 1 : 1;
+  winnerRecord.lastMatch = {
     winnerId: winner.id,
     kimarite: result.kimarite,
     bashoId,
@@ -45,19 +47,36 @@ export function updateH2H(
   };
 
   // Update Loser's record against Winner
-  if (!loser.h2h[winner.id]) {
-    loser.h2h[winner.id] = createEmptyH2H();
-  }
-  const loseRec = loser.h2h[winner.id];
-  loseRec.losses++;
-  loseRec.streak = loseRec.streak < 0 ? loseRec.streak - 1 : -1;
-  loseRec.lastMatch = {
+  const loserRecord = loserH2h[winner.id] || createEmptyH2H();
+  loserRecord.losses++;
+  loserRecord.streak = loserRecord.streak < 0 ? loserRecord.streak - 1 : -1;
+  loserRecord.lastMatch = {
     winnerId: winner.id,
     kimarite: result.kimarite,
     bashoId,
     day,
     year,
   };
+
+  // Build the update objects
+  const winnerUpdate = {
+    h2h: {
+      ...winnerH2h,
+      [loser.id]: winnerRecord
+    }
+  };
+
+  const loserUpdate = {
+    h2h: {
+      ...loserH2h,
+      [winner.id]: loserRecord
+    }
+  };
+
+  builder.updateRikishi(winner.id, winnerUpdate);
+  builder.updateRikishi(loser.id, loserUpdate);
+
+  return builder.build();
 }
 
 /**

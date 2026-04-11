@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   createKoenkai,
   calculateKoenkaiIncome,
@@ -6,12 +6,13 @@ import {
   applyAchievementImpact,
   computeStarPower,
   processSponsorChurn
-} from "../SponsorshipService";
-import { rngFromSeed, SeededRNG } from "../../../rng";
-import type { SponsorPool, Sponsor, Koenkai, KoenkaiBandType } from "../../../types/sponsors";
-import type { WorldState } from "../../../types/world";
-import type { Heya } from "../../../types/heya";
-import { mockRikishi } from "../../../__tests__/utils";
+} from '../SponsorshipService';
+import type { WorldState } from '../../../types/world';
+import type { Sponsor, SponsorPool, Koenkai } from '../../../types/sponsors';
+import type { Heya } from '../../../types/heya';
+import { mockRikishi } from '../../../__tests__/utils';
+import { resolveImpacts } from '../../../core/ImpactResolver';
+import { rngFromSeed } from '../../../rng';
 
 describe("SponsorshipService", () => {
   describe("createKoenkai", () => {
@@ -168,7 +169,9 @@ describe("SponsorshipService", () => {
         return { sponsors, koenkais };
       };
     it("returns empty values if no sponsors pool", () => {
-      expect(processSponsorChurn({} as WorldState)).toEqual({ churned: [], retained: 0 });
+      const result = processSponsorChurn({} as WorldState);
+      expect(result.metadata?.churned).toEqual([]);
+      expect(result.metadata?.retained).toBe(0);
     });
 
     it("evaluates satisfaction and updates koenkai band", () => {
@@ -208,16 +211,19 @@ describe("SponsorshipService", () => {
 
       // Ensure EventBus doesn't fail
       const result = processSponsorChurn(world);
+      const resolvedWorld = resolveImpacts(world, [result]);
+      Object.assign(world, resolvedWorld);
 
-      expect(result.churned.length).toBe(2);
-      expect(result.churned).toContain("Local");
-      expect(result.churned).toContain("Corp");
-      expect(result.retained).toBe(0);
+      expect(result.metadata?.churned?.length).toBe(2);
+      expect(result.metadata?.churned).toContain("Local");
+      expect(result.metadata?.churned).toContain("Corp");
+      expect(result.metadata?.retained).toBe(0);
       expect(sponsors.get("s_local")?.active).toBe(false);
 
       const updatedKoenkai = koenkais.get("koenkai_h1");
       expect(updatedKoenkai?.members.length).toBe(0);
-      expect(heya.koenkaiBand).toBe("none");
+      const updatedHeya = world.heyas.get("h1");
+      expect(updatedHeya?.koenkaiBand).toBe("none");
     });
 
     it("retains sponsors if satisfaction is high enough", () => {
@@ -240,16 +246,19 @@ describe("SponsorshipService", () => {
       } as unknown as WorldState;
 
       const result = processSponsorChurn(world);
+      const resolvedWorld = resolveImpacts(world, [result]);
+      Object.assign(world, resolvedWorld);
 
-      expect(result.churned.length).toBe(1);
-      expect(result.churned).toContain("Other");
-      expect(result.retained).toBe(2);
+      expect(result.metadata?.churned?.length).toBe(1);
+      expect(result.metadata?.churned).toContain("Other");
+      expect(result.metadata?.retained).toBe(2);
       expect(sponsors.get("s_other")?.active).toBe(false);
       expect(sponsors.get("s_local")?.active).toBe(true);
 
       const updatedKoenkai = koenkais.get("koenkai_h1");
       expect(updatedKoenkai?.members.length).toBe(2);
-      expect(heya.koenkaiBand).toBe("moderate"); // member count <= 4 -> moderate
+      const updatedHeya = world.heyas.get("h1");
+      expect(updatedHeya?.koenkaiBand).toBe("moderate"); // member count <= 4 -> moderate
     });
   });
 });

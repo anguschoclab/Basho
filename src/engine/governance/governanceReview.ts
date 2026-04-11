@@ -22,6 +22,7 @@ import { recordOyakataHandover } from "../lineage";
 import { rngForWorld, rngFromSeed } from "../rng";
 import { BardEngine } from "../narrative/BardEngine";
 import { createImpactBuilder } from "../core/ImpactBuilder";
+import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
@@ -66,8 +67,10 @@ export function runGovernanceReview(world: WorldState): StateImpact {
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
       if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
-        // Still call directly - will migrate in Phase 4
-        issueBailoutLoanIfNeeded(world, heya.id);
+        // Now returns StateImpact - resolve immediately
+        const loanImpact = issueBailoutLoanIfNeeded(world, heya.id);
+        const resolvedWorld = resolveImpacts(world, [loanImpact]);
+        Object.assign(world, resolvedWorld);
       }
 
       // v1.7 Faction Solidarity (Traditional Bailouts)
@@ -209,8 +212,11 @@ export function runGovernanceReview(world: WorldState): StateImpact {
           // Execute actual merger
           const targetId = findMergerTarget(world, heya.id);
           if (targetId) {
-             // Still call directly - will migrate in Phase 4
-             executeMerger(world, heya.id, targetId, "critically_low_roster");
+            // Execute merger - now returns StateImpact
+            const mergerImpact = executeMerger(world, heya.id, targetId, "critically_low_roster");
+            // Resolve merger impact immediately since it affects the same world state
+            const resolvedWorld = resolveImpacts(world, [mergerImpact]);
+            Object.assign(world, resolvedWorld);
           }
         }
       } else {

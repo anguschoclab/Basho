@@ -15,6 +15,8 @@ import {
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD
 } from "./constants/EconomicConstants";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 
 export interface LoanTerms {
@@ -96,17 +98,21 @@ export function createLoanObject(world: WorldState, heyaId: Id, terms: LoanTerms
  * Check and issue loans for insolvent stables.
  * Triggered when funds drop below a critical threshold (e.g. -5,000,000).
  * Escalate from Emergency -> Supporter -> Benefactor.
+ * Returns StateImpact describing loan issuance instead of mutating state.
  */
-export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
+export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateImpact {
+  const builder = createImpactBuilder('bailoutLoan');
   const heya = world.heyas.get(heyaId);
-  if (!heya) return;
+  if (!heya) {
+    return builder.build();
+  }
 
-  if (heya.funds >= LOAN_ISSUANCE_THRESHOLD) return; // Not critical enough for bailout yet
+  if (heya.funds >= LOAN_ISSUANCE_THRESHOLD) return builder.build(); // Not critical enough for bailout yet
 
   // If they already have a benefactor loan, they might be beyond saving (forced closure/merger)
   if (heya.activeLoans?.some(l => l.type === "benefactor")) {
     // Escalate to terminal insolvency check (handled by world.ts merger/closure pressure)
-    return;
+    return builder.build();
   }
 
   const deficit = Math.abs(heya.funds);
@@ -115,32 +121,48 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): void {
   const terms = determineLoanTerms(world, heya, rng, deficit);
   const loan = createLoanObject(world, heyaId, terms, rng);
 
-  if (!heya.activeLoans) heya.activeLoans = [];
-  heya.activeLoans.push(loan);
-  heya.funds += terms.principal;
+  const activeLoans = heya.activeLoans || [];
+  const newActiveLoans = [...activeLoans, loan];
+  const newFunds = heya.funds + terms.principal;
 
   // Penalize prestige
-  heya.reputation = Math.max(0, (heya.reputation || 50) - 10);
+  const newReputation = Math.max(0, (heya.reputation || 50) - 10);
 
+  let newScandalScore = heya.scandalScore || 0;
   if (terms.loanType === "benefactor" || terms.loanType === "supporter") {
-    heya.scandalScore = Math.min(100, (heya.scandalScore || 0) + 10); // Governance scrutiny
+    newScandalScore = Math.min(100, newScandalScore + 10); // Governance scrutiny
   }
 
-  EventBus.financialAlert(world, heya.id, {
-    incident: "loan_issued",
-    status: terms.loanType,
-    money: terms.principal,
-    heyaname: heya.name,
-    heya: terms.providerName,
-    reason: terms.stringsAttached.join("|")
+  builder.updateHeya(heyaId, {
+    activeLoans: newActiveLoans,
+    funds: newFunds,
+    reputation: newReputation,
+    scandalScore: newScandalScore
   });
 
+  builder.logEvent(
+    'FINANCIAL_ALERT',
+    'economy',
+    {
+      incident: "loan_issued",
+      status: terms.loanType,
+      money: terms.principal,
+      heyaname: heya.name,
+      heya: terms.providerName,
+      reason: terms.stringsAttached.join("|")
+    },
+    { heyaId: heya.id, importance: terms.loanType === "benefactor" ? 'major' : 'notable' }
+  );
+
+  // generateGovernanceHeadline still called directly - will migrate in Phase 5
   generateGovernanceHeadline({
     world,
     heyaId: heya.id,
     templatePath: terms.loanType === "emergency" ? "institutional.governance.emergency_loan" : "institutional.governance.scandal",
     severity: terms.loanType === "benefactor" ? "main_event" : "national"
   });
+
+  return builder.build();
 }
 
 /**

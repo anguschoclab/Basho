@@ -20,6 +20,49 @@ import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact } from "./StateImpact";
 
 /**
+ * Deep merge two objects, handling nested structures.
+ */
+function deepMerge(target: any, source: any): any {
+  if (!target || typeof target !== 'object') return source;
+  if (!source || typeof source !== 'object') return source;
+
+  const output = { ...target };
+
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+        output[key] = deepMerge(target[key], source[key]);
+      } else {
+        output[key] = source[key];
+      }
+    }
+  }
+
+  return output;
+}
+
+/**
+ * Set a nested field value using a dot-separated path.
+ */
+function setNestedField(obj: any, path: string, value: any): any {
+  const keys = path.split('.');
+  const result = { ...obj };
+  let current = result;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!(key in current)) {
+      current[key] = {};
+    }
+    current[key] = { ...current[key] };
+    current = current[key];
+  }
+
+  current[keys[keys.length - 1]] = value;
+  return result;
+}
+
+/**
  * Builder class for constructing StateImpact objects.
  * Provides a fluent API for building impacts.
  */
@@ -64,8 +107,28 @@ export class ImpactBuilder {
     const existing = this.impact.entities.rikishiUpdates.get(id);
     this.impact.entities.rikishiUpdates.set(
       id,
-      existing ? { ...existing, ...update } : update
+      existing ? deepMerge(existing, update) : update
     );
+    return this;
+  }
+
+  /**
+   * Update a nested field in a rikishi (e.g., h2h[opponentId]).
+   */
+  updateRikishiNestedField(
+    id: string,
+    fieldPath: string,
+    value: any
+  ): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.rikishiUpdates) {
+      this.impact.entities.rikishiUpdates = new Map();
+    }
+    const existing = this.impact.entities.rikishiUpdates.get(id) || {};
+    const updated = setNestedField(existing, fieldPath, value);
+    this.impact.entities.rikishiUpdates.set(id, updated);
     return this;
   }
 
@@ -160,13 +223,22 @@ export class ImpactBuilder {
   /**
    * Update a top-level world field.
    */
-  updateWorldField<K extends keyof Pick<WorldState, 
-    | 'year' 
-    | 'week' 
-    | 'cyclePhase' 
-    | '_postBashoMeta' 
+  updateWorldField<K extends keyof Pick<WorldState,
+    | 'year'
+    | 'week'
+    | 'cyclePhase'
+    | '_postBashoMeta'
     | '_recruitmentWindow'
     | 'closedHeyas'
+    | 'currentBasho'
+    | 'currentBashoName'
+    | 'ozekiKadoban'
+    | '_interimDaysRemaining'
+    | 'history'
+    | 'almanacSnapshots'
+    | 'mediaState'
+    | 'ftue'
+    | 'rivalriesState'
   >>(
     field: K,
     value: WorldState[K]
@@ -175,6 +247,22 @@ export class ImpactBuilder {
       this.impact.worldFields = {};
     }
     (this.impact.worldFields as any)[field] = value;
+    return this;
+  }
+
+  /**
+   * Append items to a world array field.
+   * @param field - The world field array to append to (history, almanacSnapshots, basho.matches)
+   * @param items - Items to append
+   */
+  appendToWorldArray<K extends 'history' | 'almanacSnapshots' | 'basho.matches'>(
+    field: K,
+    items: any[]
+  ): ImpactBuilder {
+    if (!this.impact.arrayAppends) {
+      this.impact.arrayAppends = [];
+    }
+    this.impact.arrayAppends.push({ field, items });
     return this;
   }
 
@@ -282,13 +370,22 @@ export function logEventImpact(
 /**
  * Convenience function to create a world field update impact.
  */
-export function updateWorldFieldImpact<K extends keyof Pick<WorldState, 
-  | 'year' 
-  | 'week' 
-  | 'cyclePhase' 
-  | '_postBashoMeta' 
+export function updateWorldFieldImpact<K extends keyof Pick<WorldState,
+  | 'year'
+  | 'week'
+  | 'cyclePhase'
+  | '_postBashoMeta'
   | '_recruitmentWindow'
   | 'closedHeyas'
+  | 'currentBasho'
+  | 'currentBashoName'
+  | 'ozekiKadoban'
+  | '_interimDaysRemaining'
+  | 'history'
+  | 'almanacSnapshots'
+  | 'mediaState'
+  | 'ftue'
+  | 'rivalriesState'
 >>(
   field: K,
   value: WorldState[K],

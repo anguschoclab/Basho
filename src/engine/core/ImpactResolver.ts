@@ -1,9 +1,8 @@
 /**
  * Impact Resolver
  * 
- * Applies StateImpact patches to WorldState atomically.
- * The resolver takes a base WorldState and an array of impacts,
- * applies them in order, and returns the final resolved state.
+ * Applies StateImpact objects to a WorldState to produce a new state.
+ * All impacts are applied atomically - either all succeed or none are applied.
  */
 
 import type { WorldState } from "../types/world";
@@ -14,6 +13,7 @@ import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
 
 /**
+ * Apply a single StateImpact to a WorldState.
  * Applies a single StateImpact to a WorldState.
  * Returns a new WorldState with the impact applied.
  */
@@ -95,6 +95,33 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
     }
   }
 
+  // Apply entity deletions
+  if (impact.deletedEntities) {
+    if (impact.deletedEntities.heyaIds && impact.deletedEntities.heyaIds.length > 0) {
+      const nextHeyas = new Map(result.heyas);
+      for (const id of impact.deletedEntities.heyaIds) {
+        nextHeyas.delete(id);
+      }
+      result = { ...result, heyas: nextHeyas };
+    }
+
+    if (impact.deletedEntities.oyakataIds && impact.deletedEntities.oyakataIds.length > 0) {
+      const nextOyakata = new Map(result.oyakata);
+      for (const id of impact.deletedEntities.oyakataIds) {
+        nextOyakata.delete(id);
+      }
+      result = { ...result, oyakata: nextOyakata };
+    }
+
+    if (impact.deletedEntities.rikishiIds && impact.deletedEntities.rikishiIds.length > 0) {
+      const nextRikishi = new Map(result.rikishi);
+      for (const id of impact.deletedEntities.rikishiIds) {
+        nextRikishi.delete(id);
+      }
+      result = { ...result, rikishi: nextRikishi };
+    }
+  }
+
   // Apply world field updates
   if (impact.worldFields) {
     result = { ...result, ...impact.worldFields };
@@ -166,6 +193,11 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       rikishiToHistorical: [],
       rikishiFromHistorical: [],
     },
+    deletedEntities: {
+      heyaIds: [],
+      oyakataIds: [],
+      rikishiIds: [],
+    },
     worldFields: {},
     events: [],
     metadata: {
@@ -207,6 +239,17 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     }
     if (impact.collections?.rikishiFromHistorical) {
       merged.collections!.rikishiFromHistorical!.push(...impact.collections.rikishiFromHistorical);
+    }
+
+    // Merge deleted entities
+    if (impact.deletedEntities?.heyaIds) {
+      merged.deletedEntities!.heyaIds!.push(...impact.deletedEntities.heyaIds);
+    }
+    if (impact.deletedEntities?.oyakataIds) {
+      merged.deletedEntities!.oyakataIds!.push(...impact.deletedEntities.oyakataIds);
+    }
+    if (impact.deletedEntities?.rikishiIds) {
+      merged.deletedEntities!.rikishiIds!.push(...impact.deletedEntities.rikishiIds);
     }
 
     // Merge world field updates (last writer wins)
