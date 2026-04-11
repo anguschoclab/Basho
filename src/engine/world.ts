@@ -35,7 +35,8 @@ import {
   updateMediaFromBout, 
   processWeeklyMediaBoundary,
   resetBashoMediaTracking,
-  snapshotMediaHeatForBasho
+  snapshotMediaHeatForBasho,
+  handleMediaEvent
 } from "./systems/media/MediaService";
 import * as economics from "./economics";
 import * as governance from "./governance/GovernanceService";
@@ -70,7 +71,8 @@ import { ensureDaySchedule } from "./schedule";
 export { 
   getActiveRikishi, 
   getStableRikishi, 
-  applyBoutResult 
+  applyBoutResult,
+  handleMediaEvent
 };
 
 
@@ -83,6 +85,8 @@ export {
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
+
+export const issueGovernanceRuling = governance.issueGovernanceRuling;
 
 /**
  * Start basho.

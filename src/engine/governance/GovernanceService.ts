@@ -158,3 +158,32 @@ export function spendPoliticalCapital(world: WorldState, heyaId: string, amount:
   heya.politicalCapital = current - amount;
   return true;
 }
+
+/**
+ * Issues a governance ruling based on player choice.
+ */
+export function issueGovernanceRuling(world: WorldState, rulingId: string, severity: "lenient" | "standard" | "harsh"): void {
+  const rulingIndex = world.governanceLog?.findIndex(r => r.id === rulingId);
+  if (rulingIndex !== undefined && rulingIndex >= 0 && world.governanceLog) {
+    const ruling = world.governanceLog[rulingIndex] as GovernanceRuling;
+    const heya = world.heyas.get(ruling.heyaId);
+
+    if (heya) {
+      const severityMultiplier = severity === "lenient" ? 0.5 : severity === "harsh" ? 1.5 : 1.0;
+      const originalDelta = ruling.effects.scandalScoreDelta || 0;
+      const adjustedDelta = Math.round(originalDelta * severityMultiplier);
+
+      heya.scandalScore = Math.max(0, (heya.scandalScore || 0) - (originalDelta - adjustedDelta));
+
+      ruling.playerSeverity = severity;
+      ruling.playerResponse = `Player issued ${severity} ruling`;
+      ruling.effects.scandalScoreDelta = adjustedDelta;
+
+      if (severity === "lenient") {
+        heya.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
+      } else if (severity === "harsh") {
+        heya.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
+      }
+    }
+  }
+}
