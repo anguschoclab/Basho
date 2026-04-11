@@ -1,3 +1,3 @@
-## 2025-02-26 - Optimize renewSponsorContract performance
-**Learning:** `findIndex` inside a loop iterating over all `.values()` of a large Map is extremely slow when the target's ID can be used for O(1) direct lookup.
-**Action:** When searching for an inner array relationship (`sponsor.relationships`) by its id, pass the parent entity's id (`sponsorId`) when available in the calling context to skip iterating through unrelated entities.
+## 2024-04-11 - Optimize OPFS Archive Directory Iteration
+**Learning:** Sequential `for await` loops over `FileSystemDirectoryHandle.values()` cause unnecessary I/O blocking per iteration.
+**Action:** Replaced sequential `for await` with a `Promise.all` batch chunking strategy in `getArchivedBoutIdsForSeason`, significantly improving parallelized iterator resolution speed while maintaining memory safety.
