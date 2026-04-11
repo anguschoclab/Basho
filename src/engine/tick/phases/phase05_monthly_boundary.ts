@@ -47,7 +47,7 @@ export function phase05_monthly_boundary(world: WorldState): WorldState {
 
     // Runway Band Sync
     const burn = Math.max(1, totalExpenses + maintenance);
-    const runway = nextHeya.funds / burn;
+    const runway = (nextHeya.funds ?? 0) / burn;
     nextHeya.runwayBand =
       runway >= 12
         ? "secure"
@@ -64,7 +64,13 @@ export function phase05_monthly_boundary(world: WorldState): WorldState {
 
   // 2. Process Rikishi (Archetype Drift)
   if (isBashoMonth(world.calendar.month)) {
-    processArchetypeDrift(world, nextRikishi);
+    for (const [id, r] of nextRikishi) {
+      if (r.isRetired) continue;
+      const nextR = { ...r };
+      if (processArchetypeDrift(world, nextR)) {
+        nextRikishi.set(id, nextR);
+      }
+    }
   }
 
   EventBus.bashoStatus(world, {
@@ -81,6 +87,8 @@ export function phase05_monthly_boundary(world: WorldState): WorldState {
   };
 }
 
+// --- Helper Functions ---
+
 function processHeyaEconomics(
   world: WorldState,
   nextHeya: Heya,
@@ -88,6 +96,7 @@ function processHeyaEconomics(
 ): number {
   let totalSalaries = 0;
   const rikishiIds = nextHeya.rikishiIds ?? [];
+
   for (const rId of rikishiIds) {
     const r = nextRikishi.get(rId) || world.rikishi.get(rId);
     if (!r) continue;
@@ -205,12 +214,10 @@ function processNpcAutoInvestment(
   maintenance: number,
 ): void {
   if (nextHeya.id !== world.playerHeyaId) {
-    // NPC AI: if runway > 6 months, invest in weakest facility axis
     const monthlyBurn = Math.max(1, totalExpenses + maintenance);
     const runway = (nextHeya.funds ?? 0) / monthlyBurn;
 
     if (runway > 6) {
-      // Find weakest facility axis
       const facilities = nextHeya.facilities;
       const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
       const weakestAxis = axes.reduce(
@@ -221,12 +228,10 @@ function processNpcAutoInvestment(
       const currentLevel = facilities[weakestAxis];
       const maxLevel = 100;
 
-      // Calculate how many points we can afford (up to 5 points)
       const maxPoints = 5;
       const desiredPoints = Math.min(maxPoints, maxLevel - currentLevel);
 
       if (desiredPoints > 0) {
-        // Calculate cost per point (scales with level)
         const baseCost = 200_000;
         let upgradeCost = 0;
         let points = 0;
@@ -247,13 +252,11 @@ function processNpcAutoInvestment(
         }
 
         if (points > 0 && upgradeCost > 0) {
-          // Apply upgrade
           nextHeya.funds = (nextHeya.funds ?? 0) - upgradeCost;
           facilities[weakestAxis] = Math.min(maxLevel, currentLevel + points);
           const oldBand = nextHeya.facilitiesBand;
           nextHeya.facilitiesBand = computeFacilitiesBand(nextHeya);
 
-          // Emit upgrade event (NPC upgrades use same UPGRADED type as player)
           EventBus.facilityUpdate(
             world,
             nextHeya.id,
@@ -272,41 +275,35 @@ function processNpcAutoInvestment(
   }
 }
 
-function processArchetypeDrift(
-  world: WorldState,
-  nextRikishi: Map<string, Rikishi>,
-): void {
-  for (const [id, r] of nextRikishi) {
-    if (r.isRetired) continue;
-    const nextR = { ...r };
-    const evidence = nextR.archetypeEvidence;
-    if (evidence && !Array.isArray(evidence)) {
-      let newArchetype = nextR.tacticalArchetypePrimary;
-      if (
-        evidence.push.success >= 5 &&
-        evidence.push.success > evidence.grapple.success
-      )
-        newArchetype = "oshi";
-      else if (
-        evidence.grapple.success >= 5 &&
-        evidence.grapple.success > evidence.push.success
-      )
-        newArchetype = "yotsu";
+function processArchetypeDrift(world: WorldState, nextR: Rikishi): boolean {
+  const evidence = nextR.archetypeEvidence;
+  if (evidence && !Array.isArray(evidence)) {
+    let newArchetype = nextR.tacticalArchetypePrimary;
+    if (
+      evidence.push.success >= 5 &&
+      evidence.push.success > evidence.grapple.success
+    )
+      newArchetype = "oshi";
+    else if (
+      evidence.grapple.success >= 5 &&
+      evidence.grapple.success > evidence.push.success
+    )
+      newArchetype = "yotsu";
 
-      if (newArchetype !== nextR.tacticalArchetypePrimary) {
-        EventBus.trainingUpdate(world, {
-          rikishiId: id,
-          status: newArchetype,
-          reason: nextR.tacticalArchetypePrimary,
-        });
-        nextR.tacticalArchetypePrimary = newArchetype;
-      }
-      nextR.archetypeEvidence = {
-        push: { success: 0, fail: 0 },
-        grapple: { success: 0, fail: 0 },
-        evade: { success: 0, fail: 0 },
-      };
-      nextRikishi.set(id, nextR);
+    if (newArchetype !== nextR.tacticalArchetypePrimary) {
+      EventBus.trainingUpdate(world, {
+        rikishiId: nextR.id,
+        status: newArchetype,
+        reason: nextR.tacticalArchetypePrimary,
+      });
+      nextR.tacticalArchetypePrimary = newArchetype;
     }
+    nextR.archetypeEvidence = {
+      push: { success: 0, fail: 0 },
+      grapple: { success: 0, fail: 0 },
+      evade: { success: 0, fail: 0 },
+    };
+    return true;
   }
+  return false;
 }
