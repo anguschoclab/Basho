@@ -27,19 +27,26 @@ import { rollArchetype, buildCombatProfile } from "./archetype";
 export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: string): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
-  
+
   // 1. Mandatory Retirement
   if (age >= 45) return "Mandatory Age Retirement";
 
   // 2. Injury Forced Retirement
-  const severity = typeof rikishi.injuryStatus?.severity === "number" 
-    ? rikishi.injuryStatus.severity 
+  const severity = typeof rikishi.injuryStatus?.severity === "number"
+    ? rikishi.injuryStatus.severity
     : 0;
   if (rikishi.injuryStatus?.isInjured && severity > 90) {
     return "Career-Ending Injury";
   }
 
-  // 3. Natural Aging Curve (Probability increases with age)
+  // 3. Yokozuna Make-Koshi Retirement Pressure
+  // Real sumo: Yokozuna with consecutive losing records face intense retirement pressure
+  if (rikishi.rank === "yokozuna" && rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2) {
+    // 2 consecutive make-koshi = high retirement pressure (like real sumo)
+    if (rng.bool(0.7)) return "Yokozuna Make-Koshi Retirement";
+  }
+
+  // 4. Natural Aging Curve (Probability increases with age)
   const baseRetireChance = Math.max(0, (age - 34) * 0.05);
   const roll = rng.next();
 
@@ -47,7 +54,7 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
     return "Age & Fatigue";
   }
 
-  // 4. Performance Drop (Rank-based)
+  // 5. Performance Drop (Rank-based)
   if (rikishi.rank === "jonokuchi" && age > 25) {
     if (rng.bool(0.3)) return "Lack of Performance";
   }

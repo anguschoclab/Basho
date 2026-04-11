@@ -249,6 +249,18 @@ export function publishBanzukeUpdate(world: WorldState): WorldState {
       rikishi.consecutiveStrongOzeki = 0;
     }
 
+    // Yokozuna make-koshi tracking for retirement pressure
+    // Real sumo: Yokozuna with consecutive losing records face retirement pressure
+    if (rikishi?.rank === "yokozuna") {
+      const isMakeKoshi = stats.wins < 8; // Losing record for yokozuna
+      if (!rikishi.consecutiveMakeKoshi) rikishi.consecutiveMakeKoshi = 0;
+      if (isMakeKoshi) {
+        rikishi.consecutiveMakeKoshi++;
+      } else {
+        rikishi.consecutiveMakeKoshi = 0;
+      }
+    }
+
     performanceList.push({
       rikishiId: id,
       wins: stats.wins,

@@ -122,6 +122,7 @@ export interface Rikishi {
   makuuchiWins: number;
   consecutiveYusho: number;
   consecutiveStrongOzeki?: number; // Tracks consecutive 12+ win performances at ozeki for yokozuna promotion
+  consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
 
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
