@@ -9,30 +9,32 @@ import { selectTopRivals } from "@/presenters/selectors";
 
 const RivalRow = React.memo(
   ({
-    r,
+    id,
+    name,
+    prestige,
+    roster,
+    heat,
   }: {
-    r: {
-      id: string;
-      name: string;
-      prestige: string;
-      roster: string;
-      heat: string;
-    };
+    id: string;
+    name: string;
+    prestige: string;
+    roster: string;
+    heat: string;
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
         <StableName
-          id={r.id}
-          name={r.name}
+          id={id}
+          name={name}
           className="font-medium flex-1 truncate"
         />
         <Badge variant="outline" className="text-[10px] capitalize shrink-0">
-          {r.prestige}
+          {prestige}
         </Badge>
         <span className="text-[10px] text-muted-foreground capitalize w-16 text-right">
-          {r.roster}
+          {roster}
         </span>
-        {(r.heat === "blazing" || r.heat === "hot") && (
+        {(heat === "blazing" || heat === "hot") && (
           <Flame className="h-3 w-3 text-accent shrink-0 animate-pulse-glow" />
         )}
       </div>
@@ -65,7 +67,14 @@ export function RivalsWidget() {
     <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
       <div className="space-y-0.5">
         {rivals.map((r) => (
-          <RivalRow key={r.id} r={r} />
+          <RivalRow
+            key={r.id}
+            id={r.id}
+            name={r.name}
+            prestige={r.prestige}
+            roster={r.roster}
+            heat={r.heat}
+          />
         ))}
       </div>
     </BaseWidget>

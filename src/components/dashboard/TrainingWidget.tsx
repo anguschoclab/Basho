@@ -228,6 +228,49 @@ export function TrainingWidget() {
     [world, maxIntensityIdx, updateWorld],
   );
 
+  const intensityOptions = useMemo(
+    () =>
+      INTENSITY_OPTIONS.map((v, i) => ({
+        value: v,
+        label: v.charAt(0).toUpperCase() + v.slice(1),
+        disabled: i > maxIntensityIdx,
+      })),
+    [maxIntensityIdx],
+  );
+
+  const focusOptions = useMemo(
+    () =>
+      FOCUS_OPTIONS.map((v) => ({
+        value: v,
+        label: FOCUS_LABELS[v],
+      })),
+    [],
+  );
+
+  const recoveryOptions = useMemo(
+    () =>
+      RECOVERY_OPTIONS.map((v) => ({
+        value: v,
+        label: RECOVERY_LABELS[v],
+      })),
+    [],
+  );
+
+  const handleIntensityChange = React.useCallback(
+    (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
+    [updateProfile],
+  );
+
+  const handleFocusChange = React.useCallback(
+    (v: string) => updateProfile({ focus: v as TrainingFocus }),
+    [updateProfile],
+  );
+
+  const handleRecoveryChange = React.useCallback(
+    (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
+    [updateProfile],
+  );
+
   return (
     <BaseWidget title="Training" icon={Dumbbell} headerAction={headerAction}>
       {/* Current profile */}
@@ -310,34 +353,22 @@ export function TrainingWidget() {
             label="Intensity"
             icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
-            options={INTENSITY_OPTIONS.map((v, i) => ({
-              value: v,
-              label: v.charAt(0).toUpperCase() + v.slice(1),
-              disabled: i > maxIntensityIdx,
-            }))}
-            onChange={(v) =>
-              updateProfile({ intensity: v as TrainingIntensity })
-            }
+            options={intensityOptions}
+            onChange={handleIntensityChange}
           />
           <ProfileRow
             label="Focus"
             icon={<Target className="h-3 w-3 text-muted-foreground" />}
             value={profile.focus}
-            options={FOCUS_OPTIONS.map((v) => ({
-              value: v,
-              label: FOCUS_LABELS[v],
-            }))}
-            onChange={(v) => updateProfile({ focus: v as TrainingFocus })}
+            options={focusOptions}
+            onChange={handleFocusChange}
           />
           <ProfileRow
             label="Recovery"
             icon={<Shield className="h-3 w-3 text-muted-foreground" />}
             value={profile.recovery}
-            options={RECOVERY_OPTIONS.map((v) => ({
-              value: v,
-              label: RECOVERY_LABELS[v],
-            }))}
-            onChange={(v) => updateProfile({ recovery: v as RecoveryEmphasis })}
+            options={recoveryOptions}
+            onChange={handleRecoveryChange}
           />
         </div>
       )}
