@@ -73,7 +73,7 @@ const TECHNICIAN_GINO_MIN = 3;
 
 // === INDUCTION PIPELINE ===
 
-function tryAddInductee(
+export function tryAddInductee(
   world: WorldState,
   hof: HallOfFameState,
   newInductees: HoFInductee[],
