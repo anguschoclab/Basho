@@ -32,3 +32,15 @@ export function parseLLMResponse<T>(rawText: string): T {
     throw new Error(`Failed to parse LLM payload after sanitization. Ensure generationConfig.responseMimeType is 'application/json'. Error: ${(finalError as Error).message}`);
   }
 }
+
+export function safeParse<T extends object>(jsonString: string, fallback: T): T {
+  try {
+    const result = JSON.parse(jsonString);
+    if (result !== null && typeof result === 'object') {
+        return result as T;
+    }
+    return fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
