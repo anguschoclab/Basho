@@ -9,7 +9,7 @@ export function heyaSlice(state: GameState, action: GameAction): GameState {
       if (!state.world) return state;
       const world = { ...state.world, heyas: new Map(state.world.heyas) };
       const heya = world.heyas.get(action.heyaId);
-      if (heya) heya.isPlayerOwned = true;
+      if (heya) world.heyas.set(action.heyaId, { ...heya, isPlayerOwned: true });
       
       return {
         ...state,

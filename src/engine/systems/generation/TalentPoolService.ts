@@ -6,6 +6,7 @@
 import { SeededRNG } from "../../rng";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
@@ -362,7 +363,9 @@ export function resolveCandidateSuitor(
 
 /**
  * Automates recruitment for NPC stables.
- * Returns StateImpact describing NPC recruitment instead of mutating directly.
+ * Materializes candidates immediately into world.rikishi and updates heya rosters.
+ * Also returns the StateImpact for callers that need it, but self-applies to ensure
+ * rikishi always land in the world regardless of whether callers resolve the impact.
  */
 export function fillVacanciesForNPC(
   world: WorldState,
@@ -423,7 +426,17 @@ export function fillVacanciesForNPC(
     }
   }
 
-  return builder.build();
+  // Self-apply: all call sites discard the return value, so we must apply the
+  // rikishi/heya updates directly to the world to ensure NPC rikishi materialize.
+  const impact = builder.build();
+  if (
+    (impact.entities?.rikishiUpdates?.size ?? 0) > 0 ||
+    (impact.entities?.heyaUpdates?.size ?? 0) > 0
+  ) {
+    const resolved = resolveImpacts(world, [impact]);
+    Object.assign(world, resolved);
+  }
+  return impact;
 }
 
 /**

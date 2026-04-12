@@ -36,7 +36,8 @@
       "Bash(bun add:*)",
       "Bash(bun run:*)",
       "Bash(npm view:*)",
-      "Bash(npx electron-vite:*)"
+      "Bash(npx electron-vite:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k,v\\) for k,v in {**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}.items\\(\\)]\")"
     ]
   },
   "outputStyle": "default"

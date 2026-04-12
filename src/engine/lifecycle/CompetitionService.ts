@@ -1,7 +1,7 @@
 import { EventBus } from "../events";
 import { stableTieBreak } from "../utils/sort";
 import { determineSpecialPrizes, generateSanshoLedgerEntry } from "../banzuke";
-import { onBashoEnded } from "../records";
+import { runPostBashoResolution } from "../core/SimulationRunner";
 import { buildAlmanacSnapshot } from "../almanac";
 import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
 import { autosave } from "../saveload";
@@ -232,7 +232,7 @@ function recordBashoHistory(
     opfsArchiveService.archiveAwards(world.year, yearAwards);
   });
 
-  onBashoEnded(world);
+  runPostBashoResolution(world);
   const yushoRikishi = world.rikishi.get(yusho);
   EventBus.bashoStatus(world, {
     status: "ended",

@@ -167,9 +167,17 @@ export const WelfareService = {
       }
 
       case "investigation": {
+        if (!state.investigation) {
+          state.investigation = {
+            openedWeek: week,
+            severity: "low",
+            triggers: [],
+            progress: 0,
+          };
+        }
         const progressGain = clamp(Math.round(4 + (heya.facilities?.recovery || 50) / 30), 2, 12);
-        state.investigation!.progress = clamp(
-          (state.investigation!.progress || 0) + progressGain,
+        state.investigation.progress = clamp(
+          (state.investigation.progress || 0) + progressGain,
           0,
           100
         );

@@ -17,11 +17,13 @@ import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { mergeImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { RANK_HIERARCHY } from "../../banzuke";
 import { getHeyaStaffBonuses } from "../../staff";
 import { isBashoMonth } from "../../calendar";
 import { computeFacilitiesBand, type FacilityAxis } from "../../facilities";
+import { tickMonthlyNPC } from "../../npcAI";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder('phase05_monthly_boundary');
@@ -83,7 +85,12 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     }
   );
 
-  return builder.build();
+  // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
+  // retirement evaluation, vacancy assessment. This was previously orphaned
+  // (tickMonthlyNPC exported but never called from the pipeline).
+  const npcMonthlyImpact = tickMonthlyNPC(world);
+
+  return mergeImpacts([builder.build(), npcMonthlyImpact]);
 }
 
 // --- Helper Functions ---

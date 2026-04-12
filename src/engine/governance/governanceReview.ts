@@ -41,7 +41,7 @@ import {
 export function runGovernanceReview(world: WorldState): StateImpact {
   const builder = createImpactBuilder('governanceReview');
 
-  for (const heya of stableSort(world.heyas.values(), x => x.id)) {
+  for (let heya of stableSort(world.heyas.values(), x => x.id)) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
@@ -71,6 +71,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         const loanImpact = issueBailoutLoanIfNeeded(world, heya.id);
         const resolvedWorld = resolveImpacts(world, [loanImpact]);
         Object.assign(world, resolvedWorld);
+        // Re-fetch heya — world.heyas was replaced, old reference is stale
+        heya = world.heyas.get(heya.id) ?? heya;
       }
 
       // v1.7 Faction Solidarity (Traditional Bailouts)
