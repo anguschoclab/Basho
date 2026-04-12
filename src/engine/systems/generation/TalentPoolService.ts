@@ -5,7 +5,6 @@
 
 import { SeededRNG } from "../../rng";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
@@ -15,17 +14,12 @@ import {
   TalentCandidate,
   TalentPoolWorldState,
   TalentPoolState,
-  VisibilityBand,
-  CandidateAvailabilityState,
 } from "../../types/talent";
-import { Rikishi } from "../../types/rikishi";
-import { generateRikishiName } from "../../shikona";
-import { rollArchetype, buildCombatProfile } from "../../archetype";
 import { generateCandidate, convertCandidateToRikishi } from "./CandidateGenerator";
 import { clampInt } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
-import { rngFromSeed, rngForWorld } from "../../rng";
+import { rngFromSeed } from "../../rng";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -93,7 +87,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
  */
 export function listVisibleCandidates(
   world: WorldState,
-  poolType: TalentPoolType,
+  poolType: TalentPoolType
 ): TalentCandidate[] {
   const tp = world.talentPool;
   if (!tp) return [];
@@ -106,10 +100,7 @@ export function listVisibleCandidates(
 /**
  * Gets the player's scouting level for a specific candidate.
  */
-export function getCandidateScoutingLevel(
-  world: WorldState,
-  candidateId: Id,
-): number {
+export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): number {
   return world.talentPool?.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
 }
 
@@ -148,17 +139,13 @@ export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
 export function scoutPool(
   world: WorldState,
   poolType: TalentPoolType,
-  options: { revealCount: number } = { revealCount: 1 },
+  options: { revealCount: number } = { revealCount: 1 }
 ): { revealed: Id[] } {
   const tp = ensureTalentPoolState(world);
   const pool = tp.pools[poolType];
   if (!pool || pool.candidatesHidden.length === 0) return { revealed: [] };
 
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `reveal_${poolType}_${world.week}`,
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `reveal_${poolType}_${world.week}`);
   const count = Math.min(options.revealCount, pool.candidatesHidden.length);
 
   const revealed: Id[] = [];
@@ -182,7 +169,7 @@ export function scoutPool(
 export function scoutCandidate(
   world: WorldState,
   candidateId: Id,
-  options: { effort: number } = { effort: 1 },
+  options: { effort: number } = { effort: 1 }
 ): { ok: boolean; scoutingLevel: number } {
   const tp = ensureTalentPoolState(world);
   const candidate = tp.candidates[candidateId];
@@ -197,11 +184,7 @@ export function scoutCandidate(
   }
 
   const record = tp.playerScouting[candidateId];
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `intel_${candidateId}_${world.week}`,
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `intel_${candidateId}_${world.week}`);
 
   const gain = (10 + rng.int(0, 15)) * options.effort;
   record.scoutingLevel = clampInt(record.scoutingLevel + gain, 0, 100);
@@ -209,10 +192,7 @@ export function scoutCandidate(
 
   // If intel high enough, improve visibility band
   if (record.scoutingLevel >= 70) candidate.visibilityBand = "public";
-  else if (
-    record.scoutingLevel >= 30 &&
-    candidate.visibilityBand === "hidden"
-  ) {
+  else if (record.scoutingLevel >= 30 && candidate.visibilityBand === "hidden") {
     candidate.visibilityBand = "obscure";
   }
 
@@ -227,17 +207,13 @@ export function offerCandidate(
   candidateId: Id,
   heyaId: Id,
   offerType: "standard" | "aggressive",
-  interest: "low" | "medium" | "high" | "all_in",
+  interest: "low" | "medium" | "high" | "all_in"
 ): { ok: boolean; reason?: string } {
   const tp = ensureTalentPoolState(world);
   const candidate = tp.candidates[candidateId];
   if (!candidate) return { ok: false, reason: "Candidate not found" };
 
-  const rng = rngFromSeed(
-    `offer-validate-${candidateId}-${heyaId}`,
-    "narrative",
-    "scouting",
-  );
+  const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
 
   // 1. Validation: Foreigner limit
   if ((candidate.nationality ?? "Japan") !== "Japan") {
@@ -245,23 +221,16 @@ export function offerCandidate(
     if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
       return {
         ok: false,
-        reason: BardEngine.resolve(
-          rng,
-          "ui.labels.scouting.reasons.foreigner_limit",
-        ).text,
+        reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.foreigner_limit").text,
       };
     }
   }
 
   // 2. Validation: Already signed or unavailable
-  if (
-    candidate.availabilityState !== "available" &&
-    candidate.availabilityState !== "in_talks"
-  ) {
+  if (candidate.availabilityState !== "available" && candidate.availabilityState !== "in_talks") {
     return {
       ok: false,
-      reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.unavailable")
-        .text,
+      reason: BardEngine.resolve(rng, "ui.labels.scouting.reasons.unavailable").text,
     };
   }
 
@@ -309,9 +278,7 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
     if (candidate.availabilityState !== "in_talks") continue;
     if (!candidate.competingSuitors.length) continue;
 
-    const deadlineExpired = candidate.competingSuitors.some(
-      (s) => world.week >= s.deadlineWeek,
-    );
+    const deadlineExpired = candidate.competingSuitors.some((s) => world.week >= s.deadlineWeek);
     if (!deadlineExpired) continue;
 
     const resolution = resolveCandidateSuitor(nextWorld, candidate);
@@ -332,11 +299,7 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
   };
 
   // 4. Periodic pool refresh logic (basho cadence)
-  if (
-    world.calendar &&
-    world.calendar.month % 2 !== 0 &&
-    world.calendar.currentDay === 1
-  ) {
+  if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
     refreshAllPools(nextWorld);
   }
 
@@ -348,7 +311,7 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
  */
 export function resolveCandidateSuitor(
   world: WorldState,
-  candidate: TalentCandidate,
+  candidate: TalentCandidate
 ): { signed: boolean; candidate: TalentCandidate; winnerHeya?: any } {
   if (candidate.availabilityState !== "in_talks" || !candidate.competingSuitors.length) {
     return { signed: false, candidate };
@@ -362,7 +325,7 @@ export function resolveCandidateSuitor(
   };
 
   const sortedSuitors = [...candidate.competingSuitors].sort(
-    (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0),
+    (a, b) => (bandRank[b.interestBand] ?? 0) - (bandRank[a.interestBand] ?? 0)
   );
 
   const winner = sortedSuitors[0];
@@ -403,17 +366,13 @@ export function resolveCandidateSuitor(
  */
 export function fillVacanciesForNPC(
   world: WorldState,
-  targetHeyas: Record<string, number>,
+  targetHeyas: Record<string, number>
 ): StateImpact {
-  const builder = createImpactBuilder('fillVacanciesForNPC');
+  const builder = createImpactBuilder("fillVacanciesForNPC");
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `npc_fill_${world.week}`,
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
     const heya = world.heyas.get(heyaId);
@@ -421,17 +380,12 @@ export function fillVacanciesForNPC(
 
     for (let i = 0; i < vacancyCount; i++) {
       // Pick a random visible candidate
-      const poolTypes: TalentPoolType[] = [
-        "high_school",
-        "university",
-        "foreign",
-      ];
+      const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
       const pt = poolTypes[rng.int(0, 2)];
       const pool = tp.pools[pt];
 
       if (pool.candidatesVisible.length > 0) {
-        const cId =
-          pool.candidatesVisible[rng.int(0, pool.candidatesVisible.length - 1)];
+        const cId = pool.candidatesVisible[rng.int(0, pool.candidatesVisible.length - 1)];
         const c = tp.candidates[cId];
         if (c && c.availabilityState === "available") {
           // NPC fast-path signing: bypass multi-week negotiation to stabilize world
@@ -447,7 +401,7 @@ export function fillVacanciesForNPC(
               },
             ],
           };
-          
+
           // Note: talentPool updates are not directly supported by ImpactBuilder yet
           // For now, we'll update them directly as talentPool is a nested state
           tp.candidates[cId] = updatedCandidate;
@@ -480,24 +434,20 @@ export function fillVacanciesForNPC(
 export function materializeCandidateToRikishi(
   world: WorldState,
   candidateId: Id,
-  heyaId: Id,
+  heyaId: Id
 ): StateImpact {
-  const builder = createImpactBuilder('materializeCandidateToRikishi');
+  const builder = createImpactBuilder("materializeCandidateToRikishi");
   const tp = world.talentPool;
   const candidate = tp?.candidates[candidateId];
   if (!candidate || !tp) return builder.build();
 
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `materialize_${candidateId}`,
-  );
-  
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
+
   const rikishi = convertCandidateToRikishi({
     candidate,
     rng,
     currentYear: world.year,
-    heyaId
+    heyaId,
   });
 
   // 1. Inject into world
@@ -525,7 +475,7 @@ export function materializeCandidateToRikishi(
  * This ensures recruits are actually added to stable rosters and the world state.
  */
 export function finalizeSignedCandidates(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('finalizeSignedCandidates');
+  const builder = createImpactBuilder("finalizeSignedCandidates");
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
@@ -543,7 +493,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
           candidate,
           rng,
           currentYear: world.year,
-          heyaId
+          heyaId,
         });
 
         // Add to world
@@ -564,8 +514,8 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
     nextPools[pt] = {
       ...nextPools[pt],
-      candidatesVisible: nextPools[pt].candidatesVisible.filter(cid => nextCandidates[cid]),
-      candidatesHidden: nextPools[pt].candidatesHidden.filter(cid => nextCandidates[cid])
+      candidatesVisible: nextPools[pt].candidatesVisible.filter((cid) => nextCandidates[cid]),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => nextCandidates[cid]),
     };
   }
 
@@ -600,18 +550,13 @@ function fillHiddenCandidates(
 
 function refreshAllPools(world: WorldState) {
   const tp = ensureTalentPoolState(world);
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `refresh_${world.year}`,
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `refresh_${world.year}`);
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
   poolTypes.forEach((pt) => {
     const pool = tp.pools[pt];
     // Fill until the hidden reserve cap
-    const currentCount =
-      pool.candidatesVisible.length + pool.candidatesHidden.length;
+    const currentCount = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = pool.hiddenReserveCap - currentCount;
 
     for (let i = 0; i < toGenerate; i++) {
@@ -637,14 +582,10 @@ function refreshAllPools(world: WorldState) {
  * Returns StateImpact describing yearly refresh instead of mutating directly.
  */
 export function tickYear(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickYear');
+  const builder = createImpactBuilder("tickYear");
   const tp = ensureTalentPoolState(world);
   const currentYear = world.year ?? 2025;
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "scouting",
-    `yearly_refresh_${currentYear}`,
-  );
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `yearly_refresh_${currentYear}`);
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 
@@ -654,30 +595,21 @@ export function tickYear(world: WorldState): StateImpact {
     const pool = { ...tp.pools[poolType] };
 
     // 1. Age out stale candidates (estimate age from birthYear)
-    const maxAge =
-      poolType === "high_school" ? 20 : poolType === "university" ? 24 : 28;
+    const maxAge = poolType === "high_school" ? 20 : poolType === "university" ? 24 : 28;
     pool.candidatesVisible = filterAgedOutCandidates(
       pool.candidatesVisible,
       tp,
       currentYear,
-      maxAge,
+      maxAge
     );
-    pool.candidatesHidden = filterAgedOutCandidates(
-      pool.candidatesHidden,
-      tp,
-      currentYear,
-      maxAge,
-    );
+    pool.candidatesHidden = filterAgedOutCandidates(pool.candidatesHidden, tp, currentYear, maxAge);
 
     // 2. Inject fresh prospects for the new year
     const targetFill = Math.floor(pool.hiddenReserveCap * 0.6);
-    const currentTotal =
-      pool.candidatesVisible.length + pool.candidatesHidden.length;
+    const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 
-    fillHiddenCandidates(pool, tp, toGenerate, rng, currentYear, poolType, () =>
-      rng.uuid("CD"),
-    );
+    fillHiddenCandidates(pool, tp, toGenerate, rng, currentYear, poolType, () => rng.uuid("CD"));
 
     updatedPools[poolType] = pool;
   }
@@ -695,15 +627,14 @@ function filterAgedOutCandidates(
   candidateIds: Id[],
   tp: TalentPoolWorldState,
   currentYear: number,
-  maxAge: number,
+  maxAge: number
 ): Id[] {
   return candidateIds.filter((id) => {
     const candidate = tp.candidates[id];
     // Remove ghost IDs where candidate data is missing
     if (!candidate) return false;
 
-    const estimatedAge =
-      currentYear - (candidate.birthYear ?? currentYear - 20);
+    const estimatedAge = currentYear - (candidate.birthYear ?? currentYear - 20);
     if (estimatedAge > maxAge) {
       delete tp.candidates[id];
       return false;
