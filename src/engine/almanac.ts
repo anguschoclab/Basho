@@ -5,11 +5,9 @@
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
-import type { BashoResult, BashoName } from "./types/basho";
+import type { BashoName } from "./types/basho";
 import type { Division, Rank } from "./types/banzuke";
 import type { Id } from "./types/common";
-import { BASHO_CALENDAR } from "./calendar";
-import { RANK_HIERARCHY } from "./banzuke";
 
 // === CAREER RECORD TYPES ===
 
@@ -124,7 +122,11 @@ export interface OyakataRecord {
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => number): RikishiCareerRecord {
+function _generateCareerRecord(
+  rikishi: Rikishi,
+  world: WorldState,
+  rng: () => number
+): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
   // Realistic basho counts calibrated from real wrestlers:
@@ -152,7 +154,6 @@ function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => nu
   let kinboshiTotal = 0;
 
   let highestRank: Rank = currentRank;
-  let highestRankNumber: number | undefined = undefined;
   let highestRankAchievedYear: number | undefined = undefined;
 
   let currentWinStreak = 0;
@@ -168,7 +169,13 @@ function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => nu
 
     if (year > world.year || (year === world.year && bashoIndex >= worldBashoIndex)) break;
 
-    const performance = simulateBashoPerformance(currentRank, currentDivision, rikishi.rank, rankNumber, rng);
+    const performance = simulateBashoPerformance(
+      currentRank,
+      currentDivision,
+      rikishi.rank,
+      rankNumber,
+      rng
+    );
 
     // Realistic absence rate (~5-8% of basho have some absences)
     const abs = rng() < 0.06 ? Math.floor(1 + rng() * 2) : 0;
@@ -188,7 +195,7 @@ function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => nu
       ginoSho: performance.ginoSho,
       kantosho: performance.kantosho,
       shukunsho: performance.shukunsho,
-      kinboshiCount: performance.kinboshi
+      kinboshiCount: performance.kinboshi,
     };
 
     bashoHistory.push(record);
@@ -224,7 +231,6 @@ function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => nu
 
     if (getRankValue(newRank) > getRankValue(highestRank)) {
       highestRank = newRank;
-      highestRankNumber = newRankNumber;
       highestRankAchievedYear = year;
     }
 
@@ -264,7 +270,7 @@ function generateCareerRecord(rikishi: Rikishi, world: WorldState, rng: () => nu
     longestWinStreak,
     currentLossStreak: 0,
 
-    isActive: true
+    isActive: true,
   };
 }
 
@@ -306,7 +312,7 @@ function simulateBashoPerformance(
   // Past-peak wrestlers struggle (~40-50%)
   let baseWinRate = 0.5;
   if (isClimbing) baseWinRate = 0.58 + rng() * 0.12;
-  else if (atTarget) baseWinRate = 0.47 + rng() * 0.10;
+  else if (atTarget) baseWinRate = 0.47 + rng() * 0.1;
   else baseWinRate = 0.38 + rng() * 0.15;
 
   const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * 3);
@@ -320,7 +326,7 @@ function simulateBashoPerformance(
   // Only possible with dominant records (13+ wins in makuuchi, 6+ in lower)
   const yushoThreshold = boutCount === 15 ? 13 : 6;
   const yusho = atTarget && wins >= yushoThreshold && rng() < 0.08;
-  const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < 0.10;
+  const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < 0.1;
 
   // Sanshō calibration:
   // Only awarded in makuuchi, and quite rare
@@ -332,8 +338,7 @@ function simulateBashoPerformance(
 
   // Kinboshi: only maegashira beating a yokozuna
   // Most maegashira get 0-1 in career, a few exceptional ones get 2-3
-  const kinboshi =
-    currentRank === "maegashira" && wins >= 9 && rng() < 0.08 ? 1 : 0;
+  const kinboshi = currentRank === "maegashira" && wins >= 9 && rng() < 0.08 ? 1 : 0;
 
   return { wins, losses, yusho, junYusho, ginoSho, kantosho, shukunsho, kinboshi };
 }
@@ -350,7 +355,7 @@ function simulateBashoPerformance(
  */
 function simulateRankProgression(
   currentRank: Rank,
-  currentDivision: Division,
+  _currentDivision: Division,
   wins: number,
   losses: number,
   rankNumber: number | undefined,
@@ -369,7 +374,7 @@ function simulateRankProgression(
     "komusubi",
     "sekiwake",
     "ozeki",
-    "yokozuna"
+    "yokozuna",
   ];
 
   const divisionMap: Record<Rank, Division> = {
@@ -382,17 +387,19 @@ function simulateRankProgression(
     komusubi: "makuuchi",
     sekiwake: "makuuchi",
     ozeki: "makuuchi",
-    yokozuna: "makuuchi"
+    yokozuna: "makuuchi",
   };
 
   let rankIndex = rankOrder.indexOf(currentRank);
   let newRankNumber = rankNumber;
 
   if (isKachiKoshi) {
-    if (margin >= 5 && rankIndex < rankOrder.length - 1) rankIndex = Math.min(rankIndex + 2, rankOrder.length - 1);
+    if (margin >= 5 && rankIndex < rankOrder.length - 1)
+      rankIndex = Math.min(rankIndex + 2, rankOrder.length - 1);
     else if (margin >= 2 && rankIndex < rankOrder.length - 1) rankIndex++;
 
-    if (newRankNumber !== undefined && margin >= 3) newRankNumber = Math.max(1, newRankNumber - Math.floor(margin / 2));
+    if (newRankNumber !== undefined && margin >= 3)
+      newRankNumber = Math.max(1, newRankNumber - Math.floor(margin / 2));
   } else {
     const absMargin = Math.abs(margin);
     if (absMargin >= 5 && rankIndex > 0) rankIndex = Math.max(0, rankIndex - 2);
@@ -402,9 +409,20 @@ function simulateRankProgression(
   }
 
   const newRank = rankOrder[rankIndex];
-  const numbered = ["maegashira", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"].includes(newRank);
+  const numbered = [
+    "maegashira",
+    "juryo",
+    "makushita",
+    "sandanme",
+    "jonidan",
+    "jonokuchi",
+  ].includes(newRank);
 
-  return { newRank, newDivision: divisionMap[newRank], newRankNumber: numbered ? newRankNumber : undefined };
+  return {
+    newRank,
+    newDivision: divisionMap[newRank],
+    newRankNumber: numbered ? newRankNumber : undefined,
+  };
 }
 
 /**
@@ -423,7 +441,7 @@ function getRankCareerMultiplier(rank: Rank): number {
     makushita: 2,
     sandanme: 1.5,
     jonidan: 1,
-    jonokuchi: 0.5
+    jonokuchi: 0.5,
   };
   return multipliers[rank] || 1;
 }
@@ -444,7 +462,7 @@ function getRankValue(rank: Rank): number {
     komusubi: 7,
     sekiwake: 8,
     ozeki: 9,
-    yokozuna: 10
+    yokozuna: 10,
   };
   return values[rank] || 0;
 }
@@ -458,7 +476,7 @@ function getRankValue(rank: Rank): number {
  *  * @param rng - The Rng.
  *  * @returns The result.
  */
-function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
+function _generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
   for (const r of world.rikishi.values()) {
     if (r.heyaId === heya.id) {
@@ -466,7 +484,7 @@ function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): H
     }
   }
 
-  const sekitori = rikishiInHeya.filter((r) =>
+  const _sekitori = rikishiInHeya.filter((r) =>
     ["juryo", "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna"].includes(r.rank)
   );
 
@@ -477,7 +495,7 @@ function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): H
       established: 1.5,
       rebuilding: 0.8,
       fragile: 0.5,
-      new: 0.1
+      new: 0.1,
     }[heya.statureBand] || 1;
 
   return {
@@ -490,7 +508,7 @@ function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): H
     ozekiProduced: Math.floor(statureMultiplier * 1.5 + rng() * 3),
     sekitoriProduced: Math.floor(statureMultiplier * 10 + rng() * 20),
     bashoHistory: [],
-    foundedYear: world.year - Math.floor(20 + statureMultiplier * 30 + rng() * 50)
+    foundedYear: world.year - Math.floor(20 + statureMultiplier * 30 + rng() * 50),
   };
 }
 
@@ -558,11 +576,11 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
     makuuchiSummary: {
       totalBouts,
       avgWins: totalMakuuchiWins / Math.max(1, makuuchiRikishiCount),
-      injuryCount: makuuchiInjuryCount
+      injuryCount: makuuchiInjuryCount,
     },
     promotions: [],
     demotions: [],
-    retirements: []
+    retirements: [],
   };
 }
 
@@ -573,13 +591,14 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
  *  * @param record - The Record.
  *  * @returns The result.
  */
-function getRikishiCareerSummary(record: RikishiCareerRecord): string {
+function _getRikishiCareerSummary(record: RikishiCareerRecord): string {
   const parts: string[] = [];
 
   if (record.yushoCount > 0) parts.push(`${record.yushoCount} Yusho`);
   if (record.junYushoCount > 0) parts.push(`${record.junYushoCount} Jun-Yusho`);
 
-  const sanshoTotal = record.sanshoCounts.ginoSho + record.sanshoCounts.kantosho + record.sanshoCounts.shukunsho;
+  const sanshoTotal =
+    record.sanshoCounts.ginoSho + record.sanshoCounts.kantosho + record.sanshoCounts.shukunsho;
   if (sanshoTotal > 0) parts.push(`${sanshoTotal} Sansho`);
 
   if (record.kinboshiCount > 0) parts.push(`${record.kinboshiCount} Kinboshi`);

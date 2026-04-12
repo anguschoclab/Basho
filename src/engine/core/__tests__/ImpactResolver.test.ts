@@ -2,53 +2,52 @@
  * ImpactResolver Unit Tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { resolveImpacts, mergeImpacts } from '../ImpactResolver';
-import type { WorldState } from '../../types/world';
-import type { StateImpact } from '../StateImpact';
-import type { Heya } from '../../types/heya';
-import { createEmptyImpact } from '../StateImpact';
-import { mockRikishi } from '../../__tests__/utils';
+import { describe, it, expect, beforeEach } from "vitest";
+import { resolveImpacts, mergeImpacts } from "../ImpactResolver";
+import type { WorldState } from "../../types/world";
+import type { StateImpact } from "../StateImpact";
+import type { Heya } from "../../types/heya";
+import { mockRikishi } from "../../__tests__/utils";
 
-describe('ImpactResolver', () => {
+describe("ImpactResolver", () => {
   let world: WorldState;
 
   beforeEach(() => {
     world = {
-      id: 'world-1',
-      seed: 'test-seed',
+      id: "world-1",
+      seed: "test-seed",
       year: 2025,
       week: 1,
       dayIndexGlobal: 0,
-      cyclePhase: 'interim',
+      cyclePhase: "interim",
       heyas: new Map(),
       rikishi: new Map(),
       historicalRikishi: new Map(),
       oyakata: new Map(),
-      events: { version: '1.0.0', log: [], dedupe: {} },
+      events: { version: "1.0.0", log: [], dedupe: {} },
       history: [],
       ftue: {} as any,
       calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
       records: {} as any,
-      settings: { archiveMode: 'standard' },
+      settings: { archiveMode: "standard" },
     } as unknown as WorldState;
   });
 
-  describe('resolveImpacts', () => {
-    it('returns world unchanged when impacts array is empty', () => {
+  describe("resolveImpacts", () => {
+    it("returns world unchanged when impacts array is empty", () => {
       const result = resolveImpacts(world, []);
       expect(result).toBe(world);
     });
 
-    it('applies heya entity updates', () => {
+    it("applies heya entity updates", () => {
       const heya: Heya = {
-        id: 'heya-1',
-        name: 'Test Heya',
+        id: "heya-1",
+        name: "Test Heya",
         funds: 1000,
         reputation: 50,
-        prestigeBand: 'unknown',
-        statureBand: 'new',
-        oyakataId: 'oyakata-1',
+        prestigeBand: "unknown",
+        statureBand: "new",
+        oyakataId: "oyakata-1",
         isActive: true,
         facilities: { level: 1, condition: 100 },
         fanbase: 100,
@@ -59,93 +58,93 @@ describe('ImpactResolver', () => {
 
       const impact: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['heya-1', { funds: 2000, reputation: 75 }]]),
+          heyaUpdates: new Map([["heya-1", { funds: 2000, reputation: 75 }]]),
         },
-        metadata: { source: 'test' },
+        metadata: { source: "test" },
       };
 
       const result = resolveImpacts(world, [impact]);
-      expect(result.heyas.get('heya-1')?.funds).toBe(2000);
-      expect(result.heyas.get('heya-1')?.reputation).toBe(75);
-      expect(result.heyas.get('heya-1')?.name).toBe('Test Heya'); // Unchanged
+      expect(result.heyas.get("heya-1")?.funds).toBe(2000);
+      expect(result.heyas.get("heya-1")?.reputation).toBe(75);
+      expect(result.heyas.get("heya-1")?.name).toBe("Test Heya"); // Unchanged
     });
 
-    it('applies rikishi entity updates', () => {
-      const rikishi = mockRikishi('r1', { shikona: 'Test', power: 50 });
+    it("applies rikishi entity updates", () => {
+      const rikishi = mockRikishi("r1", { shikona: "Test", power: 50 });
       world.rikishi.set(rikishi.id, rikishi);
 
       const impact: StateImpact = {
         entities: {
-          rikishiUpdates: new Map([['r1', { power: 60, speed: 55 }]]),
+          rikishiUpdates: new Map([["r1", { power: 60, speed: 55 }]]),
         },
-        metadata: { source: 'test' },
+        metadata: { source: "test" },
       };
 
       const result = resolveImpacts(world, [impact]);
-      expect(result.rikishi.get('r1')?.power).toBe(60);
-      expect(result.rikishi.get('r1')?.speed).toBe(55);
-      expect(result.rikishi.get('r1')?.shikona).toBe('Test'); // Unchanged
+      expect(result.rikishi.get("r1")?.power).toBe(60);
+      expect(result.rikishi.get("r1")?.speed).toBe(55);
+      expect(result.rikishi.get("r1")?.shikona).toBe("Test"); // Unchanged
     });
 
-    it('applies collection operations - rikishi to historical', () => {
-      const rikishi = mockRikishi('r1', { shikona: 'Test' });
+    it("applies collection operations - rikishi to historical", () => {
+      const rikishi = mockRikishi("r1", { shikona: "Test" });
       world.rikishi.set(rikishi.id, rikishi);
 
       const impact: StateImpact = {
         collections: {
-          rikishiToHistorical: ['r1'],
+          rikishiToHistorical: ["r1"],
         },
-        metadata: { source: 'test' },
+        metadata: { source: "test" },
       };
 
       const result = resolveImpacts(world, [impact]);
-      expect(result.rikishi.has('r1')).toBe(false);
-      expect(result.historicalRikishi.has('r1')).toBe(true);
-      expect(result.historicalRikishi.get('r1')?.shikona).toBe('Test');
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.historicalRikishi.has("r1")).toBe(true);
+      expect(result.historicalRikishi.get("r1")?.shikona).toBe("Test");
     });
 
-    it('applies collection operations - rikishi from historical', () => {
-      const rikishi = mockRikishi('r1', { shikona: 'Test' });
+    it("applies collection operations - rikishi from historical", () => {
+      const rikishi = mockRikishi("r1", { shikona: "Test" });
       world.historicalRikishi.set(rikishi.id, rikishi);
 
       const impact: StateImpact = {
         collections: {
-          rikishiFromHistorical: ['r1'],
+          rikishiFromHistorical: ["r1"],
         },
-        metadata: { source: 'test' },
+        metadata: { source: "test" },
       };
 
       const result = resolveImpacts(world, [impact]);
-      expect(result.historicalRikishi.has('r1')).toBe(false);
-      expect(result.rikishi.has('r1')).toBe(true);
-      expect(result.rikishi.get('r1')?.shikona).toBe('Test');
+      expect(result.historicalRikishi.has("r1")).toBe(false);
+      expect(result.rikishi.has("r1")).toBe(true);
+      expect(result.rikishi.get("r1")?.shikona).toBe("Test");
     });
 
-    it('applies world field updates', () => {
+    it("applies world field updates", () => {
       const impact: StateImpact = {
         worldFields: {
           year: 2026,
           week: 2,
-          cyclePhase: 'active_basho',
+          cyclePhase: "active_basho",
         },
-        metadata: { source: 'test' },
+        metadata: { source: "test" },
       };
 
       const result = resolveImpacts(world, [impact]);
       expect(result.year).toBe(2026);
       expect(result.week).toBe(2);
-      expect(result.cyclePhase).toBe('active_basho');
+      expect(result.cyclePhase).toBe("active_basho");
     });
 
-    it('applies multiple impacts in order', () => {
+    it("applies multiple impacts in order", () => {
       const heya: Heya = {
-        id: 'heya-1',
-        name: 'Test Heya',
+        id: "heya-1",
+        name: "Test Heya",
         funds: 1000,
         reputation: 50,
-        prestigeBand: 'unknown',
-        statureBand: 'new',
-        oyakataId: 'oyakata-1',
+        prestigeBand: "unknown",
+        statureBand: "new",
+        oyakataId: "oyakata-1",
         isActive: true,
         facilities: { level: 1, condition: 100 },
         fanbase: 100,
@@ -156,30 +155,30 @@ describe('ImpactResolver', () => {
 
       const impact1: StateImpact = {
         worldFields: { week: 2 },
-        metadata: { source: 'impact1' },
+        metadata: { source: "impact1" },
       };
 
       const impact2: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['heya-1', { funds: 2000 }]]),
+          heyaUpdates: new Map([["heya-1", { funds: 2000 }]]),
         },
-        metadata: { source: 'impact2' },
+        metadata: { source: "impact2" },
       };
 
       const result = resolveImpacts(world, [impact1, impact2]);
       expect(result.week).toBe(2);
-      expect(result.heyas.get('heya-1')?.funds).toBe(2000);
+      expect(result.heyas.get("heya-1")?.funds).toBe(2000);
     });
 
-    it('handles errors gracefully by returning pre-error state', () => {
+    it("handles errors gracefully by returning pre-error state", () => {
       const heya: Heya = {
-        id: 'heya-1',
-        name: 'Test Heya',
+        id: "heya-1",
+        name: "Test Heya",
         funds: 1000,
         reputation: 50,
-        prestigeBand: 'unknown',
-        statureBand: 'new',
-        oyakataId: 'oyakata-1',
+        prestigeBand: "unknown",
+        statureBand: "new",
+        oyakataId: "oyakata-1",
         isActive: true,
         facilities: { level: 1, condition: 100 },
         fanbase: 100,
@@ -190,17 +189,17 @@ describe('ImpactResolver', () => {
 
       const impact1: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['heya-1', { funds: 2000 }]]),
+          heyaUpdates: new Map([["heya-1", { funds: 2000 }]]),
         },
-        metadata: { source: 'impact1' },
+        metadata: { source: "impact1" },
       };
 
       // This impact will cause an error (trying to update non-existent entity)
       const impact2: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['non-existent', { funds: 3000 } as any]]),
+          heyaUpdates: new Map([["non-existent", { funds: 3000 } as any]]),
         },
-        metadata: { source: 'impact2' },
+        metadata: { source: "impact2" },
       };
 
       // Suppress console.error for this test
@@ -212,80 +211,80 @@ describe('ImpactResolver', () => {
       console.error = consoleSpy;
 
       // Should have applied impact1 but stopped before impact2
-      expect(result.heyas.get('heya-1')?.funds).toBe(2000);
+      expect(result.heyas.get("heya-1")?.funds).toBe(2000);
     });
   });
 
-  describe('mergeImpacts', () => {
-    it('merges entity updates from multiple impacts', () => {
+  describe("mergeImpacts", () => {
+    it("merges entity updates from multiple impacts", () => {
       const impact1: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['h1', { funds: 1000 }]]),
+          heyaUpdates: new Map([["h1", { funds: 1000 }]]),
         },
-        metadata: { source: 'impact1' },
+        metadata: { source: "impact1" },
       };
 
       const impact2: StateImpact = {
         entities: {
-          heyaUpdates: new Map([['h1', { reputation: 75 }]]),
+          heyaUpdates: new Map([["h1", { reputation: 75 }]]),
         },
-        metadata: { source: 'impact2' },
+        metadata: { source: "impact2" },
       };
 
       const merged = mergeImpacts([impact1, impact2]);
-      expect(merged.entities?.heyaUpdates?.get('h1')).toEqual({ funds: 1000, reputation: 75 });
+      expect(merged.entities?.heyaUpdates?.get("h1")).toEqual({ funds: 1000, reputation: 75 });
     });
 
-    it('merges collection operations from multiple impacts', () => {
+    it("merges collection operations from multiple impacts", () => {
       const impact1: StateImpact = {
         collections: {
-          rikishiToHistorical: ['r1'],
+          rikishiToHistorical: ["r1"],
         },
-        metadata: { source: 'impact1' },
+        metadata: { source: "impact1" },
       };
 
       const impact2: StateImpact = {
         collections: {
-          rikishiToHistorical: ['r2'],
+          rikishiToHistorical: ["r2"],
         },
-        metadata: { source: 'impact2' },
+        metadata: { source: "impact2" },
       };
 
       const merged = mergeImpacts([impact1, impact2]);
-      expect(merged.collections?.rikishiToHistorical).toEqual(['r1', 'r2']);
+      expect(merged.collections?.rikishiToHistorical).toEqual(["r1", "r2"]);
     });
 
-    it('merges world field updates with last writer wins', () => {
+    it("merges world field updates with last writer wins", () => {
       const impact1: StateImpact = {
         worldFields: { week: 2 },
-        metadata: { source: 'impact1' },
+        metadata: { source: "impact1" },
       };
 
       const impact2: StateImpact = {
         worldFields: { week: 3 },
-        metadata: { source: 'impact2' },
+        metadata: { source: "impact2" },
       };
 
       const merged = mergeImpacts([impact1, impact2]);
       expect(merged.worldFields?.week).toBe(3);
     });
 
-    it('merges events from multiple impacts', () => {
+    it("merges events from multiple impacts", () => {
       const impact1: StateImpact = {
-        events: [{ type: 'TRAINING_UPDATE' as any, category: 'training', data: {} }],
-        metadata: { source: 'impact1' },
+        events: [{ type: "TRAINING_UPDATE" as any, category: "training", data: {} }],
+        metadata: { source: "impact1" },
       };
 
       const impact2: StateImpact = {
-        events: [{ type: 'MEDICAL_REPORT' as any, category: 'injury', data: {} }],
-        metadata: { source: 'impact2' },
+        events: [{ type: "MEDICAL_REPORT" as any, category: "injury", data: {} }],
+        metadata: { source: "impact2" },
       };
 
       const merged = mergeImpacts([impact1, impact2]);
       expect(merged.events?.length).toBe(2);
     });
 
-    it('returns empty merged impact when input is empty', () => {
+    it("returns empty merged impact when input is empty", () => {
       const merged = mergeImpacts([]);
       expect(merged.entities?.heyaUpdates?.size).toBe(0);
       expect(merged.collections?.rikishiToAdd?.length).toBe(0);

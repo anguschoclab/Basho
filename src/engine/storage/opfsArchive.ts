@@ -247,7 +247,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       const file = await fileHandle.getFile();
       const contents = await file.text();
       return JSON.parse(contents);
-    } catch (_e) {
+    } catch {
       return [];
     }
   }
@@ -281,7 +281,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       const file = await fileHandle.getFile();
       const contents = await file.text();
       return JSON.parse(contents);
-    } catch (_e) {
+    } catch {
       return null;
     }
   }
