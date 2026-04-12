@@ -34,14 +34,17 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
   const lastBasho = world.history[world.history.length - 1];
 
   // Question about basho performance
-  const totalWins = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
+  let totalWins = 0;
+  let totalLosses = 0;
+
+  for (const id of playerHeya.rikishiIds ?? []) {
     const r = world.rikishi.get(id);
-    return sum + (r?.currentBashoWins ?? 0);
-  }, 0);
-  const totalLosses = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
-    const r = world.rikishi.get(id);
-    return sum + (r?.currentBashoLosses ?? 0);
-  }, 0);
+    if (r) {
+      totalWins += r.currentBashoWins ?? 0;
+      totalLosses += r.currentBashoLosses ?? 0;
+    }
+  }
+
   const winRate = totalWins + totalLosses > 0 ? totalWins / (totalWins + totalLosses) : 0.5;
 
   questions.push({

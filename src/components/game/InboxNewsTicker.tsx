@@ -4,17 +4,19 @@
  * A persistent, unobtrusive ticker for minor drama and engine updates.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useGame } from "../../contexts/GameContext";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 
 export function InboxNewsTicker() {
   const { digest } = useGame();
-  if (!digest || !digest.sections) return null;
 
   // Flatten all items from all sections for the ticker
-  const allItems = digest.sections.flatMap(s => s.items.map(i => ({ ...i, sectionTitle: s.title })));
+  const allItems = useMemo(() => {
+    if (!digest || !digest.sections) return [];
+    return digest.sections.flatMap(s => s.items.map(i => ({ ...i, sectionTitle: s.title })));
+  }, [digest]);
 
   if (allItems.length === 0) return null;
 

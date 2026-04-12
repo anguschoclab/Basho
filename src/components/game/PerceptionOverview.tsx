@@ -1,7 +1,7 @@
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,32 @@ import {
   projectH2HBetweenHeyas 
 } from "@/presenters/uiDigest";
 
+const RikishiSelectorButton = React.memo(({
+  rikishiId,
+  shikona,
+  rank,
+  isSelected,
+  onSelect
+}: {
+  rikishiId: string;
+  shikona: string;
+  rank: string;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+}) => {
+  return (
+    <Button
+      variant="ghost"
+      className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+        isSelected ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
+      }`}
+      onClick={() => onSelect(rikishiId)}
+    >
+      {shikona} <span className="text-muted-foreground capitalize">({rank})</span>
+    </Button>
+  );
+});
+
 function RikishiSelectorList({
   perceptions,
   selectedId,
@@ -25,19 +51,20 @@ function RikishiSelectorList({
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
+  const handleSelect = useCallback((id: string) => onSelect(id), [onSelect]);
+
   return (
     <ScrollArea className="max-h-28 border border-border rounded-md">
       <div className="p-1 space-y-0.5">
         {perceptions.map(r => (
-          <Button variant="ghost"
+          <RikishiSelectorButton
             key={r.rikishiId}
-            className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
-              selectedId === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
-            }`}
-            onClick={() => onSelect(r.rikishiId)}
-          >
-            {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-          </Button>
+            rikishiId={r.rikishiId}
+            shikona={r.shikona}
+            rank={r.rank}
+            isSelected={selectedId === r.rikishiId}
+            onSelect={handleSelect}
+          />
         ))}
       </div>
     </ScrollArea>
