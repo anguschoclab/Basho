@@ -4,6 +4,7 @@ import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { stableSort } from "./utils/sort";
 import { buyMyoseki } from "./myosekiMarket";
+import { buyAvailableMyoseki } from "./utils/strategy";
 
 interface FinanceStrategy {
   evaluateFinances: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
@@ -20,20 +21,7 @@ export const DefaultFinanceStrategy: FinanceStrategy = {
     const threshold = isHoarder ? 500_000_000 : 300_000_000;
 
     if (heya.funds > threshold && isAmbitious) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 100_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break; // Only buy one per month per heya
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 100_000_000);
     }
   },
 };
@@ -46,20 +34,7 @@ export const TraditionalistFinanceStrategy: FinanceStrategy = {
     // They only buy myoseki when they have significant funds and high tradition
     const threshold = 600_000_000; // Higher threshold for traditionalists
     if (heya.funds > threshold && oyakata.traits.tradition > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 200_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 200_000_000);
     }
   },
 };
@@ -72,20 +47,7 @@ export const ScientistFinanceStrategy: FinanceStrategy = {
     // They value myoseki that provide technical advantages
     const threshold = 350_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 100_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 100_000_000);
     }
   },
 };
@@ -98,20 +60,7 @@ export const GamblerFinanceStrategy: FinanceStrategy = {
     // They'll spend more of their funds on myoseki
     const threshold = 200_000_000; // Lower threshold - they take risks
     if (heya.funds > threshold && oyakata.traits.risk > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 50_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 50_000_000);
     }
   },
 };
@@ -124,20 +73,7 @@ export const NurturerFinanceStrategy: FinanceStrategy = {
     // They're cautious with myoseki spending
     const threshold = 700_000_000; // Very high threshold - they prioritize welfare
     if (heya.funds > threshold && oyakata.traits.compassion > 70) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 300_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 300_000_000);
     }
   },
 };
@@ -150,20 +86,7 @@ export const TyrantFinanceStrategy: FinanceStrategy = {
     // They rarely spend on myoseki unless it's for power
     const threshold = 1_000_000_000; // Extremely high threshold
     if (heya.funds > threshold) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 400_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 400_000_000);
     }
   },
 };
@@ -176,20 +99,7 @@ export const StrategistFinanceStrategy: FinanceStrategy = {
     // They calculate optimal purchase timing
     const threshold = 400_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 50) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 150_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 150_000_000);
     }
   },
 };
@@ -202,20 +112,7 @@ export const StrictFinanceStrategy: FinanceStrategy = {
     // They're conservative but follow traditional approaches
     const threshold = 550_000_000;
     if (heya.funds > threshold && oyakata.traits.tradition > 50) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 200_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 200_000_000);
     }
   },
 };
@@ -228,20 +125,7 @@ export const IndulgentFinanceStrategy: FinanceStrategy = {
     // They spend moderately on myoseki
     const threshold = 450_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 40) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
-        if (
-          stock.status === "available" &&
-          stock.askingPrice &&
-          stock.askingPrice < heya.funds - 150_000_000
-        ) {
-          buyMyoseki(world, oyakata.id, heya.id, stock.id);
-          break;
-        }
-      }
+      buyAvailableMyoseki(world, heya, oyakata, 150_000_000);
     }
   },
 };

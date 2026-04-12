@@ -5,6 +5,7 @@ import type { OyakataArchetype } from "./types/oyakata";
 import type { SponsorRelationship, SponsorRole } from "./types/sponsors";
 import { rngForWorld } from "./rng";
 import { EventBus } from "./events";
+import { calculateRunwayMonths, countCurrentSponsors, getEligibleSponsors } from "./utils/strategy";
 
 interface SponsorStrategy {
   evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
@@ -24,10 +25,7 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
     const isRiskTaker = oyakata.traits.risk > 50;
 
     // Only recruit if financial runway is healthy
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 6) return; // Too tight to recruit
 
@@ -35,9 +33,7 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
     const recruitmentThreshold = isAmbitious && isPublicityHawk ? 3 : isAmbitious ? 2 : 1;
 
     // Count current sponsor relationships
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
@@ -120,18 +116,13 @@ export const TraditionalistSponsorStrategy: SponsorStrategy = {
     const isPublicityHawk = oyakata.managerFlags?.publicityHawk;
 
     // Only recruit if financial runway is healthy
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 9) return; // Traditionalists are more conservative
 
     const recruitmentThreshold = isPublicityHawk ? 2 : 1;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
@@ -188,26 +179,19 @@ export const ScientistSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Scientists target sponsors with research/training benefits
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 6) return;
 
     const recruitmentThreshold = 2;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
-    const eligibleSponsors = Array.from(pool.sponsors.values())
-      .filter(
-        (s) => s.active && !s.relationships?.some((r) => r.targetId === heya.id) && s.tier !== "T0"
-      )
-      .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+    const eligibleSponsors = getEligibleSponsors(pool, heya).sort(
+      (a, b) => b.prestigeAffinity - a.prestigeAffinity
+    );
 
     if (eligibleSponsors.length === 0) return;
 
@@ -253,27 +237,20 @@ export const GamblerSponsorStrategy: SponsorStrategy = {
     // Gamblers take high-risk sponsor relationships
     const isRiskTaker = oyakata.traits.risk > 60;
 
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 3) return; // Gamblers are more willing to take risks
 
     const recruitmentThreshold = isRiskTaker ? 4 : 2;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
     // Gamblers willing to take volatile sponsor deals
-    const eligibleSponsors = Array.from(pool.sponsors.values())
-      .filter(
-        (s) => s.active && !s.relationships?.some((r) => r.targetId === heya.id) && s.tier !== "T0"
-      )
-      .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+    const eligibleSponsors = getEligibleSponsors(pool, heya).sort(
+      (a, b) => b.prestigeAffinity - a.prestigeAffinity
+    );
 
     if (eligibleSponsors.length === 0) return;
 
@@ -317,18 +294,13 @@ export const NurturerSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Nurturers seek sponsors with welfare benefits for rikishi
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 8) return; // Nurturers prioritize welfare
 
     const recruitmentThreshold = 1;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
@@ -384,18 +356,13 @@ export const TyrantSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Tyrants demand high-tier sponsors, prestige-focused
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 12) return; // Tyrants want significant reserves
 
     const recruitmentThreshold = 3;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
@@ -451,26 +418,19 @@ export const StrategistSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Strategists maintain diversified sponsor portfolio
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 6) return;
 
     const recruitmentThreshold = 3;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
-    const eligibleSponsors = Array.from(pool.sponsors.values())
-      .filter(
-        (s) => s.active && !s.relationships?.some((r) => r.targetId === heya.id) && s.tier !== "T0"
-      )
-      .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+    const eligibleSponsors = getEligibleSponsors(pool, heya).sort(
+      (a, b) => b.prestigeAffinity - a.prestigeAffinity
+    );
 
     if (eligibleSponsors.length === 0) return;
 
@@ -514,18 +474,13 @@ export const StrictSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Strict only partner with reputable sponsors
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 8) return;
 
     const recruitmentThreshold = 2;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
@@ -582,26 +537,19 @@ export const IndulgentSponsorStrategy: SponsorStrategy = {
     const rng = rngForWorld(world, "sponsorStrategy", heya.id);
 
     // Indulgent maintain friendly sponsor relationships
-    const avgFacility =
-      (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-    const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
-    const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
+    const runwayMonths = calculateRunwayMonths(heya);
 
     if (runwayMonths < 5) return;
 
     const recruitmentThreshold = 2;
 
-    const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
-      (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
-    ).length;
+    const currentSponsorCount = countCurrentSponsors(pool, heya);
 
     if (currentSponsorCount >= recruitmentThreshold) return;
 
-    const eligibleSponsors = Array.from(pool.sponsors.values())
-      .filter(
-        (s) => s.active && !s.relationships?.some((r) => r.targetId === heya.id) && s.tier !== "T0"
-      )
-      .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+    const eligibleSponsors = getEligibleSponsors(pool, heya).sort(
+      (a, b) => b.prestigeAffinity - a.prestigeAffinity
+    );
 
     if (eligibleSponsors.length === 0) return;
 

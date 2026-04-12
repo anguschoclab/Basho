@@ -655,3 +655,15 @@ function filterAgedOutCandidates(
     return true;
   });
 }
+
+export function countsAsForeignFromRikishi(
+  rikishi: import("../../types/rikishi").Rikishi
+): boolean {
+  return (rikishi.nationality ?? "Japan") !== "Japan";
+}
+
+export function countsAsForeign(
+  candidate: import("../../types/sponsors").TalentCandidate
+): boolean {
+  return (candidate.nationality ?? "Japan") !== "Japan";
+}
