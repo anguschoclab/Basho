@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
-import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-react";
+import { Dumbbell, Zap, Target, Shield, Activity } from "lucide-react";
 import type {
   TrainingIntensity,
   TrainingFocus,
@@ -225,21 +225,6 @@ export function TrainingWidget() {
       updateWorld({ ...world });
     },
     [world, maxIntensityIdx, updateWorld]
-  );
-
-  const handleIntensityChange = React.useCallback(
-    (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
-    [updateProfile]
-  );
-
-  const handleFocusChange = React.useCallback(
-    (v: string) => updateProfile({ focus: v as TrainingFocus }),
-    [updateProfile]
-  );
-
-  const handleRecoveryChange = React.useCallback(
-    (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
-    [updateProfile]
   );
 
   const toggleExpanded = React.useCallback(() => setExpanded((prev) => !prev), []);

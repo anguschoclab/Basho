@@ -1,10 +1,11 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
-global.calculatePerceivedStats = vi.fn(() => ({ strength: 'Dominant' }));
+global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 import { describe, it, expect } from "vitest";
 import { projectRikishi, projectHeya, getLocalizedArchetype } from "../uiModels";
-import { generateInitialWorld } from '../../engine/systems/generation/WorldFactory';
-import type { TacticalArchetype } from '../../engine/types/combat';
+import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
+import type { TacticalArchetype } from "../../engine/types/combat";
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {
@@ -39,7 +40,9 @@ describe("UI Models Projections", () => {
     expect(uiHeya.id).toBe(heyaId);
     expect(uiHeya.name).toBe(heya.name);
     expect(uiHeya.oyakataName).toBeDefined();
-    const expectedSize = Array.from(world.rikishi.values()).filter(r => r.heyaId === heyaId).length;
+    const expectedSize = Array.from(world.rikishi.values()).filter(
+      (r) => r.heyaId === heyaId
+    ).length;
     expect(uiHeya.rosterSize).toBe(expectedSize);
   });
 
@@ -50,7 +53,12 @@ describe("UI Models Projections", () => {
       const rikishi = world.rikishi.get(rikishiId)!;
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "sprain", severity: "minor", location: "knee", weeksRemaining: 1 };
+      rikishi.injuryStatus = {
+        type: "sprain",
+        severity: "minor",
+        location: "knee",
+        weeksRemaining: 1,
+      };
 
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");
@@ -90,6 +98,6 @@ describe("Narrative Leakage - Archetype Localizer", () => {
 
   it("Test B: Fallback Handling", () => {
     expect(getLocalizedArchetype(undefined as unknown as TacticalArchetype)).toBe("All-Rounder");
-    expect(getLocalizedArchetype('unknown_enum' as unknown as TacticalArchetype)).toBe("Unknown");
+    expect(getLocalizedArchetype("unknown_enum" as unknown as TacticalArchetype)).toBe("Unknown");
   });
 });

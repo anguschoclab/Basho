@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the self object for Web Worker environment before importing the worker
 const mockPostMessage = vi.fn();
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+// @ts-expect-error
 globalThis.self = {
   postMessage: mockPostMessage,
   onmessage: null,
@@ -42,7 +43,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(startCmd);
 
     expect(mockPostMessage).toHaveBeenCalledWith({
@@ -65,7 +67,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(loadCmd);
 
     expect(mockPostMessage).toHaveBeenCalledWith({
@@ -88,7 +91,8 @@ describe("engine.worker", () => {
         },
       },
     };
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(loadCmd);
     vi.clearAllMocks();
 
@@ -98,7 +102,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(tickCmd);
 
     // Since tickOrchestrator is mocked to return { ...world, ticked: true }
@@ -122,7 +127,8 @@ describe("engine.worker", () => {
         },
       },
     };
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(loadCmd);
     vi.clearAllMocks();
 
@@ -133,7 +139,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(autoSimCmd);
 
     // It should emit progress at day 1 (index 0) and day 6 (index 5)
@@ -182,7 +189,8 @@ describe("engine.worker", () => {
         },
       },
     };
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(loadCmd);
     vi.clearAllMocks();
 
@@ -192,7 +200,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(digestCmd);
 
     expect(mockPostMessage).toHaveBeenCalledWith({
@@ -205,9 +214,7 @@ describe("engine.worker", () => {
   });
 
   it("should handle invalid commands by logging a warning", async () => {
-    const consoleWarnSpy = vi
-      .spyOn(console, "warn")
-      .mockImplementation(() => {});
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const invalidCmd = {
       data: {
@@ -215,19 +222,17 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(invalidCmd);
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "[Worker] Unknown command: INVALID_COMMAND",
-    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith("[Worker] Unknown command: INVALID_COMMAND");
     consoleWarnSpy.mockRestore();
   });
 
   it("should handle generic errors", async () => {
     // We mock the generateInitialWorld to throw an error for this specific test
-    const { generateInitialWorld } =
-      await import("../systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
     (generateInitialWorld as any).mockImplementationOnce(() => {
       throw new Error("Test error message");
     });
@@ -239,7 +244,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(errorCmd);
 
     expect(mockPostMessage).toHaveBeenCalledWith({
@@ -249,8 +255,7 @@ describe("engine.worker", () => {
   });
 
   it("should handle error without message property gracefully", async () => {
-    const { generateInitialWorld } =
-      await import("../systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
     (generateInitialWorld as any).mockImplementationOnce(() => {
       throw "String error instead of Error object";
     });
@@ -262,7 +267,8 @@ describe("engine.worker", () => {
       },
     };
 
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
+    // @ts-expect-error
     await globalThis.self.onmessage(errorCmd);
 
     expect(mockPostMessage).toHaveBeenCalledWith({

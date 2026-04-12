@@ -9,7 +9,6 @@ import type { PotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS, toPotentialBand } from "@/presenters/uiDigest";
-import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",
@@ -28,7 +27,7 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
 
 const ProspectRow = React.memo(
   ({
-    candidateId,
+    candidateId: _candidateId,
     name,
     archetype,
     talentSeed,
@@ -59,23 +58,17 @@ const ProspectRow = React.memo(
           {archetype.replace(/_/g, " ")}
         </span>
         {(potential === "generational" || potential === "star") && (
-          <Sparkles
-            className={`h-3 w-3 shrink-0 ${POTENTIAL_COLORS[potential]}`}
-          />
+          <Sparkles className={`h-3 w-3 shrink-0 ${POTENTIAL_COLORS[potential]}`} />
         )}
         <Badge
-          variant={
-            potential === "generational" || potential === "star"
-              ? "default"
-              : "secondary"
-          }
+          variant={potential === "generational" || potential === "star" ? "default" : "secondary"}
           className="text-[9px] px-1.5 py-0 h-4 shrink-0"
         >
           {potentialInfo.label.split(" ")[0]}
         </Badge>
       </div>
     );
-  },
+  }
 );
 
 /** scouting widget. */
@@ -87,18 +80,14 @@ export function ScoutingWidget() {
       label: "Full Board",
       onClick: () => navigate({ to: "/talent" }),
     }),
-    [navigate],
+    [navigate]
   );
   const world = state.world;
 
   const prospects = useMemo(() => {
     if (!world) return [];
     const all: (TalentCandidate & { pool: TalentPoolType })[] = [];
-    for (const pool of [
-      "high_school",
-      "university",
-      "foreign",
-    ] as TalentPoolType[]) {
+    for (const pool of ["high_school", "university", "foreign"] as TalentPoolType[]) {
       for (const c of talentpool.listVisibleCandidates(world, pool)) {
         all.push({ ...c, pool });
       }
@@ -114,11 +103,7 @@ export function ScoutingWidget() {
     foreign: 0,
   };
   for (const p of prospects) {
-    if (
-      p.pool === "high_school" ||
-      p.pool === "university" ||
-      p.pool === "foreign"
-    ) {
+    if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
       poolCounts[p.pool]++;
     }
   }
@@ -129,20 +114,15 @@ export function ScoutingWidget() {
     <BaseWidget title="Scouting" icon={Search} headerAction={headerAction}>
       {/* Pool summary with icons */}
       <div className="flex gap-2 text-xs">
-        {(["high_school", "university", "foreign"] as TalentPoolType[]).map(
-          (pool) => {
-            const Icon = POOL_ICONS[pool];
-            return (
-              <div
-                key={pool}
-                className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-md"
-              >
-                <Icon className="h-3 w-3 text-muted-foreground" />
-                <span className="font-medium">{poolCounts[pool]}</span>
-              </div>
-            );
-          },
-        )}
+        {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pool) => {
+          const Icon = POOL_ICONS[pool];
+          return (
+            <div key={pool} className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-md">
+              <Icon className="h-3 w-3 text-muted-foreground" />
+              <span className="font-medium">{poolCounts[pool]}</span>
+            </div>
+          );
+        })}
         <span className="text-muted-foreground ml-auto self-center text-[10px]">
           {prospects.length} visible
         </span>
@@ -153,9 +133,7 @@ export function ScoutingWidget() {
         {topProspects.length === 0 ? (
           <div className="text-center py-4">
             <Search className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
-            <p className="text-xs text-muted-foreground">
-              No prospects scouted yet
-            </p>
+            <p className="text-xs text-muted-foreground">No prospects scouted yet</p>
           </div>
         ) : (
           (() => {
@@ -163,10 +141,7 @@ export function ScoutingWidget() {
             const nodes = new Array(limit);
             for (let i = 0; i < limit; i++) {
               const c = topProspects[i];
-              const intel = talentpool.getCandidateScoutingLevel(
-                world,
-                c.candidateId,
-              );
+              const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
               nodes[i] = (
                 <ProspectRow
                   key={c.candidateId}
