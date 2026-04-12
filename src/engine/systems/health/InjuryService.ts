@@ -7,16 +7,7 @@ import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
 import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
 import { clamp, clampInt } from "../../utils/math";
-import { seededPick } from "../../utils/random";
-import { EventBus } from "../../events";
-import {
-  InjurySeverity,
-  InjuryBodyArea,
-  InjuryType,
-  getBaseWeeksOut,
-  BODY_AREA_LABELS,
-  INJURY_TYPE_LABELS
-} from "./BodyDefinitions";
+import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "./BodyDefinitions";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
@@ -27,7 +18,7 @@ import type { StateImpact } from "../../core/StateImpact";
 export function calculateWeeklyInjuryChance(rikishi: Rikishi, fatigue: number): number {
   const base = SIMULATION_CONFIG.injuries.weeklyBaseChance;
   const fatigueMult = 1 + clamp(fatigue, 0, 100) / 200;
-  
+
   // Durability: using 'durability' property if it exists, default 60
   const durability = typeof rikishi.durability === "number" ? rikishi.durability : 60;
   const durabilityMult = clamp(1.35 - durability / 100, 0.6, 1.35);
@@ -45,13 +36,14 @@ export function rollWeeklyInjury(args: {
   fatigue: number;
 }): { severity: InjurySeverity; area: InjuryBodyArea; type: InjuryType; weeksOut: number } | null {
   const { rng, rikishi, fatigue } = args;
-  
+
   const chance = calculateWeeklyInjuryChance(rikishi, fatigue);
   if (rng.next() >= chance) return null;
 
   const sevRoll = rng.next();
-  const severity: InjurySeverity = sevRoll < 0.72 ? "minor" : sevRoll < 0.95 ? "moderate" : "serious";
-  
+  const severity: InjurySeverity =
+    sevRoll < 0.72 ? "minor" : sevRoll < 0.95 ? "moderate" : "serious";
+
   const area = pickArea(rng);
   const type = pickType(rng, severity);
   const { min, max } = getBaseWeeksOut(severity, area, type);
@@ -61,9 +53,20 @@ export function rollWeeklyInjury(args: {
 }
 
 function pickArea(rng: SeededRNG): InjuryBodyArea {
-  const areas: InjuryBodyArea[] = ["knee", "ankle", "back", "shoulder", "elbow", "wrist", "hip", "rib", "neck", "other"];
-  const weights = [0.18, 0.12, 0.12, 0.10, 0.08, 0.08, 0.08, 0.08, 0.06, 0.10];
-  
+  const areas: InjuryBodyArea[] = [
+    "knee",
+    "ankle",
+    "back",
+    "shoulder",
+    "elbow",
+    "wrist",
+    "hip",
+    "rib",
+    "neck",
+    "other",
+  ];
+  const weights = [0.18, 0.12, 0.12, 0.1, 0.08, 0.08, 0.08, 0.08, 0.06, 0.1];
+
   let r = rng.next();
   for (let i = 0; i < weights.length; i++) {
     if (r < weights[i]) return areas[i];
@@ -81,7 +84,7 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   }
   if (severity === "moderate") {
     if (roll < 0.35) return "sprain";
-    if (roll < 0.70) return "strain";
+    if (roll < 0.7) return "strain";
     return "contusion";
   }
   return "inflammation"; // Default minor
@@ -92,12 +95,16 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
  * Returns StateImpact describing injury updates instead of mutating state directly.
  */
 export function tickWeekInjury(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickWeekInjury');
+  const builder = createImpactBuilder("tickWeekInjury");
 
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || rikishi.injured) continue;
 
-    const seededRng = RNGRegistry.getSystemRNG(world, "health", `tick::${rikishi.id}::${world.week}`);
+    const seededRng = RNGRegistry.getSystemRNG(
+      world,
+      "health",
+      `tick::${rikishi.id}::${world.week}`
+    );
 
     const fatigue = (rikishi as any).fatigue ?? 0;
     const result = rollWeeklyInjury({ rng: seededRng, rikishi, fatigue });
@@ -105,11 +112,11 @@ export function tickWeekInjury(world: WorldState): StateImpact {
     if (result) {
       builder.updateRikishi(rikishi.id, {
         injured: true,
-        injuryWeeksRemaining: result.weeksOut
+        injuryWeeksRemaining: result.weeksOut,
       });
 
-      builder.updateRikishiNestedField(rikishi.id, 'currentInjury', {
-        id: seededRng.uuid('IJ'),
+      builder.updateRikishiNestedField(rikishi.id, "currentInjury", {
+        id: seededRng.uuid("IJ"),
         severity: result.severity,
         area: result.area,
         type: result.type,
@@ -118,15 +125,15 @@ export function tickWeekInjury(world: WorldState): StateImpact {
       });
 
       builder.logEvent(
-        'LIFECYCLE_EVENT',
-        'injury',
+        "LIFECYCLE_EVENT",
+        "injury",
         {
           rikishiId: rikishi.id,
           heyaId: rikishi.heyaId,
           shikona: rikishi.shikona || rikishi.name,
           status: "injury",
           reason: result.area,
-          score: result.weeksOut
+          score: result.weeksOut,
         },
         { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
       );
@@ -145,7 +152,7 @@ import { getHeyaStaffBonuses } from "../../staff";
  * Returns StateImpact describing recovery updates instead of mutating state directly.
  */
 export function tickWeekRecovery(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickWeekRecovery');
+  const builder = createImpactBuilder("tickWeekRecovery");
 
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.isRetired || !rikishi.injured) continue;
@@ -156,19 +163,19 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
     if (recovered) {
       builder.updateRikishi(rikishi.id, {
         injured: false,
-        injuryWeeksRemaining: 0
+        injuryWeeksRemaining: 0,
       });
 
-      builder.updateRikishiNestedField(rikishi.id, 'currentInjury', undefined);
+      builder.updateRikishiNestedField(rikishi.id, "currentInjury", undefined);
 
       builder.logEvent(
-        'LIFECYCLE_EVENT',
-        'injury',
+        "LIFECYCLE_EVENT",
+        "injury",
         {
           rikishiId: rikishi.id,
           heyaId: rikishi.heyaId,
           shikona: rikishi.shikona || rikishi.name,
-          status: "recovery"
+          status: "recovery",
         },
         { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
       );
@@ -177,7 +184,6 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
 
   return builder.build();
 }
-
 
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
@@ -188,7 +194,7 @@ export function onBoutResolvedInjury(
   ctx: { match: any; result: any; east: any; west: any }
 ): StateImpact {
   const { result, east, west } = ctx;
-  const builder = createImpactBuilder('onBoutResolvedInjury');
+  const builder = createImpactBuilder("onBoutResolvedInjury");
 
   if (!result) return builder.build();
 
@@ -209,11 +215,11 @@ export function onBoutResolvedInjury(
 
     builder.updateRikishi(loser.id, {
       injured: true,
-      injuryWeeksRemaining
+      injuryWeeksRemaining,
     });
 
-    builder.updateRikishiNestedField(loser.id, 'currentInjury', {
-      id: rngSeed.uuid('IJ'),
+    builder.updateRikishiNestedField(loser.id, "currentInjury", {
+      id: rngSeed.uuid("IJ"),
       severity: "minor",
       area: "other",
       type: "inflammation",
@@ -222,12 +228,12 @@ export function onBoutResolvedInjury(
     });
 
     builder.logEvent(
-      'LIFECYCLE_EVENT',
-      'injury',
+      "LIFECYCLE_EVENT",
+      "injury",
       {
         status: "injury_bout",
         reason: "Bout impact",
-        score: injuryWeeksRemaining
+        score: injuryWeeksRemaining,
       },
       { rikishiId: loser.id, heyaId: loser.heyaId }
     );
@@ -241,14 +247,14 @@ export function onBoutResolvedInjury(
  * Returns StateImpact describing injury clearance instead of mutating state directly.
  */
 export function clearInjury(rikishiId: string): StateImpact {
-  const builder = createImpactBuilder('clearInjury');
+  const builder = createImpactBuilder("clearInjury");
 
   builder.updateRikishi(rikishiId, {
     injured: false,
-    injuryWeeksRemaining: 0
+    injuryWeeksRemaining: 0,
   });
 
-  builder.updateRikishiNestedField(rikishiId, 'currentInjury', undefined);
+  builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);
 
   return builder.build();
 }
@@ -256,7 +262,9 @@ export function clearInjury(rikishiId: string): StateImpact {
 /**
  * Converts a rikishi's current injury state to an engine event object for UI display.
  */
-export function toInjuryEvent(rikishi: any): { type: string; rikishiId: string; severity: string; weeksOut: number } | null {
+export function toInjuryEvent(
+  rikishi: any
+): { type: string; rikishiId: string; severity: string; weeksOut: number } | null {
   if (!rikishi.injured || !(rikishi as any).currentInjury) return null;
   const inj = (rikishi as any).currentInjury;
   return {

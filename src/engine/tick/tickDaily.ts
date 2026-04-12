@@ -1,4 +1,3 @@
-import { stableSort } from "../utils/sort";
 /**
  * dailyTick.ts
  * =======
@@ -23,21 +22,7 @@ import { stableSort } from "../utils/sort";
  * =======
  */
 
-
 import type { WorldState, CyclePhase } from "../types/world";
-import { EventBus } from "../events";
-import { BASHO_CALENDAR, getNextBasho, getInterimWeeks } from "../calendar";
-import { initializeBasho } from "../systems/generation/WorldFactory";
-import { WelfareService } from "../systems/welfare/WelfareService";
-import * as schedule from "../schedule";
-import { needsScheduleForDay } from "../schedule";
-import { resetBashoMediaTracking } from "../systems/media/MediaService";
-import { BardEngine } from "../narrative/BardEngine";
-import { rngFromSeed } from "../rng";
-
-import { toRikishiDescriptor } from "../descriptorBands";
-
-import { assertNever } from "../utils/types";
 
 // ====
 // TYPES
@@ -55,7 +40,6 @@ export interface DailyTickReport {
 }
 
 // Migration complete: daily micro-logic moved to phases/phase01_daily_*.ts
-
 
 // ====
 // MAIN PIPELINE: AdvanceOneDay()
@@ -76,7 +60,7 @@ export interface DailyTickReport {
  *   8) Year tick gate (on year boundary)
  *   9) UI digest batch
  */
-import { runPipeline, emptyDeltas, defaultActiveModifiers } from "./pipelineRunner";
+import { runPipeline } from "./pipelineRunner";
 import * as phases from "./phases";
 import { phase05_monthly_boundary } from "./phases/phase05_monthly_boundary";
 import { phase06_yearly_boundary } from "./phases/phase06_yearly_boundary";
@@ -91,12 +75,12 @@ export function advanceOneDay(world: WorldState): WorldState {
   // 1. Logic to determine if we run the full weekly sub-pipeline
   // Note: we check boundaries BEFORE running preflight to know if today is a tick day,
   // OR we look at the state as it was left by the previous day.
-  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? (world.dayIndexGlobal % 7)) + 1;
-  
+  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? world.dayIndexGlobal % 7) + 1;
+
   const aboutToStartBasho =
     (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
     (world._interimDaysRemaining || 0) <= 1; // 1 because preflight will decr it
-  
+
   const isWeeklyTick = daysSinceTick >= 7 || aboutToStartBasho;
 
   // 2. Determine which phases to run
@@ -127,20 +111,23 @@ export function advanceOneDay(world: WorldState): WorldState {
   // 5. Update Weekly Tick Counter purely
   nextWorld = {
     ...nextWorld,
-    _daysSinceLastWeeklyTick: isWeeklyTick ? 0 : daysSinceTick
+    _daysSinceLastWeeklyTick: isWeeklyTick ? 0 : daysSinceTick,
   };
 
   // 6. Finalize report in transient context
   nextWorld.transientContext = {
     ...nextWorld.transientContext,
-    lastReport: buildDailyReport(nextWorld, isWeeklyTick)
+    lastReport: buildDailyReport(nextWorld, isWeeklyTick),
   };
 
   return nextWorld;
 }
 
 function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport {
-  const boundaries = world.transientContext?.boundaries || { monthBoundary: false, yearBoundary: false };
+  const boundaries = world.transientContext?.boundaries || {
+    monthBoundary: false,
+    yearBoundary: false,
+  };
   return {
     dayIndexGlobal: world.dayIndexGlobal,
     phase: world.cyclePhase,
@@ -149,7 +136,6 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
     yearBoundary: boundaries.yearBoundary,
   };
 }
-
 
 // ====
 // CONVENIENCE: Advance multiple days
@@ -192,7 +178,7 @@ export function enterPostBasho(world: WorldState): WorldState {
   return {
     ...world,
     cyclePhase: "post_basho",
-    _postBashoDays: 7
+    _postBashoDays: 7,
   };
 }
 
@@ -203,6 +189,6 @@ export function enterInterim(world: WorldState): WorldState {
   return {
     ...world,
     cyclePhase: "interim",
-    _interimDaysRemaining: 42 // Standard 6-week interim
+    _interimDaysRemaining: 42, // Standard 6-week interim
   };
 }

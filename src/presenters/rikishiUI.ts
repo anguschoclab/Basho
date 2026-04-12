@@ -6,12 +6,10 @@ import type { Style, TacticalArchetype } from "../engine/types/combat";
 import {
   toRikishiDescriptor,
   toPotentialBand,
-  toStatBand,
   type RikishiDescriptor,
-  type PotentialBand
+  type PotentialBand,
 } from "../engine/descriptorBands";
 import { getCareerPhase } from "../engine/systems/training/TrainingMath";
-import { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/systems/recruitment/ScoutingService";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
@@ -86,7 +84,7 @@ export interface UIRikishi {
   descriptor: RikishiDescriptor;
   potentialBand: PotentialBand;
   conditionDescriptor: string; // Resolved Label
-  moraleDescriptor: string;    // Resolved Label
+  moraleDescriptor: string; // Resolved Label
   potentialDescriptor: string; // Resolved Label
   topRivals: UIRivalEntry[];
   personalityTraits: string[];
@@ -131,35 +129,40 @@ function calculateMostFrequentKimarite(history: any[]): { kimarite: string; perc
     }));
 }
 
-function buildFavoredKimariteDisplay(rng: SeededRNG, entries: { kimarite: string; percentage: number }[]): string {
+function buildFavoredKimariteDisplay(
+  rng: SeededRNG,
+  entries: { kimarite: string; percentage: number }[]
+): string {
   if (entries.length === 0) {
     return BardEngine.resolve(rng, "ui.labels.kimarite.rookie").text;
   }
   const top = entries[0];
   const name = top.kimarite.charAt(0).toUpperCase() + top.kimarite.slice(1);
-  return BardEngine.resolve(rng, "ui.labels.kimarite.display_format", { NAME: name, PCT: top.percentage.toString() }).text;
+  return BardEngine.resolve(rng, "ui.labels.kimarite.display_format", {
+    NAME: name,
+    PCT: top.percentage.toString(),
+  }).text;
 }
-
 
 function calculateInjurySummary(rng: SeededRNG, r: Rikishi): string {
   if (!r.injured || !r.injuryStatus) {
     return BardEngine.resolve(rng, "ui.digest.status.healthy").text;
   }
-  
+
   const loc = r.injuryStatus.location ? ` ${r.injuryStatus.location}` : "";
   const severityValue = typeof r.injuryStatus.severity === "number" ? r.injuryStatus.severity : 50;
-  
+
   let sevKey = "moderate";
   if (severityValue < 30) sevKey = "minor";
   if (severityValue >= 70) sevKey = "severe";
-  
+
   const sevLabel = BardEngine.resolve(rng, `ui.labels.injury.severity.${sevKey}`).text;
   const weeks = r.injuryWeeksRemaining?.toString() ?? "?";
-  
-  return BardEngine.resolve(rng, "ui.labels.injury.summary_format", { 
-    SEV: sevLabel, 
-    LOC: loc, 
-    WEEKS: weeks 
+
+  return BardEngine.resolve(rng, "ui.labels.injury.summary_format", {
+    SEV: sevLabel,
+    LOC: loc,
+    WEEKS: weeks,
   }).text;
 }
 
@@ -198,16 +201,30 @@ function calculateAchievements(r: Rikishi) {
   };
 }
 
-
 export function calculatePerceivedStats(rng: SeededRNG, r: Rikishi) {
   return {
-    strength: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.strength ?? 50)),
-    technique: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.technique ?? 50)),
+    strength: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats?.strength ?? 50)
+    ),
+    technique: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats?.technique ?? 50)
+    ),
     speed: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.speed ?? 50)),
-    stamina: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.stamina ?? 50)),
+    stamina: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats?.stamina ?? 50)
+    ),
     mental: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.mental ?? 50)),
-    adaptability: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.adaptability ?? 50)),
-    balance: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.balance ?? 50)),
+    adaptability: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats?.adaptability ?? 50)
+    ),
+    balance: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats?.balance ?? 50)
+    ),
   };
 }
 
@@ -218,18 +235,18 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const milestones = r.milestones || [];
   const rng = world.rng || new SeededRNG(world.seed || r.id);
 
-  const rankEntry = BardEngine.getRegistryEntry('ranks', r.rank);
+  const rankEntry = BardEngine.getRegistryEntry("ranks", r.rank);
   const rankLabel = rankEntry?.label ?? r.rank;
 
-  const styleEntry = BardEngine.getRegistryEntry('styles', r.style);
+  const styleEntry = BardEngine.getRegistryEntry("styles", r.style);
   const styleName = styleEntry?.label ?? r.style;
 
   const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
-  const archEntry = BardEngine.getRegistryEntry('archetypes', combatArchetype);
+  const archEntry = BardEngine.getRegistryEntry("archetypes", combatArchetype);
   const archetypeName = archEntry?.label ?? combatArchetype;
 
   const derivedArchetype = r.derivedArchetype || ("all_rounder" as any);
-  const dArchEntry = BardEngine.getRegistryEntry('archetypes', derivedArchetype);
+  const dArchEntry = BardEngine.getRegistryEntry("archetypes", derivedArchetype);
   const derivedArchetypeName = dArchEntry?.label ?? derivedArchetype;
 
   const favoredKimariteDetailed = calculateMostFrequentKimarite(r.history ?? []);
@@ -262,7 +279,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     motivation: r.motivation,
     fatigue: r.fatigue,
     powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.power ?? 50)),
-    techniqueBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.technique ?? 50)),
+    techniqueBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.technique ?? 50)
+    ),
     speedBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.speed ?? 50)),
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
@@ -284,9 +304,11 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     personalityTraits: r.personalityTraits ?? [],
     favoredKimariteDetailed,
     favoredKimariteDisplay: buildFavoredKimariteDisplay(rng, favoredKimariteDetailed),
-    favoredKimarite: favoredKimariteDetailed.slice(0, 1).map(e => `${e.kimarite} (${e.percentage}%)`),
-    preferredGrip: r.combatProfile?.preferredGrip ?? 'none',
-    preferredGripDepth: r.combatProfile?.preferredGripDepth ?? 'standard',
+    favoredKimarite: favoredKimariteDetailed
+      .slice(0, 1)
+      .map((e) => `${e.kimarite} (${e.percentage}%)`),
+    preferredGrip: r.combatProfile?.preferredGrip ?? "none",
+    preferredGripDepth: r.combatProfile?.preferredGripDepth ?? "standard",
     specialPrizes: calculateSpecialPrizes(r),
     achievements: calculateAchievements(r),
     salaryBreakdown: getSalaryBreakdown(
@@ -296,7 +318,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     ),
     careerHistory,
     milestones,
-    h2h: r.h2h as UIRikishi['h2h'],
+    h2h: r.h2h as UIRikishi["h2h"],
   };
 }
 
@@ -337,9 +359,16 @@ export interface UIRosterEntry {
 
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
   const RANK_TIER: Record<string, number> = {
-    yokozuna: 1, ozeki: 2, sekiwake: 3, komusubi: 4,
-    maegashira: 5, juryo: 6, makushita: 7,
-    sandanme: 8, jonidan: 9, jonokuchi: 10,
+    yokozuna: 1,
+    ozeki: 2,
+    sekiwake: 3,
+    komusubi: 4,
+    maegashira: 5,
+    juryo: 6,
+    makushita: 7,
+    sandanme: 8,
+    jonidan: 9,
+    jonokuchi: 10,
   };
   const tier = RANK_TIER[rank] ?? 99;
   const num = rankNumber ?? 0;
@@ -347,8 +376,12 @@ export function rankScore(rank: string, rankNumber?: number, side?: string): num
   return tier * 1000 + num * 2 + sideVal;
 }
 
-export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: number): UIRosterEntry {
-  const rankEntry = BardEngine.getRegistryEntry('ranks', r.rank);
+export function projectRosterEntry(
+  r: Rikishi,
+  world?: WorldState,
+  prevScore?: number
+): UIRosterEntry {
+  const rankEntry = BardEngine.getRegistryEntry("ranks", r.rank);
   let rankDelta: UIRankDelta | undefined;
 
   const rng = world?.rng || new SeededRNG(world?.seed || r.id);
@@ -390,13 +423,19 @@ export function projectRosterEntry(r: Rikishi, world?: WorldState, prevScore?: n
     condition: r.condition,
     fatigue: r.fatigue,
     powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.power ?? 50)),
-    techniqueBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.technique ?? 50)),
+    techniqueBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.technique ?? 50)
+    ),
     speedBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.speed ?? 50)),
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
-    archetypeLabel: BardEngine.getRegistryEntry('archetypes', r.combatProfile?.archetype ?? r.archetype ?? (r as any).derivedArchetype)?.label || "Rikishi",
+    archetypeLabel:
+      BardEngine.getRegistryEntry(
+        "archetypes",
+        r.combatProfile?.archetype ?? r.archetype ?? (r as any).derivedArchetype
+      )?.label || "Rikishi",
     rankDelta,
   };
-
 }

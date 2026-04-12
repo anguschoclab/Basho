@@ -10,7 +10,6 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
@@ -24,11 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Play,
   FastForward,
@@ -42,25 +37,12 @@ import {
 import {
   BASHO_CALENDAR,
   getDayName,
-  getSeasonalFlavor,
   getTotalBashodays,
   isKeyDay,
   needsScheduleForDay,
   projectBashoUIDigest,
 } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
-
-/** Type representing match like. */
-type MatchLike = {
-  day?: number;
-  boutId?: string;
-  eastRikishiId: string;
-  westRikishiId: string;
-  result?: any;
-  eastRikishi?: UIRikishi | null;
-  westRikishi?: UIRikishi | null;
-  isPlayerBout?: boolean;
-};
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
@@ -86,42 +68,28 @@ interface ScheduleOverviewProps {
  * schedule overview.
  */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
-  const divisions = [
-    "makuuchi",
-    "juryo",
-    "makushita",
-    "sandanme",
-    "jonidan",
-    "jonokuchi",
-  ];
+  const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
   return (
     <div className="space-y-3">
       <div className="text-xs text-muted-foreground">
-        <strong>Schedule Legend:</strong> Lower divisions fight on odd days only
-        (1,3,5,7,9,11,13)
+        <strong>Schedule Legend:</strong> Lower divisions fight on odd days only (1,3,5,7,9,11,13)
       </div>
 
       {divisions.map((division) => {
         const totalDays = getTotalBashodays(division as any);
-        const divisionName =
-          division.charAt(0).toUpperCase() + division.slice(1);
+        const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
 
         return (
           <div key={division} className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{divisionName}</span>
-              <span className="text-xs text-muted-foreground">
-                {totalDays} days
-              </span>
+              <span className="text-xs text-muted-foreground">{totalDays} days</span>
             </div>
 
             <div className="grid grid-cols-15 gap-1">
               {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
-                const needsScheduling = needsScheduleForDay(
-                  division as any,
-                  day,
-                );
+                const needsScheduling = needsScheduleForDay(division as any, day);
                 const isCurrent = day === currentDay;
                 const isPast = day < currentDay;
 
@@ -156,19 +124,11 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
 /** basho page. */
 export default function BashoPage() {
   const navigate = useNavigate();
-  const {
-    state,
-    simulateBout,
-    simulateAllBouts,
-    advanceDay,
-    endBasho,
-    setBoutTactic,
-  } = useGame();
+  const { state, simulateBout, simulateAllBouts, advanceDay, endBasho, setBoutTactic } = useGame();
   const { world } = state;
 
   const [selectedBout, setSelectedBout] = useState<SelectedBout | null>(null);
-  const [autoShowPlayerBout, setAutoShowPlayerBout] =
-    useState<SelectedBout | null>(null);
+  const [autoShowPlayerBout, setAutoShowPlayerBout] = useState<SelectedBout | null>(null);
   const [showEndBashoConfirm, setShowEndBashoConfirm] = useState(false);
   const [showScheduleOverview, setShowScheduleOverview] = useState(false);
   const lastAutoShownKeyRef = useRef<string | null>(null);
@@ -211,18 +171,11 @@ export default function BashoPage() {
 
     const matchToday = bashoDigest.matches.find(
       (m: any) =>
-        (m.eastRikishiId === last.winnerRikishiId &&
-          m.westRikishiId === last.loserRikishiId) ||
-        (m.eastRikishiId === last.loserRikishiId &&
-          m.westRikishiId === last.winnerRikishiId),
+        (m.eastRikishiId === last.winnerRikishiId && m.westRikishiId === last.loserRikishiId) ||
+        (m.eastRikishiId === last.loserRikishiId && m.westRikishiId === last.winnerRikishiId)
     );
 
-    if (
-      matchToday &&
-      matchToday.isPlayerBout &&
-      matchToday.eastRikishi &&
-      matchToday.westRikishi
-    ) {
+    if (matchToday && matchToday.isPlayerBout && matchToday.eastRikishi && matchToday.westRikishi) {
       setAutoShowPlayerBout({
         east: matchToday.eastRikishi,
         west: matchToday.westRikishi,
@@ -248,7 +201,7 @@ export default function BashoPage() {
 
   const handleTacticChange = useCallback(
     (id: string, tactic: string) => setBoutTactic(id, tactic as any),
-    [setBoutTactic],
+    [setBoutTactic]
   );
 
   const confirmEndBasho = useCallback(() => {
@@ -288,26 +241,20 @@ export default function BashoPage() {
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="font-display text-2xl font-bold">
-                {bashoInfo?.nameJa ?? "Basho"}
-              </h1>
+              <h1 className="font-display text-2xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
                 Day {day}/{getTotalBashodays("makuuchi")}
               </Badge>
               {isKeyDay(day) && (
-                <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">
-                  Key Day
-                </Badge>
+                <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {dayInfo?.dayJa ?? `Day ${day}`} · {bashoInfo?.location ?? "—"} ·{" "}
-              {completedBouts}/{matches.length} bouts complete
+              {dayInfo?.dayJa ?? `Day ${day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/
+              {matches.length} bouts complete
             </p>
             {seasonalFlavor && (
-              <p className="text-xs text-muted-foreground/70 italic mt-0.5">
-                {seasonalFlavor}
-              </p>
+              <p className="text-xs text-muted-foreground/70 italic mt-0.5">{seasonalFlavor}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -330,14 +277,8 @@ export default function BashoPage() {
               <FastForward className="h-3.5 w-3.5" /> Sim All
             </Button>
             {remainingBouts === 0 && (
-              <Button
-                size="sm"
-                onClick={handleNextDay}
-                className="gap-1.5"
-                id="advance-basho-btn"
-              >
-                {day >= 15 ? "End Basho" : "Next Day"}{" "}
-                <ChevronRight className="h-3.5 w-3.5" />
+              <Button size="sm" onClick={handleNextDay} className="gap-1.5" id="advance-basho-btn">
+                {day >= 15 ? "End Basho" : "Next Day"} <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
@@ -393,18 +334,9 @@ export default function BashoPage() {
                       }`}
                     >
                       <span className="w-4 text-muted-foreground text-right shrink-0">
-                        {idx === 0 ? (
-                          <Crown className="h-3 w-3 text-gold inline" />
-                        ) : (
-                          `${idx + 1}`
-                        )}
+                        {idx === 0 ? <Crown className="h-3 w-3 text-gold inline" /> : `${idx + 1}`}
                       </span>
-                      {isPlayer && (
-                        <Star
-                          className="h-2.5 w-2.5 shrink-0"
-                          fill="currentColor"
-                        />
-                      )}
+                      {isPlayer && <Star className="h-2.5 w-2.5 shrink-0" fill="currentColor" />}
                       <span className="flex-1 font-display truncate">
                         {entry?.rikishi?.shikona ?? "—"}
                       </span>
@@ -431,8 +363,7 @@ export default function BashoPage() {
               highlightRikishiId={(state as any).selectedRikishiId || undefined}
               playerTactics={(state as any).boutTactics}
               onBoutClick={(match: any) => {
-                if (!match.result || !match.eastRikishi || !match.westRikishi)
-                  return;
+                if (!match.result || !match.eastRikishi || !match.westRikishi) return;
                 setSelectedBout({
                   east: match.eastRikishi,
                   west: match.westRikishi,
@@ -468,23 +399,17 @@ export default function BashoPage() {
           day={day}
         />
       )}
-      <AlertDialog
-        open={showEndBashoConfirm}
-        onOpenChange={setShowEndBashoConfirm}
-      >
+      <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>End Tournament?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will finalize results, update rankings, and advance to the
-              off-season.
+              This will finalize results, update rankings, and advance to the off-season.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmEndBasho}>
-              End Basho
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

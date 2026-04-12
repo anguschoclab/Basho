@@ -1,10 +1,8 @@
 // MatchDayViewer.tsx - Polished match day panel with staggered animations,
 // east/west color coding, and immersive bout cards
 
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { BoutCard } from "./BoutCard";
-import type { MatchLike } from "./BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CircleDot, Swords } from "lucide-react";
@@ -32,7 +30,7 @@ interface MatchDayViewerProps {
 export function MatchDayViewer({
   matches,
   world,
-  playerRikishiIds,
+  playerRikishiIds: _playerRikishiIds,
   onBoutClick,
   onTacticChange,
   playerTactics = {},
@@ -61,7 +59,7 @@ export function MatchDayViewer({
             east: m.eastRikishi,
             west: m.westRikishi,
           }
-        : m,
+        : m
     );
     return mapped.sort((a, b) => {
       if (!a || !b) return 0;
@@ -91,18 +89,13 @@ export function MatchDayViewer({
       <Card className="paper">
         <CardContent className="py-12 text-center">
           <CircleDot className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
-          <p className="text-muted-foreground text-sm">
-            No matches scheduled for today.
-          </p>
+          <p className="text-muted-foreground text-sm">No matches scheduled for today.</p>
         </CardContent>
       </Card>
     );
   }
 
-  const completedCount = sortedMatches.reduce(
-    (count, m) => count + (m?.result ? 1 : 0),
-    0,
-  );
+  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
 
   return (
     <>
@@ -145,10 +138,7 @@ export function MatchDayViewer({
                 if (!match) continue;
                 nodes[i] = (
                   <BoutCard
-                    key={
-                      match.boutId ||
-                      `${match.eastRikishiId}-${match.westRikishiId}-${i}`
-                    }
+                    key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
                     match={match as any}
                     idx={i}
                     onBoutClick={handleBoutClick}

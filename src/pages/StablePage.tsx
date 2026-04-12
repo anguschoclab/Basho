@@ -3,59 +3,22 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { HQ_TABS } from "@/constants/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type {
-  FacilitiesBand,
-  KoenkaiBandType,
-  PrestigeBand,
-  RunwayBand,
-  StatureBand,
-} from "@/engine/types/narrative";
-import {
-  projectRosterEntry,
-  projectRikishi,
-  type UIRosterEntry,
-  type UIRikishi,
-} from "@/presenters/uiModels";
-import {
-  Activity,
-  AlertTriangle,
-  Building,
-  Coins,
-  Crown,
-  Dumbbell,
-  Heart,
-  History,
-  Medal,
-  Shield,
-  Sparkles,
-  Star,
-  Target,
-  TrendingDown,
-  TrendingUp,
-  Trophy,
-  Users,
-  Users2,
-  Zap,
-  Scroll,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { OyakataName, RikishiName } from "@/components/ClickableName";
-import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
+import { Building, Medal, Star, Trophy, Users, Users2, Scroll } from "lucide-react";
+import { useMemo } from "react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = world && playerHeyaId ? routeId || playerHeyaId : "";
-  const isViewingOwnStable = viewingHeyaId === playerHeyaId;
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
   // Compute rikishi list before any early returns

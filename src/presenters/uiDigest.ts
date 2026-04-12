@@ -16,7 +16,6 @@ import {
   selectYokozunaCandidates,
   selectKadobanRikishi,
   selectTopRivals,
-  selectRikishiByHeya,
 } from "./selectors";
 import { projectRikishi } from "./uiModels";
 export { projectRikishi };
@@ -39,11 +38,7 @@ import { getHeyaRoster, getSekitoriInHeya } from "../engine/queries";
 import { buildPerceptionSnapshot } from "../engine/perception";
 import { buildPrevRankScores, buildBanzukeRows } from "./banzukeUI";
 import { projectRosterEntry } from "./rikishiUI";
-import {
-  BASHO_CALENDAR,
-  isKeyDay,
-  getSeasonalFlavor,
-} from "../engine/calendar";
+import { BASHO_CALENDAR, isKeyDay, getSeasonalFlavor } from "../engine/calendar";
 import { BardEngine } from "../engine/narrative/BardEngine";
 import { SeededRNG } from "../engine/rng";
 
@@ -128,14 +123,24 @@ function buildEventSections(world: WorldState): DigestSection[] {
   const eventBuckets = selectRecentEvents(world);
   const mapEventToItem = (e: import("../engine/events").EngineEvent): DigestItem => ({
     id: e.id,
-    kind: e.category === "scouting" ? "scouting" : e.category === "economy" || e.category === "sponsor" ? "economy" : e.category === "training" ? "training" : "generic",
+    kind:
+      e.category === "scouting"
+        ? "scouting"
+        : e.category === "economy" || e.category === "sponsor"
+          ? "economy"
+          : e.category === "training"
+            ? "training"
+            : "generic",
     title: e.title,
     detail: e.summary,
     rikishiId: e.rikishiId,
     heyaId: e.heyaId,
   });
 
-  const narrativeItems = queryEvents(world, { category: "narrative" }).map((e) => ({ ...mapEventToItem(e), kind: "narrative" as const }));
+  const narrativeItems = queryEvents(world, { category: "narrative" }).map((e) => ({
+    ...mapEventToItem(e),
+    kind: "narrative" as const,
+  }));
   const trainingItems = eventBuckets.training.map(mapEventToItem);
   const scoutItems = eventBuckets.scouting.map(mapEventToItem);
   const econItems = eventBuckets.economy.map(mapEventToItem);
@@ -144,11 +149,18 @@ function buildEventSections(world: WorldState): DigestSection[] {
   if (narrativeItems.length)
     sections.push({ id: "narrative", title: "Internal Intelligence", items: narrativeItems });
   if (trainingItems.length)
-    sections.push({ id: "training", title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text, items: trainingItems });
-  if (scoutItems.length)
-    sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
+    sections.push({
+      id: "training",
+      title: BardEngine.resolve(sectionRng, "ui.digest.sections.governance").text,
+      items: trainingItems,
+    });
+  if (scoutItems.length) sections.push({ id: "scouting", title: "Scouting", items: scoutItems });
   if (econItems.length)
-    sections.push({ id: "economy", title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text, items: econItems });
+    sections.push({
+      id: "economy",
+      title: BardEngine.resolve(sectionRng, "ui.digest.sections.economy").text,
+      items: econItems,
+    });
 
   return sections;
 }
@@ -185,7 +197,11 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   sections.push(...eventSections);
 
   const eventBuckets = selectRecentEvents(world);
-  const headline = buildHeadline(world, matchupResult.items.length, injurySection?.items.length || 0);
+  const headline = buildHeadline(
+    world,
+    matchupResult.items.length,
+    injurySection?.items.length || 0
+  );
 
   return {
     time: { label: labelForWorld(world) },
@@ -201,7 +217,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   };
 }
 
-function buildMatchupItems(world: WorldState): { items: DigestItem[], section?: DigestSection } {
+function buildMatchupItems(world: WorldState): { items: DigestItem[]; section?: DigestSection } {
   const matchupItems: DigestItem[] = [];
   const basho = world.currentBasho;
   if (basho && world.cyclePhase === "active_basho" && world.week > 1) {
@@ -233,8 +249,7 @@ function buildMatchupItems(world: WorldState): { items: DigestItem[], section?: 
         items: matchupItems,
         section: {
           id: "matchups",
-          title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups")
-            .text,
+          title: BardEngine.resolve(sectionRng, "ui.digest.sections.matchups").text,
           items: matchupItems,
         },
       };
@@ -367,10 +382,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
         recentWins,
         threshold,
         progress: Math.min(100, (recentWins / threshold) * 100),
-        narrative: BardEngine.resolve(
-          rng,
-          `ui.digest.promotion.ozeki_run.${runKey}`,
-        ).text,
+        narrative: BardEngine.resolve(rng, `ui.digest.promotion.ozeki_run.${runKey}`).text,
       });
     }
   }
@@ -404,10 +416,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
       else if (yushos === 1 && junYushos === 1) runKey = "borderline";
       else if (yushos === 1) runKey = "partial";
 
-      const narrative = BardEngine.resolve(
-        rng,
-        `ui.digest.promotion.yokozuna_run.${runKey}`,
-      ).text;
+      const narrative = BardEngine.resolve(rng, `ui.digest.promotion.yokozuna_run.${runKey}`).text;
 
       candidates.push({
         rikishi: projectRikishi(r, world),
@@ -423,7 +432,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
 }
 
 export function getKadobanDrama(
-  world: WorldState,
+  world: WorldState
 ): Array<{ rikishi: UIRikishi; narrative: string; isDemoted: boolean }> {
   const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Array<{
@@ -455,10 +464,7 @@ export function getKadobanDrama(
     else if (status.isKadoban && wins >= 8) runKey = "cleared";
     else if (status.consecutiveMakeKoshi === 1) runKey = "danger";
 
-    const narrative = BardEngine.resolve(
-      rng,
-      `ui.digest.kadoban.${runKey}`,
-    ).text;
+    const narrative = BardEngine.resolve(rng, `ui.digest.kadoban.${runKey}`).text;
 
     entries.push({ rikishi: projectRikishi(r, world), narrative, isDemoted });
   }
@@ -473,9 +479,7 @@ export function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
   else if (level >= 25) band = "capable";
 
   // Note: re-using rikishi stats bands for facility quality labels
-  return BardEngine.resolve(rng, `rikishi.stats.power.${band}`)
-    .text.split(" — ")[0]
-    .split(".")[0];
+  return BardEngine.resolve(rng, `rikishi.stats.power.${band}`).text.split(" — ")[0].split(".")[0];
 }
 
 export function getFacilityLevelColor(level: number): string {
@@ -502,10 +506,7 @@ export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
 // Re-exports of safe engine constants/utilities for UI
 // The UI layer MUST NOT import from @/engine directly.
 // ─────────────────────────────────────────
-export {
-  getMonthlyMaintenanceCost,
-  getUpgradeCostEstimate,
-} from "../engine/facilities";
+export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
 export {
   describeAggression,
   describeAttribute,
@@ -513,20 +514,12 @@ export {
   describeTrainingEffect,
 } from "../engine/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
-export {
-  createScoutedView,
-  describeScoutingLevel,
-  getScoutedAttributes,
-} from "../engine";
+export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine";
 
 /**
  * Resolves a localized label for a given registry domain and ID.
  */
-export function resolveRegistryLabel(
-  domain: string,
-  id: string,
-  useJa: boolean = false,
-): string {
+export function resolveRegistryLabel(domain: string, id: string, useJa: boolean = false): string {
   const entry = BardEngine.getRegistryEntry(domain, id);
   if (!entry) return id;
   return useJa ? (entry.labelJa ?? entry.label) : entry.label;
@@ -553,11 +546,7 @@ export {
   isKeyDay,
 } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
-export {
-  DEFAULT_DIVISION_DAYS,
-  getTotalBashodays,
-  needsScheduleForDay,
-} from "../engine/schedule";
+export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
 export {
   toFatigueBand,
   toPotentialBand,
@@ -580,10 +569,7 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   exhausted: "Exhausted",
   spent: "Spent",
 };
-export const POTENTIAL_LABELS: Record<
-  PotentialBand,
-  { label: string; color: string }
-> = {
+export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; color: string }> = {
   generational: { label: "Generational Talent", color: "text-yellow-400" },
   star: { label: "Star Potential", color: "text-blue-400" },
   solid: { label: "Solid Prospect", color: "text-green-400" },
@@ -623,16 +609,10 @@ export {
   isMakeKoshi,
 } from "../engine/banzuke";
 export { createDefaultMediaState } from "../engine/systems/media/MediaService";
-export {
-  buildPerceptionSnapshot,
-  getCachedPerception,
-} from "../engine/perception";
+export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
 export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
 export { clamp, clampInt } from "../engine/utils";
-export {
-  clearInjury,
-  toInjuryEvent,
-} from "../engine/systems/health/InjuryService";
+export { clearInjury, toInjuryEvent } from "../engine/systems/health/InjuryService";
 export { deleteSave, exportSave, importSave } from "../engine/saveload";
 export { ensureHeyaWelfareState } from "../engine/systems/welfare/WelfareService";
 export {
@@ -664,16 +644,11 @@ export {
 } from "../engine/systems/generation/TalentPoolService";
 export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
 
-const boutIndexCache = new WeakMap<any, Map<string, any>>();
-
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
  * Returns null if the bout or its participants cannot be found.
  */
-export function buildBoutPreviewUI(
-  boutId: string,
-  world: WorldState,
-): BoutPreviewUI | null {
+export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPreviewUI | null {
   const match = world.currentBasho?.matches.find((m) => m.boutId === boutId);
   if (!match) return null;
 
@@ -699,19 +674,16 @@ export function buildBoutPreviewUI(
  * Project a list of recent headlines for the Media Page.
  */
 export function projectMediaUIDigest(world: WorldState) {
-  const mediaState =
-    (world.mediaState as MediaState) || buildRawMediaDigest(world as any);
+  const mediaState = (world.mediaState as MediaState) || buildRawMediaDigest(world as any);
   const headlines = [...(mediaState.headlines || [])].sort(
-    (a, b) => b.impact - a.impact || b.week - a.week,
+    (a, b) => b.impact - a.impact || b.week - a.week
   );
 
   const hotRikishi = Object.entries(mediaState.mediaHeat || {})
     .map(([id, heat]) => ({
       id,
       heat: heat as number,
-      rikishi: world.rikishi.get(id)
-        ? projectRikishi(world.rikishi.get(id)!, world)
-        : null,
+      rikishi: world.rikishi.get(id) ? projectRikishi(world.rikishi.get(id)!, world) : null,
       history: (mediaState.mediaHeatHistory?.[id] as any[]) ?? [],
     }))
     .filter((x) => x.rikishi)
@@ -782,21 +754,16 @@ export function projectHOFUIDigest(world: WorldState) {
  */
 export function projectRecruitmentUIDigest(
   world: WorldState,
-  poolType: "high_school" | "university" | "foreign",
+  poolType: "high_school" | "university" | "foreign"
 ) {
-  const candidates = talentpool
-    .listVisibleCandidates(world, poolType)
-    .map((c) => {
-      const scoutLevel = talentpool.getCandidateScoutingLevel(
-        world,
-        c.candidateId,
-      );
-      return {
-        ...c,
-        scoutLevel,
-        scoutInfo: describeScoutingLevel(scoutLevel),
-      };
-    });
+  const candidates = talentpool.listVisibleCandidates(world, poolType).map((c) => {
+    const scoutLevel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
+    return {
+      ...c,
+      scoutLevel,
+      scoutInfo: describeScoutingLevel(scoutLevel),
+    };
+  });
   return { candidates };
 }
 
@@ -806,7 +773,7 @@ export function projectRecruitmentUIDigest(
 export function projectOpponentScoutingUIDigest(
   world: WorldState,
   playerHeyaId: string | null,
-  filterDivision: string,
+  filterDivision: string
 ) {
   const list: any[] = [];
   const seed = (world as any).seed || "default";
@@ -834,12 +801,8 @@ export function projectOpponentScoutingUIDigest(
 
   // Sort by rank tier
   list.sort((a, b) => {
-    const ta =
-      RANK_HIERARCHY[a.rank as import("../engine/types/banzuke").Rank]?.tier ??
-      99;
-    const tb =
-      RANK_HIERARCHY[b.rank as import("../engine/types/banzuke").Rank]?.tier ??
-      99;
+    const ta = RANK_HIERARCHY[a.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
+    const tb = RANK_HIERARCHY[b.rank as import("../engine/types/banzuke").Rank]?.tier ?? 99;
     if (ta !== tb) return ta - tb;
     return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
   });
@@ -848,7 +811,7 @@ export function projectOpponentScoutingUIDigest(
   // Pre-warm scouting entries inside project to keep UI pure
   warmScoutingForRikishiList(
     world,
-    sliced.map((r) => r.id),
+    sliced.map((r) => r.id)
   );
 
   return { opponents: sliced };
@@ -867,7 +830,11 @@ function buildMatchupData(rAId: string, rA: any, rBId: string, rB: any, record: 
   };
 }
 
-function calculateHeyaMatchups(world: WorldState, rikishiAIds: string[], rikishiBIds: string[]): { winsA: number, winsB: number, matchups: any[] } {
+function calculateHeyaMatchups(
+  world: WorldState,
+  rikishiAIds: string[],
+  rikishiBIds: string[]
+): { winsA: number; winsB: number; matchups: any[] } {
   let winsA = 0;
   let winsB = 0;
   const matchups: any[] = [];
@@ -895,11 +862,7 @@ function calculateHeyaMatchups(world: WorldState, rikishiAIds: string[], rikishi
 /**
  * Project H2H history between two stables for PerceptionOverview.
  */
-export function projectH2HBetweenHeyas(
-  world: WorldState,
-  heyaAId: string,
-  heyaBId: string,
-) {
+export function projectH2HBetweenHeyas(world: WorldState, heyaAId: string, heyaBId: string) {
   const heyaA = world.heyas.get(heyaAId);
   const heyaB = world.heyas.get(heyaBId);
   if (!heyaA || !heyaB) return null;
@@ -941,11 +904,7 @@ export function projectDashboardUIDigest(world: WorldState) {
     balance: heya.funds,
     weeklyIncome: deltas?.revenue ?? 0,
     weeklyExpense: deltas?.expenses ?? 0,
-    status: (heya.funds > 10000000
-      ? "stable"
-      : heya.funds < 0
-        ? "critical"
-        : "normal") as any,
+    status: (heya.funds > 10000000 ? "stable" : heya.funds < 0 ? "critical" : "normal") as any,
   };
 
   return {
@@ -958,8 +917,7 @@ export function projectDashboardUIDigest(world: WorldState) {
     stats: {
       rosterSize: (heya.rikishiIds || []).length,
       sekitoriCount: getSekitoriInHeya(world, playerHeyaId),
-      injuredCount: getHeyaRoster(world, playerHeyaId).filter((r) => r.injured)
-        .length,
+      injuredCount: getHeyaRoster(world, playerHeyaId).filter((r) => r.injured).length,
     },
     recentEvents,
     topRivals,
@@ -971,11 +929,9 @@ export function projectDashboardUIDigest(world: WorldState) {
 }
 
 function buildSponsorData(sponsor: any, rel: any, heya: any, world: WorldState): any {
-  const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] * (rel.strength / 3);
-  const satisfactionEstimate = Math.min(
-    100,
-    sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4,
-  );
+  const monthlyIncome =
+    SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] * (rel.strength / 3);
+  const satisfactionEstimate = Math.min(100, sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4);
   const expiryWeek = rel.endsAtTick ?? null;
   const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
 
@@ -995,7 +951,12 @@ function buildSponsorData(sponsor: any, rel: any, heya: any, world: WorldState):
   };
 }
 
-function buildAndSortActiveSponsors(pool: any, playerHeyaId: string, heya: any, world: WorldState): any[] {
+function buildAndSortActiveSponsors(
+  pool: any,
+  playerHeyaId: string,
+  heya: any,
+  world: WorldState
+): any[] {
   const activeSponsors: any[] = [];
   for (const sponsor of pool.sponsors.values()) {
     if (!sponsor.active) continue;
@@ -1018,9 +979,7 @@ function buildAndSortActiveSponsors(pool: any, playerHeyaId: string, heya: any, 
 
 function calculateKoenkaiIncome(heya: any): number {
   const koenkaiStrength = heya.koenkaiBand ?? "none";
-  return KOENKAI_MONTHLY_INCOME[
-    koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME
-  ] || 0;
+  return KOENKAI_MONTHLY_INCOME[koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
 }
 
 /**
@@ -1043,9 +1002,7 @@ export function projectSponsorUIDigest(world: WorldState) {
     koenkaiName: `${heya.name} Supporters Association`,
     strength: koenkaiStrength,
     activeSponsors,
-    totalMonthlyIncome:
-      activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) +
-      koenkaiIncome,
+    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
     expiringCount: activeSponsors.filter((s) => s.isExpiringSoon).length,
     koenkaiIncome,
   };
@@ -1058,7 +1015,7 @@ export function projectSponsorUIDigest(world: WorldState) {
 export function renewSponsorContract(
   world: WorldState,
   relId: string,
-  sponsorId?: string,
+  sponsorId?: string
 ): boolean {
   const pool = world.sponsorPool;
   if (!pool) return false;
@@ -1119,14 +1076,10 @@ export function projectMedicalUIDigest(world: WorldState) {
     facilityLabel,
     injuredRikishi: injured.map((r) => {
       const injuryStatus = r.injuryStatus;
-      const weeksRemaining =
-        r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
-      const weeksTotal =
-        (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
+      const weeksRemaining = r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
+      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
       const recoveryProgress =
-        weeksTotal > 0
-          ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100)
-          : 0;
+        weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
       const facilityBonus = Math.round((recoveryFacility - 50) / 10);
 
       return {
@@ -1155,15 +1108,13 @@ export function projectMedicalUIDigest(world: WorldState) {
       rosterStrengthBand: perception.rosterStrengthBand,
       stableMediaHeatBand: perception.stableMediaHeatBand,
       rivalryPressureBand: perception.rivalryPressureBand,
-      rikishiHealthPerceptions: perception.rikishiPerceptions.map(
-        (rp: any) => ({
-          rikishiId: rp.rikishiId,
-          shikona: rp.shikona,
-          rank: rp.rank,
-          healthBand: rp.healthBand,
-          momentum: rp.momentum,
-        }),
-      ),
+      rikishiHealthPerceptions: perception.rikishiPerceptions.map((rp: any) => ({
+        rikishiId: rp.rikishiId,
+        shikona: rp.shikona,
+        rank: rp.rank,
+        healthBand: rp.healthBand,
+        momentum: rp.momentum,
+      })),
     },
   };
 }
@@ -1171,11 +1122,7 @@ export function projectMedicalUIDigest(world: WorldState) {
 /**
  * Update heya diet via presenter.
  */
-export function setHeyaDietAction(
-  world: WorldState,
-  heyaId: string,
-  diet: any,
-): boolean {
+export function setHeyaDietAction(world: WorldState, heyaId: string, diet: any): boolean {
   const heya = world.heyas.get(heyaId);
   if (!heya) return false;
   if (!heya.welfareState) {
@@ -1195,22 +1142,13 @@ export function setHeyaDietAction(
  * Project banzuke and rank movement data.
  */
 export function projectBanzukeUIDigest(world: WorldState) {
-  const divisions = [
-    "makuuchi",
-    "juryo",
-    "makushita",
-    "sandanme",
-    "jonidan",
-    "jonokuchi",
-  ] as const;
+  const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const;
   const history = world.history || [];
 
   // Use existing banzukeUI logic but in the presenter context
   const prevScoreMap = buildPrevRankScores(history);
 
-  const allRikishi = Array.from(world.rikishi.values()).filter(
-    (r) => !r.isRetired,
-  );
+  const allRikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
   const rosterEntries = allRikishi.map((r) => {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
@@ -1269,9 +1207,7 @@ export function projectBashoUIDigest(world: WorldState) {
 
       // Rivalry data
       const rivalriesState = (world as any).rivalriesState;
-      const rivalry = rivalriesState
-        ? getRivalry(rivalriesState, east.id, west.id)
-        : null;
+      const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
       const heat = rivalry?.heat ?? 0;
       let heatBand: any = "cold";
       if (heat >= 75) heatBand = "inferno";
@@ -1283,8 +1219,7 @@ export function projectBashoUIDigest(world: WorldState) {
         eastRikishi: uiEast,
         westRikishi: uiWest,
         isPlayerBout:
-          playerRikishiIds.has(match.eastRikishiId) ||
-          playerRikishiIds.has(match.westRikishiId),
+          playerRikishiIds.has(match.eastRikishiId) || playerRikishiIds.has(match.westRikishiId),
         h2h,
         rivalry,
         heatBand,
@@ -1294,8 +1229,7 @@ export function projectBashoUIDigest(world: WorldState) {
     .filter((m): m is any => !!m);
 
   const completedBouts = matches.filter((m) => m.result).length;
-  const dayProgress =
-    matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
+  const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
   // Standings (simplified projection)
   const standings = Array.from(world.rikishi.values())
@@ -1308,11 +1242,7 @@ export function projectBashoUIDigest(world: WorldState) {
         losses: record.losses,
       };
     })
-    .sort(
-      (a, b) =>
-        b.wins - a.wins ||
-        compareRanks(a.rikishi.rank as any, b.rikishi.rank as any),
-    )
+    .sort((a, b) => b.wins - a.wins || compareRanks(a.rikishi.rank as any, b.rikishi.rank as any))
     .slice(0, 10);
 
   return {
@@ -1328,7 +1258,7 @@ export function projectBashoUIDigest(world: WorldState) {
     isKeyDay: isKeyDay(day),
     seasonalFlavor: getSeasonalFlavor(
       BASHO_CALENDAR[basho.bashoName || "hatsu"].season,
-      (world as any).seed,
+      (world as any).seed
     ),
   };
 }
@@ -1345,10 +1275,7 @@ export function projectLoanStatus(world: WorldState, heyaId: string) {
 
   const loans = heya.activeLoans;
   const totalBalance = loans.reduce((sum, l) => sum + l.remainingBalance, 0);
-  const totalMonthlyPayment = loans.reduce(
-    (sum, l) => sum + l.monthlyPayment,
-    0,
-  );
+  const totalMonthlyPayment = loans.reduce((sum, l) => sum + l.monthlyPayment, 0);
   const overdueLoans = loans.filter((l) => l.remainingBalance > l.principal);
 
   return {

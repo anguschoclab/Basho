@@ -8,29 +8,20 @@
 
 import React, { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate, Link } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import {
   Activity,
   Dumbbell,
   Heart,
   Shield,
-  Sparkles,
   Target,
-  TrendingDown,
   TrendingUp,
   Users,
-  Zap,
-  AlertTriangle,
   Flame,
-  CircleDot,
-  ChevronRight,
   ClipboardCheck,
   LayoutDashboard,
   BrainCircuit,
@@ -49,13 +40,10 @@ import { cn } from "@/lib/utils";
 import {
   FATIGUE_LABELS,
   FOCUS_BIAS_MATRIX,
-  PHASE_EFFECTS,
-  POTENTIAL_LABELS,
   INTENSITY_MULTIPLIERS,
   RECOVERY_MULTIPLIERS,
   describeTrainingEffect,
   toFatigueBand,
-  toPotentialBand,
   getCareerPhase,
   getIntensityLabel,
   getFocusLabel,
@@ -112,7 +100,6 @@ const FOCUS_MODE_OPTIONS: {
 ];
 
 export default function TrainingPage() {
-  const navigate = useNavigate();
   const { state, updateWorld } = useGame();
   const { world, playerHeyaId } = state;
   const heya = world?.heyas.get(playerHeyaId || "") ?? null;
@@ -212,7 +199,6 @@ export default function TrainingPage() {
   };
 
   const currentIntensity = trainingState.activeProfile.intensity as TrainingIntensity;
-  const intensityEffect = INTENSITY_MULTIPLIERS[currentIntensity];
 
   return (
     <AppLayout pageTitle="Training Management" subNavTabs={HQ_TABS} activeSubTab="training">

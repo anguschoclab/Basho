@@ -1,15 +1,10 @@
-import { rngFromSeed, SeededRNG } from "../rng";
 import type { WorldState } from "../types/world";
-import type {
-  BashoName,
-  BashoSimResult,
-  BanzukeUpdateHook,
-} from "../types/basho";
+import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
-import type { ChronicleReport, ChronicleRecordEntry } from "../types/records";
+import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { assertNever } from "../utils/types";
 
@@ -62,7 +57,7 @@ export function runAutoSim(
   config: AutoSimConfig,
   opts?: {
     banzukeUpdateHook?: BanzukeUpdateHook;
-  },
+  }
 ): AutoSimResult {
   const startYear = world.year;
   let bashoSimulated = 0;
@@ -88,21 +83,19 @@ export function runAutoSim(
     if (bashoResult.yushoWinner.id) {
       championCounts.set(
         bashoResult.yushoWinner.id,
-        (championCounts.get(bashoResult.yushoWinner.id) || 0) + 1,
+        (championCounts.get(bashoResult.yushoWinner.id) || 0) + 1
       );
     }
 
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`,
+        `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 
     for (const condition of config.stopConditions) {
-      if (
-        checkStopCondition(condition, bashoResult, world, config, chronicle)
-      ) {
+      if (checkStopCondition(condition, bashoResult, world, config, chronicle)) {
         stoppedBy = condition;
         break;
       }
@@ -136,13 +129,7 @@ export function runAutoSim(
 
     if (
       config.duration.type === "untilEvent" &&
-      checkStopCondition(
-        config.duration.eventType,
-        bashoResult,
-        world,
-        config,
-        chronicle,
-      )
+      checkStopCondition(config.duration.eventType, bashoResult, world, config, chronicle)
     ) {
       stoppedBy = config.duration.eventType;
       break;
@@ -155,12 +142,7 @@ export function runAutoSim(
     bashoSimulated,
     daysSimulated,
     stoppedBy,
-    chronicle: ChronicleService.finalizeReport(
-      world,
-      chronicle,
-      championCounts,
-      startYear,
-    ),
+    chronicle: ChronicleService.finalizeReport(world, chronicle, championCounts, startYear),
     finalWorld: world,
   };
 }
@@ -170,7 +152,7 @@ export function checkStopCondition(
   bashoResult: BashoSimResult,
   world: WorldState,
   config: AutoSimConfig,
-  chronicle: ChronicleReport,
+  _chronicle: ChronicleReport
 ): boolean {
   const hasPlayer = !config.observerMode && !!config.playerHeyaId;
   const anyWorld = world as any;
@@ -182,32 +164,20 @@ export function checkStopCondition(
       return bashoResult.promotions.some((p) => p.to === "ozeki");
     case "yusho":
       return (
-        hasPlayer &&
-        world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId ===
-          config.playerHeyaId
+        hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId
       );
     case "stableInsolvency":
-      return (
-        hasPlayer &&
-        world.heyas.get(config.playerHeyaId!)?.runwayBand === "desperate"
-      );
+      return hasPlayer && world.heyas.get(config.playerHeyaId!)?.runwayBand === "desperate";
     case "scandal": {
-      const scandals: any[] = Array.isArray(anyWorld.scandals)
-        ? anyWorld.scandals
-        : [];
-      const eventLog: any[] = Array.isArray(anyWorld.eventLog)
-        ? anyWorld.eventLog
-        : [];
+      const scandals: any[] = Array.isArray(anyWorld.scandals) ? anyWorld.scandals : [];
+      const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
       return (
-        scandals.some(
-          (s: any) => s?.severity === "major" && s?.year === world.year,
-        ) || eventLog.some((e: any) => e?.type === "scandal")
+        scandals.some((s: any) => s?.severity === "major" && s?.year === world.year) ||
+        eventLog.some((e: any) => e?.type === "scandal")
       );
     }
     case "retirementOfStar": {
-      const retirements: any[] = Array.isArray(anyWorld.retirements)
-        ? anyWorld.retirements
-        : [];
+      const retirements: any[] = Array.isArray(anyWorld.retirements) ? anyWorld.retirements : [];
       return retirements.some((r: any) => {
         const rikishi = world.rikishi.get(r.rikishiId);
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;

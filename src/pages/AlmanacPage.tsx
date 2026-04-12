@@ -1,29 +1,14 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import type { RecordEntry } from "@/engine/types/records";
-import {
-  Building2,
-  ChevronRight,
-  Crown,
-  Medal,
-  Scroll,
-  Search,
-  Star,
-  TrendingUp,
-  Trophy,
-  Users,
-  History,
-  Award,
-} from "lucide-react";
+import { Medal, Scroll, Star, TrendingUp, Trophy, Users, History, Award } from "lucide-react";
 
 /** Leaderboard widget for record book displays. */
 function LeaderboardWidget({
@@ -81,11 +66,9 @@ function LeaderboardWidget({
 }
 
 export default function AlmanacPage() {
-  const navigate = useNavigate();
   const { state } = useGame();
   const { world } = state;
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("past-bashos");
 
   // Compute giant slayers data before any early returns

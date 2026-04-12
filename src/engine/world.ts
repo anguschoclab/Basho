@@ -10,74 +10,30 @@
  * - FTUE state is updated after first basho completion.
  */
 
-import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
 import type { WorldState } from "./types/world";
-import type { BashoName, BoutResult, MatchSchedule, BashoState } from "./types/basho";
+import type { BashoName, BoutResult, BashoState } from "./types/basho";
 import type { Id } from "./types/common";
 import { toRankPosition, type Side } from "./types/index";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
-import * as talentpool from "./systems/generation/TalentPoolService";
-import { initializeBasho } from "./systems/generation/WorldFactory";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout/boutResolver";
-import { stableTieBreak } from "./utils/sort";
-import { updateH2H } from "./h2h";
 import { EventBus } from "./events";
-import { advanceOneDay, enterPostBasho, enterInterim, type DailyTickReport } from "./tick/tickDaily";
-import { buildAlmanacSnapshot } from "./almanac";
-import { autosave } from "./saveload";
-import { runSponsorChurn } from "./economics";
-import * as schedule from "./schedule";
-import * as events from "./events";
-import * as injuries from "./systems/health/InjuryService";
-import * as rivalries from "./rivalries";
-import { 
-  updateMediaFromBout, 
-  processWeeklyMediaBoundary,
-  resetBashoMediaTracking,
-  snapshotMediaHeatForBasho,
-  handleMediaEvent
-} from "./systems/media/MediaService";
-import * as economics from "./economics";
+import { advanceOneDay, enterInterim } from "./tick/tickDaily";
 import * as governance from "./governance/GovernanceService";
-import { executeMerger, findMergerTarget } from "./mergers";
-import { issueBailoutLoanIfNeeded, processMonthlyLoanRepayments } from "./loans";
-import { checkNaturalizations } from "./naturalization";
-
-import * as npcAI from "./npcAI";
-import * as scoutingStore from "./scoutingStore";
-import * as historyIndex from "./historyIndex";
- 
-import { } from "./systems/generation/CandidateGenerator";
-import { determineSpecialPrizes, updateBanzuke } from "./banzuke";
+import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
+import { updateBanzuke } from "./banzuke";
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { resolveImpacts } from "./core/ImpactResolver";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
-import { checkRetirement } from "./lifecycle";
-import { generateOyakata } from "./oyakataPersonalities";
-import { getHeyaRoster, getRikishi, getActiveRikishi, getStableRikishi } from "./queries";
-import { runPrestigeDecay, updateStatureBand } from "./prestige/prestigeSystem";
-import { runGovernanceReview, runRetirements, runAIMetaDrift } from "./governance/governanceReview";
-import { onRikishiRetired } from "./records";
-import { runHistoryUpdates } from "./history";
-import { recordOyakataHandover } from "./lineage";
-import { safeCall } from "./utils/safe";
+import { getActiveRikishi, getStableRikishi } from "./queries";
 
 // New Lifecycle Services
 import * as bashoManager from "./lifecycle/BashoManager";
 import * as competition from "./lifecycle/CompetitionService";
-import * as registry from "./lifecycle/RegistryService";
 import { ensureDaySchedule } from "./schedule";
 
-
-export { 
-  getActiveRikishi, 
-  getStableRikishi, 
-  applyBoutResult,
-  handleMediaEvent
-};
-
+export { getActiveRikishi, getStableRikishi, applyBoutResult, handleMediaEvent };
 
 // Type guard or helper to access current basho
 /**
@@ -96,16 +52,13 @@ export const issueGovernanceRuling = governance.issueGovernanceRuling;
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   const updated = bashoManager.startBasho(world, bashoName);
-  
+
   // Reset basho-scoped media tracking (streaks, promo watch)
   if (updated.mediaState) {
     updated.mediaState = resetBashoMediaTracking(updated.mediaState);
   }
   return updated;
 }
-
-
-
 
 /**
  * Advance basho day.
@@ -129,7 +82,7 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   EventBus.bashoStatus(world, {
     status: "day_advanced",
-    day: nextDay
+    day: nextDay,
   });
   return world;
 }
@@ -161,20 +114,30 @@ export function simulateBoutForToday(
   const playerHeyaId = world.playerHeyaId;
 
   const playerSide = playerHeyaId
-    ? (eastHeyaId === playerHeyaId ? ("east" as Side) : westHeyaId === playerHeyaId ? ("west" as Side) : undefined)
+    ? eastHeyaId === playerHeyaId
+      ? ("east" as Side)
+      : westHeyaId === playerHeyaId
+        ? ("west" as Side)
+        : undefined
     : undefined;
 
-
   const boutContext = {
-      id: `d${basho.day}-b${unplayedIndex}`,
-      day: basho.day,
-      rikishiEastId: east.id,
-      rikishiWestId: west.id,
-      division: east.division,
-      playerSide
+    id: `d${basho.day}-b${unplayedIndex}`,
+    day: basho.day,
+    rikishiEastId: east.id,
+    rikishiWestId: west.id,
+    division: east.division,
+    playerSide,
   };
 
-  const { result, impact: resolveImpact } = resolveBout(boutContext, east, west, basho, playerTactic, world);
+  const { result, impact: resolveImpact } = resolveBout(
+    boutContext,
+    east,
+    west,
+    basho,
+    playerTactic,
+    world
+  );
 
   const boutImpact = applyBoutResult(world, match, result);
   const resolvedWorld = resolveImpacts(world, [resolveImpact, boutImpact]);
@@ -202,7 +165,6 @@ export function endBasho(world: WorldState): WorldState {
   return world;
 }
 
-
 // runRetirements moved to governanceReview.ts
 
 // ─── 5. RECRUITMENT WINDOWS (Constitution A3.4) ────────────────
@@ -216,7 +178,6 @@ export function endBasho(world: WorldState): WorldState {
  * Player gets a recruitment window event with duration tracking.
  */
 
-
 /**
  * Publish banzuke update.
  * Returns StateImpact describing banzuke update instead of mutating state directly.
@@ -224,7 +185,7 @@ export function endBasho(world: WorldState): WorldState {
  * @returns The result.
  */
 export function publishBanzukeUpdate(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('publishBanzukeUpdate');
+  const builder = createImpactBuilder("publishBanzukeUpdate");
 
   if (world.cyclePhase !== "post_basho") return builder.build();
 
@@ -238,16 +199,15 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     return builder.build();
   }
 
-  const standingEntries = (standings instanceof Map)
-    ? Array.from(standings.entries())
-    : Object.entries(standings as any);
+  const standingEntries =
+    standings instanceof Map ? Array.from(standings.entries()) : Object.entries(standings as any);
 
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const r of world.rikishi.values()) {
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
-      position: toRankPosition({ rank: r.rank, rankNumber: r.rankNumber, side: r.side })
+      position: toRankPosition({ rank: r.rank, rankNumber: r.rankNumber, side: r.side }),
     });
   }
 
@@ -283,7 +243,10 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         promoteToYokozuna = true;
       }
       // Promotion Case 2: 1 Yusho + 1 Jun-Yusho (13+ wins both)
-      else if ((isYusho && wasJunYushoPrevious && lastWins >= 13) || (isJunYusho && wonPrevious && currentWins >= 13)) {
+      else if (
+        (isYusho && wasJunYushoPrevious && lastWins >= 13) ||
+        (isJunYusho && wonPrevious && currentWins >= 13)
+      ) {
         promoteToYokozuna = true;
       }
       // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
@@ -301,11 +264,11 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       // Narrative: Yokozuna Watch
       if (isYusho && !promoteToYokozuna) {
         builder.logEvent(
-          'LIFECYCLE_EVENT',
-          'injury',
+          "LIFECYCLE_EVENT",
+          "injury",
           {
             status: "yokozuna_watch",
-            description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`
+            description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`,
           },
           { rikishiId: id, heyaId: rikishi.heyaId }
         );
@@ -350,15 +313,15 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           const currentTechnique = rikishi.stats.technique || 50;
           statsUpdate = {
             mental: currentMental * 0.9,
-            technique: currentTechnique * 0.9
+            technique: currentTechnique * 0.9,
           };
 
           builder.logEvent(
-            'GOVERNANCE_RULING',
-            'economy',
+            "GOVERNANCE_RULING",
+            "economy",
             {
               incident: "yokozuna_deliberation",
-              description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`
+              description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`,
             },
             { rikishiId: id, heyaId: rikishi.heyaId }
           );
@@ -374,7 +337,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         consecutiveKyujo,
         pressureScore,
         councilWarnings,
-        stats: statsUpdate
+        stats: statsUpdate,
       });
     }
 
@@ -386,15 +349,15 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       yusho: isYusho,
       junYusho: isJunYusho,
       specialPrizes: prizePoints,
-      promoteToYokozuna
+      promoteToYokozuna,
     });
   }
 
-  const perfMap = new Map(performanceList.map(p => [p.rikishiId, p]));
+  const perfMap = new Map(performanceList.map((p) => [p.rikishiId, p]));
   const result = updateBanzuke(currentBanzukeList, perfMap, world.ozekiKadoban ?? {}, world.heyas);
 
   // Update ozekiKadoban world field
-  builder.updateWorldField('ozekiKadoban', result.updatedOzekiKadoban);
+  builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
 
   for (const newEntry of result.newBanzuke) {
     const rikishi = world.rikishi.get(newEntry.rikishiId);
@@ -405,7 +368,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         rankNumber: newEntry.position.rankNumber,
         side: newEntry.position.side,
         currentBashoWins: 0,
-        currentBashoLosses: 0
+        currentBashoLosses: 0,
       });
     }
   }
@@ -413,13 +376,18 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const next = getNextBasho(lastBasho.bashoName);
   const nextYear = next === "hatsu" ? world.year + 1 : world.year;
 
-  builder.updateWorldField('year', nextYear);
-  builder.updateWorldField('currentBashoName', next);
-  builder.updateWorldField('currentBasho', undefined);
+  builder.updateWorldField("year", nextYear);
+  builder.updateWorldField("currentBashoName", next);
+  builder.updateWorldField("currentBasho", undefined);
 
   // Note: enterInterim mutates world state - this would need to be migrated separately
   // For now, we'll call it directly and let it mutate
-  const interimWorld = { ...world, year: nextYear, currentBashoName: next, currentBasho: undefined };
+  const interimWorld = {
+    ...world,
+    year: nextYear,
+    currentBashoName: next,
+    currentBasho: undefined,
+  };
   enterInterim(interimWorld);
 
   return builder.build();
@@ -432,7 +400,12 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
  *  * @returns The result.
  */
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
-  if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho" && world.cyclePhase !== "post_basho") return world;
+  if (
+    world.cyclePhase !== "interim" &&
+    world.cyclePhase !== "pre_basho" &&
+    world.cyclePhase !== "post_basho"
+  )
+    return world;
 
   // Convert weeks to days and run through the daily tick pipeline
   const days = Math.max(1, Math.trunc(weeks)) * 7;
@@ -459,37 +432,35 @@ export function advanceDay(world: WorldState): WorldState | null {
 // --- CANONICAL SELECTORS ---
 
 export function getPlayerOyakata(world: WorldState) {
-    if (!world.playerHeyaId) return undefined;
-    const heya = world.heyas.get(world.playerHeyaId);
-    if (!heya) return undefined;
-    return world.oyakata.get(heya.oyakataId);
+  if (!world.playerHeyaId) return undefined;
+  const heya = world.heyas.get(world.playerHeyaId);
+  if (!heya) return undefined;
+  return world.oyakata.get(heya.oyakataId);
 }
 
 export function getPlayerStable(world: WorldState) {
-    if (!world.playerHeyaId) return undefined;
-    return world.heyas.get(world.playerHeyaId);
+  if (!world.playerHeyaId) return undefined;
+  return world.heyas.get(world.playerHeyaId);
 }
 
 // getStableRikishi moved to queries.ts
 
 export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
-    const basho = world.currentBasho;
-    const standings = basho?.standings;
-    if (!standings) {
-        return { wins: 0, losses: 0, absences: 0 };
-    }
-    
-    const statsArr = standings instanceof Map 
-        ? standings.get(rikishiId) 
-        : (standings as any)[rikishiId];
+  const basho = world.currentBasho;
+  const standings = basho?.standings;
+  if (!standings) {
+    return { wins: 0, losses: 0, absences: 0 };
+  }
 
-    if (!statsArr) {
-        return { wins: 0, losses: 0, absences: 0 };
-    }
-    return {
-        wins: statsArr.wins || 0,
-        losses: statsArr.losses || 0,
-        absences: statsArr.absences || 0
-    };
+  const statsArr =
+    standings instanceof Map ? standings.get(rikishiId) : (standings as any)[rikishiId];
+
+  if (!statsArr) {
+    return { wins: 0, losses: 0, absences: 0 };
+  }
+  return {
+    wins: statsArr.wins || 0,
+    losses: statsArr.losses || 0,
+    absences: statsArr.absences || 0,
+  };
 }
-
