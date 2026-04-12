@@ -19,6 +19,7 @@ import {
   updateMediaFromBout,
   createDefaultMediaState
 } from "../systems/media/MediaService";
+import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
 import { safeCall } from "../utils/safe";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
@@ -99,6 +100,16 @@ export function applyBoutResult(
       winnerEconomics.kinboshiCount = (winnerEconomics.kinboshiCount || 0) + 1;
     } else if (result.awardFact === 'ginboshi') {
       winnerAchievements.ginboshiEarned++;
+    }
+
+    // Apply popularity boost for kinboshi/ginboshi awards
+    if (result.awardFact === 'kinboshi' || result.awardFact === 'ginboshi') {
+      if (!winnerEconomics) {
+        winnerEconomics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
+      }
+      const tempWinner = { ...winner, economics: { ...winnerEconomics } };
+      applyAchievementImpact(world, tempWinner, result.awardFact);
+      winnerEconomics = tempWinner.economics!;
     }
   }
 

@@ -1,7 +1,6 @@
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
-import { spendPoliticalCapital } from "./governance/GovernanceService";
 import { EventBus } from "./events";
 
 interface GovernanceStrategy {
@@ -24,20 +23,23 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
 
     // Decision scenarios where political capital might be spent
 
+    // Helper: spend capital and return true if successful
+    const trySpend = (amount: number): boolean => {
+      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
+      heya.politicalCapital -= amount;
+      return true;
+    };
+
     // 1. Reduce scandal score if it's high and oyakata is ambitious or compassionate
     if (scandalScore >= 20 && (isAmbitious || isCompassionate)) {
-      // Spend political capital to reduce scandal impact
       const spendAmount = Math.min(20, politicalCapital);
-      const success = spendPoliticalCapital(world, heya.id, spendAmount);
-      
-      if (success) {
-        // Reduce scandal score as a result
+      if (trySpend(spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 5);
-        
+
         const reason = isAmbitious
           ? "Ambitious oyakata spent political capital to protect reputation"
           : "Compassionate oyakata spent political capital to protect heya members";
-        
+
         EventBus.managementDecision(world, heya.id, {
           archetype: oyakata.archetype,
           action: "reduce_scandal",
@@ -51,11 +53,9 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
     // 2. Traditionalists spend political capital to maintain standing
     if (isTraditionalist && scandalScore >= 10) {
       const spendAmount = Math.min(15, politicalCapital);
-      const success = spendPoliticalCapital(world, heya.id, spendAmount);
-      
-      if (success) {
+      if (trySpend(spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 3);
-        
+
         EventBus.managementDecision(world, heya.id, {
           archetype: oyakata.archetype,
           action: "maintain_standing",
@@ -68,22 +68,18 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
 
     // 3. Risk-takers might hoard political capital for future opportunities
     if (isRiskTaker && politicalCapital < 80) {
-      // Don't spend, just hoard for future use
       return;
     }
 
     // 4. Default: small maintenance spend if scandal is present
     if (scandalScore >= 15 && politicalCapital >= 25) {
-      const spendAmount = 10;
-      const success = spendPoliticalCapital(world, heya.id, spendAmount);
-      
-      if (success) {
+      if (trySpend(10)) {
         heya.scandalScore = Math.max(0, scandalScore - 2);
-        
+
         EventBus.managementDecision(world, heya.id, {
           archetype: oyakata.archetype,
           action: "maintenance_spend",
-          spent: spendAmount,
+          spent: 10,
           reasoning: "Standard political capital maintenance"
         }, "minor");
       }

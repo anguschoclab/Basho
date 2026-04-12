@@ -38,7 +38,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const totalExpenses = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates);
 
     // -- Loan Repayments --
-    processLoanRepayments(world, heya, heyaUpdates);
+    processLoanRepayments(world, heya, heyaUpdates, builder);
 
     // -- Facilities Decay & Maintenance --
     const maintenance = processFacilitiesMaintenance(world, heya, heyaUpdates);
@@ -157,7 +157,7 @@ function processHeyaEconomics(
   return totalExpenses;
 }
 
-function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any): void {
+function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any, builder: ReturnType<typeof import("../../core/ImpactBuilder").createImpactBuilder>): void {
   if (heya.activeLoans && heya.activeLoans.length > 0) {
     let totalPayment = 0;
     const nextLoans = [];
@@ -171,8 +171,17 @@ function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any):
       if (nextLoan.remainingBalance > 0) {
         nextLoans.push(nextLoan);
       } else {
-        // Note: EventBus replaced - loan paid off event skipped for now
-        console.log(`[LoanPaidOff] ${heya.name} paid off loan from ${loan.providerName}`);
+        builder.logEvent(
+          'FINANCIAL_ALERT',
+          'economy',
+          {
+            incident: "loan_paid_off",
+            status: loan.type,
+            heya: loan.providerName,
+            heyaname: heya.name,
+          },
+          { heyaId: heya.id }
+        );
       }
     }
     heyaUpdates.activeLoans = nextLoans;

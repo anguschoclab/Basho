@@ -185,12 +185,20 @@ function handleWatchTransition(world: WorldState, heya: Heya, state: WelfareStat
 }
 
 function handleInvestigationTransition(world: WorldState, heya: Heya, state: WelfareState, reasons: string[], builder: any, mediaPressureChanges: Record<string, number>, seriousCount: number): void {
+  if (!state.investigation) {
+    state.investigation = {
+      openedWeek: world.calendar.currentWeek || 0,
+      severity: "low",
+      triggers: [],
+      progress: 0,
+    };
+  }
   const progressGain = clamp(Math.round(4 + (heya.facilities?.recovery || 50) / 30), 2, 12);
-  state.investigation!.progress = clamp((state.investigation!.progress || 0) + progressGain, 0, 100);
+  state.investigation.progress = clamp((state.investigation.progress || 0) + progressGain, 0, 100);
 
   if (state.welfareRisk >= 85 || (seriousCount >= 3 && state.welfareRisk >= 70)) {
     transitionToSanctioned(world, heya, state, builder, mediaPressureChanges);
-  } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
+  } else if (state.investigation.progress >= 100 && state.welfareRisk <= 50) {
     setComplianceStatePure(state, "watch");
     state.investigation = undefined;
     builder.logEvent(

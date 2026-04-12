@@ -12,8 +12,9 @@
 import type { WorldState } from "../../types/world";
 import type { GovernanceStatus } from "../../types/economy";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { mergeImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
-import { generateGovernanceHeadline } from "../../systems/media/MediaService";
+import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder('phase01_week_governance');
@@ -107,5 +108,6 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     });
   }
 
-  return builder.build();
+  // Apply ongoing scandal pressure to media state (scandalScore → heyaPressure bump)
+  return mergeImpacts([builder.build(), evaluateScandals(world)]);
 }

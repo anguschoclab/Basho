@@ -16,6 +16,7 @@ import type { BashoState, BashoResult, MatchSchedule } from "../types/basho";
 import type { Id } from "../types/common";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -136,6 +137,12 @@ function distributePrizes(
         else if (type === "Kanto") updatedSp.kantoSho++;
         else if (type === "Gino") updatedSp.ginoSho++;
 
+        // Apply sansho popularity boost via applyAchievementImpact
+        const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
+        if (tempR.economics) {
+          applyAchievementImpact(world, tempR, 'sansho');
+        }
+
         builder.updateRikishi(rikishiId, {
           stats: {
             ...r.stats,
@@ -144,6 +151,7 @@ function distributePrizes(
               specialPrizes: updatedSp,
             },
           },
+          ...(tempR.economics && { economics: tempR.economics }),
         });
 
         builder.logEvent(
