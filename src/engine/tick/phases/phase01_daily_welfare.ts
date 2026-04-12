@@ -13,19 +13,22 @@ import { clamp } from "../../utils";
 import { rngFromSeed } from "../../rng";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_daily_welfare');
-  
+  const builder = createImpactBuilder("phase01_daily_welfare");
+
   // Cache heya diets
   const heyaDietCache = new Map<string, string>();
   for (const heya of world.heyas.values()) {
-    heyaDietCache.set(heya.id, WelfareService.ensureHeyaWelfareState(heya).activeDiet || "maintenance");
+    heyaDietCache.set(
+      heya.id,
+      WelfareService.ensureHeyaWelfareState(heya).activeDiet || "maintenance"
+    );
   }
 
   for (const [id, r] of world.rikishi) {
     if (r.isRetired) continue;
 
-    let next = { ...r };
-    
+    const next = { ...r };
+
     // 1. Sync Descriptor
     const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
     next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor);

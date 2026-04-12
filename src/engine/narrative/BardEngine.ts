@@ -1,12 +1,12 @@
-import archData from './archive.json';
-import { SeededRNG } from '../rng';
-import type { NarrativeContext } from '../types/events';
+import archData from "./archive.json";
+import { SeededRNG } from "../rng";
+import type { NarrativeContext } from "../types/events";
 
 export type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
 
 export interface BardResult {
   text: string;
-  id: string; 
+  id: string;
   path: ResolutionPath;
 }
 
@@ -20,12 +20,18 @@ export class BardEngine {
   private static MAX_CACHE_SIZE = 50;
 
   private static formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 }).format(amount).replace('￥', '¥');
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "JPY",
+      maximumFractionDigits: 0,
+    })
+      .format(amount)
+      .replace("￥", "¥");
   }
 
-  private static percentFormatter = new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    maximumFractionDigits: 1
+  private static percentFormatter = new Intl.NumberFormat("en-US", {
+    style: "percent",
+    maximumFractionDigits: 1,
   });
 
   /**
@@ -37,22 +43,22 @@ export class BardEngine {
     context: NarrativeContext = {}
   ): BardResult {
     const intensityValue = context.intensity ?? 2;
-    const intensity = typeof intensityValue === 'number' ? intensityValue : 2; 
-    
-    let options = this.getOptions(path, intensity);
-    
+    const intensity = typeof intensityValue === "number" ? intensityValue : 2;
+
+    const options = this.getOptions(path, intensity);
+
     if (options.length === 0) {
       console.warn(`BardEngine: No options found at path "${path}" (Intensity: ${intensity})`);
-      return { text: `[System Log]: No narrative templates found at ${path}`, id: 'unknown', path };
+      return { text: `[System Log]: No narrative templates found at ${path}`, id: "unknown", path };
     }
 
     // LRU Cache Anti-Repetition Logic
     let attempts = 0;
     let idx = 0;
     let template = "";
-    
-    const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
-    
+
+    const isTest = typeof process !== "undefined" && process.env?.NODE_ENV === "test";
+
     do {
       idx = rng.int(0, options.length - 1);
       template = options[idx];
@@ -69,7 +75,7 @@ export class BardEngine {
     return {
       text: interpolatedText,
       id: templateId,
-      path
+      path,
     };
   }
 
@@ -87,15 +93,15 @@ export class BardEngine {
    * Internal helper to traverse the JSON archive.
    */
   private static getOptions(path: string, intensity: number): string[] {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let current: any = this.archive;
 
     // Check if path starts with root-level keys (registry, matrix, digests)
-    const isRootKey = ['registry', 'matrix', 'digests'].includes(keys[0]);
-    
-    if (!isRootKey && keys[0] !== 'domains') {
-        // Legacy support: auto-prefix with 'domains' if not explicitly provided
-        current = (this.archive as any).domains;
+    const isRootKey = ["registry", "matrix", "digests"].includes(keys[0]);
+
+    if (!isRootKey && keys[0] !== "domains") {
+      // Legacy support: auto-prefix with 'domains' if not explicitly provided
+      current = (this.archive as any).domains;
     }
 
     for (const key of keys) {
@@ -104,21 +110,22 @@ export class BardEngine {
     }
 
     if (Array.isArray(current)) return current;
-    if (typeof current === 'string') return [current];
+    if (typeof current === "string") return [current];
 
-    if (typeof current === 'object' && current !== null) {
+    if (typeof current === "object" && current !== null) {
       // If we are looking for a specific intensity variant
       const intensityKey = `intensity_${intensity}`;
       if (Array.isArray(current[intensityKey])) return current[intensityKey];
       if (Array.isArray(current.common)) return current.common;
-      
+
       // If we are looking at a Registry entry (e.g., registry.kimarite.yorikiri)
       // Standardized to prioritize .label, with fallbacks to .name or .description
-      if (current.label && typeof current.label === 'string') return [current.label];
-      if (current.name && typeof current.name === 'string') return [current.name];
-      if (current.description && typeof current.description === 'string') return [current.description];
+      if (current.label && typeof current.label === "string") return [current.label];
+      if (current.name && typeof current.name === "string") return [current.name];
+      if (current.description && typeof current.description === "string")
+        return [current.description];
 
-      const firstArrayKey = Object.keys(current).find(k => Array.isArray(current[k]));
+      const firstArrayKey = Object.keys(current).find((k) => Array.isArray(current[k]));
       if (firstArrayKey) return current[firstArrayKey];
     }
 
@@ -130,9 +137,9 @@ export class BardEngine {
    */
   private static interpolate(text: string, context: NarrativeContext): string {
     const pattern = /%([A-Z0-9_]+)%|\{\{([a-zA-Z0-9_]+)\}\}/g;
-    
+
     const result = text.replace(pattern, (match, p1, p2) => {
-      const key = (p1 || p2);
+      const key = p1 || p2;
       const value = context[key] ?? context[key.toLowerCase()];
 
       if (value === undefined || value === null) {
@@ -144,19 +151,25 @@ export class BardEngine {
       }
 
       // Special Domain Logic: Kimarite Multi-language ("寄り切り (Yorikiri)")
-      if (key === 'kimarite' && typeof value === 'string') {
-        const entry = this.getRegistryEntry('kimarite', value.toLowerCase());
+      if (key === "kimarite" && typeof value === "string") {
+        const entry = this.getRegistryEntry("kimarite", value.toLowerCase());
         if (entry && entry.labelJa) {
           return `${entry.labelJa} (${entry.label})`;
         }
       }
 
       // Auto-Formatting Rules
-      if (typeof value === 'number') {
-        if (key.includes('money') || key.includes('kensho') || key.includes('cost') || key.includes('revenue') || key.includes('profit')) {
+      if (typeof value === "number") {
+        if (
+          key.includes("money") ||
+          key.includes("kensho") ||
+          key.includes("cost") ||
+          key.includes("revenue") ||
+          key.includes("profit")
+        ) {
           return this.formatCurrency(value);
         }
-        if (key.includes('rate') || key.includes('chance')) {
+        if (key.includes("rate") || key.includes("chance")) {
           return this.percentFormatter.format(value > 1 ? value / 100 : value);
         }
       }
@@ -164,14 +177,15 @@ export class BardEngine {
       return value.toString();
     });
 
-    if (result.includes('%') || result.includes('{{') || result.includes('}}')) {
-       const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
-       const proc = (globalThis as any).process;
-       const shouldThrow = typeof proc !== 'undefined' && (proc.env?.NODE_ENV === 'test' || proc.env?.CI);
-       if (shouldThrow) {
-         throw new Error(leakMsg);
-       }
-       console.warn(leakMsg);
+    if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
+      const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
+      const proc = (globalThis as any).process;
+      const shouldThrow =
+        typeof proc !== "undefined" && (proc.env?.NODE_ENV === "test" || proc.env?.CI);
+      if (shouldThrow) {
+        throw new Error(leakMsg);
+      }
+      console.warn(leakMsg);
     }
 
     return result;
