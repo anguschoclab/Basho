@@ -5,11 +5,17 @@ import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 
 interface RecruitmentStrategy {
   evaluateVacancies: (world: WorldState, heya: Heya, oyakata: Oyakata) => number;
-  calculateMaxBid: (world: WorldState, heya: Heya, oyakata: Oyakata, candidateId: string, rivalHeyaId?: string) => number;
+  calculateMaxBid: (
+    world: WorldState,
+    heya: Heya,
+    oyakata: Oyakata,
+    candidateId: string,
+    rivalHeyaId?: string
+  ) => number;
 }
 
 export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(world: WorldState, heya: Heya, oyakata: Oyakata): number {
+  evaluateVacancies(_world: WorldState, heya: Heya, oyakata: Oyakata): number {
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return 0;
 
@@ -19,26 +25,34 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     if (oyakata.traits.tradition < 30) targetSize -= 1; // Modern less is more approach
 
     const currentSize = heya.rikishiIds ? heya.rikishiIds.length : 0;
-    
+
     return Math.max(0, targetSize - currentSize);
   },
 
-  calculateMaxBid(world: WorldState, heya: Heya, oyakata: Oyakata, candidateId: string, rivalHeyaId?: string): number {
+  calculateMaxBid(
+    _world: WorldState,
+    heya: Heya,
+    oyakata: Oyakata,
+    _candidateId: string,
+    rivalHeyaId?: string
+  ): number {
     // Basic value based on heya funds and ambition
     let maxBase = heya.funds * 0.15; // 15% of funds as a standard max
     if (oyakata.traits.ambition > 80) maxBase *= 1.25;
 
     // Drama Pass (Initiative 4): Vindictive NPCs overpay to spite rivals
-    if (rivalHeyaId && oyakata.temperament === 'Vindictive') {
+    if (rivalHeyaId && oyakata.temperament === "Vindictive") {
       const isGrudge = oyakata.grudges?.includes(rivalHeyaId);
       if (isGrudge) {
-        console.log(`[DramaPass] Oyakata ${oyakata.name} is overpaying (Vindictive) to deny a recruit to rival heya ${rivalHeyaId}`);
+        console.log(
+          `[DramaPass] Oyakata ${oyakata.name} is overpaying (Vindictive) to deny a recruit to rival heya ${rivalHeyaId}`
+        );
         maxBase *= 1.4; // 40% premium to block a hated rival
       }
     }
 
     return maxBase;
-  }
+  },
 };
 
 /**
@@ -46,77 +60,196 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
  * Aligned with real-world sumo archetypes (Traditionalist, Scientist, Gambler, etc.)
  */
 export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(world, heya, oyakata) {
+  evaluateVacancies(_world, heya, oyakata) {
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return 0;
-    
+
     // Traditionalists keep a stable, medium roster (approx 10-12)
     const targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
     const currentSize = heya.rikishiIds?.length ?? 0;
     return Math.max(0, targetSize - currentSize);
   },
-  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Traditionalists are conservative with money unless it's a "Traditional" prospect
-    let maxBase = heya.funds * 0.10; 
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(c => c.candidateId === candidateId);
+    let maxBase = heya.funds * 0.1;
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
     if (candidate?.style === "yotsu") maxBase *= 1.35; // Value belt-wrestlers
     return maxBase;
-  }
+  },
 };
 
 export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(world, heya, oyakata) {
+  evaluateVacancies(_world, heya, oyakata) {
     // Scientists lean, high-potential rosters
     const targetSize = oyakata.traits.ambition > 80 ? 15 : 9;
     return Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
   },
-  calculateMaxBid(world, heya, oyakata, candidateId) {
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Scientists value 'Potential' (talentSeed) above all else
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(c => c.candidateId === candidateId);
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
     const potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
-    return heya.funds * 0.20 * potentialMultiplier;
-  }
+    return heya.funds * 0.2 * potentialMultiplier;
+  },
 };
 
 export const GamblerRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(world, heya, oyakata) {
+  evaluateVacancies(_world, _heya, _oyakata) {
     // Gamblers always have room for one more "long shot"
-    return 1; 
+    return 1;
   },
-  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
+  calculateMaxBid(_world, heya, _oyakata, _candidateId, rivalHeyaId) {
     // Gamblers take massive risks if it denies a rival or if they feel lucky
     let base = heya.funds * 0.25;
     if (rivalHeyaId) base *= 1.5; // "The Spite Premium"
     return base;
-  }
+  },
 };
 
 export const TyrantRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(world, heya, oyakata) {
+  evaluateVacancies(_world, heya, _oyakata) {
     // Tyrants want a massive meat-grinder roster
     return Math.max(0, 25 - (heya.rikishiIds?.length ?? 0));
   },
-  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
+  calculateMaxBid(_world, heya, _oyakata, _candidateId, _rivalHeyaId) {
     // Tyrants will spend 50% of their total wealth to secure a top prospect
-    return heya.funds * 0.50;
-  }
+    return heya.funds * 0.5;
+  },
+};
+
+export const NurturerRecruitmentStrategy: RecruitmentStrategy = {
+  evaluateVacancies(_world, heya, oyakata) {
+    const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
+    if (freezeWeeks > 0) return 0;
+
+    // Nurturers prefer smaller, more intimate rosters (8-10) to focus on individual development
+    const targetSize = oyakata.traits.compassion > 70 ? 8 : 10;
+    const currentSize = heya.rikishiIds?.length ?? 0;
+    return Math.max(0, targetSize - currentSize);
+  },
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+    // Nurturers bid higher for compassionate reasons, especially for young prospects
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
+    let maxBase = heya.funds * 0.12;
+
+    // Bonus for young, high-potential prospects they can nurture
+    if (candidate && candidate.talentSeed > 70) {
+      const age = world.year - candidate.birthYear;
+      if (age < 18) {
+        maxBase *= 1.25;
+      }
+    }
+
+    return maxBase;
+  },
+};
+
+export const IndulgentRecruitmentStrategy: RecruitmentStrategy = {
+  evaluateVacancies(_world, heya, oyakata) {
+    const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
+    if (freezeWeeks > 0) return 0;
+
+    // Indulgent maintain moderate rosters (9-11) based on comfort
+    const targetSize = 9 + Math.floor(oyakata.traits.tradition / 25);
+    const currentSize = heya.rikishiIds?.length ?? 0;
+    return Math.max(0, targetSize - currentSize);
+  },
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+    // Indulgent bid based on "likeability" - they prefer prospects with compatible traits
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
+    let maxBase = heya.funds * 0.14;
+
+    // Bonus for prospects with high discipline (they value "good attitude")
+    if (candidate && candidate.temperament.discipline > 70) {
+      maxBase *= 1.15;
+    }
+
+    return maxBase;
+  },
+};
+
+export const StrictRecruitmentStrategy: RecruitmentStrategy = {
+  evaluateVacancies(_world, heya, oyakata) {
+    const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
+    if (freezeWeeks > 0) return 0;
+
+    // Strict maintain traditionalist-like rosters but with stricter stat thresholds
+    const targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
+    const currentSize = heya.rikishiIds?.length ?? 0;
+    return Math.max(0, targetSize - currentSize);
+  },
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+    // Strict are conservative but will pay for high-quality traditional prospects
+    let maxBase = heya.funds * 0.11;
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
+
+    // Only bid significantly for high-quality prospects (based on talentSeed and discipline)
+    if (candidate && candidate.talentSeed > 75 && candidate.temperament.discipline > 75) {
+      maxBase *= 1.3;
+    } else if (candidate && (candidate.talentSeed < 60 || candidate.temperament.discipline < 60)) {
+      maxBase *= 0.7; // Penalty for weak prospects
+    }
+
+    return maxBase;
+  },
+};
+
+export const StrategistRecruitmentStrategy: RecruitmentStrategy = {
+  evaluateVacancies(_world, heya, oyakata) {
+    // Strategists adapt roster size based on ambition
+    const targetSize = oyakata.traits.ambition > 80 ? 14 : 10;
+    return Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
+  },
+  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+    // Strategists use data-driven bidding based on talent analysis
+    const candidate = Object.values(world.talentPool?.candidates || {}).find(
+      (c) => c.candidateId === candidateId
+    );
+
+    let maxBase = heya.funds * 0.16;
+
+    // Bonus for high-potential prospects
+    if (candidate && candidate.talentSeed > 75) {
+      maxBase *= 1.25;
+    }
+
+    // Timing-based: bid more aggressively when funds are healthy
+    const runwayMonths = heya.funds / ((heya.rikishiIds?.length ?? 0) * 150000);
+    if (runwayMonths > 12) {
+      maxBase *= 1.15;
+    }
+
+    return maxBase;
+  },
 };
 
 export function getRecruitmentStrategy(archetype: OyakataArchetype): RecruitmentStrategy {
   switch (archetype) {
     case "traditionalist":
-    case "strict":
       return TraditionalistRecruitmentStrategy;
+    case "strict":
+      return StrictRecruitmentStrategy;
     case "scientist":
-    case "strategist":
       return ScientistRecruitmentStrategy;
+    case "strategist":
+      return StrategistRecruitmentStrategy;
     case "gambler":
       return GamblerRecruitmentStrategy;
     case "tyrant":
       return TyrantRecruitmentStrategy;
     case "nurturer":
+      return NurturerRecruitmentStrategy;
     case "indulgent":
-      return DefaultRecruitmentStrategy;
+      return IndulgentRecruitmentStrategy;
     default:
       assertNever(archetype);
       return DefaultRecruitmentStrategy;

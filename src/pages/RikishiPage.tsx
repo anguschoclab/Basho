@@ -57,6 +57,7 @@ import { RosterList } from "@/components/rikishi/RosterList";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed } from "@/engine/rng";
+import { getMentor, menteesOf } from "@/engine/lineage";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -158,9 +159,9 @@ export default function RikishiPage() {
   const isOwned = rikishi.heyaId === playerHeyaId;
   const milestones = rikishi.milestones;
 
-  // Get mentorship info
-  const mentor = rawRikishi.mentorId ? world.rikishi.get(rawRikishi.mentorId) : null;
-  const mentees = (rawRikishi.menteeIds ?? []).map((id) => world.rikishi.get(id)).filter(Boolean);
+  // Get mentorship info using lineage functions
+  const mentor = getMentor(world, rawRikishi);
+  const mentees = menteesOf(world, rawRikishi);
 
   return (
     <AppLayout pageTitle="Rikishi Profile" subNavTabs={HQ_TABS} activeSubTab="roster">
