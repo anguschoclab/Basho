@@ -6,7 +6,7 @@
 
 // Assumptions based on canonical world logic
 const KINBOSHI_STIPEND_PER_BOSHI = 40000; // Persistent monthly bonus
-const SANSHO_PRIZE_MONEY = 2000000;       // One-time cash injection to stable
+const SANSHO_PRIZE_MONEY = 2000000; // One-time cash injection to stable
 
 export interface SalaryBreakdown {
   base: number;
@@ -23,41 +23,41 @@ export interface SalaryBreakdown {
  * @returns SalaryBreakdown object
  */
 export function getSalaryBreakdown(
-  baseSalary: number, 
-  division: string, 
+  baseSalary: number,
+  division: string,
   kinboshiCount: number
 ): SalaryBreakdown {
   let kinboshiBonus = 0;
 
   // Kinboshi stipends are strictly only paid out while competing in the top division.
   // Note: Division names are lowercase ('makuuchi') in the engine.
-  if (division.toLowerCase() === 'makuuchi' && kinboshiCount > 0) {
+  if (division.toLowerCase() === "makuuchi" && kinboshiCount > 0) {
     kinboshiBonus = kinboshiCount * KINBOSHI_STIPEND_PER_BOSHI;
   }
 
   return {
     base: baseSalary,
     kinboshiBonus,
-    total: baseSalary + kinboshiBonus
+    total: baseSalary + kinboshiBonus,
   };
 }
 
 /**
  * Generates the financial transaction ledger entry for a Sansho prize.
  */
-function generateSanshoLedgerEntry(
-  rikishiName: string, 
-  prizeType: 'Shukun' | 'Kanto' | 'Gino'
+export function generateSanshoLedgerEntry(
+  rikishiName: string,
+  prizeType: "Shukun" | "Kanto" | "Gino"
 ) {
   const prizeNames = {
-    'Shukun': 'Outstanding Performance',
-    'Kanto': 'Fighting Spirit',
-    'Gino': 'Technique'
+    Shukun: "Outstanding Performance",
+    Kanto: "Fighting Spirit",
+    Gino: "Technique",
   };
 
   return {
     amount: SANSHO_PRIZE_MONEY,
     description: `Special Prize (${prizeNames[prizeType]}): ${rikishiName}`,
-    category: 'Prize Money'
+    category: "Prize Money",
   };
 }

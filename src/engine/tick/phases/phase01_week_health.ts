@@ -12,16 +12,13 @@ import type { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import {
-  rollWeeklyInjury,
-} from "../../systems/health/InjuryService";
-//@ts-ignore
+import { rollWeeklyInjury } from "../../systems/health/InjuryService";
 import { tickRikishiRecovery } from "../../systems/health/RecoveryService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getHeyaStaffBonuses } from "../../staff";
 
 export function phase01_week_health(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_week_health');
+  const builder = createImpactBuilder("phase01_week_health");
 
   for (const [id, rikishi] of world.rikishi) {
     if (rikishi.isRetired) continue;
@@ -51,13 +48,13 @@ function processRecovery(world: WorldState, r: Rikishi, builder: any): boolean {
 
   if (recovered) {
     builder.logEvent(
-      'LIFECYCLE_EVENT',
-      'welfare',
+      "LIFECYCLE_EVENT",
+      "welfare",
       {
         rikishiId: r.id,
         heyaId: r.heyaId,
         shikona: r.shikona || r.name,
-        status: "recovery"
+        status: "recovery",
       },
       { rikishiId: r.id, heyaId: r.heyaId }
     );
@@ -75,7 +72,7 @@ function processInjuryRoll(world: WorldState, r: Rikishi, builder: any): boolean
     r.injured = true;
     r.injuryWeeksRemaining = result.weeksOut;
     (r as any).currentInjury = {
-      id: seededRng.uuid('IJ'),
+      id: seededRng.uuid("IJ"),
       severity: result.severity,
       area: result.area,
       type: result.type,
@@ -84,15 +81,15 @@ function processInjuryRoll(world: WorldState, r: Rikishi, builder: any): boolean
     };
 
     builder.logEvent(
-      'LIFECYCLE_EVENT',
-      'welfare',
+      "LIFECYCLE_EVENT",
+      "welfare",
       {
         rikishiId: r.id,
         heyaId: r.heyaId,
         shikona: r.shikona || r.name,
         status: "injury",
         reason: result.area,
-        score: result.weeksOut
+        score: result.weeksOut,
       },
       { rikishiId: r.id, heyaId: r.heyaId }
     );

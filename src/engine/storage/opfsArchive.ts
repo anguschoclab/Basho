@@ -1,5 +1,6 @@
 import { type BoutResult } from "../types/basho";
 import { OPFSFileSystem } from "./OPFSFileSystem";
+import { warn, error } from "../utils/Logger";
 
 // Type guard to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
@@ -22,44 +23,34 @@ function validateBoutLog(data: unknown): BoutResult | null {
   ];
   for (const prop of requiredStringProps) {
     if (typeof obj[prop] !== "string") {
-      console.warn(
-        `[OPFS Validation] Invalid BoutResult: missing or invalid string property '${prop}'`,
-      );
+      warn(`Invalid BoutResult: missing or invalid string property '${prop}'`, "OPFS Validation");
       return null;
     }
   }
 
   if (typeof obj.duration !== "number") {
-    console.warn(
-      "[OPFS Validation] Invalid BoutResult: missing or invalid number property 'duration'",
-    );
+    warn("Invalid BoutResult: missing or invalid number property 'duration'", "OPFS Validation");
     return null;
   }
 
   if (typeof obj.upset !== "boolean") {
-    console.warn(
-      "[OPFS Validation] Invalid BoutResult: missing or invalid boolean property 'upset'",
-    );
+    warn("Invalid BoutResult: missing or invalid boolean property 'upset'", "OPFS Validation");
     return null;
   }
 
   // Arrays are optional but if present must be arrays
   if (obj.narrative !== undefined && !Array.isArray(obj.narrative)) {
-    console.warn(
-      "[OPFS Validation] Invalid BoutResult: narrative must be an array of strings",
-    );
+    warn("Invalid BoutResult: narrative must be an array of strings", "OPFS Validation");
     return null;
   }
 
   if (obj.pbpLines !== undefined && !Array.isArray(obj.pbpLines)) {
-    console.warn(
-      "[OPFS Validation] Invalid BoutResult: pbpLines must be an array",
-    );
+    warn("Invalid BoutResult: pbpLines must be an array", "OPFS Validation");
     return null;
   }
 
   if (obj.pbp !== undefined && !Array.isArray(obj.pbp)) {
-    console.warn("[OPFS Validation] Invalid BoutResult: pbp must be an array");
+    warn("Invalid BoutResult: pbp must be an array", "OPFS Validation");
     return null;
   }
 
@@ -82,40 +73,21 @@ export class ArchiveConflictError extends Error {
 
 export interface ArchiveService {
   isSupported: () => boolean;
-  archiveBoutLog: (
-    season: number,
-    boutId: string,
-    logData: unknown,
-  ) => Promise<void>;
-  retrieveBoutLog: (
-    season: number,
-    boutId: string,
-  ) => Promise<BoutResult | null>;
-  archiveGazette: (
-    season: number,
-    week: number,
-    markdown: string,
-  ) => Promise<void>;
+  archiveBoutLog: (season: number, boutId: string, logData: unknown) => Promise<void>;
+  retrieveBoutLog: (season: number, boutId: string) => Promise<BoutResult | null>;
+  archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
   archiveAwards: (season: number, awards: any[]) => Promise<void>;
   retrieveAwards: (season: number) => Promise<any[]>;
-  archiveBanzuke: (
-    season: number,
-    bashoNumber: number,
-    snapshot: any,
-  ) => Promise<void>;
+  archiveBanzuke: (season: number, bashoNumber: number, snapshot: any) => Promise<void>;
   retrieveBanzuke: (season: number, bashoNumber: number) => Promise<any | null>;
 }
 
 class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
   // --- BOUTS ---
 
-  public async archiveBoutLog(
-    season: number,
-    boutId: string,
-    logData: unknown,
-  ): Promise<void> {
+  public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, "bouts"]);
     if (!dir) return;
 
@@ -126,15 +98,11 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       await dir.getFileHandle(fileName, { create: false });
       // If the above line DOES NOT throw, the file exists.
       throw new ArchiveConflictError(
-        `Bout log ${boutId} already exists in season ${season}. History is immutable.`,
+        `Bout log ${boutId} already exists in season ${season}. History is immutable.`
       );
     } catch (e: unknown) {
       if (e instanceof ArchiveConflictError) throw e;
-      if (
-        (e instanceof Error || e instanceof DOMException) &&
-        e.name !== "NotFoundError"
-      )
-        throw e; // Bubble up unexpected errors
+      if ((e instanceof Error || e instanceof DOMException) && e.name !== "NotFoundError") throw e; // Bubble up unexpected errors
     }
 
     // File does not exist, safe to write.
@@ -148,10 +116,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveBoutLog(
-    season: number,
-    boutId: string,
-  ): Promise<BoutResult | null> {
+  public async retrieveBoutLog(season: number, boutId: string): Promise<BoutResult | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "bouts"]);
     if (!dir) return null;
 
@@ -164,12 +129,12 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       const parsed = JSON.parse(contents);
       return validateBoutLog(parsed);
     } catch (e: unknown) {
-      if (
-        (e instanceof Error || e instanceof DOMException) &&
-        e.name === "NotFoundError"
-      )
+      if ((e instanceof Error || e instanceof DOMException) && e.name === "NotFoundError")
         return null; // Graceful degradation for missing logs
-      console.error(`[OPFS] Error reading bout log ${boutId}:`, e);
+      error(
+        `Error reading bout log ${boutId}: ${e instanceof Error ? e.message : String(e)}`,
+        "OPFS"
+      );
       return null;
     }
   }
@@ -182,10 +147,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     try {
       // Async iteration over directory handles with concurrent chunking for performance
       const iterator = (
-        dir as unknown as Record<
-          string,
-          () => AsyncIterableIterator<FileSystemHandle>
-        >
+        dir as unknown as Record<string, () => AsyncIterableIterator<FileSystemHandle>>
       ).values();
       const CHUNK_SIZE = 100;
       let isDone = false;
@@ -209,18 +171,17 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
         }
       }
     } catch (e) {
-      console.error(`[OPFS] Error listing bouts for season ${season}:`, e);
+      error(
+        `Error listing bouts for season ${season}: ${e instanceof Error ? e.message : String(e)}`,
+        "OPFS"
+      );
     }
     return ids;
   }
 
   // --- GAZETTES ---
 
-  public async archiveGazette(
-    season: number,
-    week: number,
-    markdown: string,
-  ): Promise<void> {
+  public async archiveGazette(season: number, week: number, markdown: string): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, "gazettes"]);
     if (!dir) return;
 
@@ -236,10 +197,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveGazette(
-    season: number,
-    week: number,
-  ): Promise<string | null> {
+  public async retrieveGazette(season: number, week: number): Promise<string | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "gazettes"]);
     if (!dir) return null;
 
@@ -250,12 +208,12 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       const file = await fileHandle.getFile();
       return await file.text();
     } catch (e: unknown) {
-      if (
-        (e instanceof Error || e instanceof DOMException) &&
-        e.name === "NotFoundError"
-      )
+      if ((e instanceof Error || e instanceof DOMException) && e.name === "NotFoundError")
         return null;
-      console.error(`[OPFS] Error reading gazette S${season}W${week}:`, e);
+      error(
+        `Error reading gazette S${season}W${week}: ${e instanceof Error ? e.message : String(e)}`,
+        "OPFS"
+      );
       return null;
     }
   }
@@ -296,11 +254,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
 
   // --- BANZUKE ---
 
-  public async archiveBanzuke(
-    season: number,
-    bashoNumber: number,
-    snapshot: any,
-  ): Promise<void> {
+  public async archiveBanzuke(season: number, bashoNumber: number, snapshot: any): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return;
 
@@ -316,10 +270,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(
-    season: number,
-    bashoNumber: number,
-  ): Promise<any | null> {
+  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<any | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return null;
 

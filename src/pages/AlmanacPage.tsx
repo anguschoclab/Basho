@@ -22,11 +22,21 @@ import {
   Trophy,
   Users,
   History,
-  Award
+  Award,
 } from "lucide-react";
 
 /** Leaderboard widget for record book displays. */
-function LeaderboardWidget({ title, entries, icon: Icon, colorClass = "text-primary" }: { title: string, entries: RecordEntry[], icon: any, colorClass?: string }) {
+function LeaderboardWidget({
+  title,
+  entries,
+  icon: Icon,
+  colorClass = "text-primary",
+}: {
+  title: string;
+  entries: RecordEntry[];
+  icon: any;
+  colorClass?: string;
+}) {
   return (
     <Card className="paper h-full">
       <CardHeader className="pb-2">
@@ -47,7 +57,9 @@ function LeaderboardWidget({ title, entries, icon: Icon, colorClass = "text-prim
                 params={{ rikishiId: entry.rikishiId }}
                 className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
               >
-                <span className={`w-5 text-center font-bold ${idx < 3 ? colorClass : "text-muted-foreground"}`}>
+                <span
+                  className={`w-5 text-center font-bold ${idx < 3 ? colorClass : "text-muted-foreground"}`}
+                >
                   {idx + 1}
                 </span>
                 <span className="flex-1 font-display truncate">{entry.shikona}</span>
@@ -76,6 +88,24 @@ export default function AlmanacPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("past-bashos");
 
+  // Compute giant slayers data before any early returns
+  const giantSlayers = useMemo(() => {
+    if (!world) return [];
+    return Array.from(world.rikishi.values())
+      .map((r) => ({
+        rikishiId: r.id,
+        shikona: r.shikona,
+        value:
+          (r.stats?.achievements?.kinboshiEarned ?? 0) +
+          (r.stats?.achievements?.ginboshiEarned ?? 0),
+        details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
+        achievedDate: { year: world.year, month: world.calendar?.month ?? 1 },
+      }))
+      .filter((entry) => entry.value > 0)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [world?.rikishi, world?.year, world?.calendar?.month]);
+
   if (!world) {
     return (
       <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
@@ -89,24 +119,10 @@ export default function AlmanacPage() {
     );
   }
 
-  const records = world.records || { 
+  const records = world.records || {
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
-
-  const giantSlayers = useMemo(() => {
-    return Array.from(world.rikishi.values())
-      .map(r => ({
-        rikishiId: r.id,
-        shikona: r.shikona,
-        value: (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0),
-        details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-        achievedDate: { year: world.year, month: 1 } // Placeholder for current session
-      }))
-      .filter(entry => entry.value > 0)
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
-  }, [world.rikishi, world.year]);
 
   return (
     <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
@@ -148,32 +164,45 @@ export default function AlmanacPage() {
             <div className="grid gap-6">
               {(world.history || []).length === 0 ? (
                 <Card className="paper py-12 text-center">
-                  <p className="text-muted-foreground">No tournaments have been completed yet in this world.</p>
+                  <p className="text-muted-foreground">
+                    No tournaments have been completed yet in this world.
+                  </p>
                 </Card>
               ) : (
                 [...world.history].reverse().map((basho: any, idx) => (
                   <Card key={idx} className="paper overflow-hidden">
                     <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
                       <div>
-                        <h3 className="font-bold text-lg capitalize">{basho.bashoName} {basho.year}</h3>
+                        <h3 className="font-bold text-lg capitalize">
+                          {basho.bashoName} {basho.year}
+                        </h3>
                         <p className="text-xs text-muted-foreground">Tournament Snapshot</p>
                       </div>
                       <Trophy className="h-6 w-6 text-gold" />
                     </div>
                     <CardContent className="p-4 grid md:grid-cols-3 gap-4">
-                       <div className="space-y-1">
-                          <p className="text-xs uppercase text-muted-foreground font-semibold">Yūshō Winner</p>
-                          <p className="font-display font-bold text-lg">{basho.yushoShikona || "Reserved"}</p>
-                       </div>
-                       <div className="space-y-1">
-                          <p className="text-xs uppercase text-muted-foreground font-semibold">Attendance</p>
-                          <p className="font-mono text-lg">Full House</p>
-                       </div>
-                       <div className="text-right">
-                          <Link to={"/basho" as any} className="text-primary hover:underline text-sm font-semibold">
-                            View Full Results →
-                          </Link>
-                       </div>
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase text-muted-foreground font-semibold">
+                          Yūshō Winner
+                        </p>
+                        <p className="font-display font-bold text-lg">
+                          {basho.yushoShikona || "Reserved"}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase text-muted-foreground font-semibold">
+                          Attendance
+                        </p>
+                        <p className="font-mono text-lg">Full House</p>
+                      </div>
+                      <div className="text-right">
+                        <Link
+                          to={"/basho" as any}
+                          className="text-primary hover:underline text-sm font-semibold"
+                        >
+                          View Full Results →
+                        </Link>
+                      </div>
                     </CardContent>
                   </Card>
                 ))
@@ -182,31 +211,71 @@ export default function AlmanacPage() {
           </TabsContent>
 
           <TabsContent value="records" className="space-y-8">
-             <div className="space-y-4">
-               <h2 className="text-2xl font-bold flex items-center gap-2">
-                 <Star className="h-6 w-6 text-gold" />
-                 All-Time Records
-               </h2>
-               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  <LeaderboardWidget title="Total Wins" entries={records.allTime.careerWins} icon={TrendingUp} colorClass="text-success" />
-                  <LeaderboardWidget title="Makuuchi Wins" entries={records.allTime.makuuchiWins} icon={Users} colorClass="text-west" />
-                  <LeaderboardWidget title="Yūshō Count" entries={records.allTime.yusho} icon={Trophy} colorClass="text-gold" />
-                  <LeaderboardWidget title="Consecutive Yūshō" entries={records.allTime.consecutiveYusho} icon={Star} colorClass="text-purple-400" />
-                  <LeaderboardWidget title="Giant Slayers" entries={giantSlayers as any} icon={Medal} colorClass="text-gold" />
-               </div>
-             </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Star className="h-6 w-6 text-gold" />
+                All-Time Records
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <LeaderboardWidget
+                  title="Total Wins"
+                  entries={records.allTime.careerWins}
+                  icon={TrendingUp}
+                  colorClass="text-success"
+                />
+                <LeaderboardWidget
+                  title="Makuuchi Wins"
+                  entries={records.allTime.makuuchiWins}
+                  icon={Users}
+                  colorClass="text-west"
+                />
+                <LeaderboardWidget
+                  title="Yūshō Count"
+                  entries={records.allTime.yusho}
+                  icon={Trophy}
+                  colorClass="text-gold"
+                />
+                <LeaderboardWidget
+                  title="Consecutive Yūshō"
+                  entries={records.allTime.consecutiveYusho}
+                  icon={Star}
+                  colorClass="text-purple-400"
+                />
+                <LeaderboardWidget
+                  title="Giant Slayers"
+                  entries={giantSlayers as any}
+                  icon={Medal}
+                  colorClass="text-gold"
+                />
+              </div>
+            </div>
 
-             <div className="space-y-4">
-               <h2 className="text-2xl font-bold flex items-center gap-2">
-                 <TrendingUp className="h-6 w-6 text-success" />
-                 Active Leaders
-               </h2>
-               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  <LeaderboardWidget title="Total Wins" entries={records.active.careerWins} icon={TrendingUp} colorClass="text-success" />
-                  <LeaderboardWidget title="Makuuchi Wins" entries={records.active.makuuchiWins} icon={Users} colorClass="text-west" />
-                  <LeaderboardWidget title="Yūshō Count" entries={records.active.yusho} icon={Trophy} colorClass="text-gold" />
-               </div>
-             </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <TrendingUp className="h-6 w-6 text-success" />
+                Active Leaders
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <LeaderboardWidget
+                  title="Total Wins"
+                  entries={records.active.careerWins}
+                  icon={TrendingUp}
+                  colorClass="text-success"
+                />
+                <LeaderboardWidget
+                  title="Makuuchi Wins"
+                  entries={records.active.makuuchiWins}
+                  icon={Users}
+                  colorClass="text-west"
+                />
+                <LeaderboardWidget
+                  title="Yūshō Count"
+                  entries={records.active.yusho}
+                  icon={Trophy}
+                  colorClass="text-gold"
+                />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="hof">
@@ -216,10 +285,13 @@ export default function AlmanacPage() {
                 <div>
                   <h3 className="text-xl font-bold">The Hall of Fame</h3>
                   <p className="text-muted-foreground max-w-md mx-auto mt-2">
-                    Reserved for the greatest legends of Sumo history. Wrestlers become eligible after retiring with exceptional achievements.
+                    Reserved for the greatest legends of Sumo history. Wrestlers become eligible
+                    after retiring with exceptional achievements.
                   </p>
                 </div>
-                <Badge variant="secondary" className="mt-4">Expansion in Progress</Badge>
+                <Badge variant="secondary" className="mt-4">
+                  Expansion in Progress
+                </Badge>
               </div>
             </Card>
           </TabsContent>

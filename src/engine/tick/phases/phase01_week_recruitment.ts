@@ -14,11 +14,12 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { mergeImpacts } from "../../core/ImpactResolver";
-import { stableSort } from "../../utils/sort";
 import * as talentpool from "../../systems/generation/TalentPoolService";
+import { assignMentor } from "../../lineage";
+import { rngFromSeed } from "../../rng";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_week_recruitment');
+  const builder = createImpactBuilder("phase01_week_recruitment");
 
   // 1. Talent Pool Weekly Tick (Intel Decay, Suitor resolution)
   // Note: tickWeekTalentPool already returns StateImpact and mutates world
@@ -31,8 +32,8 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     world._recruitmentWindow = { ...rw, isOpen: false };
     if (world.playerHeyaId) {
       builder.logEvent(
-        'RECRUIT_DISCOVERED',
-        'narrative',
+        "RECRUIT_DISCOVERED",
+        "narrative",
         {
           rikishiId: world.playerHeyaId,
           heyaId: world.playerHeyaId,
@@ -46,18 +47,11 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
 
   // 3. Mid-Interim Openings
   if (world.cyclePhase === "interim") {
-    const elapsedWeeks = Math.floor(
-      (42 - (world._interimDaysRemaining ?? 0)) / 7,
-    );
+    const elapsedWeeks = Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7);
     if (elapsedWeeks === 3 && !world._recruitmentWindow?.isOpen) {
-      const playerHeya = world.playerHeyaId
-        ? world.heyas.get(world.playerHeyaId)
-        : null;
+      const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
-      if (
-        playerHeya &&
-        playerHeya.welfareState?.complianceState !== "sanctioned"
-      ) {
+      if (playerHeya && playerHeya.welfareState?.complianceState !== "sanctioned") {
         world._recruitmentWindow = {
           openedAtWeek: world.week,
           closesAtWeek: world.week + 2,
@@ -66,8 +60,8 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
           phase: "mid_interim",
         };
         builder.logEvent(
-          'RECRUIT_DISCOVERED',
-          'narrative',
+          "RECRUIT_DISCOVERED",
+          "narrative",
           {
             rikishiId: playerHeya.id,
             heyaId: playerHeya.id,
@@ -103,6 +97,49 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   // 5. Finalize signed candidates into full Rikishi
   // This converts "signed" candidates (from resolution or NPC fast-path) into real entities.
   const finalizeImpact = talentpool.finalizeSignedCandidates(world);
+
+  // 6. Auto-assign mentors to newly recruited rikishi
+  // Find newly added rikishi without mentors and assign senior rikishi as mentors
+  for (const heya of world.heyas.values()) {
+    const heyaRikishi = (heya.rikishiIds ?? []).map((id) => world.rikishi.get(id)).filter(Boolean);
+
+    // Find senior rikishi (sekitori or experienced) who can be mentors
+    const potentialMentors = heyaRikishi
+      .filter(
+        (r) =>
+          r && (r.division === "makuuchi" || r.division === "juryo" || (r as any).experience > 50)
+      )
+      .map((r) => r!.id);
+
+    // Find junior rikishi without mentors
+    const juniorsWithoutMentors = heyaRikishi.filter(
+      (r) => r && !r.mentorId && (r as any).experience < 30
+    );
+
+    // Assign mentors to juniors
+    for (const junior of juniorsWithoutMentors) {
+      if (!junior) continue;
+      // Pick a random mentor from potential mentors using seeded RNG
+      if (potentialMentors.length > 0) {
+        const rng = rngFromSeed(world.seed, "lineage", `mentor-${junior.id}`);
+        const mentorId = potentialMentors[Math.floor(rng.next() * potentialMentors.length)];
+        if (mentorId !== junior.id) {
+          assignMentor(world, junior.id, mentorId);
+          builder.logEvent(
+            "LIFECYCLE_EVENT",
+            "narrative",
+            {
+              rikishiId: junior.id,
+              heyaId: heya.id,
+              status: "mentor_assigned",
+              mentorId: mentorId,
+            },
+            { rikishiId: junior.id, heyaId: heya.id }
+          );
+        }
+      }
+    }
+  }
 
   // Merge the finalize impact with the builder's impact
   return mergeImpacts([builder.build(), finalizeImpact]);

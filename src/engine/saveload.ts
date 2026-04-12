@@ -2,6 +2,7 @@ import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
 import { runArchivalPruning } from "./archival";
 import { destr } from "destr";
+import { error } from "./utils/Logger";
 import type { WorldState, SaveGame, SaveVersion } from "./types/index";
 import { CURRENT_SAVE_VERSION } from "./types/index";
 
@@ -20,13 +21,15 @@ export function saveGame(world: WorldState, slotName: string, timestampISO?: str
 
     const existingRaw = storage.getItem(key);
     const existingParsed = existingRaw ? destr(existingRaw) : null;
-    const existing = SaveSlotService.isValidSave(existingParsed) ? (existingParsed as SaveGame) : undefined;
+    const existing = SaveSlotService.isValidSave(existingParsed)
+      ? (existingParsed as SaveGame)
+      : undefined;
 
     const save = createSaveGame(world, slotName, existing, timestampISO);
     storage.setItem(key, JSON.stringify(save));
     return true;
   } catch (e) {
-    console.error("Failed to save game:", e);
+    error(`Failed to save game: ${e instanceof Error ? e.message : String(e)}`, "SaveLoad");
     return false;
   }
 }
@@ -49,7 +52,7 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
     let save = parsed as SaveGame;
     // Migration logic could be moved to MigrationService later
     if (save.version !== CURRENT_SAVE_VERSION) {
-      save = { ...save, version: CURRENT_SAVE_VERSION }; 
+      save = { ...save, version: CURRENT_SAVE_VERSION };
     }
 
     return SerializationService.deserializeWorld(save.world);
@@ -62,7 +65,12 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
 /**
  * Create save game object.
  */
-function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGame, timestampISO?: string): SaveGame {
+function createSaveGame(
+  world: WorldState,
+  slotName?: string,
+  existing?: SaveGame,
+  timestampISO?: string
+): SaveGame {
   const now = timestampISO ?? existing?.lastSavedAtISO ?? "1970-01-01T00:00:00Z";
   return {
     version: CURRENT_SAVE_VERSION,
@@ -70,11 +78,11 @@ function createSaveGame(world: WorldState, slotName?: string, existing?: SaveGam
     lastSavedAtISO: now,
     ruleset: {
       banzukeAlgorithm: "slot_fill_v1",
-      kimariteRegistryVersion: "82_official_v1"
+      kimariteRegistryVersion: "82_official_v1",
     },
     world: SerializationService.serializeWorld(world),
     saveSlotName: slotName,
-    playTimeMinutes: existing?.playTimeMinutes
+    playTimeMinutes: existing?.playTimeMinutes,
   };
 }
 
@@ -117,10 +125,15 @@ export function quickSave(world: WorldState, timestampISO?: string): boolean {
   return saveGame(world, oldest?.slotName || "slot_1");
 }
 
-export function exportSave(world: WorldState, filename?: string, timestampISO?: string): { json: string; filename: string } {
+export function exportSave(
+  world: WorldState,
+  filename?: string,
+  timestampISO?: string
+): { json: string; filename: string } {
   const save = createSaveGame(world, undefined, undefined, timestampISO);
   const json = JSON.stringify(save, null, 2);
-  const defaultFilename = filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
+  const defaultFilename =
+    filename || `basho_${world.year}_${world.currentBashoName || "save"}.json`;
   return { json, filename: defaultFilename };
 }
 
@@ -136,4 +149,3 @@ export async function importSave(file: File): Promise<WorldState | null> {
     return null;
   }
 }
-

@@ -6,6 +6,7 @@
  */
 
 import { opfsArchiveService } from "./storage/opfsArchive";
+import { info } from "./utils/Logger";
 import type { BoutResult } from "./types/basho";
 import type { RecordEntry } from "./types/records";
 import type { BanzukeSnapshot } from "./types/banzuke";
@@ -40,7 +41,7 @@ class HistoryLRUCache {
     }
 
     // Cache miss — try to load from OPFS
-    console.log(`[HistoryCache] Cache miss for year ${year}, attempting OPFS load...`);
+    info(`Cache miss for year ${year}, attempting OPFS load...`, "HistoryCache");
     const data = await this.loadFromOPFS(year);
     if (data) {
       this.putYear(year, data);
@@ -81,7 +82,7 @@ class HistoryLRUCache {
       if (boutIds.length === 0) return null;
 
       const bouts = await Promise.all(
-        boutIds.map(id => opfsArchiveService.retrieveBoutLog(year, id))
+        boutIds.map((id) => opfsArchiveService.retrieveBoutLog(year, id))
       );
 
       // 2. Load Awards
@@ -89,14 +90,14 @@ class HistoryLRUCache {
 
       // 3. Load Banzuke Snapshots (Standard 6 Bashos)
       const snapshots = await Promise.all(
-        [1, 3, 5, 7, 9, 11].map(m => opfsArchiveService.retrieveBanzuke(year, m))
+        [1, 3, 5, 7, 9, 11].map((m) => opfsArchiveService.retrieveBanzuke(year, m))
       );
 
       return {
         year,
         bouts: bouts.filter((b): b is BoutResult => b !== null),
         awards,
-        banzukeSnapshots: snapshots.filter((s): s is BanzukeSnapshot => s !== null)
+        banzukeSnapshots: snapshots.filter((s): s is BanzukeSnapshot => s !== null),
       };
     } catch (err) {
       console.error(`[HistoryCache] Failed to load year ${year} from OPFS:`, err);

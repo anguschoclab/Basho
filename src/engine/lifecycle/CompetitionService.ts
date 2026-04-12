@@ -1,6 +1,6 @@
 import { EventBus } from "../events";
 import { stableTieBreak } from "../utils/sort";
-import { determineSpecialPrizes } from "../banzuke";
+import { determineSpecialPrizes, generateSanshoLedgerEntry } from "../banzuke";
 import { onBashoEnded } from "../records";
 import { buildAlmanacSnapshot } from "../almanac";
 import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
@@ -52,7 +52,11 @@ function resolvePlayoffs(
       const boutId = `playoff-${world.year}-${basho.bashoName}-d${day}-${eastId}-${westId}`;
       const { result } = resolveBout(
         { id: boutId, day, rikishiEastId: eastId, rikishiWestId: westId },
-        east, west, basho, undefined, world
+        east,
+        west,
+        basho,
+        undefined,
+        world
       );
       allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
       next.push(result.winnerRikishiId);
@@ -66,13 +70,16 @@ function resolvePlayoffs(
   return { winner: round[0], matches: allMatches };
 }
 
-
-
-function calculateStandings(basho: BashoState): { topCandidates: Id[], bestWins: number, table: Array<{id: Id, wins: number, losses: number}> } {
-  const table: Array<{id: Id, wins: number, losses: number}> = [];
-  const standingsEntries = basho.standings instanceof Map 
-    ? Array.from(basho.standings.entries()) 
-    : Object.entries(basho.standings);
+function calculateStandings(basho: BashoState): {
+  topCandidates: Id[];
+  bestWins: number;
+  table: Array<{ id: Id; wins: number; losses: number }>;
+} {
+  const table: Array<{ id: Id; wins: number; losses: number }> = [];
+  const standingsEntries =
+    basho.standings instanceof Map
+      ? Array.from(basho.standings.entries())
+      : Object.entries(basho.standings);
 
   for (const [id, rec] of standingsEntries) {
     const s = rec as { wins: number; losses: number };
@@ -92,15 +99,19 @@ function calculateStandings(basho: BashoState): { topCandidates: Id[], bestWins:
   return { topCandidates, bestWins, table };
 }
 
-function distributePrizes(world: WorldState, basho: BashoState, yusho: Id): { prizes: any; impact: StateImpact } {
-  const builder = createImpactBuilder('distributePrizes');
+function distributePrizes(
+  world: WorldState,
+  basho: BashoState,
+  yusho: Id
+): { prizes: any; impact: StateImpact } {
+  const builder = createImpactBuilder("distributePrizes");
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
   const SANSHO_PRIZE_AMOUNT = 2000000;
   const awardTypes = {
-    shukunsho: 'Shukun',
-    kantosho: 'Kanto',
-    ginoSho: 'Gino'
+    shukunsho: "Shukun",
+    kantosho: "Kanto",
+    ginoSho: "Gino",
   } as const;
 
   for (const [key, type] of Object.entries(awardTypes)) {
@@ -113,31 +124,35 @@ function distributePrizes(world: WorldState, basho: BashoState, yusho: Id): { pr
           ginboshiEarned: 0,
           kinboshiConceded: 0,
           ginboshiConceded: 0,
-          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
         };
-        const currentSp = currentAchievements.specialPrizes || { shukunSho: 0, kantoSho: 0, ginoSho: 0 };
+        const currentSp = currentAchievements.specialPrizes || {
+          shukunSho: 0,
+          kantoSho: 0,
+          ginoSho: 0,
+        };
         const updatedSp = { ...currentSp };
-        if (type === 'Shukun') updatedSp.shukunSho++;
-        else if (type === 'Kanto') updatedSp.kantoSho++;
-        else if (type === 'Gino') updatedSp.ginoSho++;
+        if (type === "Shukun") updatedSp.shukunSho++;
+        else if (type === "Kanto") updatedSp.kantoSho++;
+        else if (type === "Gino") updatedSp.ginoSho++;
 
         builder.updateRikishi(rikishiId, {
           stats: {
             ...r.stats,
             achievements: {
               ...currentAchievements,
-              specialPrizes: updatedSp
-            }
-          }
+              specialPrizes: updatedSp,
+            },
+          },
         });
 
         builder.logEvent(
-          'AWARD_CONFERRED',
-          'economy',
+          "AWARD_CONFERRED",
+          "economy",
           {
             money: SANSHO_PRIZE_AMOUNT,
             status: "special_prize",
-            regimen: type as string
+            regimen: type as string,
           },
           { rikishiId: r.id, heyaId: r.heyaId }
         );
@@ -145,7 +160,21 @@ function distributePrizes(world: WorldState, basho: BashoState, yusho: Id): { pr
         const heya = world.heyas.get(r.heyaId);
         if (heya) {
           builder.updateHeya(r.heyaId, {
-            funds: heya.funds + SANSHO_PRIZE_AMOUNT
+            funds: heya.funds + SANSHO_PRIZE_AMOUNT,
+          });
+
+          // Generate ledger entry for sansho prize
+          const rikishiName = r.shikona || r.name || "Unknown";
+          const ledgerEntry = generateSanshoLedgerEntry(
+            rikishiName,
+            type as "Shukun" | "Kanto" | "Gino"
+          );
+          const currentLedger = heya.ledger || [];
+          builder.updateHeya(r.heyaId, {
+            ledger: [
+              ...currentLedger,
+              { ...ledgerEntry, date: { year: world.year, month: world.calendar.month } },
+            ],
           });
         }
       }
@@ -165,21 +194,21 @@ function recordBashoHistory(
   bestWins: number
 ) {
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
-  
+
   const result: BashoResult = {
-    id: rng.uuid('HI'),
+    id: rng.uuid("HI"),
     year: world.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     yusho,
-    junYusho: topCandidates.filter(id => id !== yusho),
+    junYusho: topCandidates.filter((id) => id !== yusho),
     ...prizes,
     playoffMatches,
     prizes: {
       yushoAmount: 10000000,
       junYushoAmount: 2000000,
-      specialPrizes: 2000000
-    }
+      specialPrizes: 2000000,
+    },
   };
 
   if (!world.history) world.history = [];
@@ -190,7 +219,7 @@ function recordBashoHistory(
     if (snapshot) {
       if (!world.almanacSnapshots) world.almanacSnapshots = [];
       world.almanacSnapshots.push(snapshot);
-      
+
       // FM v2.0 Archival: Move to cold storage immediately
       opfsArchiveService.archiveBanzuke(world.year, basho.bashoNumber, snapshot);
     }
@@ -199,7 +228,7 @@ function recordBashoHistory(
   // Archive Awards
   safeCall(() => {
     // Collect specific prizes from the current result
-    const yearAwards = (world.history || []).filter(h => h.year === world.year);
+    const yearAwards = (world.history || []).filter((h) => h.year === world.year);
     opfsArchiveService.archiveAwards(world.year, yearAwards);
   });
 
@@ -208,8 +237,8 @@ function recordBashoHistory(
   EventBus.bashoStatus(world, {
     status: "ended",
     incident: basho.bashoName,
-    winner: yushoRikishi?.shikona || 'Unknown',
-    winnerRikishiId: yusho
+    winner: yushoRikishi?.shikona || "Unknown",
+    winnerRikishiId: yusho,
   });
 
   safeCall(() => {
@@ -226,14 +255,16 @@ function recordBashoHistory(
   EventBus.bashoStatus(world, {
     status: "concluded_summary",
     incident: basho.bashoName,
-    shikona: yushoRikishi?.shikona || 'Unknown',
+    shikona: yushoRikishi?.shikona || "Unknown",
     score: bestWins,
-    delta: 15 - bestWins
+    delta: 15 - bestWins,
   });
 
   enterPostBasho(world);
 
-  safeCall(() => { autosave(world); });
+  safeCall(() => {
+    autosave(world);
+  });
 }
 
 /**
@@ -244,7 +275,7 @@ function recordBashoHistory(
  * @returns StateImpact with BashoResult recorded
  */
 export function concludeBashoCompetition(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('concludeBashoCompetition');
+  const builder = createImpactBuilder("concludeBashoCompetition");
   const basho = world.currentBasho;
   if (!basho) return builder.build();
 
@@ -262,13 +293,13 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
 
     const champ = world.rikishi.get(yusho);
     builder.logEvent(
-      'BOUT_RESOLVED',
-      'narrative',
+      "BOUT_RESOLVED",
+      "narrative",
       {
         status: "playoff_result",
         shikona: champ?.shikona ?? yusho,
         score: topCandidates.length,
-        delta: bestWins
+        delta: bestWins,
       },
       { rikishiId: yusho }
     );
@@ -292,7 +323,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
       builder.logEvent(event.type, event.category, event.data, {
         heyaId: event.heyaId,
         rikishiId: event.rikishiId,
-        importance: event.importance
+        importance: event.importance,
       });
     }
   }
@@ -303,5 +334,3 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
 
   return builder.build();
 }
-
-

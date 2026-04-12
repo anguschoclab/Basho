@@ -1,27 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics, type BoutContext } from "../boutPhysics";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
 import type { BashoState } from "../../types/basho";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
-  return {
-    id: "test-basho",
-    year: 2025,
-    bashoNumber: 1,
-    bashoName: "hatsu",
-    day: 1,
-    matches: [],
-    standings: new Map(),
-    schedule: [],
-    results: [],
-    name: "hatsu",
-    ...overrides,
-  } as unknown as BashoState;
-}
 
 function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
   return {
@@ -97,8 +81,20 @@ describe("resolveBoutPhysics — aggression modifier", () => {
   it("completes without error for a rikishi with aggression=90", () => {
     // Validates that the aggression modifier path in selectAction() does not crash
     // and produces a valid BoutResult when aggression exceeds the 65 threshold.
-    const east = mockRikishi("r-east", { power: 60, speed: 60, balance: 60, technique: 60, aggression: 90 });
-    const west = mockRikishi("r-west", { power: 60, speed: 60, balance: 60, technique: 60, aggression: 30 });
+    const east = mockRikishi("r-east", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      aggression: 90,
+    });
+    const west = mockRikishi("r-west", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      aggression: 30,
+    });
     (east as any).combatProfile = {
       archetype: "all_rounder",
       familyPreferences: { push: 60, belt: 15, trick: 10, speed: 15 },

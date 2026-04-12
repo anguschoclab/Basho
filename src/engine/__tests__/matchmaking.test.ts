@@ -5,27 +5,13 @@ import {
   buildCandidatePairs,
   type MatchPairing,
 } from "../matchmaking/index";
-import { mockRikishi } from "./utils";
+import { mockRikishi, makeMockBasho } from "./utils";
 import type { BashoState } from "../types/basho";
 import type { Rikishi } from "../types/rikishi";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
-  return {
-    id: "test-basho",
-    year: 2025,
-    bashoNumber: 1,
-    bashoName: "hatsu",
-    day: 1,
-    matches: [],
-    standings: new Map(),
-    isActive: true,
-    ...overrides,
-  } as unknown as BashoState;
-}
 
 function setStandings(
   basho: BashoState,
@@ -39,6 +25,7 @@ function setStandings(
 let _rikishiCounter = 0;
 /**
  * Create a mock Rikishi with flexible rank/rankNumber.
+ * Uses mockRikishi from utils.ts with sensible defaults.
  */
 function createRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
   _rikishiCounter++;
@@ -75,10 +62,7 @@ describe("buildSwissTorikumi — Phase 1 (Days 1–7)", () => {
     const yokoIndex = pairings.findIndex(
       (p) =>
         (p.eastId === yokozuna.id || p.westId === yokozuna.id) &&
-        (p.eastId === m1.id ||
-          p.westId === m1.id ||
-          p.eastId === m2.id ||
-          p.westId === m2.id)
+        (p.eastId === m1.id || p.westId === m1.id || p.eastId === m2.id || p.westId === m2.id)
     );
     expect(yokoIndex).toBeGreaterThanOrEqual(0);
   });
@@ -151,8 +135,7 @@ describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
     // r1 vs r2 should both be winners (same bucket)
     const r1r2Pair = pairings.find(
       (p) =>
-        (p.eastId === r1.id && p.westId === r2.id) ||
-        (p.eastId === r2.id && p.westId === r1.id)
+        (p.eastId === r1.id && p.westId === r2.id) || (p.eastId === r2.id && p.westId === r1.id)
     );
     expect(r1r2Pair).toBeDefined();
     expect([r1r2Pair!.eastId, r1r2Pair!.westId].sort()).toEqual([r1.id, r2.id].sort());
@@ -241,9 +224,7 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
     });
 
     // Neither m10a nor m10b should be specifically marked yusho_exception
-    const yushoMatches = pairings.filter((p) =>
-      p.reasons.includes("yusho_exception")
-    );
+    const yushoMatches = pairings.filter((p) => p.reasons.includes("yusho_exception"));
     expect(yushoMatches.length).toBe(0);
   });
 
@@ -262,9 +243,7 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
       division: "makuuchi",
     });
 
-    const yushoMatches = pairings.filter((p) =>
-      p.reasons.includes("yusho_exception")
-    );
+    const yushoMatches = pairings.filter((p) => p.reasons.includes("yusho_exception"));
     expect(yushoMatches.length).toBe(0);
   });
 
@@ -374,9 +353,7 @@ describe("buildSwissTorikumi — chronological order", () => {
     // The first pairing should be lower-ranked (higher rankNumber)
     const firstPairing = pairings[0];
     const firstIds = [firstPairing.eastId, firstPairing.westId];
-    const hasMaegashira = firstIds.some((id) =>
-      [m15.id, m14.id, m1.id].includes(id)
-    );
+    const hasMaegashira = firstIds.some((id) => [m15.id, m14.id, m1.id].includes(id));
     expect(hasMaegashira).toBe(true);
   });
 });
@@ -448,7 +425,12 @@ describe("buildSwissTorikumi — full 15-day schedule", () => {
 describe("scorePairing — kadoban pressure", () => {
   it("boosts score for an ozeki with < 8 wins on day 11", () => {
     const ozeki = createRikishi({ id: "ozeki-kadoban", rank: "ozeki", heyaId: "heya-a" });
-    const opponent = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1, heyaId: "heya-b" });
+    const opponent = createRikishi({
+      id: "m1",
+      rank: "maegashira",
+      rankNumber: 1,
+      heyaId: "heya-b",
+    });
 
     const bashoKadoban = makeMockBasho({ day: 11 });
     setStandings(bashoKadoban, {
@@ -474,7 +456,12 @@ describe("scorePairing — kadoban pressure", () => {
 
   it("does not apply kadoban bonus before day 10", () => {
     const ozeki = createRikishi({ id: "ozeki-early", rank: "ozeki", heyaId: "heya-a" });
-    const m1 = createRikishi({ id: "m1-early", rank: "maegashira", rankNumber: 1, heyaId: "heya-b" });
+    const m1 = createRikishi({
+      id: "m1-early",
+      rank: "maegashira",
+      rankNumber: 1,
+      heyaId: "heya-b",
+    });
 
     const bashoEarly = makeMockBasho({ day: 7 });
     setStandings(bashoEarly, {

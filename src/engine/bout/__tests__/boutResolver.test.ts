@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../boutResolver";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
 import type { KimariteId } from "../../types/combat";
 import type { BoutContext } from "../boutPhysics";
 import type { BashoState } from "../../types/basho";
@@ -9,20 +9,6 @@ import { resolveImpacts } from "../../core/ImpactResolver";
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
-  return {
-    id: "test-basho",
-    year: 2025,
-    bashoNumber: 1,
-    bashoName: "hatsu",
-    day: 1,
-    matches: [],
-    standings: new Map(),
-    isActive: false,
-    ...overrides,
-  } as unknown as BashoState;
-}
 
 function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
   return {
@@ -113,7 +99,13 @@ describe("resolveBout — fusensho (walkover)", () => {
 
 describe("resolveBout — henka momentum penalty", () => {
   it("winner's momentum decreases after successful henka", () => {
-    const east = mockRikishi("r-east", { power: 50, speed: 90, technique: 80, balance: 70, momentum: 70 });
+    const east = mockRikishi("r-east", {
+      power: 50,
+      speed: 90,
+      technique: 80,
+      balance: 70,
+      momentum: 70,
+    });
     const west = mockRikishi("r-west", { power: 80, speed: 40, balance: 50, momentum: 70 });
     const basho = makeMockBasho();
     const ctx = makeBoutContext({ playerSide: "east", playerTactic: "HENKA" });
@@ -143,7 +135,13 @@ describe("resolveBout — henka momentum penalty", () => {
   });
 
   it("momentum penalty does not drop below 0", () => {
-    const east = mockRikishi("r-east", { power: 50, speed: 95, technique: 90, balance: 80, momentum: 5 });
+    const east = mockRikishi("r-east", {
+      power: 50,
+      speed: 95,
+      technique: 90,
+      balance: 80,
+      momentum: 5,
+    });
     const west = mockRikishi("r-west", { power: 60, speed: 30, balance: 40, momentum: 50 });
     const basho = makeMockBasho();
     const ctx = makeBoutContext({ playerSide: "east", playerTactic: "HENKA" });

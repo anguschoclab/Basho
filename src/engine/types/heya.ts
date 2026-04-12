@@ -3,8 +3,20 @@
  */
 
 import type { Id } from "./common";
-import type { StatureBand, PrestigeBand, FacilitiesBand, KoenkaiBandType, RunwayBand } from "./narrative";
-import type { GovernanceStatus, GovernanceRuling, WelfareState, Loan, IchimonName } from "./economy";
+import type {
+  StatureBand,
+  PrestigeBand,
+  FacilitiesBand,
+  KoenkaiBandType,
+  RunwayBand,
+} from "./narrative";
+import type {
+  GovernanceStatus,
+  GovernanceRuling,
+  WelfareState,
+  Loan,
+  IchimonName,
+} from "./economy";
 import type { BeyaTrainingState } from "./training";
 import type { HistoricalOyakata } from "./history";
 
@@ -59,4 +71,12 @@ export interface Heya {
 
   lineage: HistoricalOyakata[];
   historicalYusho: number;
+
+  /** Financial ledger for tracking transactions like prize money, loans, etc. */
+  ledger?: Array<{
+    amount: number;
+    description: string;
+    category: string;
+    date?: { year: number; month: number; week?: number };
+  }>;
 }

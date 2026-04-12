@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
+import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -19,7 +20,7 @@ import {
   Shield,
   AlertTriangle,
   Info,
-  HandCoins
+  HandCoins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
@@ -42,36 +43,36 @@ const RUNWAY_CONFIG: Record<
     description: "Comfortable reserves with room to invest in the future.",
     color: "text-success",
     icon: Shield,
-    progressValue: 100
+    progressValue: 100,
   },
   comfortable: {
     label: "Comfortable",
     description: "Finances are stable. You can weather minor setbacks without concern.",
     color: "text-green-400",
     icon: TrendingUp,
-    progressValue: 75
+    progressValue: 75,
   },
   tight: {
     label: "Tight Budget",
     description: "Careful management required. Unexpected expenses could cause problems.",
     color: "text-gold",
     icon: Wallet,
-    progressValue: 50
+    progressValue: 50,
   },
   critical: {
     label: "Critical",
     description: "Pressure is mounting. Consider reducing costs or strengthening income streams.",
     color: "text-orange-400",
     icon: TrendingDown,
-    progressValue: 25
+    progressValue: 25,
   },
   desperate: {
     label: "Desperate",
     description: "Immediate intervention required. The heya’s survival is at stake.",
     color: "text-red-400",
     icon: AlertTriangle,
-    progressValue: 10
-  }
+    progressValue: 10,
+  },
 };
 
 // Koenkai (supporter) descriptions
@@ -88,32 +89,32 @@ const KOENKAI_CONFIG: Record<
     label: "Powerful Kōenkai",
     description: "A wide network of patrons and devoted fans provides substantial support.",
     color: "text-gold",
-    monthlySupport: "Very High"
+    monthlySupport: "Very High",
   },
   strong: {
     label: "Strong Kōenkai",
     description: "A dedicated group of supporters contributes reliably each month.",
     color: "text-purple-400",
-    monthlySupport: "High"
+    monthlySupport: "High",
   },
   moderate: {
     label: "Modest Kōenkai",
     description: "A smaller but loyal supporter base helps cover some expenses.",
     color: "text-west",
-    monthlySupport: "Moderate"
+    monthlySupport: "Moderate",
   },
   weak: {
     label: "Weak Kōenkai",
     description: "Few supporters. Building stronger relationships should be a priority.",
     color: "text-muted-foreground",
-    monthlySupport: "Low"
+    monthlySupport: "Low",
   },
   none: {
     label: "No Kōenkai",
     description: "No organized supporter group yet. You’re operating without a safety net.",
     color: "text-red-400",
-    monthlySupport: "None"
-  }
+    monthlySupport: "None",
+  },
 };
 
 // Expense categories (narrative)
@@ -122,16 +123,19 @@ const EXPENSE_CATEGORIES = [
   { name: "Heya Operations", description: "Utilities, maintenance, and administration." },
   { name: "Training & Equipment", description: "Dohyo upkeep, supplies, and coaching costs." },
   { name: "Medical & Recovery", description: "Treatment, rehab, and injury prevention." },
-  { name: "Travel & Appearances", description: "Exhibitions, tours, and sanctioned events." }
+  { name: "Travel & Appearances", description: "Exhibitions, tours, and sanctioned events." },
 ];
 
 // Income sources (narrative)
 const INCOME_SOURCES = [
-  { name: "League Distributions", description: "Official payments influenced by rank presence and prestige." },
+  {
+    name: "League Distributions",
+    description: "Official payments influenced by rank presence and prestige.",
+  },
   { name: "Kōenkai Contributions", description: "Recurring supporter donations and patronage." },
   { name: "Kenshō Winnings", description: "Sponsor banner prizes earned through headline bouts." },
   { name: "Prize Money", description: "Tournament awards and special prizes." },
-  { name: "Appearances", description: "Exhibitions, tours, and sanctioned events." }
+  { name: "Appearances", description: "Exhibitions, tours, and sanctioned events." },
 ];
 
 // Kensho tiering (narrative). This function uses counts internally but never shows them.
@@ -146,13 +150,21 @@ function kenshoTierLabel(total: number): { label: string; detail: string } {
 // Safe access helpers for older saves
 function safeRunwayBand(v: unknown): RunwayBand {
   const s = typeof v === "string" ? v : "";
-  if (s === "secure" || s === "comfortable" || s === "tight" || s === "critical" || s === "desperate") return s;
+  if (
+    s === "secure" ||
+    s === "comfortable" ||
+    s === "tight" ||
+    s === "critical" ||
+    s === "desperate"
+  )
+    return s;
   return "tight";
 }
 
 function safeKoenkaiBand(v: unknown): KoenkaiBandType {
   const s = typeof v === "string" ? v : "";
-  if (s === "powerful" || s === "strong" || s === "moderate" || s === "weak" || s === "none") return s;
+  if (s === "powerful" || s === "strong" || s === "moderate" || s === "weak" || s === "none")
+    return s;
   return "none";
 }
 
@@ -168,22 +180,24 @@ export default function EconomyPage() {
 
   const handleBailoutRequest = useCallback(() => {
     if (!world || !state.playerHeyaId || !playerHeya) return;
-    
+
     if (playerHeya.funds >= 0) {
       toast.error("Emergency funding is only available when in significant debt.");
       return;
     }
 
     if (playerHeya.funds > -5_000_000) {
-        toast.info("The Association only considers bailouts for stables with debts exceeding ¥5,000,000.");
-        return;
+      toast.info(
+        "The Association only considers bailouts for stables with debts exceeding ¥5,000,000."
+      );
+      return;
     }
 
     // Capture loan count before
     const beforeCount = playerHeya.activeLoans?.length || 0;
-    
+
     issueBailoutLoanIfNeeded(world, state.playerHeyaId);
-    
+
     const afterCount = playerHeya.activeLoans?.length || 0;
     if (afterCount > beforeCount) {
       toast.success("Emergency bailout approved. Funds have been credited.");
@@ -195,10 +209,12 @@ export default function EconomyPage() {
 
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];
-    const ids: string[] = Array.isArray((playerHeya as any).rikishiIds) ? (playerHeya as any).rikishiIds : [];
-    return ids
-      .map((id) => world.rikishi.get(id))
-      .filter(Boolean) as Array<NonNullable<ReturnType<typeof world.rikishi.get>>>;
+    const ids: string[] = Array.isArray((playerHeya as any).rikishiIds)
+      ? (playerHeya as any).rikishiIds
+      : [];
+    return ids.map((id) => world.rikishi.get(id)).filter(Boolean) as Array<
+      NonNullable<ReturnType<typeof world.rikishi.get>>
+    >;
   }, [playerHeya, world]);
 
   // Sekitori count
@@ -239,13 +255,8 @@ export default function EconomyPage() {
   const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
   const canRequestBailout = playerHeya.funds < 0;
 
-
   return (
-    <AppLayout 
-      subNavTabs={OFFICE_TABS} 
-      activeSubTab="economy" 
-      pageTitle="Financial Management"
-    >
+    <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
       <Helmet>
         <title>Economy — {playerHeya.name} | Basho</title>
       </Helmet>
@@ -263,8 +274,15 @@ export default function EconomyPage() {
                 <CardDescription>{runwayConfig.description}</CardDescription>
               </div>
               <div className="text-right">
-                <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">Current Balance</div>
-                <div className={cn("text-2xl font-display font-bold tabular-nums", playerHeya.funds < 0 ? "text-destructive" : "text-foreground")}>
+                <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">
+                  Current Balance
+                </div>
+                <div
+                  className={cn(
+                    "text-2xl font-display font-bold tabular-nums",
+                    playerHeya.funds < 0 ? "text-destructive" : "text-foreground"
+                  )}
+                >
                   ¥{playerHeya.funds.toLocaleString()}
                 </div>
               </div>
@@ -283,8 +301,8 @@ export default function EconomyPage() {
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
                     <AlertTriangle className="h-4 w-4 text-red-400" />
                     <span className="text-sm text-red-400">
-                      Financial pressure is rising. Consider cost control, sponsor growth, or safer training loads to
-                      reduce injury costs.
+                      Financial pressure is rising. Consider cost control, sponsor growth, or safer
+                      training loads to reduce injury costs.
                     </span>
                   </div>
                 )}
@@ -292,78 +310,113 @@ export default function EconomyPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn("paper flex flex-col justify-center", canRequestBailout ? "border-destructive/30" : "bg-muted/10")}>
-             <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <HandCoins className="h-4 w-4" /> Association Support
-                </CardTitle>
-             </CardHeader>
-             <CardContent className="space-y-4">
-                <p className="text-xs text-muted-foreground">
-                  Stables in severe financial distress may request emergency bailout loans from the Sumo Association.
+          <Card
+            className={cn(
+              "paper flex flex-col justify-center",
+              canRequestBailout ? "border-destructive/30" : "bg-muted/10"
+            )}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <HandCoins className="h-4 w-4" /> Association Support
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Stables in severe financial distress may request emergency bailout loans from the
+                Sumo Association.
+              </p>
+              <Button
+                variant={canRequestBailout ? "destructive" : "outline"}
+                className="w-full text-xs font-bold uppercase tracking-widest h-10"
+                disabled={!canRequestBailout}
+                onClick={handleBailoutRequest}
+                tooltip="Apply for an emergency bailout from the Association (Requires debt over ¥5M)"
+                tooltipSide="top"
+              >
+                Request Emergency Funding
+              </Button>
+              {canRequestBailout && (
+                <p className="text-[10px] text-destructive/80 italic text-center">
+                  Requires funds below -¥5,000,000. Carries heavy stipulations.
                 </p>
-                <Button 
-                  variant={canRequestBailout ? "destructive" : "outline"} 
-                  className="w-full text-xs font-bold uppercase tracking-widest h-10"
-                  disabled={!canRequestBailout}
-                  onClick={handleBailoutRequest}
-                  tooltip="Apply for an emergency bailout from the Association (Requires debt over ¥5M)"
-                  tooltipSide="top"
-                >
-                  Request Emergency Funding
-                </Button>
-                {canRequestBailout && (
-                  <p className="text-[10px] text-destructive/80 italic text-center">
-                    Requires funds below -¥5,000,000. Carries heavy stipulations.
-                  </p>
-                )}
-             </CardContent>
+              )}
+            </CardContent>
           </Card>
         </div>
 
         {/* Debt & Obligations (FM v2.0) */}
-        {((playerHeya as any).activeLoans?.length > 0) && (
+        {(playerHeya as any).activeLoans?.length > 0 && (
           <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
             <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive" />
-              <span className="text-xs font-bold text-destructive uppercase tracking-widest">Active Institutional Debt</span>
+              <span className="text-xs font-bold text-destructive uppercase tracking-widest">
+                Active Institutional Debt
+              </span>
             </div>
             <CardContent className="pt-6">
               <div className="space-y-4">
                 {(playerHeya as any).activeLoans.map((loan: any) => (
-                  <div key={loan.id} className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3">
+                  <div
+                    key={loan.id}
+                    className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3"
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Badge variant="destructive" className="uppercase text-[10px]">{loan.type} Loan</Badge>
+                        <Badge variant="destructive" className="uppercase text-[10px]">
+                          {loan.type} Loan
+                        </Badge>
                         <span className="font-bold">{loan.providerName}</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Remaining</div>
-                        <div className="text-lg font-bold">¥{loan.remainingBalance.toLocaleString()}</div>
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
+                          Remaining
+                        </div>
+                        <div className="text-lg font-bold">
+                          ¥{loan.remainingBalance.toLocaleString()}
+                        </div>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-4 text-center py-2 border-y border-border/30">
                       <div>
-                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Principal</div>
-                        <div className="text-sm font-medium">¥{loan.principal.toLocaleString()}</div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">
+                          Principal
+                        </div>
+                        <div className="text-sm font-medium">
+                          ¥{loan.principal.toLocaleString()}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Interest</div>
-                        <div className="text-sm font-medium">{(loan.interestRate * 100).toFixed(1)}%</div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">
+                          Interest
+                        </div>
+                        <div className="text-sm font-medium">
+                          {(loan.interestRate * 100).toFixed(1)}%
+                        </div>
                       </div>
                       <div>
-                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Monthly</div>
-                        <div className="text-sm font-bold text-destructive">¥{loan.monthlyPayment.toLocaleString()}</div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">
+                          Monthly
+                        </div>
+                        <div className="text-sm font-bold text-destructive">
+                          ¥{loan.monthlyPayment.toLocaleString()}
+                        </div>
                       </div>
                     </div>
 
                     {loan.stringsAttached?.length > 0 && (
                       <div className="space-y-1.5">
-                        <div className="text-[9px] text-muted-foreground uppercase font-bold">Institutional Stipulations:</div>
+                        <div className="text-[9px] text-muted-foreground uppercase font-bold">
+                          Institutional Stipulations:
+                        </div>
                         <div className="flex flex-wrap gap-1.5">
                           {loan.stringsAttached.map((s: string) => (
-                            <Badge key={s} variant="outline" className="text-[9px] border-destructive/30 text-destructive bg-destructive/5 py-0">
+                            <Badge
+                              key={s}
+                              variant="outline"
+                              className="text-[9px] border-destructive/30 text-destructive bg-destructive/5 py-0"
+                            >
                               {s.replace(/_/g, " ").toUpperCase()}
                             </Badge>
                           ))}
@@ -432,6 +485,9 @@ export default function EconomyPage() {
         </div>
 
         <SponsorsPanel />
+
+        {/* Institution Health */}
+        {playerHeya && world && <InstitutionPanel world={world} heya={playerHeya} />}
 
         {/* Income Sources */}
         <Card className="paper">
@@ -530,12 +586,13 @@ export default function EconomyPage() {
               <div className="text-sm text-muted-foreground">
                 <p className="font-medium text-foreground mb-1">About Economy</p>
                 <p>
-                  Your heya’s finances are shaped by rank presence, supporter strength, and visibility. Strong basho
-                  performance draws prizes and kenshō—while injuries and travel quietly increase costs.
+                  Your heya’s finances are shaped by rank presence, supporter strength, and
+                  visibility. Strong basho performance draws prizes and kenshō—while injuries and
+                  travel quietly increase costs.
                 </p>
                 <p className="mt-2">
-                  The runway meter summarizes how safe your current trajectory is. Keep it healthy by developing talent,
-                  managing risk, and cultivating supporters and sponsors.
+                  The runway meter summarizes how safe your current trajectory is. Keep it healthy
+                  by developing talent, managing risk, and cultivating supporters and sponsors.
                 </p>
               </div>
             </div>

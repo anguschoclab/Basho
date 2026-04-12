@@ -20,7 +20,10 @@ import { rngForWorld } from "./rng";
 // we store month/location/venue metadata here.
 
 /** b a s h o_ c a l e n d a r. */
-export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { startDay?: number }> = {
+export const BASHO_CALENDAR: Record<
+  BashoName,
+  Omit<BashoInfo, "startDay"> & { startDay?: number }
+> = {
   hatsu: {
     name: "hatsu",
     nameJa: "初場所",
@@ -30,7 +33,7 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Ryōgoku Kokugikan",
     venueJa: "両国国技館",
     season: "winter",
-    description: "The first basho of the year, held in the new year spirit"
+    description: "The first basho of the year, held in the new year spirit",
   },
   haru: {
     name: "haru",
@@ -41,7 +44,7 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Edion Arena Osaka",
     venueJa: "エディオンアリーナ大阪",
     season: "spring",
-    description: "The spring basho held in Osaka, known for passionate local fans"
+    description: "The spring basho held in Osaka, known for passionate local fans",
   },
   natsu: {
     name: "natsu",
@@ -52,7 +55,7 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Ryōgoku Kokugikan",
     venueJa: "両国国技館",
     season: "summer",
-    description: "The summer basho returns to Tokyo's sumo heartland"
+    description: "The summer basho returns to Tokyo's sumo heartland",
   },
   nagoya: {
     name: "nagoya",
@@ -64,7 +67,7 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Aichi Prefectural Gymnasium",
     venueJa: "愛知県体育館",
     season: "summer",
-    description: "The midsummer basho, often the hottest and most grueling"
+    description: "The midsummer basho, often the hottest and most grueling",
   },
   aki: {
     name: "aki",
@@ -75,7 +78,7 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Ryōgoku Kokugikan",
     venueJa: "両国国技館",
     season: "autumn",
-    description: "The autumn basho, traditionally when new stars emerge"
+    description: "The autumn basho, traditionally when new stars emerge",
   },
   kyushu: {
     name: "kyushu",
@@ -86,8 +89,8 @@ export const BASHO_CALENDAR: Record<BashoName, Omit<BashoInfo, "startDay"> & { s
     venue: "Fukuoka Kokusai Center",
     venueJa: "福岡国際センター",
     season: "autumn",
-    description: "The year's final basho, held in southern Japan"
-  }
+    description: "The year's final basho, held in southern Japan",
+  },
 };
 
 // Basho order for iteration
@@ -144,7 +147,7 @@ export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
   const computedStartDay = base.startDay ?? getSecondSunday(year ?? 2026, base.month);
   return {
     ...(base as Omit<BashoInfo, "startDay">),
-    startDay: computedStartDay
+    startDay: computedStartDay,
   };
 }
 
@@ -155,23 +158,23 @@ const SEASONAL_FLAVOR: Record<BashoInfo["season"], string[]> = {
   winter: [
     "Cold winds blow across the kokugikan as the new year begins.",
     "Steam rises from the chanko pots as rikishi prepare for the first basho.",
-    "The fresh spirit of the new year fills the arena."
+    "The fresh spirit of the new year fills the arena.",
   ],
   spring: [
     "Cherry blossoms frame the arena as spring arrives.",
     "The Osaka crowds bring their passionate energy to every bout.",
-    "Spring rain patters on the roof as the tournament unfolds."
+    "Spring rain patters on the roof as the tournament unfolds.",
   ],
   summer: [
     "Heat shimmers over the dohyo in the height of summer.",
     "Fans wave uchiwa as the temperature rises with the action.",
-    "The summer sun beats down, testing the endurance of every rikishi."
+    "The summer sun beats down, testing the endurance of every rikishi.",
   ],
   autumn: [
     "Autumn leaves drift past the kokugikan windows.",
     "The cooling air brings renewed vigor to the competition.",
-    "As the year winds down, every bout carries extra weight."
-  ]
+    "As the year winds down, every bout carries extra weight.",
+  ],
 };
 
 /**
@@ -199,11 +202,11 @@ export function getDayName(day: number): { dayNum: string; dayJa: string } {
     7: "中日",
     8: "中日",
     14: "千秋楽前日",
-    15: "千秋楽"
+    15: "千秋楽",
   };
   return {
     dayNum: `Day ${day}`,
-    dayJa: dayNames[day] || `${day}日目`
+    dayJa: dayNames[day] || `${day}日目`,
   };
 }
 
@@ -259,7 +262,7 @@ export function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
     natsu: 3,
     nagoya: 4,
     aki: 5,
-    kyushu: 6
+    kyushu: 6,
   };
   return numbers[name];
 }
@@ -270,29 +273,48 @@ export function isBashoMonth(month: number): boolean {
 
 // --- PHASE 4: LIFECYCLE & ARCHIVAL ---
 
+export function endBasho(world: import("./types").WorldState) {
+  // Use currentBasho (modern field) instead of legacy basho field
+  const basho = world.currentBasho || (world as any).basho;
+  if (!basho) return;
 
-export function endBasho(world: import('./types').WorldState) {
-    if (!world.basho) return;
+  const rng = rngForWorld(world, "history", `basho_concluded_${basho.year}_${basho.bashoName}`);
 
-    const rng = rngForWorld(world, "history", `basho_concluded_${world.basho.year}_${world.basho.bashoName}`);
-    
-    world.history.push({
-        id: rng.uuid('HI'),
-        type: 'BASHO_CONCLUDED',
-        bashoId: world.basho.id,
-        year: world.basho.year,
-        month: world.basho.month,
-        leaderboard: JSON.parse(JSON.stringify(world.basho.leaderboard))
-    } as any);
-
-    for (const [rikishiId, stats] of Object.entries(world.basho.leaderboard)) {
-        const r = world.rikishi.get(rikishiId);
-        if (r) {
-            r.careerWins = (r.careerWins || 0) + ((stats as any).wins || 0);
-            r.careerLosses = (r.careerLosses || 0) + ((stats as any).losses || 0);
-            r.careerAbsences = (r.careerAbsences || 0) + ((stats as any).absences || 0);
-        }
+  // Build leaderboard from basho standings if available
+  const leaderboard: Record<string, { wins: number; losses: number; absences?: number }> = {};
+  if (basho.standings) {
+    const standings: Array<[string, any]> =
+      basho.standings instanceof Map
+        ? Array.from(basho.standings.entries())
+        : Object.entries(basho.standings || {});
+    for (const [id, record] of standings) {
+      leaderboard[id] = {
+        wins: record?.wins || 0,
+        losses: record?.losses || 0,
+        absences: record?.absences || 0,
+      };
     }
+  }
 
-    world.basho = undefined;
+  world.history.push({
+    id: rng.uuid("HI"),
+    type: "BASHO_CONCLUDED",
+    bashoId: basho.id,
+    year: basho.year,
+    month: basho.month ?? world.calendar?.month ?? 1,
+    leaderboard: JSON.parse(JSON.stringify(leaderboard)),
+  } as any);
+
+  for (const [rikishiId, stats] of Object.entries(leaderboard)) {
+    const r = world.rikishi.get(rikishiId);
+    if (r) {
+      r.careerWins = (r.careerWins || 0) + ((stats as any).wins || 0);
+      r.careerLosses = (r.careerLosses || 0) + ((stats as any).losses || 0);
+      r.careerAbsences = (r.careerAbsences || 0) + ((stats as any).absences || 0);
+    }
+  }
+
+  // Clear both legacy and modern fields
+  world.currentBasho = undefined;
+  (world as any).basho = undefined;
 }

@@ -5,7 +5,18 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { GripVertical, RotateCcw, AlertTriangle, Wrench, Coins, Shield, ChevronRight, Activity, TrendingUp, Search } from "lucide-react";
+import {
+  GripVertical,
+  RotateCcw,
+  AlertTriangle,
+  Wrench,
+  Coins,
+  Shield,
+  ChevronRight,
+  Activity,
+  TrendingUp,
+  Search,
+} from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
@@ -22,23 +33,25 @@ import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
+import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
-  { id: "calendar",   order: 0, span: 4, component: CalendarWidget,   label: "Calendar" },
-  { id: "stable",     order: 1, span: 4, component: StableWidget,     label: "Stable" },
-  { id: "basho",      order: 2, span: 4, component: BashoWidget,      label: "Basho" },
-  { id: "training",   order: 3, span: 6, component: TrainingWidget,   label: "Training" },
-  { id: "finances",   order: 4, span: 6, component: FinancesWidget,   label: "Finances" },
-  { id: "digest",     order: 5, span: 8, component: DigestWidget,     label: "Weekly Digest" },
-  { id: "trends",     order: 6, span: 4, component: TrendsWidget,     label: "JSA Trends" },
-  { id: "banzuke",    order: 7, span: 4, component: BanzukeWidget,    label: "Banzuke" },
-  { id: "roster",     order: 8, span: 8, component: RosterWidget,     label: "Roster" },
-  { id: "news",       order: 9, span: 4, component: NewsWidget,       label: "News" },
-  { id: "rivals",     order: 10, span: 4, component: RivalsWidget,     label: "Rivals" },
-  { id: "scouting",   order: 11, span: 4, component: ScoutingWidget,   label: "Scouting" },
+  { id: "calendar", order: 0, span: 4, component: CalendarWidget, label: "Calendar" },
+  { id: "stable", order: 1, span: 4, component: StableWidget, label: "Stable" },
+  { id: "basho", order: 2, span: 4, component: BashoWidget, label: "Basho" },
+  { id: "training", order: 3, span: 6, component: TrainingWidget, label: "Training" },
+  { id: "finances", order: 4, span: 6, component: FinancesWidget, label: "Finances" },
+  { id: "digest", order: 5, span: 8, component: DigestWidget, label: "Weekly Digest" },
+  { id: "trends", order: 6, span: 4, component: TrendsWidget, label: "JSA Trends" },
+  { id: "banzuke", order: 7, span: 4, component: BanzukeWidget, label: "Banzuke" },
+  { id: "roster", order: 8, span: 8, component: RosterWidget, label: "Roster" },
+  { id: "news", order: 9, span: 4, component: NewsWidget, label: "News" },
+  { id: "rivals", order: 10, span: 4, component: RivalsWidget, label: "Rivals" },
+  { id: "scouting", order: 11, span: 4, component: ScoutingWidget, label: "Scouting" },
+  { id: "institution", order: 12, span: 6, component: InstitutionWidget, label: "Institution" },
 ];
 
 const PHASE_ACCENT: Record<string, string> = {
@@ -59,13 +72,11 @@ export default function Dashboard() {
   const { getOrderedPlacements, onDragStart, onDragOver, onDragEnd, resetLayout } =
     useDashboardLayout(WIDGET_REGISTRY);
 
-  const widgetMap = useMemo(
-    () => new Map(WIDGET_REGISTRY.map(w => [w.id, w])),
-    []
-  );
+  const widgetMap = useMemo(() => new Map(WIDGET_REGISTRY.map((w) => [w.id, w])), []);
 
   useEffect(() => {
-    if (state.phase === "basho_recap" || state.phase === "basho_results") navigate({ to: "/recap" });
+    if (state.phase === "basho_recap" || state.phase === "basho_results")
+      navigate({ to: "/recap" });
   }, [state.phase, navigate]);
 
   useEffect(() => {
@@ -76,7 +87,7 @@ export default function Dashboard() {
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
-  const playerHeya = (isLoaded && world?.playerHeyaId) ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = isLoaded && world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
   const digest = useMemo(() => {
     if (!world) return null;
@@ -86,17 +97,17 @@ export default function Dashboard() {
   const alerts = useMemo(() => {
     if (!digest) return [];
     const a: { icon: any; text: string; color: string; link: string }[] = [];
-    
+
     // Alert logic now uses pre-formatted digest data
     if (digest.finances.status === "critical") {
-      a.push({ 
-        icon: Wrench, 
-        text: "Facilities at risk — funds won't cover maintenance", 
-        color: "text-destructive", 
-        link: "/office/facilities" 
+      a.push({
+        icon: Wrench,
+        text: "Facilities at risk — funds won't cover maintenance",
+        color: "text-destructive",
+        link: "/office/facilities",
       });
     }
-    
+
     // Add logic for other alerts from digest...
     return a;
   }, [digest]);
@@ -105,17 +116,21 @@ export default function Dashboard() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full text-muted-foreground animate-pulse">
-            Institutional interface initializing...
+          Institutional interface initializing...
         </div>
       </AppLayout>
     );
   }
 
   const phase = world.cyclePhase;
-  const phaseLabel = phase === "active_basho" ? "Tournament Active"
-    : phase === "pre_basho" ? "Pre-Basho"
-    : phase === "post_basho" ? "Post-Basho"
-    : "Off-Season";
+  const phaseLabel =
+    phase === "active_basho"
+      ? "Tournament Active"
+      : phase === "pre_basho"
+        ? "Pre-Basho"
+        : phase === "post_basho"
+          ? "Post-Basho"
+          : "Off-Season";
 
   return (
     <AppLayout>
@@ -123,41 +138,76 @@ export default function Dashboard() {
         {/* ═══════════ HEADER ═══════════ */}
         <div className="glass paper p-6 rounded-lg animate-fade-in relative overflow-hidden">
           {/* Subtle background glow based on phase */}
-          <div className={cn(
-            "absolute inset-0 opacity-5 pointer-events-none transition-all duration-700",
-            phase === "active_basho" ? "bg-accent" : "bg-primary"
-          )} />
+          <div
+            className={cn(
+              "absolute inset-0 opacity-5 pointer-events-none transition-all duration-700",
+              phase === "active_basho" ? "bg-accent" : "bg-primary"
+            )}
+          />
 
           <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
             <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden group">
-              <span className="text-primary-foreground font-display text-3xl font-bold relative z-10">力</span>
+              <span className="text-primary-foreground font-display text-3xl font-bold relative z-10">
+                力
+              </span>
               <div className="absolute inset-0 rank-shimmer" />
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <h1 className="text-3xl font-display font-bold leading-none tracking-tight">
                   {playerHeya?.name || "Stable"}
                 </h1>
-                <Badge variant="outline" className="px-1.5 h-5 text-[10px] uppercase font-bold text-primary border-primary/20">
-                    Control Center
+                <Badge
+                  variant="outline"
+                  className="px-1.5 h-5 text-[10px] uppercase font-bold text-primary border-primary/20"
+                >
+                  Control Center
                 </Badge>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4">
                 <div className="flex items-center gap-1.5">
                   <div className="flex items-center gap-1">
-                    <div className={cn("phase-dot", digest?.phase === "interim" ? "phase-dot--active" : "phase-dot--interim")} />
-                    <div className={cn("phase-dot", digest?.phase === "pre_basho" ? "phase-dot--active" : "phase-dot--pre")} />
-                    <div className={cn("phase-dot", digest?.phase === "active_basho" ? "phase-dot--active" : "phase-dot--interim")} />
-                    <div className={cn("phase-dot", digest?.phase === "post_basho" ? "phase-dot--active" : "phase-dot--post")} />
+                    <div
+                      className={cn(
+                        "phase-dot",
+                        digest?.phase === "interim" ? "phase-dot--active" : "phase-dot--interim"
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        "phase-dot",
+                        digest?.phase === "pre_basho" ? "phase-dot--active" : "phase-dot--pre"
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        "phase-dot",
+                        digest?.phase === "active_basho"
+                          ? "phase-dot--active"
+                          : "phase-dot--interim"
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        "phase-dot",
+                        digest?.phase === "post_basho" ? "phase-dot--active" : "phase-dot--post"
+                      )}
+                    />
                   </div>
-                  <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">{phaseLabel}</span>
+                  <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">
+                    {phaseLabel}
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 border-l border-border/50 pl-4 h-4">
-                  <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /> Year {digest?.currentYear}</span>
-                  <span className="flex items-center gap-1"><Activity className="h-3 w-3" /> {digest?.heya.name} Center</span>
+                  <span className="flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3" /> Year {digest?.currentYear}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Activity className="h-3 w-3" /> {digest?.heya.name} Center
+                  </span>
                   <span className="italic">Week {digest?.currentWeek}</span>
                 </div>
               </div>
@@ -165,10 +215,10 @@ export default function Dashboard() {
 
             <div className="flex items-center gap-2 shrink-0">
               {editMode && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={resetLayout} 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetLayout}
                   className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest gap-2"
                   tooltip="Restore widgets to their default positions and sizes"
                   tooltipSide="bottom"
@@ -181,7 +231,11 @@ export default function Dashboard() {
                 size="sm"
                 onClick={() => setEditMode(!editMode)}
                 className="h-8 px-4 text-[10px] font-bold uppercase tracking-widest gap-2"
-                tooltip={editMode ? "Save current widget arrangement" : "Toggle edit mode to rearrange dashboard widgets"}
+                tooltip={
+                  editMode
+                    ? "Save current widget arrangement"
+                    : "Toggle edit mode to rearrange dashboard widgets"
+                }
                 tooltipSide="bottom"
               >
                 <GripVertical className="h-3 w-3" />
@@ -201,11 +255,15 @@ export default function Dashboard() {
                   className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
                 >
                   <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                      <AlertTriangle className={cn("h-4 w-4", alert.color)} />
+                    <AlertTriangle className={cn("h-4 w-4", alert.color)} />
                   </div>
                   <div className="flex-1 min-w-0">
-                      <div className={cn("text-xs font-bold leading-tight", alert.color)}>{alert.text}</div>
-                      <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">Action required immediately</div>
+                    <div className={cn("text-xs font-bold leading-tight", alert.color)}>
+                      {alert.text}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                      Action required immediately
+                    </div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
@@ -216,7 +274,7 @@ export default function Dashboard() {
 
         {/* ═══════════ PROGRESSION ARCS ═══════════ */}
         {world && (
-          <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
             <ProgressionTracker world={world} />
           </div>
         )}
@@ -230,14 +288,17 @@ export default function Dashboard() {
             const span = def.span || 4;
 
             return (
-              <div 
-                key={placement.id} 
+              <div
+                key={placement.id}
                 className={cn(
                   "flex flex-col widget-enter",
-                  span === 12 ? "col-span-full" : 
-                  span === 8 ? "xl:col-span-8 md:col-span-2 col-span-1" :
-                  span === 6 ? "xl:col-span-6 md:col-span-2 col-span-1" :
-                  "xl:col-span-4 md:col-span-2 col-span-1"
+                  span === 12
+                    ? "col-span-full"
+                    : span === 8
+                      ? "xl:col-span-8 md:col-span-2 col-span-1"
+                      : span === 6
+                        ? "xl:col-span-6 md:col-span-2 col-span-1"
+                        : "xl:col-span-4 md:col-span-2 col-span-1"
                 )}
                 style={{ animationDelay: `${150 + index * 50}ms` }}
               >

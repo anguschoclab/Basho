@@ -1,10 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  scheduleDivisionDay,
-  needsScheduleForDay,
-  getTotalBashodays,
-} from "../schedule";
-import { mockRikishi } from "./utils";
+import { scheduleDivisionDay, needsScheduleForDay, getTotalBashodays } from "../schedule";
+import { mockRikishi, makeMockBasho, makeMockWorld } from "./utils";
 import type { BashoState } from "../types/basho";
 import type { WorldState } from "../types/world";
 
@@ -12,56 +8,9 @@ import type { WorldState } from "../types/world";
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
-  return {
-    id: "test-basho",
-    year: 2025,
-    bashoNumber: 1,
-    bashoName: "hatsu",
-    day: 1,
-    matches: [],
-    standings: new Map(),
-    isActive: true,
-    ...overrides,
-  } as unknown as BashoState;
-}
-
-function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
-  return {
-    id: "test-world",
-    seed: "test-seed",
-    year: 2025,
-    week: 1,
-    dayIndexGlobal: 1,
-    cyclePhase: "active_basho",
-    heyas: new Map(),
-    rikishi: new Map(),
-    historicalRikishi: new Map(),
-    oyakata: new Map(),
-    staff: new Map(),
-    events: { bouts: [], milestones: [], tournaments: [], media: [] },
-    history: [],
-    ftue: { completedSteps: [] },
-    records: {
-      allTimeRecords: { wins: [], losses: [] },
-      bashoRecords: { wins: [], losses: [] },
-    },
-    calendar: {
-      year: 2025,
-      month: 1,
-      currentWeek: 1,
-      currentDay: 1,
-    },
-    settings: {
-      archiveMode: "standard",
-    },
-    ...overrides,
-  } as unknown as WorldState;
-}
-
 function setStandings(
   basho: BashoState,
-  records: Record<string, { wins: number; losses: number }>,
+  records: Record<string, { wins: number; losses: number }>
 ) {
   for (const [id, record] of Object.entries(records)) {
     basho.standings.set(id, record);
@@ -144,7 +93,7 @@ describe("scheduleDivisionDay", () => {
 
     // scheduleDivisionDay now returns StateImpact with arrayAppends for basho.matches
     // The impact should contain the scheduled matches
-    const bashoMatchesAppend = impact.arrayAppends?.find((a: any) => a.field === 'basho.matches');
+    const bashoMatchesAppend = impact.arrayAppends?.find((a: any) => a.field === "basho.matches");
     expect(bashoMatchesAppend?.items?.length).toBeGreaterThan(0);
   });
 
@@ -396,9 +345,7 @@ describe("scheduleDivisionDay — chronological order for makuuchi", () => {
     // The last match should include the yokozuna
     expect(scheduled.length).toBeGreaterThan(0);
     const lastMatch = scheduled[scheduled.length - 1];
-    expect([lastMatch.eastRikishiId, lastMatch.westRikishiId]).toContain(
-      yoko.id,
-    );
+    expect([lastMatch.eastRikishiId, lastMatch.westRikishiId]).toContain(yoko.id);
   });
 });
 
@@ -440,7 +387,7 @@ describe("scheduleDivisionDay — basho state mutation", () => {
     const hasRematch = dayTwoMatches.some(
       (m: any) =>
         (m.eastRikishiId === r1.id && m.westRikishiId === r2.id) ||
-        (m.eastRikishiId === r2.id && m.westRikishiId === r1.id),
+        (m.eastRikishiId === r2.id && m.westRikishiId === r1.id)
     );
 
     expect(hasRematch).toBe(false);
