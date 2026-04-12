@@ -1,12 +1,12 @@
 // HoFTimeline.tsx — Horizontal timeline of Hall of Fame inductions by year
 // Shows year markers on a scrollable axis with inductee portrait clusters
 
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { projectRikishi } from "@/presenters/uiModels";
@@ -82,8 +82,6 @@ interface HoFTimelineProps {
  *  * @param { inductees, world } - The { inductees, world }.
  */
 export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   const yearGroups = useMemo(() => {
     const map = new Map<number, HoFInductee[]>();
     for (const ind of inductees) {
@@ -128,9 +126,7 @@ export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
                 {/* Dot on the axis */}
                 <div className="w-3 h-3 rounded-full bg-primary border-2 border-background shadow-md z-10" />
                 {/* Year label */}
-                <div className="mt-1.5 text-xs font-display font-bold text-foreground">
-                  {year}
-                </div>
+                <div className="mt-1.5 text-xs font-display font-bold text-foreground">{year}</div>
                 <div className="text-[10px] text-muted-foreground">
                   {inds.length} inductee{inds.length !== 1 ? "s" : ""}
                 </div>

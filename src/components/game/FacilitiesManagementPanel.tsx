@@ -14,22 +14,33 @@ import {
   ArrowUp,
 } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
-import { getFacilityLevelColor as getLevelColor, getFacilityLevelLabel as getLevelBand, getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "@/presenters/uiDigest";
+import {
+  getFacilityLevelColor as getLevelColor,
+  getFacilityLevelLabel as getLevelBand,
+  getMonthlyMaintenanceCost,
+  getUpgradeCostEstimate,
+} from "@/presenters/uiDigest";
 
-const AXIS_META: Record<FacilityAxis, { label: string; icon: typeof Building; description: string; effectLabel: string }> = {
+const AXIS_META: Record<
+  FacilityAxis,
+  { label: string; icon: typeof Building; description: string; effectLabel: string }
+> = {
   training: {
     label: "Training Dohyo",
     icon: Building,
-    description: "Quality of practice facilities. Higher levels boost stat growth for all wrestlers.",
+    description:
+      "Quality of practice facilities. Higher levels boost stat growth for all wrestlers.",
     effectLabel: "Stat growth bonus",
   },
   recovery: {
     label: "Recovery Center",
     icon: Bed,
-    description: "Medical and rehab equipment. Higher levels reduce injury risk and speed up recovery.",
+    description:
+      "Medical and rehab equipment. Higher levels reduce injury risk and speed up recovery.",
     effectLabel: "Recovery speed & injury prevention",
   },
   nutrition: {
@@ -55,7 +66,6 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
   basic: "Basic",
   minimal: "Minimal",
 };
-
 
 /**
  * Get effect percent.
@@ -89,7 +99,12 @@ interface FacilitiesManagementPanelProps {
  * facilities management panel.
  *  * @param { heya, world, isOwner, onUpgrade } - The { heya, world, is owner, on upgrade }.
  */
-export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: FacilitiesManagementPanelProps) {
+export function FacilitiesManagementPanel({
+  heya,
+  world,
+  isOwner,
+  onUpgrade,
+}: FacilitiesManagementPanelProps) {
   const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
 
   const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya.facilities]);
@@ -113,7 +128,8 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 Facilities Overview
               </CardTitle>
               <CardDescription>
-                Overall: <span className={`font-semibold ${BAND_COLORS[heya.facilitiesBand]}`}>
+                Overall:{" "}
+                <span className={`font-semibold ${BAND_COLORS[heya.facilitiesBand]}`}>
                   {BAND_LABELS[heya.facilitiesBand]}
                 </span>
               </CardDescription>
@@ -123,19 +139,23 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 <Coins className="h-3.5 w-3.5" />
                 Monthly Upkeep
               </div>
-              <span className="font-mono text-foreground">¥{monthlyMaintenance.toLocaleString()}</span>
+              <span className="font-mono text-foreground">
+                ¥{monthlyMaintenance.toLocaleString()}
+              </span>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Facilities influence training gains, injury recovery, and nutrition quality.
-            They decay monthly if maintenance costs aren't covered. Invest to improve — costs scale with level.
+            Facilities influence training gains, injury recovery, and nutrition quality. They decay
+            monthly if maintenance costs aren't covered. Invest to improve — costs scale with level.
           </p>
           {heya.funds < monthlyMaintenance && (
             <div className="mt-3 flex items-center gap-2 text-sm text-destructive">
               <AlertTriangle className="h-4 w-4" />
-              <span>Warning: Current funds may not cover monthly maintenance. Facilities will degrade.</span>
+              <span>
+                Warning: Current funds may not cover monthly maintenance. Facilities will degrade.
+              </span>
             </div>
           )}
         </CardContent>
@@ -143,11 +163,13 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
 
       {/* Feedback toast */}
       {lastResult && (
-        <div className={`p-3 rounded-lg border text-sm ${
-          lastResult.success 
-            ? "bg-success/10 border-success/30 text-success"
-            : "bg-destructive/10 border-destructive/30 text-destructive"
-        }`}>
+        <div
+          className={`p-3 rounded-lg border text-sm ${
+            lastResult.success
+              ? "bg-success/10 border-success/30 text-success"
+              : "bg-destructive/10 border-destructive/30 text-destructive"
+          }`}
+        >
           {lastResult.success
             ? `Upgraded ${lastResult.axis} from ${lastResult.oldLevel} → ${lastResult.newLevel} for ¥${lastResult.cost.toLocaleString()}`
             : `Cannot upgrade: ${lastResult.reason}`}
@@ -190,7 +212,9 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <TrendingUp className="h-3 w-3" />
                   <span>{meta.effectLabel}: </span>
-                  <span className={`font-medium ${level >= 50 ? "text-success" : "text-foreground"}`}>
+                  <span
+                    className={`font-medium ${level >= 50 ? "text-success" : "text-foreground"}`}
+                  >
                     {getEffectPercent(axis, level)}
                   </span>
                 </div>
@@ -224,12 +248,12 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
                 )}
 
                 {isOwner && atMax && (
-                  <Badge variant="secondary" className="text-xs">Maxed Out</Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    Maxed Out
+                  </Badge>
                 )}
 
-                {!isOwner && (
-                  <p className="text-xs text-muted-foreground italic">Viewing only</p>
-                )}
+                {!isOwner && <p className="text-xs text-muted-foreground italic">Viewing only</p>}
               </CardContent>
             </Card>
           );
@@ -242,11 +266,26 @@ export function FacilitiesManagementPanel({ heya, world, isOwner, onUpgrade }: F
           <CardTitle className="text-sm">How Facilities Work</CardTitle>
         </CardHeader>
         <CardContent className="text-xs text-muted-foreground space-y-1">
-          <p>• <strong>Training Dohyo</strong> directly multiplies all weekly stat gains for your wrestlers.</p>
-          <p>• <strong>Recovery Center</strong> reduces injury chance and speeds up recovery from injuries.</p>
-          <p>• <strong>Kitchen & Chanko</strong> boosts strength and stamina development specifically.</p>
-          <p>• Facilities <strong>decay by 2 points/month</strong> if you can't afford the maintenance cost.</p>
-          <p>• Upgrade costs <strong>scale with level</strong> — higher facilities are exponentially more expensive.</p>
+          <p>
+            • <strong>Training Dohyo</strong> directly multiplies all weekly stat gains for your
+            wrestlers.
+          </p>
+          <p>
+            • <strong>Recovery Center</strong> reduces injury chance and speeds up recovery from
+            injuries.
+          </p>
+          <p>
+            • <strong>Kitchen & Chanko</strong> boosts strength and stamina development
+            specifically.
+          </p>
+          <p>
+            • Facilities <strong>decay by 2 points/month</strong> if you can't afford the
+            maintenance cost.
+          </p>
+          <p>
+            • Upgrade costs <strong>scale with level</strong> — higher facilities are exponentially
+            more expensive.
+          </p>
         </CardContent>
       </Card>
     </>

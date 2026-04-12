@@ -33,6 +33,7 @@ import {
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "../../engine/types/world";
 
 interface SaveSlotManagerProps {
@@ -191,15 +192,12 @@ export function SaveSlotManager({
                             variant="secondary"
                             className="text-[9px] font-bold uppercase tracking-widest"
                           >
-                            {slot.slotName === "autosave"
-                              ? "Dynamic"
-                              : "Stable"}
+                            {slot.slotName === "autosave" ? "Dynamic" : "Stable"}
                           </Badge>
                         </div>
                         <div className="text-[10px] text-muted-foreground flex items-center gap-3 uppercase font-bold tracking-widest">
                           <span className="flex items-center gap-1">
-                            <Star className="h-3 w-3 text-gold" /> Year{" "}
-                            {slot.year}
+                            <Star className="h-3 w-3 text-gold" /> Year {slot.year}
                           </span>
                           {slot.bashoName && (
                             <>

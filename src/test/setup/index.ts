@@ -1,5 +1,3 @@
-import { vi } from 'vitest';
-
 /**
  * OPFS (Origin Private File System) In-Memory Mock for Vitest
  * Simulates directory handles, file handles, and writable streams
@@ -22,8 +20,8 @@ class MockFileSystemWritableFileStream {
 }
 
 export class MockFileSystemFileHandle {
-  public kind = 'file' as const;
-  public _content: string = '';
+  public kind = "file" as const;
+  public _content: string = "";
 
   constructor(public name: string) {}
 
@@ -37,7 +35,7 @@ export class MockFileSystemFileHandle {
 }
 
 export class MockFileSystemDirectoryHandle {
-  public kind = 'directory' as const;
+  public kind = "directory" as const;
   public children = new Map<string, MockFileSystemDirectoryHandle | MockFileSystemFileHandle>();
 
   constructor(public name: string) {}
@@ -48,12 +46,12 @@ export class MockFileSystemDirectoryHandle {
         this.children.set(name, new MockFileSystemDirectoryHandle(name));
       } else {
         const err = new Error(`Directory ${name} not found`);
-        err.name = 'NotFoundError';
+        err.name = "NotFoundError";
         throw err;
       }
     }
     const child = this.children.get(name);
-    if (child?.kind !== 'directory') throw new Error('Type mismatch');
+    if (child?.kind !== "directory") throw new Error("Type mismatch");
     return child as MockFileSystemDirectoryHandle;
   }
 
@@ -63,12 +61,12 @@ export class MockFileSystemDirectoryHandle {
         this.children.set(name, new MockFileSystemFileHandle(name));
       } else {
         const err = new Error(`File ${name} not found`);
-        err.name = 'NotFoundError';
+        err.name = "NotFoundError";
         throw err;
       }
     }
     const child = this.children.get(name);
-    if (child?.kind !== 'file') throw new Error('Type mismatch');
+    if (child?.kind !== "file") throw new Error("Type mismatch");
     return child as MockFileSystemFileHandle;
   }
 
@@ -81,16 +79,16 @@ export class MockFileSystemDirectoryHandle {
 }
 
 // Global setup injection
-const rootDir = new MockFileSystemDirectoryHandle('root');
+const rootDir = new MockFileSystemDirectoryHandle("root");
 
-Object.defineProperty(globalThis, 'navigator', {
+Object.defineProperty(globalThis, "navigator", {
   value: {
     storage: {
       getDirectory: async () => rootDir,
-    }
+    },
   },
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 // Reset the file system before each test to prevent state leakage

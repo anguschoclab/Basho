@@ -2,12 +2,12 @@
  * src/engine/systems/welfare/WelfareService.ts
  * ============================================
  * Stateful orchestration for the Welfare System.
- * 
+ *
  * Responsibilities:
  * 1. State Hydration (ensureHeyaWelfareState)
  * 2. Weekly Compliance Tick (applyWeeklyWelfareTick)
  * 3. Sanction & Investigation Management
- * 
+ *
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
@@ -22,10 +22,7 @@ import { clamp } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
-import { 
-  calculateWeeklyWelfareDelta, 
-  computeInjuryPressure 
-} from "./WelfareCalculations";
+import { calculateWeeklyWelfareDelta, computeInjuryPressure } from "./WelfareCalculations";
 import { generateGovernanceHeadline } from "../media/MediaService";
 import { assertNever } from "../../utils/types";
 
@@ -33,17 +30,13 @@ import { assertNever } from "../../utils/types";
  * Unified Welfare Service.
  */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
-  return EntityService.ensureState(
-    heya, 
-    "welfareState", 
-    () => ({
-      welfareRisk: 10,
-      complianceState: "compliant",
-      weeksInState: 0,
-      lastReviewedWeek: 0,
-      activeDiet: "maintenance"
-    })
-  );
+  return EntityService.ensureState(heya, "welfareState", () => ({
+    welfareRisk: 10,
+    complianceState: "compliant",
+    weeksInState: 0,
+    lastReviewedWeek: 0,
+    activeDiet: "maintenance",
+  }));
 }
 
 export const WelfareService = {
@@ -56,7 +49,7 @@ export const WelfareService = {
     const stables = EntityCollection.getHeyas(world);
     const week = world.calendar.currentWeek || 0;
 
-    stables.forEach(heya => {
+    stables.forEach((heya) => {
       const state = this.ensureHeyaWelfareState(heya);
       const beforeRisk = state.welfareRisk;
 
@@ -71,17 +64,18 @@ export const WelfareService = {
 
       // 3. Risk indicator Update
       if (!heya.riskIndicators) heya.riskIndicators = {} as any;
-      heya.riskIndicators!.welfare = state.complianceState !== "compliant" || state.welfareRisk >= 55;
+      heya.riskIndicators!.welfare =
+        state.complianceState !== "compliant" || state.welfareRisk >= 55;
 
       // 4. Material Shift logging
       const riskUp = state.welfareRisk - beforeRisk;
       if (Math.abs(riskUp) >= 8) {
-        EventBus.welfareCompliance(world, heya.id, { 
-          heyaname: heya.name, 
+        EventBus.welfareCompliance(world, heya.id, {
+          heyaname: heya.name,
           status: "risk_shift",
-          risk: state.welfareRisk, 
-          delta: riskUp, 
-          reason: reasons.join("|") 
+          risk: state.welfareRisk,
+          delta: riskUp,
+          reason: reasons.join("|"),
         });
       }
     });
@@ -90,74 +84,95 @@ export const WelfareService = {
   /**
    * Orchestrates transitions through the compliance lifecycle.
    */
-  orchestrateComplianceTransitions(world: WorldState, heya: Heya, state: WelfareState, reasons: string[]): void {
+  orchestrateComplianceTransitions(
+    world: WorldState,
+    heya: Heya,
+    state: WelfareState,
+    reasons: string[]
+  ): void {
     const { seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
     const hasNegligence = negligenceCount > 0;
     const week = world.calendar.currentWeek || 0;
 
     switch (state.complianceState) {
-      case "compliant":
+      case "compliant": {
         const watchThreshold = hasNegligence ? 30 : 45;
-        if (state.welfareRisk >= watchThreshold || seriousCount >= 2 || (hasNegligence && state.welfareRisk >= 20)) {
+        if (
+          state.welfareRisk >= watchThreshold ||
+          seriousCount >= 2 ||
+          (hasNegligence && state.welfareRisk >= 20)
+        ) {
           this.setComplianceState(state, "watch");
-          EventBus.welfareCompliance(world, heya.id, { 
-            heyaname: heya.name, 
+          EventBus.welfareCompliance(world, heya.id, {
+            heyaname: heya.name,
             status: "watch",
-            incident: hasNegligence ? "negligence_suspected" : "standard_watch", 
-            reason: reasons.join("|") 
+            incident: hasNegligence ? "negligence_suspected" : "standard_watch",
+            reason: reasons.join("|"),
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
-            world, 
-            heyaId: heya.id, 
-            templatePath: 'institutional.welfare.watch_headline',
-            severity: "local"
+            world,
+            heyaId: heya.id,
+            templatePath: "institutional.welfare.watch_headline",
+            severity: "local",
           });
           if (world.mediaState) {
-            world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 15);
+            world.mediaState.heyaPressure[heya.id] = Math.min(
+              100,
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + 15
+            );
           }
         }
         break;
+      }
 
-      case "watch":
+      case "watch": {
         if (state.welfareRisk >= 65 && state.weeksInState >= 2) {
           this.setComplianceState(state, "investigation");
           state.investigation = {
             openedWeek: week,
             severity: state.welfareRisk >= 80 ? "high" : state.welfareRisk >= 72 ? "medium" : "low",
             triggers: reasons,
-            progress: 0
+            progress: 0,
           };
-          EventBus.welfareCompliance(world, heya.id, { 
-            heyaname: heya.name, 
+          EventBus.welfareCompliance(world, heya.id, {
+            heyaname: heya.name,
             status: "investigation_opened",
-            risk: state.welfareRisk 
+            risk: state.welfareRisk,
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
-            world, 
-            heyaId: heya.id, 
-            templatePath: 'institutional.welfare.investigation_headline',
-            severity: "national"
+            world,
+            heyaId: heya.id,
+            templatePath: "institutional.welfare.investigation_headline",
+            severity: "national",
           });
           if (world.mediaState) {
-            world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 30);
+            world.mediaState.heyaPressure[heya.id] = Math.min(
+              100,
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + 30
+            );
           }
         } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
           this.setComplianceState(state, "compliant");
-          EventBus.welfareCompliance(world, heya.id, { 
-            heyaname: heya.name, 
+          EventBus.welfareCompliance(world, heya.id, {
+            heyaname: heya.name,
             status: "cleared",
-            risk: state.welfareRisk 
+            risk: state.welfareRisk,
           });
         }
         break;
+      }
 
-      case "investigation":
+      case "investigation": {
         const progressGain = clamp(Math.round(4 + (heya.facilities?.recovery || 50) / 30), 2, 12);
-        state.investigation!.progress = clamp((state.investigation!.progress || 0) + progressGain, 0, 100);
+        state.investigation!.progress = clamp(
+          (state.investigation!.progress || 0) + progressGain,
+          0,
+          100
+        );
 
         if (state.welfareRisk >= 85 || (seriousCount >= 3 && state.welfareRisk >= 70)) {
           this.setComplianceState(state, "sanctioned");
@@ -166,56 +181,62 @@ export const WelfareService = {
             recruitmentFreezeWeeks: 12,
             trainingIntensityCap: "medium",
             fineYen,
-            note: "Mandatory welfare remediation"
+            note: "Mandatory welfare remediation",
           };
 
           heya.funds = (heya.funds ?? 0) - fineYen;
 
-          EventBus.welfareCompliance(world, heya.id, { 
-            heyaname: heya.name, 
+          EventBus.welfareCompliance(world, heya.id, {
+            heyaname: heya.name,
             status: "sanctioned",
-            risk: state.welfareRisk, 
-            money: fineYen
+            risk: state.welfareRisk,
+            money: fineYen,
           });
 
           // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
-            world, 
-            heyaId: heya.id, 
-            templatePath: 'institutional.welfare.sanction_headline',
-            severity: "main_event"
+            world,
+            heyaId: heya.id,
+            templatePath: "institutional.welfare.sanction_headline",
+            severity: "main_event",
           });
           if (world.mediaState) {
-            world.mediaState.heyaPressure[heya.id] = Math.min(100, (world.mediaState.heyaPressure[heya.id] ?? 0) + 50);
+            world.mediaState.heyaPressure[heya.id] = Math.min(
+              100,
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + 50
+            );
           }
         } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
-          EventBus.welfareCompliance(world, heya.id, { 
-            heyaname: heya.name, 
+          EventBus.welfareCompliance(world, heya.id, {
+            heyaname: heya.name,
             status: "investigation_closed",
-            risk: state.welfareRisk 
+            risk: state.welfareRisk,
           });
         }
         break;
+      }
 
-      case "sanctioned":
+      case "sanctioned": {
         if (state.sanctions?.recruitmentFreezeWeeks && state.sanctions.recruitmentFreezeWeeks > 0) {
           state.sanctions.recruitmentFreezeWeeks--;
         }
-        const freezeDone = !state.sanctions?.recruitmentFreezeWeeks || state.sanctions.recruitmentFreezeWeeks <= 0;
+        const freezeDone =
+          !state.sanctions?.recruitmentFreezeWeeks || state.sanctions.recruitmentFreezeWeeks <= 0;
         if (freezeDone && state.welfareRisk <= 45 && state.weeksInState >= 4) {
           this.setComplianceState(state, "watch");
           state.sanctions = undefined;
           EventBus.welfareCompliance(world, heya.id, {
             status: "sanctions_lifted",
             heyaname: heya.name,
-            risk: state.welfareRisk
+            risk: state.welfareRisk,
           });
         }
         break;
-      default: assertNever(state.complianceState);
-
+      }
+      default:
+        assertNever(state.complianceState);
     }
   },
 
@@ -240,11 +261,11 @@ export const WelfareService = {
     const oldDiet = state.activeDiet;
     state.activeDiet = diet;
 
-    EventBus.welfareCompliance(world, heyaId, { 
-      heyaname: heya.name, 
+    EventBus.welfareCompliance(world, heyaId, {
+      heyaname: heya.name,
       status: "diet_changed",
       regimen: diet,
-      reason: oldDiet
+      reason: oldDiet,
     });
-  }
+  },
 };

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Users } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
@@ -52,7 +53,14 @@ const DELIBERATION_DIALOGUE = {
  * yokozuna deliberation.
  *  * @param { rikishi, world, open, onClose, verdict, reasoning } - The { rikishi, world, open, on close, verdict, reasoning }.
  */
-export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, reasoning }: DeliberationProps) {
+export function YokozunaDeliberation({
+  rikishi,
+  world,
+  open,
+  onClose,
+  verdict,
+  reasoning,
+}: DeliberationProps) {
   const dialogue = DELIBERATION_DIALOGUE[verdict];
   const heya = world.heyas.get(rikishi.heyaId);
   const isPlayerRikishi = rikishi.heyaId === world.playerHeyaId;
@@ -94,18 +102,22 @@ export function YokozunaDeliberation({ rikishi, world, open, onClose, verdict, r
           <span>Present: {ELDER_NAMES.join(", ")}</span>
         </div>
       }
-      steps={dialogue.map(d => `"${d}"`)}
+      steps={dialogue.map((d) => `"${d}"`)}
       finalVerdictClassName={`p-4 rounded-lg border text-center ${
-        verdict === "promoted" ? "border-gold/50 bg-gold/10" :
-        verdict === "denied" ? "border-destructive/30 bg-destructive/5" :
-        "border-muted bg-muted/30"
+        verdict === "promoted"
+          ? "border-gold/50 bg-gold/10"
+          : verdict === "denied"
+            ? "border-destructive/30 bg-destructive/5"
+            : "border-muted bg-muted/30"
       }`}
       finalVerdictContent={
         <>
           <p className="text-lg font-display font-bold">
-            {verdict === "promoted" ? "🎉 PROMOTION APPROVED" :
-             verdict === "denied" ? "Promotion Not Recommended" :
-             "Decision Deferred"}
+            {verdict === "promoted"
+              ? "🎉 PROMOTION APPROVED"
+              : verdict === "denied"
+                ? "Promotion Not Recommended"
+                : "Decision Deferred"}
           </p>
           {isPlayerRikishi && verdict === "promoted" && (
             <Badge className="mt-2 bg-gold text-black">YOUR RIKISHI BECOMES YOKOZUNA!</Badge>

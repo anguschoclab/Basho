@@ -3,16 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import {
-  FastForward,
-  ArrowRight,
-  Repeat,
-  Calendar,
-  ChevronRight,
-  SkipForward,
-} from "lucide-react";
+import { FastForward, ArrowRight, Repeat, Calendar, ChevronRight, SkipForward } from "lucide-react";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, getSeasonalFlavor } from "@/presenters/uiDigest";
 
@@ -50,13 +42,8 @@ export function CalendarWidget() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const world = state.world;
-  if (!world) return null;
 
-  const phase = world.cyclePhase || "interim";
-  const phaseInfo = PHASE_LABELS[phase] ?? PHASE_LABELS.interim;
-  const bashoName = world.currentBashoName || "hatsu";
-  const inBasho = phase === "active_basho" && !!world.currentBasho;
-
+  // All callbacks must be defined before any early return
   const handleAdvanceDay = React.useCallback(() => {
     advanceOneDay();
     toast({ title: "Day advanced" });
@@ -77,14 +64,15 @@ export function CalendarWidget() {
     navigate({ to: "/basho" });
   }, [simFullBasho, navigate, toast]);
 
-  const navToSchedule = React.useCallback(
-    () => navigate({ to: "/schedule" }),
-    [navigate],
-  );
-  const navToBasho = React.useCallback(
-    () => navigate({ to: "/basho" }),
-    [navigate],
-  );
+  const navToSchedule = React.useCallback(() => navigate({ to: "/schedule" }), [navigate]);
+  const navToBasho = React.useCallback(() => navigate({ to: "/basho" }), [navigate]);
+
+  if (!world) return null;
+
+  const phase = world.cyclePhase || "interim";
+  const phaseInfo = PHASE_LABELS[phase] ?? PHASE_LABELS.interim;
+  const bashoName = world.currentBashoName || "hatsu";
+  const inBasho = phase === "active_basho" && !!world.currentBasho;
 
   // Basho day progress (1-15)
   const bashoDay = inBasho && world.currentBasho ? world.currentBasho.day : 0;
@@ -97,9 +85,7 @@ export function CalendarWidget() {
       headerContent={
         <>
           <span className={`h-2 w-2 rounded-full ${phaseInfo.dotClass}`} />
-          <span className="text-[10px] font-medium text-muted-foreground">
-            {phaseInfo.label}
-          </span>
+          <span className="text-[10px] font-medium text-muted-foreground">{phaseInfo.label}</span>
         </>
       }
     >
@@ -140,9 +126,7 @@ export function CalendarWidget() {
         (() => {
           const info = BASHO_CALENDAR[bashoName as BashoName];
           const season = info?.season;
-          const flavorText = season
-            ? getSeasonalFlavor(season, world.seed)
-            : null;
+          const flavorText = season ? getSeasonalFlavor(season, world.seed) : null;
           return (
             <div className="space-y-0.5">
               <div className="text-xs text-muted-foreground">
@@ -150,9 +134,7 @@ export function CalendarWidget() {
                 <span className="font-medium text-foreground">
                   {BASHO_NAMES[bashoName] || bashoName} Basho
                 </span>
-                {info?.location && (
-                  <span className="ml-1 opacity-70">· {info.location}</span>
-                )}
+                {info?.location && <span className="ml-1 opacity-70">· {info.location}</span>}
               </div>
               {flavorText && (
                 <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">

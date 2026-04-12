@@ -7,16 +7,7 @@ import { cn } from "@/lib/utils";
 import type { PerceptionSnapshot } from "@/engine/perception";
 import { BaseWidget } from "./BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
-import {
-  Building2,
-  Heart,
-  Shield,
-  Users,
-  Handshake,
-  UserPlus,
-  Briefcase,
-  Zap,
-} from "lucide-react";
+import { Building2, Heart, Shield, Users, Handshake, UserPlus, Briefcase, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
@@ -58,6 +49,14 @@ export function StableWidget() {
   const navigate = useNavigate();
   const world = state.world;
 
+  const headerAction = useMemo(
+    () => ({
+      label: "Manage",
+      onClick: () => navigate({ to: "/stable" as any }),
+    }),
+    [navigate]
+  );
+
   const p = useMemo<PerceptionSnapshot | null>(() => {
     if (!world?.playerHeyaId) return null;
     return getCachedPerception(world, world.playerHeyaId);
@@ -65,20 +64,8 @@ export function StableWidget() {
 
   if (!p) return null;
 
-  const headerAction = useMemo(
-    () => ({
-      label: "Manage",
-      onClick: () => navigate({ to: "/stable" as any }),
-    }),
-    [navigate],
-  );
-
   return (
-    <BaseWidget
-      title="Stable Overview"
-      icon={Building2}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="Stable Overview" icon={Building2} headerAction={headerAction}>
       <div className="space-y-4">
         {/* Tier & Reputation */}
         <div className="flex items-center justify-between bg-muted/30 p-2.5 rounded-lg border border-border/50">
@@ -90,9 +77,7 @@ export function StableWidget() {
               <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">
                 Stature
               </div>
-              <div className="text-sm font-bold leading-none">
-                {p.statureBand.toUpperCase()}
-              </div>
+              <div className="text-sm font-bold leading-none">{p.statureBand.toUpperCase()}</div>
             </div>
           </div>
           <Badge
@@ -105,11 +90,7 @@ export function StableWidget() {
 
         {/* Vital Stats Grid */}
         <div className="grid grid-cols-2 gap-2">
-          <StatMini
-            icon={<Heart className="h-3 w-3" />}
-            label="Morale"
-            value={p.moraleBand}
-          />
+          <StatMini icon={<Heart className="h-3 w-3" />} label="Morale" value={p.moraleBand} />
           <StatMini
             icon={<Shield className="h-3 w-3" />}
             label="Security"
@@ -154,15 +135,7 @@ export function StableWidget() {
   );
 }
 
-function StatMini({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function StatMini({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
   return (
     <div className="flex flex-col gap-1 p-2 rounded-md border border-border/40 bg-card/50">

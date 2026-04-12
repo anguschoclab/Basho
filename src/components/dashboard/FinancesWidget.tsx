@@ -1,27 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
 import { usePlayerHeya } from "@/hooks/usePlayerHeya";
-import {
-  Coins,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  ArrowUpRight,
-  ArrowDownRight,
-} from "lucide-react";
+import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-} from "recharts";
+import { AreaChart, Area, ResponsiveContainer } from "recharts";
 import type { LucideIcon } from "lucide-react";
 
 const RUNWAY_CONFIG: Record<
@@ -65,20 +47,22 @@ export function FinancesWidget() {
   const navigate = useNavigate();
   const { heya } = usePlayerHeya();
 
-  if (!heya) return null;
-
-  const band = (heya as any).runwayBand || "comfortable";
-  const config = RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
+  // Compute config before early return
+  const config = useMemo(() => {
+    if (!heya) return RUNWAY_CONFIG.comfortable;
+    const band = (heya as any).runwayBand || "comfortable";
+    return RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
+  }, [heya]);
 
   // Mock history for visual flair
   const history = useMemo(
     () => [
-      { name: "W1", value: heya.funds * 0.8 },
-      { name: "W2", value: heya.funds * 0.85 },
-      { name: "W3", value: heya.funds * 0.9 },
-      { name: "W4", value: heya.funds },
+      { name: "W1", value: (heya?.funds ?? 0) * 0.8 },
+      { name: "W2", value: (heya?.funds ?? 0) * 0.85 },
+      { name: "W3", value: (heya?.funds ?? 0) * 0.9 },
+      { name: "W4", value: heya?.funds ?? 0 },
     ],
-    [heya.funds],
+    [heya?.funds]
   );
 
   const headerAction = useMemo(
@@ -87,8 +71,10 @@ export function FinancesWidget() {
       onClick: () => navigate({ to: "/office/finances" as any }),
       tooltip: "Analyze stable financial health and project future runway",
     }),
-    [navigate],
+    [navigate]
   );
+
+  if (!heya) return null;
 
   return (
     <BaseWidget title="Finances" icon={Coins} headerAction={headerAction}>
@@ -103,18 +89,14 @@ export function FinancesWidget() {
               <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
                 Status
               </div>
-              <div className={`text-lg font-bold leading-none ${config.color}`}>
-                {config.label}
-              </div>
+              <div className={`text-lg font-bold leading-none ${config.color}`}>{config.label}</div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
               Balance
             </div>
-            <div className="text-lg font-bold leading-none">
-              ¥{heya.funds.toLocaleString()}
-            </div>
+            <div className="text-lg font-bold leading-none">¥{heya.funds.toLocaleString()}</div>
           </div>
         </div>
 
@@ -124,16 +106,8 @@ export function FinancesWidget() {
             <AreaChart data={history}>
               <defs>
                 <linearGradient id="colorFunds" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="hsl(var(--primary))"
-                    stopOpacity={0.3}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="hsl(var(--primary))"
-                    stopOpacity={0}
-                  />
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <Area

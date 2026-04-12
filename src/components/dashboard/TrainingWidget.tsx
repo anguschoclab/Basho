@@ -4,19 +4,12 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
-import {
-  Dumbbell,
-  ChevronRight,
-  Zap,
-  Target,
-  Shield,
-  Activity,
-} from "lucide-react";
+import { Dumbbell, ChevronRight, Zap, Target, Shield, Activity } from "lucide-react";
 import type {
   TrainingIntensity,
   TrainingFocus,
   RecoveryEmphasis,
-  TrainingProfile 
+  TrainingProfile,
 } from "@/engine/types/training";
 import {
   INTENSITY_MULTIPLIERS,
@@ -31,13 +24,7 @@ const INTENSITY_OPTIONS: TrainingIntensity[] = [
   "intensive",
   "punishing",
 ];
-const FOCUS_OPTIONS: TrainingFocus[] = [
-  "neutral",
-  "power",
-  "speed",
-  "technique",
-  "balance",
-];
+const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];
 const RECOVERY_OPTIONS: RecoveryEmphasis[] = ["low", "normal", "high"];
 
 const INTENSITY_ICONS: Record<TrainingIntensity, string> = {
@@ -116,7 +103,7 @@ const ProfileRow = React.memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 const MultiplierBar = React.memo(
@@ -143,12 +130,10 @@ const MultiplierBar = React.memo(
             style={{ width: `${Math.min(100, value * 60)}%` }}
           />
         </div>
-        <span className="font-medium text-foreground">
-          {(value * 100).toFixed(0)}%
-        </span>
+        <span className="font-medium text-foreground">{(value * 100).toFixed(0)}%</span>
       </div>
     );
-  },
+  }
 );
 
 /** training widget. */
@@ -159,35 +144,14 @@ export function TrainingWidget() {
     () => ({
       label: "Full Plan",
       onClick: () => navigate({ to: "/stable/training" as any }),
-      tooltip:
-        "Design and implement comprehensive training regimens for your rikishi",
+      tooltip: "Design and implement comprehensive training regimens for your rikishi",
     }),
-    [navigate],
+    [navigate]
   );
   const world = state.world;
   const [expanded, setExpanded] = useState(false);
 
-  const profile = useMemo(() => {
-    if (!world?.playerHeyaId) return null;
-    const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
-    return ts.activeProfile;
-  }, [world]);
-
-  if (!world || !profile) return null;
-
-  const intensityInfo = INTENSITY_MULTIPLIERS[profile.intensity];
-  const recoveryInfo = RECOVERY_MULTIPLIERS[profile.recovery];
-
-  // Read pre-computed modifier from transientContext (set by phase02_context each tick).
-  // Falls back to raw intensity multiplier if context hasn't been built yet.
-  const activeModifiers = world.transientContext?.activeModifiers;
-  const effectiveGrowthMultiplier =
-    activeModifiers != null
-      ? activeModifiers.trainingMultiplier
-      : intensityInfo.growth;
-  const financialPenalty = activeModifiers?.financialPenalty ?? false;
-  const moraleBoost = activeModifiers?.moraleBoost ?? false;
-
+  // Constants for intensity ranking
   const CAP_TO_INTENSITY: Record<string, TrainingIntensity> = {
     low: "conservative",
     medium: "balanced",
@@ -199,6 +163,13 @@ export function TrainingWidget() {
     "intensive",
     "punishing",
   ];
+
+  // All hooks must be called before any early return
+  const profile = useMemo(() => {
+    if (!world?.playerHeyaId) return null;
+    const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
+    return ts.activeProfile;
+  }, [world]);
 
   const sanctionCap = useMemo(() => {
     if (!world?.playerHeyaId) return null;
@@ -218,7 +189,7 @@ export function TrainingWidget() {
         label: v.charAt(0).toUpperCase() + v.slice(1),
         disabled: i > maxIntensityIdx,
       })),
-    [maxIntensityIdx],
+    [maxIntensityIdx]
   );
 
   const focusOptions = useMemo(
@@ -227,7 +198,7 @@ export function TrainingWidget() {
         value: v,
         label: FOCUS_LABELS[v],
       })),
-    [],
+    []
   );
 
   const recoveryOptions = useMemo(
@@ -236,12 +207,12 @@ export function TrainingWidget() {
         value: v,
         label: RECOVERY_LABELS[v],
       })),
-    [],
+    []
   );
 
   const updateProfile = React.useCallback(
     (patch: Partial<TrainingProfile>) => {
-      if (!world.playerHeyaId) return;
+      if (!world?.playerHeyaId) return;
       const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
       // Enforce training intensity cap from active welfare sanctions
       if (patch.intensity) {
@@ -253,23 +224,39 @@ export function TrainingWidget() {
       ts.activeProfile = { ...ts.activeProfile, ...patch };
       updateWorld({ ...world });
     },
-    [world, maxIntensityIdx, updateWorld],
+    [world, maxIntensityIdx, updateWorld]
   );
 
   const handleIntensityChange = React.useCallback(
     (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
-    [updateProfile],
+    [updateProfile]
   );
 
   const handleFocusChange = React.useCallback(
     (v: string) => updateProfile({ focus: v as TrainingFocus }),
-    [updateProfile],
+    [updateProfile]
   );
 
   const handleRecoveryChange = React.useCallback(
     (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
-    [updateProfile],
+    [updateProfile]
   );
+
+  const toggleExpanded = React.useCallback(() => setExpanded((prev) => !prev), []);
+
+  // Early return after all hooks
+  if (!world || !profile) return null;
+
+  const intensityInfo = INTENSITY_MULTIPLIERS[profile.intensity];
+  const recoveryInfo = RECOVERY_MULTIPLIERS[profile.recovery];
+
+  // Read pre-computed modifier from transientContext (set by phase02_context each tick).
+  // Falls back to raw intensity multiplier if context hasn't been built yet.
+  const activeModifiers = world.transientContext?.activeModifiers;
+  const effectiveGrowthMultiplier =
+    activeModifiers != null ? activeModifiers.trainingMultiplier : intensityInfo.growth;
+  const financialPenalty = activeModifiers?.financialPenalty ?? false;
+  const moraleBoost = activeModifiers?.moraleBoost ?? false;
 
   return (
     <BaseWidget title="Training" icon={Dumbbell} headerAction={headerAction}>
@@ -282,8 +269,7 @@ export function TrainingWidget() {
           <Target className="h-2.5 w-2.5" /> {FOCUS_LABELS[profile.focus]}
         </Badge>
         <Badge variant="secondary" className="text-[10px] gap-1">
-          <Shield className="h-2.5 w-2.5" /> Recovery:{" "}
-          {RECOVERY_LABELS[profile.recovery]}
+          <Shield className="h-2.5 w-2.5" /> Recovery: {RECOVERY_LABELS[profile.recovery]}
         </Badge>
       </div>
 
@@ -315,8 +301,7 @@ export function TrainingWidget() {
               label: "Fatigue",
               value: intensityInfo.fatigue,
               icon: Activity,
-              color:
-                intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
+              color: intensityInfo.fatigue > 1.2 ? "bg-destructive" : "bg-warning",
             },
             {
               label: "Recovery",
@@ -345,7 +330,7 @@ export function TrainingWidget() {
 
       <Button
         variant="ghost"
-        onClick={React.useCallback(() => setExpanded(!expanded), [expanded])}
+        onClick={toggleExpanded}
         aria-expanded={expanded}
         aria-controls="training-quick-change-panel"
         className="h-auto p-0 text-[11px] text-primary hover:underline underline-offset-2 rounded-sm"
@@ -363,9 +348,7 @@ export function TrainingWidget() {
             icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
             options={intensityOptions}
-            onChange={(v) =>
-              updateProfile({ intensity: v as TrainingIntensity })
-            }
+            onChange={(v) => updateProfile({ intensity: v as TrainingIntensity })}
           />
           <ProfileRow
             label="Focus"

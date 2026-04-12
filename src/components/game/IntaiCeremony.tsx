@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 
@@ -57,7 +58,9 @@ function getCareerNarrative(r: UIRikishi, reason: string): string[] {
   }
 
   if (r.achievements?.kinboshiEarned && r.achievements.kinboshiEarned > 0) {
-    lines.push(`Earned ${r.achievements.kinboshiEarned} kinboshi (gold star) victories over yokozuna.`);
+    lines.push(
+      `Earned ${r.achievements.kinboshiEarned} kinboshi (gold star) victories over yokozuna.`
+    );
   }
 
   lines.push(
@@ -86,14 +89,14 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
             <Scissors className="h-5 w-5 text-muted-foreground" />
             引退 — Intai Ceremony
           </DialogTitle>
-          <DialogDescription>
-            {rikishi.shikona} bids farewell to the dohyō
-          </DialogDescription>
+          <DialogDescription>{rikishi.shikona} bids farewell to the dohyō</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Rikishi header */}
-          <div className={`p-4 rounded-lg border ${isPlayerRikishi ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30"}`}>
+          <div
+            className={`p-4 rounded-lg border ${isPlayerRikishi ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30"}`}
+          >
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center">
                 <Crown className="h-7 w-7 text-muted-foreground" />
@@ -101,9 +104,13 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
               <div className="flex-1">
                 <h3 className="text-2xl font-display font-bold">{rikishi.shikona}</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Badge variant="outline" className="capitalize">{rankInfo?.nameJa ?? rikishi.rank}</Badge>
+                  <Badge variant="outline" className="capitalize">
+                    {rankInfo?.nameJa ?? rikishi.rank}
+                  </Badge>
                   <span>{heya?.name ?? "Unknown Stable"}</span>
-                  {isPlayerRikishi && <Badge className="bg-primary/20 text-primary text-xs">Your Rikishi</Badge>}
+                  {isPlayerRikishi && (
+                    <Badge className="bg-primary/20 text-primary text-xs">Your Rikishi</Badge>
+                  )}
                 </div>
               </div>
             </div>
@@ -121,7 +128,9 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
                 <div className="text-[10px] text-muted-foreground uppercase">Yūshō</div>
               </div>
               <div className="text-center p-2 rounded bg-muted/50">
-                <div className="text-lg font-bold font-mono">{rikishi.achievements?.kinboshiEarned || 0}</div>
+                <div className="text-lg font-bold font-mono">
+                  {rikishi.achievements?.kinboshiEarned || 0}
+                </div>
                 <div className="text-[10px] text-muted-foreground uppercase">Kinboshi</div>
               </div>
             </div>
@@ -132,7 +141,10 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
           {/* Narrative */}
           <div className="space-y-2">
             {narrative.map((line, i) => (
-              <p key={i} className={`text-sm ${i === narrative.length - 1 ? "text-muted-foreground italic" : "text-foreground"}`}>
+              <p
+                key={i}
+                className={`text-sm ${i === narrative.length - 1 ? "text-muted-foreground italic" : "text-foreground"}`}
+              >
                 {line}
               </p>
             ))}

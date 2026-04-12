@@ -5,15 +5,10 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Crown,
-  ShieldAlert,
-  TrendingUp,
-  Flame,
-  AlertTriangle,
-} from "lucide-react";
+import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import type { OzekiKadobanMap } from "@/engine/banzuke";
 import React from "react";
@@ -52,13 +47,9 @@ const YokozunaRow = React.memo(
               <RikishiName id={rikishiId} name={shikona} />
             </span>
             {isStrong && (
-              <Badge className="bg-amber-500/20 text-amber-500 text-xs">
-                Strong Candidate
-              </Badge>
+              <Badge className="bg-amber-500/20 text-amber-500 text-xs">Strong Candidate</Badge>
             )}
-            {isPlayer && (
-              <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-            )}
+            {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
           </div>
           <p className="text-sm text-muted-foreground mt-1">{narrative}</p>
           <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
@@ -68,7 +59,7 @@ const YokozunaRow = React.memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 const OzekiRow = React.memo(
@@ -100,9 +91,7 @@ const OzekiRow = React.memo(
           <Badge variant="outline" className="capitalize text-xs">
             {RANK_HIERARCHY[rank]?.nameJa ?? rank}
           </Badge>
-          {isPlayer && (
-            <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-          )}
+          {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
         </div>
         <p className="text-sm text-muted-foreground">{narrative}</p>
         <div className="flex items-center gap-3">
@@ -113,7 +102,7 @@ const OzekiRow = React.memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 const KadobanRow = React.memo(
@@ -140,21 +129,16 @@ const KadobanRow = React.memo(
             <span className="font-display font-bold">
               <RikishiName id={rikishiId} name={shikona} />
             </span>
-            <Badge
-              variant={isDemoted ? "destructive" : "outline"}
-              className="text-xs"
-            >
+            <Badge variant={isDemoted ? "destructive" : "outline"} className="text-xs">
               {isDemoted ? "DEMOTED" : "KADOBAN"}
             </Badge>
-            {isPlayer && (
-              <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>
-            )}
+            {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
           </div>
           <p className="text-sm text-muted-foreground mt-1">{narrative}</p>
         </div>
       </div>
     );
-  },
+  }
 );
 
 /** Defines the structure for progression tracker props. */
@@ -172,16 +156,11 @@ interface ProgressionTrackerProps {
  */
 export function ProgressionTracker({ world }: ProgressionTrackerProps) {
   const ozekiRuns = useMemo(() => getOzekiRunCandidates(world), [world]);
-  const yokozunaCandidates = useMemo(
-    () => getYokozunaCandidates(world),
-    [world],
-  );
+  const yokozunaCandidates = useMemo(() => getYokozunaCandidates(world), [world]);
   const kadobanDrama = useMemo(() => getKadobanDrama(world), [world]);
 
   const hasContent =
-    ozekiRuns.length > 0 ||
-    yokozunaCandidates.length > 0 ||
-    kadobanDrama.length > 0;
+    ozekiRuns.length > 0 || yokozunaCandidates.length > 0 || kadobanDrama.length > 0;
   if (!hasContent) return null;
 
   return (

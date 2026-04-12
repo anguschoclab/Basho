@@ -3,9 +3,8 @@ import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Newspaper, Mic, Camera, MessageSquare, TrendingUp, TrendingDown } from "lucide-react";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 
 /** Defines the structure for press question. */
@@ -30,10 +29,10 @@ interface PressQuestion {
 function generatePressQuestions(world: WorldState): PressQuestion[] {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   if (!playerHeya) return [];
-  
+
   const questions: PressQuestion[] = [];
   const lastBasho = world.history[world.history.length - 1];
-  
+
   // Question about basho performance
   const totalWins = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
     const r = world.rikishi.get(id);
@@ -49,23 +48,26 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
     id: "basho_performance",
     reporter: "Yamada",
     outlet: "NHK Sports",
-    question: winRate >= 0.6 
-      ? `Your stable had an impressive tournament. What's the secret to your success?`
-      : winRate >= 0.45
-        ? `A mixed basho for ${playerHeya.name}. How do you assess your wrestlers' performances?`
-        : `A difficult tournament for your stable. What changes do you plan to make?`,
+    question:
+      winRate >= 0.6
+        ? `Your stable had an impressive tournament. What's the secret to your success?`
+        : winRate >= 0.45
+          ? `A mixed basho for ${playerHeya.name}. How do you assess your wrestlers' performances?`
+          : `A difficult tournament for your stable. What changes do you plan to make?`,
     answers: [
       {
         label: "Humble",
         tone: "humble",
         effect: { reputation: 3, morale: 1, mediaHeat: -5 },
-        response: "We are grateful for every match. Our wrestlers gave their best, and we will continue to work hard in the keiko-ba.",
+        response:
+          "We are grateful for every match. Our wrestlers gave their best, and we will continue to work hard in the keiko-ba.",
       },
       {
         label: "Confident",
         tone: "confident",
         effect: { reputation: 1, morale: 3, mediaHeat: 5 },
-        response: "Our training methods are producing results. I expect even greater things from my wrestlers next basho.",
+        response:
+          "Our training methods are producing results. I expect even greater things from my wrestlers next basho.",
       },
       {
         label: "Deflect",
@@ -79,7 +81,7 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
   // Question about rivalries or specific results
   if (lastBasho) {
     const hasYusho = lastBasho.yusho && playerHeya.rikishiIds?.includes(lastBasho.yusho);
-    
+
     questions.push({
       id: "future_plans",
       reporter: "Suzuki",
@@ -92,13 +94,15 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
           label: "Ambitious",
           tone: "confident",
           effect: { reputation: 2, morale: 4, mediaHeat: 8 },
-          response: "We aim for the Emperor's Cup. Every wrestler in our stable dreams of standing at the top.",
+          response:
+            "We aim for the Emperor's Cup. Every wrestler in our stable dreams of standing at the top.",
         },
         {
           label: "Strategic",
           tone: "deflect",
           effect: { reputation: 4, morale: 2, mediaHeat: 2 },
-          response: "We're focused on developing our young talent and strengthening our foundations.",
+          response:
+            "We're focused on developing our young talent and strengthening our foundations.",
         },
         {
           label: "Provocative",
@@ -201,7 +205,9 @@ export function PressConference({ world, open, onClose }: PressConferenceProps) 
                     <MessageSquare className="h-4 w-4 mr-3 shrink-0 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-sm">{ans.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">{ans.response.slice(0, 60)}...</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 whitespace-normal">
+                        {ans.response.slice(0, 60)}...
+                      </p>
                     </div>
                   </Button>
                 ))}

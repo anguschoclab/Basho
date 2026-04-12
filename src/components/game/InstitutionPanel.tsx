@@ -8,10 +8,17 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
-import { SCANDAL_LABELS, TRAIT_LABELS, clamp, getArchetypeDescription, getStatusLabel, toScandalBand, toTraitBand } from "@/presenters/uiDigest";
-
-
+import {
+  SCANDAL_LABELS,
+  TRAIT_LABELS,
+  clamp,
+  getArchetypeDescription,
+  getStatusLabel,
+  toScandalBand,
+  toTraitBand,
+} from "@/presenters/uiDigest";
 
 /**
  * Compliance badge.
@@ -102,7 +109,8 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
           </div>
           {sanc?.trainingIntensityCap && (
             <div className="text-xs text-muted-foreground">
-              Training cap: <span className="font-medium">{String(sanc.trainingIntensityCap).toUpperCase()}</span>
+              Training cap:{" "}
+              <span className="font-medium">{String(sanc.trainingIntensityCap).toUpperCase()}</span>
               {sanc.recruitmentFreezeWeeks ? ` · Freeze: ${sanc.recruitmentFreezeWeeks}w` : ""}
               {sanc.fineYen ? ` · Fine: ¥${Number(sanc.fineYen).toLocaleString()}` : ""}
             </div>
@@ -117,7 +125,9 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
             <Gavel className="h-4 w-4" />
             <div className="text-sm font-medium">Governance</div>
             <Badge variant="outline">{getStatusLabel(heya.governanceStatus)}</Badge>
-            {heya.scandalScore >= 20 && <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>}
+            {heya.scandalScore >= 20 && (
+              <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>
+            )}
           </div>
           <div className="text-xs text-muted-foreground">
             Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster.
@@ -141,13 +151,15 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
 
           {traits && (
             <div className="grid grid-cols-2 gap-3 pt-1">
-              {([
-                ["Ambition", traits.ambition],
-                ["Patience", traits.patience],
-                ["Risk", traits.risk],
-                ["Tradition", traits.tradition],
-                ["Compassion", traits.compassion],
-              ] as Array<[string, number]>).map(([label, v]) => {
+              {(
+                [
+                  ["Ambition", traits.ambition],
+                  ["Patience", traits.patience],
+                  ["Risk", traits.risk],
+                  ["Tradition", traits.tradition],
+                  ["Compassion", traits.compassion],
+                ] as Array<[string, number]>
+              ).map(([label, v]) => {
                 const band = toTraitBand(v);
                 return (
                   <div key={label} className="space-y-1">
@@ -165,7 +177,9 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
           {quirks.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-2">
               {quirks.slice(0, 6).map((q) => (
-                <Badge key={q} variant="outline">{q}</Badge>
+                <Badge key={q} variant="outline">
+                  {q}
+                </Badge>
               ))}
             </div>
           )}

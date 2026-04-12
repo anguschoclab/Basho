@@ -20,9 +20,10 @@ import {
   Wrench,
 } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
+// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
 import type { WorldState } from "@/engine/types/world";
 import { formatEventTime } from "@/presenters/uiDigest";
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 
 const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -57,7 +58,6 @@ function getCategoryMeta(cat: string) {
  *  * @returns The result.
  */
 
-
 /**
  * Derive the best navigation route for an event based on its category, type, and entity references.
  */
@@ -77,12 +77,12 @@ function getEventRoute(e: EngineEvent): string | null {
   }
 
   // Rikishi-specific events → rikishi profile
-    if (e.rikishiId) {
-      // Training, injury, career, promotion for a specific rikishi
-      if (["training", "injury", "career", "promotion"].includes(cat)) {
-        return `/rikishi/${e.rikishiId}`;
-      }
+  if (e.rikishiId) {
+    // Training, injury, career, promotion for a specific rikishi
+    if (["training", "injury", "career", "promotion"].includes(cat)) {
+      return `/rikishi/${e.rikishiId}`;
     }
+  }
   if (cat === "scouting") return "/talent-pool";
 
   // Economy/sponsor → economy page
@@ -137,53 +137,82 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const world = state.world;
 
   /** Render inline clickable entity tags for rikishi/stable referenced by an event */
-  const renderEntityTags = useCallback((e: EngineEvent) => {
-    if (!world) return null;
-    const tags: React.ReactNode[] = [];
-    const seen = new Set<string>();
+  const renderEntityTags = useCallback(
+    (e: EngineEvent) => {
+      if (!world) return null;
+      const tags: React.ReactNode[] = [];
+      const seen = new Set<string>();
 
-    const addRikishi = (id: string) => {
-      if (seen.has(id)) return;
-      seen.add(id);
-      const r = world.rikishi.get(id);
-      if (r) tags.push(<RikishiName key={`r-${r.id}`} id={r.id} name={r.shikona || r.id} className="text-[11px] font-medium" />);
-    };
-
-    // Primary entity
-    if (e.rikishiId) addRikishi(e.rikishiId);
-
-    // Bout events: show winner & loser as clickable names with "vs" separator
-    if ((e.category === "match" || e.category === "basho") && e.data) {
-      const winnerId = e.data.winnerId as string | undefined;
-      const loserId = e.data.loserId as string | undefined;
-      if (winnerId && loserId) {
-        // Clear primary tag, show bout-specific layout instead
-        tags.length = 0;
-        seen.clear();
-        const winner = world.rikishi.get(winnerId);
-        const loser = world.rikishi.get(loserId);
-        if (winner && loser) {
+      const addRikishi = (id: string) => {
+        if (seen.has(id)) return;
+        seen.add(id);
+        const r = world.rikishi.get(id);
+        if (r)
           tags.push(
-            <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
-              <RikishiName id={winner.id} name={winner.shikona || winner.id} className="text-[11px] font-medium text-primary" />
-              <span className="text-muted-foreground">def.</span>
-              <RikishiName id={loser.id} name={loser.shikona || loser.id} className="text-[11px] font-medium" />
-              {e.data.kimarite && <span className="text-muted-foreground">({e.data.kimarite})</span>}
-            </span>
+            <RikishiName
+              key={`r-${r.id}`}
+              id={r.id}
+              name={r.shikona || r.id}
+              className="text-[11px] font-medium"
+            />
           );
-          // Mark both as seen so they're not duplicated
-          seen.add(winnerId);
+      };
+
+      // Primary entity
+      if (e.rikishiId) addRikishi(e.rikishiId);
+
+      // Bout events: show winner & loser as clickable names with "vs" separator
+      if ((e.category === "match" || e.category === "basho") && e.data) {
+        const winnerId = e.data.winnerId as string | undefined;
+        const loserId = e.data.loserId as string | undefined;
+        if (winnerId && loserId) {
+          // Clear primary tag, show bout-specific layout instead
+          tags.length = 0;
+          seen.clear();
+          const winner = world.rikishi.get(winnerId);
+          const loser = world.rikishi.get(loserId);
+          if (winner && loser) {
+            tags.push(
+              <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
+                <RikishiName
+                  id={winner.id}
+                  name={winner.shikona || winner.id}
+                  className="text-[11px] font-medium text-primary"
+                />
+                <span className="text-muted-foreground">def.</span>
+                <RikishiName
+                  id={loser.id}
+                  name={loser.shikona || loser.id}
+                  className="text-[11px] font-medium"
+                />
+                {e.data.kimarite && (
+                  <span className="text-muted-foreground">({e.data.kimarite})</span>
+                )}
+              </span>
+            );
+            // Mark both as seen so they're not duplicated
+            seen.add(winnerId);
+          }
         }
       }
-    }
 
-    if (e.heyaId) {
-      const h = world.heyas.get(e.heyaId);
-      if (h) tags.push(<StableName key={`h-${h.id}`} id={h.id} name={h.name} className="text-[11px] font-medium" />);
-    }
-    if (tags.length === 0) return null;
-    return <span className="inline-flex items-center gap-1.5 flex-wrap">{tags}</span>;
-  }, [world]);
+      if (e.heyaId) {
+        const h = world.heyas.get(e.heyaId);
+        if (h)
+          tags.push(
+            <StableName
+              key={`h-${h.id}`}
+              id={h.id}
+              name={h.name}
+              className="text-[11px] font-medium"
+            />
+          );
+      }
+      if (tags.length === 0) return null;
+      return <span className="inline-flex items-center gap-1.5 flex-wrap">{tags}</span>;
+    },
+    [world]
+  );
   const events = useMemo(() => {
     if (!world?.events?.log) return [];
     const all = [...world.events.log];
@@ -199,12 +228,13 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
   const grouped = useMemo(() => {
     const groups: { label: string; events: EngineEvent[] }[] = [];
     let currentLabel = "";
-    
+
     for (const e of filteredEvents) {
-      const label = e.bashoNumber !== undefined
-        ? `Basho ${e.bashoNumber} · Year ${e.year}`
-        : `Week ${e.week} · Year ${e.year}`;
-      
+      const label =
+        e.bashoNumber !== undefined
+          ? `Basho ${e.bashoNumber} · Year ${e.year}`
+          : `Week ${e.week} · Year ${e.year}`;
+
       if (label !== currentLabel) {
         currentLabel = label;
         groups.push({ label, events: [e] });
@@ -215,11 +245,14 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     return groups;
   }, [filteredEvents]);
 
-  const handleEventClick = useCallback((e: EngineEvent) => {
-    const route = getEventRoute(e);
-    if (route) {
-    }
-  }, [navigate]);
+  const handleEventClick = useCallback(
+    (e: EngineEvent) => {
+      const route = getEventRoute(e);
+      if (route) {
+      }
+    },
+    [navigate]
+  );
 
   const filterOptions = [
     { value: "all", label: "All" },
@@ -262,7 +295,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
               No events yet. Advance time to see updates.
             </p>
           )}
-          
+
           {grouped.map((group, gi) => (
             <div key={gi}>
               <div className="sticky top-0 z-10 px-2 py-1 bg-card/90">
@@ -270,7 +303,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                   {group.label}
                 </span>
               </div>
-              
+
               {group.events.map((e) => {
                 const meta = getCategoryMeta(e.category);
                 const Icon = meta.icon;
@@ -318,9 +351,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
 
                     {isExpanded && (
                       <div id={`event-details-${e.id}`} className="mt-1 ml-6 space-y-1.5">
-                        <p className="text-[11px] text-muted-foreground">
-                          {e.summary}
-                        </p>
+                        <p className="text-[11px] text-muted-foreground">{e.summary}</p>
                         {renderEntityTags(e)}
                         <div className="flex items-center gap-1 flex-wrap">
                           <Badge variant="outline" className="text-[9px] h-4">

@@ -1,16 +1,9 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
-import {
-  Users,
-  ChevronRight,
-  HeartPulse,
-  AlertTriangle,
-  Star,
-} from "lucide-react";
+import { Users, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
@@ -33,17 +26,9 @@ const RosterEntryRow = React.memo(
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
-        <RikishiName
-          id={id}
-          name={shikona}
-          className="flex-1 font-medium truncate"
-        />
-        <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">
-          {rank}
-        </span>
-        {isInjured && (
-          <HeartPulse className="h-3 w-3 text-destructive shrink-0" />
-        )}
+        <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
+        <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{rank}</span>
+        {isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
         {(potentialBand === "star" || potentialBand === "generational") && (
           <Star className="h-3 w-3 text-gold shrink-0" />
         )}
@@ -51,18 +36,14 @@ const RosterEntryRow = React.memo(
         <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
           <div
             className={`h-full rounded-full transition-all duration-300 ${
-              fatigue > 70
-                ? "bg-destructive"
-                : fatigue > 40
-                  ? "bg-warning"
-                  : "bg-primary/60"
+              fatigue > 70 ? "bg-destructive" : fatigue > 40 ? "bg-warning" : "bg-primary/60"
             }`}
             style={{ width: `${fatigue}%` }}
           />
         </div>
       </div>
     );
-  },
+  }
 );
 
 export function RosterWidget() {
@@ -73,7 +54,7 @@ export function RosterWidget() {
       label: "All Rikishi",
       onClick: () => navigate({ to: "/rikishi" as any }),
     }),
-    [navigate],
+    [navigate]
   );
   const world = state.world;
 
@@ -106,6 +87,8 @@ export function RosterWidget() {
     };
   }, [world]);
 
+  const handleViewAllRikishi = React.useCallback(() => navigate({ to: "/rikishi" }), [navigate]);
+
   if (!world) return null;
 
   return (
@@ -134,11 +117,7 @@ export function RosterWidget() {
       <div className="h-1 rounded-full bg-muted overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigue > 70
-              ? "bg-destructive"
-              : avgFatigue > 40
-                ? "bg-warning"
-                : "bg-primary"
+            avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
           }`}
           style={{ width: `${avgFatigue}%` }}
         />
@@ -166,16 +145,10 @@ export function RosterWidget() {
           return nodes;
         })()}
         {roster.length > 8 && (
-          <TooltipWrap
-            content="Navigate to the full rikishi directory"
-            side="top"
-          >
+          <TooltipWrap content="Navigate to the full rikishi directory" side="top">
             <Button
               variant="ghost"
-              onClick={React.useCallback(
-                () => navigate({ to: "/rikishi" }),
-                [navigate],
-              )}
+              onClick={handleViewAllRikishi}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
               +{roster.length - 8} more wrestlers →
