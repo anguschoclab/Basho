@@ -43,6 +43,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
           return (
             <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
               <button
+                aria-current={isActive ? "page" : undefined}
                 onClick={() => {
                   if (tab.href) {
                     navigate({ to: tab.href as any });
@@ -51,7 +52,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
                   }
                 }}
                 className={cn(
-                  "relative h-full px-4 flex items-center transition-all duration-150 group",
+                  "relative h-full px-4 flex items-center transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset rounded-sm",
                   isActive
                     ? "text-[hsl(var(--primary))]"
                     : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
