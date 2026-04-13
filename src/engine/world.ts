@@ -201,6 +201,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   }
 
   const standingEntries =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     standings instanceof Map ? Array.from(standings.entries()) : Object.entries(standings as any);
 
   const currentBanzukeList: BanzukeEntry[] = [];
@@ -282,6 +283,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     let consecutiveKyujo = rikishi?.consecutiveKyujo || 0;
     let pressureScore = rikishi?.pressureScore || 0;
     let councilWarnings = rikishi?.councilWarnings || 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let statsUpdate: any = {};
 
     if (rikishi?.rank === "yokozuna") {
@@ -473,6 +475,7 @@ export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
   }
 
   const statsArr =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     standings instanceof Map ? standings.get(rikishiId) : (standings as any)[rikishiId];
 
   if (!statsArr) {

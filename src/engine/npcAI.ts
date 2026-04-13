@@ -149,6 +149,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 }
 
 /** Worker: Training Sub-Agent */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function spawnTrainingWorker(ctx: any) {
   const intensity = decideTrainingIntensity(
     ctx.perception,
@@ -174,12 +175,14 @@ function spawnTrainingWorker(ctx: any) {
 }
 
 /** Worker: Scouting Sub-Agent */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function spawnScoutingWorker(ctx: any) {
   const decision = decideScoutingPriority(
     {
       runwayBand: ctx.runwayBand,
       rosterSize: ctx.rosterSize,
       rosterStrengthBand: ctx.rosterStrengthBand,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     ctx.ambition,
     ctx.hasSleeperScout
@@ -191,8 +194,10 @@ function spawnScoutingWorker(ctx: any) {
 }
 
 /** Worker: Personnel Sub-Agent */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function spawnPersonnelWorker(ctx: any) {
   const reasoning: string[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const protectDecision = identifyProtects(ctx as any, ctx.welfareDiscipline);
   if (protectDecision.protectIds.length > 0) {
     reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
@@ -269,6 +274,7 @@ function spawnPersonnelWorker(ctx: any) {
 }
 
 /** Helper: Isolated perception view */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function rpPerception(p: any) {
   return {
     rikishiPerceptions: p.rikishiPerceptions,
@@ -288,6 +294,7 @@ function rpPerception(p: any) {
 export function consolidateOyakataMemory(
   world: WorldState,
   heyaId: Id,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   perception: any
 ): StateImpact {
   const builder = createImpactBuilder("consolidateOyakataMemory");
@@ -374,6 +381,7 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
     ...decision.individualDevelops,
   ]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const existingFocus = state.focusSlots.filter((f: any) => !allManagedIds.has(f.rikishiId));
 
   const protectSlots = decision.individualProtects.map((id) => ({
@@ -408,8 +416,6 @@ export function tickWeekNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekNPC");
 
   const playerHeyaId = world.playerHeyaId;
-
-  const _decisionsApplied = false;
 
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
@@ -490,6 +496,8 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     const candidateHeyas = getAvailableStables(world).filter(
       (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
     );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     for (const heya of stableSort(candidateHeyas, (x: any) => (x as any).id || String(x))) {
       const oyakata = world.oyakata.get(heya.oyakataId)!;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
@@ -506,6 +514,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
   const candidateHeyas2 = getAvailableStables(world).filter(
     (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
   );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const heya of stableSort(candidateHeyas2, (x: any) => (x as any).id || String(x))) {
     const oyakata = world.oyakata.get(heya.oyakataId)!;
 

@@ -2,8 +2,11 @@
 import { JSDOM } from "jsdom";
 const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
 Object.defineProperty(global, "document", { value: dom.window.document, writable: true });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 Object.defineProperty(global, "window", { value: dom.window as any, writable: true });
 Object.defineProperty(global, "navigator", { value: dom.window.navigator, writable: true });
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * @vitest-environment jsdom

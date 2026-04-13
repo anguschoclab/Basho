@@ -15,6 +15,7 @@ export function generateRikishiStats(args: {
   rng: SeededRNG;
   rank: Rank;
   profile: CombatProfile;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any {
   const { rng, rank, profile } = args;
 
@@ -50,7 +51,7 @@ export function generateRikishiStats(args: {
     balance: genStat("balance"),
     weight,
     height,
-  } as any;
+  };
 }
 
 /**
@@ -132,6 +133,7 @@ function simulateCareerProgression(args: {
   let totalLosses = 0;
   let yushoCount = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const divisionRecords: any = {
     makuuchi: { wins: 0, losses: 0 },
     juryo: { wins: 0, losses: 0 },
@@ -202,6 +204,7 @@ export function generateSyntheticCareer(args: {
   birthYear: number;
   currentYear: number;
   nationality?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): { careerWins: number; careerLosses: number; yushoCount: number; divisionRecords: any } {
   // Use career progression simulation for more realistic records
   const progression = simulateCareerProgression({
@@ -389,6 +392,7 @@ function createCombatStats(
 }
 
 function createCareerHistory(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   records: { careerWins: number; careerLosses: number; yushoCount: number; divisionRecords?: any },
 
   _division: Division
@@ -432,6 +436,7 @@ function createCareerHistory(
  * This is the final step of the recruitment pipeline.
  */
 export function convertCandidateToRikishi(args: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   candidate: any; // TalentCandidate
   rng: SeededRNG;
   currentYear: number;
@@ -495,7 +500,9 @@ export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;
   currentYear: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   poolType: any; // TalentPoolType
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any {
   const { id, rng, currentYear, poolType } = args;
 

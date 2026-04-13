@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Id } from "../engine/types/common";
 import type { WorldState } from "../engine/types/world";
 import { queryEvents } from "../engine/events";

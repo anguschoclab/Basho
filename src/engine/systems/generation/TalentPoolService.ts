@@ -143,6 +143,7 @@ export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): b
 /**
  * Reinjects a released rikishi back into the talent pool as a free agent.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function reinjectToTalentPool(world: WorldState, rikishi: any): void {
   const tp = ensureTalentPoolState(world);
 
@@ -377,6 +378,7 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
 export function resolveCandidateSuitor(
   world: WorldState,
   candidate: TalentCandidate
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { signed: boolean; candidate: TalentCandidate; winnerHeya?: any } {
   if (candidate.availabilityState !== "in_talks" || !candidate.competingSuitors.length) {
     return { signed: false, candidate };
@@ -530,6 +532,7 @@ export function fillVacanciesForNPCWithBidding(
   }
 
   // For each heya with vacancies, calculate bids for available candidates
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: any }> = [];
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
@@ -549,6 +552,7 @@ export function fillVacanciesForNPCWithBidding(
 
       const bidAmount = recruitmentStrat.calculateMaxBid(
         world,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         heya as any,
         oyakata,
         candidate.candidateId,

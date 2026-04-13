@@ -20,7 +20,6 @@ import { onRikishiRetired } from "../records";
 import { recordOyakataHandover } from "../lineage";
 import { rngForWorld } from "../rng";
 import { createImpactBuilder } from "../core/ImpactBuilder";
-import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
@@ -37,14 +36,10 @@ import {
  * still mutate directly and will be migrated in Phase 4.
  */
 export function runGovernanceReview(world: WorldState): StateImpact {
-<<<<<<< Updated upstream
-  const builder = createImpactBuilder("governanceReview");
-=======
   const impacts: StateImpact[] = [];
-  const builder = createImpactBuilder('governanceReview');
->>>>>>> Stashed changes
+  const builder = createImpactBuilder("governanceReview");
 
-  for (let heya of stableSort(world.heyas.values(), (x) => x.id)) {
+  for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
 
@@ -103,7 +98,6 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         }
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
-<<<<<<< Updated upstream
       if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
@@ -117,12 +111,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
             },
             { heyaId: heya.id, importance: "headline" }
           );
-          // Still call directly - will migrate in Phase 4
-          executeMerger(world, heya.id, targetId, "financial_insolvency");
-=======
           // Queue merger impact
           impacts.push(executeMerger(world, heya.id, targetId, "financial_insolvency"));
->>>>>>> Stashed changes
         }
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {

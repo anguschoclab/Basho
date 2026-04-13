@@ -38,6 +38,7 @@ export function createHeyaWithOyakata(args: {
     "nurturer",
     "tyrant",
     "strategist",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ]) as any;
   const age = 45 + rng.int(0, 20);
 
@@ -262,6 +263,7 @@ export function generateInitialWorld(seed: string): WorldState {
     isInitialSeed: true,
     sponsorPool: generateInitialSponsorPool(seed),
     trainingState: new Map(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   // 3. Establish Initial Koenkai Relationships (Constitution A6)
