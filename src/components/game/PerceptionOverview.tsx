@@ -1,7 +1,7 @@
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,17 +9,51 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StableName, RikishiName } from "@/components/ClickableName";
-import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, GitCompareArrows, Swords, User } from "lucide-react";
+import {
+  Building2,
+  Eye,
+  Shield,
+  Heart,
+  TrendingUp,
+  Flame,
+  Users,
+  GitCompareArrows,
+  Swords,
+  User,
+} from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
-import { 
-  buildPerceptionSnapshot, 
-  projectH2HBetweenHeyas 
-} from "@/presenters/uiDigest";
+import { buildPerceptionSnapshot, projectH2HBetweenHeyas } from "@/presenters/uiDigest";
+
+const RikishiSelectorItem = React.memo(
+  ({
+    r,
+    isSelected,
+    onSelect,
+  }: {
+    r: { rikishiId: string; shikona: string; rank: string };
+    isSelected: boolean;
+    onSelect: (id: string) => void;
+  }) => {
+    return (
+      <Button
+        variant="ghost"
+        className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
+          isSelected
+            ? "bg-primary/20 text-primary hover:bg-primary/30"
+            : "hover:bg-secondary/50 text-foreground"
+        }`}
+        onClick={() => onSelect(r.rikishiId)}
+      >
+        {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
+      </Button>
+    );
+  }
+);
 
 function RikishiSelectorList({
   perceptions,
   selectedId,
-  onSelect
+  onSelect,
 }: {
   perceptions: Array<{ rikishiId: string; shikona: string; rank: string }>;
   selectedId: string;
@@ -28,16 +62,13 @@ function RikishiSelectorList({
   return (
     <ScrollArea className="max-h-28 border border-border rounded-md">
       <div className="p-1 space-y-0.5">
-        {perceptions.map(r => (
-          <Button variant="ghost"
+        {perceptions.map((r) => (
+          <RikishiSelectorItem
             key={r.rikishiId}
-            className={`w-full justify-start h-auto text-xs px-2 py-1 rounded transition-colors ${
-              selectedId === r.rikishiId ? "bg-primary/20 text-primary hover:bg-primary/30" : "hover:bg-secondary/50 text-foreground"
-            }`}
-            onClick={() => onSelect(r.rikishiId)}
-          >
-            {r.shikona} <span className="text-muted-foreground capitalize">({r.rank})</span>
-          </Button>
+            r={r}
+            isSelected={selectedId === r.rikishiId}
+            onSelect={onSelect}
+          />
         ))}
       </div>
     </ScrollArea>
@@ -112,13 +143,15 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
     const strengthOrder = ["dominant", "strong", "competitive", "developing", "weak"];
     results.sort((a, b) => {
       if (a.isPlayer !== b.isPlayer) return a.isPlayer ? -1 : 1;
-      return strengthOrder.indexOf(a.rosterStrengthBand) - strengthOrder.indexOf(b.rosterStrengthBand);
+      return (
+        strengthOrder.indexOf(a.rosterStrengthBand) - strengthOrder.indexOf(b.rosterStrengthBand)
+      );
     });
     return { snapshots: results, snapMap: map };
   }, [world, playerHeyaId]);
 
   const handleToggleCompare = (heyaId: string) => {
-    setCompareIds(prev => {
+    setCompareIds((prev) => {
       if (prev[0] === heyaId) return [null, prev[1]];
       if (prev[1] === heyaId) return [prev[0], null];
       if (!prev[0]) return [heyaId, prev[1]];
@@ -135,12 +168,20 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
       <div className="flex items-center gap-2 flex-wrap">
         <Eye className="h-5 w-5 text-primary" />
         <h3 className="font-display font-semibold">Stable Perception Intel</h3>
-        <Badge variant="secondary" className="text-[10px]">{snapshots.length} stables</Badge>
+        <Badge variant="secondary" className="text-[10px]">
+          {snapshots.length} stables
+        </Badge>
         <Button
           variant={comparing ? "default" : "outline"}
           size="sm"
           className="ml-auto gap-1.5 h-7 text-xs"
-          onClick={() => { setComparing(!comparing); if (comparing) { setCompareIds([null, null]); setCompareMode("stables"); } }}
+          onClick={() => {
+            setComparing(!comparing);
+            if (comparing) {
+              setCompareIds([null, null]);
+              setCompareMode("stables");
+            }
+          }}
         >
           <GitCompareArrows className="h-3.5 w-3.5" />
           {comparing ? "Exit Compare" : "Compare Stables"}
@@ -154,45 +195,47 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
 
       {/* Comparison panel */}
       {comparing && snapA && snapB && (
-          <Card className="paper border-primary/20">
-            <CardHeader className="pb-2 pt-3 px-4">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <GitCompareArrows className="h-4 w-4 text-primary" />
-                {snapA.heyaName} vs {snapB.heyaName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-3">
-              <Tabs value={compareMode} onValueChange={(v) => setCompareMode(v as any)}>
-                <TabsList className="grid w-full max-w-xs grid-cols-3 mb-3">
-                  <TabsTrigger value="stables" className="gap-1 text-xs">
-                    <Building2 className="h-3 w-3" /> Stables
-                  </TabsTrigger>
-                  <TabsTrigger value="rikishi" className="gap-1 text-xs">
-                    <User className="h-3 w-3" /> Rikishi
-                  </TabsTrigger>
-                  <TabsTrigger value="h2h" className="gap-1 text-xs">
-                    <Swords className="h-3 w-3" /> H2H
-                  </TabsTrigger>
-                </TabsList>
+        <Card className="paper border-primary/20">
+          <CardHeader className="pb-2 pt-3 px-4">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <GitCompareArrows className="h-4 w-4 text-primary" />
+              {snapA.heyaName} vs {snapB.heyaName}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-3">
+            <Tabs value={compareMode} onValueChange={(v) => setCompareMode(v as any)}>
+              <TabsList className="grid w-full max-w-xs grid-cols-3 mb-3">
+                <TabsTrigger value="stables" className="gap-1 text-xs">
+                  <Building2 className="h-3 w-3" /> Stables
+                </TabsTrigger>
+                <TabsTrigger value="rikishi" className="gap-1 text-xs">
+                  <User className="h-3 w-3" /> Rikishi
+                </TabsTrigger>
+                <TabsTrigger value="h2h" className="gap-1 text-xs">
+                  <Swords className="h-3 w-3" /> H2H
+                </TabsTrigger>
+              </TabsList>
 
-                <TabsContent value="stables">
-                  <StableMetricGrid snapA={snapA} snapB={snapB} />
-                </TabsContent>
+              <TabsContent value="stables">
+                <StableMetricGrid snapA={snapA} snapB={snapB} />
+              </TabsContent>
 
-                <TabsContent value="rikishi">
-                  <RikishiComparisonGrid snapA={snapA} snapB={snapB} />
-                </TabsContent>
+              <TabsContent value="rikishi">
+                <RikishiComparisonGrid snapA={snapA} snapB={snapB} />
+              </TabsContent>
 
-                <TabsContent value="h2h">
-                  <H2HPanel heyaAId={snapA.heyaId} heyaBId={snapB.heyaId} />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+              <TabsContent value="h2h">
+                <H2HPanel heyaAId={snapA.heyaId} heyaBId={snapB.heyaId} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       )}
       {comparing && (!snapA || !snapB) && (
         <div className="text-xs text-muted-foreground border border-dashed border-primary/30 rounded-lg p-4 text-center">
-          {!snapA && !snapB ? "Pick two stables from the list below." : "Pick one more stable to compare."}
+          {!snapA && !snapB
+            ? "Pick two stables from the list below."
+            : "Pick one more stable to compare."}
         </div>
       )}
 
@@ -206,8 +249,8 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
                 snap={snap}
                 comparing={comparing}
                 isSelected={isSelected}
-                onToggleCompare={() => handleToggleCompare(snap.heyaId)}
-                onNavigate={() => navigate({ to: "/stable/$id", params: { id: snap.heyaId } as any })}
+                onToggleCompare={handleToggleCompare}
+                onNavigate={handleNavigate}
               />
             );
           })}
@@ -223,17 +266,44 @@ const COMPARE_ROWS: Array<{
   get: (s: any) => string;
   colorMap?: Record<string, string>;
 }> = [
-  { label: "Stature", icon: Building2, get: s => s.statureBand, colorMap: STATURE_COLOR },
-  { label: "Roster", icon: Users, get: s => `${s.rosterStrengthBand} (${s.rosterSize})`, colorMap: ROSTER_COLOR },
-  { label: "Morale", icon: Heart, get: s => s.moraleBand, colorMap: MORALE_COLOR },
-  { label: "Welfare", icon: Shield, get: s => s.welfareRiskBand, colorMap: WELFARE_COLOR },
-  { label: "Prestige", icon: TrendingUp, get: s => s.prestigeBand },
-  { label: "Finances", icon: Building2, get: s => s.runwayBand },
-  { label: "Media Heat", icon: Flame, get: s => s.stableMediaHeatBand },
-  { label: "Rivalry", icon: Flame, get: s => s.rivalryPressureBand },
-  { label: "Style Bias", icon: Eye, get: s => String(s.styleBias) },
-  { label: "Compliance", icon: Shield, get: s => s.complianceState },
+  { label: "Stature", icon: Building2, get: (s) => s.statureBand, colorMap: STATURE_COLOR },
+  {
+    label: "Roster",
+    icon: Users,
+    get: (s) => `${s.rosterStrengthBand} (${s.rosterSize})`,
+    colorMap: ROSTER_COLOR,
+  },
+  { label: "Morale", icon: Heart, get: (s) => s.moraleBand, colorMap: MORALE_COLOR },
+  { label: "Welfare", icon: Shield, get: (s) => s.welfareRiskBand, colorMap: WELFARE_COLOR },
+  { label: "Prestige", icon: TrendingUp, get: (s) => s.prestigeBand },
+  { label: "Finances", icon: Building2, get: (s) => s.runwayBand },
+  { label: "Media Heat", icon: Flame, get: (s) => s.stableMediaHeatBand },
+  { label: "Rivalry", icon: Flame, get: (s) => s.rivalryPressureBand },
+  { label: "Style Bias", icon: Eye, get: (s) => String(s.styleBias) },
+  { label: "Compliance", icon: Shield, get: (s) => s.complianceState },
 ];
+
+const CompareRowItem = React.memo(
+  ({ row, snapA, snapB }: { row: (typeof COMPARE_ROWS)[0]; snapA: any; snapB: any }) => {
+    const valA = row.get(snapA);
+    const valB = row.get(snapB);
+    const bandA = valA.split(" ")[0];
+    const bandB = valB.split(" ")[0];
+    const colorA = row.colorMap?.[bandA] ?? "";
+    const colorB = row.colorMap?.[bandB] ?? "";
+    return (
+      <div className="grid grid-cols-[1fr_24px_80px_24px_1fr] gap-1 text-xs py-1 items-center">
+        <div className={`text-right capitalize font-medium ${colorA}`}>{valA}</div>
+        <div className="flex justify-center">
+          <row.icon className="h-3 w-3 text-muted-foreground" />
+        </div>
+        <div className="text-center text-muted-foreground">{row.label}</div>
+        <div />
+        <div className={`capitalize font-medium ${colorB}`}>{valB}</div>
+      </div>
+    );
+  }
+);
 
 function StableMetricGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
   return (
@@ -245,30 +315,20 @@ function StableMetricGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
         <div />
         <div className="truncate text-primary">{snapB.heyaName}</div>
       </div>
-      {COMPARE_ROWS.map(row => {
-        const valA = row.get(snapA);
-        const valB = row.get(snapB);
-        const bandA = valA.split(" ")[0];
-        const bandB = valB.split(" ")[0];
-        const colorA = row.colorMap?.[bandA] ?? "";
-        const colorB = row.colorMap?.[bandB] ?? "";
-        return (
-          <div key={row.label} className="grid grid-cols-[1fr_24px_80px_24px_1fr] gap-1 text-xs py-1 items-center">
-            <div className={`text-right capitalize font-medium ${colorA}`}>{valA}</div>
-            <div className="flex justify-center"><row.icon className="h-3 w-3 text-muted-foreground" /></div>
-            <div className="text-center text-muted-foreground">{row.label}</div>
-            <div />
-            <div className={`capitalize font-medium ${colorB}`}>{valB}</div>
-          </div>
-        );
-      })}
+      {COMPARE_ROWS.map((row) => (
+        <CompareRowItem key={row.label} row={row} snapA={snapA} snapB={snapB} />
+      ))}
     </>
   );
 }
 
 function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
-  const [selectedA, setSelectedA] = useState<string | null>(snapA.rikishiPerceptions[0]?.rikishiId ?? null);
-  const [selectedB, setSelectedB] = useState<string | null>(snapB.rikishiPerceptions[0]?.rikishiId ?? null);
+  const [selectedA, setSelectedA] = useState<string | null>(
+    snapA.rikishiPerceptions[0]?.rikishiId ?? null
+  );
+  const [selectedB, setSelectedB] = useState<string | null>(
+    snapB.rikishiPerceptions[0]?.rikishiId ?? null
+  );
 
   const rA = snapA.rikishiPerceptions.find((r: any) => r.rikishiId === selectedA);
   const rB = snapB.rikishiPerceptions.find((r: any) => r.rikishiId === selectedB);
@@ -278,11 +338,19 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapA.heyaName}</label>
-          <RikishiSelectorList perceptions={snapA.rikishiPerceptions} selectedId={selectedA!} onSelect={setSelectedA} />
+          <RikishiSelectorList
+            perceptions={snapA.rikishiPerceptions}
+            selectedId={selectedA!}
+            onSelect={setSelectedA}
+          />
         </div>
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapB.heyaName}</label>
-          <RikishiSelectorList perceptions={snapB.rikishiPerceptions} selectedId={selectedB!} onSelect={setSelectedB} />
+          <RikishiSelectorList
+            perceptions={snapB.rikishiPerceptions}
+            selectedId={selectedB!}
+            onSelect={setSelectedB}
+          />
         </div>
       </div>
 
@@ -297,19 +365,37 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
           </div>
           <RikishiRow label="Rank" valA={rA.rank} valB={rB.rank} />
           <RikishiRow label="Style" valA={rA.style} valB={rB.style} />
-          <RikishiRow label="Health" valA={rA.healthBand} valB={rB.healthBand} colorMapA={HEALTH_COLOR} colorMapB={HEALTH_COLOR} />
-          <RikishiRow label="Momentum" valA={rA.momentum} valB={rB.momentum} colorMapA={MOMENTUM_COLOR} colorMapB={MOMENTUM_COLOR} />
+          <RikishiRow
+            label="Health"
+            valA={rA.healthBand}
+            valB={rB.healthBand}
+            colorMapA={HEALTH_COLOR}
+            colorMapB={HEALTH_COLOR}
+          />
+          <RikishiRow
+            label="Momentum"
+            valA={rA.momentum}
+            valB={rB.momentum}
+            colorMapA={MOMENTUM_COLOR}
+            colorMapB={MOMENTUM_COLOR}
+          />
           <RikishiRow label="Media" valA={rA.mediaHeatBand} valB={rB.mediaHeatBand} />
         </div>
       ) : (
-        <p className="text-xs text-muted-foreground text-center py-4">Select one rikishi from each stable.</p>
+        <p className="text-xs text-muted-foreground text-center py-4">
+          Select one rikishi from each stable.
+        </p>
       )}
     </div>
   );
 }
 
 function RikishiRow({
-  label, valA, valB, colorMapA, colorMapB,
+  label,
+  valA,
+  valB,
+  colorMapA,
+  colorMapB,
 }: {
   label: string;
   valA: string;
@@ -328,13 +414,7 @@ function RikishiRow({
   );
 }
 
-function H2HPanel({
-  heyaAId,
-  heyaBId,
-}: {
-  heyaAId: string;
-  heyaBId: string;
-}) {
+function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: string }) {
   const { state } = useGame();
   const world = state.world;
 
@@ -349,8 +429,12 @@ function H2HPanel({
     return (
       <div className="text-center py-6">
         <Swords className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
-        <p className="text-xs text-muted-foreground">No bouts recorded between these stables yet.</p>
-        <p className="text-[10px] text-muted-foreground mt-1">H2H records build up as basho are played.</p>
+        <p className="text-xs text-muted-foreground">
+          No bouts recorded between these stables yet.
+        </p>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          H2H records build up as basho are played.
+        </p>
       </div>
     );
   }
@@ -370,7 +454,8 @@ function H2HPanel({
         </div>
       </div>
       <div className="text-center text-[10px] text-muted-foreground">
-        {h2hData.totalBouts} bout{h2hData.totalBouts !== 1 ? "s" : ""} across {h2hData.matchups.length} matchup{h2hData.matchups.length !== 1 ? "s" : ""}
+        {h2hData.totalBouts} bout{h2hData.totalBouts !== 1 ? "s" : ""} across{" "}
+        {h2hData.matchups.length} matchup{h2hData.matchups.length !== 1 ? "s" : ""}
       </div>
 
       {/* Win share bar */}
@@ -389,28 +474,36 @@ function H2HPanel({
       <ScrollArea className="max-h-48">
         <div className="space-y-1.5 pr-2">
           {h2hData.matchups.map((m: any, i: number) => (
-            <div key={i} className="flex items-center justify-between text-xs p-2 rounded bg-secondary/30">
-              <div className="flex-1 text-right truncate">
-                <RikishiName id={m.rikishiAId} name={m.rikishiAName} className="text-xs font-medium" />
-              </div>
-              <div className="mx-3 font-mono text-muted-foreground whitespace-nowrap">
-                <span className={m.aWins > m.bWins ? "text-primary font-bold" : ""}>{m.aWins}</span>
-                {" - "}
-                <span className={m.bWins > m.aWins ? "text-primary font-bold" : ""}>{m.bWins}</span>
-              </div>
-              <div className="flex-1 truncate">
-                <RikishiName id={m.rikishiBId} name={m.rikishiBName} className="text-xs font-medium" />
-              </div>
-              {m.lastKimarite && (
-                <Badge variant="outline" className="text-[9px] ml-2 shrink-0">{m.lastKimarite}</Badge>
-              )}
-            </div>
+            <MatchupRow key={i} m={m} />
           ))}
         </div>
       </ScrollArea>
     </div>
   );
 }
+
+const MatchupRow = React.memo(({ m }: { m: any }) => {
+  return (
+    <div className="flex items-center justify-between text-xs p-2 rounded bg-secondary/30">
+      <div className="flex-1 text-right truncate">
+        <RikishiName id={m.rikishiAId} name={m.rikishiAName} className="text-xs font-medium" />
+      </div>
+      <div className="mx-3 font-mono text-muted-foreground whitespace-nowrap">
+        <span className={m.aWins > m.bWins ? "text-primary font-bold" : ""}>{m.aWins}</span>
+        {" - "}
+        <span className={m.bWins > m.aWins ? "text-primary font-bold" : ""}>{m.bWins}</span>
+      </div>
+      <div className="flex-1 truncate">
+        <RikishiName id={m.rikishiBId} name={m.rikishiBName} className="text-xs font-medium" />
+      </div>
+      {m.lastKimarite && (
+        <Badge variant="outline" className="text-[9px] ml-2 shrink-0">
+          {m.lastKimarite}
+        </Badge>
+      )}
+    </div>
+  );
+});
 
 function PerceptionChip({
   icon: Icon,
@@ -437,72 +530,124 @@ function PerceptionChip({
   );
 }
 
-function StablePerceptionCard({
-  snap,
-  comparing,
-  isSelected,
-  onToggleCompare,
-  onNavigate,
-}: {
-  snap: any;
-  comparing: boolean;
-  isSelected: boolean;
-  onToggleCompare: () => void;
-  onNavigate: () => void;
-}) {
-  return (
-    <Card
-      className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
-      onClick={(e) => {
-        if (comparing) {
-          e.preventDefault();
-          onToggleCompare();
-        } else {
-          onNavigate();
-        }
-      }}
-    >
-      <CardContent className="p-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              {comparing ? (
-                <span className="font-medium text-sm">{snap.heyaName}</span>
-              ) : (
-                <StableName id={snap.heyaId} name={snap.heyaName} className="font-medium text-sm" />
-              )}
-              {snap.isPlayer && (
-                <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
-                  Your Stable
+const StablePerceptionCard = React.memo(
+  ({
+    snap,
+    comparing,
+    isSelected,
+    onToggleCompare,
+    onNavigate,
+  }: {
+    snap: any;
+    comparing: boolean;
+    isSelected: boolean;
+    onToggleCompare: (id: string) => void;
+    onNavigate: (id: string) => void;
+  }) => {
+    return (
+      <Card
+        className={`paper cursor-pointer hover:border-primary/50 transition-all ${snap.isPlayer ? "border-primary/30 bg-primary/5" : ""} ${isSelected ? "ring-2 ring-primary" : ""}`}
+        onClick={(e) => {
+          if (comparing) {
+            e.preventDefault();
+            onToggleCompare(snap.heyaId);
+          } else {
+            onNavigate(snap.heyaId);
+          }
+        }}
+      >
+        <CardContent className="p-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                {comparing ? (
+                  <span className="font-medium text-sm">{snap.heyaName}</span>
+                ) : (
+                  <StableName
+                    id={snap.heyaId}
+                    name={snap.heyaName}
+                    className="font-medium text-sm"
+                  />
+                )}
+                {snap.isPlayer && (
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] bg-primary/10 text-primary border-primary/30"
+                  >
+                    Your Stable
+                  </Badge>
+                )}
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] capitalize ${STATURE_COLOR[snap.statureBand] ?? ""}`}
+                >
+                  {snap.statureBand}
                 </Badge>
-              )}
-              <Badge variant="outline" className={`text-[10px] capitalize ${STATURE_COLOR[snap.statureBand] ?? ""}`}>
-                {snap.statureBand}
-              </Badge>
-              {comparing && isSelected && (
-                <Badge variant="default" className="text-[10px]">Selected</Badge>
-              )}
-            </div>
+                {comparing && isSelected && (
+                  <Badge variant="default" className="text-[10px]">
+                    Selected
+                  </Badge>
+                )}
+              </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 mt-2">
-              <PerceptionChip icon={Users} label="Roster" value={snap.rosterStrengthBand} count={snap.rosterSize} color={ROSTER_COLOR[snap.rosterStrengthBand]} />
-              <PerceptionChip icon={Heart} label="Morale" value={snap.moraleBand} color={MORALE_COLOR[snap.moraleBand]} />
-              <PerceptionChip icon={Shield} label="Welfare" value={snap.welfareRiskBand} color={WELFARE_COLOR[snap.welfareRiskBand]} />
-              <PerceptionChip icon={Flame} label="Media" value={snap.stableMediaHeatBand} color={snap.stableMediaHeatBand === "blazing" ? "text-destructive" : snap.stableMediaHeatBand === "hot" ? "text-orange-400" : "text-muted-foreground"} />
-            </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 mt-2">
+                <PerceptionChip
+                  icon={Users}
+                  label="Roster"
+                  value={snap.rosterStrengthBand}
+                  count={snap.rosterSize}
+                  color={ROSTER_COLOR[snap.rosterStrengthBand]}
+                />
+                <PerceptionChip
+                  icon={Heart}
+                  label="Morale"
+                  value={snap.moraleBand}
+                  color={MORALE_COLOR[snap.moraleBand]}
+                />
+                <PerceptionChip
+                  icon={Shield}
+                  label="Welfare"
+                  value={snap.welfareRiskBand}
+                  color={WELFARE_COLOR[snap.welfareRiskBand]}
+                />
+                <PerceptionChip
+                  icon={Flame}
+                  label="Media"
+                  value={snap.stableMediaHeatBand}
+                  color={
+                    snap.stableMediaHeatBand === "blazing"
+                      ? "text-destructive"
+                      : snap.stableMediaHeatBand === "hot"
+                        ? "text-orange-400"
+                        : "text-muted-foreground"
+                  }
+                />
+              </div>
 
-            <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground flex-wrap">
-              <span>Prestige: <strong className="text-foreground capitalize">{snap.prestigeBand}</strong></span>
-              <span>Finances: <strong className="text-foreground capitalize">{snap.runwayBand}</strong></span>
-              <span>Rivalry: <strong className="text-foreground capitalize">{snap.rivalryPressureBand}</strong></span>
-              <span>Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong></span>
-              {snap.complianceState !== "compliant" && (
-                <span className="text-orange-400">⚠ {snap.complianceState}</span>
-              )}
+              <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground flex-wrap">
+                <span>
+                  Prestige:{" "}
+                  <strong className="text-foreground capitalize">{snap.prestigeBand}</strong>
+                </span>
+                <span>
+                  Finances:{" "}
+                  <strong className="text-foreground capitalize">{snap.runwayBand}</strong>
+                </span>
+                <span>
+                  Rivalry:{" "}
+                  <strong className="text-foreground capitalize">{snap.rivalryPressureBand}</strong>
+                </span>
+                <span>
+                  Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong>
+                </span>
+                {snap.complianceState !== "compliant" && (
+                  <span className="text-orange-400">⚠ {snap.complianceState}</span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+        </CardContent>
+      </Card>
+    );
+  }
+);
