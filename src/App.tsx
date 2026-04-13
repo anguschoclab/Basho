@@ -6,13 +6,13 @@ import { RouterProvider } from "@tanstack/react-router";
 import { GameProvider } from "./contexts/GameContext";
 import { OpfsQuotaListener } from "./components/OpfsQuotaListener";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { TitleBar } from "./components/TitleBar";
 import { router } from "./routes";
-
-const queryClient = new QueryClient();
-
 import { WorkerInitializer } from "./components/worker/WorkerInitializer";
 import { InboxNewsTicker } from "./components/game/InboxNewsTicker";
 import { CrisisModal } from "./components/game/CrisisModal";
+
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -25,6 +25,7 @@ const App = () => (
           <Toaster />
           <OpfsQuotaListener />
           <Sonner />
+          <TitleBar />
           <RouterProvider router={router} />
         </GameProvider>
       </TooltipProvider>

@@ -1,0 +1,89 @@
+import { useEffect, useState } from "react";
+import { Minus, Square, X } from "lucide-react";
+
+interface TitleBarProps {
+  title?: string;
+}
+
+export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  useEffect(() => {
+    // Check if running in Electron
+    const isElectron = typeof window !== "undefined" && (window as any).__ELECTRON__;
+    if (!isElectron) return;
+
+    // Listen for window maximize state changes
+    const checkMaximized = async () => {
+      if ((window as any).electronCustom?.window) {
+        // We'd need to add an IPC handler to check current state
+        // For now, just track local state
+      }
+    };
+
+    checkMaximized();
+  }, []);
+
+  const handleMinimize = () => {
+    if ((window as any).electronCustom?.window) {
+      (window as any).electronCustom.window.minimize();
+    }
+  };
+
+  const handleMaximize = () => {
+    if ((window as any).electronCustom?.window) {
+      (window as any).electronCustom.window.maximize();
+      setIsMaximized(!isMaximized);
+    }
+  };
+
+  const handleClose = () => {
+    if ((window as any).electronCustom?.window) {
+      (window as any).electronCustom.window.close();
+    }
+  };
+
+  const isElectron = typeof window !== "undefined" && (window as any).__ELECTRON__;
+
+  if (!isElectron) {
+    return null; // Don't show title bar in web builds
+  }
+
+  return (
+    <div
+      className="flex items-center justify-between h-8 bg-slate-900 select-none"
+      style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+    >
+      <div className="flex items-center px-3">
+        <span className="text-xs text-slate-300 font-medium">{title}</span>
+      </div>
+
+      <div
+        className="flex items-center"
+        style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+      >
+        <button
+          onClick={handleMinimize}
+          className="w-8 h-8 flex items-center justify-center hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+          aria-label="Minimize"
+        >
+          <Minus size={14} />
+        </button>
+        <button
+          onClick={handleMaximize}
+          className="w-8 h-8 flex items-center justify-center hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+          aria-label={isMaximized ? "Restore" : "Maximize"}
+        >
+          <Square size={12} />
+        </button>
+        <button
+          onClick={handleClose}
+          className="w-8 h-8 flex items-center justify-center hover:bg-red-600 text-slate-400 hover:text-white transition-colors"
+          aria-label="Close"
+        >
+          <X size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,50 +1,401 @@
-import { app, BrowserWindow, shell } from 'electron'
-import { join } from 'path'
-import { is } from '@electron-toolkit/utils'
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray, nativeImage } from "electron";
+import { join } from "path";
+import { is } from "@electron-toolkit/utils";
+import path from "path";
+import { promises as fs } from "fs";
 
-let mainWindow: BrowserWindow | null = null
+// Initialize electron-store for configuration persistence
+// Using dynamic import to handle ESM/CommonJS compatibility
+let Store: any;
+let store: any;
 
-function createWindow(): void {
+async function initStore() {
+  const module = await import("electron-store");
+  Store = module.default;
+  store = new Store();
+}
+
+let mainWindow: BrowserWindow | null = null;
+let tray: Tray | null = null;
+
+async function createWindow(): Promise<void> {
+  await initStore();
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 1024,
     minHeight: 600,
     show: false,
-    autoHideMenuBar: true,
+    frame: false, // Frameless window for custom title bar
+    titleBarStyle: "hidden", // Hide default title bar
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, "../preload/preload.mjs"),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,
     },
-  })
+  });
 
-  mainWindow.on('ready-to-show', () => mainWindow!.show())
+  mainWindow.on("ready-to-show", () => mainWindow!.show());
 
   // Open external links in the OS browser, not inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
-  })
+    if (url.startsWith("https:")) shell.openExternal(url);
+    return { action: "deny" };
+  });
 
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  // Restore window state from electron-store
+  const windowState = store.get("windowState", {
+    x: undefined,
+    y: undefined,
+    width: 1280,
+    height: 800,
+  }) as { x?: number; y?: number; width: number; height: number };
+  if (windowState.x !== undefined && windowState.y !== undefined) {
+    mainWindow.setPosition(windowState.x, windowState.y);
+  }
+  mainWindow.setSize(windowState.width, windowState.height);
+
+  // Save window state on close
+  // Save window state on close
+  mainWindow.on("close", (e) => {
+    if (process.platform === "darwin") {
+      // On macOS, hide to tray instead of closing
+      if (!mainWindow?.isFullScreen()) {
+        e.preventDefault();
+        mainWindow?.hide();
+      }
+    }
+    const bounds = mainWindow!.getBounds();
+    store.set("windowState", {
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+    });
+  });
+
+  if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
     // Dev: load from Vite dev server (HTTP origin) — browser history works, HMR enabled
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
   } else {
     // Prod: load from file:// — renderer uses hash routing (#/dashboard)
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 }
 
-app.whenReady().then(() => {
-  createWindow()
+function createTray(): void {
+  // Create tray icon (using a simple colored square as placeholder)
+  const iconPath = path.join(__dirname, "../../resources/icon.png");
+  const icon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Show Window",
+      click: () => {
+        mainWindow?.show();
+        mainWindow?.focus();
+      },
+    },
+    {
+      label: "New Game",
+      click: () => {
+        mainWindow?.webContents.send("menu:new-game");
+        mainWindow?.show();
+      },
+    },
+    {
+      label: "Load Game",
+      click: () => {
+        mainWindow?.webContents.send("menu:load-game");
+        mainWindow?.show();
+      },
+    },
+    { type: "separator" },
+    {
+      label: "Quit",
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+  tray.setToolTip("Sumo Manager Pro");
+  tray.setContextMenu(contextMenu);
+
+  // Show window on tray icon click
+  tray.on("click", () => {
+    if (mainWindow) {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    }
+  });
+}
+
+function createMenu(): void {
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "New Game",
+          accelerator: "CmdOrCtrl+N",
+          click: () => {
+            mainWindow?.webContents.send("menu:new-game");
+          },
+        },
+        {
+          label: "Save Game",
+          accelerator: "CmdOrCtrl+S",
+          click: () => {
+            mainWindow?.webContents.send("menu:save-game");
+          },
+        },
+        {
+          label: "Load Game",
+          accelerator: "CmdOrCtrl+O",
+          click: () => {
+            mainWindow?.webContents.send("menu:load-game");
+          },
+        },
+        { type: "separator" },
+        {
+          label: process.platform === "darwin" ? "Quit Sumo Manager Pro" : "Exit",
+          accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
+          click: () => {
+            app.quit();
+          },
+        },
+      ],
+    },
+    {
+      label: "Edit",
+      submenu: [
+        { role: "undo", accelerator: "CmdOrCtrl+Z" },
+        { role: "redo", accelerator: "CmdOrCtrl+Shift+Z" },
+        { type: "separator" },
+        { role: "cut", accelerator: "CmdOrCtrl+X" },
+        { role: "copy", accelerator: "CmdOrCtrl+C" },
+        { role: "paste", accelerator: "CmdOrCtrl+V" },
+      ],
+    },
+    {
+      label: "View",
+      submenu: [
+        { role: "reload", accelerator: "CmdOrCtrl+R" },
+        { role: "forceReload", accelerator: "CmdOrCtrl+Shift+R" },
+        { role: "toggleDevTools", accelerator: "CmdOrCtrl+Shift+I" },
+        { type: "separator" },
+        { role: "resetZoom", accelerator: "CmdOrCtrl+0" },
+        { role: "zoomIn", accelerator: "CmdOrCtrl+Plus" },
+        { role: "zoomOut", accelerator: "CmdOrCtrl+-" },
+      ],
+    },
+    {
+      label: "Help",
+      submenu: [
+        {
+          label: "About",
+          click: () => {
+            mainWindow?.webContents.send("menu:about");
+          },
+        },
+      ],
+    },
+  ];
+
+  // Mac-specific app menu
+  if (process.platform === "darwin") {
+    template.unshift({
+      label: app.getName(),
+      submenu: [
+        { role: "about" },
+        { type: "separator" },
+        { role: "services" },
+        { type: "separator" },
+        { role: "hide", accelerator: "Cmd+H" },
+        { role: "hideOthers", accelerator: "Cmd+Shift+H" },
+        { role: "unhide", accelerator: "Cmd+U" },
+        { type: "separator" },
+        { role: "quit", accelerator: "Cmd+Q" },
+      ],
+    });
+  }
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
+// IPC Handlers for storage operations
+ipcMain.handle("storage:get", (event, key: string) => {
+  return store.get(key);
+});
+
+ipcMain.handle("storage:set", (event, key: string, value: any) => {
+  store.set(key, value);
+  return true;
+});
+
+ipcMain.handle("storage:delete", (event, key: string) => {
+  store.delete(key);
+  return true;
+});
+
+ipcMain.handle("storage:clear", () => {
+  store.clear();
+  return true;
+});
+
+ipcMain.handle("storage:keys", () => {
+  return store.store;
+});
+
+ipcMain.handle("storage:size", () => {
+  return Object.keys(store.store).length;
+});
+
+// IPC Handlers for window controls
+ipcMain.handle("window:minimize", () => {
+  mainWindow?.minimize();
+});
+
+ipcMain.handle("window:hide", () => {
+  mainWindow?.hide();
+});
+
+ipcMain.handle("window:show", () => {
+  mainWindow?.show();
+  mainWindow?.focus();
+});
+
+ipcMain.handle("window:maximize", () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow?.maximize();
+  }
+});
+
+ipcMain.handle("window:close", () => {
+  mainWindow?.close();
+});
+
+// IPC Handlers for file dialogs
+ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
+  const result = await dialog.showSaveDialog(mainWindow!, options || {});
+  return result;
+});
+
+ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
+  const result = await dialog.showOpenDialog(mainWindow!, options || {});
+  return result;
+});
+
+// IPC Handlers for app info
+ipcMain.handle("app:getVersion", () => {
+  return app.getVersion();
+});
+
+ipcMain.handle("app:getPlatform", () => {
+  return process.platform;
+});
+
+// IPC Handlers for native notifications
+ipcMain.handle("notification:show", async (event, options: { title: string; body: string }) => {
+  const { Notification } = await import("electron");
+  if (Notification.isSupported()) {
+    new Notification({
+      title: options.title,
+      body: options.body,
+    }).show();
+  }
+  return true;
+});
+
+// IPC Handlers for file system operations
+ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) => {
+  try {
+    await fs.writeFile(filePath, content, "utf-8");
+    return true;
+  } catch (error) {
+    console.error("Failed to write file:", error);
+    return false;
+  }
+});
+
+ipcMain.handle("fs:readFile", async (event, filePath: string) => {
+  try {
+    const content = await fs.readFile(filePath, "utf-8");
+    return content;
+  } catch (error) {
+    console.error("Failed to read file:", error);
+    return null;
+  }
+});
+
+ipcMain.handle("fs:exists", async (event, filePath: string) => {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+});
+
+ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = true) => {
+  try {
+    await fs.mkdir(dirPath, { recursive });
+    return true;
+  } catch (error) {
+    console.error("Failed to create directory:", error);
+    return false;
+  }
+});
+
+ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
+  try {
+    const files = await fs.readdir(dirPath);
+    return files;
+  } catch (error) {
+    console.error("Failed to read directory:", error);
+    return [];
+  }
+});
+
+ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
+  try {
+    await fs.unlink(filePath);
+    return true;
+  } catch (error) {
+    console.error("Failed to delete file:", error);
+    return false;
+  }
+});
+
+// IPC Handler for getting app data path
+ipcMain.handle("app:getPath", (event, name: string) => {
+  return app.getPath(name as any);
+});
+
+app.whenReady().then(async () => {
+  await createWindow();
+  createMenu();
+  createTray();
+
+  app.on("activate", async () => {
+    if (BrowserWindow.getAllWindows().length === 0) await createWindow();
+  });
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    tray?.destroy();
+    app.quit();
+  }
+});

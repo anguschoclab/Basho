@@ -1,17 +1,24 @@
 // Game State Context — slim provider + hook
 // Types, reducer, and helpers split into sibling modules.
 
-import React, { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
+import { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
-import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos, type SaveSlotInfo } from "@/engine/saveload";
+import {
+  saveGame,
+  loadGame,
+  hasAutosave,
+  loadAutosave,
+  getSaveSlotInfos,
+  type SaveSlotInfo,
+} from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
-import { registerLocalStorage } from "./localStorageProvider";
+import { registerElectronStorage } from "./electronStorageProvider";
 
-// Register browser localStorage as the engine's storage backend
-registerLocalStorage();
+// Register electron-store as the engine's storage backend (falls back to localStorage for web builds)
+registerElectronStorage();
 
 import type { GamePhase, GameState } from "./gameTypes";
 import type { UIDigest } from "@/presenters/uiDigest";
@@ -94,50 +101,78 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
   const advanceDay = useCallback(() => dispatch(actions.advanceDay()), []);
-  const simulateBoutAction = useCallback((index: number) => dispatch(actions.simulateBout(index)), []);
-  const setBoutTacticAction = useCallback((id: string, tactic: import("@/engine/types/combat").BoutTactic) => dispatch(actions.setBoutTactic(id, tactic)), []);
+  const simulateBoutAction = useCallback(
+    (index: number) => dispatch(actions.simulateBout(index)),
+    []
+  );
+  const setBoutTacticAction = useCallback(
+    (id: string, tactic: import("@/engine/types/combat").BoutTactic) =>
+      dispatch(actions.setBoutTactic(id, tactic)),
+    []
+  );
   const simulateAllBouts = useCallback(() => dispatch(actions.simulateAllBouts()), []);
   const endDay = useCallback(() => dispatch(actions.endDay()), []);
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
   const simFullBasho = useCallback(() => dispatch(actions.simFullBasho()), []);
-  const tickMultipleDays = useCallback((days: number) => dispatch(actions.tickMultipleDays(days)), []);
-  const advanceInterim = useCallback((weeks: number = 1) => dispatch(actions.advanceInterim(weeks)), []);
+  const tickMultipleDays = useCallback(
+    (days: number) => dispatch(actions.tickMultipleDays(days)),
+    []
+  );
+  const advanceInterim = useCallback(
+    (weeks: number = 1) => dispatch(actions.advanceInterim(weeks)),
+    []
+  );
   const advanceOneDayAction = useCallback(() => dispatch(actions.advanceOneDay()), []);
   const updateWorld = useCallback((world: WorldState) => dispatch(actions.updateWorld(world)), []);
 
-  const issueRuling = useCallback((rulingId: string, severity: "lenient" | "standard" | "harsh") => {
-    dispatch(actions.issueRuling(rulingId, severity));
-  }, []);
+  const issueRuling = useCallback(
+    (rulingId: string, severity: "lenient" | "standard" | "harsh") => {
+      dispatch(actions.issueRuling(rulingId, severity));
+    },
+    []
+  );
 
   const handleMediaEvent = useCallback((eventId: string, choice: string) => {
     dispatch(actions.handleMediaEvent(eventId, choice));
   }, []);
 
-  const advanceTutorialStepAction = useCallback((step: import("@/engine/types/tutorial").TutorialStep) => {
-    dispatch(actions.advanceTutorialStep(step));
-  }, []);
+  const advanceTutorialStepAction = useCallback(
+    (step: import("@/engine/types/tutorial").TutorialStep) => {
+      dispatch(actions.advanceTutorialStep(step));
+    },
+    []
+  );
 
-  const setTutorialFlagAction = useCallback((flag: keyof import("@/engine/types/tutorial").TutorialFlags) => {
-    dispatch(actions.setTutorialFlag(flag));
-  }, []);
+  const setTutorialFlagAction = useCallback(
+    (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => {
+      dispatch(actions.setTutorialFlag(flag));
+    },
+    []
+  );
 
   const completeTutorialAction = useCallback(() => {
     dispatch(actions.completeTutorial());
   }, []);
 
-  const goOnHoliday = useCallback((config: HolidayConfig): HolidayResult | null => {
-    if (!state.world) return null;
-    const result = runHoliday(state.world, config);
-    dispatch(actions.runHoliday(result));
-    return result;
-  }, [state.world]);
+  const goOnHoliday = useCallback(
+    (config: HolidayConfig): HolidayResult | null => {
+      if (!state.world) return null;
+      const result = runHoliday(state.world, config);
+      dispatch(actions.runHoliday(result));
+      return result;
+    },
+    [state.world]
+  );
 
-  const runAutoSimAction = useCallback(async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
-    if (!state.world) return null;
-    const result = runAutoSim(state.world, config);
-    dispatch(actions.runAutoSim(result));
-    return result;
-  }, [state.world]);
+  const runAutoSimAction = useCallback(
+    async (config: AutoSimConfig): Promise<AutoSimResult | null> => {
+      if (!state.world) return null;
+      const result = runAutoSim(state.world, config);
+      dispatch(actions.runAutoSim(result));
+      return result;
+    },
+    [state.world]
+  );
 
   const getRikishi = useCallback((id: string) => state.world?.rikishi.get(id), [state.world]);
   const getHeya = useCallback((id: string) => state.world?.heyas.get(id), [state.world]);
@@ -147,8 +182,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!state.world?.currentBasho) return [];
     const standings = state.world.currentBasho.standings;
     return Array.from(state.world.rikishi.values())
-      .filter(r => r.division === "makuuchi")
-      .map(r => ({
+      .filter((r) => r.division === "makuuchi")
+      .map((r) => ({
         rikishi: r,
         wins: standings.get(r.id)?.wins || 0,
         losses: standings.get(r.id)?.losses || 0,
@@ -156,14 +191,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
   }, [state.world]);
 
-  const saveToSlot = useCallback((slotName: string) => {
-    if (!state.world) return false;
-    return saveGame(state.world, slotName, new Date().toISOString());
-  }, [state.world]);
+  const saveToSlot = useCallback(
+    (slotName: string) => {
+      if (!state.world) return false;
+      return saveGame(state.world, slotName, new Date().toISOString());
+    },
+    [state.world]
+  );
 
   const loadFromSlot = useCallback((slotName: string) => {
     const world = loadGame(slotName);
-    if (world) { dispatch(actions.loadWorld(world)); return true; }
+    if (world) {
+      dispatch(actions.loadWorld(world));
+      return true;
+    }
     return false;
   }, []);
 
@@ -175,42 +216,91 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const loadFromAutosaveAction = useCallback(() => {
     const world = loadAutosave();
-    if (world) { dispatch(actions.loadWorld(world)); return true; }
+    if (world) {
+      dispatch(actions.loadWorld(world));
+      return true;
+    }
     return false;
   }, []);
 
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
-  const value: GameContextValue = useMemo(() => ({
-    state,
-    digest: state.digest,
-    createWorld, setPhase, selectRikishi, selectHeya,
-    startBasho,
-    advanceDay,
-    simulateBout: simulateBoutAction,
-    setBoutTactic: setBoutTacticAction,
-    simulateAllBouts,
-    endDay, endBasho, simFullBasho, advanceInterim, advanceOneDay: advanceOneDayAction,
-    saveToSlot, loadFromSlot, quickSave: quickSaveAction,
-    loadFromAutosave: loadFromAutosaveAction, hasAutosave: hasAutosaveCheck, getSaveSlots,
-    getRikishi, getHeya, getCurrentDayMatches, getStandings,
-    updateWorld, goOnHoliday, runAutoSimAction,
-    tickMultipleDays,
-    issueRuling, handleMediaEvent,
-    advanceTutorialStep: advanceTutorialStepAction,
-    setTutorialFlag: setTutorialFlagAction,
-    completeTutorial: completeTutorialAction,
-  }), [
-    state,
-    createWorld, setPhase, selectRikishi, selectHeya,
-    startBasho, advanceDay, simulateBoutAction, setBoutTacticAction, simulateAllBouts,
-    endDay, endBasho, simFullBasho, advanceInterim, advanceOneDayAction,
-    saveToSlot, loadFromSlot, quickSaveAction, loadFromAutosaveAction, hasAutosaveCheck, getSaveSlots,
-    getRikishi, getHeya, getCurrentDayMatches, getStandings,
-    updateWorld, goOnHoliday, runAutoSimAction, tickMultipleDays, issueRuling, handleMediaEvent,
-    advanceTutorialStepAction, setTutorialFlagAction, completeTutorialAction,
-  ]);
+  const value: GameContextValue = useMemo(
+    () => ({
+      state,
+      digest: state.digest,
+      createWorld,
+      setPhase,
+      selectRikishi,
+      selectHeya,
+      startBasho,
+      advanceDay,
+      simulateBout: simulateBoutAction,
+      setBoutTactic: setBoutTacticAction,
+      simulateAllBouts,
+      endDay,
+      endBasho,
+      simFullBasho,
+      advanceInterim,
+      advanceOneDay: advanceOneDayAction,
+      saveToSlot,
+      loadFromSlot,
+      quickSave: quickSaveAction,
+      loadFromAutosave: loadFromAutosaveAction,
+      hasAutosave: hasAutosaveCheck,
+      getSaveSlots,
+      getRikishi,
+      getHeya,
+      getCurrentDayMatches,
+      getStandings,
+      updateWorld,
+      goOnHoliday,
+      runAutoSimAction,
+      tickMultipleDays,
+      issueRuling,
+      handleMediaEvent,
+      advanceTutorialStep: advanceTutorialStepAction,
+      setTutorialFlag: setTutorialFlagAction,
+      completeTutorial: completeTutorialAction,
+    }),
+    [
+      state,
+      createWorld,
+      setPhase,
+      selectRikishi,
+      selectHeya,
+      startBasho,
+      advanceDay,
+      simulateBoutAction,
+      setBoutTacticAction,
+      simulateAllBouts,
+      endDay,
+      endBasho,
+      simFullBasho,
+      advanceInterim,
+      advanceOneDayAction,
+      saveToSlot,
+      loadFromSlot,
+      quickSaveAction,
+      loadFromAutosaveAction,
+      hasAutosaveCheck,
+      getSaveSlots,
+      getRikishi,
+      getHeya,
+      getCurrentDayMatches,
+      getStandings,
+      updateWorld,
+      goOnHoliday,
+      runAutoSimAction,
+      tickMultipleDays,
+      issueRuling,
+      handleMediaEvent,
+      advanceTutorialStepAction,
+      setTutorialFlagAction,
+      completeTutorialAction,
+    ]
+  );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }

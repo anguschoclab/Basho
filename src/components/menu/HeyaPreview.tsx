@@ -323,7 +323,10 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                         <Calendar className="h-3 w-3" /> Age
                       </div>
                       <div className="font-display font-bold text-sm">
-                        {selectedRikishi.age} Cycles
+                        {selectedRikishi.birthYear && world?.year
+                          ? world.year - selectedRikishi.birthYear
+                          : "--"}{" "}
+                        Cycles
                       </div>
                     </div>
                     <div className="bg-muted/30 p-2.5 rounded-lg">
@@ -365,19 +368,11 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                     </h3>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { label: "Force", key: "strength", icon: <Zap className="h-3 w-3" /> },
+                        { label: "Power", key: "power", icon: <Zap className="h-3 w-3" /> },
+                        { label: "Speed", key: "speed", icon: <TrendingUp className="h-3 w-3" /> },
+                        { label: "Balance", key: "balance", icon: <Shield className="h-3 w-3" /> },
                         {
-                          label: "Agility",
-                          key: "speed",
-                          icon: <TrendingUp className="h-3 w-3" />,
-                        },
-                        {
-                          label: "Resilience",
-                          key: "stamina",
-                          icon: <Shield className="h-3 w-3" />,
-                        },
-                        {
-                          label: "Precision",
+                          label: "Technique",
                           key: "technique",
                           icon: <Target className="h-3 w-3" />,
                         },
@@ -386,8 +381,8 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                           <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
                             {stat.icon} {stat.label}
                           </div>
-                          <div className="text-xl font-display font-black">
-                            {selectedRikishi.stats?.[stat.key] ?? "--"}
+                          <div className="text-xl font-display font-black text-foreground">
+                            {selectedRikishi[stat.key] ?? "--"}
                           </div>
                         </div>
                       ))}
