@@ -23,6 +23,7 @@ import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
 import { isForeign } from "../../utils/identity";
 import { buildCombatProfile } from "../../archetype";
+import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -491,6 +492,153 @@ export function fillVacanciesForNPC(
 
   // Self-apply: all call sites discard the return value, so we must apply the
   // rikishi/heya updates directly to the world to ensure NPC rikishi materialize.
+  const impact = builder.build();
+  if (
+    (impact.entities?.rikishiUpdates?.size ?? 0) > 0 ||
+    (impact.entities?.heyaUpdates?.size ?? 0) > 0
+  ) {
+    const resolved = resolveImpacts(world, [impact]);
+    Object.assign(world, resolved);
+  }
+  return impact;
+}
+
+/**
+ * Automates recruitment for NPC stables with competitive bidding.
+ * NPCs bid against each other for visible candidates using their archetype's calculateMaxBid().
+ * Materializes candidates immediately into world.rikishi and updates heya rosters.
+ * Returns StateImpact describing recruitment decisions.
+ */
+export function fillVacanciesForNPCWithBidding(
+  world: WorldState,
+  targetHeyas: Record<string, number>
+): StateImpact {
+  const builder = createImpactBuilder("fillVacanciesForNPCWithBidding");
+  const tp = world.talentPool;
+  if (!tp) return builder.build();
+
+  // Collect all visible candidates across all pools
+  const allVisibleCandidates: TalentCandidate[] = [];
+  for (const poolType of ["high_school", "university", "foreign"] as TalentPoolType[]) {
+    const pool = tp.pools[poolType];
+    for (const cId of pool.candidatesVisible) {
+      const c = tp.candidates[cId];
+      if (c && c.availabilityState === "available") {
+        allVisibleCandidates.push(c);
+      }
+    }
+  }
+
+  // For each heya with vacancies, calculate bids for available candidates
+  const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: any }> = [];
+
+  for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
+    const heya = world.heyas.get(heyaId);
+    if (!heya) continue;
+
+    const oyakata = world.oyakata.get(heya.oyakataId);
+    if (!oyakata) continue;
+
+    const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
+
+    // Calculate bids for visible candidates (up to vacancy count)
+    const candidatesToBid = allVisibleCandidates.slice(0, vacancyCount);
+    for (const candidate of candidatesToBid) {
+      // Identify rival heyas (other stables that might want this candidate)
+      const rivalHeyaId = Object.keys(targetHeyas).find((hid) => hid !== heyaId);
+
+      const bidAmount = recruitmentStrat.calculateMaxBid(
+        world,
+        heya as any,
+        oyakata,
+        candidate.candidateId,
+        rivalHeyaId
+      );
+
+      bids.push({
+        heyaId,
+        candidateId: candidate.candidateId,
+        bidAmount,
+        oyakata,
+      });
+    }
+  }
+
+  // Sort bids by amount (highest first) to resolve competitive assignments
+  bids.sort((a, b) => b.bidAmount - a.bidAmount);
+
+  // Track which candidates and heyas have been assigned
+  const assignedCandidates = new Set<Id>();
+  const assignedHeyaSlots = new Map<Id, number>();
+
+  // Initialize slot tracking
+  for (const heyaId of Object.keys(targetHeyas)) {
+    assignedHeyaSlots.set(heyaId, 0);
+  }
+
+  // Assign candidates to highest bidders
+  for (const bid of bids) {
+    // Skip if candidate already assigned
+    if (assignedCandidates.has(bid.candidateId)) continue;
+
+    // Skip if heya has filled all vacancies
+    const heyaSlotsUsed = assignedHeyaSlots.get(bid.heyaId) ?? 0;
+    const heyaVacancies = targetHeyas[bid.heyaId] ?? 0;
+    if (heyaSlotsUsed >= heyaVacancies) continue;
+
+    // Assign candidate to this heya
+    const candidate = tp.candidates[bid.candidateId];
+    if (!candidate) continue;
+
+    // Mark as signed with competing suitor
+    const updatedCandidate = {
+      ...candidate,
+      availabilityState: "signed" as const,
+      competingSuitors: [
+        {
+          heyaId: bid.heyaId,
+          offerType: "standard" as const,
+          interestBand: "high" as const,
+          deadlineWeek: world.week,
+        },
+      ],
+    };
+
+    tp.candidates[bid.candidateId] = updatedCandidate;
+
+    // Materialize immediately for NPCs
+    const materializeImpact = materializeCandidateToRikishi(world, bid.candidateId, bid.heyaId);
+    if (materializeImpact.entities?.rikishiUpdates) {
+      for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
+        builder.updateRikishi(id, update);
+      }
+    }
+    if (materializeImpact.entities?.heyaUpdates) {
+      for (const [id, update] of materializeImpact.entities.heyaUpdates) {
+        builder.updateHeya(id, update);
+      }
+    }
+
+    // Log bidding decision using existing event type
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "narrative",
+      {
+        heyaId: bid.heyaId,
+        candidateId: bid.candidateId,
+        bidAmount: bid.bidAmount,
+        archetype: bid.oyakata.archetype,
+        strategy: "recruitment_bidding",
+      },
+      { heyaId: bid.heyaId, importance: "minor" }
+    );
+
+    // Mark as assigned
+    assignedCandidates.add(bid.candidateId);
+    assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
+  }
+
+  // Self-apply to ensure NPC rikishi materialize
   const impact = builder.build();
   if (
     (impact.entities?.rikishiUpdates?.size ?? 0) > 0 ||

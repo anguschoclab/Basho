@@ -536,7 +536,8 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     const globalCap =
       world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === "number" ? HARD_CAP_ROSTER_SIZE : 30);
     if (world.rikishi.size < globalCap) {
-      talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId);
+      // Use competitive bidding system for NPC recruitment
+      talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId);
     }
   }
 

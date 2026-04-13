@@ -9,7 +9,6 @@ import {
   CombatArchetype,
   KimariteId,
   CombatProfile,
-  BoutTactic,
   RikishiArchetype,
   TacticalArchetype,
 } from "./combat";
@@ -145,6 +144,7 @@ export interface Rikishi {
 
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
+  shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
 
   h2h: Record<string, H2HRecord>;
   history: MatchResultLog[];

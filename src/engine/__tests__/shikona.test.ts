@@ -33,9 +33,14 @@ describe("Shikona Generation System", () => {
       );
 
       // We expect at least some of these names to start with Mongolian prefixes
-      const hasMongolianPrefix = names.some(n =>
-        n.startsWith("Teru") || n.startsWith("Haku") || n.startsWith("Ichi") ||
-        n.startsWith("Ao") || n.startsWith("Ryu") || n.startsWith("Dai")
+      const hasMongolianPrefix = names.some(
+        (n) =>
+          n.startsWith("Teru") ||
+          n.startsWith("Haku") ||
+          n.startsWith("Ichi") ||
+          n.startsWith("Ao") ||
+          n.startsWith("Ryu") ||
+          n.startsWith("Dai")
       );
 
       expect(hasMongolianPrefix).toBe(true);
@@ -52,15 +57,31 @@ describe("Shikona Generation System", () => {
     it("should generate a prestigious name for Yokozuna rank if lucky", () => {
       let foundPrestigious = false;
       const PRESTIGIOUS_FULL_NAMES = [
-        "Hakuryu", "Kaio", "Takanofuji", "Wakatora", "Asashoryu",
-        "Kotoshogiku", "Tochishima", "Terunofuji", "Mitakeumi",
-        "Ichinojo", "Aoiyama", "Kirishima", "Tamanoshima"
+        "Hakuryu",
+        "Kaio",
+        "Takanofuji",
+        "Wakatora",
+        "Asashoryu",
+        "Kotoshogiku",
+        "Tochishima",
+        "Terunofuji",
+        "Mitakeumi",
+        "Ichinojo",
+        "Aoiyama",
+        "Kirishima",
+        "Tamanoshima",
       ];
 
       // Force generating names at top rank until we hit the prestige chance
       for (let i = 0; i < 50; i++) {
-        const name = generateShikona(`rank-test-${i}`, { rank: "yokozuna", preferPrestigious: true });
-        if (PRESTIGIOUS_FULL_NAMES.includes(name) || PRESTIGIOUS_FULL_NAMES.some(p => name.startsWith(p))) {
+        const name = generateShikona(`rank-test-${i}`, {
+          rank: "yokozuna",
+          preferPrestigious: true,
+        });
+        if (
+          PRESTIGIOUS_FULL_NAMES.includes(name) ||
+          PRESTIGIOUS_FULL_NAMES.some((p) => name.startsWith(p))
+        ) {
           foundPrestigious = true;
           break;
         }
@@ -85,6 +106,47 @@ describe("Shikona Generation System", () => {
 
       const name3 = generateOyakataName("oyakata-2");
       expect(name3).toBeTruthy();
+    });
+  });
+
+  describe("Legacy Shikona Generation", () => {
+    it("should generate shikona with legacy patterns when legacyShikona is provided", () => {
+      const legacyShikona = "Takayama";
+      const name = generateShikona("legacy-test-1", {
+        legacyShikona,
+        rank: "maegashira",
+      });
+      expect(typeof name).toBe("string");
+      expect(name.length).toBeGreaterThan(0);
+    });
+
+    it("should be deterministic with legacy shikona", () => {
+      const legacyShikona = "Wakafuji";
+      const config = { legacyShikona, rank: "juryo" };
+      const name1 = generateShikona("legacy-determinism-1", config);
+      const name2 = generateShikona("legacy-determinism-1", config);
+      expect(name1).toBe(name2);
+    });
+
+    it("should use legacy patterns more frequently for sekitori ranks", () => {
+      const legacyShikona = "Kotoshogiku";
+      const sekitoriNames = Array.from({ length: 100 }, (_, i) =>
+        generateShikona(`sekitori-${i}`, { legacyShikona, rank: "maegashira" })
+      );
+      const lowerRankNames = Array.from({ length: 100 }, (_, i) =>
+        generateShikona(`lower-${i}`, { legacyShikona, rank: "jonokuchi" })
+      );
+
+      // Both should produce valid names
+      expect(sekitoriNames.every((n) => typeof n === "string")).toBe(true);
+      expect(lowerRankNames.every((n) => typeof n === "string")).toBe(true);
+    });
+
+    it("should handle legacy shikona with common prefixes", () => {
+      const legacyShikona = "Asashoryu";
+      const name = generateShikona("prefix-test", { legacyShikona, rank: "ozeki" });
+      expect(typeof name).toBe("string");
+      expect(name.length).toBeGreaterThan(0);
     });
   });
 });

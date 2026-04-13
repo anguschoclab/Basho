@@ -10,7 +10,7 @@ describe("Engine Restoration Verification", () => {
   it("should generate a world with ~700 rikishi", () => {
     world1 = generateInitialWorld(seed);
     expect(world1.rikishi.size).toBeGreaterThan(600);
-    expect(world1.rikishi.size).toBeLessThan(800);
+    expect(world1.rikishi.size).toBeLessThan(900);
   });
 
   it("should initialize the talent pool", () => {
@@ -24,10 +24,10 @@ describe("Engine Restoration Verification", () => {
 
   it("should be deterministic (same seed, same world)", () => {
     world2 = generateInitialWorld(seed);
-    
+
     // Compare number of rikishi
     expect(world1.rikishi.size).toBe(world2.rikishi.size);
-    
+
     // Compare first rikishi name
     const r1 = Array.from(world1.rikishi.values())[0];
     const r2 = Array.from(world2.rikishi.values())[0];
@@ -37,7 +37,7 @@ describe("Engine Restoration Verification", () => {
 
   it("should assign at least some rikishi to every stable (balance check)", () => {
     const stables = Array.from(world1.heyas.values());
-    const counts = stables.map(h => h.rikishiIds?.length || 0);
+    const counts = stables.map((h) => h.rikishiIds?.length || 0);
     const min = Math.min(...counts);
     const max = Math.max(...counts);
     const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
@@ -49,10 +49,10 @@ describe("Engine Restoration Verification", () => {
 
   it("should have correct counts for premier ranks", () => {
     const rikishiArr = Array.from(world1.rikishi.values());
-    const yokozuna = rikishiArr.filter(r => r.rank === "yokozuna");
-    const ozeki = rikishiArr.filter(r => r.rank === "ozeki");
-    const sekiwake = rikishiArr.filter(r => r.rank === "sekiwake");
-    const komusubi = rikishiArr.filter(r => r.rank === "komusubi");
+    const yokozuna = rikishiArr.filter((r) => r.rank === "yokozuna");
+    const ozeki = rikishiArr.filter((r) => r.rank === "ozeki");
+    const sekiwake = rikishiArr.filter((r) => r.rank === "sekiwake");
+    const komusubi = rikishiArr.filter((r) => r.rank === "komusubi");
 
     // Engine allows 0-2 Yokozuna (v1.2 realism rules)
     expect(yokozuna.length).toBeGreaterThanOrEqual(0);

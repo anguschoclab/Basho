@@ -7,7 +7,6 @@ import {
   tickWeekEvents,
 } from "../events";
 import type { WorldState } from "../types/world";
-import type { EngineEvent } from "../types/events";
 
 const createMockWorld = (): WorldState =>
   ({
@@ -47,10 +46,11 @@ describe("events.ts - Core Bus", () => {
       const world = createMockWorld();
 
       const event = logEngineEvent(world, {
-        type: "TEST_EVENT",
+        type: "TEST_EVENT" as any,
         category: "career",
         title: "Test Event",
         summary: "This is a test event.",
+        data: {},
       });
 
       expect(event.id).toBeDefined();
@@ -67,19 +67,21 @@ describe("events.ts - Core Bus", () => {
       const world = createMockWorld();
 
       const event1 = logEngineEvent(world, {
-        type: "TEST_DUPE",
+        type: "TEST_DUPE" as any,
         category: "career",
         title: "Duplicate Me",
         summary: "A test.",
         dedupeKey: "explicit-key-1",
+        data: {},
       });
 
       const event2 = logEngineEvent(world, {
-        type: "TEST_DUPE",
+        type: "TEST_DUPE" as any,
         category: "career",
         title: "Duplicate Me Again",
         summary: "Another test.",
         dedupeKey: "explicit-key-1", // Same key!
+        data: {},
       });
 
       expect(world.events?.log.length).toBe(1);
@@ -90,19 +92,21 @@ describe("events.ts - Core Bus", () => {
       const world = createMockWorld();
 
       const event1 = logEngineEvent(world, {
-        type: "AUTO_DUPE",
+        type: "AUTO_DUPE" as any,
         category: "career",
         title: "Auto",
         summary: "A",
         heyaId: "h1",
+        data: {},
       });
 
       const event2 = logEngineEvent(world, {
-        type: "AUTO_DUPE",
+        type: "AUTO_DUPE" as any,
         category: "career",
         title: "Auto", // Same title, same type, same heya, same week = same default dedupe key
         summary: "B",
         heyaId: "h1",
+        data: {},
       });
 
       expect(world.events?.log.length).toBe(1);
@@ -121,6 +125,7 @@ describe("events.ts - Core Bus", () => {
         title: "T1",
         summary: "S1",
         dedupeKey: "k1",
+        data: {},
       });
       world.events!.log[0].year = 2024;
 
@@ -131,6 +136,7 @@ describe("events.ts - Core Bus", () => {
         title: "T2",
         summary: "S2",
         dedupeKey: "k2",
+        data: {},
       });
 
       // Same time event
@@ -140,6 +146,7 @@ describe("events.ts - Core Bus", () => {
         title: "T3",
         summary: "S3",
         dedupeKey: "k3",
+        data: {},
       });
 
       const results = queryEvents(world, {});
@@ -158,6 +165,7 @@ describe("events.ts - Core Bus", () => {
         title: "T1",
         summary: "S1",
         dedupeKey: "k1",
+        data: {},
       });
       logEngineEvent(world, {
         type: "E2" as any,
@@ -165,6 +173,7 @@ describe("events.ts - Core Bus", () => {
         title: "T2",
         summary: "S2",
         dedupeKey: "k2",
+        data: {},
       });
 
       const results = queryEvents(world, { category: "injury" });
@@ -181,6 +190,7 @@ describe("events.ts - Core Bus", () => {
         title: "T1",
         summary: "S1",
         dedupeKey: "k1",
+        data: {},
       });
       logEngineEvent(world, {
         type: "E2" as any,
@@ -189,6 +199,7 @@ describe("events.ts - Core Bus", () => {
         title: "T2",
         summary: "S2",
         dedupeKey: "k2",
+        data: {},
       });
 
       const results = queryEvents(world, { minImportance: "major" });
@@ -237,7 +248,7 @@ describe("events.ts - Helpers & Cleanup", () => {
       // 1. Very old, minor, non-career -> Should be trimmed
       world.events!.log.push({
         id: "evt-1",
-        type: "TRAINING_MILESTONE",
+        type: "TRAINING_MILESTONE" as any,
         category: "training",
         importance: "minor",
         year: 2020,
@@ -275,7 +286,7 @@ describe("events.ts - Helpers & Cleanup", () => {
       // 3. Very old, but career -> Should be kept
       world.events!.log.push({
         id: "evt-3",
-        type: "RETIREMENT",
+        type: "RETIREMENT" as any,
         category: "career",
         importance: "minor",
         year: 2020,
@@ -294,7 +305,7 @@ describe("events.ts - Helpers & Cleanup", () => {
       // 4. Recent minor -> Should be kept
       world.events!.log.push({
         id: "evt-4",
-        type: "TRAINING_MILESTONE",
+        type: "TRAINING_MILESTONE" as any,
         category: "training",
         importance: "minor",
         year: 2025,

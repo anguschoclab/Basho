@@ -25,6 +25,7 @@ import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
 import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
+import { recruitSponsor } from "@/presenters/uiDigest";
 
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
@@ -132,9 +133,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const handleMediaEvent = useCallback((eventId: string, choice: string) => {
-    dispatch(actions.handleMediaEvent(eventId, choice));
-  }, []);
+  const handleMediaEvent = useCallback(
+    (eventId: string, choice: string) => {
+      if (!state.world) return;
+      dispatch(actions.handleMediaEvent(eventId, choice));
+    },
+    [state.world]
+  );
+
+  const recruitSponsorAction = useCallback(
+    (sponsorId: string) => {
+      if (!state.world || !state.world.playerHeyaId || !state.world.rng) return;
+      recruitSponsor(state.world, state.world.playerHeyaId, sponsorId, state.world.rng);
+      updateWorld({ ...state.world });
+    },
+    [state.world, updateWorld]
+  );
 
   const advanceTutorialStepAction = useCallback(
     (step: import("@/engine/types/tutorial").TutorialStep) => {
@@ -260,6 +274,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       tickMultipleDays,
       issueRuling,
       handleMediaEvent,
+      recruitSponsor: recruitSponsorAction,
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
       completeTutorial: completeTutorialAction,
@@ -296,6 +311,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       tickMultipleDays,
       issueRuling,
       handleMediaEvent,
+      recruitSponsorAction,
       advanceTutorialStepAction,
       setTutorialFlagAction,
       completeTutorialAction,

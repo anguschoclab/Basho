@@ -4,7 +4,7 @@ import { RikishiStats, Rikishi } from "../../types/rikishi";
 import { Rank, Division, Side } from "../../types/banzuke";
 import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
 import { clamp, clampInt } from "../../utils/math";
-import { generateRikishiName } from "../../shikona";
+import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 
@@ -232,6 +232,7 @@ export function generateFullRikishi(args: {
   division: Division;
   side: Side;
   rankNumber: number;
+  legacyShikona?: string;
 }): Rikishi {
   const { id, rng, currentYear, rank, division, side, rankNumber } = args;
 
@@ -256,7 +257,13 @@ export function generateFullRikishi(args: {
     nationality,
   });
 
-  const name = generateRikishiName(`${rng.seed}::${id}`, rng);
+  const name = generateShikona(`${rng.seed}::${id}`, {
+    rng,
+    heyaId: undefined, // Will be set when assigned to heya
+    nationality,
+    rank,
+    legacyShikona: args.legacyShikona,
+  });
 
   const rikishiStats: RikishiStats = {
     ...statsBase,
@@ -383,7 +390,8 @@ function createCombatStats(
 
 function createCareerHistory(
   records: { careerWins: number; careerLosses: number; yushoCount: number; divisionRecords?: any },
-  division: Division
+
+  _division: Division
 ) {
   return {
     careerWins: records.careerWins,
@@ -429,7 +437,7 @@ export function convertCandidateToRikishi(args: {
   currentYear: number;
   heyaId: string;
 }): Rikishi {
-  const { candidate, rng, currentYear, heyaId } = args;
+  const { candidate, rng, currentYear: _currentYear, heyaId } = args;
 
   // New recruits start at the bottom of the banzuke
   const rank: Rank = "jonokuchi";
@@ -493,15 +501,22 @@ export function generateCandidate(args: {
 
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
-  const statsBase = generateRikishiStats({ rng, rank: "jonokuchi", profile });
 
-  const name = generateRikishiName(`${rng.seed}::candidate::${id}`, rng);
+  const _statsBase = generateRikishiStats({ rng, rank: "jonokuchi", profile });
 
   // Determine origin based on pool
   const origin =
     poolType === "foreign"
       ? seededPick(rng, ["Mongolia", "Georgia", "Russia", "Brazil", "USA"])
       : seededPick(rng, ["Aomori", "Osaka", "Tokyo", "Fukuoka", "Hokkaido", "Ishikawa"]);
+
+  const name = generateShikona(`${rng.seed}::candidate::${id}`, {
+    rng,
+    heyaId: undefined,
+    nationality: poolType === "foreign" ? origin : "Japan",
+    rank: "jonokuchi",
+    legacyShikona: undefined,
+  });
 
   return {
     candidateId: id,

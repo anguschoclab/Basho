@@ -1,0 +1,127 @@
+/**
+ * PreBashoAssessment.tsx
+ * =====================
+ * Dashboard widget showing pre-basho health assessment and withdrawal recommendations.
+ */
+
+import { useGame } from "../../contexts/GameContext";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
+import { TooltipWrap } from "../ui/tooltip-wrap";
+
+export function PreBashoAssessment() {
+  const { state } = useGame();
+  const world = state.world;
+  const assessment = world?._preBashoAssessment;
+
+  // Only show during pre_basho phase
+  if (world?.cyclePhase !== "pre_basho" || !assessment) {
+    return null;
+  }
+
+  const daysRemaining = world._interimDaysRemaining ?? 0;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Activity className="h-4 w-4" />
+          Pre-Basho Assessment
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Health assessment for upcoming basho • {daysRemaining} days remaining
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Overall Health Score */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">Overall Health Score</span>
+          <Badge
+            variant={
+              assessment.overallHealthScore >= 70
+                ? "default"
+                : assessment.overallHealthScore >= 50
+                  ? "secondary"
+                  : "destructive"
+            }
+          >
+            {Math.round(assessment.overallHealthScore)}%
+          </Badge>
+        </div>
+
+        {/* Withdrawals Recommended */}
+        {assessment.withdrawalsThisAssessment > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Withdrawals Recommended</span>
+            <Badge variant="destructive" className="flex items-center gap-1">
+              <UserMinus className="h-3 w-3" />
+              {assessment.withdrawalsThisAssessment}
+            </Badge>
+          </div>
+        )}
+
+        {/* Rikishi Assessments */}
+        <div className="space-y-2 max-h-60 overflow-y-auto">
+          {Array.from(assessment.rikishiAssessments.entries()).map(
+            ([rikishiId, rikishiAssessment]) => {
+              const rikishi = world.rikishi.get(rikishiId);
+              if (!rikishi) return null;
+
+              return (
+                <div
+                  key={rikishiId}
+                  className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-muted/50 text-xs"
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="font-medium truncate">{rikishi.shikona}</span>
+                    <Badge
+                      variant={
+                        rikishiAssessment.injuryRisk === "low"
+                          ? "default"
+                          : rikishiAssessment.injuryRisk === "medium"
+                            ? "secondary"
+                            : "destructive"
+                      }
+                      className="shrink-0"
+                    >
+                      {rikishiAssessment.injuryRisk}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {rikishiAssessment.withdrawalRecommended && (
+                      <TooltipWrap content="Withdrawal recommended due to injury" side="left">
+                        <AlertTriangle className="h-3 w-3 text-destructive" />
+                      </TooltipWrap>
+                    )}
+                    {rikishiAssessment.recommendedFocus !== "normal" && (
+                      <TooltipWrap
+                        content={`Recommended focus: ${rikishiAssessment.recommendedFocus}`}
+                        side="left"
+                      >
+                        <Shield
+                          className={`h-3 w-3 ${rikishiAssessment.recommendedFocus === "protect" ? "text-destructive" : "text-yellow-500"}`}
+                        />
+                      </TooltipWrap>
+                    )}
+                    <span className="text-muted-foreground w-8 text-right">
+                      {Math.round(rikishiAssessment.healthScore)}%
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+          )}
+        </div>
+
+        {/* Action Button */}
+        {assessment.withdrawalsThisAssessment > 0 && (
+          <Button variant="outline" size="sm" className="w-full text-xs">
+            View Roster for Withdrawals
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

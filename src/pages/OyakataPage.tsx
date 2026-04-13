@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { Brain, Heart, Briefcase, Zap, Scale, Users } from "lucide-react";
+import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown } from "lucide-react";
 import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
 
@@ -117,6 +117,51 @@ export default function OyakataPage() {
           </CardContent>
         </Card>
 
+        {/* CAREER AS RIKISHI */}
+        {(selectedOyakata.formerShikona || selectedOyakata.highestRank) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="h-5 w-5" /> Career as Rikishi
+              </CardTitle>
+              <CardDescription>
+                Former wrestling career before becoming a stable master.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {selectedOyakata.formerShikona && (
+                  <div className="space-y-2">
+                    <div className="text-sm text-muted-foreground">Former Shikona</div>
+                    <div className="text-2xl font-bold">{selectedOyakata.formerShikona}</div>
+                  </div>
+                )}
+                {selectedOyakata.highestRank && (
+                  <div className="space-y-2">
+                    <div className="text-sm text-muted-foreground">Highest Rank Achieved</div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          selectedOyakata.highestRank.toLowerCase() === "yokozuna" ||
+                          selectedOyakata.highestRank.toLowerCase() === "ozeki"
+                            ? "default"
+                            : "outline"
+                        }
+                        className="text-lg capitalize"
+                      >
+                        {selectedOyakata.highestRank.toLowerCase() === "yokozuna" && (
+                          <Crown className="h-4 w-4 mr-1" />
+                        )}
+                        {selectedOyakata.highestRank}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* MENTORSHIP */}
         {mentorshipPairs.length > 0 && (
           <Card>
@@ -128,13 +173,13 @@ export default function OyakataPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mentorshipPairs.map((pair: any) => (
+                {mentorshipPairs.map((pair) => (
                   <div key={pair.mentor.id} className="p-4 bg-muted/30 rounded-lg">
                     <div className="font-medium mb-2">
                       {pair.mentor.shikona || pair.mentor.name}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {pair.mentees.map((mentee: any) => (
+                      {pair.mentees.map((mentee) => (
                         <Badge key={mentee.id} variant="outline" className="text-sm">
                           {mentee.shikona || mentee.name} ({mentee.rank})
                         </Badge>
@@ -169,16 +214,34 @@ export default function OyakataPage() {
                         <Avatar>
                           <AvatarFallback>{o.name[0]}</AvatarFallback>
                         </Avatar>
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium">{o.name}</p>
                           <p className="text-sm text-muted-foreground">
                             {heya?.name || "Unknown Stable"}
                           </p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="mt-2 capitalize text-xs">
-                        {o.archetype?.replace("_", " ")}
-                      </Badge>
+                      <div className="flex gap-2 mt-2">
+                        <Badge variant="outline" className="capitalize text-xs">
+                          {o.archetype?.replace("_", " ")}
+                        </Badge>
+                        {o.highestRank && (
+                          <Badge
+                            variant={
+                              o.highestRank.toLowerCase() === "yokozuna" ||
+                              o.highestRank.toLowerCase() === "ozeki"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="capitalize text-xs"
+                          >
+                            {o.highestRank.toLowerCase() === "yokozuna" && (
+                              <Crown className="h-3 w-3 mr-1" />
+                            )}
+                            {o.highestRank}
+                          </Badge>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );

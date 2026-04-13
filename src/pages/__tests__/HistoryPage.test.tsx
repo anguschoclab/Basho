@@ -1,3 +1,13 @@
+// Set up jsdom-like environment manually
+import { JSDOM } from "jsdom";
+const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
+Object.defineProperty(global, "document", { value: dom.window.document, writable: true });
+Object.defineProperty(global, "window", { value: dom.window as any, writable: true });
+Object.defineProperty(global, "navigator", { value: dom.window.navigator, writable: true });
+
+/**
+ * @vitest-environment jsdom
+ */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
@@ -82,9 +92,7 @@ describe("HistoryPage", () => {
     expect(screen.queryByText("Mock Stable")).toBeTruthy();
 
     // Check missing Jun-Yusho guard renders dash
-    expect(
-      screen.queryByText("—", { selector: ".text-sm.text-muted-foreground" }),
-    ).toBeTruthy();
+    expect(screen.queryByText("—", { selector: ".text-sm.text-muted-foreground" })).toBeTruthy();
   });
 
   it("handles missing rank in RANK_HIERARCHY gracefully", () => {

@@ -10,16 +10,16 @@ export interface CareerSnapshot {
   year: number;
   month: number;
   bashoName: string;
-  
+
   rank: Rank;
   division: Division;
   rankNumber: number;
   side: "east" | "west";
-  
+
   wins: number;
   losses: number;
   absences: number;
-  
+
   isYusho: boolean;
   isJunYusho: boolean;
   specialPrizes: {
@@ -27,7 +27,7 @@ export interface CareerSnapshot {
     kantosho: boolean;
     ginosho: boolean;
   };
-  
+
   weight: number;
   momentum: number;
 }
@@ -37,11 +37,17 @@ export interface CareerSnapshot {
  */
 export interface Milestone {
   id: string;
-  type: "promotion" | "yusho" | "special_prize" | "kinboshi" | "stats_record" | "retirement";
+  type:
+    | "promotion"
+    | "yusho"
+    | "special_prize"
+    | "kinboshi"
+    | "stats_record"
+    | "retirement"
+    | "shikona_change";
   title: string;
   description: string;
   date: { year: number; month: number };
-
 }
 
 /** Tenure achievements. */
@@ -62,13 +68,12 @@ export interface HistoricalOyakata {
   generation: number;
   startYear: number;
   endYear?: number;
-  
+
   // Tenure Achievements
   achievements: OyakataAchievements;
 
   notes?: string;
 }
-
 
 /**
  * Historical record of a closed/defunct Heya.

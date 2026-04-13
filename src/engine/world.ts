@@ -27,6 +27,7 @@ import { resolveImpacts } from "./core/ImpactResolver";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { getActiveRikishi, getStableRikishi } from "./queries";
+import { checkShikonaChange, recordShikonaChange } from "./history";
 
 // New Lifecycle Services
 import * as bashoManager from "./lifecycle/BashoManager";
@@ -362,14 +363,33 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   for (const newEntry of result.newBanzuke) {
     const rikishi = world.rikishi.get(newEntry.rikishiId);
     if (rikishi) {
-      builder.updateRikishi(newEntry.rikishiId, {
-        division: newEntry.division,
-        rank: newEntry.position.rank,
-        rankNumber: newEntry.position.rankNumber,
-        side: newEntry.position.side,
-        currentBashoWins: 0,
-        currentBashoLosses: 0,
-      });
+      const oldRank = rikishi.rank;
+      const oldShikona = rikishi.shikona;
+
+      // Check if shikona should change due to promotion
+      const newShikona = checkShikonaChange(world, rikishi, oldRank);
+
+      if (newShikona) {
+        recordShikonaChange(world, rikishi.id, oldShikona, newShikona);
+        builder.updateRikishi(newEntry.rikishiId, {
+          division: newEntry.division,
+          rank: newEntry.position.rank,
+          rankNumber: newEntry.position.rankNumber,
+          side: newEntry.position.side,
+          currentBashoWins: 0,
+          currentBashoLosses: 0,
+          shikona: newShikona,
+        });
+      } else {
+        builder.updateRikishi(newEntry.rikishiId, {
+          division: newEntry.division,
+          rank: newEntry.position.rank,
+          rankNumber: newEntry.position.rankNumber,
+          side: newEntry.position.side,
+          currentBashoWins: 0,
+          currentBashoLosses: 0,
+        });
+      }
     }
   }
 

@@ -7,13 +7,13 @@
  */
 
 import { rngFromSeed } from "./rng";
-import { Rikishi, RikishiStats } from "./types/rikishi";
-import { Rank } from "./types/banzuke";
+import type { Rikishi, RikishiStats } from "./types/rikishi";
+import type { Rank } from "./types/banzuke";
+import { generateShikona } from "./shikona";
 import { CombatArchetype, TacticalArchetype, RikishiArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
-import { generateRikishiName } from "./shikona";
-import { rollArchetype, buildCombatProfile } from "./archetype";
+import { buildCombatProfile } from "./archetype";
 
 // --- RETIREMENT LOGIC ---
 
@@ -108,14 +108,7 @@ const ARCHETYPES: CombatArchetype[] = [
   "giant",
 ];
 
-/**
- * Generate rookie.
- *  * @param world - The World.
- *  * @param currentYear - The Current year.
- *  * @param targetRank - The Target rank.
- *  * @returns The result.
- */
-function generateRookie(
+function _generateRookie(
   world: WorldState,
   currentYear: number,
   targetRank: Rank = "jonokuchi"
@@ -153,7 +146,17 @@ function generateRookie(
   if (origin.speedMod) stats.speed *= origin.speedMod;
   if (origin.weightMod) stats.weight *= origin.weightMod;
 
-  const shikona = generateRikishiName(`${world.seed}::rookie::${rookieId}`);
+  // Get oyakata's former shikona for legacy patterns if assigned to a heya
+  let legacyShikona: string | undefined;
+  // Note: generateRookie creates rikishi in scout pool, so no heya assignment yet
+  // Legacy shikona will be applied when they join a stable
+
+  const shikona = generateShikona(`${world.seed}::rookie::${rookieId}`, {
+    rng,
+    nationality: origin.name.includes("University") ? "Japan" : origin.name,
+    rank: targetRank,
+    legacyShikona,
+  });
 
   return {
     id: rookieId,

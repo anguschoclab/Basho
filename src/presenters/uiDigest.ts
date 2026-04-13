@@ -643,6 +643,7 @@ export {
   getCandidateScoutingLevel,
 } from "../engine/systems/generation/TalentPoolService";
 export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
+export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.

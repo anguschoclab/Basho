@@ -41,7 +41,17 @@ export function createHeyaWithOyakata(args: {
   ]) as any;
   const age = 45 + rng.int(0, 20);
 
-  const oyakata = generateOyakata(oyakataId, id, oyakataName, age, archetype);
+  const oyakata = generateOyakata(
+    oyakataId,
+    id,
+    oyakataName,
+    age,
+    archetype,
+    undefined,
+    undefined,
+    undefined,
+    tier
+  );
 
   const heya: Heya = {
     id,
@@ -146,7 +156,8 @@ export function createStables(worldRng: SeededRNG): {
 
 export function createRosters(
   worldRng: SeededRNG,
-  heyaMap: Map<string, Heya>
+  heyaMap: Map<string, Heya>,
+  oyakataMap: Map<string, Oyakata>
 ): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
   const heyaIds = Array.from(heyaMap.keys());
@@ -167,6 +178,7 @@ export function createRosters(
     { rank: "jonokuchi", division: "jonokuchi", count: 150 }, // Increased from 110 for more junior wrestlers
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let totalGenerated = 0;
   rankConfigs.forEach((config) => {
     for (let i = 0; i < config.count; i++) {
@@ -182,6 +194,12 @@ export function createRosters(
           : 1;
 
       const rikishiId = worldRng.uuid("RK");
+
+      // Randomly assign to a stable first
+      const heyaId = worldRng.pick(heyaIds);
+      const heya = heyaMap.get(heyaId);
+      const oyakata = oyakataMap.get(heya?.oyakataId || "");
+
       const r = generateFullRikishi({
         id: rikishiId,
         rng: worldRng,
@@ -190,12 +208,11 @@ export function createRosters(
         division: config.division,
         side,
         rankNumber,
+        legacyShikona: oyakata?.formerShikona,
       });
 
-      // Randomly assign to a stable
-      const heyaId = worldRng.pick(heyaIds);
       r.heyaId = heyaId;
-      heyaMap.get(heyaId)?.rikishiIds?.push(r.id);
+      heya?.rikishiIds?.push(r.id);
       rikishiMap.set(r.id, r);
       totalGenerated++;
     }
@@ -214,7 +231,7 @@ export function generateInitialWorld(seed: string): WorldState {
   const { heyaMap, oyakataMap } = createStables(worldRng);
 
   // 2. Initial Roster Generation
-  const rikishiMap = createRosters(worldRng, heyaMap);
+  const rikishiMap = createRosters(worldRng, heyaMap, oyakataMap);
 
   const world: WorldState = {
     id: worldRng.uuid("WD"),

@@ -2,7 +2,7 @@
 // Defines the archetypes and traits for NPC Managers.
 // Used to generate diverse and believing opponents.
 
-import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import { rngFromSeed, SeededRNG } from "./rng";
 import type { Oyakata, OyakataArchetype, OyakataTraits, OyakataMood } from "./types/oyakata";
 
 /** o y a k a t a_ a r c h e t y p e s. */
@@ -12,68 +12,69 @@ export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {
     patience: 80,
     risk: 20,
     tradition: 90,
-    compassion: 40
+    compassion: 40,
   },
   scientist: {
     ambition: 70,
     patience: 60,
     risk: 40,
     tradition: 10,
-    compassion: 70
+    compassion: 70,
   },
   gambler: {
     ambition: 90,
     patience: 20,
     risk: 90,
     tradition: 30,
-    compassion: 20
+    compassion: 20,
   },
   nurturer: {
     ambition: 30,
     patience: 90,
     risk: 10,
     tradition: 50,
-    compassion: 95
+    compassion: 95,
   },
   tyrant: {
     ambition: 100,
     patience: 30,
     risk: 70,
     tradition: 80,
-    compassion: 5
+    compassion: 5,
   },
   strategist: {
     ambition: 80,
     patience: 70,
     risk: 30,
     tradition: 40,
-    compassion: 50
+    compassion: 50,
   },
   strict: {
     ambition: 60,
     patience: 40,
     risk: 30,
     tradition: 85,
-    compassion: 10
+    compassion: 10,
   },
   indulgent: {
     ambition: 20,
     patience: 70,
     risk: 10,
     tradition: 30,
-    compassion: 90
-  }
+    compassion: 90,
+  },
 };
 
 const ARCHETYPE_DESCRIPTIONS: Record<OyakataArchetype, string> = {
-  traditionalist: "Believes in spirit, endless repetition, and yotsu-sumo. Dislikes modern sports science.",
+  traditionalist:
+    "Believes in spirit, endless repetition, and yotsu-sumo. Dislikes modern sports science.",
   scientist: "Analytic approach. Values rest, nutrition, and data over blind tradition.",
   gambler: "High risk, high reward. Pushes rikishi to the breaking point for glory.",
   nurturer: "Protects their wrestlers like family. Produces long careers but few superstars.",
   tyrant: "Rules through fear. Demands victory at any cost. High turnover rate.",
   strategist: "Balanced and cunning. Adapts training to the current meta.",
   strict: "Demands absolute discipline and adherence to strict protocols. No excuses.",
-  indulgent: "Very lenient with rikishi. Prioritizes happiness over results."
+  indulgent: "Very lenient with rikishi. Prioritizes happiness over results.",
 };
 
 const FORMER_SHIKONA_SUFFIXES = ["yama", "gawa", "fuji", "umi", "kuni", "hime", "maru", "ryu"];
@@ -91,7 +92,7 @@ const QUIRK_IDS = [
   "Keiko Romantic",
   "Cold Pragmatist",
   "Family First",
-  "Numbers Guy"
+  "Numbers Guy",
 ] as const;
 
 /**
@@ -120,6 +121,36 @@ function generateRandomShikona(seed: string): string {
 }
 
 /**
+ * Generate realistic rank based on heya tier.
+ */
+function generateRankByTier(rng: SeededRNG, tier: number): string {
+  const roll = rng.next();
+
+  // Legendary heya (tier < 0.2): 40% yokozuna, 35% ozeki, 20% sekiwake/komusubi, 5% maegashira
+  if (tier < 0.2) {
+    if (roll < 0.4) return "Yokozuna";
+    if (roll < 0.75) return "Ozeki";
+    if (roll < 0.95) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
+    return "Maegashira";
+  }
+
+  // Powerful heya (tier < 0.5): 20% yokozuna, 35% ozeki, 30% sekiwake/komusubi, 15% maegashira
+  if (tier < 0.5) {
+    if (roll < 0.2) return "Yokozuna";
+    if (roll < 0.55) return "Ozeki";
+    if (roll < 0.85) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
+    return "Maegashira";
+  }
+
+  // Established heya (tier >= 0.5): 5% yokozuna, 15% ozeki, 40% sekiwake/komusubi, 30% maegashira, 10% juryo
+  if (roll < 0.05) return "Yokozuna";
+  if (roll < 0.2) return "Ozeki";
+  if (roll < 0.6) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
+  if (roll < 0.9) return "Maegashira";
+  return "Juryo";
+}
+
+/**
  * Generate oyakata.
  *  * @param id - The Id.
  *  * @param heyaId - The Heya id.
@@ -127,6 +158,9 @@ function generateRandomShikona(seed: string): string {
  *  * @param age - The Age.
  *  * @param archetype - The Archetype.
  *  * @param rikishiTraits - Optional rikishi traits to inherit from retiring rikishi.
+ *  * @param formerRank - Optional former rank (from retiring rikishi).
+ *  * @param formerShikona - Optional former shikona (from retiring rikishi).
+ *  * @param heyaTier - Optional heya tier for realistic rank distribution.
  *  * @returns The result.
  */
 export function generateOyakata(
@@ -135,22 +169,30 @@ export function generateOyakata(
   name: string,
   age: number,
   archetype?: OyakataArchetype,
-  rikishiTraits?: { aggression?: number; experience?: number; adaptability?: number; momentum?: number }
+  rikishiTraits?: {
+    aggression?: number;
+    experience?: number;
+    adaptability?: number;
+    momentum?: number;
+  },
+  formerRank?: string,
+  formerShikona?: string,
+  heyaTier?: number
 ): Oyakata {
-    const rng = rngFromSeed(id, "oyakata", "personality");
-// Determine archetype randomly if not provided
+  const rng = rngFromSeed(id, "oyakata", "personality");
+  // Determine archetype randomly if not provided
   const keys = Object.keys(OYAKATA_ARCHETYPES) as OyakataArchetype[];
   const type = archetype || (keys.length ? keys[rng.int(0, keys.length - 1)] : "traditionalist");
-  
+
   const baseTraits = OYAKATA_ARCHETYPES[type];
-  
+
   // Apply small random variance to traits (+/- 10)
-  const vary = (val: number) => Math.max(0, Math.min(100, val + ((rng.next() * 20) - 10)));
+  const vary = (val: number) => Math.max(0, Math.min(100, val + (rng.next() * 20 - 10)));
 
   // If rikishi traits are provided, blend them with archetype traits (50/50 blend)
   const blend = (base: number, rikishi?: number) => {
     if (rikishi === undefined) return vary(base);
-    return Math.max(0, Math.min(100, (base + rikishi) / 2 + ((rng.next() * 10) - 5)));
+    return Math.max(0, Math.min(100, (base + rikishi) / 2 + (rng.next() * 10 - 5)));
   };
 
   // Map rikishi traits to oyakata traits
@@ -162,8 +204,11 @@ export function generateOyakata(
     ambition: blend(baseTraits.ambition, rikishiTraits?.momentum),
     patience: blend(baseTraits.patience, rikishiTraits?.experience),
     risk: blend(baseTraits.risk, rikishiTraits?.aggression),
-    tradition: blend(baseTraits.tradition, rikishiTraits?.adaptability !== undefined ? 100 - rikishiTraits.adaptability : undefined),
-    compassion: vary(baseTraits.compassion) // No direct rikishi mapping, keep random
+    tradition: blend(
+      baseTraits.tradition,
+      rikishiTraits?.adaptability !== undefined ? 100 - rikishiTraits.adaptability : undefined
+    ),
+    compassion: vary(baseTraits.compassion), // No direct rikishi mapping, keep random
   };
 
   // Generate quirks (same logic as ensurePersonaForOyakata)
@@ -173,9 +218,10 @@ export function generateOyakata(
   // Generate manager flags based on quirks and traits
   const flags = {
     welfareHawk: quirkIds.includes("Welfare Hawk") || traits.compassion >= 75,
-    disciplineHawk: quirkIds.includes("Discipline Hawk") || type === "tyrant" || traits.tradition >= 80,
+    disciplineHawk:
+      quirkIds.includes("Discipline Hawk") || type === "tyrant" || traits.tradition >= 80,
     publicityHawk: quirkIds.includes("Media Operator") || traits.ambition >= 80,
-    nepotist: quirkIds.includes("Nepotist")
+    nepotist: quirkIds.includes("Nepotist"),
   };
 
   // Initialize mood
@@ -185,8 +231,14 @@ export function generateOyakata(
   const memory = {
     observations: [],
     coreDirectives: [`Maintain the excellence of stable`, `Prioritize ${type} values`],
-    lastConsolidationTick: 0
+    lastConsolidationTick: 0,
   };
+
+  // Determine highest rank: use provided formerRank, or generate based on tier
+  const highestRank = formerRank || generateRankByTier(rng, heyaTier ?? 0.5);
+
+  // Determine former shikona: use provided formerShikona, or generate randomly
+  const finalFormerShikona = formerShikona || generateRandomShikona(id);
 
   return {
     id,
@@ -200,9 +252,9 @@ export function generateOyakata(
     managerFlags: flags,
     mood,
     memory,
-    formerShikona: generateRandomShikona(id),
-    highestRank: rng.bool(0.3) ? "Komusubi" : "Maegashira",
-    yearsInCharge: rng.int(1, 20)
+    formerShikona: finalFormerShikona,
+    highestRank,
+    yearsInCharge: rng.int(1, 20),
   };
 }
 
