@@ -37,7 +37,12 @@ import {
  * still mutate directly and will be migrated in Phase 4.
  */
 export function runGovernanceReview(world: WorldState): StateImpact {
+<<<<<<< Updated upstream
   const builder = createImpactBuilder("governanceReview");
+=======
+  const impacts: StateImpact[] = [];
+  const builder = createImpactBuilder('governanceReview');
+>>>>>>> Stashed changes
 
   for (let heya of stableSort(world.heyas.values(), (x) => x.id)) {
     const welfareState = heya.welfareState;
@@ -65,12 +70,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
 
       // === Loans/benefactors escalation (Constitution §4.4) ===
       if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
-        // Now returns StateImpact - resolve immediately
-        const loanImpact = issueBailoutLoanIfNeeded(world, heya.id);
-        const resolvedWorld = resolveImpacts(world, [loanImpact]);
-        Object.assign(world, resolvedWorld);
-        // Re-fetch heya — world.heyas was replaced, old reference is stale
-        heya = world.heyas.get(heya.id) ?? heya;
+        impacts.push(issueBailoutLoanIfNeeded(world, heya.id));
       }
 
       // v1.7 Faction Solidarity (Traditional Bailouts)
@@ -103,6 +103,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         }
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
+<<<<<<< Updated upstream
       if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
@@ -118,6 +119,10 @@ export function runGovernanceReview(world: WorldState): StateImpact {
           );
           // Still call directly - will migrate in Phase 4
           executeMerger(world, heya.id, targetId, "financial_insolvency");
+=======
+          // Queue merger impact
+          impacts.push(executeMerger(world, heya.id, targetId, "financial_insolvency"));
+>>>>>>> Stashed changes
         }
       }
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
@@ -210,11 +215,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
           // Execute actual merger
           const targetId = findMergerTarget(world, heya.id);
           if (targetId) {
-            // Execute merger - now returns StateImpact
-            const mergerImpact = executeMerger(world, heya.id, targetId, "critically_low_roster");
-            // Resolve merger impact immediately since it affects the same world state
-            const resolvedWorld = resolveImpacts(world, [mergerImpact]);
-            Object.assign(world, resolvedWorld);
+            impacts.push(executeMerger(world, heya.id, targetId, "critically_low_roster"));
           }
         }
       } else {
