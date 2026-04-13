@@ -408,7 +408,8 @@ export function tickWeekNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekNPC");
 
   const playerHeyaId = world.playerHeyaId;
-  let decisionsApplied = 0;
+
+  const _decisionsApplied = false;
 
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
 
@@ -419,7 +420,6 @@ export function tickWeekNPC(world: WorldState): StateImpact {
     const decision = makeNPCWeeklyDecision(world, heya.id);
 
     applyNPCDecision(world, decision);
-    decisionsApplied++;
 
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
     const oldMood = oyakata?.mood ?? "content";
