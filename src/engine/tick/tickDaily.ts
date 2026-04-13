@@ -89,6 +89,7 @@ export function advanceOneDay(world: WorldState): WorldState {
     phases.phase01_daily_economy,
     phases.phase01_daily_welfare,
     phases.phase01_daily_sponsors,
+    phases.phase01_daily_drama,
     phases.phase01_monthly_market,
   ];
 

@@ -32,7 +32,18 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
     if (runwayMonths < 6) return; // Too tight to recruit
 
     // Ambitious and publicity-focused oyakata recruit more aggressively
-    const recruitmentThreshold = isAmbitious && isPublicityHawk ? 3 : isAmbitious ? 2 : 1;
+    // High patience leads to more selective recruitment (lower threshold)
+    let recruitmentThreshold = isAmbitious && isPublicityHawk ? 3 : isAmbitious ? 2 : 1;
+    if (oyakata.traits.patience > 70) {
+      recruitmentThreshold = Math.max(1, recruitmentThreshold - 1); // More patient oyakata recruit fewer sponsors
+    }
+
+    // Mood affects sponsor recruitment aggressiveness
+    if (oyakata.mood === "anxious") {
+      recruitmentThreshold = Math.max(1, recruitmentThreshold - 1); // Anxious oyakata recruit fewer sponsors
+    } else if (oyakata.mood === "obsessed") {
+      recruitmentThreshold += 1; // Obsessed oyakata recruit more sponsors
+    }
 
     // Count current sponsor relationships
     const currentSponsorCount = Array.from(pool.sponsors.values()).filter(
@@ -258,7 +269,12 @@ export const GamblerSponsorStrategy: SponsorStrategy = {
     const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
     const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 
-    if (runwayMonths < 3) return; // Gamblers are more willing to take risks
+    let runwayThreshold = 3;
+    // Gambler's Instinct quirk makes gamblers even more willing to take risks
+    if (oyakata.quirks?.includes("Gambler's Instinct")) {
+      runwayThreshold = 2;
+    }
+    if (runwayMonths < runwayThreshold) return;
 
     const recruitmentThreshold = isRiskTaker ? 4 : 2;
 

@@ -16,6 +16,7 @@ import type { PipelinePhase } from "../pipelineRunner";
 import * as phases from "../phases";
 
 export const offSeasonPipeline: PipelinePhase[] = [
+  phases.phase01_week_economy, // Weekly finances: income, salaries, facility upkeep
   phases.phase01_week_training,
   phases.phase01_week_health,
   phases.phase01_week_welfare,

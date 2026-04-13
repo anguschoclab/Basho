@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Oyakata, OyakataArchetype } from "@/engine/types/oyakata";
-import { Brain, Heart, Briefcase, Zap, Scale } from "lucide-react";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { Brain, Heart, Briefcase, Zap, Scale, Users } from "lucide-react";
 import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
+import { menteesOf } from "@/engine/lineage";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -44,6 +45,21 @@ export default function OyakataPage() {
     { key: "compassion", label: "Compassion", icon: Heart, value: traits.compassion },
   ];
 
+  // Get mentorship relationships in the stable
+  const heya = world.heyas.get(selectedOyakata.heyaId);
+  const mentorshipPairs: Array<{ mentor: Rikishi; mentees: Rikishi[] }> = [];
+  if (heya?.rikishiIds) {
+    for (const id of heya.rikishiIds) {
+      const r = world.rikishi.get(id);
+      if (r) {
+        const mentees = menteesOf(world, r);
+        if (mentees.length > 0) {
+          mentorshipPairs.push({ mentor: r, mentees });
+        }
+      }
+    }
+  }
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -54,7 +70,7 @@ export default function OyakataPage() {
               {selectedOyakata.name[0]}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <h1 className="text-4xl font-bold">{selectedOyakata.name}</h1>
@@ -76,18 +92,22 @@ export default function OyakataPage() {
         <Card>
           <CardHeader>
             <CardTitle>Personality Traits</CardTitle>
-            <CardDescription>These traits influence training, scouting, and management decisions.</CardDescription>
+            <CardDescription>
+              These traits influence training, scouting, and management decisions.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {traitItems.map(trait => {
+              {traitItems.map((trait) => {
                 const band = toTraitBand(trait.value);
                 return (
                   <div key={trait.key} className="space-y-2">
                     <div className="flex items-center gap-2">
                       <trait.icon className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">{trait.label}</span>
-                      <span className="ml-auto text-sm text-muted-foreground">{TRAIT_LABELS[band]}</span>
+                      <span className="ml-auto text-sm text-muted-foreground">
+                        {TRAIT_LABELS[band]}
+                      </span>
                     </div>
                     <Progress value={trait.value} className="h-2" />
                   </div>
@@ -96,6 +116,36 @@ export default function OyakataPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* MENTORSHIP */}
+        {mentorshipPairs.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" /> Stable Mentorship
+              </CardTitle>
+              <CardDescription>Mentor-mentee relationships within the stable.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {mentorshipPairs.map((pair: any) => (
+                  <div key={pair.mentor.id} className="p-4 bg-muted/30 rounded-lg">
+                    <div className="font-medium mb-2">
+                      {pair.mentor.shikona || pair.mentor.name}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {pair.mentees.map((mentee: any) => (
+                        <Badge key={mentee.id} variant="outline" className="text-sm">
+                          {mentee.shikona || mentee.name} ({mentee.rank})
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* ALL OYAKATA */}
         <Card>
@@ -109,9 +159,9 @@ export default function OyakataPage() {
                 const heya = world.heyas.get(o.heyaId);
                 const isSelected = o.id === selectedOyakata.id;
                 return (
-                  <Card 
-                    key={o.id} 
-                    className={`cursor-pointer transition-colors ${isSelected ? 'ring-2 ring-primary' : 'hover:bg-muted/50'}`}
+                  <Card
+                    key={o.id}
+                    className={`cursor-pointer transition-colors ${isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50"}`}
                     onClick={() => setSelectedOyakata(o)}
                   >
                     <CardContent className="p-4">
@@ -121,7 +171,9 @@ export default function OyakataPage() {
                         </Avatar>
                         <div>
                           <p className="font-medium">{o.name}</p>
-                          <p className="text-sm text-muted-foreground">{heya?.name || "Unknown Stable"}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {heya?.name || "Unknown Stable"}
+                          </p>
                         </div>
                       </div>
                       <Badge variant="outline" className="mt-2 capitalize text-xs">

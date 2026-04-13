@@ -18,6 +18,7 @@ import type { Heya } from "../../types/heya";
 import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { mergeImpacts } from "../../core/ImpactResolver";
+import { OYAKATA_SALARY_MONTHLY, FACILITY_UPKEEP } from "../../constants/EconomicConstants";
 import type { StateImpact } from "../../core/StateImpact";
 import { RANK_HIERARCHY } from "../../banzuke";
 import { getHeyaStaffBonuses } from "../../staff";
@@ -26,7 +27,7 @@ import { computeFacilitiesBand, type FacilityAxis } from "../../facilities";
 import { tickMonthlyNPC } from "../../npcAI";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase05_monthly_boundary');
+  const builder = createImpactBuilder("phase05_monthly_boundary");
   const boundaries = world.transientContext?.boundaries;
   if (!boundaries?.monthBoundary) return builder.build();
 
@@ -74,16 +75,12 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     }
   }
 
-  builder.logEvent(
-    'BASHO_STATUS',
-    'narrative',
-    {
-      status: "meta_shift",
-      incident: "monthly_boundary",
-      day: world.calendar.month,
-      score: world.calendar.year,
-    }
-  );
+  builder.logEvent("BASHO_STATUS", "narrative", {
+    status: "meta_shift",
+    incident: "monthly_boundary",
+    day: world.calendar.month,
+    score: world.calendar.year,
+  });
 
   // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
   // retirement evaluation, vacancy assessment. This was previously orphaned
@@ -99,7 +96,7 @@ function processHeyaEconomics(
   world: WorldState,
   heya: Heya,
   rikishiMap: Map<string, Rikishi>,
-  heyaUpdates: any,
+  heyaUpdates: any
 ): number {
   let totalSalaries = 0;
   const rikishiIds = heya.rikishiIds ?? [];
@@ -112,8 +109,7 @@ function processHeyaEconomics(
     if (info?.isSekitori) {
       const baseSalary = info.salary ?? 0;
       const kinboshiCount = r.stats?.achievements?.kinboshiEarned ?? 0;
-      const kinboshiStipend =
-        r.division === "makuuchi" ? kinboshiCount * 40_000 : 0;
+      const kinboshiStipend = r.division === "makuuchi" ? kinboshiCount * 40_000 : 0;
       const totalRikishiPay = baseSalary + kinboshiStipend;
 
       const rikishiUpdates: any = {
@@ -144,11 +140,11 @@ function processHeyaEconomics(
   }
 
   const staffBonuses = getHeyaStaffBonuses(world, heya.id);
-  const oyakataSalary = 1_200_000 * staffBonuses.administration;
+  const oyakataSalary = OYAKATA_SALARY_MONTHLY * staffBonuses.administration;
   const facilityUpkeep =
-    (heya.facilities.training * 4000 +
-      heya.facilities.recovery * 4000 +
-      heya.facilities.nutrition * 8000) *
+    (heya.facilities.training * FACILITY_UPKEEP.training * 4 +
+      heya.facilities.recovery * FACILITY_UPKEEP.recovery * 4 +
+      heya.facilities.nutrition * FACILITY_UPKEEP.nutrition * 4) *
     staffBonuses.administration;
   const totalExpenses = totalSalaries + facilityUpkeep + oyakataSalary;
 
@@ -157,7 +153,12 @@ function processHeyaEconomics(
   return totalExpenses;
 }
 
-function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any, builder: ReturnType<typeof import("../../core/ImpactBuilder").createImpactBuilder>): void {
+function processLoanRepayments(
+  world: WorldState,
+  heya: Heya,
+  heyaUpdates: any,
+  builder: ReturnType<typeof import("../../core/ImpactBuilder").createImpactBuilder>
+): void {
   if (heya.activeLoans && heya.activeLoans.length > 0) {
     let totalPayment = 0;
     const nextLoans = [];
@@ -172,8 +173,8 @@ function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any, 
         nextLoans.push(nextLoan);
       } else {
         builder.logEvent(
-          'FINANCIAL_ALERT',
-          'economy',
+          "FINANCIAL_ALERT",
+          "economy",
           {
             incident: "loan_paid_off",
             status: loan.type,
@@ -189,16 +190,9 @@ function processLoanRepayments(world: WorldState, heya: Heya, heyaUpdates: any, 
   }
 }
 
-function processFacilitiesMaintenance(
-  world: WorldState,
-  heya: Heya,
-  heyaUpdates: any,
-): number {
+function processFacilitiesMaintenance(world: WorldState, heya: Heya, heyaUpdates: any): number {
   const maintenance =
-    (heya.facilities.training +
-      heya.facilities.recovery +
-      heya.facilities.nutrition) *
-    3000;
+    (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) * 3000;
   const currentFunds = heyaUpdates.funds ?? heya.funds ?? 0;
   if (currentFunds >= maintenance) {
     heyaUpdates.funds = currentFunds - maintenance;
@@ -221,7 +215,7 @@ function processNpcAutoInvestment(
   heya: Heya,
   totalExpenses: number,
   maintenance: number,
-  heyaUpdates: any,
+  heyaUpdates: any
 ): void {
   if (heya.id !== world.playerHeyaId) {
     const monthlyBurn = Math.max(1, totalExpenses + maintenance);
@@ -233,7 +227,7 @@ function processNpcAutoInvestment(
       const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
       const weakestAxis = axes.reduce(
         (min, axis) => (facilities[axis] < facilities[min] ? axis : min),
-        axes[0],
+        axes[0]
       );
 
       const currentLevel = facilities[weakestAxis];
@@ -266,11 +260,11 @@ function processNpcAutoInvestment(
           heyaUpdates.funds = currentFunds - upgradeCost;
           heyaUpdates.facilities = {
             ...facilities,
-            [weakestAxis]: Math.min(maxLevel, currentLevel + points)
+            [weakestAxis]: Math.min(maxLevel, currentLevel + points),
           };
           heyaUpdates.facilitiesBand = computeFacilitiesBand({
             ...heya,
-            facilities: heyaUpdates.facilities
+            facilities: heyaUpdates.facilities,
           });
           // Note: EventBus replaced - facility upgraded event skipped for now
           console.log(`[FacilityUpgraded] ${heya.name} upgraded ${weakestAxis}`);
@@ -284,15 +278,9 @@ function processArchetypeDrift(world: WorldState, nextR: Rikishi): boolean {
   const evidence = nextR.archetypeEvidence;
   if (evidence && !Array.isArray(evidence)) {
     let newArchetype = nextR.tacticalArchetypePrimary;
-    if (
-      evidence.push.success >= 5 &&
-      evidence.push.success > evidence.grapple.success
-    )
+    if (evidence.push.success >= 5 && evidence.push.success > evidence.grapple.success)
       newArchetype = "oshi";
-    else if (
-      evidence.grapple.success >= 5 &&
-      evidence.grapple.success > evidence.push.success
-    )
+    else if (evidence.grapple.success >= 5 && evidence.grapple.success > evidence.push.success)
       newArchetype = "yotsu";
 
     if (newArchetype !== nextR.tacticalArchetypePrimary) {

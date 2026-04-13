@@ -17,6 +17,7 @@ import type { Id } from "../types/common";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
+import { historyCache } from "../historyCache";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -140,7 +141,7 @@ function distributePrizes(
         // Apply sansho popularity boost via applyAchievementImpact
         const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
         if (tempR.economics) {
-          applyAchievementImpact(world, tempR, 'sansho');
+          applyAchievementImpact(world, tempR, "sansho");
         }
 
         builder.updateRikishi(rikishiId, {
@@ -238,6 +239,9 @@ function recordBashoHistory(
     // Collect specific prizes from the current result
     const yearAwards = (world.history || []).filter((h) => h.year === world.year);
     opfsArchiveService.archiveAwards(world.year, yearAwards);
+
+    // Cache year data for historyCache (async operation)
+    historyCache.getYear(world.year);
   });
 
   runPostBashoResolution(world);

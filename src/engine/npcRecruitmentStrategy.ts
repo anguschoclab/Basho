@@ -24,6 +24,13 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     if (oyakata.traits.ambition > 75) targetSize += 2;
     if (oyakata.traits.tradition < 30) targetSize -= 1; // Modern less is more approach
 
+    // Mood affects recruitment aggressiveness
+    if (oyakata.mood === "anxious") {
+      targetSize -= 1; // Anxious oyakata are more conservative
+    } else if (oyakata.mood === "obsessed") {
+      targetSize += 1; // Obsessed oyakata are more aggressive
+    }
+
     const currentSize = heya.rikishiIds ? heya.rikishiIds.length : 0;
 
     return Math.max(0, targetSize - currentSize);
@@ -65,17 +72,33 @@ export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
     if (freezeWeeks > 0) return 0;
 
     // Traditionalists keep a stable, medium roster (approx 10-12)
-    const targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
+    // High patience leads to slightly larger target roster (slower development)
+    let targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
+    if (oyakata.traits.patience > 70) {
+      targetSize += 1; // More patient oyakata maintain larger rosters
+    }
     const currentSize = heya.rikishiIds?.length ?? 0;
     return Math.max(0, targetSize - currentSize);
   },
-  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+  calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Traditionalists are conservative with money unless it's a "Traditional" prospect
     let maxBase = heya.funds * 0.1;
     const candidate = Object.values(world.talentPool?.candidates || {}).find(
       (c) => c.candidateId === candidateId
     );
     if (candidate?.style === "yotsu") maxBase *= 1.35; // Value belt-wrestlers
+    // Weight-Cutter quirk prefers lighter rikishi
+    if (
+      oyakata.quirks?.includes("Weight-Cutter") &&
+      candidate?.weightPotentialKg &&
+      candidate.weightPotentialKg < 120
+    ) {
+      maxBase *= 1.2;
+    }
+    // Keiko Romantic quirk strongly favors traditional yotsu style
+    if (oyakata.quirks?.includes("Keiko Romantic") && candidate?.style === "yotsu") {
+      maxBase *= 1.4;
+    }
     return maxBase;
   },
 };
@@ -86,20 +109,35 @@ export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
     const targetSize = oyakata.traits.ambition > 80 ? 15 : 9;
     return Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
   },
-  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
+  calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Scientists value 'Potential' (talentSeed) above all else
     const candidate = Object.values(world.talentPool?.candidates || {}).find(
       (c) => c.candidateId === candidateId
     );
     const potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
-    return heya.funds * 0.2 * potentialMultiplier;
+    let maxBid = heya.funds * 0.2 * potentialMultiplier;
+    // Numbers Guy quirk uses detailed stat analysis
+    if (oyakata.quirks?.includes("Numbers Guy") && candidate) {
+      const discipline = candidate.temperament?.discipline ?? 50;
+      const volatility = candidate.temperament?.volatility ?? 50;
+      // Favor candidates with high discipline and low volatility
+      if (discipline > 70 && volatility < 30) {
+        maxBid *= 1.25;
+      }
+    }
+    return maxBid;
   },
 };
 
 export const GamblerRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(_world, _heya, _oyakata) {
+  evaluateVacancies(_world, _heya, oyakata) {
     // Gamblers always have room for one more "long shot"
-    return 1;
+    // Low patience leads to more aggressive recruitment (higher vacancy target)
+    const baseVacancies = 1;
+    if (oyakata.traits.patience < 30) {
+      return baseVacancies + 1; // Impatient gamblers recruit more aggressively
+    }
+    return baseVacancies;
   },
   calculateMaxBid(_world, heya, _oyakata, _candidateId, rivalHeyaId) {
     // Gamblers take massive risks if it denies a rival or if they feel lucky
@@ -124,27 +162,26 @@ export const NurturerRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return 0;
-
-    // Nurturers prefer smaller, more intimate rosters (8-10) to focus on individual development
     const targetSize = oyakata.traits.compassion > 70 ? 8 : 10;
     const currentSize = heya.rikishiIds?.length ?? 0;
     return Math.max(0, targetSize - currentSize);
   },
-  calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
-    // Nurturers bid higher for compassionate reasons, especially for young prospects
+  calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     const candidate = Object.values(world.talentPool?.candidates || {}).find(
       (c) => c.candidateId === candidateId
     );
     let maxBase = heya.funds * 0.12;
-
-    // Bonus for young, high-potential prospects they can nurture
     if (candidate && candidate.talentSeed > 70) {
       const age = world.year - candidate.birthYear;
       if (age < 18) {
         maxBase *= 1.25;
       }
     }
-
+    // Family First quirk increases bid for candidates with high discipline
+    const discipline = candidate?.temperament?.discipline;
+    if (oyakata.quirks?.includes("Family First") && discipline && discipline > 70) {
+      maxBase *= 1.15;
+    }
     return maxBase;
   },
 };
@@ -167,7 +204,8 @@ export const IndulgentRecruitmentStrategy: RecruitmentStrategy = {
     let maxBase = heya.funds * 0.14;
 
     // Bonus for prospects with high discipline (they value "good attitude")
-    if (candidate && candidate.temperament.discipline > 70) {
+    const discipline = candidate?.temperament?.discipline;
+    if (discipline && discipline > 70) {
       maxBase *= 1.15;
     }
 
@@ -193,9 +231,10 @@ export const StrictRecruitmentStrategy: RecruitmentStrategy = {
     );
 
     // Only bid significantly for high-quality prospects (based on talentSeed and discipline)
-    if (candidate && candidate.talentSeed > 75 && candidate.temperament.discipline > 75) {
+    const discipline = candidate?.temperament?.discipline;
+    if (candidate && candidate.talentSeed > 75 && discipline && discipline > 75) {
       maxBase *= 1.3;
-    } else if (candidate && (candidate.talentSeed < 60 || candidate.temperament.discipline < 60)) {
+    } else if (candidate && (candidate.talentSeed < 60 || (discipline && discipline < 60))) {
       maxBase *= 0.7; // Penalty for weak prospects
     }
 

@@ -46,6 +46,19 @@ export const DefaultMediaStrategy: MediaStrategy = {
       choice = "ignore";
     }
 
+    // Mood affects media response
+    if (oyakata.mood === "anxious") {
+      // Anxious oyakata are more likely to apologize to avoid further issues
+      if (choice === "deny" || choice === "ignore") {
+        choice = "apologize";
+      }
+    } else if (oyakata.mood === "obsessed") {
+      // Obsessed oyakata are more aggressive in their responses
+      if (choice === "apologize") {
+        choice = "deny";
+      }
+    }
+
     // Apply the choice using the existing handleMediaEvent function
     handleMediaEvent(world, eventId, choice);
 

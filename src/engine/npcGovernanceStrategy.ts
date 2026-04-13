@@ -258,7 +258,11 @@ export const TyrantGovernanceStrategy: GovernanceStrategy = {
 
     // Tyrants spend aggressively to maintain power
     if (scandalScore >= 5) {
-      const spendAmount = Math.min(25, politicalCapital);
+      let spendAmount = Math.min(25, politicalCapital);
+      // Old-School Stickler quirk increases spending to maintain traditional authority
+      if (oyakata.quirks?.includes("Old-School Stickler")) {
+        spendAmount = Math.min(40, politicalCapital);
+      }
       if (trySpend(spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 7);
 
@@ -270,6 +274,23 @@ export const TyrantGovernanceStrategy: GovernanceStrategy = {
             action: "maintain_power",
             spent: spendAmount,
             reasoning: "Tyrant spent political capital aggressively to maintain power",
+          },
+          "minor"
+        );
+      }
+    }
+
+    // Discipline Hawk quirk causes tyrants to spend capital to enforce discipline
+    if (oyakata.quirks?.includes("Discipline Hawk") && politicalCapital > 40) {
+      if (trySpend(15)) {
+        EventBus.managementDecision(
+          world,
+          heya.id,
+          {
+            archetype: oyakata.archetype,
+            action: "enforce_discipline",
+            spent: 15,
+            reasoning: "Tyrant spent political capital to enforce discipline",
           },
           "minor"
         );
@@ -327,7 +348,20 @@ export const StrictGovernanceStrategy: GovernanceStrategy = {
     };
 
     // Strict spend to maintain discipline and avoid any scandal
-    if (scandalScore >= 8) {
+    // High patience leads to more calculated spending (only when necessary)
+    let scandalThreshold = 8;
+    if (oyakata.traits.patience > 70) {
+      scandalThreshold = 12; // More patient strict oyakata tolerate more scandal before acting
+    }
+
+    // Mood affects political spending
+    if (oyakata.mood === "anxious") {
+      scandalThreshold += 2; // Anxious strict oyakata are more hesitant to spend political capital
+    } else if (oyakata.mood === "obsessed") {
+      scandalThreshold = Math.max(6, scandalThreshold - 2); // Obsessed strict oyakata spend more aggressively
+    }
+
+    if (scandalScore >= scandalThreshold) {
       const spendAmount = Math.min(20, politicalCapital);
       if (trySpend(spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 5);

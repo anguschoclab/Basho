@@ -3,7 +3,7 @@
 // Bout rewards (Kensho), insolvency handling, and sponsor churn.
 //
 // NOTE: Weekly finance calculation (salary burn, koenkai income) is handled
-// by the pipeline at src/engine/tick/phases/phase01_economy.ts,
+// by the pipeline at src/engine/tick/phases/phase01_week_economy.ts,
 // which uses FinanceCalculator.ts for the pure math.
 
 import { RNGRegistry } from "./core/RNGRegistry";
@@ -16,7 +16,7 @@ import { EventBus } from "./events";
 import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
 import {
   processSponsorChurn as runSponsorChurnService,
-  selectBenefactor
+  selectBenefactor,
 } from "./systems/economics/SponsorshipService";
 import {
   DEBT_LIMIT,
@@ -38,7 +38,11 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
 
   const pool = world.sponsorPool;
   const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
-  const rng = RNGRegistry.getSystemRNG(world, "economics", `bailout-${heya.id}-${world.dayIndexGlobal}`);
+  const rng = RNGRegistry.getSystemRNG(
+    world,
+    "economics",
+    `bailout-${heya.id}-${world.dayIndexGlobal}`
+  );
 
   const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
 
@@ -48,7 +52,7 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
       heyaname: heya.name,
       incident: "bailout",
       money: BENEFACTOR_BAILOUT_AMOUNT,
-      sponsor: benefactor.displayName
+      sponsor: benefactor.displayName,
     });
   } else if (heya.governanceStatus !== "sanctioned") {
     reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
@@ -70,7 +74,7 @@ export function onBoutResolvedEconomics(
   context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): StateImpact {
   const { result, east, west } = context;
-  const builder = createImpactBuilder('onBoutResolvedEconomics');
+  const builder = createImpactBuilder("onBoutResolvedEconomics");
 
   // Only Makuuchi bouts generate Kensho normally
   if (east.division !== "makuuchi") return builder.build();
@@ -87,19 +91,24 @@ export function onBoutResolvedEconomics(
     kinboshiCount: 0,
     totalEarnings: 0,
     currentBashoEarnings: 0,
-    popularity: 50
+    popularity: 50,
   };
 
   // Use envelope count from boutResolver if already set; otherwise calculate
   let kenshoCount = result.kenshoEnvelopes ?? 0;
   if (!result.kenshoEnvelopes && result.kenshoEnvelopes !== 0) {
-    const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${winner.id}-${world.dayIndexGlobal}`);
+    const kenshoRng = RNGRegistry.getSystemRNG(
+      world,
+      "kensho",
+      `kensho-${winner.id}-${world.dayIndexGlobal}`
+    );
     kenshoCount = calculateKenshoEnvelopes(world, winner, result.awardFact ?? undefined, kenshoRng);
     result.kenshoEnvelopes = kenshoCount;
   }
 
   // Marketability shift for kinboshi/ginboshi
-  const marketabilityScale = result.awardFact === 'kinboshi' ? 5 : result.awardFact === 'ginboshi' ? 2 : 0;
+  const marketabilityScale =
+    result.awardFact === "kinboshi" ? 5 : result.awardFact === "ginboshi" ? 2 : 0;
   const existingMarketability = winner.marketability ?? 50;
 
   if (kenshoCount > 0) {
@@ -120,25 +129,25 @@ export function onBoutResolvedEconomics(
       currentBashoEarnings: existingEconomics.currentBashoEarnings + rikishiNet,
       careerKenshoWon: existingEconomics.careerKenshoWon + kenshoCount,
       totalEarnings: existingEconomics.totalEarnings + rikishiNet,
-      popularity: Math.min(100, existingEconomics.popularity + (marketabilityScale * 2))
+      popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * 2),
     };
 
     builder.updateRikishi(winner.id, {
       economics: updatedEconomics,
-      marketability: existingMarketability + marketabilityScale
+      marketability: existingMarketability + marketabilityScale,
     });
 
     builder.updateHeya(winnerHeya.id, {
-      funds: winnerHeya.funds + stableShare
+      funds: winnerHeya.funds + stableShare,
     });
 
     builder.logEvent(
-      'AWARD_CONFERRED',
-      'economy',
+      "AWARD_CONFERRED",
+      "economy",
       {
         kensho: total,
         envelopes: kenshoCount,
-        status: "kensho"
+        status: "kensho",
       },
       { rikishiId: winner.id, heyaId: winnerHeya.id }
     );
@@ -147,9 +156,9 @@ export function onBoutResolvedEconomics(
     builder.updateRikishi(winner.id, {
       economics: {
         ...existingEconomics,
-        popularity: Math.min(100, existingEconomics.popularity + (marketabilityScale * 2))
+        popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * 2),
       },
-      marketability: existingMarketability + marketabilityScale
+      marketability: existingMarketability + marketabilityScale,
     });
   }
 

@@ -10,7 +10,7 @@ interface RetirementStrategy {
 }
 
 export const DefaultRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world: WorldState, heya: Heya, oyakata: Oyakata) {
+  evaluateRetirements(world: WorldState, heya: Heya, _oyakata: Oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -45,7 +45,7 @@ export const DefaultRetirementStrategy: RetirementStrategy = {
 };
 
 export const TraditionalistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -80,7 +80,7 @@ export const TraditionalistRetirementStrategy: RetirementStrategy = {
 };
 
 export const ScientistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -142,7 +142,7 @@ export const GamblerRetirementStrategy: RetirementStrategy = {
 };
 
 export const NurturerRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -176,7 +176,7 @@ export const NurturerRetirementStrategy: RetirementStrategy = {
 };
 
 export const TyrantRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -210,7 +210,7 @@ export const TyrantRetirementStrategy: RetirementStrategy = {
 };
 
 export const StrategistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -241,7 +241,7 @@ export const StrategistRetirementStrategy: RetirementStrategy = {
 };
 
 export const StrictRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {
@@ -254,17 +254,17 @@ export const StrictRetirementStrategy: RetirementStrategy = {
         world.seed
       );
 
-      // Strict maintain high standards, cut when discipline drops
+      // Strict maintain high standards, cut when performance drops
       if (
         retireReason ||
-        (oyakata.traits.tradition > 60 && r.temperament && r.temperament.discipline < 40)
+        (r.stats && (r.stats as any).strength < 30 && r.rank && r.rank.startsWith("juryo"))
       ) {
         EventBus.lifecycleEvent(world, {
           rikishiId: r.id,
           heyaId: heya.id,
           shikona: r.shikona || r.name || r.id,
           status: "retirement",
-          reason: retireReason || "Cut due to lack of discipline",
+          reason: retireReason || "Cut due to poor performance",
         });
 
         heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
@@ -275,7 +275,7 @@ export const StrictRetirementStrategy: RetirementStrategy = {
 };
 
 export const IndulgentRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
+  evaluateRetirements(world, heya, _oyakata) {
     const currentRikishiIds = [...(heya.rikishiIds || [])];
 
     for (const rId of currentRikishiIds) {

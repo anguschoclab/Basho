@@ -57,7 +57,7 @@ import { RosterList } from "@/components/rikishi/RosterList";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed } from "@/engine/rng";
-import { getMentor, menteesOf } from "@/engine/lineage";
+import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -162,6 +162,7 @@ export default function RikishiPage() {
   // Get mentorship info using lineage functions
   const mentor = getMentor(world, rawRikishi);
   const mentees = menteesOf(world, rawRikishi);
+  const lineageTree = getLineageTree(world, rawRikishi.id);
 
   return (
     <AppLayout pageTitle="Rikishi Profile" subNavTabs={HQ_TABS} activeSubTab="roster">
@@ -292,7 +293,7 @@ export default function RikishiPage() {
 
           <div className="p-8">
             {/* Mentorship Lineage */}
-            {(mentor || mentees.length > 0) && (
+            {(mentor || mentees.length > 0 || lineageTree.length > 0) && (
               <div className="mb-10 p-6 bg-primary/5 border-2 border-primary/10 rounded-lg">
                 <h3 className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight mb-4">
                   <Users className="h-5 w-5 text-primary" /> Lineage & Mentorship
@@ -320,6 +321,28 @@ export default function RikishiPage() {
                             <RikishiName id={m!.id} name={m!.shikona} className="text-sm" />
                             <Badge variant="outline" className="text-[10px]">
                               {m!.rank}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {lineageTree.length > 0 && (
+                    <div className="p-3 bg-muted/30 rounded-lg">
+                      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                        Lineage Tree
+                      </div>
+                      <div className="space-y-1">
+                        {lineageTree.map((node) => (
+                          <div
+                            key={node.id}
+                            className="flex items-center gap-2 text-sm pl-2"
+                            style={{ paddingLeft: `${node.depth * 16}px` }}
+                          >
+                            <span className="text-muted-foreground">└</span>
+                            <RikishiName id={node.id} name={node.shikona} className="text-sm" />
+                            <Badge variant="outline" className="text-[10px]">
+                              {node.rank}
                             </Badge>
                           </div>
                         ))}
