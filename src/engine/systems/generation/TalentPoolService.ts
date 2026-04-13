@@ -21,6 +21,8 @@ import { clampInt } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { rngFromSeed } from "../../rng";
+import { isForeign } from "../../utils/identity";
+import { buildCombatProfile } from "../../archetype";
 
 // --- Constants ---
 export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
@@ -128,6 +130,67 @@ export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
     }
   }
   return count;
+}
+
+/**
+ * Checks if a rikishi counts as foreign for roster cap purposes.
+ */
+export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): boolean {
+  return isForeign(rikishi);
+}
+
+/**
+ * Reinjects a released rikishi back into the talent pool as a free agent.
+ */
+export function reinjectToTalentPool(world: WorldState, rikishi: any): void {
+  const tp = ensureTalentPoolState(world);
+
+  // Create a candidate from the rikishi
+  const candidateId = rikishi.id;
+  const poolType =
+    (rikishi.nationality ?? "Japan") !== "Japan"
+      ? "foreign"
+      : rikishi.origin?.toLowerCase().includes("university")
+        ? "university"
+        : "high_school";
+
+  // Determine archetype based on rikishi stats or default to hybrid
+  const archetype: "oshi" | "yotsu" | "hybrid" = "hybrid";
+  const combatProfile = buildCombatProfile(archetype);
+
+  tp.candidates[candidateId] = {
+    candidateId,
+    personId: rikishi.id,
+    name: rikishi.shikona,
+    nationality: rikishi.nationality ?? "Japan",
+    birthYear: rikishi.birthYear ?? world.year - 20,
+    originRegion: rikishi.origin ?? "Unknown",
+    visibilityBand: "obscure",
+    reputationSeed: rikishi.talentSeed ?? 50,
+    tags: [],
+    combatProfile,
+    availabilityState: "available",
+    competingSuitors: [],
+    archetype,
+    style: archetype,
+    heightPotentialCm: rikishi.height ?? 180,
+    weightPotentialKg: rikishi.weight ?? 100,
+    talentSeed: rikishi.talentSeed ?? 50,
+    temperament: {
+      discipline: 50,
+      volatility: 50,
+    },
+  };
+
+  // Add to the appropriate pool's visible candidates
+  const pool = tp.pools[poolType];
+  if (
+    pool &&
+    !pool.candidatesVisible.includes(candidateId) &&
+    !pool.candidatesHidden.includes(candidateId)
+  ) {
+    pool.candidatesVisible.push(candidateId);
+  }
 }
 
 // ============================================

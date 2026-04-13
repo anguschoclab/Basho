@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, ArrowRight, User, Info, Trophy, MapPin, Building } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
+import { RikishiName } from "@/components/ClickableName";
 import { STATURE_CONFIG } from "./HeyaCard";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { sortRikishiByRank } from "@/utils/engineUtils";
@@ -155,11 +156,11 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span
+                              <RikishiName
+                                id={r.id}
+                                name={r.shikona}
                                 className={`font-display font-black truncate ${isSekitori ? "text-primary" : "text-foreground"}`}
-                              >
-                                {r.shikona}
-                              </span>
+                              />
                               {isSekitori && (
                                 <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[9px] h-4 font-black">
                                   SEKITORI
