@@ -541,8 +541,8 @@ const StablePerceptionCard = React.memo(
     snap: any;
     comparing: boolean;
     isSelected: boolean;
-    onToggleCompare: () => void;
-    onNavigate: () => void;
+    onToggleCompare: (id: string) => void;
+    onNavigate: (id: string) => void;
   }) => {
     return (
       <Card
@@ -550,9 +550,9 @@ const StablePerceptionCard = React.memo(
         onClick={(e) => {
           if (comparing) {
             e.preventDefault();
-            onToggleCompare();
+            onToggleCompare(snap.heyaId);
           } else {
-            onNavigate();
+            onNavigate(snap.heyaId);
           }
         }}
       >
