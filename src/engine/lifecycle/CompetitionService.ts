@@ -9,6 +9,7 @@ import { safeCall } from "../utils/safe";
 import { enterPostBasho } from "../tick/tickDaily";
 import { rngForWorld, rngFromSeed } from "../rng";
 import { opfsArchiveService } from "../storage/opfsArchive";
+import { electronArchiveService } from "../storage/electronArchive";
 import { BardEngine } from "../narrative/BardEngine";
 import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
@@ -230,18 +231,29 @@ function recordBashoHistory(
       world.almanacSnapshots.push(snapshot);
 
       // FM v2.0 Archival: Move to cold storage immediately
-      opfsArchiveService.archiveBanzuke(world.year, basho.bashoNumber, snapshot);
+      // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
+      const archiveService =
+        typeof window !== "undefined" && (window as any).__ELECTRON__
+          ? electronArchiveService
+          : opfsArchiveService;
+
+      archiveService.archiveBanzuke(world.year, basho.bashoNumber, snapshot);
     }
-  });
 
-  // Archive Awards
-  safeCall(() => {
-    // Collect specific prizes from the current result
-    const yearAwards = (world.history || []).filter((h) => h.year === world.year);
-    opfsArchiveService.archiveAwards(world.year, yearAwards);
+    // Archive Awards
+    safeCall(() => {
+      // Collect specific prizes from the current result
+      const yearAwards = (world.history || []).filter((h) => h.year === world.year);
+      const archiveService =
+        typeof window !== "undefined" && (window as any).__ELECTRON__
+          ? electronArchiveService
+          : opfsArchiveService;
 
-    // Cache year data for historyCache (async operation)
-    historyCache.getYear(world.year);
+      archiveService.archiveAwards(world.year, yearAwards);
+
+      // Cache year data for historyCache (async operation)
+      historyCache.getYear(world.year);
+    });
   });
 
   runPostBashoResolution(world);

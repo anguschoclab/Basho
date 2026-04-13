@@ -15,10 +15,7 @@ import * as rivalries from "../rivalries";
 import * as economics from "../economics";
 import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
-import {
-  updateMediaFromBout,
-  createDefaultMediaState
-} from "../systems/media/MediaService";
+import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
 import { safeCall } from "../utils/safe";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -37,7 +34,7 @@ export function applyBoutResult(
   match: MatchSchedule,
   result: BoutResult
 ): StateImpact {
-  const builder = createImpactBuilder('boutResult');
+  const builder = createImpactBuilder("boutResult");
   const basho = world.currentBasho;
   if (!basho) {
     return builder.build();
@@ -59,6 +56,50 @@ export function applyBoutResult(
   standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
   standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
 
+  // 1.5. Update Career Records Per-Bout (Architectural Change)
+  // Increment career wins/losses immediately after each bout
+  builder.updateRikishi(winner.id, {
+    careerWins: (winner.careerWins ?? 0) + 1,
+  });
+  builder.updateRikishi(loser.id, {
+    careerLosses: (loser.careerLosses ?? 0) + 1,
+  });
+
+  // Increment makuuchiWins if winner is in makuuchi division
+  if (winner.division === "makuuchi") {
+    builder.updateRikishi(winner.id, {
+      makuuchiWins: (winner.makuuchiWins ?? 0) + 1,
+    });
+  }
+
+  // Increment division-specific records based on current division
+  const winnerDivision = winner.division;
+  const loserDivision = loser.division;
+
+  if (winnerDivision && winner.divisionRecords) {
+    builder.updateRikishi(winner.id, {
+      divisionRecords: {
+        ...winner.divisionRecords,
+        [winnerDivision]: {
+          wins: (winner.divisionRecords[winnerDivision]?.wins ?? 0) + 1,
+          losses: winner.divisionRecords[winnerDivision]?.losses ?? 0,
+        },
+      },
+    });
+  }
+
+  if (loserDivision && loser.divisionRecords) {
+    builder.updateRikishi(loser.id, {
+      divisionRecords: {
+        ...loser.divisionRecords,
+        [loserDivision]: {
+          wins: loser.divisionRecords[loserDivision]?.wins ?? 0,
+          losses: (loser.divisionRecords[loserDivision]?.losses ?? 0) + 1,
+        },
+      },
+    });
+  }
+
   // Note: basho.standings is not directly updatable via ImpactBuilder
   // This will be handled by updating the basho entity directly
   // For now, we'll update the basho via world field update
@@ -77,12 +118,12 @@ export function applyBoutResult(
         specialPrizes: {
           shukunSho: 0,
           kantoSho: 0,
-          ginoSho: 0
-        }
+          ginoSho: 0,
+        },
       };
     }
 
-    if (result.awardFact === 'kinboshi') {
+    if (result.awardFact === "kinboshi") {
       winnerAchievements.kinboshiEarned++;
 
       // Update legacy kinboshiCount for backward compatibility
@@ -94,18 +135,26 @@ export function applyBoutResult(
           kinboshiCount: 0,
           totalEarnings: 0,
           currentBashoEarnings: 0,
-          popularity: 50
+          popularity: 50,
         };
       }
       winnerEconomics.kinboshiCount = (winnerEconomics.kinboshiCount || 0) + 1;
-    } else if (result.awardFact === 'ginboshi') {
+    } else if (result.awardFact === "ginboshi") {
       winnerAchievements.ginboshiEarned++;
     }
 
     // Apply popularity boost for kinboshi/ginboshi awards
-    if (result.awardFact === 'kinboshi' || result.awardFact === 'ginboshi') {
+    if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {
       if (!winnerEconomics) {
-        winnerEconomics = { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 };
+        winnerEconomics = {
+          cash: 0,
+          retirementFund: 0,
+          careerKenshoWon: 0,
+          kinboshiCount: 0,
+          totalEarnings: 0,
+          currentBashoEarnings: 0,
+          popularity: 50,
+        };
       }
       const tempWinner = { ...winner, economics: { ...winnerEconomics } };
       applyAchievementImpact(world, tempWinner, result.awardFact);
@@ -115,7 +164,7 @@ export function applyBoutResult(
 
   builder.updateRikishi(winner.id, {
     stats: { ...winner.stats, achievements: winnerAchievements },
-    economics: winnerEconomics
+    economics: winnerEconomics,
   });
 
   // 3. Update Head-to-Head Records
@@ -130,7 +179,7 @@ export function applyBoutResult(
   const scoutingImpact = scoutingStore.onBoutResolvedScouting(world, { match, result, east, west });
 
   // 5. Update Media (generates headlines, heat, etc.)
-  let mediaImpact = createImpactBuilder('media').build();
+  let mediaImpact = createImpactBuilder("media").build();
   if (!world.mediaState) {
     world.mediaState = createDefaultMediaState();
   }
@@ -145,7 +194,15 @@ export function applyBoutResult(
   });
 
   // Merge all impacts into the main builder
-  mergeImpacts(builder, h2hImpact, injuryImpact, rivalryImpact, economicsImpact, scoutingImpact, mediaImpact);
+  mergeImpacts(
+    builder,
+    h2hImpact,
+    injuryImpact,
+    rivalryImpact,
+    economicsImpact,
+    scoutingImpact,
+    mediaImpact
+  );
 
   // 6. Emit Canonical Event (Bard Engine v2.1)
   const intensity = calculateMatchIntensity(match, result);
@@ -161,15 +218,13 @@ export function applyBoutResult(
     isKinboshi: result.isKinboshi,
   };
 
-  builder.logEvent(
-    'BOUT_RESOLVED',
-    'narrative',
-    ctx,
-    { rikishiId: winner.id, importance: intensity === 'high_stakes' ? 'major' : 'notable' }
-  );
+  builder.logEvent("BOUT_RESOLVED", "narrative", ctx, {
+    rikishiId: winner.id,
+    importance: intensity === "high_stakes" ? "major" : "notable",
+  });
 
   // Store updated standings in metadata for the resolver to apply
-  builder.addMetadata('updatedStandings', standings);
+  builder.addMetadata("updatedStandings", standings);
 
   return builder.build();
 }
@@ -177,13 +232,16 @@ export function applyBoutResult(
 /**
  * Calculates narrative intensity for commentary selection.
  */
-function calculateMatchIntensity(match: MatchSchedule, result: BoutResult): "high_stakes" | "technical" | "neutral" {
+function calculateMatchIntensity(
+  match: MatchSchedule,
+  result: BoutResult
+): "high_stakes" | "technical" | "neutral" {
   if (result.isKinboshi || result.upset || match.day === 15) {
     return "high_stakes";
   }
 
   // Technical matches are long or have many momentum shifts
-  const momentumShifts = result.log.filter(l => l.phase === 'momentum').length;
+  const momentumShifts = result.log.filter((l) => l.phase === "momentum").length;
   if (result.duration > 15 || momentumShifts > 3) {
     return "technical";
   }
@@ -216,7 +274,7 @@ function mergeImpacts(builder: any, ...impacts: StateImpact[]): void {
         builder.logEvent(event.type, event.category, event.data, {
           heyaId: event.heyaId,
           rikishiId: event.rikishiId,
-          importance: event.importance
+          importance: event.importance,
         });
       }
     }

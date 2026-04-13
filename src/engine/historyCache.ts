@@ -6,6 +6,7 @@
  */
 
 import { opfsArchiveService } from "./storage/opfsArchive";
+import { electronArchiveService } from "./storage/electronArchive";
 import { info } from "./utils/Logger";
 import type { BoutResult } from "./types/basho";
 import type { RecordEntry } from "./types/records";
@@ -71,26 +72,32 @@ class HistoryLRUCache {
   }
 
   /**
-   * Loads a full year of historical data from OPFS by aggregating bouts and snapshots.
+   * Loads a full year of historical data from OPFS/Electron FS by aggregating bouts and snapshots.
    */
   private async loadFromOPFS(year: number): Promise<ArchivedYear | null> {
-    if (!opfsArchiveService.isSupported()) return null;
+    // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
+    const archiveService =
+      typeof window !== "undefined" && (window as any).__ELECTRON__
+        ? electronArchiveService
+        : opfsArchiveService;
+
+    if (!archiveService.isSupported()) return null;
 
     try {
       // 1. Load Bouts
-      const boutIds = await opfsArchiveService.getArchivedBoutIdsForSeason(year);
+      const boutIds = await archiveService.getArchivedBoutIdsForSeason(year);
       if (boutIds.length === 0) return null;
 
       const bouts = await Promise.all(
-        boutIds.map((id) => opfsArchiveService.retrieveBoutLog(year, id))
+        boutIds.map((id) => archiveService.retrieveBoutLog(year, id))
       );
 
       // 2. Load Awards
-      const awards = await opfsArchiveService.retrieveAwards(year);
+      const awards = await archiveService.retrieveAwards(year);
 
       // 3. Load Banzuke Snapshots (Standard 6 Bashos)
       const snapshots = await Promise.all(
-        [1, 3, 5, 7, 9, 11].map((m) => opfsArchiveService.retrieveBanzuke(year, m))
+        [1, 3, 5, 7, 9, 11].map((m) => archiveService.retrieveBanzuke(year, m))
       );
 
       return {
@@ -100,7 +107,7 @@ class HistoryLRUCache {
         banzukeSnapshots: snapshots.filter((s): s is BanzukeSnapshot => s !== null),
       };
     } catch (err) {
-      console.error(`[HistoryCache] Failed to load year ${year} from OPFS:`, err);
+      console.error(`[HistoryCache] Failed to load year ${year} from archive service:`, err);
       return null;
     }
   }

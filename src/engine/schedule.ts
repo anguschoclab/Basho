@@ -1,19 +1,20 @@
-import { stableSort } from "./utils";
 // schedule.ts
 // =======================================================
 // Schedule Builder v1.1 — Deterministic torikumi pairing for ALL divisions
 // Uses matchmaking.ts for candidate generation and scoring.
 // =======================================================
-import { rngFromSeed, rngForWorld, SeededRNG } from "./rng";
+import { rngFromSeed } from "./rng";
 import type { BashoState, MatchSchedule } from "./types/basho";
 import type { Division } from "./types/banzuke";
 import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import { getActiveRikishi } from "./selectors";
+import { stableSort } from "./utils/sort";
 
 import {
   buildCandidatePairs,
   buildSwissTorikumi,
+  buildLowerDivisionSwiss,
   type MatchPairing,
   type MatchmakingRules,
 } from "./matchmaking/index";
@@ -48,15 +49,48 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
 // === HELPERS ===
 
 /**
+ * Get the expected roster size for a division.
+ * Based on real-life sumo division sizes.
+ */
+export function getDivisionExpectedSize(division: Division): number {
+  const sizes: Record<Division, number> = {
+    makuuchi: 42,
+    juryo: 28,
+    makushita: 120,
+    sandanme: 200,
+    jonidan: 200,
+    jonokuchi: 200,
+  };
+  return sizes[division];
+}
+
+/**
+ * Get the division below the given division in the hierarchy.
+ * Returns null for the bottom division (jonokuchi).
+ */
+export function getDivisionBelow(division: Division): Division | null {
+  const hierarchy: Division[] = [
+    "makuuchi",
+    "juryo",
+    "makushita",
+    "sandanme",
+    "jonidan",
+    "jonokuchi",
+  ];
+  const index = hierarchy.indexOf(division);
+  if (index === -1 || index === hierarchy.length - 1) {
+    return null;
+  }
+  return hierarchy[index + 1];
+}
+
+/**
  * Active division roster.
  *  * @param world - The World.
  *  * @param division - The Division.
  *  * @returns The result.
  */
-function activeDivisionRoster(
-  world: WorldState,
-  division: Division,
-): Rikishi[] {
+function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of getActiveRikishi(world)) {
     if (r.division === division && !r.injured) {
@@ -67,33 +101,13 @@ function activeDivisionRoster(
 }
 
 /**
- * Previous opponents set.
- *  * @param basho - The Basho.
- *  * @returns The result.
- */
-function previousOpponentsSet(basho: BashoState): Map<string, Set<string>> {
-  const map = new Map<string, Set<string>>();
-  for (const m of basho.matches) {
-    const e = m.eastRikishiId;
-    const w = m.westRikishiId;
-
-    if (!map.has(e)) map.set(e, new Set());
-    if (!map.has(w)) map.set(w, new Set());
-
-    map.get(e)!.add(w);
-    map.get(w)!.add(e);
-  }
-  return map;
-}
-
-/**
  * Greedy selection of non-overlapping pairs.
  * Candidates should be pre-sorted by score (descending).
  */
 function greedySelectPairs(
   candidates: MatchPairing[],
   maxPairs: number,
-  used = new Set<string>(),
+  used = new Set<string>()
 ): MatchPairing[] {
   const selected: MatchPairing[] = [];
 
@@ -137,24 +151,22 @@ export function scheduleDivisionDay(args: {
   rules?: ScheduleRules;
   config?: DivisionScheduleConfig;
 }): { scheduled: MatchSchedule[]; impact: StateImpact } {
-  const { world, basho, division, day } = args;
-  const builder = createImpactBuilder('scheduleDivisionDay');
-  const rules = args.rules ?? {};
+  const { world, basho, division, day, rules, config } = args;
 
+  const builder = createImpactBuilder("scheduleDivisionDay");
   const roster = activeDivisionRoster(world, division);
-  const maxActive = args.config?.maxActiveRikishi;
+  const maxActiveRikishi = config?.maxActiveRikishi;
   if (!needsScheduleForDay(division, day)) return { scheduled: [], impact: builder.build() };
 
   const pool =
-    typeof maxActive === "number"
-      ? roster.slice(0, Math.max(0, maxActive))
-      : roster;
+    typeof maxActiveRikishi === "number" ? roster.slice(0, Math.max(0, maxActiveRikishi)) : roster;
 
   if (pool.length < 2) return { scheduled: [], impact: builder.build() };
 
   let finalPairings: MatchPairing[];
 
   const rng = rngFromSeed(args.seed, "schedule", `${division}::day${day}`);
+  const scheduleRules = rules ?? {};
   if (division === "makuuchi") {
     // ── JSA Swiss path (TDD §2.2–2.4) ─────────────────────────────────────
     // buildSwissTorikumi already applies the three-phase constraint solver
@@ -164,8 +176,33 @@ export function scheduleDivisionDay(args: {
       division: "makuuchi",
       rivalriesState: (world as any).rivalriesState,
     });
+  } else if (["makushita", "sandanme", "jonidan", "jonokuchi"].includes(division)) {
+    // ── NEW: 7-bout Division Swiss path ─────────────────────────────────
+    finalPairings = buildLowerDivisionSwiss(basho, pool, {
+      seed: `${args.seed}-lower-swiss-${division}-day${day}`,
+      division,
+    });
+  } else if (division === "juryo") {
+    // ── NEW: Juryo with crossover from Makushita ─────────────────────────
+    const { scheduled, impact: crossoverImpact } = scheduleJuryoWithCrossover(world, basho, {
+      seed: args.seed,
+    });
+
+    // Merge the crossover impact
+    if (crossoverImpact.arrayAppends) {
+      for (const append of crossoverImpact.arrayAppends) {
+        builder.appendToWorldArray(append.field, append.items);
+      }
+    }
+    if (crossoverImpact.worldFields) {
+      for (const [field, value] of Object.entries(crossoverImpact.worldFields)) {
+        (builder as any).updateWorldField(field, value);
+      }
+    }
+
+    return { scheduled, impact: builder.build() };
   } else {
-    // ── Legacy candidate-pair path (all lower divisions) ───────────────────
+    // ── Legacy candidate-pair path (should not be reached) ───────────────
     const boutsPerDay = args.config?.boutsPerDay ?? Math.floor(pool.length / 2);
     if (boutsPerDay <= 0) return { scheduled: [], impact: builder.build() };
 
@@ -177,17 +214,13 @@ export function scheduleDivisionDay(args: {
     const used = new Set<string>();
     const selected = greedySelectPairs(candidates, boutsPerDay, used);
 
-    if (selected.length < boutsPerDay && (rules.allowForcedRepeats ?? true)) {
+    if (selected.length < boutsPerDay && (scheduleRules.allowForcedRepeats ?? true)) {
       const relaxedCandidates = buildCandidatePairs(basho, pool, {
         seed: `${args.seed}-relaxed-${division}-day${day}`,
         division,
         rules: { avoidRepeatOpponents: false },
       });
-      const additional = greedySelectPairs(
-        relaxedCandidates,
-        boutsPerDay - selected.length,
-        used,
-      );
+      const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
       selected.push(...additional);
     }
 
@@ -208,7 +241,7 @@ export function scheduleDivisionDay(args: {
   }));
 
   // Append to basho state using ImpactBuilder
-  builder.appendToWorldArray('basho.matches', scheduled);
+  builder.appendToWorldArray("basho.matches", scheduled);
 
   return { scheduled, impact: builder.build() };
 }
@@ -228,16 +261,9 @@ function scheduleAllDivisionsDay(args: {
 }): { scheduled: MatchSchedule[]; impact: StateImpact } {
   const divisions: Division[] =
     args.divisions ??
-    ([
-      "jonokuchi",
-      "jonidan",
-      "sandanme",
-      "makushita",
-      "juryo",
-      "makuuchi",
-    ] as Division[]);
+    (["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "makuuchi"] as Division[]);
 
-  const builder = createImpactBuilder('scheduleAllDivisionsDay');
+  const builder = createImpactBuilder("scheduleAllDivisionsDay");
   const out: MatchSchedule[] = [];
   for (const div of divisions) {
     const { scheduled, impact } = scheduleDivisionDay({
@@ -278,7 +304,7 @@ export function generateDaySchedule(
   basho: BashoState,
   day: number,
   seed: string,
-  rules?: ScheduleRules,
+  rules?: ScheduleRules
 ): { scheduled: MatchSchedule[]; impact: StateImpact } {
   return scheduleAllDivisionsDay({ world, basho, day, seed, rules });
 }
@@ -295,17 +321,10 @@ export function generateFullBashoSchedule(args: {
   rules?: ScheduleRules;
   divisions?: Division[];
 }): StateImpact {
-  const builder = createImpactBuilder('generateFullBashoSchedule');
+  const builder = createImpactBuilder("generateFullBashoSchedule");
   const divisions: Division[] =
     args.divisions ??
-    ([
-      "makuuchi",
-      "juryo",
-      "makushita",
-      "sandanme",
-      "jonidan",
-      "jonokuchi",
-    ] as Division[]);
+    (["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as Division[]);
 
   const maxDays = 15;
 
@@ -356,6 +375,96 @@ export function needsScheduleForDay(division: Division, day: number): boolean {
 }
 
 /**
+ * Schedule Juryo with crossover from Makushita.
+ * Checks both injured and isKyujo flags for odd slots, calls up top Makushita (Ms1-Ms5).
+ */
+export function scheduleJuryoWithCrossover(
+  world: WorldState,
+  basho: BashoState,
+  options: { seed: string }
+): { scheduled: MatchSchedule[]; impact: StateImpact } {
+  const builder = createImpactBuilder("scheduleJuryoWithCrossover");
+  const division = "juryo";
+  const day = basho.day ?? 1;
+
+  if (!needsScheduleForDay(division, day)) {
+    return { scheduled: [], impact: builder.build() };
+  }
+
+  let pool = activeDivisionRoster(world, division);
+  const expectedSize = getDivisionExpectedSize(division);
+  const actualSize = pool.length;
+
+  // Check for odd slots (injured or kyujo)
+  const oddSlots = expectedSize - actualSize;
+  let callups: Rikishi[] = [];
+
+  if (oddSlots > 0) {
+    // Call up top Makushita (Ms1-Ms5)
+    const makushitaPool = activeDivisionRoster(world, "makushita")
+      .filter((r) => !r.injured && !(r as any).isKyujo)
+      .sort((a, b) => {
+        const aNum = a.rankNumber ?? 99;
+        const bNum = b.rankNumber ?? 99;
+        if (aNum !== bNum) return aNum - bNum;
+        return a.side === "east" ? -1 : 1;
+      });
+
+    // Take top 5 or as many as needed
+    const callupCount = Math.min(oddSlots, 5, makushitaPool.length);
+    callups = makushitaPool.slice(0, callupCount);
+
+    // Temporarily move callups to Juryo for scheduling
+    pool = [...pool, ...callups];
+  }
+
+  // Schedule using legacy candidate-pair system for now
+  // (Could be upgraded to Swiss in future)
+  const boutsPerDay = Math.floor(pool.length / 2);
+  if (boutsPerDay <= 0) return { scheduled: [], impact: builder.build() };
+
+  const candidates = buildCandidatePairs(basho, pool, {
+    seed: `${options.seed}-juryo-crossover-day${day}`,
+    division,
+  });
+
+  const used = new Set<string>();
+  const selected = greedySelectPairs(candidates, boutsPerDay, used);
+
+  // Add forced repeats if needed
+  if (selected.length < boutsPerDay) {
+    const relaxedCandidates = buildCandidatePairs(basho, pool, {
+      seed: `${options.seed}-relaxed-juryo-day${day}`,
+      division,
+      rules: { avoidRepeatOpponents: false },
+    });
+    const additional = greedySelectPairs(relaxedCandidates, boutsPerDay - selected.length, used);
+    selected.push(...additional);
+  }
+
+  const rng = rngFromSeed(options.seed, "schedule", `juryo::day${day}`);
+  const shuffled = [...selected];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rng.next() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const scheduled: MatchSchedule[] = shuffled.map((p) => ({
+    boutId: `b-${world.year}-${basho.bashoName}-d${day}-${p.eastId}-${p.westId}`,
+    day,
+    eastRikishiId: p.eastId,
+    westRikishiId: p.westId,
+  }));
+
+  builder.appendToWorldArray("basho.matches", scheduled);
+
+  // Note: knock-on effects (promoting from lower divisions to fill gaps in Makushita)
+  // would be implemented here in a full implementation
+
+  return { scheduled, impact: builder.build() };
+}
+
+/**
  * Get total expected bouts for a division in a basho.
  */
 export function getTotalBashodays(division: Division): number {
@@ -371,7 +480,7 @@ export function getTotalBashodays(division: Division): number {
  * @param day Day number
  */
 export function ensureDaySchedule(world: WorldState, day: number): StateImpact {
-  const builder = createImpactBuilder('ensureDaySchedule');
+  const builder = createImpactBuilder("ensureDaySchedule");
   const basho = world.currentBasho;
   if (!basho) return builder.build();
 

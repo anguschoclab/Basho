@@ -1,10 +1,3 @@
-/**
- * @vitest-environment jsdom
- */
-import { describe, it, expect, beforeEach, vi } from "vitest";
-
-import { loadSavedOrder } from "../useDashboardLayout";
-
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -22,10 +15,17 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, "localStorage", {
+Object.defineProperty(global, "localStorage", {
   value: localStorageMock,
-  writable: true
+  writable: true,
 });
+
+/**
+ * @vitest-environment jsdom
+ */
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+import { loadSavedOrder } from "../useDashboardLayout";
 
 describe("useDashboardLayout: loadSavedOrder", () => {
   beforeEach(() => {
@@ -57,8 +57,8 @@ describe("useDashboardLayout: loadSavedOrder", () => {
     // Missing required fields or wrong types
     const malicious = [
       { id: "w1", order: "0" }, // order should be number
-      { id: 123, order: 1 },    // id should be string
-      { id: "w3", order: 2 },    // unknown id (not handled here but types checked)
+      { id: 123, order: 1 }, // id should be string
+      { id: "w3", order: 2 }, // unknown id (not handled here but types checked)
       { something: "else" },
     ];
     localStorage.setItem("dashboard-widget-order", JSON.stringify(malicious));
@@ -68,8 +68,8 @@ describe("useDashboardLayout: loadSavedOrder", () => {
 
   it("should handle partially correct but malicious array elements", () => {
     const partiallyInvalid = [
-        { id: "w1", order: 1, column: 0 },
-        { order: 2, column: 0 } // Missing id
+      { id: "w1", order: 1, column: 0 },
+      { order: 2, column: 0 }, // Missing id
     ];
     localStorage.setItem("dashboard-widget-order", JSON.stringify(partiallyInvalid));
     expect(loadSavedOrder()).toBeNull();

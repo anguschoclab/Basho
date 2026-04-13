@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
-import { Users, HeartPulse, AlertTriangle, Star } from "lucide-react";
+import { Users, HeartPulse, AlertTriangle, Star, UserMinus } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
@@ -22,6 +22,7 @@ const RosterEntryRow = React.memo(
     potentialBand,
     fatigue,
     healthBadge,
+    onWithdraw,
   }: {
     id: string;
     shikona: string;
@@ -30,6 +31,7 @@ const RosterEntryRow = React.memo(
     potentialBand: string;
     fatigue: number;
     healthBadge: string;
+    onWithdraw?: (id: string) => void;
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
@@ -61,14 +63,27 @@ const RosterEntryRow = React.memo(
             style={{ width: `${fatigue}%` }}
           />
         </div>
+        {isInjured && onWithdraw && (
+          <TooltipWrap content="Withdraw from tournament (kyujo)" side="left">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => onWithdraw(id)}
+            >
+              <UserMinus className="h-3 w-3" />
+            </Button>
+          </TooltipWrap>
+        )}
       </div>
     );
   }
 );
 
 export function RosterWidget() {
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
   const navigate = useNavigate();
+
   const headerAction = useMemo(
     () => ({
       label: "All Rikishi",
@@ -77,6 +92,32 @@ export function RosterWidget() {
     [navigate]
   );
   const world = state.world;
+
+  const handleWithdraw = React.useCallback(
+    (rikishiId: string) => {
+      if (!world) return;
+
+      const rikishi = world.rikishi.get(rikishiId);
+      if (rikishi && rikishi.injured) {
+        const updatedWorld = {
+          ...world,
+          rikishi: new Map(world.rikishi).set(rikishiId, {
+            ...rikishi,
+            isKyujo: true,
+            kyujoReason: "injury" as const,
+            medicalCertificate: {
+              injury: rikishi.injuryStatus?.type || "unknown",
+              severity: rikishi.injuryStatus?.severity || "moderate",
+              treatmentWeeks: rikishi.injuryWeeksRemaining,
+              submittedDate: world.calendar.currentWeek,
+            },
+          }),
+        };
+        updateWorld(updatedWorld);
+      }
+    },
+    [world, updateWorld]
+  );
 
   const { roster, injuredCount, avgFatigue } = useMemo(() => {
     if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0 };
@@ -161,6 +202,7 @@ export function RosterWidget() {
                 potentialBand={entry.potentialBand}
                 fatigue={entry.fatigue}
                 healthBadge={entry.healthBadge}
+                onWithdraw={handleWithdraw}
               />
             );
           }

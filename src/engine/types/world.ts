@@ -54,6 +54,11 @@ export interface TransientContext {
     yearBoundary: boolean;
   };
   lastReport?: any;
+  preGeneratedSchedules?: {
+    day1: any[];
+    day2: any[];
+    announcedAtWeek: number;
+  };
 }
 
 /** Defines the structure for recruitment window. */
@@ -73,18 +78,35 @@ export interface PostBashoMeta {
   recognitionEligibleWeek: number;
 }
 
+/** Defines the structure for pre-basho assessment. */
+export interface PreBashoAssessment {
+  assessedAtWeek: number;
+  rikishiAssessments: Map<
+    string,
+    {
+      rikishiId: string;
+      healthScore: number;
+      injuryRisk: "low" | "medium" | "high";
+      recommendedFocus: "protect" | "rebuild" | "normal";
+      withdrawalRecommended: boolean;
+    }
+  >;
+  overallHealthScore: number;
+  withdrawalsThisAssessment: number;
+}
+
 import type { LineageEdge } from "../lineage";
-import type { HallOfFameState } from '../hallOfFame';
-import type { HistoryIndex } from '../historyIndex';
-import type { Staff } from './staff';
-import type { SeededRNG } from '../rng';
-import type { ScoutedRikishi } from '../systems/recruitment/ScoutingService';
-import type { AlmanacSnapshot } from '../almanac';
-import type { OzekiKadobanMap } from '../banzuke';
-import type { SponsorPool } from './sponsors';
-import type { MediaState } from './media';
-import type { PerceptionSnapshot } from '../perception';
-import type { RivalriesState } from '../rivalries';
+import type { HallOfFameState } from "../hallOfFame";
+import type { HistoryIndex } from "../historyIndex";
+import type { Staff } from "./staff";
+import type { SeededRNG } from "../rng";
+import type { ScoutedRikishi } from "../systems/recruitment/ScoutingService";
+import type { AlmanacSnapshot } from "../almanac";
+import type { OzekiKadobanMap } from "../banzuke";
+import type { SponsorPool } from "./sponsors";
+import type { MediaState } from "./media";
+import type { PerceptionSnapshot } from "../perception";
+import type { RivalriesState } from "../rivalries";
 
 /** Defines the structure for a closed or merged heya. */
 export interface ClosedHeyaRecord extends Heya {
@@ -92,7 +114,6 @@ export interface ClosedHeyaRecord extends Heya {
   closedAtBasho?: BashoName;
   mergedInto?: Id;
 }
-
 
 export interface WorldState {
   hallOfFame?: HallOfFameState;
@@ -123,7 +144,6 @@ export interface WorldState {
     scouting?: Record<string, ScoutedRikishi>;
   };
 
-
   governanceLog?: GovernanceRuling[];
   factions?: Record<IchimonName, Faction>;
 
@@ -134,7 +154,6 @@ export interface WorldState {
 
   currentBanzuke?: BanzukeSnapshot;
   closedHeyas?: Map<Id, ClosedHeyaRecord>;
-
 
   ozekiKadoban?: OzekiKadobanMap;
 
@@ -161,6 +180,14 @@ export interface WorldState {
 
   rivalriesState?: RivalriesState;
 
+  _preGeneratedSchedules?: {
+    day1: any[];
+    day2: any[];
+    announcedAtWeek: number;
+  };
+
+  _preBashoAssessment?: PreBashoAssessment;
+
   calendar: {
     year: number;
     month: number;
@@ -178,7 +205,6 @@ export interface WorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
-
   };
 
   /**
@@ -194,4 +220,3 @@ export interface WorldState {
 
   bashoNumber?: number;
 }
-

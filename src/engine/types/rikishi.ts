@@ -4,14 +4,14 @@ import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/heal
  */
 
 import type { Id } from "./common";
-import { 
-  Style, 
-  CombatArchetype, 
-  KimariteId, 
-  CombatProfile, 
-  BoutTactic, 
-  RikishiArchetype, 
-  TacticalArchetype 
+import {
+  Style,
+  CombatArchetype,
+  KimariteId,
+  CombatProfile,
+  BoutTactic,
+  RikishiArchetype,
+  TacticalArchetype,
 } from "./combat";
 
 export type { RikishiArchetype, TacticalArchetype };
@@ -33,14 +33,14 @@ export interface ArchetypeEvidence {
 
 /** Career achievements and prestige ledger. */
 export interface RikishiAchievements {
-  kinboshiEarned: number;    // Gold Stars (v Yokozuna)
-  ginboshiEarned: number;    // Silver Stars (v Ozeki)
-  kinboshiConceded: number;  // For Yokozuna: times beaten by Maegashira
-  ginboshiConceded: number;  // For Ozeki: times beaten by Maegashira
+  kinboshiEarned: number; // Gold Stars (v Yokozuna)
+  ginboshiEarned: number; // Silver Stars (v Ozeki)
+  kinboshiConceded: number; // For Yokozuna: times beaten by Maegashira
+  ginboshiConceded: number; // For Ozeki: times beaten by Maegashira
   specialPrizes: {
     shukunSho: number; // Outstanding Performance
-    kantoSho: number;  // Fighting Spirit
-    ginoSho: number;   // Technique
+    kantoSho: number; // Fighting Spirit
+    ginoSho: number; // Technique
   };
 }
 
@@ -97,6 +97,14 @@ export interface Rikishi {
     weeksRemaining: number;
     weeksToHeal?: number;
   };
+  isKyujo: boolean; // Separate from injured - voluntary withdrawal
+  kyujoReason?: "voluntary" | "injury" | "personal";
+  medicalCertificate?: {
+    injury: string;
+    severity: string;
+    treatmentWeeks: number;
+    submittedDate: number;
+  };
 
   style: Style;
   trainingFocus?: string;
@@ -120,6 +128,14 @@ export interface Rikishi {
   careerLosses: number;
   careerAbsences: number;
   makuuchiWins: number;
+  divisionRecords: {
+    makuuchi: { wins: number; losses: number };
+    juryo: { wins: number; losses: number };
+    makushita: { wins: number; losses: number };
+    sandanme: { wins: number; losses: number };
+    jonidan: { wins: number; losses: number };
+    jonokuchi: { wins: number; losses: number };
+  };
   consecutiveYusho: number;
   consecutiveStrongOzeki?: number; // Tracks consecutive 12+ win performances at ozeki for yokozuna promotion
   consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
@@ -165,11 +181,11 @@ export interface Rikishi {
   currentBashoRecord?: { wins: number; losses: number };
 
   // UI hysteresis descriptor (set by tickDaily, consumed by presenters)
-   
+
   descriptor?: any;
 
   // Backward-compat alias for injuryStatus (set by RecoveryService)
-  injury?: Rikishi['injuryStatus'];
+  injury?: Rikishi["injuryStatus"];
 
   // Used by InjuryService for durability calculation
   durability?: number;

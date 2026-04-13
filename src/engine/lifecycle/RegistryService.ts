@@ -18,12 +18,15 @@ import type { StateImpact } from "../core/StateImpact";
  * Player gets a recruitment window event with duration tracking.
  * Returns StateImpact describing recruitment window changes instead of mutating state.
  * Note: talentpool.fillVacanciesForNPC still mutates directly and will be migrated in Phase 4.
- * 
+ *
  * @param world Current WorldState
  * @param vacanciesByHeyaId Map of heya IDs to vacancy counts
  */
-export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Record<string, number>): StateImpact {
-  const builder = createImpactBuilder('recruitmentWindow');
+export function runRecruitmentWindow(
+  world: WorldState,
+  vacanciesByHeyaId: Record<string, number>
+): StateImpact {
+  const builder = createImpactBuilder("recruitmentWindow");
 
   // NPC stables auto-fill from talent pool
   // Still mutates directly - will migrate in Phase 4
@@ -36,25 +39,25 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
 
   if (playerHeya) {
     // Queue world field update for _recruitmentWindow
-    builder.updateWorldField('_recruitmentWindow', {
+    builder.updateWorldField("_recruitmentWindow", {
       openedAtWeek: world.week,
       closesAtWeek: world.week + 4, // 4-week window per Constitution
       vacancies: playerVacancies,
       isOpen: true,
-      phase: "post_basho"
+      phase: "post_basho",
     });
 
     builder.logEvent(
-      'RECRUIT_DISCOVERED',
-      'scouting',
+      "RECRUIT_DISCOVERED",
+      "scouting",
       {
         rikishiId: playerHeya.id,
         heyaId: playerHeya.id,
         status: "window_open",
         score: playerVacancies,
-        day: world.week + 4 // closesAtWeek
+        day: world.week + 4, // closesAtWeek
       },
-      { heyaId: playerHeya.id, importance: 'notable' }
+      { heyaId: playerHeya.id, importance: "notable" }
     );
   }
 
@@ -67,14 +70,10 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
   }
 
   if (totalNPCVacancies > 0) {
-    builder.logEvent(
-      'RECRUIT_DISCOVERED',
-      'scouting',
-      {
-        status: "npc_summary",
-        score: totalNPCVacancies
-      }
-    );
+    builder.logEvent("RECRUIT_DISCOVERED", "scouting", {
+      status: "npc_summary",
+      score: totalNPCVacancies,
+    });
   }
 
   return builder.build();
@@ -88,17 +87,16 @@ export function runRecruitmentWindow(world: WorldState, vacanciesByHeyaId: Recor
 export function runCareerJournalUpdates(world: WorldState): StateImpact {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) {
-    return createImpactBuilder('careerJournalUpdates').build();
+    return createImpactBuilder("careerJournalUpdates").build();
   }
 
-  const builder = createImpactBuilder('careerJournalUpdates');
+  const builder = createImpactBuilder("careerJournalUpdates");
 
   for (const r of getActiveRikishi(world)) {
-    // Update career totals from basho records
-    const newCareerWins = (r.careerWins ?? 0) + (r.currentBashoWins ?? 0);
-    const newCareerLosses = (r.careerLosses ?? 0) + (r.currentBashoLosses ?? 0);
+    // DEPRECATED: Career wins/losses are now updated per-bout in boutResultApplier.ts
+    // This function now only handles momentum updates and yusho counting
 
-    // Update career record helper
+    // Update yusho count
     const newYushoCount = (r.careerRecord?.yusho ?? 0) + (lastBasho.yusho === r.id ? 1 : 0);
 
     // Momentum update based on basho performance
@@ -113,49 +111,47 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
       else if (winRate < 0.45) newMomentum = Math.max(-5, newMomentum - 1);
     }
 
-    // Queue rikishi update
+    // Queue rikishi update (only momentum and yusho, not career totals)
     builder.updateRikishi(r.id, {
-      careerWins: newCareerWins,
-      careerLosses: newCareerLosses,
       careerRecord: {
-        wins: newCareerWins,
-        losses: newCareerLosses,
-        yusho: newYushoCount
+        wins: r.careerWins ?? 0,
+        losses: r.careerLosses ?? 0,
+        yusho: newYushoCount,
       },
-      momentum: newMomentum
+      momentum: newMomentum,
     });
 
     // HoF eligibility flag (yokozuna with 500+ wins)
-    if (r.rank === "yokozuna" && newCareerWins >= 500) {
+    if (r.rank === "yokozuna" && (r.careerWins ?? 0) >= 500) {
       builder.logEvent(
-        'LIFECYCLE_EVENT',
-        'career',
+        "LIFECYCLE_EVENT",
+        "career",
         {
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona ?? r.name,
           status: "hof_eligible",
-          score: newCareerWins
+          score: r.careerWins ?? 0,
         },
-        { rikishiId: r.id, heyaId: r.heyaId, importance: 'major' }
+        { rikishiId: r.id, heyaId: r.heyaId, importance: "major" }
       );
     }
 
     // Milestone events
     const milestones = [100, 200, 300, 500];
-    if (milestones.includes(newCareerWins)) {
-       builder.logEvent(
-         'LIFECYCLE_EVENT',
-         'career',
-         {
+    if (milestones.includes(r.careerWins ?? 0)) {
+      builder.logEvent(
+        "LIFECYCLE_EVENT",
+        "career",
+        {
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona ?? r.name,
           status: "wins_milestone",
-          score: newCareerWins
-         },
-         { rikishiId: r.id, heyaId: r.heyaId, importance: 'notable' }
-       );
+          score: r.careerWins ?? 0,
+        },
+        { rikishiId: r.id, heyaId: r.heyaId, importance: "notable" }
+      );
     }
   }
 

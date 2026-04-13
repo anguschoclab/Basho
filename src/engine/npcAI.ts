@@ -49,6 +49,7 @@ export interface NPCWeeklyDecision {
   individualPushes: Id[];
   reasoning: string[];
   mood?: OyakataMood;
+  impact?: StateImpact;
 }
 
 /**
@@ -112,6 +113,25 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     );
   }
 
+  const builder = createImpactBuilder("makeNPCWeeklyDecision");
+
+  // Apply withdrawal decisions
+  for (const withdrawalId of personnelProposal.withdrawalIds) {
+    const rikishi = getRikishi(world, withdrawalId);
+    if (rikishi && rikishi.injured) {
+      builder.updateRikishi(withdrawalId, {
+        isKyujo: true,
+        kyujoReason: "injury",
+        medicalCertificate: {
+          injury: rikishi.injuryStatus?.type || "unknown",
+          severity: rikishi.injuryStatus?.severity || "moderate",
+          treatmentWeeks: rikishi.injuryWeeksRemaining,
+          submittedDate: world.calendar.currentWeek,
+        },
+      });
+    }
+  }
+
   return {
     heyaId,
     archetype: persona.archetype,
@@ -124,6 +144,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     individualPushes: personnelProposal.individualPushes,
     reasoning,
     mood: persona.mood,
+    impact: builder.build(),
   };
 }
 
@@ -177,6 +198,27 @@ function spawnPersonnelWorker(ctx: any) {
     reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
   }
 
+  // Withdrawal decisions for injured rikishi
+  const withdrawalIds: Id[] = [];
+  for (const rp of ctx.rikishiPerceptions) {
+    const rikishi = getRikishi(ctx.world, rp.rikishiId);
+    if (!rikishi) continue;
+
+    // Check if rikishi should be withdrawn (kyujo)
+    if (rikishi.injured && !rikishi.isKyujo) {
+      const severity = rikishi.injuryStatus?.severity;
+      const weeksRemaining = rikishi.injuryWeeksRemaining;
+
+      // Withdraw if injury is serious and recovery time is long
+      if (severity === "serious" && weeksRemaining > 2) {
+        withdrawalIds.push(rikishi.id);
+        reasoning.push(
+          `[Withdrawal Worker] Withdrawing ${rikishi.shikona} due to ${severity} injury (${weeksRemaining} weeks remaining)`
+        );
+      }
+    }
+  }
+
   const individualDevelops: Id[] = [];
   const individualPushes: Id[] = [];
   const protectedSet = new Set(protectDecision.protectIds);
@@ -221,6 +263,7 @@ function spawnPersonnelWorker(ctx: any) {
     individualProtects: protectDecision.protectIds,
     individualDevelops,
     individualPushes,
+    withdrawalIds,
     reasoning,
   };
 }

@@ -8,7 +8,7 @@ import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";
 import { Oyakata } from "../../types/oyakata";
 import { Rikishi } from "../../types/rikishi";
-import { generateShikona, generateOyakataName } from "../../shikona";
+import { generateOyakataName } from "../../shikona";
 import { seededPick } from "../../utils/random";
 import { generateFullRikishi } from "./CandidateGenerator";
 import { Division, Rank, Side } from "../../types/banzuke";
@@ -23,18 +23,24 @@ import { generateOyakata } from "../../oyakataPersonalities";
  * Creates a new Heya and its associated Oyakata.
  */
 export function createHeyaWithOyakata(args: {
-  id: string,
-  name: string,
-  rng: SeededRNG,
-  tier: number,
-  currentYear: number
-}): { heya: Heya, oyakata: Oyakata } {
-  const { id, name, rng, tier, currentYear } = args;
-  const oyakataId = rng.uuid('OY');
+  id: string;
+  name: string;
+  rng: SeededRNG;
+  tier: number;
+}): { heya: Heya; oyakata: Oyakata } {
+  const { id, name, rng, tier } = args;
+  const oyakataId = rng.uuid("OY");
   const oyakataName = generateOyakataName(`${rng.seed}::oyakata::${oyakataId}`, rng);
-  const archetype = seededPick(rng, ["traditionalist", "scientist", "gambler", "nurturer", "tyrant", "strategist"]) as any;
+  const archetype = seededPick(rng, [
+    "traditionalist",
+    "scientist",
+    "gambler",
+    "nurturer",
+    "tyrant",
+    "strategist",
+  ]) as any;
   const age = 45 + rng.int(0, 20);
-  
+
   const oyakata = generateOyakata(oyakataId, id, oyakataName, age, archetype);
 
   const heya: Heya = {
@@ -51,40 +57,85 @@ export function createHeyaWithOyakata(args: {
     funds: tier < 0.2 ? 40_000_000 : 15_000_000,
     scandalScore: 0,
     governanceStatus: "good_standing",
-    welfareState: { welfareRisk: 10, activeDiet: "maintenance", complianceState: "compliant", weeksInState: 0, lastReviewedWeek: 0 },
+    welfareState: {
+      welfareRisk: 10,
+      activeDiet: "maintenance",
+      complianceState: "compliant",
+      weeksInState: 0,
+      lastReviewedWeek: 0,
+    },
     facilities: { training: 50, recovery: 50, nutrition: 50 },
     riskIndicators: { financial: false, governance: false, rivalry: false },
     ichimon: seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
     politicalCapital: 100,
     location: "Tokyo",
     lineage: [],
-    historicalYusho: 0
+    historicalYusho: 0,
   };
 
   return { heya, oyakata };
 }
 
-export function createStables(worldRng: SeededRNG): { heyaMap: Map<string, Heya>, oyakataMap: Map<string, Oyakata> } {
+export function createStables(worldRng: SeededRNG): {
+  heyaMap: Map<string, Heya>;
+  oyakataMap: Map<string, Oyakata>;
+} {
   const heyaMap = new Map<string, Heya>();
   const oyakataMap = new Map<string, Oyakata>();
 
   // 1. Create Stables (45 traditional stables)
   const HEYA_NAMES = [
-    "Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama",
-    "Sakaigawa", "Kasugano", "Kokonoe", "Kise", "Musashigawa",
-    "Kataonami", "Onoe", "Tatsunami", "Minezaki", "Tamanoi",
-    "Isenoumi", "Ajigawa", "Sadogatake", "Hakkaku", "Shibatayama",
-    "Michinoku", "Miyagino", "Oigami", "Tagonoura", "Naruto",
-    "Arashio", "Asakayama", "Nakagawa", "Shikihide", "Yamahibiki",
-    "Irumagawa", "Hanahago", "Shirane", "Futagoyama", "Fujishima",
-    "Takadagawa", "Magaki", "Katsushika", "Oshogatsu", "Chiganoura",
-    "Minato", "Shikoroyama", "Kagamiyama", "Hanakago", "Oguruma"
+    "Dewanoumi",
+    "Nishonoseki",
+    "Takasago",
+    "Tokitsukaze",
+    "Isegahama",
+    "Sakaigawa",
+    "Kasugano",
+    "Kokonoe",
+    "Kise",
+    "Musashigawa",
+    "Kataonami",
+    "Onoe",
+    "Tatsunami",
+    "Minezaki",
+    "Tamanoi",
+    "Isenoumi",
+    "Ajigawa",
+    "Sadogatake",
+    "Hakkaku",
+    "Shibatayama",
+    "Michinoku",
+    "Miyagino",
+    "Oigami",
+    "Tagonoura",
+    "Naruto",
+    "Arashio",
+    "Asakayama",
+    "Nakagawa",
+    "Shikihide",
+    "Yamahibiki",
+    "Irumagawa",
+    "Hanahago",
+    "Shirane",
+    "Futagoyama",
+    "Fujishima",
+    "Takadagawa",
+    "Magaki",
+    "Katsushika",
+    "Oshogatsu",
+    "Chiganoura",
+    "Minato",
+    "Shikoroyama",
+    "Kagamiyama",
+    "Hanakago",
+    "Oguruma",
   ];
 
   HEYA_NAMES.forEach((name, i) => {
-    const id = worldRng.uuid('HY');
+    const id = worldRng.uuid("HY");
     const tier = i / HEYA_NAMES.length;
-    const { heya, oyakata } = createHeyaWithOyakata({ id, name, rng: worldRng, tier, currentYear: 2025 });
+    const { heya, oyakata } = createHeyaWithOyakata({ id, name, rng: worldRng, tier });
     heyaMap.set(id, heya);
     oyakataMap.set(oyakata.id, oyakata);
     heya.rikishiIds = [];
@@ -93,7 +144,10 @@ export function createStables(worldRng: SeededRNG): { heyaMap: Map<string, Heya>
   return { heyaMap, oyakataMap };
 }
 
-export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): Map<string, Rikishi> {
+export function createRosters(
+  worldRng: SeededRNG,
+  heyaMap: Map<string, Heya>
+): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
   const heyaIds = Array.from(heyaMap.keys());
 
@@ -107,21 +161,27 @@ export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): 
     { rank: "komusubi", division: "makuuchi", count: 2 },
     { rank: "maegashira", division: "makuuchi", count: 34 },
     { rank: "juryo", division: "juryo", count: 28 },
-    { rank: "makushita", division: "makushita", count: 120 },
-    { rank: "sandanme", division: "sandanme", count: 200 },
-    { rank: "jonidan", division: "jonidan", count: 200 },
-    { rank: "jonokuchi", division: "jonokuchi", count: 110 }
+    { rank: "makushita", division: "makushita", count: 150 }, // Increased from 120 for more junior wrestlers
+    { rank: "sandanme", division: "sandanme", count: 250 }, // Increased from 200 for more junior wrestlers
+    { rank: "jonidan", division: "jonidan", count: 250 }, // Increased from 200 for more junior wrestlers
+    { rank: "jonokuchi", division: "jonokuchi", count: 150 }, // Increased from 110 for more junior wrestlers
   ];
 
   let totalGenerated = 0;
-  rankConfigs.forEach(config => {
+  rankConfigs.forEach((config) => {
     for (let i = 0; i < config.count; i++) {
       const side: Side = i % 2 === 0 ? "east" : "west";
-      const rankNumber = config.rank === "maegashira" || config.rank === "juryo" || config.rank === "makushita" || config.rank === "sandanme" || config.rank === "jonidan" || config.rank === "jonokuchi" 
-        ? Math.floor(i / 2) + 1 
-        : 1;
+      const rankNumber =
+        config.rank === "maegashira" ||
+        config.rank === "juryo" ||
+        config.rank === "makushita" ||
+        config.rank === "sandanme" ||
+        config.rank === "jonidan" ||
+        config.rank === "jonokuchi"
+          ? Math.floor(i / 2) + 1
+          : 1;
 
-      const rikishiId = worldRng.uuid('RK');
+      const rikishiId = worldRng.uuid("RK");
       const r = generateFullRikishi({
         id: rikishiId,
         rng: worldRng,
@@ -129,7 +189,7 @@ export function createRosters(worldRng: SeededRNG, heyaMap: Map<string, Heya>): 
         rank: config.rank,
         division: config.division,
         side,
-        rankNumber
+        rankNumber,
       });
 
       // Randomly assign to a stable
@@ -157,7 +217,7 @@ export function generateInitialWorld(seed: string): WorldState {
   const rikishiMap = createRosters(worldRng, heyaMap);
 
   const world: WorldState = {
-    id: worldRng.uuid('WD'),
+    id: worldRng.uuid("WD"),
     seed,
     year: 2025,
     week: 1,
@@ -172,19 +232,19 @@ export function generateInitialWorld(seed: string): WorldState {
     history: [],
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
-    playerHeyaId: Array.from(heyaMap.keys())[0], 
+    playerHeyaId: Array.from(heyaMap.keys())[0],
     almanacSnapshots: [],
     factions: createInitialFactions(worldRng),
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-    records: { 
-      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }, 
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] } 
+    records: {
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
     },
     settings: { archiveMode: "standard" },
     planetRating: 50,
     isInitialSeed: true,
     sponsorPool: generateInitialSponsorPool(seed),
-    trainingState: new Map()
+    trainingState: new Map(),
   } as any;
 
   // 3. Establish Initial Koenkai Relationships (Constitution A6)
@@ -215,31 +275,31 @@ export function generateInitialWorld(seed: string): WorldState {
 export function initializeBasho(world: WorldState, name: BashoName): BashoState {
   const rng = rngFromSeed(world.seed, "basho", `${world.year}-${name}`);
   return {
-    id: rng.uuid('BS'),
+    id: rng.uuid("BS"),
     year: world.year,
-    bashoNumber: 1, 
+    bashoNumber: 1,
     bashoName: name,
     day: 1,
     currentDay: 1,
     matches: [],
     standings: new Map(),
-    isActive: true
+    isActive: true,
   };
 }
 
 function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
   const names: IchimonName[] = ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"];
   const factions: Record<string, Faction> = {};
-  
-  names.forEach(name => {
-    const id = rng.uuid('FN');
+
+  names.forEach((name) => {
+    const id = rng.uuid("FN");
     factions[id] = {
       id: name, // The type Faction uses IchimonName as ID internally (A6.2 compliance)
       name: `${name} Ichimon`,
       influence: 50,
-      oyakataLeaderId: null
+      oyakataLeaderId: null,
     };
   });
-  
+
   return factions;
 }

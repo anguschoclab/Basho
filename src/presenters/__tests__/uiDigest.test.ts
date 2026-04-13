@@ -1,15 +1,14 @@
-import { vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 import { queryEvents } from "../../engine/events";
 vi.mock("../../engine/events", () => ({
   queryEvents: vi.fn(
-    (world) => world.events?.log?.map((e) => ({ ...e, type: e.type || "GENERIC" })) || []
+    (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
   ),
 }));
 import type { StandingsTableRuntime } from "../../engine/types/basho";
-import { describe, it, expect, vi } from "vitest";
 import {
   enrichRikishiForUI,
   formatRadarData,
@@ -22,18 +21,11 @@ import { mockRikishi as generateMockRikishi } from "../../engine/__tests__/utils
 import type { RikishiStats, Rikishi } from "../../engine/types/rikishi";
 import type { WorldState } from "../../engine/types/world";
 
-// Since the original file didn't have mocks, maybe calculatePerceivedStats is imported differently or wasn't breaking?
-// Wait, the original file DID break in our run before we changed anything. It broke because calculatePerceivedStats was not defined.
-// This is because we ran bun install which might have updated vitest or changed module resolution.
-// Let's mock calculatePerceivedStats properly.
-vi.mock("../rikishiUI", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
-    toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
-  };
-});
+// Mock calculatePerceivedStats properly
+vi.mock("../rikishiUI", () => ({
+  calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
+  toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
+}));
 
 describe("UI Digest: Rikishi Perception Boundary", () => {
   it("MUST NOT leak raw numerical stats into the UI model", () => {

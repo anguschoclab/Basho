@@ -24,7 +24,11 @@ import { rollArchetype, buildCombatProfile } from "./archetype";
  *  * @param seed - The Seed.
  *  * @returns The result.
  */
-export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: string): string | null {
+export function checkRetirement(
+  rikishi: Rikishi,
+  currentYear: number,
+  seed: string
+): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
 
@@ -36,9 +40,8 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
   if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
 
   // 2. Injury Forced Retirement
-  const severity = typeof rikishi.injuryStatus?.severity === "number"
-    ? rikishi.injuryStatus.severity
-    : 0;
+  const severity =
+    typeof rikishi.injuryStatus?.severity === "number" ? rikishi.injuryStatus.severity : 0;
   if (rikishi.injuryStatus?.isInjured && severity > 90) {
     return "Career-Ending Injury";
   }
@@ -46,7 +49,7 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
   // 3. Yokozuna Retirement Pressure (Council Recommendations)
   if (rikishi.rank === "yokozuna") {
     const warnings = rikishi.councilWarnings || 0;
-    
+
     // 3.1 Council Warning Trigger (Binary)
     // 3 warnings = mandatory retirement
     if (warnings >= 3) return "Council Forced Retirement (Lack of Dignity)";
@@ -58,9 +61,11 @@ export function checkRetirement(rikishi: Rikishi, currentYear: number, seed: str
 
     if (isWeak || isAbsentTooLong) {
       // Base chance increases by 30% per warning level
-      const pressureChance = 0.5 + (warnings * 0.2);
+      const pressureChance = 0.5 + warnings * 0.2;
       if (rng.bool(Math.min(0.95, pressureChance))) {
-        return isAbsentTooLong ? "Yokozuna Chronic Injury Retirement" : "Yokozuna Performance Retirement";
+        return isAbsentTooLong
+          ? "Yokozuna Chronic Injury Retirement"
+          : "Yokozuna Performance Retirement";
       }
     }
   }
@@ -87,7 +92,7 @@ const ORIGINS = [
   { name: "Hokkaido", weightMod: 1.05, strMod: 1.0 },
   { name: "Tokyo", weightMod: 0.95, techMod: 1.1 },
   { name: "Aomori", weightMod: 1.0, strMod: 1.05 },
-  { name: "Mongolia", weightMod: 0.9, strMod: 1.2, mentalMod: 1.2 }, 
+  { name: "Mongolia", weightMod: 0.9, strMod: 1.2, mentalMod: 1.2 },
   { name: "Georgia", weightMod: 1.1, strMod: 1.1 },
   { name: "Brazil", weightMod: 1.0, techMod: 0.9, speedMod: 1.1 },
   { name: "Nihon University", weightMod: 1.0, techMod: 1.3, isElite: true },
@@ -95,8 +100,12 @@ const ORIGINS = [
 ];
 
 const ARCHETYPES: CombatArchetype[] = [
-  "oshi", "yotsu", "speedster", 
-  "trickster", "hybrid", "giant"
+  "oshi",
+  "yotsu",
+  "speedster",
+  "trickster",
+  "hybrid",
+  "giant",
 ];
 
 /**
@@ -106,17 +115,21 @@ const ARCHETYPES: CombatArchetype[] = [
  *  * @param targetRank - The Target rank.
  *  * @returns The result.
  */
-function generateRookie(world: WorldState, currentYear: number, targetRank: Rank = "jonokuchi"): Rikishi {
+function generateRookie(
+  world: WorldState,
+  currentYear: number,
+  targetRank: Rank = "jonokuchi"
+): Rikishi {
   const count = world.rikishi.size;
   const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
   const rookieId = `rk_${currentYear}_${tmpRng.int(1000000, 9999999)}`;
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
-  
+
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
   const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
-  
+
   const isElite = origin.isElite || false;
-  const age = isElite ? 22 : 15 + rng.int(0, 2); 
+  const age = isElite ? 22 : 15 + rng.int(0, 2);
 
   const baseStat = isElite ? 40 : 20;
   const variance = 15;
@@ -144,13 +157,13 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
 
   return {
     id: rookieId,
-    name: shikona, 
+    name: shikona,
     shikona: shikona,
     heyaId: "scout_pool",
     nationality: origin.name.includes("University") ? "Japan" : origin.name,
     birthYear: currentYear - age,
     origin: origin.name,
-    
+
     // Rank
     rank: isElite ? "makushita" : targetRank,
     rankNumber: isElite ? 15 : 50,
@@ -167,56 +180,71 @@ function generateRookie(world: WorldState, currentYear: number, targetRank: Rank
     experience: isElite ? 20 : 0,
     adaptability: stats.adaptability,
     fatigue: 0,
-    
+
     height: 175 + rng.next() * 20,
     weight: stats.weight,
-    
+
     momentum: 50,
     stamina: stats.stamina,
 
     tacticalArchetypePrimary: archetype,
-    archetypeEvidence: { push: { success: 0, fail: 0 }, grapple: { success: 0, fail: 0 }, evade: { success: 0, fail: 0 } },
+    archetypeEvidence: {
+      push: { success: 0, fail: 0 },
+      grapple: { success: 0, fail: 0 },
+      evade: { success: 0, fail: 0 },
+    },
 
     // Style
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
     archetype: archetype as unknown as TacticalArchetype,
     derivedArchetype: archetype as unknown as RikishiArchetype,
     combatProfile: buildCombatProfile(archetype),
-    
+
     careerWins: 0,
     careerLosses: 0,
     careerAbsences: 0,
+    makuuchiWins: 0,
+    divisionRecords: {
+      makuuchi: { wins: 0, losses: 0 },
+      juryo: { wins: 0, losses: 0 },
+      makushita: { wins: 0, losses: 0 },
+      sandanme: { wins: 0, losses: 0 },
+      jonidan: { wins: 0, losses: 0 },
+      jonokuchi: { wins: 0, losses: 0 },
+    },
     currentBashoWins: 0,
     currentBashoLosses: 0,
-    
+
     careerRecord: { wins: 0, losses: 0, yusho: 0 },
     currentBashoRecord: { wins: 0, losses: 0 },
     history: [],
     h2h: {},
-    
+
     injuryStatus: {
       type: "none",
       isInjured: false,
       severity: "none" as InjurySeverity,
       location: undefined,
       weeksRemaining: 0,
-      weeksToHeal: 0
+      weeksToHeal: 0,
     },
     injured: false,
     injuryWeeksRemaining: 0,
-    
+    isKyujo: false,
+    kyujoReason: undefined,
+    medicalCertificate: undefined,
+
     condition: 100,
     motivation: 50 + rng.next() * 50,
     behavior: {
       discipline: 60 + rng.int(0, 30),
       mediaSavvy: 30 + rng.int(0, 40),
-      stress: 0
+      stress: 0,
     },
     personalityTraits: [],
     favoredKimarite: [],
     weakAgainstStyles: [],
     // Required Rikishi fields for career tracking
-    makuuchiWins: 0,
     consecutiveYusho: 0,
     careerHistory: [],
     milestones: [],

@@ -101,4 +101,21 @@ export interface MediaState {
   injuryWithdrawalFired: Record<string, boolean>;
   mediaHeatHistory: Record<string, Array<{ basho: string; heat: number }>>;
   weeklyGazette?: string;
+  absenceAnnouncements: AbsenceAnnouncement[];
+}
+
+/** Absence announcement for kyojo (voluntary withdrawal). */
+export interface AbsenceAnnouncement {
+  id: string;
+  rikishiId: string;
+  shikona: string;
+  division: string;
+  reason: "voluntary" | "injury" | "personal";
+  announcedWeek: number;
+  announcedBasho?: string;
+  medicalCertificate?: {
+    injury: string;
+    severity: string;
+    treatmentWeeks: number;
+  };
 }

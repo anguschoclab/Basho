@@ -6,21 +6,15 @@ import * as worldEngine from "../../engine/world";
 import * as tickOrchestrator from "../../engine/tick/tickOrchestrator";
 
 // Mock dependencies
-vi.mock("../gameHelpers", async () => {
-  const actual = await vi.importActual("../gameHelpers");
-  return {
-    ...actual,
-    autosaveWithSignal: vi.fn(),
-  };
-});
+vi.mock("../gameHelpers", () => ({
+  autosaveWithSignal: vi.fn(),
+}));
 
 vi.mock("../../engine/world", () => ({
   advanceBashoDay: vi.fn(),
-  simulateBoutForToday: vi
-    .fn()
-    .mockReturnValue({
-      result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
-    }),
+  simulateBoutForToday: vi.fn().mockReturnValue({
+    result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
+  }),
 }));
 
 vi.mock("../../engine/tick/tickOrchestrator", () => ({
@@ -33,7 +27,7 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("handles autosave errors gracefully on ADVANCE_DAY (day <= 15)", () => {
-    const mockAutosave = vi.mocked(gameHelpers.autosaveWithSignal);
+    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
     mockAutosave.mockImplementation(() => {
       throw new Error("Disk full");
     });
@@ -55,7 +49,7 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("handles autosave errors gracefully on ADVANCE_DAY (day > 15)", () => {
-    const mockAutosave = vi.mocked(gameHelpers.autosaveWithSignal);
+    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
     mockAutosave.mockImplementation(() => {
       throw new Error("Disk full");
     });
@@ -75,14 +69,14 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("handles autosave errors gracefully on SIMULATE_ALL_BOUTS", () => {
-    const mockAutosave = vi.mocked(gameHelpers.autosaveWithSignal);
+    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
     mockAutosave.mockImplementation(() => {
       throw new Error("Disk full");
     });
 
     // Mock simulateBoutForToday to return a result only once to avoid infinite loop
     let called = false;
-    vi.mocked(worldEngine.simulateBoutForToday).mockImplementation(() => {
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(() => {
       if (!called) {
         called = true;
         return {
@@ -109,18 +103,18 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("handles autosave errors gracefully on SIM_FULL_BASHO", () => {
-    const mockAutosave = vi.mocked(gameHelpers.autosaveWithSignal);
+    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
     mockAutosave.mockImplementation(() => {
       throw new Error("Disk full");
     });
 
     // Mock advanceBashoDay to increase day to terminate loop
-    vi.mocked(worldEngine.advanceBashoDay).mockImplementation((world: any) => {
+    (worldEngine.advanceBashoDay as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
       world.currentBasho.day += 1;
     });
 
     // Mock simulateBoutForToday to return null to skip internal loop
-    vi.mocked(worldEngine.simulateBoutForToday).mockReturnValue({
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockReturnValue({
       result: null,
     });
 

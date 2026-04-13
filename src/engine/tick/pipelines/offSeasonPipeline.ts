@@ -17,6 +17,7 @@ import * as phases from "../phases";
 
 export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_economy, // Weekly finances: income, salaries, facility upkeep
+  phases.phase_pre_basho_schedule, // Generate Day 1-2 schedules 2 days before basho
   phases.phase01_week_training,
   phases.phase01_week_health,
   phases.phase01_week_welfare,
