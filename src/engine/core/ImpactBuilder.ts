@@ -1,6 +1,6 @@
 /**
  * Impact Builder
- * 
+ *
  * Helper functions for constructing StateImpact objects.
  * Provides a fluent API for building impacts without manually constructing the structure.
  */
@@ -23,14 +23,14 @@ import { createEmptyImpact } from "./StateImpact";
  * Deep merge two objects, handling nested structures.
  */
 function deepMerge(target: any, source: any): any {
-  if (!target || typeof target !== 'object') return source;
-  if (!source || typeof source !== 'object') return source;
+  if (!target || typeof target !== "object") return source;
+  if (!source || typeof source !== "object") return source;
 
   const output = { ...target };
 
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
-      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+      if (typeof source[key] === "object" && source[key] !== null && !Array.isArray(source[key])) {
         output[key] = deepMerge(target[key], source[key]);
       } else {
         output[key] = source[key];
@@ -45,7 +45,7 @@ function deepMerge(target: any, source: any): any {
  * Set a nested field value using a dot-separated path.
  */
 function setNestedField(obj: any, path: string, value: any): any {
-  const keys = path.split('.');
+  const keys = path.split(".");
   const result = { ...obj };
   let current = result;
 
@@ -87,10 +87,7 @@ export class ImpactBuilder {
       this.impact.entities.heyaUpdates = new Map();
     }
     const existing = this.impact.entities.heyaUpdates.get(id);
-    this.impact.entities.heyaUpdates.set(
-      id,
-      existing ? { ...existing, ...update } : update
-    );
+    this.impact.entities.heyaUpdates.set(id, existing ? { ...existing, ...update } : update);
     return this;
   }
 
@@ -105,21 +102,14 @@ export class ImpactBuilder {
       this.impact.entities.rikishiUpdates = new Map();
     }
     const existing = this.impact.entities.rikishiUpdates.get(id);
-    this.impact.entities.rikishiUpdates.set(
-      id,
-      existing ? deepMerge(existing, update) : update
-    );
+    this.impact.entities.rikishiUpdates.set(id, existing ? deepMerge(existing, update) : update);
     return this;
   }
 
   /**
    * Update a nested field in a rikishi (e.g., h2h[opponentId]).
    */
-  updateRikishiNestedField(
-    id: string,
-    fieldPath: string,
-    value: any
-  ): ImpactBuilder {
+  updateRikishiNestedField(id: string, fieldPath: string, value: any): ImpactBuilder {
     if (!this.impact.entities) {
       this.impact.entities = {};
     }
@@ -143,10 +133,7 @@ export class ImpactBuilder {
       this.impact.entities.oyakataUpdates = new Map();
     }
     const existing = this.impact.entities.oyakataUpdates.get(id);
-    this.impact.entities.oyakataUpdates.set(
-      id,
-      existing ? { ...existing, ...update } : update
-    );
+    this.impact.entities.oyakataUpdates.set(id, existing ? { ...existing, ...update } : update);
     return this;
   }
 
@@ -223,29 +210,30 @@ export class ImpactBuilder {
   /**
    * Update a top-level world field.
    */
-  updateWorldField<K extends keyof Pick<WorldState,
-    | 'year'
-    | 'week'
-    | 'dayIndexGlobal'
-    | 'cyclePhase'
-    | '_postBashoMeta'
-    | '_recruitmentWindow'
-    | 'closedHeyas'
-    | 'currentBasho'
-    | 'currentBashoName'
-    | 'ozekiKadoban'
-    | '_interimDaysRemaining'
-    | '_postBashoDays'
-    | 'calendar'
-    | 'history'
-    | 'almanacSnapshots'
-    | 'mediaState'
-    | 'ftue'
-    | 'rivalriesState'
-  >>(
-    field: K,
-    value: WorldState[K]
-  ): ImpactBuilder {
+  updateWorldField<
+    K extends keyof Pick<
+      WorldState,
+      | "year"
+      | "week"
+      | "dayIndexGlobal"
+      | "cyclePhase"
+      | "_postBashoMeta"
+      | "_recruitmentWindow"
+      | "closedHeyas"
+      | "currentBasho"
+      | "currentBashoName"
+      | "ozekiKadoban"
+      | "_interimDaysRemaining"
+      | "_postBashoDays"
+      | "calendar"
+      | "history"
+      | "almanacSnapshots"
+      | "mediaState"
+      | "ftue"
+      | "rivalriesState"
+      | "_preBashoAssessment"
+    >,
+  >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
       this.impact.worldFields = {};
     }
@@ -258,7 +246,7 @@ export class ImpactBuilder {
    * @param field - The world field array to append to (history, almanacSnapshots, basho.matches)
    * @param items - Items to append
    */
-  appendToWorldArray<K extends 'history' | 'almanacSnapshots' | 'basho.matches'>(
+  appendToWorldArray<K extends "history" | "almanacSnapshots" | "basho.matches">(
     field: K,
     items: any[]
   ): ImpactBuilder {
@@ -301,7 +289,7 @@ export class ImpactBuilder {
    */
   addMetadata(key: string, value: any): ImpactBuilder {
     if (!this.impact.metadata) {
-      this.impact.metadata = { source: 'unknown' };
+      this.impact.metadata = { source: "unknown" };
     }
     (this.impact.metadata as any)[key] = value;
     return this;
@@ -325,11 +313,7 @@ export function createImpactBuilder(source: string): ImpactBuilder {
 /**
  * Convenience function to create a simple heya update impact.
  */
-export function updateHeyaImpact(
-  id: string,
-  update: Partial<Heya>,
-  source: string
-): StateImpact {
+export function updateHeyaImpact(id: string, update: Partial<Heya>, source: string): StateImpact {
   return createImpactBuilder(source).updateHeya(id, update).build();
 }
 
@@ -365,37 +349,34 @@ export function logEventImpact(
     importance?: EventImportance;
   }
 ): StateImpact {
-  return createImpactBuilder(source)
-    .logEvent(type, category, data, options)
-    .build();
+  return createImpactBuilder(source).logEvent(type, category, data, options).build();
 }
 
 /**
  * Convenience function to create a world field update impact.
  */
-export function updateWorldFieldImpact<K extends keyof Pick<WorldState,
-  | 'year'
-  | 'week'
-  | 'dayIndexGlobal'
-  | 'cyclePhase'
-  | '_postBashoMeta'
-  | '_recruitmentWindow'
-  | 'closedHeyas'
-  | 'currentBasho'
-  | 'currentBashoName'
-  | 'ozekiKadoban'
-  | '_interimDaysRemaining'
-  | '_postBashoDays'
-  | 'calendar'
-  | 'history'
-  | 'almanacSnapshots'
-  | 'mediaState'
-  | 'ftue'
-  | 'rivalriesState'
->>(
-  field: K,
-  value: WorldState[K],
-  source: string
-): StateImpact {
+export function updateWorldFieldImpact<
+  K extends keyof Pick<
+    WorldState,
+    | "year"
+    | "week"
+    | "dayIndexGlobal"
+    | "cyclePhase"
+    | "_postBashoMeta"
+    | "_recruitmentWindow"
+    | "closedHeyas"
+    | "currentBasho"
+    | "currentBashoName"
+    | "ozekiKadoban"
+    | "_interimDaysRemaining"
+    | "_postBashoDays"
+    | "calendar"
+    | "history"
+    | "almanacSnapshots"
+    | "mediaState"
+    | "ftue"
+    | "rivalriesState"
+  >,
+>(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();
 }
