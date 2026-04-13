@@ -1,6 +1,5 @@
 import { RANK_HIERARCHY, type Rank, type RankPosition } from "../types/banzuke";
 
-
 /** Compare ranks by tier, number, and side. */
 export function compareRanks(a: RankPosition, b: RankPosition): number {
   const aInfo = RANK_HIERARCHY[a.rank];
@@ -23,6 +22,11 @@ export function formatRank(position: RankPosition): string {
   const side = position.side === "east" ? "E" : "W";
   if (position.rankNumber !== undefined) return `${info.nameJa}${position.rankNumber}${side}`;
   return `${info.nameJa}${side}`;
+}
+
+/** Alias for formatRank for consistency with plan naming */
+export function formatRankPosition(position: RankPosition): string {
+  return formatRank(position);
 }
 
 /** Get full Japanese rank title (e.g. 東前頭1枚目). */

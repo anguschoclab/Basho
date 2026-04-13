@@ -58,6 +58,8 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed } from "@/engine/rng";
 import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
+import { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import { RikishiRadarChart } from "@/components/rikishi/RikishiRadarChart";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -158,6 +160,7 @@ export default function RikishiPage() {
 
   const isOwned = rikishi.heyaId === playerHeyaId;
   const milestones = rikishi.milestones;
+  const healthBadge = getHealthBadge(rawRikishi);
 
   // Get mentorship info using lineage functions
   const mentor = getMentor(world, rawRikishi);
@@ -196,6 +199,22 @@ export default function RikishiPage() {
                     )}
                   >
                     {rikishi.rankLabel}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "font-bold h-6 uppercase text-[9px] tracking-widest",
+                      healthBadge === "Fresh" && "border-success text-success bg-success/10",
+                      healthBadge === "Worn" &&
+                        "border-yellow-500 text-yellow-500 bg-yellow-500/10",
+                      healthBadge === "Struggling" &&
+                        "border-orange-500 text-orange-500 bg-orange-500/10",
+                      healthBadge === "Critical" &&
+                        "border-destructive text-destructive bg-destructive/10",
+                      healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
+                    )}
+                  >
+                    {healthBadge}
                   </Badge>
                   {isOwned && (
                     <Badge
@@ -550,6 +569,16 @@ export default function RikishiPage() {
                 className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300"
               >
                 <div className="grid md:grid-cols-2 gap-8">
+                  {/* Radar Chart */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                      <Activity className="h-5 w-5 text-primary" /> Combat Radar
+                    </h3>
+                    <div className="bg-muted/20 rounded-lg p-6 border border-border/50">
+                      <RikishiRadarChart rikishi={rawRikishi} className="h-64" />
+                    </div>
+                  </div>
+
                   {/* Archetype card */}
                   <div className="space-y-6">
                     <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">

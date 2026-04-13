@@ -11,10 +11,20 @@ import {
   type BanzukeEntry,
   type BashoPerformance,
   type MovementEvent,
+  type BanzukeSnapshot,
+  type DivisionBanzukeSnapshot,
+  type BanzukeAssignment,
 } from "./types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
 import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
+
+interface BanzukeChange {
+  rikishiId: string;
+  oldPosition: RankPosition | null;
+  newPosition: RankPosition;
+  change: "up" | "down" | "none" | "new";
+}
 
 // Re-export helpers and local logic
 export * from "./banzuke/banzukeHelpers";
@@ -49,6 +59,117 @@ function positionKey(e: BanzukeEntry): number {
   const num = e.position.rankNumber ?? 0;
   const side = e.position.side === "east" ? 0 : 1;
   return tier * 1000 + num * 2 + side;
+}
+
+/**
+ * Convert BanzukeEntry[] to BanzukeSnapshot format for comparison with historical snapshots.
+ */
+export function convertBanzukeEntriesToSnapshot(
+  entries: BanzukeEntry[],
+  year: number,
+  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
+): BanzukeSnapshot {
+  const divisions: Record<Division, DivisionBanzukeSnapshot> = {
+    makuuchi: { division: "makuuchi", slots: [], assignments: [] },
+    juryo: { division: "juryo", slots: [], assignments: [] },
+    makushita: { division: "makushita", slots: [], assignments: [] },
+    sandanme: { division: "sandanme", slots: [], assignments: [] },
+    jonidan: { division: "jonidan", slots: [], assignments: [] },
+    jonokuchi: { division: "jonokuchi", slots: [], assignments: [] },
+  };
+
+  for (const entry of entries) {
+    const division = entry.division;
+    if (!divisions[division]) continue;
+
+    divisions[division].slots.push(entry.position);
+    divisions[division].assignments.push({
+      rikishiId: entry.rikishiId,
+      position: entry.position,
+    });
+  }
+
+  return {
+    year,
+    bashoNumber,
+    divisions,
+  };
+}
+
+/**
+ * Compare current banzuke snapshot with previous snapshot to detect rank changes.
+ */
+export function compareBanzuke(
+  currentSnapshot: BanzukeSnapshot,
+  previousSnapshot: BanzukeSnapshot | null,
+  rikishiMap: Map<string, Rikishi>
+): BanzukeChange[] {
+  const changes: BanzukeChange[] = [];
+
+  // Build a map of rikishiId -> previous position
+  const previousPositions = new Map<string, RankPosition>();
+  const previousDivisions = new Map<string, Division>();
+
+  if (previousSnapshot) {
+    for (const [divKey, divSnapshot] of Object.entries(previousSnapshot.divisions)) {
+      for (const assignment of divSnapshot.assignments) {
+        previousPositions.set(assignment.rikishiId, assignment.position);
+        previousDivisions.set(assignment.rikishiId, divKey as Division);
+      }
+    }
+  }
+
+  for (const [divKey, divSnapshot] of Object.entries(currentSnapshot.divisions)) {
+    for (const assignment of divSnapshot.assignments) {
+      const rikishi = rikishiMap.get(assignment.rikishiId);
+      if (!rikishi || rikishi.isRetired) continue;
+
+      const previousPosition = previousPositions.get(assignment.rikishiId);
+      const previousDivision = previousDivisions.get(assignment.rikishiId);
+
+      let change: "up" | "down" | "none" | "new" = "none";
+
+      if (!previousPosition) {
+        change = "new";
+      } else {
+        // Compare using RANK_HIERARCHY tier
+        const currentTier = RANK_HIERARCHY[assignment.position.rank].tier;
+        const previousTier = RANK_HIERARCHY[previousPosition.rank].tier;
+
+        if (currentTier < previousTier) {
+          change = "up";
+        } else if (currentTier > previousTier) {
+          change = "down";
+        } else if (previousDivision && previousDivision !== (divKey as Division)) {
+          // Same tier but different division - treat as division_change
+          change = "none"; // Will be handled as division_change in transformation
+        }
+      }
+
+      changes.push({
+        rikishiId: assignment.rikishiId,
+        oldPosition: previousPosition || null,
+        newPosition: assignment.position,
+        change,
+      });
+    }
+  }
+
+  // Sort by significance: sanyaku changes > major promotions > demotions > no change > new
+  changes.sort((a, b) => {
+    const isSanyaku = (pos: RankPosition | null) =>
+      pos && ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(pos.rank);
+    const aSanyaku = isSanyaku(a.newPosition) || isSanyaku(a.oldPosition);
+    const bSanyaku = isSanyaku(b.newPosition) || isSanyaku(b.oldPosition);
+
+    if (aSanyaku && !bSanyaku) return -1;
+    if (!aSanyaku && bSanyaku) return 1;
+
+    const changeOrder = { up: 0, new: 1, down: 2, none: 3 };
+    return changeOrder[a.change] - changeOrder[b.change];
+  });
+
+  return changes;
 }
 
 /** Helper to determine division tier (lower is better). */

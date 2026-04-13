@@ -2,11 +2,16 @@ import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
 import { Users, HeartPulse, AlertTriangle, Star } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { getHealthBadge } from "@/presenters/PerceptionPresenter";
+import { cn } from "@/lib/utils";
+
+type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
 const RosterEntryRow = React.memo(
   ({
@@ -16,6 +21,7 @@ const RosterEntryRow = React.memo(
     isInjured,
     potentialBand,
     fatigue,
+    healthBadge,
   }: {
     id: string;
     shikona: string;
@@ -23,11 +29,25 @@ const RosterEntryRow = React.memo(
     isInjured: boolean;
     potentialBand: string;
     fatigue: number;
+    healthBadge: string;
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
         <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
         <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{rank}</span>
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-[8px] font-bold uppercase tracking-widest px-1.5 h-4 shrink-0",
+            healthBadge === "Fresh" && "border-success text-success bg-success/10",
+            healthBadge === "Worn" && "border-yellow-500 text-yellow-500 bg-yellow-500/10",
+            healthBadge === "Struggling" && "border-orange-500 text-orange-500 bg-orange-500/10",
+            healthBadge === "Critical" && "border-destructive text-destructive bg-destructive/10",
+            healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
+          )}
+        >
+          {healthBadge === "Fresh" ? "OK" : healthBadge.slice(0, 3)}
+        </Badge>
         {isInjured && <HeartPulse className="h-3 w-3 text-destructive shrink-0" />}
         {(potentialBand === "star" || potentialBand === "generational") && (
           <Star className="h-3 w-3 text-gold shrink-0" />
@@ -64,7 +84,7 @@ export function RosterWidget() {
     if (!heya) return { roster: [], injuredCount: 0, avgFatigue: 0 };
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
-    const entries: UIRosterEntry[] = [];
+    const entries: RosterEntryWithHealth[] = [];
     let injuries = 0;
     let totalFatigue = 0;
 
@@ -72,7 +92,8 @@ export function RosterWidget() {
       const r = world.rikishi.get(id);
       if (r && !r.isRetired) {
         const entry = projectRosterEntry(r);
-        entries.push(entry);
+        const healthBadge = getHealthBadge(r);
+        entries.push({ ...entry, healthBadge });
         if (entry.isInjured) injuries++;
         totalFatigue += entry.fatigue;
       }
@@ -139,6 +160,7 @@ export function RosterWidget() {
                 isInjured={entry.isInjured}
                 potentialBand={entry.potentialBand}
                 fatigue={entry.fatigue}
+                healthBadge={entry.healthBadge}
               />
             );
           }

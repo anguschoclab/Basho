@@ -12,10 +12,14 @@ import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
  */
 function getSeverityColor(severity: string): string {
   switch (severity) {
-    case "serious": return "text-destructive";
-    case "moderate": return "text-gold";
-    case "minor": return "text-gold";
-    default: return "text-muted-foreground";
+    case "serious":
+      return "text-destructive";
+    case "moderate":
+      return "text-gold";
+    case "minor":
+      return "text-gold";
+    default:
+      return "text-muted-foreground";
   }
 }
 
@@ -24,10 +28,14 @@ function getSeverityColor(severity: string): string {
  */
 function getSeverityBadge(severity: string) {
   switch (severity) {
-    case "serious": return <Badge variant="destructive">Serious</Badge>;
-    case "moderate": return <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>;
-    case "minor": return <Badge variant="secondary">Minor</Badge>;
-    default: return <Badge variant="outline">Unknown</Badge>;
+    case "serious":
+      return <Badge variant="destructive">Serious</Badge>;
+    case "moderate":
+      return <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>;
+    case "minor":
+      return <Badge variant="secondary">Minor</Badge>;
+    default:
+      return <Badge variant="outline">Unknown</Badge>;
   }
 }
 
@@ -51,7 +59,9 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
               <Heart className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Recovery Facilities</span>
             </div>
-            <Badge variant="outline">{facilityLabel} ({facilityLevel}/100)</Badge>
+            <Badge variant="outline">
+              {facilityLabel} ({facilityLevel}/100)
+            </Badge>
           </div>
           <Progress value={facilityLevel} className="h-2" />
           <p className="text-xs text-muted-foreground mt-2">
@@ -70,7 +80,9 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
           <CardContent className="p-8 text-center">
             <Shield className="h-8 w-8 text-success mx-auto mb-3" />
             <p className="font-medium">All Clear</p>
-            <p className="text-sm text-muted-foreground mt-1">No injuries in your stable. Keep training smart.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              No injuries in your stable. Keep training smart.
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -92,6 +104,12 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                           <h4 className="font-display font-semibold">
                             <RikishiName id={info.id} name={info.shikona} />
                           </h4>
+                          <Badge
+                            variant="outline"
+                            className="border-blue-500 text-blue-500 bg-blue-500/10 font-bold text-[9px] tracking-widest"
+                          >
+                            Recovering
+                          </Badge>
                           {getSeverityBadge(info.severity)}
                         </div>
 
@@ -102,7 +120,8 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                           </span>
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {info.weeksRemaining} week{info.weeksRemaining !== 1 ? "s" : ""} remaining
+                            {info.weeksRemaining} week{info.weeksRemaining !== 1 ? "s" : ""}{" "}
+                            remaining
                           </span>
                         </div>
 
@@ -128,10 +147,15 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                         )}
                       </div>
 
-                      <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${
-                        info.severity === "serious" ? "bg-destructive/10" :
-                        info.severity === "moderate" ? "bg-gold/10" : "bg-gold/10"
-                      }`}>
+                      <div
+                        className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${
+                          info.severity === "serious"
+                            ? "bg-destructive/10"
+                            : info.severity === "moderate"
+                              ? "bg-gold/10"
+                              : "bg-gold/10"
+                        }`}
+                      >
                         <AlertTriangle className={`h-5 w-5 ${getSeverityColor(info.severity)}`} />
                       </div>
                     </div>

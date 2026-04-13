@@ -21,6 +21,9 @@ import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
 import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { PlayoffBracket } from "@/components/game/PlayoffBracket";
+import { BanzukeReveal } from "@/components/game/BanzukeReveal";
+import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
+import { makeBashoKey } from "@/engine/historyIndex";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
@@ -94,6 +97,7 @@ export default function RecapPage() {
   const [showPressConference, setShowPressConference] = useState(false);
   const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
   const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
+  const [showBanzukeReveal, setShowBanzukeReveal] = useState(false);
   const [intaiQueue, setIntaiQueue] = useState<{ rikishi: any; reason: string }[]>([]);
   const [currentIntaiIndex, setCurrentIntaiIndex] = useState(0);
 
@@ -152,6 +156,59 @@ export default function RecapPage() {
     return getHallOfFame(world).inductees.filter((i) => i.inductionYear === world.year);
   }, [world]);
 
+  // Generate banzuke comparison data using real banzuke comparison
+  const banzukeEntries = useMemo(() => {
+    if (!world || !lastBasho) return [];
+
+    const currentBanzuke = world.currentBanzuke;
+    const historyIndex = world.historyIndex;
+
+    if (!currentBanzuke || !historyIndex) return [];
+
+    // Get previous basho key
+    const prevYear = lastBasho.bashoNumber === 1 ? lastBasho.year - 1 : lastBasho.year;
+    const prevBashoNum = lastBasho.bashoNumber === 1 ? 6 : lastBasho.bashoNumber - 1;
+    const prevBashoKey = makeBashoKey(prevYear, prevBashoNum);
+
+    const previousSnapshot = historyIndex.banzukeByBasho[prevBashoKey];
+
+    // Get changes using comparison function
+    const rikishiMap = world.rikishi;
+    const changes = compareBanzuke(currentBanzuke, previousSnapshot || null, rikishiMap);
+
+    // Transform to reveal entries
+    return changes
+      .slice(0, 20)
+      .map((change) => {
+        const rikishi = rikishiMap.get(change.rikishiId);
+        if (!rikishi) return null;
+
+        let displayChange: "up" | "down" | "none" | "new" | "division_change" = change.change;
+
+        // Detect division changes
+        if (change.oldPosition && change.newPosition) {
+          const oldDivision = RANK_HIERARCHY[change.oldPosition.rank].division;
+          const newDivision = RANK_HIERARCHY[change.newPosition.rank].division;
+          if (oldDivision !== newDivision) {
+            displayChange = "division_change";
+          }
+        }
+
+        return {
+          id: change.rikishiId,
+          shikona: rikishi.shikona,
+          oldRank: change.oldPosition ? formatRankPosition(change.oldPosition) : "New Entry",
+          newRank: formatRankPosition(change.newPosition),
+          change: displayChange,
+        };
+      })
+      .filter((e): e is NonNullable<typeof e> => e !== null);
+  }, [world, lastBasho]);
+
+  const handleBanzukeRevealComplete = () => {
+    setShowBanzukeReveal(false);
+  };
+
   if (!world) return null;
   const events = world.events?.log || [];
   const bashoEvents = getBashoWrapEvents(events, lastBasho?.bashoNumber);
@@ -194,6 +251,13 @@ export default function RecapPage() {
             <Button
               variant="outline"
               className="h-12 px-6 font-black uppercase tracking-widest border-2"
+              onClick={() => setShowBanzukeReveal(true)}
+            >
+              Banzuke Reveal
+            </Button>
+            <Button
+              variant="outline"
+              className="h-12 px-6 font-black uppercase tracking-widest border-2"
               onClick={() => setShowPressConference(true)}
             >
               Press Conference
@@ -209,6 +273,11 @@ export default function RecapPage() {
 
         {/* ═══ CEREMONIAL LAYER ═══ */}
         <TournamentCeremony lastBasho={lastBasho} world={world} />
+
+        {/* ═══ BANZUKE REVEAL ═══ */}
+        {showBanzukeReveal && (
+          <BanzukeReveal entries={banzukeEntries} onComplete={handleBanzukeRevealComplete} />
+        )}
 
         {/* ═══ PLAYOFF BRACKET (if playoffs occurred) ═══ */}
         {lastBasho?.playoffMatches && lastBasho.playoffMatches.length > 0 && (
