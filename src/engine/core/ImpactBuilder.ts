@@ -138,6 +138,21 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a partial sponsor update to the impact.
+   */
+  updateSponsor(id: string, update: any): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.sponsorUpdates) {
+      this.impact.entities.sponsorUpdates = new Map();
+    }
+    const existing = this.impact.entities.sponsorUpdates.get(id);
+    this.impact.entities.sponsorUpdates.set(id, existing ? { ...existing, ...update } : update);
+    return this;
+  }
+
+  /**
    * Add a rikishi to the active roster.
    */
   addRikishi(rikishi: Rikishi): ImpactBuilder {
@@ -232,6 +247,9 @@ export class ImpactBuilder {
       | "ftue"
       | "rivalriesState"
       | "_preBashoAssessment"
+      | "sponsorPool"
+      | "myosekiMarket"
+      | "_daysSinceLastWeeklyTick"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -376,6 +394,9 @@ export function updateWorldFieldImpact<
     | "mediaState"
     | "ftue"
     | "rivalriesState"
+    | "sponsorPool"
+    | "myosekiMarket"
+    | "_daysSinceLastWeeklyTick"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

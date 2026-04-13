@@ -40,13 +40,22 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
       result = { ...result, rikishi: nextRikishi };
     }
 
-    if (impact.entities.oyakataUpdates) {
-      const nextOyakata = new Map(result.oyakata);
-      for (const [id, update] of impact.entities.oyakataUpdates) {
-        const existing = nextOyakata.get(id);
-        nextOyakata.set(id, existing ? { ...existing, ...update } as Oyakata : update as Oyakata);
-      }
       result = { ...result, oyakata: nextOyakata };
+    }
+
+    if (impact.entities.sponsorUpdates && result.sponsorPool) {
+      const nextSponsors = new Map(result.sponsorPool.sponsors);
+      for (const [id, update] of impact.entities.sponsorUpdates) {
+        const existing = nextSponsors.get(id);
+        nextSponsors.set(id, existing ? { ...existing, ...update } : update);
+      }
+      result = {
+        ...result,
+        sponsorPool: {
+          ...result.sponsorPool,
+          sponsors: nextSponsors
+        }
+      };
     }
   }
 
@@ -123,8 +132,6 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
   }
 
   // Apply world field updates (preserve entity maps)
-  if (impact.worldFields) {
-    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } = impact.worldFields as any;
     result = {
       ...result,
       ...otherFields,
@@ -135,6 +142,25 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
       ...(historicalRikishi && { historicalRikishi }),
       ...(staff && { staff }),
     };
+  }
+
+  // Apply array appends
+  if (impact.arrayAppends && impact.arrayAppends.length > 0) {
+    for (const append of impact.arrayAppends) {
+      if (append.field === 'history') {
+        result = { ...result, history: [...(result.history || []), ...append.items] };
+      } else if (append.field === 'almanacSnapshots') {
+        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items] };
+      } else if (append.field === 'basho.matches' && result.currentBasho) {
+        result = {
+          ...result,
+          currentBasho: {
+            ...result.currentBasho,
+            matches: [...(result.currentBasho.matches || []), ...append.items]
+          }
+        };
+      }
+    }
   }
 
   // Log events
@@ -196,6 +222,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       heyaUpdates: new Map(),
       rikishiUpdates: new Map(),
       oyakataUpdates: new Map(),
+      sponsorUpdates: new Map(),
     },
     collections: {
       rikishiToAdd: [],
@@ -209,6 +236,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       rikishiIds: [],
     },
     worldFields: {},
+    arrayAppends: [],
     events: [],
     metadata: {
       source: 'merged',
@@ -234,6 +262,13 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       for (const [id, update] of impact.entities.oyakataUpdates) {
         const existing = merged.entities!.oyakataUpdates!.get(id);
         merged.entities!.oyakataUpdates!.set(id, existing ? { ...existing, ...update } : update);
+      }
+    }
+    if (impact.entities?.sponsorUpdates) {
+      if (!merged.entities!.sponsorUpdates) merged.entities!.sponsorUpdates = new Map();
+      for (const [id, update] of impact.entities.sponsorUpdates) {
+        const existing = merged.entities!.sponsorUpdates!.get(id);
+        merged.entities!.sponsorUpdates!.set(id, existing ? { ...existing, ...update } : update);
       }
     }
 
@@ -268,6 +303,18 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         merged.worldFields = {};
       }
       Object.assign(merged.worldFields, impact.worldFields);
+    }
+
+    // Merge array appends
+    if (impact.arrayAppends) {
+      for (const append of impact.arrayAppends) {
+        const existing = merged.arrayAppends!.find(a => a.field === append.field);
+        if (existing) {
+          existing.items.push(...append.items);
+        } else {
+          merged.arrayAppends!.push({ ...append, items: [...append.items] });
+        }
+      }
     }
 
     // Merge events

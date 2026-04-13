@@ -34,6 +34,8 @@ export interface StateImpact {
     rikishiUpdates?: Map<string, Partial<Rikishi>>;
     /** Map of oyakata ID → partial oyakata update */
     oyakataUpdates?: Map<string, Partial<Oyakata>>;
+    /** Map of sponsor ID → partial sponsor update */
+    sponsorUpdates?: Map<string, any>;
     // Add other entity types as needed
   };
 
@@ -88,6 +90,9 @@ export interface StateImpact {
     | 'mediaState'
     | 'ftue'
     | 'rivalriesState'
+    | 'sponsorPool'
+    | 'myosekiMarket'
+    | '_daysSinceLastWeeklyTick'
   >>;
 
   /**
