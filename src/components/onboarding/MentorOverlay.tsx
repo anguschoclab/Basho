@@ -80,7 +80,7 @@ export function MentorOverlay({
         </div>
         <button
           onClick={onDismiss}
-          className="text-muted-foreground hover:text-foreground transition-colors mt-0.5"
+          className="text-muted-foreground hover:text-foreground transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
           aria-label="Dismiss"
         >
           <X className="h-4 w-4" />
