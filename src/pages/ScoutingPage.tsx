@@ -9,39 +9,24 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Target,
-  Eye,
-  UserPlus,
-  Shield,
-} from "lucide-react";
+import { Target, Eye, UserPlus, Shield } from "lucide-react";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 
 export default function ScoutingPage() {
   const { state } = useGame();
   const world = state.world;
-  const playerHeyaId = state.playerHeyaId ?? (world as any)?.playerHeyaId ?? null;
+  const playerHeyaId = state.playerHeyaId ?? world?.playerHeyaId ?? null;
 
   if (!world) {
     return (
-      <AppLayout
-        pageTitle="Scouting Network"
-        subNavTabs={OFFICE_TABS}
-        activeSubTab="scouting"
-      >
-        <div className="p-6 text-center text-muted-foreground">
-          No world loaded.
-        </div>
+      <AppLayout pageTitle="Scouting Network" subNavTabs={OFFICE_TABS} activeSubTab="scouting">
+        <div className="p-6 text-center text-muted-foreground">No world loaded.</div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout
-      pageTitle="Scouting Network"
-      subNavTabs={OFFICE_TABS}
-      activeSubTab="scouting"
-    >
+    <AppLayout pageTitle="Scouting Network" subNavTabs={OFFICE_TABS} activeSubTab="scouting">
       <Helmet>
         <title>Scouting & Recruitment — Basho</title>
         <meta

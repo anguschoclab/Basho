@@ -10,6 +10,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
+import { RikishiName } from "@/components/ClickableName";
 
 export function PreBashoAssessment() {
   const { state } = useGame();
@@ -75,7 +76,9 @@ export function PreBashoAssessment() {
                   className="flex items-center justify-between py-1 px-2 rounded-md hover:bg-muted/50 text-xs"
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="font-medium truncate">{rikishi.shikona}</span>
+                    <span className="font-medium truncate">
+                      <RikishiName id={rikishiId} name={rikishi.shikona} />
+                    </span>
                     <Badge
                       variant={
                         rikishiAssessment.injuryRisk === "low"

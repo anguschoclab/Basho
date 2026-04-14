@@ -8,17 +8,28 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
+import type { OyakataArchetype } from "@/engine/types/oyakata";
 import {
   SCANDAL_LABELS,
   TRAIT_LABELS,
   clamp,
   getArchetypeDescription,
-  getStatusLabel,
   toScandalBand,
   toTraitBand,
 } from "@/presenters/uiDigest";
+
+/**
+ * Simple governance status label mapping (without RNG).
+ */
+function getGovernanceStatusLabel(status: string): string {
+  const labelMap: Record<string, string> = {
+    good_standing: "Good Standing",
+    warning: "Warning",
+    probation: "Probation",
+    sanctioned: "Sanctioned",
+  };
+  return labelMap[status] || status;
+}
 
 /**
  * Compliance badge.
@@ -44,7 +55,7 @@ function complianceBadge(state: string) {
  *  * @param risk - The Risk.
  *  * @returns The result.
  */
-function riskTone(risk: number): { label: string; icon: any } {
+function riskTone(risk: number): { label: string; icon: React.ElementType } {
   if (risk >= 80) return { label: "Severe", icon: AlertTriangle };
   if (risk >= 60) return { label: "High", icon: AlertTriangle };
   if (risk >= 40) return { label: "Elevated", icon: HeartPulse };
@@ -53,18 +64,48 @@ function riskTone(risk: number): { label: string; icon: any } {
 
 /**
  * institution panel.
- *  * @param { world, heya } - The { world, heya }.
+ *  * @param { heya, oyakata, oyakataQuirks, oyakataTraits } - The component props.
  */
-export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Heya }) {
-  const welfare = (heya as any).welfareState as any | undefined;
+export function InstitutionPanel({
+  heya,
+  oyakata,
+  oyakataQuirks,
+  oyakataTraits,
+}: {
+  heya: Heya;
+  oyakata: {
+    archetype?: string;
+  } | null;
+  oyakataQuirks: string[];
+  oyakataTraits: {
+    ambition: number;
+    patience: number;
+    risk: number;
+    tradition: number;
+    compassion: number;
+  } | null;
+}) {
+  const welfare = (
+    heya as Heya & {
+      welfareState?: {
+        welfareRisk?: number;
+        complianceState?: string;
+        investigation?: { progress?: number; severity?: string };
+        sanctions?: {
+          recruitmentFreezeWeeks?: number;
+          trainingIntensityCap?: string;
+          fineYen?: number;
+        };
+      };
+    }
+  ).welfareState;
   const risk = clamp(Number(welfare?.welfareRisk ?? 10), 0, 100);
   const compliance = String(welfare?.complianceState ?? "compliant");
   const inv = welfare?.investigation;
   const sanc = welfare?.sanctions;
 
-  const oyakata = world.oyakata.get(heya.oyakataId);
-  const quirks: string[] = (oyakata as any)?.quirks ?? [];
-  const traits = oyakata?.traits;
+  const quirks = oyakataQuirks;
+  const traits = oyakataTraits;
 
   const tone = riskTone(risk);
   const ToneIcon = tone.icon;
@@ -124,7 +165,7 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
           <div className="flex items-center gap-2">
             <Gavel className="h-4 w-4" />
             <div className="text-sm font-medium">Governance</div>
-            <Badge variant="outline">{getStatusLabel(heya.governanceStatus)}</Badge>
+            <Badge variant="outline">{getGovernanceStatusLabel(heya.governanceStatus)}</Badge>
             {heya.scandalScore >= 20 && (
               <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>
             )}
@@ -145,7 +186,7 @@ export function InstitutionPanel({ world, heya }: { world: WorldState; heya: Hey
           </div>
           {oyakata?.archetype && (
             <div className="text-xs text-muted-foreground">
-              {getArchetypeDescription(oyakata.archetype)}
+              {getArchetypeDescription(oyakata.archetype as OyakataArchetype)}
             </div>
           )}
 

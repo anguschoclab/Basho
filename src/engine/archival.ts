@@ -41,7 +41,7 @@ export function runArchivalPruning(world: WorldState): StateImpact {
 
   for (const [id, r] of world.historicalRikishi) {
     // If already pruned (is a summary object), skip
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Runtime type check for pruned object property
     if ((r as any).isPruned) continue;
 
     const tier = determineArchivalTier(r);
@@ -92,7 +92,7 @@ function determineArchivalTier(r: Rikishi): 1 | 2 | 3 {
   return 3;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mutates rikishi object to add pruning metadata
 function pruneToTier2(r: any): void {
   r.isPruned = true;
   r.pruningTier = 2;
@@ -106,7 +106,7 @@ function pruneToTier2(r: any): void {
   // Keep: Shikona, Career Stats, Milestones, Mentor
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mutates rikishi object to add pruning metadata
 function pruneToTier3(r: any): void {
   r.isPruned = true;
   r.pruningTier = 3;

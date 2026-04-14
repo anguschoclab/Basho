@@ -17,7 +17,6 @@ import {
   ScrollText,
   Swords,
   Coins,
-  History,
   BookOpen,
   Search,
   Newspaper,
@@ -35,7 +34,6 @@ import {
   Calendar,
   AlertTriangle,
   Lock,
-  ChevronRight,
 } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -47,14 +45,14 @@ export function AppSidebar() {
 
   const isLoaded = !!world;
   const tutorialCompleted = world?.tutorialState?.completed ?? false;
-  const playerHeya = isLoaded && world?.playerHeyaId
-    ? world.heyas.get(world.playerHeyaId)
-    : null;
+  const playerHeya = isLoaded && world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day;
-  const fundsLow = playerHeya && ["tight", "critical", "desperate"].includes(playerHeya.runwayBand ?? "");
-  const fundsCritical = playerHeya && ["critical", "desperate"].includes(playerHeya.runwayBand ?? "");
+  const fundsLow =
+    playerHeya && ["tight", "critical", "desperate"].includes(playerHeya.runwayBand ?? "");
+  const fundsCritical =
+    playerHeya && ["critical", "desperate"].includes(playerHeya.runwayBand ?? "");
 
   function isActive(url: string) {
     return location.pathname === url;
@@ -68,62 +66,67 @@ export function AppSidebar() {
     {
       label: null,
       items: [
-        { title: "Dashboard",       url: "/dashboard",  icon: LayoutDashboard, exactOnly: true },
-        { title: "Events & Recap",  url: "/recap",      icon: Newspaper,       exactOnly: true },
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
+        { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
       ],
     },
     {
       label: "My Stable",
       items: [
-        { title: "Overview",        url: "/stable",             icon: Home,          exactOnly: true },
-        { title: "Roster",          url: "/stable/roster",      icon: Users },
-        { title: "Training",        url: "/stable/training",    icon: Dumbbell },
-        { title: "Medical",         url: "/stable/medical",     icon: Heart },
-        { title: "Staff",           url: "/stable/staff",       icon: Briefcase },
-        { title: "Scouting",        url: "/office/scouting",    icon: Search,        locked: !tutorialCompleted },
+        { title: "Overview", url: "/stable", icon: Home, exactOnly: true },
+        { title: "Roster", url: "/stable/roster", icon: Users },
+        { title: "Training", url: "/stable/training", icon: Dumbbell },
+        { title: "Medical", url: "/stable/medical", icon: Heart },
+        { title: "Staff", url: "/stable/staff", icon: Briefcase },
+        { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
       ],
     },
     {
       label: "Tournament",
       items: [
         {
-          title: "Current Basho",   url: "/basho",      icon: Trophy,     exactOnly: true,
+          title: "Current Basho",
+          url: "/basho",
+          icon: Trophy,
+          exactOnly: true,
           badge: inBasho ? `Day ${bashoDay ?? 1}` : undefined,
           badgeKind: "basho" as const,
         },
-        { title: "Banzuke",         url: "/banzuke",    icon: ScrollText },
-        { title: "Schedule",        url: "/schedule",   icon: Calendar },
-        { title: "Rivalries",       url: "/rivalries",  icon: Swords },
+        { title: "Banzuke", url: "/banzuke", icon: ScrollText },
+        { title: "Schedule", url: "/schedule", icon: Calendar },
+        { title: "Rivalries", url: "/rivalries", icon: Swords },
       ],
     },
     {
       label: "Management",
       items: [
         {
-          title: "Finances",        url: "/office/finances",    icon: Coins,
+          title: "Finances",
+          url: "/office/finances",
+          icon: Coins,
           locked: !tutorialCompleted,
           badge: fundsCritical ? "!" : fundsLow ? "Low" : undefined,
           badgeKind: (fundsCritical ? "critical" : "warn") as "critical" | "warn",
         },
-        { title: "Facilities",      url: "/office/facilities",  icon: Building2 },
-        { title: "Sponsors",        url: "/office/sponsors",    icon: HandshakeIcon },
+        { title: "Facilities", url: "/office/facilities", icon: Building2 },
+        { title: "Sponsors", url: "/office/sponsors", icon: HandshakeIcon },
       ],
     },
     {
       label: "Association",
       items: [
-        { title: "Governance",      url: "/jsa/governance",     icon: ShieldAlert },
-        { title: "Elder Market",    url: "/jsa/myoseki",        icon: Landmark },
-        { title: "Press & Rep",     url: "/media",              icon: Newspaper },
-        { title: "Trends",          url: "/jsa/trends",         icon: TrendingUp },
+        { title: "Governance", url: "/jsa/governance", icon: ShieldAlert },
+        { title: "Elder Market", url: "/jsa/myoseki", icon: Landmark },
+        { title: "Press & Rep", url: "/media", icon: Newspaper },
+        { title: "Trends", url: "/jsa/trends", icon: TrendingUp },
       ],
     },
     {
       label: "Records",
       items: [
-        { title: "Stable History",  url: "/history",        icon: Archive },
-        { title: "Almanac",         url: "/almanac",        icon: BookOpen },
-        { title: "Hall of Fame",    url: "/hall-of-fame",   icon: Award },
+        { title: "Stable History", url: "/history", icon: Archive },
+        { title: "Almanac", url: "/almanac", icon: BookOpen },
+        { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
       ],
     },
   ];
@@ -134,7 +137,8 @@ export function AppSidebar() {
       className="border-r-0 bg-[hsl(var(--sidebar-background))]"
       style={{
         /* Subtle washi paper dot texture */
-        backgroundImage: "radial-gradient(circle, hsl(var(--sidebar-foreground) / 0.04) 1px, transparent 1px)",
+        backgroundImage:
+          "radial-gradient(circle, hsl(var(--sidebar-foreground) / 0.04) 1px, transparent 1px)",
         backgroundSize: "16px 16px",
       }}
     >
@@ -154,7 +158,10 @@ export function AppSidebar() {
           >
             <span
               className="text-[hsl(222_32%_5%)] font-bold text-lg leading-none select-none"
-              style={{ fontFamily: "var(--font-display)", textShadow: "0 1px 2px hsl(0 0% 0% / 0.2)" }}
+              style={{
+                fontFamily: "var(--font-display)",
+                textShadow: "0 1px 2px hsl(0 0% 0% / 0.2)",
+              }}
             >
               力
             </span>
@@ -180,7 +187,10 @@ export function AppSidebar() {
         {/* Thin gold separator line below logo */}
         <div
           className="mt-3 mx-1 h-px group-data-[collapsible=icon]:hidden"
-          style={{ background: "linear-gradient(to right, hsl(var(--gold) / 0.4), hsl(var(--gold) / 0.1), transparent)" }}
+          style={{
+            background:
+              "linear-gradient(to right, hsl(var(--gold) / 0.4), hsl(var(--gold) / 0.1), transparent)",
+          }}
         />
       </SidebarHeader>
 
@@ -199,7 +209,9 @@ export function AppSidebar() {
                 </span>
                 <div
                   className="flex-1 h-px"
-                  style={{ background: "linear-gradient(to right, hsl(var(--gold) / 0.2), transparent)" }}
+                  style={{
+                    background: "linear-gradient(to right, hsl(var(--gold) / 0.2), transparent)",
+                  }}
                 />
               </div>
             )}
@@ -214,9 +226,7 @@ export function AppSidebar() {
                     locked?: boolean;
                   };
 
-                  const active = itemAny.exactOnly
-                    ? isActive(item.url)
-                    : isSectionActive(item.url);
+                  const active = itemAny.exactOnly ? isActive(item.url) : isSectionActive(item.url);
 
                   if (itemAny.locked) {
                     return (
@@ -239,9 +249,13 @@ export function AppSidebar() {
                   }
 
                   const badgeColor =
-                    itemAny.badgeKind === "basho"  ? "hsl(var(--gold))"         :
-                    itemAny.badgeKind === "critical"? "hsl(var(--destructive))"  :
-                    itemAny.badgeKind === "warn"    ? "hsl(var(--warning))"      : "hsl(var(--muted-foreground))";
+                    itemAny.badgeKind === "basho"
+                      ? "hsl(var(--gold))"
+                      : itemAny.badgeKind === "critical"
+                        ? "hsl(var(--destructive))"
+                        : itemAny.badgeKind === "warn"
+                          ? "hsl(var(--warning))"
+                          : "hsl(var(--muted-foreground))";
 
                   return (
                     <SidebarMenuItem key={item.url}>
@@ -252,16 +266,22 @@ export function AppSidebar() {
                         className={`
                           mx-1.5 w-[calc(100%-0.75rem)] py-2 h-auto rounded
                           transition-all duration-150
-                          ${active
-                            ? "bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]"
-                            : "hover:bg-[hsl(var(--sidebar-foreground)/0.06)] text-[hsl(var(--sidebar-foreground)/0.7)] hover:text-[hsl(var(--sidebar-foreground))]"}
+                          ${
+                            active
+                              ? "bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]"
+                              : "hover:bg-[hsl(var(--sidebar-foreground)/0.06)] text-[hsl(var(--sidebar-foreground)/0.7)] hover:text-[hsl(var(--sidebar-foreground))]"
+                          }
                         `}
-                        style={active ? {
-                          boxShadow: "inset 2px 0 0 hsl(var(--gold))",
-                          borderRadius: "0 4px 4px 0",
-                        } : undefined}
+                        style={
+                          active
+                            ? {
+                                boxShadow: "inset 2px 0 0 hsl(var(--gold))",
+                                borderRadius: "0 4px 4px 0",
+                              }
+                            : undefined
+                        }
                       >
-                        <Link to={item.url as any} className="flex items-center gap-3">
+                        <Link to={item.url} className="flex items-center gap-3">
                           <item.icon
                             className={`h-3.5 w-3.5 shrink-0 transition-all duration-150 ${active ? "text-[hsl(var(--gold))]" : ""}`}
                           />
@@ -297,7 +317,10 @@ export function AppSidebar() {
         {/* Thin gold separator above footer */}
         <div
           className="mb-3 mx-1 h-px group-data-[collapsible=icon]:hidden"
-          style={{ background: "linear-gradient(to right, transparent, hsl(var(--gold) / 0.25), transparent)" }}
+          style={{
+            background:
+              "linear-gradient(to right, transparent, hsl(var(--gold) / 0.25), transparent)",
+          }}
         />
 
         {playerHeya && (
@@ -312,10 +335,11 @@ export function AppSidebar() {
                 border: `1px solid ${fundsCritical ? "hsl(var(--destructive) / 0.3)" : "hsl(var(--sidebar-border))"}`,
               }}
             >
-              {fundsCritical
-                ? <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--destructive))]" />
-                : <Building2 className="h-3.5 w-3.5 text-[hsl(var(--sidebar-foreground)/0.5)]" />
-              }
+              {fundsCritical ? (
+                <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--destructive))]" />
+              ) : (
+                <Building2 className="h-3.5 w-3.5 text-[hsl(var(--sidebar-foreground)/0.5)]" />
+              )}
             </div>
 
             <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
@@ -330,10 +354,13 @@ export function AppSidebar() {
                   className="w-1.5 h-1.5 rounded-full shrink-0"
                   style={{
                     background:
-                      playerHeya.runwayBand === "secure"      ? "hsl(var(--success))" :
-                      playerHeya.runwayBand === "comfortable" ? "hsl(145 55% 48%)"    :
-                      playerHeya.runwayBand === "tight"       ? "hsl(var(--warning))" :
-                                                                "hsl(var(--destructive))",
+                      playerHeya.runwayBand === "secure"
+                        ? "hsl(var(--success))"
+                        : playerHeya.runwayBand === "comfortable"
+                          ? "hsl(145 55% 48%)"
+                          : playerHeya.runwayBand === "tight"
+                            ? "hsl(var(--warning))"
+                            : "hsl(var(--destructive))",
                   }}
                 />
                 <span

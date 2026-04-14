@@ -10,6 +10,9 @@ import { resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
+import { Rikishi } from "../../types/rikishi";
+import { Heya } from "../../types/heya";
+import { Oyakata } from "../../types/oyakata";
 import {
   TalentPoolType,
   TalentCandidate,
@@ -79,7 +82,10 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
       },
     };
   }
-  return world.talentPool!;
+  if (!world.talentPool) {
+    throw new Error("Talent pool not initialized");
+  }
+  return world.talentPool;
 }
 
 // ============================================
@@ -143,8 +149,7 @@ export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): b
 /**
  * Reinjects a released rikishi back into the talent pool as a free agent.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function reinjectToTalentPool(world: WorldState, rikishi: any): void {
+export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void {
   const tp = ensureTalentPoolState(world);
 
   // Create a candidate from the rikishi
@@ -378,8 +383,7 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
 export function resolveCandidateSuitor(
   world: WorldState,
   candidate: TalentCandidate
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): { signed: boolean; candidate: TalentCandidate; winnerHeya?: any } {
+): { signed: boolean; candidate: TalentCandidate; winnerHeya?: Heya } {
   if (candidate.availabilityState !== "in_talks" || !candidate.competingSuitors.length) {
     return { signed: false, candidate };
   }
@@ -456,11 +460,12 @@ export function fillVacanciesForNPC(
     const heya = world.heyas.get(heyaId);
     if (!heya) continue;
 
-    const hasForeigner = Array.from(world.rikishi.values())
-      .filter((r) => r.heyaId === heyaId && r.origin === "foreign" && !r.isRetired).length > 0;
+    const hasForeigner =
+      Array.from(world.rikishi.values()).filter(
+        (r) => r.heyaId === heyaId && r.origin === "foreign" && !r.isRetired
+      ).length > 0;
 
     for (let i = 0; i < vacancyCount; i++) {
-        
       // Collect all available visible candidates
       const availableCandidates: string[] = [];
       for (const pt of ["high_school", "university", "foreign"] as const) {
@@ -485,49 +490,48 @@ export function fillVacanciesForNPC(
           let affinity = 1.0;
           if (talent >= 80 && repScore < 70) affinity = 0.1; // Elite candidates largely reject small stables
           if (talent >= 90 && repScore < 85) affinity = 0.05; // Generational candidates strictly reject
-          
-          const score = (talent * affinity) + rng.int(0, 20); // Add variance
+
+          const score = talent * affinity + rng.int(0, 20); // Add variance
           return { cId, score, c };
         });
 
         // Sort by highest score
         candidatesWithScores.sort((a, b) => b.score - a.score);
-        
+
         // Pick from top 3
         const pickIdx = rng.int(0, Math.min(2, candidatesWithScores.length - 1));
         const bestCandidate = candidatesWithScores[pickIdx];
         const cId = bestCandidate.cId;
         const c = bestCandidate.c;
 
-          // NPC fast-path signing: bypass multi-week negotiation to stabilize world
-          const updatedCandidate = {
-            ...c,
-            availabilityState: "signed" as const,
-            competingSuitors: [
-              {
-                heyaId,
-                offerType: "standard" as const,
-                interestBand: "high" as const,
-                deadlineWeek: world.week,
-              },
-            ],
-          };
+        // NPC fast-path signing: bypass multi-week negotiation to stabilize world
+        const updatedCandidate = {
+          ...c,
+          availabilityState: "signed" as const,
+          competingSuitors: [
+            {
+              heyaId,
+              offerType: "standard" as const,
+              interestBand: "high" as const,
+              deadlineWeek: world.week,
+            },
+          ],
+        };
 
-          // Note: talentPool updates are not directly supported by ImpactBuilder yet
-          // For now, we'll update them directly as talentPool is a nested state
-          tp.candidates[cId] = updatedCandidate;
+        // Note: talentPool updates are not directly supported by ImpactBuilder yet
+        // For now, we'll update them directly as talentPool is a nested state
+        tp.candidates[cId] = updatedCandidate;
 
-          // Materialize immediately for NPCs to keep the banzuke populated
-          const materializeImpact = materializeCandidateToRikishi(world, cId, heyaId);
-          if (materializeImpact.entities?.rikishiUpdates) {
-            for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
-              builder.updateRikishi(id, update);
-            }
+        // Materialize immediately for NPCs to keep the banzuke populated
+        const materializeImpact = materializeCandidateToRikishi(world, cId, heyaId);
+        if (materializeImpact.entities?.rikishiUpdates) {
+          for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
+            builder.updateRikishi(id, update);
           }
-          if (materializeImpact.entities?.heyaUpdates) {
-            for (const [id, update] of materializeImpact.entities.heyaUpdates) {
-              builder.updateHeya(id, update);
-            }
+        }
+        if (materializeImpact.entities?.heyaUpdates) {
+          for (const [id, update] of materializeImpact.entities.heyaUpdates) {
+            builder.updateHeya(id, update);
           }
         }
       }
@@ -574,8 +578,7 @@ export function fillVacanciesForNPCWithBidding(
   }
 
   // For each heya with vacancies, calculate bids for available candidates
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: any }> = [];
+  const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
     const heya = world.heyas.get(heyaId);
@@ -594,8 +597,7 @@ export function fillVacanciesForNPCWithBidding(
 
       const bidAmount = recruitmentStrat.calculateMaxBid(
         world,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        heya as any,
+        heya,
         oyakata,
         candidate.candidateId,
         rivalHeyaId
@@ -733,8 +735,9 @@ export function materializeCandidateToRikishi(
   // 3. Remove from talent pool (mark as signed)
   // Note: talentPool updates are not directly supported by ImpactBuilder yet
   // For now, we'll update them directly as talentPool is a nested state
-  const nextCandidates = { ...tp.candidates };
-  delete nextCandidates[candidateId];
+  const nextCandidates = Object.fromEntries(
+    Object.entries(tp.candidates).filter(([id]) => id !== candidateId)
+  );
   world.talentPool = { ...tp, candidates: nextCandidates };
 
   return builder.build();
@@ -750,6 +753,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   if (!tp) return builder.build();
 
   const nextCandidates = { ...tp.candidates };
+  const signedIds = new Set<string>();
 
   for (const [id, candidate] of Object.entries(tp.candidates)) {
     if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
@@ -773,25 +777,32 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
         const newRikishiIds = [...(heya.rikishiIds || []), rikishi.id];
         builder.updateHeya(heyaId, { rikishiIds: newRikishiIds });
 
-        // Remove from talent pool
-        delete nextCandidates[id];
+        // Mark for removal from talent pool
+        signedIds.add(id);
       }
     }
   }
+
+  // Remove signed candidates from talent pool
+  const nextCandidatesFiltered = Object.fromEntries(
+    Object.entries(nextCandidates).filter(([id]) => !signedIds.has(id))
+  );
 
   // Re-filter visibility lists to remove converted candidates
   const nextPools = { ...tp.pools };
   for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
     nextPools[pt] = {
       ...nextPools[pt],
-      candidatesVisible: nextPools[pt].candidatesVisible.filter((cid) => nextCandidates[cid]),
-      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => nextCandidates[cid]),
+      candidatesVisible: nextPools[pt].candidatesVisible.filter(
+        (cid) => nextCandidatesFiltered[cid]
+      ),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => nextCandidatesFiltered[cid]),
     };
   }
 
   // Note: talentPool updates are not directly supported by ImpactBuilder yet
   // For now, we'll update them directly as talentPool is a nested state
-  world.talentPool = { ...tp, candidates: nextCandidates, pools: nextPools };
+  world.talentPool = { ...tp, candidates: nextCandidatesFiltered, pools: nextPools };
 
   return builder.build();
 }
@@ -899,16 +910,27 @@ function filterAgedOutCandidates(
   currentYear: number,
   maxAge: number
 ): Id[] {
-  return candidateIds.filter((id) => {
+  const idsToRemove: Id[] = [];
+  const filteredIds = candidateIds.filter((id) => {
     const candidate = tp.candidates[id];
     // Remove ghost IDs where candidate data is missing
     if (!candidate) return false;
 
     const estimatedAge = currentYear - (candidate.birthYear ?? currentYear - 20);
     if (estimatedAge > maxAge) {
-      delete tp.candidates[id];
+      idsToRemove.push(id);
       return false;
     }
     return true;
   });
+
+  // Remove aged-out candidates from talent pool
+  for (const id of idsToRemove) {
+    const nextCandidates = Object.fromEntries(
+      Object.entries(tp.candidates).filter(([key]) => key !== id)
+    );
+    tp.candidates = nextCandidates;
+  }
+
+  return filteredIds;
 }

@@ -10,7 +10,12 @@ describe("PerceptionPresenter", () => {
     });
 
     it("returns health-based badge if injured is true but injuryWeeksRemaining is 0", () => {
-      const rikishi = { injured: true, injuryWeeksRemaining: 0, stamina: 100, fatigue: 0 } as Rikishi;
+      const rikishi = {
+        injured: true,
+        injuryWeeksRemaining: 0,
+        stamina: 100,
+        fatigue: 0,
+      } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
     });
 
@@ -80,7 +85,7 @@ describe("PerceptionPresenter", () => {
     });
 
     it("returns default color for unknown or unhandled tones", () => {
-      // Cast to MediaTone to test default case fallback
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid input
       expect(getMediaToneColor("unknown" as any)).toBe("#94a3b8");
     });
   });

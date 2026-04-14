@@ -8,7 +8,6 @@ import type { PerceptionSnapshot } from "@/engine/perception";
 import { BaseWidget } from "./BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
 import { Building2, Heart, Shield, Users, Handshake, UserPlus, Briefcase, Zap } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
@@ -52,7 +51,7 @@ export function StableWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Manage",
-      onClick: () => navigate({ to: "/stable" as any }),
+      onClick: () => navigate({ to: "/stable" }),
     }),
     [navigate]
   );

@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
-import { queryEvents } from "../../engine/events";
 vi.mock("../../engine/events", () => ({
   queryEvents: vi.fn(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
     (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
   ),
 }));

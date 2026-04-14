@@ -82,6 +82,7 @@ function RikishiPortrait({
 
 // === Inductee Full Card ===
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type from engine doesn't match UI requirements
 function InducteeFullCard({ inductee }: { inductee: any }) {
   const Icon = CATEGORY_ICONS[inductee.category as HoFCategory];
   const label = HOF_CATEGORY_LABELS[inductee.category as HoFCategory];
@@ -174,6 +175,7 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
                   Tournament Victories
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch */}
                   {inductee.yushoList.map((y: any, i: number) => (
                     <Badge key={i} className="text-[10px] capitalize">
                       {y.bashoName} {y.year}
@@ -190,6 +192,7 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
                   <Swords className="h-3 w-3" /> Notable Bouts
                 </div>
                 <div className="space-y-1">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch */}
                   {inductee.greatestFights.map((f: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
                       <span className="text-success">W</span>
@@ -230,11 +233,13 @@ function StatBox({
 
 // === Category Tab ===
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
 function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: any[] }) {
   const label = HOF_CATEGORY_LABELS[category];
 
   // Group by induction year
   const byYear = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
     const map = new Map<number, any[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
@@ -282,8 +287,10 @@ function CategoryTab({ category, inductees }: { category: HoFCategory; inductees
 
 // === All-time view ===
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
 function AllInducteesTab({ inductees }: { inductees: any[] }) {
   const byYear = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
     const map = new Map<number, any[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
@@ -336,6 +343,7 @@ export default function HallOfFamePage() {
   const hof = useMemo(() => (world ? projectHOFUIDigest(world) : null), [world]);
 
   const byCategory = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
     const map: Record<HoFCategory, any[]> = { champion: [], iron_man: [], technician: [] };
     if (!hof) return map;
     for (const ind of hof.inductees) {
@@ -403,7 +411,20 @@ export default function HallOfFamePage() {
 
         {/* Timeline Visualization */}
         {totalInductees > 0 && (
-          <HoFTimeline world={world} inductees={(hof?.inductees as any) ?? []} />
+          <HoFTimeline
+            rikishiMap={
+              new Map(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
+                ((hof?.inductees as any[]) ?? [])
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
+                  .map((ind: any) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)])
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
+                  .filter((pair: any) => pair[1]) as Array<[string, any]>
+              )
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type mismatch with HoFTimeline props
+            inductees={(hof?.inductees as any) ?? []}
+          />
         )}
 
         {/* Tabs */}

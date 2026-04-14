@@ -1,9 +1,11 @@
 /**
  * Impact Resolver
- * 
+ *
  * Applies StateImpact objects to a WorldState to produce a new state.
  * All impacts are applied atomically - either all succeed or none are applied.
  */
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion -- Merged object is fully initialized before use */
 
 import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
@@ -26,7 +28,7 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
       const nextHeyas = new Map(result.heyas);
       for (const [id, update] of impact.entities.heyaUpdates) {
         const existing = nextHeyas.get(id);
-        nextHeyas.set(id, existing ? { ...existing, ...update } as Heya : update as Heya);
+        nextHeyas.set(id, existing ? ({ ...existing, ...update } as Heya) : (update as Heya));
       }
       result = { ...result, heyas: nextHeyas };
     }
@@ -35,11 +37,23 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
       const nextRikishi = new Map(result.rikishi);
       for (const [id, update] of impact.entities.rikishiUpdates) {
         const existing = nextRikishi.get(id);
-        nextRikishi.set(id, existing ? { ...existing, ...update } as Rikishi : update as Rikishi);
+        nextRikishi.set(
+          id,
+          existing ? ({ ...existing, ...update } as Rikishi) : (update as Rikishi)
+        );
       }
       result = { ...result, rikishi: nextRikishi };
     }
 
+    if (impact.entities.oyakataUpdates) {
+      const nextOyakata = new Map(result.oyakata);
+      for (const [id, update] of impact.entities.oyakataUpdates) {
+        const existing = nextOyakata.get(id);
+        nextOyakata.set(
+          id,
+          existing ? ({ ...existing, ...update } as Oyakata) : (update as Oyakata)
+        );
+      }
       result = { ...result, oyakata: nextOyakata };
     }
 
@@ -53,8 +67,8 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         ...result,
         sponsorPool: {
           ...result.sponsorPool,
-          sponsors: nextSponsors
-        }
+          sponsors: nextSponsors,
+        },
       };
     }
   }
@@ -133,7 +147,8 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
 
   // Apply world field updates (preserve entity maps)
   if (impact.worldFields) {
-    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } = impact.worldFields;
+    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } =
+      impact.worldFields;
     result = {
       ...result,
       ...otherFields,
@@ -149,17 +164,20 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
   // Apply array appends
   if (impact.arrayAppends && impact.arrayAppends.length > 0) {
     for (const append of impact.arrayAppends) {
-      if (append.field === 'history') {
+      if (append.field === "history") {
         result = { ...result, history: [...(result.history || []), ...append.items] };
-      } else if (append.field === 'almanacSnapshots') {
-        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items] };
-      } else if (append.field === 'basho.matches' && result.currentBasho) {
+      } else if (append.field === "almanacSnapshots") {
+        result = {
+          ...result,
+          almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items],
+        };
+      } else if (append.field === "basho.matches" && result.currentBasho) {
         result = {
           ...result,
           currentBasho: {
             ...result.currentBasho,
-            matches: [...(result.currentBasho.matches || []), ...append.items]
-          }
+            matches: [...(result.currentBasho.matches || []), ...append.items],
+          },
         };
       }
     }
@@ -176,9 +194,9 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         heyaId: eventDef.heyaId,
         rikishiId: eventDef.rikishiId,
         data: eventDef.data,
-        importance: eventDef.importance || 'notable',
-        title: '', // Will be filled by event factory if needed
-        summary: '', // Will be filled by event factory if needed
+        importance: eventDef.importance || "notable",
+        title: "", // Will be filled by event factory if needed
+        summary: "", // Will be filled by event factory if needed
       });
     }
   }
@@ -190,7 +208,7 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
  * Resolves an array of StateImpact objects against a base WorldState.
  * Impacts are applied in order, with each impact building on the result of the previous.
  * Returns the final resolved WorldState.
- * 
+ *
  * @param world - The base WorldState to apply impacts to
  * @param impacts - Array of StateImpact objects to apply
  * @returns The resolved WorldState with all impacts applied
@@ -204,7 +222,10 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
     try {
       return applyImpact(currentWorld, impact);
     } catch (error) {
-      console.error(`[IMPACT RESOLVER ERROR] in impact from "${impact.metadata?.source || 'unknown'}":`, error);
+      console.error(
+        `[IMPACT RESOLVER ERROR] in impact from "${impact.metadata?.source || "unknown"}":`,
+        error
+      );
       // Return the world state before this impact failed
       return currentWorld;
     }
@@ -214,7 +235,7 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
 /**
  * Merges multiple StateImpact objects into a single impact.
  * Useful for combining impacts from different sources before resolution.
- * 
+ *
  * @param impacts - Array of StateImpact objects to merge
  * @returns A single merged StateImpact
  */
@@ -241,7 +262,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     arrayAppends: [],
     events: [],
     metadata: {
-      source: 'merged',
+      source: "merged",
       timestamp: Date.now(),
     },
   };
@@ -310,7 +331,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     // Merge array appends
     if (impact.arrayAppends) {
       for (const append of impact.arrayAppends) {
-        const existing = merged.arrayAppends!.find(a => a.field === append.field);
+        const existing = merged.arrayAppends!.find((a) => a.field === append.field);
         if (existing) {
           existing.items.push(...append.items);
         } else {

@@ -50,7 +50,7 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
         id: s.id,
         name: s.name,
         role: s.role,
-        specialty: (s as any).specialty || "General"
+        specialty: (s as { specialty?: string }).specialty ?? "General",
       });
     }
   }
@@ -65,7 +65,14 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     return acc;
   }, []);
 
-  const prestigeBand = h.prestige < 20 ? "Emerging" : h.prestige < 50 ? "Respected" : h.prestige < 80 ? "Elite" : "Legendary";
+  const prestigeBand =
+    h.prestige < 20
+      ? "Emerging"
+      : h.prestige < 50
+        ? "Respected"
+        : h.prestige < 80
+          ? "Elite"
+          : "Legendary";
 
   return {
     id: h.id,
@@ -74,8 +81,8 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
 
     prestige: h.prestige,
     prestigeBand,
-    funds: (h as any).funds ?? 0,
-    monthlyExpense: (h as any).monthlyExpense ?? 0,
+    funds: h.funds ?? 0,
+    monthlyExpense: 0,
     location: h.location ?? "Tokyo",
     ichimon: h.ichimon ?? "Independent",
     oyakataId: h.oyakataId,
@@ -85,15 +92,15 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     staff,
     roster,
     rosterSize: roster.length,
-    rosterLimit: (h as any).rosterLimit ?? 30,
+    rosterLimit: 30,
     recruitment: {
-      scoutingPriority: (world.npcScoutingPriorities?.[h.id]) || "passive",
+      scoutingPriority: world.npcScoutingPriorities?.[h.id] || "passive",
       targetStyle: "neutral",
-      openSlots: Math.max(0, ((h as any).rosterLimit ?? 30) - roster.length)
+      openSlots: Math.max(0, 30 - roster.length),
     },
     achievements: {
       yushoCount: 0,
-      specialPrizeCount: 0
-    }
+      specialPrizeCount: 0,
+    },
   };
 }

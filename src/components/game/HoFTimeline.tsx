@@ -6,10 +6,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { projectRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ACCENT: Record<HoFCategory, string> = {
   champion: "text-gold border-gold/40",
@@ -74,14 +71,14 @@ function TimelinePortrait({
 /** Defines the structure for ho f timeline props. */
 interface HoFTimelineProps {
   inductees: HoFInductee[];
-  world: WorldState;
+  rikishiMap: Map<string, UIRikishi>;
 }
 
 /**
  * ho f timeline.
- *  * @param { inductees, world } - The { inductees, world }.
+ *  * @param { inductees, rikishiMap } - The component props.
  */
-export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
+export function HoFTimeline({ inductees, rikishiMap }: HoFTimelineProps) {
   const yearGroups = useMemo(() => {
     const map = new Map<number, HoFInductee[]>();
     for (const ind of inductees) {
@@ -111,10 +108,7 @@ export function HoFTimeline({ inductees, world }: HoFTimelineProps) {
                   <TimelinePortrait
                     key={`${ind.rikishiId}-${i}`}
                     inductee={ind}
-                    rikishi={(() => {
-                      const raw = world.rikishi.get(ind.rikishiId);
-                      return raw ? projectRikishi(raw, world) : undefined;
-                    })()}
+                    rikishi={rikishiMap.get(ind.rikishiId)}
                   />
                 ))}
               </div>

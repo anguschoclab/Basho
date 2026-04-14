@@ -11,7 +11,8 @@ describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {
     const world = generateInitialWorld("test-uimodels");
     const rikishiId = Array.from(world.rikishi.keys())[0];
-    const rikishi = world.rikishi.get(rikishiId)!;
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) throw new Error("No rikishi found");
 
     // Mutate to set a specific raw value
     rikishi.power = 85;
@@ -33,7 +34,8 @@ describe("UI Models Projections", () => {
   it("should project a Heya safely for the UI", () => {
     const world = generateInitialWorld("test-uimodels-heya");
     const heyaId = Array.from(world.heyas.keys())[0];
-    const heya = world.heyas.get(heyaId)!;
+    const heya = world.heyas.get(heyaId);
+    if (!heya) throw new Error("No heya found");
 
     const uiHeya = projectHeya(heya, world);
 
@@ -50,7 +52,8 @@ describe("UI Models Projections", () => {
     it("should project injury modifiers when rikishi has a minor knee injury", () => {
       const world = generateInitialWorld("test-inj-1");
       const rikishiId = Array.from(world.rikishi.keys())[0];
-      const rikishi = world.rikishi.get(rikishiId)!;
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
       rikishi.injuryStatus = {
@@ -67,7 +70,8 @@ describe("UI Models Projections", () => {
     it("should project injury modifiers when rikishi has a moderate back injury", () => {
       const world = generateInitialWorld("test-inj-2");
       const rikishiId = Array.from(world.rikishi.keys())[0];
-      const rikishi = world.rikishi.get(rikishiId)!;
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
       rikishi.injuryStatus = { type: "strain", severity: 40, location: "back", weeksRemaining: 2 };
@@ -79,7 +83,8 @@ describe("UI Models Projections", () => {
     it("should not project injury modifiers when rikishi is healthy", () => {
       const world = generateInitialWorld("test-inj-3");
       const rikishiId = Array.from(world.rikishi.keys())[0];
-      const rikishi = world.rikishi.get(rikishiId)!;
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = false;
       rikishi.injuryStatus = undefined;

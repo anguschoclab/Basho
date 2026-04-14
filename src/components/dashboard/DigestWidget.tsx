@@ -93,7 +93,7 @@ export function DigestWidget() {
   const totalItems = useMemo(() => {
     if (!digest) return 0;
     return digest.sections.reduce((s, sec) => s + sec.items.length, 0);
-  }, [digest?.sections]);
+  }, [digest]);
 
   if (!digest) return null;
 

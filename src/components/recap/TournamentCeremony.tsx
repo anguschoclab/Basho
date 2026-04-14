@@ -5,33 +5,37 @@
  * Features high-fidelity heraldry, yūshō calligraphy, and medal displays.
  */
 
-import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, Medal, Crown, Award, Zap, Quote, Building } from "lucide-react";
+import { Trophy, Star, Medal, Crown, Award, Zap, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RikishiName, StableName } from "@/components/ClickableName";
-import type { BashoResult } from "../../engine/types/basho";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "../../engine/types/world";
+import type { BashoResult } from "@/engine/types/basho";
+import type { UIRikishi } from "@/presenters/uiModels";
+import { RikishiName } from "@/components/ClickableName";
+import { StableName } from "@/components/ClickableName";
 
 interface TournamentCeremonyProps {
   lastBasho: BashoResult;
-  world: WorldState;
+  champion: { rikishi: UIRikishi; heyaName: string } | null;
+  isPlayerChampion: boolean;
+  junYusho: Array<{ rikishi: UIRikishi; heyaName: string }>;
+  kinboshi: Array<{ winner: UIRikishi; loser: UIRikishi }>;
+  ginoSho: UIRikishi | null;
+  shukunSho: UIRikishi | null;
+  kantoSho: UIRikishi | null;
 }
 
-export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps) {
-  if (!lastBasho || !world) return null;
-
-  const getRikishiData = (id: string) => {
-    const r = world.rikishi.get(id);
-    if (!r) return null;
-    const h = r.heyaId ? world.heyas.get(r.heyaId) : null;
-    return { ...r, heyaName: h?.name ?? "Unknown Stable" };
-  };
-
-  const champion = lastBasho.yusho ? getRikishiData(lastBasho.yusho) : null;
-  const isPlayerChampion = champion?.heyaId === world.playerHeyaId;
+export function TournamentCeremony({
+  lastBasho,
+  champion,
+  isPlayerChampion,
+  junYusho,
+  kinboshi,
+  ginoSho,
+  shukunSho,
+  kantoSho,
+}: TournamentCeremonyProps) {
+  if (!lastBasho) return null;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-1000">
@@ -43,21 +47,21 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-display text-9xl font-black italic pointer-events-none -rotate-6">
               CHAMPION
             </div>
-
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-1 bg-gold rounded-full" />
-                <div>
-                  <CardTitle className="text-3xl font-display font-black tracking-tighter flex items-center gap-2 uppercase">
-                    <Crown className="h-7 w-7 text-gold" />
-                    {lastBasho.bashoName} Tournament Champion
-                  </CardTitle>
-                  <p className="text-[10px] uppercase font-black tracking-[0.3em] text-gold/60">
-                    Association Hall of Records Entry
+            <div className="p-8 relative z-10">
+              <div className="flex items-start gap-6">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Crown className="h-6 w-6 text-gold" />
+                    <h2 className="text-3xl font-display font-black text-gold">YŪSHŌ</h2>
+                    <Badge className="bg-gold/20 text-gold border-gold/40">Emperor's Cup</Badge>
+                  </div>
+                  <p className="text-lg font-display font-bold">
+                    <RikishiName id={champion.rikishi.id} name={champion.rikishi.shikona} />
                   </p>
+                  <p className="text-sm text-muted-foreground">{champion.heyaName}</p>
                 </div>
               </div>
-            </CardHeader>
+            </div>
 
             <CardContent className="pt-4 pb-8 flex flex-col md:flex-row items-center gap-12 px-8">
               <div className="relative">
@@ -72,21 +76,22 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
               <div className="flex-1 text-center md:text-left space-y-4">
                 <div className="space-y-1">
                   <h3 className="text-5xl font-display font-black tracking-tighter sumi-e-ink">
-                    {champion.shikona}
+                    <RikishiName id={champion.rikishi.id} name={champion.rikishi.shikona} />
                   </h3>
                   <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 text-sm font-black uppercase tracking-widest text-muted-foreground/70">
                     <span className="flex items-center gap-2">
-                      <Building className="h-4 w-4" /> {champion.heyaName} Stable
+                      <Building className="h-4 w-4" />{" "}
+                      <StableName id={champion.rikishi.heyaId} name={champion.heyaName} /> Stable
                     </span>
                     <span className="h-1 w-1 bg-muted-foreground/30 rounded-full" />
-                    <span>{champion.rank} Hierarchy</span>
+                    <span>{champion.rikishi.rank} Hierarchy</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-center md:justify-start gap-4">
                   <div className="text-center bg-background/50 border border-border/40 px-6 py-2 rounded-lg">
                     <div className="text-2xl font-display font-black text-gold">
-                      {champion.currentBashoWins}-{champion.currentBashoLosses}
+                      {champion.rikishi.currentBashoWins}-{champion.rikishi.currentBashoLosses}
                     </div>
                     <div className="text-[8px] uppercase font-black opacity-40">Final Record</div>
                   </div>
@@ -127,27 +132,23 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {(lastBasho.junYusho ?? []).map((id: string) => {
-                const r = world.rikishi.get(id);
-                if (!r) return null;
-                return (
-                  <div
-                    key={id}
-                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/40 group hover:border-gold/30 transition-colors"
-                  >
-                    <div className="font-display font-black group-hover:text-gold transition-colors">
-                      {r.shikona}
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className="text-[9px] font-black uppercase tracking-widest border-2"
-                    >
-                      {r.rank}
-                    </Badge>
+              {junYusho.map((entry) => (
+                <div
+                  key={entry.rikishi.id}
+                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/40 group hover:border-gold/30 transition-colors"
+                >
+                  <div className="font-display font-black group-hover:text-gold transition-colors">
+                    <RikishiName id={entry.rikishi.id} name={entry.rikishi.shikona} />
                   </div>
-                );
-              })}
-              {(!lastBasho.junYusho || lastBasho.junYusho.length === 0) && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-bold uppercase tracking-wider border-gold/30 text-gold"
+                  >
+                    Runner-up
+                  </Badge>
+                </div>
+              ))}
+              {!junYusho.length && (
                 <p className="text-center py-8 text-xs italic text-muted-foreground opacity-50">
                   No runners-up recorded.
                 </p>
@@ -175,49 +176,36 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
-              {(() => {
-                const matches = world.currentBasho?.matches || [];
-                const kinboshi = matches.filter((m: any) => m.result?.isKinboshi);
-
-                return kinboshi.length > 0 ? (
-                  kinboshi.map((m: any, idx: number) => {
-                    const winner = world.rikishi.get(m.result.winnerRikishiId);
-                    const loser = world.rikishi.get(m.result.loserRikishiId);
-                    if (!winner || !loser) return null;
-
-                    return (
-                      <div
-                        key={idx}
-                        className="p-4 bg-gold/5 border-2 border-gold/10 rounded-lg space-y-3 relative overflow-hidden group"
-                      >
-                        <div className="absolute top-0 right-0 p-2 opacity-5 font-black text-2xl">
-                          ★
-                        </div>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-display font-black text-lg group-hover:text-gold transition-colors">
-                              {winner.shikona}
-                            </div>
-                            <div className="text-[9px] uppercase font-black opacity-40">
-                              Defeated Yokozuna {loser.shikona}
-                            </div>
-                          </div>
-                          <Badge className="bg-gold text-white font-black text-[8px] h-4">
-                            KINBOSHI
-                          </Badge>
-                        </div>
-                        <div className="text-[10px] uppercase font-black text-muted-foreground bg-white/50 px-2 py-1 rounded inline-block tracking-widest">
-                          Tournament Day {m.day}
-                        </div>
+              {kinboshi.length > 0 ? (
+                kinboshi.map((k, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 bg-gold/5 border-2 border-gold/10 rounded-lg space-y-3 relative overflow-hidden group"
+                  >
+                    <div className="absolute top-0 right-0 p-2 opacity-5 font-black text-2xl">
+                      ★
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-gold" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-gold">
+                          Kinboshi
+                        </span>
                       </div>
-                    );
-                  })
-                ) : (
-                  <div className="col-span-full py-10 text-center opacity-30 italic text-sm">
-                    No Gold Star upsets this tournament.
+                      <p className="font-display font-black">
+                        <RikishiName id={k.winner.id} name={k.winner.shikona} />
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        defeated <RikishiName id={k.loser.id} name={k.loser.shikona} />
+                      </p>
+                    </div>
                   </div>
-                );
-              })()}
+                ))
+              ) : (
+                <div className="col-span-2 text-center py-8 text-xs italic text-muted-foreground opacity-50">
+                  No kinboshi this tournament.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -234,7 +222,7 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
         <div className="grid sm:grid-cols-3 gap-6">
           {[
             {
-              id: lastBasho.shukunsho,
+              rikishi: shukunSho,
               label: "Shukun-shō",
               ja: "殊勲賞",
               sub: "Outstanding Performance",
@@ -242,56 +230,48 @@ export function TournamentCeremony({ lastBasho, world }: TournamentCeremonyProps
               color: "border-red-500/20 bg-red-500/5",
             },
             {
-              id: lastBasho.kantosho,
+              rikishi: kantoSho,
               label: "Kantō-shō",
               ja: "敢闘賞",
               sub: "Fighting Spirit",
-              icon: <Award className="h-5 w-5 text-orange-500" />,
-              color: "border-orange-500/20 bg-orange-500/5",
+              icon: <Award className="h-5 w-5 text-blue-500" />,
+              color: "border-blue-500/20 bg-blue-500/5",
             },
             {
-              id: lastBasho.ginoSho,
+              rikishi: ginoSho,
               label: "Ginō-shō",
               ja: "技能賞",
               sub: "Technique",
               icon: <Zap className="h-5 w-5 text-west" />,
               color: "border-west/20 bg-west/5",
             },
-          ].map((prize, i) => {
-            const r = prize.id ? world.rikishi.get(prize.id) : null;
-            return (
-              <div
-                key={i}
-                className={cn(
-                  "dossier-paper border-2 p-6 rounded-lg relative transition-transform hover:scale-[1.02]",
-                  prize.color
-                )}
-              >
-                <div className="absolute top-4 right-4">{prize.icon}</div>
-                <div className="space-y-4">
-                  <div>
-                    <div className="text-xl font-display font-black">{prize.ja}</div>
-                    <div className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-4">
-                      {prize.label} — {prize.sub}
-                    </div>
+          ].map((prize, i) => (
+            <div
+              key={i}
+              className={cn(
+                "dossier-paper border-2 p-6 rounded-lg relative transition-transform hover:scale-[1.02]",
+                prize.color
+              )}
+            >
+              <div className="absolute top-4 right-4">{prize.icon}</div>
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                    {prize.label}
                   </div>
-                  {r ? (
-                    <div className="space-y-2">
-                      <div className="h-px bg-border/40 w-12" />
-                      <div className="font-display font-black text-lg">{r.shikona}</div>
-                      <div className="text-[10px] uppercase font-black opacity-50 tracking-widest">
-                        {r.rank} Heirarchy
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs italic text-muted-foreground opacity-50 pt-4">
-                      No candidate met Association criteria.
-                    </p>
-                  )}
+                  <div className="text-2xl font-display font-black">{prize.ja}</div>
                 </div>
+                {prize.rikishi && (
+                  <>
+                    <div className="text-sm text-muted-foreground">{prize.sub}</div>
+                    <div className="font-display font-black">
+                      <RikishiName id={prize.rikishi.id} name={prize.rikishi.shikona} />
+                    </div>
+                  </>
+                )}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </section>
     </div>

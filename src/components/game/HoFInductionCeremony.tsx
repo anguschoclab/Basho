@@ -1,10 +1,8 @@
 // HoFInductionCeremony.tsx — Hall of Fame induction narrative ceremony
 import { Badge } from "@/components/ui/badge";
-import { StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/ClickableName";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
 const CATEGORY_CEREMONY: Record<
@@ -43,22 +41,26 @@ const CEREMONY_STEPS: Record<HoFCategory, string[]> = {
 /** Defines the structure for props. */
 interface Props {
   inductee: HoFInductee;
-  world: WorldState;
+  heyaName: string;
+  isPlayerRikishi: boolean;
   open: boolean;
   onClose: () => void;
 }
 
 /**
  * ho f induction ceremony.
- *  * @param { inductee, world, open, onClose } - The { inductee, world, open, on close }.
+ *  * @param { inductee, rikishi, heyaName, isPlayerRikishi, open, onClose } - The component props.
  */
-export function HoFInductionCeremony({ inductee, world, open, onClose }: Props) {
+export function HoFInductionCeremony({
+  inductee,
+  heyaName,
+  isPlayerRikishi,
+  open,
+  onClose,
+}: Props) {
   const ceremony = CATEGORY_CEREMONY[inductee.category];
   const steps = CEREMONY_STEPS[inductee.category];
   const CatIcon = ceremony.icon;
-  const rikishi = world.rikishi.get(inductee.rikishiId);
-  const heya = rikishi?.heyaId ? world.heyas.get(rikishi.heyaId) : null;
-  const isPlayerRikishi = rikishi?.heyaId === world.playerHeyaId;
 
   return (
     <NarrativeCeremonyDialog
@@ -79,9 +81,11 @@ export function HoFInductionCeremony({ inductee, world, open, onClose }: Props) 
             <CatIcon className={`h-8 w-8 ${ceremony.color}`} />
           </div>
           <div>
-            <p className="text-xl font-display font-bold">{inductee.shikona}</p>
+            <p className="text-xl font-display font-bold">
+              <RikishiName id={inductee.rikishiId} name={inductee.shikona} />
+            </p>
             <p className="text-sm text-muted-foreground">
-              {heya ? <StableName id={heya.id} name={heya.name} /> : ""}
+              <StableName id={inductee.rikishiId} name={heyaName} />
               {" • "}Inducted {inductee.inductionYear}
             </p>
             <div className="flex gap-2 mt-1">
@@ -108,7 +112,9 @@ export function HoFInductionCeremony({ inductee, world, open, onClose }: Props) 
       finalVerdictClassName="p-4 rounded-lg border border-gold/30 bg-gold/5 text-center"
       finalVerdictContent={
         <>
-          <p className="font-display text-lg font-bold">{inductee.shikona} — Immortalized</p>
+          <p className="font-display text-lg font-bold">
+            <RikishiName id={inductee.rikishiId} name={inductee.shikona} /> — Immortalized
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
             Career: {inductee.stats.careerWins ?? 0}W - {inductee.stats.careerLosses ?? 0}L
             {inductee.stats.highestRank && ` • Highest: ${inductee.stats.highestRank}`}

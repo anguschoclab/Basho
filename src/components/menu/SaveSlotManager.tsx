@@ -19,22 +19,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  FolderOpen,
-  Save,
-  Trash2,
-  Upload,
-  Clock,
-  ArrowRight,
-  Database,
-  History,
-  Star,
-} from "lucide-react";
+import { Save, Trash2, Upload, Clock, ArrowRight, Database, History, Star } from "lucide-react";
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "../../engine/types/world";
 
 interface SaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
@@ -42,7 +30,7 @@ interface SaveSlotManagerProps {
   loadFromAutosave: () => void;
   hasAutosave: () => boolean;
   onLoadSuccess: () => void;
-  loadWorldDirect?: (world: WorldState) => void;
+  loadWorldDirect?: (world: unknown) => void;
   createWorld?: (seed: string, playerHeyaId?: string) => void;
 }
 
@@ -70,6 +58,7 @@ export function SaveSlotManager({
 
   useEffect(() => {
     refreshSlots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getSaveSlots]);
 
   const canContinue = hasAutosave() || saveSlots.length > 0;
@@ -128,7 +117,7 @@ export function SaveSlotManager({
 
   const getBashoDisplay = (bashoName?: BashoName) => {
     if (!bashoName) return "";
-    const info = (BASHO_CALENDAR as any)?.[bashoName];
+    const info = BASHO_CALENDAR[bashoName];
     return info ? `${info.nameEn}` : String(bashoName);
   };
 

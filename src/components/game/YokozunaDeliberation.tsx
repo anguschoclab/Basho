@@ -3,14 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Crown, Users } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
 /** Defines the structure for deliberation props. */
 interface DeliberationProps {
   rikishi: UIRikishi;
-  world: WorldState;
+  heyaName: string;
+  isPlayerRikishi: boolean;
   open: boolean;
   onClose: () => void;
   verdict: "promoted" | "denied" | "deferred";
@@ -51,19 +50,18 @@ const DELIBERATION_DIALOGUE = {
 
 /**
  * yokozuna deliberation.
- *  * @param { rikishi, world, open, onClose, verdict, reasoning } - The { rikishi, world, open, on close, verdict, reasoning }.
+ *  * @param { rikishi, heyaName, isPlayerRikishi, open, onClose, verdict, reasoning } - The component props.
  */
 export function YokozunaDeliberation({
   rikishi,
-  world,
+  heyaName,
+  isPlayerRikishi,
   open,
   onClose,
   verdict,
   reasoning,
 }: DeliberationProps) {
   const dialogue = DELIBERATION_DIALOGUE[verdict];
-  const heya = world.heyas.get(rikishi.heyaId);
-  const isPlayerRikishi = rikishi.heyaId === world.playerHeyaId;
 
   return (
     <NarrativeCeremonyDialog
@@ -86,7 +84,7 @@ export function YokozunaDeliberation({
               <RikishiName id={rikishi.id} name={rikishi.shikona} />
             </p>
             <p className="text-sm text-muted-foreground">
-              {heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"} • Ōzeki
+              <StableName id={rikishi.heyaId} name={heyaName} /> • Ōzeki
             </p>
             <div className="flex items-center gap-2 mt-1 text-xs">
               <span>Record: {rikishi.careerRecord}</span>

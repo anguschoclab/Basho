@@ -6,6 +6,7 @@ import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { projectHeyaData } from "@/presenters/uiDigest";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -209,9 +210,7 @@ export default function EconomyPage() {
 
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];
-    const ids: string[] = Array.isArray((playerHeya as any).rikishiIds)
-      ? (playerHeya as any).rikishiIds
-      : [];
+    const ids: string[] = Array.isArray(playerHeya.rikishiIds) ? playerHeya.rikishiIds : [];
     return ids.map((id) => world.rikishi.get(id)).filter(Boolean) as Array<
       NonNullable<ReturnType<typeof world.rikishi.get>>
     >;
@@ -221,7 +220,7 @@ export default function EconomyPage() {
   const sekitoriCount = useMemo(() => {
     if (!playerRikishi) return 0;
     let count = 0;
-    for (const r of playerRikishi as any[]) {
+    for (const r of playerRikishi) {
       if (r?.division === "makuuchi" || r?.division === "juryo") {
         count++;
       }
@@ -231,7 +230,7 @@ export default function EconomyPage() {
 
   // Top earnes
   const topEarners = useMemo(() => {
-    return (playerRikishi as any[])
+    return playerRikishi
       .filter((r) => r && typeof r === "object")
       .sort((a, b) => {
         const av = Number(a?.economics?.careerKenshoWon ?? 0) || 0;
@@ -245,14 +244,18 @@ export default function EconomyPage() {
     return <div className="p-6 text-center text-muted-foreground">No heya selected.</div>;
   }
 
-  const runwayBand = safeRunwayBand((playerHeya as any).runwayBand);
-  const koenkaiBand = safeKoenkaiBand((playerHeya as any).koenkaiBand);
+  const runwayBand = safeRunwayBand(playerHeya.runwayBand || "unknown");
+  const koenkaiBand = safeKoenkaiBand(
+    (playerHeya as typeof playerHeya & { koenkaiBand?: string }).koenkaiBand || "unknown"
+  );
 
   const runwayConfig = RUNWAY_CONFIG[runwayBand] || RUNWAY_CONFIG.tight;
   const koenkaiConfig = KOENKAI_CONFIG[koenkaiBand] || KOENKAI_CONFIG.none;
   const RunwayIcon = runwayConfig.icon;
 
-  const hasFinancialRisk = !!(playerHeya as any)?.riskIndicators?.financial;
+  const hasFinancialRisk = !!(
+    playerHeya as typeof playerHeya & { riskIndicators?: { financial?: boolean } }
+  )?.riskIndicators?.financial;
   const canRequestBailout = playerHeya.funds < 0;
 
   return (
@@ -346,7 +349,8 @@ export default function EconomyPage() {
         </div>
 
         {/* Debt & Obligations (FM v2.0) */}
-        {(playerHeya as any).activeLoans?.length > 0 && (
+        {((playerHeya as typeof playerHeya & { activeLoans?: unknown[] }).activeLoans?.length ??
+          0) > 0 && (
           <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
             <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive" />
@@ -356,7 +360,21 @@ export default function EconomyPage() {
             </div>
             <CardContent className="pt-6">
               <div className="space-y-4">
-                {(playerHeya as any).activeLoans.map((loan: any) => (
+                {(
+                  playerHeya as typeof playerHeya & {
+                    activeLoans?: Array<{
+                      id: string;
+                      type: string;
+                      providerName: string;
+                      amount: number;
+                      interestRate: number;
+                      dueWeek: number;
+                      remainingBalance: number;
+                      principal: number;
+                      stringsAttached?: string[];
+                    }>;
+                  }
+                ).activeLoans?.map((loan) => (
                   <div
                     key={loan.id}
                     className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3"
@@ -380,6 +398,19 @@ export default function EconomyPage() {
 
                     <div className="grid grid-cols-3 gap-4 text-center py-2 border-y border-border/30">
                       <div>
+                        <div className="text-[10px] text-muted-foreground uppercase font-bold">
+                          Strings Attached
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {loan.stringsAttached?.length ?? 0} condition(s)
+                        </div>
+                      </div>
+                      {(loan.stringsAttached || []).map((s) => (
+                        <li key={s} className="text-[10px] text-muted-foreground">
+                          {s}
+                        </li>
+                      ))}
+                      <div>
                         <div className="text-[9px] text-muted-foreground uppercase font-bold">
                           Principal
                         </div>
@@ -395,6 +426,16 @@ export default function EconomyPage() {
                           {(loan.interestRate * 100).toFixed(1)}%
                         </div>
                       </div>
+                      {loan.stringsAttached && loan.stringsAttached.length > 0 && (
+                        <div>
+                          <div className="text-[9px] text-muted-foreground uppercase font-bold">
+                            Conditions
+                          </div>
+                          <div className="text-sm font-medium">
+                            {loan.stringsAttached.length} condition(s)
+                          </div>
+                        </div>
+                      )}
                       <div>
                         <div className="text-[9px] text-muted-foreground uppercase font-bold">
                           Monthly
@@ -405,7 +446,7 @@ export default function EconomyPage() {
                       </div>
                     </div>
 
-                    {loan.stringsAttached?.length > 0 && (
+                    {loan.stringsAttached && loan.stringsAttached.length > 0 && (
                       <div className="space-y-1.5">
                         <div className="text-[9px] text-muted-foreground uppercase font-bold">
                           Institutional Stipulations:
@@ -487,7 +528,20 @@ export default function EconomyPage() {
         <SponsorsPanel />
 
         {/* Institution Health */}
-        {playerHeya && world && <InstitutionPanel world={world} heya={playerHeya} />}
+        {playerHeya &&
+          world &&
+          (() => {
+            const data = projectHeyaData(world, playerHeya.id);
+            if (!data) return null;
+            return (
+              <InstitutionPanel
+                heya={playerHeya}
+                oyakata={data.oyakata}
+                oyakataQuirks={data.oyakataQuirks}
+                oyakataTraits={data.oyakataTraits}
+              />
+            );
+          })()}
 
         {/* Income Sources */}
         <Card className="paper">

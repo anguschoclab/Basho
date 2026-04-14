@@ -6,13 +6,13 @@
  * Features a high-fidelity "Rich Aesthetics" orchestration.
  */
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronRight, History, Info } from "lucide-react";
+import { ArrowRight, ChevronRight, History } from "lucide-react";
 
 import { TournamentCeremony } from "@/components/recap/TournamentCeremony";
 import { NarrativeSummary } from "@/components/recap/NarrativeSummary";
@@ -27,7 +27,11 @@ import { makeBashoKey } from "@/engine/historyIndex";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
-import { getHallOfFame } from "@/presenters/uiDigest";
+import {
+  projectPressConferenceData,
+  projectGovernanceSummary,
+  projectBashoResults,
+} from "@/presenters/uiDigest";
 
 // Helper utilities for the Recap Page logic
 function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
@@ -71,7 +75,9 @@ function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
 function getPrestigeChanges(world: any): Array<{ heya: any; change: string }> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
   const changes: Array<{ heya: any; change: string }> = [];
   if (!world?.heyas) return changes;
   const prestige_events = (world.events?.log || [])
@@ -98,6 +104,7 @@ export default function RecapPage() {
   const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
   const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
   const [showBanzukeReveal, setShowBanzukeReveal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi type mismatch
   const [intaiQueue, setIntaiQueue] = useState<{ rikishi: any; reason: string }[]>([]);
   const [currentIntaiIndex, setCurrentIntaiIndex] = useState(0);
 
@@ -131,6 +138,7 @@ export default function RecapPage() {
       (e: EngineEvent) => e.category === "career" && (e.type as string).includes("RETIRE")
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi type mismatch
     const playerRetirements: { rikishi: any; reason: string }[] = [];
     for (const event of retirementEvents) {
       if (event.rikishiId) {
@@ -150,11 +158,6 @@ export default function RecapPage() {
       setCurrentIntaiIndex(0);
     }
   }, [world, lastBasho]);
-
-  const newInductees = useMemo(() => {
-    if (!world) return [];
-    return getHallOfFame(world).inductees.filter((i) => i.inductionYear === world.year);
-  }, [world]);
 
   // Generate banzuke comparison data using real banzuke comparison
   const banzukeEntries = useMemo(() => {
@@ -272,7 +275,9 @@ export default function RecapPage() {
         </div>
 
         {/* ═══ CEREMONIAL LAYER ═══ */}
-        <TournamentCeremony lastBasho={lastBasho} world={world} />
+        {world && lastBasho && (
+          <TournamentCeremony lastBasho={lastBasho} {...projectBashoResults(world, lastBasho)} />
+        )}
 
         {/* ═══ BANZUKE REVEAL ═══ */}
         {showBanzukeReveal && (
@@ -297,14 +302,18 @@ export default function RecapPage() {
           <NarrativeSummary
             groupedEvents={groupedEvents}
             prestigeChanges={prestigeChanges}
-            world={world}
+            narrativeSummaryData={{
+              governanceLog: projectGovernanceSummary(world).governanceLog,
+              year: projectGovernanceSummary(world).year,
+              activeHeyasCount: projectGovernanceSummary(world).heyasCount,
+            }}
           />
         </div>
 
         {/* ═══ MODALS & CEREMONIES ═══ */}
         {showPressConference && (
           <PressConference
-            world={world}
+            pressData={projectPressConferenceData(world)}
             open={showPressConference}
             onClose={handlePressConferenceClose}
           />
@@ -313,8 +322,9 @@ export default function RecapPage() {
         {showYokozunaDelib && (
           <YokozunaDeliberation
             open={showYokozunaDelib}
-            world={world}
-            rikishi={Array.from(world.rikishi.values())[0] as any} // Mock for Phase 3 restoration
+            rikishi={Array.from(world.rikishi.values())[0]}
+            heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
+            isPlayerRikishi={true}
             verdict="deferred"
             reasoning={["Continued performance required."]}
             onClose={() => setShowYokozunaDelib(false)}
@@ -323,16 +333,25 @@ export default function RecapPage() {
 
         {showHoFCeremony && (
           <HoFInductionCeremony
-            world={world}
-            open={!!showHoFCeremony}
             inductee={showHoFCeremony}
+            heyaName={
+              world.heyas.get(showHoFCeremony.rikishiId)?.heyaId
+                ? world.heyas.get(world.rikishi.get(showHoFCeremony.rikishiId)?.heyaId || "")
+                    ?.name || "Unknown Stable"
+                : "Independent"
+            }
+            isPlayerRikishi={
+              world.rikishi.get(showHoFCeremony.rikishiId)?.heyaId === world.playerHeyaId
+            }
+            open={!!showHoFCeremony}
             onClose={() => setShowHoFCeremony(null)}
           />
         )}
 
         {intaiQueue.length > 0 && currentIntaiIndex < intaiQueue.length && (
           <IntaiCeremony
-            world={world}
+            heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
+            isPlayerRikishi={true}
             open={true}
             rikishi={intaiQueue[currentIntaiIndex].rikishi}
             reason={intaiQueue[currentIntaiIndex].reason}

@@ -143,7 +143,7 @@ export function TrainingWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Full Plan",
-      onClick: () => navigate({ to: "/stable/training" as any }),
+      onClick: () => navigate({ to: "/stable/training" }),
       tooltip: "Design and implement comprehensive training regimens for your rikishi",
     }),
     [navigate]
@@ -157,12 +157,10 @@ export function TrainingWidget() {
     medium: "balanced",
     high: "intensive",
   };
-  const INTENSITY_RANK: TrainingIntensity[] = [
-    "conservative",
-    "balanced",
-    "intensive",
-    "punishing",
-  ];
+  const INTENSITY_RANK = useMemo<TrainingIntensity[]>(
+    () => ["conservative", "balanced", "intensive", "punishing"],
+    []
+  );
 
   // All hooks must be called before any early return
   const profile = useMemo(() => {
@@ -224,7 +222,7 @@ export function TrainingWidget() {
       ts.activeProfile = { ...ts.activeProfile, ...patch };
       updateWorld({ ...world });
     },
-    [world, maxIntensityIdx, updateWorld]
+    [world, maxIntensityIdx, updateWorld, INTENSITY_RANK]
   );
 
   const toggleExpanded = React.useCallback(() => setExpanded((prev) => !prev), []);

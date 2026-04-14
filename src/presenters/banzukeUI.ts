@@ -11,20 +11,41 @@ export interface UIRankRow {
 }
 
 const RANK_TIER: Record<string, number> = {
-  yokozuna: 1, ozeki: 2, sekiwake: 3, komusubi: 4,
-  maegashira: 5, juryo: 6, makushita: 7,
-  sandanme: 8, jonidan: 9, jonokuchi: 10,
+  yokozuna: 1,
+  ozeki: 2,
+  sekiwake: 3,
+  komusubi: 4,
+  maegashira: 5,
+  juryo: 6,
+  makushita: 7,
+  sandanme: 8,
+  jonidan: 9,
+  jonokuchi: 10,
 };
 
 /**
  * Build a map of rikishi IDs to their rank scores from the most recent banzuke snapshot
  */
-export function buildPrevRankScores(history: { nextBanzuke?: any }[]): Map<string, number> {
+export function buildPrevRankScores(
+  history: {
+    nextBanzuke?: {
+      divisions?: Record<
+        string,
+        {
+          assignments: Array<{
+            rikishiId: string;
+            position: { rank: string; rankNumber: number; side: string };
+          }>;
+        }
+      >;
+    };
+  }[]
+): Map<string, number> {
   const map = new Map<string, number>();
   for (let i = history.length - 1; i >= 0; i--) {
     const banzuke = history[i].nextBanzuke;
     if (!banzuke) continue;
-    for (const div of Object.values(banzuke.divisions as Record<string, any>)) {
+    for (const div of Object.values(banzuke.divisions || {})) {
       for (const assignment of div.assignments) {
         const pos = assignment.position;
         map.set(assignment.rikishiId, rankScore(pos.rank, pos.rankNumber, pos.side));
@@ -35,30 +56,39 @@ export function buildPrevRankScores(history: { nextBanzuke?: any }[]): Map<strin
   return map;
 }
 
-/** 
- * CSS class for rank-tinted row backgrounds 
+/**
+ * CSS class for rank-tinted row backgrounds
  */
 function rankRowClass(rank: string): string {
   switch (rank) {
-    case "yokozuna": return "bg-[hsl(var(--gold)/0.08)] border-l-2 border-l-gold";
-    case "ozeki": return "bg-[hsl(var(--silver)/0.06)] border-l-2 border-l-silver";
+    case "yokozuna":
+      return "bg-[hsl(var(--gold)/0.08)] border-l-2 border-l-gold";
+    case "ozeki":
+      return "bg-[hsl(var(--silver)/0.06)] border-l-2 border-l-silver";
     case "sekiwake":
-    case "komusubi": return "bg-[hsl(var(--bronze)/0.05)] border-l-2 border-l-bronze";
-    default: return "";
+    case "komusubi":
+      return "bg-[hsl(var(--bronze)/0.05)] border-l-2 border-l-bronze";
+    default:
+      return "";
   }
 }
 
 /**
  * Group individual roster entries into banzuke rows (East vs West slots)
  */
-export function buildBanzukeRows(entries: UIRosterEntry[], division: string, searchQuery: string): UIRankRow[] {
-  const divEntries = entries.filter(e => e.division === division);
+export function buildBanzukeRows(
+  entries: UIRosterEntry[],
+  division: string,
+  searchQuery: string
+): UIRankRow[] {
+  const divEntries = entries.filter((e) => e.division === division);
   const groups = new Map<string, { east: UIRosterEntry | null; west: UIRosterEntry | null }>();
 
   for (const e of divEntries) {
     const key = `${e.rank}_${e.rankNumber ?? 1}`;
     if (!groups.has(key)) groups.set(key, { east: null, west: null });
-    const g = groups.get(key)!;
+    const g = groups.get(key);
+    if (!g) continue;
     if (e.side === "east") g.east = e;
     else g.west = e;
   }
@@ -76,20 +106,34 @@ export function buildBanzukeRows(entries: UIRosterEntry[], division: string, sea
     const sample = east || west;
     const rank = sample?.rank ?? "unknown";
     const rankNumber = sample?.rankNumber ?? 1;
-    const isSanyaku = rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
+    const isSanyaku =
+      rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
     const RANK_DISPLAY_NAMES: Record<string, string> = {
-      yokozuna: "Yokozuna", ozeki: "Ozeki", sekiwake: "Sekiwake", komusubi: "Komusubi",
-      maegashira: "Maegashira", juryo: "Juryo", makushita: "Makushita",
-      sandanme: "Sandanme", jonidan: "Jonidan", jonokuchi: "Jonokuchi",
+      yokozuna: "Yokozuna",
+      ozeki: "Ozeki",
+      sekiwake: "Sekiwake",
+      komusubi: "Komusubi",
+      maegashira: "Maegashira",
+      juryo: "Juryo",
+      makushita: "Makushita",
+      sandanme: "Sandanme",
+      jonidan: "Jonidan",
+      jonokuchi: "Jonokuchi",
     };
-    const baseLabel = RANK_DISPLAY_NAMES[rank] ?? (rank.charAt(0).toUpperCase() + rank.slice(1));
+    const baseLabel = RANK_DISPLAY_NAMES[rank] ?? rank.charAt(0).toUpperCase() + rank.slice(1);
     const rankLabel = isSanyaku ? baseLabel : `${baseLabel} #${rankNumber}`;
 
     // Calculate Japanese title
     const side = (sample?.side ?? "east") as "east" | "west";
-    const rankTitleJa = (rank === "maegashira" || rank === "juryo" || rank === "makushita" || rank === "sandanme" || rank === "jonidan" || rank === "jonokuchi")
-      ? `${baseLabel.charAt(0)}#${rankNumber}${side === "east" ? "東" : "西"}`
-      : `${baseLabel}${side === "east" ? "東" : "西"}`;
+    const rankTitleJa =
+      rank === "maegashira" ||
+      rank === "juryo" ||
+      rank === "makushita" ||
+      rank === "sandanme" ||
+      rank === "jonidan" ||
+      rank === "jonokuchi"
+        ? `${baseLabel.charAt(0)}#${rankNumber}${side === "east" ? "東" : "西"}`
+        : `${baseLabel}${side === "east" ? "東" : "西"}`;
 
     result.push({
       rankLabel,

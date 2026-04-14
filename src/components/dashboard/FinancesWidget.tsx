@@ -50,7 +50,7 @@ export function FinancesWidget() {
   // Compute config before early return
   const config = useMemo(() => {
     if (!heya) return RUNWAY_CONFIG.comfortable;
-    const band = (heya as any).runwayBand || "comfortable";
+    const band = (heya as { runwayBand?: string }).runwayBand || "comfortable";
     return RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
   }, [heya]);
 
@@ -68,7 +68,7 @@ export function FinancesWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Deep Dive",
-      onClick: () => navigate({ to: "/office/finances" as any }),
+      onClick: () => navigate({ to: "/office/finances" }),
       tooltip: "Analyze stable financial health and project future runway",
     }),
     [navigate]

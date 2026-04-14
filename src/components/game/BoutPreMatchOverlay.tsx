@@ -10,10 +10,10 @@
  *   - Dismiss / Begin Bout action buttons
  */
 
-import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { RikishiName } from "@/components/ClickableName";
 import { Button } from "@/components/ui/button";
-import { Flame, Thermometer, Snowflake, Swords } from "lucide-react";
+import { Swords } from "lucide-react";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { H2HRecentMeeting } from "@/engine/types/records";
@@ -35,13 +35,19 @@ interface FighterColumnProps {
 function FighterColumn({ rikishi, side }: FighterColumnProps) {
   const isEast = side === "east";
   return (
-    <div className={`flex flex-col gap-0.5 ${isEast ? "items-end text-right" : "items-start text-left"}`}>
-      <div className="font-display text-base font-bold leading-tight">{rikishi.shikona}</div>
+    <div
+      className={`flex flex-col gap-0.5 ${isEast ? "items-end text-right" : "items-start text-left"}`}
+    >
+      <div className="font-display text-base font-bold leading-tight">
+        <RikishiName id={rikishi.id} name={rikishi.shikona} />
+      </div>
       <div className="text-xs text-muted-foreground">{rikishi.rankLabel}</div>
       <div className={`font-mono text-sm font-semibold mt-1 ${isEast ? "text-east" : "text-west"}`}>
         {rikishi.currentBashoWins}–{rikishi.currentBashoLosses}
       </div>
-      <div className="text-[11px] text-muted-foreground mt-0.5">{rikishi.favoredKimariteDisplay}</div>
+      <div className="text-[11px] text-muted-foreground mt-0.5">
+        {rikishi.favoredKimariteDisplay}
+      </div>
     </div>
   );
 }
@@ -55,7 +61,12 @@ interface RecentMeetingsTableProps {
   westShikona: string;
 }
 
-function RecentMeetingsTable({ meetings, eastId, eastShikona, westShikona }: RecentMeetingsTableProps) {
+function RecentMeetingsTable({
+  meetings,
+  eastId,
+  eastShikona,
+  westShikona,
+}: RecentMeetingsTableProps) {
   if (meetings.length === 0) return null;
   return (
     <div className="mt-3 rounded-md border border-border/50 overflow-hidden">
@@ -66,11 +77,18 @@ function RecentMeetingsTable({ meetings, eastId, eastShikona, westShikona }: Rec
         const winnerName = m.winnerId === eastId ? eastShikona : westShikona;
         const kimariteDisplay = m.kimarite.charAt(0).toUpperCase() + m.kimarite.slice(1);
         return (
-          <div key={i} className="flex items-center gap-2 px-2 py-1.5 text-xs border-t border-border/40">
+          <div
+            key={i}
+            className="flex items-center gap-2 px-2 py-1.5 text-xs border-t border-border/40"
+          >
             <span className="text-muted-foreground font-mono w-10 shrink-0">{m.year}</span>
             <span className="text-muted-foreground shrink-0">Day {m.day}</span>
-            <span className="flex-1 font-semibold truncate">{winnerName}</span>
-            <Badge variant="secondary" className="text-[10px] shrink-0">{kimariteDisplay}</Badge>
+            <span className="flex-1 font-semibold truncate">
+              <RikishiName id={m.winnerId} name={winnerName} />
+            </span>
+            <Badge variant="secondary" className="text-[10px] shrink-0">
+              {kimariteDisplay}
+            </Badge>
           </div>
         );
       })}

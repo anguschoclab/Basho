@@ -6,13 +6,20 @@ import { promises as fs } from "fs";
 
 // Initialize electron-store for configuration persistence
 // Using dynamic import to handle ESM/CommonJS compatibility
-let Store: any;
-let store: any;
+type StoreType = {
+  get: (key: string) => unknown;
+  set: (key: string, value: unknown) => void;
+  delete: (key: string) => void;
+  clear: () => void;
+  store: Record<string, unknown>;
+};
+
+let store: StoreType;
 
 async function initStore() {
   const module = await import("electron-store");
-  Store = module.default;
-  store = new Store();
+  const StoreConstructor = module.default as new (...args: unknown[]) => StoreType;
+  store = new StoreConstructor();
 }
 
 let mainWindow: BrowserWindow | null = null;
@@ -37,7 +44,7 @@ async function createWindow(): Promise<void> {
     },
   });
 
-  mainWindow.on("ready-to-show", () => mainWindow!.show());
+  mainWindow.on("ready-to-show", () => mainWindow?.show());
 
   // Open external links in the OS browser, not inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -46,12 +53,16 @@ async function createWindow(): Promise<void> {
   });
 
   // Restore window state from electron-store
-  const windowState = store.get("windowState", {
+  const defaultWindowState = {
     x: undefined,
     y: undefined,
     width: 1280,
     height: 800,
-  }) as { x?: number; y?: number; width: number; height: number };
+  };
+  const windowState =
+    (store.get("windowState") as
+      | { x?: number; y?: number; width: number; height: number }
+      | undefined) ?? defaultWindowState;
   if (windowState.x !== undefined && windowState.y !== undefined) {
     mainWindow.setPosition(windowState.x, windowState.y);
   }
@@ -66,7 +77,8 @@ async function createWindow(): Promise<void> {
         mainWindow?.hide();
       }
     }
-    const bounds = mainWindow!.getBounds();
+    const bounds = mainWindow?.getBounds();
+    if (!bounds) return;
     store.set("windowState", {
       x: bounds.x,
       y: bounds.y,
@@ -236,7 +248,7 @@ ipcMain.handle("storage:get", (event, key: string) => {
   return store.get(key);
 });
 
-ipcMain.handle("storage:set", (event, key: string, value: any) => {
+ipcMain.handle("storage:set", (event, key: string, value: unknown) => {
   store.set(key, value);
   return true;
 });
@@ -291,12 +303,14 @@ ipcMain.handle("window:close", () => {
 
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
-  const result = await dialog.showSaveDialog(mainWindow!, options || {});
+  if (!mainWindow) return { canceled: true, filePath: "" };
+  const result = await dialog.showSaveDialog(mainWindow, options || {});
   return result;
 });
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
-  const result = await dialog.showOpenDialog(mainWindow!, options || {});
+  if (!mainWindow) return { canceled: true, filePaths: [] };
+  const result = await dialog.showOpenDialog(mainWindow, options || {});
   return result;
 });
 

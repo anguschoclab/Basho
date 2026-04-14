@@ -3,18 +3,18 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
 } from "recharts";
 import { formatMetaTrends } from "@/presenters/uiDigest";
-import { Globe, TrendingUp, Info, AlertCircle } from "lucide-react";
+import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function TrendsPage() {
@@ -33,7 +33,9 @@ export default function TrendsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-display font-bold">JSA Meta Trends</h1>
-          <p className="text-sm text-muted-foreground">Historical analysis of technical biases and institutional drifts.</p>
+          <p className="text-sm text-muted-foreground">
+            Historical analysis of technical biases and institutional drifts.
+          </p>
         </div>
 
         {/* Major Meta Streamgraph */}
@@ -45,7 +47,9 @@ export default function TrendsPage() {
                   <TrendingUp className="h-5 w-5 text-primary" />
                   Technical Dominance (Last 12 Basho)
                 </CardTitle>
-                <CardDescription>Shift in winning styles across the top division over time.</CardDescription>
+                <CardDescription>
+                  Shift in winning styles across the top division over time.
+                </CardDescription>
               </div>
               <Badge variant="outline" className="border-primary/30 text-primary">
                 CURRENT BIAS: OSHI-STRONG
@@ -56,55 +60,59 @@ export default function TrendsPage() {
             <div className="h-[400px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="basho" 
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
+                  <XAxis
+                    dataKey="basho"
                     tick={{ fontSize: 10, fontWeight: 600 }}
                     axisLine={false}
                     tickLine={false}
                   />
-                  <YAxis 
+                  <YAxis
                     tick={{ fontSize: 10, fontWeight: 600 }}
                     axisLine={false}
                     tickLine={false}
                     domain={[0, 100]}
                     unit="%"
                   />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
                       borderColor: "hsl(var(--border))",
                       fontSize: "12px",
                       borderRadius: "12px",
-                      boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
                     }}
                   />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Area 
-                    type="monotone" 
+                  <Area
+                    type="monotone"
                     name="Oshi-Zumo (Thrusting)"
-                    dataKey="oshi" 
-                    stackId="1" 
-                    stroke="hsl(var(--primary))" 
-                    fill="hsl(var(--primary))" 
+                    dataKey="oshi"
+                    stackId="1"
+                    stroke="hsl(var(--primary))"
+                    fill="hsl(var(--primary))"
                     fillOpacity={0.6}
                   />
-                  <Area 
-                    type="monotone" 
+                  <Area
+                    type="monotone"
                     name="Yotsu-Zumo (Grappling)"
-                    dataKey="yotsu" 
-                    stackId="1" 
-                    stroke="hsl(var(--accent))" 
-                    fill="hsl(var(--accent))" 
+                    dataKey="yotsu"
+                    stackId="1"
+                    stroke="hsl(var(--accent))"
+                    fill="hsl(var(--accent))"
                     fillOpacity={0.4}
                   />
-                  <Area 
-                    type="monotone" 
+                  <Area
+                    type="monotone"
                     name="Hybrid/Varied Styles"
-                    dataKey="hybrid" 
-                    stackId="1" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    fill="hsl(var(--muted-foreground))" 
+                    dataKey="hybrid"
+                    stackId="1"
+                    stroke="hsl(var(--muted-foreground))"
+                    fill="hsl(var(--muted-foreground))"
                     fillOpacity={0.2}
                   />
                 </AreaChart>
@@ -123,7 +131,9 @@ export default function TrendsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Wrestlers matching the current Meta Bias (Oshi) receive a subtle advantage in bout outcomes and faster momentum gains. Stables specializing in Oshi-Zumo will find their techniques more effective in this era.
+                Wrestlers matching the current Meta Bias (Oshi) receive a subtle advantage in bout
+                outcomes and faster momentum gains. Stables specializing in Oshi-Zumo will find
+                their techniques more effective in this era.
               </p>
             </CardContent>
           </Card>
@@ -137,7 +147,9 @@ export default function TrendsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Macro trends are determined by the collective success of Yokozuna and Ozeki. If the top ranks are dominated by grappling specialists, the Meta will shift towards Yotsu within 2-3 years.
+                Macro trends are determined by the collective success of Yokozuna and Ozeki. If the
+                top ranks are dominated by grappling specialists, the Meta will shift towards Yotsu
+                within 2-3 years.
               </p>
             </CardContent>
           </Card>

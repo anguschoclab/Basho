@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 interface DraggableWidgetProps {
   widgetId: string;
   column: number;
-  label: string;
   isEditMode: boolean;
   onDragStart: (id: string) => void;
   onDragOver: (id: string, column: number) => void;
@@ -39,7 +38,6 @@ interface DraggableWidgetProps {
 export function DraggableWidget({
   widgetId,
   column,
-  label,
   isEditMode,
   onDragStart,
   onDragOver,
@@ -85,7 +83,7 @@ export function DraggableWidget({
         isDragging && "opacity-40 scale-[0.98]",
         isDragOver &&
           isEditMode &&
-          "ring-2 ring-primary/50 ring-offset-2 ring-offset-background rounded-lg",
+          "ring-2 ring-primary/50 ring-offset-2 ring-offset-background rounded-lg"
       )}
     >
       {isEditMode && (

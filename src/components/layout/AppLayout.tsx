@@ -8,7 +8,8 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { openSaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { MainContentPane } from "./MainContentPane";
 import { FloatingShortcuts } from "./FloatingShortcuts";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { projectEventLogData } from "@/presenters/uiDigest";
 
 /** Defines the structure for app layout props. */
 interface AppLayoutProps {
@@ -24,6 +25,7 @@ interface AppLayoutProps {
  */
 export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: AppLayoutProps) {
   const { state } = useGame();
+  const world = state.world;
   const [eventLogOpen, setEventLogOpen] = useState(true);
 
   // Register keyboard shortcuts
@@ -65,7 +67,10 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
             {/* Right Pane: Event Log (Collapsible) */}
             {eventLogOpen && (
               <aside className="w-80 border-l border-border bg-card/50 hidden xl:flex flex-col animate-in slide-in-from-right duration-300">
-                <EventLogPanel className="h-full" />
+                <EventLogPanel
+                  className="h-full"
+                  eventLogData={world ? projectEventLogData(world) : null}
+                />
               </aside>
             )}
           </div>

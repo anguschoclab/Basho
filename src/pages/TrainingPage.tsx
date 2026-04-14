@@ -52,8 +52,8 @@ import {
   RANK_HIERARCHY,
 } from "@/presenters/uiDigest";
 import { HQ_TABS } from "@/constants/navigation";
-import { RikishiName } from "@/components/ClickableName";
-import type { Rikishi } from "@/engine/types/rikishi";
+import { RikishiName, StableName } from "@/components/ClickableName";
+import type { Heya } from "@/engine/types/heya";
 import type {
   IndividualFocusType,
   TrainingIntensity,
@@ -108,21 +108,21 @@ export default function TrainingPage() {
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
     const existing = world.trainingState?.get(playerHeyaId);
     if (existing) return existing;
-    const legacy = (heya as any)?.trainingState as BeyaTrainingState | undefined;
+    const legacy = (heya as Heya & { trainingState?: BeyaTrainingState }).trainingState;
     return legacy ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
   const rikishiList = useMemo(() => {
     if (!heya || !world) return [];
-    return (heya.rikishiIds ?? [])
+    const rikishi = (heya.rikishiIds ?? [])
       .map((id) => world.rikishi.get(id))
-      .filter(Boolean)
-      .sort((a, b) => {
-        const tierA = RANK_HIERARCHY[a!.rank]?.tier ?? 99;
-        const tierB = RANK_HIERARCHY[b!.rank]?.tier ?? 99;
-        if (tierA !== tierB) return tierA - tierB;
-        return a!.id.localeCompare(b!.id);
-      }) as Rikishi[];
+      .filter((r) => r != null) as ReturnType<typeof world.rikishi.get>[];
+    return rikishi.sort((a, b) => {
+      const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 99;
+      const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 99;
+      if (tierA !== tierB) return tierA - tierB;
+      return a.id.localeCompare(b.id);
+    });
   }, [heya, world]);
 
   // Prepare training effectiveness data for chart (moved before early return)
@@ -157,7 +157,8 @@ export default function TrainingPage() {
   const persistTrainingState = (next: BeyaTrainingState) => {
     if (!world.trainingState) world.trainingState = new Map();
     world.trainingState.set(playerHeyaId, next);
-    if ((heya as any).trainingState) delete (heya as any).trainingState;
+    const heyaWithTrainingState = heya as Heya & { trainingState?: unknown };
+    if (heyaWithTrainingState.trainingState) delete heyaWithTrainingState.trainingState;
     updateWorld({ ...world });
   };
 
@@ -218,7 +219,7 @@ export default function TrainingPage() {
             </div>
             <p className="text-sm font-medium text-muted-foreground opacity-70 flex items-center gap-2">
               <Dumbbell className="h-4 w-4" /> Professional development and physical conditioning
-              for {heya.name} Stable.
+              for <StableName id={heya.id} name={heya.name} /> Stable.
             </p>
           </div>
 
@@ -546,7 +547,8 @@ export default function TrainingPage() {
               const focusMap = new Map(
                 (trainingState.focusSlots || []).map((f) => [f.rikishiId, f])
               );
-              return rikishiList.map((rikishi, idx) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type guard in filter removes nulls but TS doesn't narrow correctly
+              return rikishiList.map((rikishi: any, idx: number) => {
                 const focus = focusMap.get(rikishi.id);
                 const fb = toFatigueBand(rikishi.fatigue ?? 0);
                 const isExhausted = fb === "exhausted" || fb === "spent";

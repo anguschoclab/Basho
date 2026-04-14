@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Swords, ChevronRight } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { MatchSchedule, WorldState } from "@/engine/types/index";
 
@@ -17,11 +16,10 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   for (const m of matches) {
     const round = m.day - 15; // day 16 = round 1
     if (!rounds.has(round)) rounds.set(round, []);
-    rounds.get(round)!.push(m);
+    rounds.get(round)?.push(m);
   }
 
   const sortedRounds = Array.from(rounds.entries()).sort((a, b) => a[0] - b[0]);
-  const isFinal = sortedRounds.length > 0;
   const finalMatch = matches[matches.length - 1];
   const champion = finalMatch?.result ? world.rikishi.get(finalMatch.result.winnerRikishiId) : null;
 
@@ -42,7 +40,9 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
         {/* Champion announcement */}
         {champion && (
           <div className="mb-4 p-3 rounded-lg border border-gold/30 bg-gold/10 text-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Champion via Playoff</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+              Champion via Playoff
+            </p>
             <p className="text-xl font-display font-bold">{champion.shikona}</p>
             {finalMatch?.result && (
               <p className="text-xs text-muted-foreground mt-1">
@@ -79,7 +79,6 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         <RikishiName
                           id={m.eastRikishiId}
                           name={east?.shikona || "???"}
-                          
                           className={eastWon ? "font-bold" : ""}
                         />
                         {eastWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
@@ -94,7 +93,6 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                         <RikishiName
                           id={m.westRikishiId}
                           name={west?.shikona || "???"}
-                          
                           className={westWon ? "font-bold" : ""}
                         />
                         {westWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}

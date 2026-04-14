@@ -149,7 +149,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 }
 
 /** Worker: Training Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
 function spawnTrainingWorker(ctx: any) {
   const intensity = decideTrainingIntensity(
     ctx.perception,
@@ -175,14 +175,14 @@ function spawnTrainingWorker(ctx: any) {
 }
 
 /** Worker: Scouting Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
 function spawnScoutingWorker(ctx: any) {
   const decision = decideScoutingPriority(
     {
       runwayBand: ctx.runwayBand,
       rosterSize: ctx.rosterSize,
       rosterStrengthBand: ctx.rosterStrengthBand,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type mismatch with NPCStrategyService input
     } as any,
     ctx.ambition,
     ctx.hasSleeperScout
@@ -194,10 +194,10 @@ function spawnScoutingWorker(ctx: any) {
 }
 
 /** Worker: Personnel Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
 function spawnPersonnelWorker(ctx: any) {
   const reasoning: string[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Perception object passed to strategy function
   const protectDecision = identifyProtects(ctx as any, ctx.welfareDiscipline);
   if (protectDecision.protectIds.length > 0) {
     reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
@@ -274,7 +274,7 @@ function spawnPersonnelWorker(ctx: any) {
 }
 
 /** Helper: Isolated perception view */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Perception object with dynamic properties
 function rpPerception(p: any) {
   return {
     rikishiPerceptions: p.rikishiPerceptions,
@@ -294,7 +294,7 @@ function rpPerception(p: any) {
 export function consolidateOyakataMemory(
   world: WorldState,
   heyaId: Id,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Perception object with dynamic properties
   perception: any
 ): StateImpact {
   const builder = createImpactBuilder("consolidateOyakataMemory");
@@ -381,7 +381,7 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
     ...decision.individualDevelops,
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Focus slot object with dynamic properties
   const existingFocus = state.focusSlots.filter((f: any) => !allManagedIds.has(f.rikishiId));
 
   const protectSlots = decision.individualProtects.map((id) => ({
@@ -497,9 +497,10 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
       (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Stable sort callback with dynamic object types
     for (const heya of stableSort(candidateHeyas, (x: any) => (x as any).id || String(x))) {
-      const oyakata = world.oyakata.get(heya.oyakataId)!;
+      const oyakata = world.oyakata.get(heya.oyakataId);
+      if (!oyakata) continue;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
       financeStrat.evaluateFinances(world, heya as import("./types/heya").Heya, oyakata);
 
@@ -514,9 +515,10 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
   const candidateHeyas2 = getAvailableStables(world).filter(
     (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Stable sort callback with dynamic object types
   for (const heya of stableSort(candidateHeyas2, (x: any) => (x as any).id || String(x))) {
-    const oyakata = world.oyakata.get(heya.oyakataId)!;
+    const oyakata = world.oyakata.get(heya.oyakataId);
+    if (!oyakata) continue;
 
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
     retirementStrat.evaluateRetirements(world, heya as import("./types/heya").Heya, oyakata);

@@ -29,7 +29,7 @@ class MockRNG extends SeededRNG {
     return this.valueToReturn;
   }
 
-  override int(_min: number, _max: number): number {
+  override int(): number {
     return this.intToReturn;
   }
 }

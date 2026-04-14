@@ -4,11 +4,11 @@
  * Dramatic reveal sequence for the new Banzuke.
  */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGameStore } from "../../store/gameStore";
 import { Badge } from "../ui/badge";
 import { ArrowUp, ArrowDown, Minus, Star, ArrowRight } from "lucide-react";
+import { RikishiName } from "@/components/ClickableName";
 
 interface RevealEntry {
   id: string;
@@ -25,7 +25,6 @@ export function BanzukeReveal({
   onComplete: () => void;
   entries?: RevealEntry[];
 }) {
-  const digest = useGameStore((state) => state.digest);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [entries, setEntries] = useState<RevealEntry[]>([]);
 
@@ -47,7 +46,7 @@ export function BanzukeReveal({
     // Initial delay
     const timer = setTimeout(() => setCurrentIndex(0), 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [entriesProp]);
 
   useEffect(() => {
     if (currentIndex >= 0 && currentIndex < entries.length) {
@@ -57,6 +56,7 @@ export function BanzukeReveal({
       const timer = setTimeout(onComplete, 2000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [currentIndex, entries.length, onComplete]);
 
   return (
@@ -94,7 +94,9 @@ export function BanzukeReveal({
                   Rank Change
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold font-display">{entry.shikona}</span>
+                  <span className="text-xl font-bold font-display">
+                    <RikishiName id={entry.id} name={entry.shikona} />
+                  </span>
                   {entry.change === "new" && (
                     <Badge className="text-[9px] font-bold uppercase tracking-widest px-2 h-5 bg-primary/80 text-white">
                       NEW

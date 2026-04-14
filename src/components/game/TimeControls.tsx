@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -18,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { toDurationBand, DURATION_LABELS } from "@/engine/descriptorBands";
 import { HolidayControls } from "./HolidayControls";
 import { AutoSimControls } from "./AutoSimControls";
+import type { AutoSimConfig } from "@/engine/autoSim";
 
 /**
  * TimeControls
@@ -39,7 +39,6 @@ export function TimeControls() {
     runAutoSimAction,
   } = useGame();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSimulating, setIsSimulating] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
@@ -87,7 +86,7 @@ export function TimeControls() {
     toast({ title: "Time advanced", description: `${DURATION_LABELS[toDurationBand(1)]} passed.` });
   };
 
-  const handleAutoSim = async (config: any) => {
+  const handleAutoSim = async (config: AutoSimConfig) => {
     setIsSimulating(true);
     try {
       const result = await runAutoSimAction(config);
@@ -100,74 +99,79 @@ export function TimeControls() {
 
   return (
     <>
-    <Card>
-      <CardContent className="p-4 flex flex-wrap gap-2 items-center">
-        {!inBasho ? (
-          <>
-            {inInterim && (
-              <>
-                <Button variant="secondary" size="sm" onClick={handleAdvanceOneDay} className="gap-2">
-                  <ArrowRight className="h-4 w-4" />
-                  Advance Day
-                </Button>
-                <Button variant="outline" onClick={handleAdvanceWeek} className="gap-2">
-                  <Repeat className="h-4 w-4" />
-                  Advance Week
-                </Button>
-              </>
-            )}
-            <HolidayControls
-              onHoliday={goOnHoliday}
-              playerHeyaId={playerHeyaId}
-              currentPhase={world.cyclePhase}
-            />
-            <AutoSimControls
-              onStartSim={handleAutoSim}
-              isSimulating={isSimulating}
-              playerHeyaId={playerHeyaId}
-            />
-            <Button variant="outline" onClick={() => setPhase("interim")} className="gap-2">
-              <Calendar className="h-4 w-4" />
-              Interim
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={handleSimDay} className="gap-2">
-              <FastForward className="h-4 w-4" />
-              Simulate Day
-            </Button>
-            <Button variant="secondary" onClick={handleSimFullBasho} className="gap-2">
-              <SkipForward className="h-4 w-4" />
-              Sim Full Basho
-            </Button>
-            <Button variant="outline" onClick={handleAdvanceDay} className="gap-2">
-              <ArrowRight className="h-4 w-4" />
-              Next Day
-            </Button>
-            <Button variant="outline" onClick={handleEndBasho} className="gap-2">
-              <Trophy className="h-4 w-4" />
-              End Basho
-            </Button>
-          </>
-        )}
-      </CardContent>
-    </Card>
+      <Card>
+        <CardContent className="p-4 flex flex-wrap gap-2 items-center">
+          {!inBasho ? (
+            <>
+              {inInterim && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleAdvanceOneDay}
+                    className="gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    Advance Day
+                  </Button>
+                  <Button variant="outline" onClick={handleAdvanceWeek} className="gap-2">
+                    <Repeat className="h-4 w-4" />
+                    Advance Week
+                  </Button>
+                </>
+              )}
+              <HolidayControls
+                onHoliday={goOnHoliday}
+                playerHeyaId={playerHeyaId}
+                currentPhase={world.cyclePhase}
+              />
+              <AutoSimControls
+                onStartSim={handleAutoSim}
+                isSimulating={isSimulating}
+                playerHeyaId={playerHeyaId}
+              />
+              <Button variant="outline" onClick={() => setPhase("interim")} className="gap-2">
+                <Calendar className="h-4 w-4" />
+                Interim
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleSimDay} className="gap-2">
+                <FastForward className="h-4 w-4" />
+                Simulate Day
+              </Button>
+              <Button variant="secondary" onClick={handleSimFullBasho} className="gap-2">
+                <SkipForward className="h-4 w-4" />
+                Sim Full Basho
+              </Button>
+              <Button variant="outline" onClick={handleAdvanceDay} className="gap-2">
+                <ArrowRight className="h-4 w-4" />
+                Next Day
+              </Button>
+              <Button variant="outline" onClick={handleEndBasho} className="gap-2">
+                <Trophy className="h-4 w-4" />
+                End Basho
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
-    <AlertDialog open={showEndConfirm} onOpenChange={setShowEndConfirm}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>End Tournament?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will finalize results, update banzuke rankings, and advance to the off-season.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <AlertDialog open={showEndConfirm} onOpenChange={setShowEndConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will finalize results, update banzuke rankings, and advance to the off-season.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

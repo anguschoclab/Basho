@@ -14,13 +14,10 @@ import {
   ArrowUp,
 } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
 import type { FacilitiesBand } from "@/engine/types/narrative";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
 import {
   getFacilityLevelColor as getLevelColor,
-  getFacilityLevelLabel as getLevelBand,
   getMonthlyMaintenanceCost,
   getUpgradeCostEstimate,
 } from "@/presenters/uiDigest";
@@ -68,6 +65,17 @@ const BAND_LABELS: Record<FacilitiesBand, string> = {
 };
 
 /**
+ * Get level band label from level value (simple conversion without RNG).
+ */
+function getLevelBand(level: number): string {
+  if (level >= 85) return "Exceptional";
+  if (level >= 65) return "Outstanding";
+  if (level >= 45) return "Strong";
+  if (level >= 25) return "Capable";
+  return "Limited";
+}
+
+/**
  * Get effect percent.
  *  * @param axis - The Axis.
  *  * @param level - The Level.
@@ -90,24 +98,22 @@ function getEffectPercent(axis: FacilityAxis, level: number): string {
 /** Defines the structure for facilities management panel props. */
 interface FacilitiesManagementPanelProps {
   heya: Heya;
-  world: WorldState;
   isOwner: boolean;
   onUpgrade: (axis: FacilityAxis, points: number) => UpgradeResult | undefined;
 }
 
 /**
  * facilities management panel.
- *  * @param { heya, world, isOwner, onUpgrade } - The { heya, world, is owner, on upgrade }.
+ *  * @param { heya, isOwner, onUpgrade } - The component props.
  */
 export function FacilitiesManagementPanel({
   heya,
-  world,
   isOwner,
   onUpgrade,
 }: FacilitiesManagementPanelProps) {
   const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
 
-  const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya.facilities]);
+  const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya]);
 
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
 

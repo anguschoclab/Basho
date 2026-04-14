@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Palmtree,
@@ -34,7 +33,6 @@ import {
   ShieldAlert,
   Trophy,
   Banknote,
-  Clock,
   Newspaper,
 } from "lucide-react";
 
@@ -60,7 +58,11 @@ const TARGET_OPTIONS: { value: HolidayTarget; label: string; description: string
   { value: "nextWeek", label: "Next Week", description: "Skip forward 7 days" },
   { value: "nextMonth", label: "Next Month", description: "Skip forward ~30 days" },
   { value: "nextBashoDay1", label: "Next Basho", description: "Skip to the next tournament" },
-  { value: "endOfBasho", label: "End of Basho", description: "Fast-forward through the tournament" },
+  {
+    value: "endOfBasho",
+    label: "End of Basho",
+    description: "Fast-forward through the tournament",
+  },
   { value: "postBasho", label: "Post-Basho", description: "Skip past tournament wrap-up" },
 ];
 
@@ -87,9 +89,7 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
   const [isOpen, setIsOpen] = useState(false);
   const [target, setTarget] = useState<HolidayTarget>("nextWeek");
   const [delegation, setDelegation] = useState<DelegationPolicy>("balanced");
-  const [activeGates, setActiveGates] = useState<Set<SafetyGate>>(
-    new Set(DEFAULT_CRITICAL_GATES)
-  );
+  const [activeGates, setActiveGates] = useState<Set<SafetyGate>>(new Set(DEFAULT_CRITICAL_GATES));
 
   const [result, setResult] = useState<HolidayResult | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -122,9 +122,7 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
   // Filter targets based on current phase
   const availableTargets = useMemo(() => {
     if (currentPhase === "active_basho") {
-      return TARGET_OPTIONS.filter((t) =>
-        ["nextDay", "endOfBasho", "postBasho"].includes(t.value)
-      );
+      return TARGET_OPTIONS.filter((t) => ["nextDay", "endOfBasho", "postBasho"].includes(t.value));
     }
     return TARGET_OPTIONS;
   }, [currentPhase]);
@@ -171,7 +169,10 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
             {playerHeyaId && (
               <div className="space-y-2">
                 <Label>Delegation Policy</Label>
-                <Select value={delegation} onValueChange={(v) => setDelegation(v as DelegationPolicy)}>
+                <Select
+                  value={delegation}
+                  onValueChange={(v) => setDelegation(v as DelegationPolicy)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -244,11 +245,15 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
               {/* Summary Bar */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-secondary/50 text-center">
-                  <div className="text-2xl font-bold">{DURATION_LABELS[toDurationBand(result.daysAdvanced)]}</div>
+                  <div className="text-2xl font-bold">
+                    {DURATION_LABELS[toDurationBand(result.daysAdvanced)]}
+                  </div>
                   <div className="text-xs text-muted-foreground">Time Passed</div>
                 </div>
                 <div className="p-3 rounded-lg bg-secondary/50 text-center">
-                  <div className="text-2xl font-bold capitalize">{result.phaseOnExit.replace("_", " ")}</div>
+                  <div className="text-2xl font-bold capitalize">
+                    {result.phaseOnExit.replace("_", " ")}
+                  </div>
                   <div className="text-xs text-muted-foreground">Current Phase</div>
                 </div>
               </div>
@@ -292,7 +297,9 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
                   </div>
                 </ScrollArea>
               ) : (
-                <p className="text-sm text-muted-foreground">A quiet period — nothing notable occurred.</p>
+                <p className="text-sm text-muted-foreground">
+                  A quiet period — nothing notable occurred.
+                </p>
               )}
             </div>
           ) : (

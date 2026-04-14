@@ -7,6 +7,20 @@ import { clamp, clampInt } from "../../utils/math";
 import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
+import type { TalentCandidate, TalentPoolType } from "../../types/talent";
+
+interface GeneratedStats extends RikishiStats {
+  height: number;
+}
+
+interface DivisionRecords {
+  makuuchi: { wins: number; losses: number };
+  juryo: { wins: number; losses: number };
+  makushita: { wins: number; losses: number };
+  sandanme: { wins: number; losses: number };
+  jonidan: { wins: number; losses: number };
+  jonokuchi: { wins: number; losses: number };
+}
 
 /**
  * Generates rikishi stats using Gaussian distribution and archetype modifiers.
@@ -15,8 +29,7 @@ export function generateRikishiStats(args: {
   rng: SeededRNG;
   rank: Rank;
   profile: CombatProfile;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}): any {
+}): GeneratedStats {
   const { rng, rank, profile } = args;
 
   const baseMean =
@@ -133,8 +146,7 @@ function simulateCareerProgression(args: {
   let totalLosses = 0;
   let yushoCount = 0;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const divisionRecords: any = {
+  const divisionRecords: DivisionRecords = {
     makuuchi: { wins: 0, losses: 0 },
     juryo: { wins: 0, losses: 0 },
     makushita: { wins: 0, losses: 0 },
@@ -204,8 +216,12 @@ export function generateSyntheticCareer(args: {
   birthYear: number;
   currentYear: number;
   nationality?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}): { careerWins: number; careerLosses: number; yushoCount: number; divisionRecords: any } {
+}): {
+  careerWins: number;
+  careerLosses: number;
+  yushoCount: number;
+  divisionRecords: DivisionRecords;
+} {
   // Use career progression simulation for more realistic records
   const progression = simulateCareerProgression({
     rng: args.rng,
@@ -294,7 +310,7 @@ export function generateFullRikishi(args: {
       nationality
     ),
     ...createCombatStats(rikishiStats, division, archetype, profile),
-    ...createCareerHistory(records, division),
+    ...createCareerHistory(records),
   } as Rikishi;
 }
 
@@ -391,12 +407,12 @@ function createCombatStats(
   };
 }
 
-function createCareerHistory(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  records: { careerWins: number; careerLosses: number; yushoCount: number; divisionRecords?: any },
-
-  _division: Division
-) {
+function createCareerHistory(records: {
+  careerWins: number;
+  careerLosses: number;
+  yushoCount: number;
+  divisionRecords?: DivisionRecords;
+}) {
   return {
     careerWins: records.careerWins,
     careerLosses: records.careerLosses,
@@ -436,13 +452,12 @@ function createCareerHistory(
  * This is the final step of the recruitment pipeline.
  */
 export function convertCandidateToRikishi(args: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  candidate: any; // TalentCandidate
+  candidate: TalentCandidate;
   rng: SeededRNG;
   currentYear: number;
   heyaId: string;
 }): Rikishi {
-  const { candidate, rng, currentYear: _currentYear, heyaId } = args;
+  const { candidate, rng, heyaId } = args;
 
   // New recruits start at the bottom of the banzuke
   const rank: Rank = "jonokuchi";
@@ -478,7 +493,7 @@ export function convertCandidateToRikishi(args: {
       candidate.nationality
     ),
     ...createCombatStats(rikishiStats, division, candidate.archetype, candidate.combatProfile),
-    ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }, division),
+    ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }),
     heyaId,
     nationality: candidate.nationality,
     origin: candidate.originRegion,
@@ -496,20 +511,17 @@ export function convertCandidateToRikishi(args: {
 /**
  * Generates a single TalentCandidate for the recruitment pools.
  */
+
 export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;
   currentYear: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  poolType: any; // TalentPoolType
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}): any {
+  poolType: TalentPoolType;
+}): TalentCandidate {
   const { id, rng, currentYear, poolType } = args;
 
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
-
-  const _statsBase = generateRikishiStats({ rng, rank: "jonokuchi", profile });
 
   // Determine origin based on pool
   const origin =
@@ -536,15 +548,16 @@ export function generateCandidate(args: {
     visibilityBand: "hidden",
     availabilityState: "available",
 
-    scoutingStatus: "unscouted",
-
     // Core combat stats (masked by visibility in UI)
     archetype,
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
     combatProfile: profile,
 
-    // Potentials
-    potentialGrade: seededPick(rng, ["S", "A", "B", "C", "D"]),
+    reputationSeed: rng.int(0, 100),
+    heightPotentialCm: 170 + rng.int(0, 30),
+    weightPotentialKg: 80 + rng.int(0, 40),
+    talentSeed: rng.int(0, 100),
+    temperament: { discipline: rng.int(0, 100), volatility: rng.int(0, 100) },
 
     competingSuitors: [],
     tags: rng.next() > 0.8 ? ["amateur_star"] : [],

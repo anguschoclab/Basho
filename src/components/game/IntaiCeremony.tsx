@@ -12,17 +12,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Crown, Award, Star, Scissors, Heart } from "lucide-react";
+import { Crown, Scissors, Heart } from "lucide-react";
+import { RikishiName, StableName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 
 /** Defines the structure for intai ceremony props. */
 interface IntaiCeremonyProps {
   rikishi: UIRikishi;
   reason: string;
-  world: WorldState;
+  heyaName: string;
+  isPlayerRikishi: boolean;
   open: boolean;
   onClose: () => void;
 }
@@ -72,11 +72,16 @@ function getCareerNarrative(r: UIRikishi, reason: string): string[] {
 
 /**
  * intai ceremony.
- *  * @param { rikishi, reason, world, open, onClose } - The { rikishi, reason, world, open, on close }.
+ *  * @param { rikishi, reason, heyaName, isPlayerRikishi, open, onClose } - The component props.
  */
-export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCeremonyProps) {
-  const heya = world.heyas.get(rikishi.heyaId);
-  const isPlayerRikishi = rikishi.heyaId === world.playerHeyaId;
+export function IntaiCeremony({
+  rikishi,
+  reason,
+  heyaName,
+  isPlayerRikishi,
+  open,
+  onClose,
+}: IntaiCeremonyProps) {
   const narrative = useMemo(() => getCareerNarrative(rikishi, reason), [rikishi, reason]);
   const rankInfo = RANK_HIERARCHY[rikishi.rank];
   const isSekitori = rankInfo?.isSekitori ?? false;
@@ -89,7 +94,9 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
             <Scissors className="h-5 w-5 text-muted-foreground" />
             引退 — Intai Ceremony
           </DialogTitle>
-          <DialogDescription>{rikishi.shikona} bids farewell to the dohyō</DialogDescription>
+          <DialogDescription>
+            <RikishiName id={rikishi.id} name={rikishi.shikona} /> bids farewell to the dohyō
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -102,12 +109,16 @@ export function IntaiCeremony({ rikishi, reason, world, open, onClose }: IntaiCe
                 <Crown className="h-7 w-7 text-muted-foreground" />
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-display font-bold">{rikishi.shikona}</h3>
+                <h3 className="text-2xl font-display font-bold">
+                  <RikishiName id={rikishi.id} name={rikishi.shikona} />
+                </h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="outline" className="capitalize">
                     {rankInfo?.nameJa ?? rikishi.rank}
                   </Badge>
-                  <span>{heya?.name ?? "Unknown Stable"}</span>
+                  <span>
+                    <StableName id={rikishi.heyaId} name={heyaName} />
+                  </span>
                   {isPlayerRikishi && (
                     <Badge className="bg-primary/20 text-primary text-xs">Your Rikishi</Badge>
                   )}

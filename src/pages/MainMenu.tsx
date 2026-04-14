@@ -20,14 +20,16 @@ import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
 import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
-import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import { RANK_HIERARCHY, projectHeyaRosterWithAge } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
 
 export default function MainMenu() {
   const navigate = useNavigate();
-  const game = useGame() as any;
-  const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } = game;
+  const game = useGame();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- GameContextValue type mismatch
+  const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
+    game as any;
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);
@@ -44,10 +46,12 @@ export default function MainMenu() {
     } else if (state.world?.seed && seed !== state.world.seed) {
       setSeed(state.world.seed);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally omitting createWorld and seed
   }, [state?.world]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];
+
     return Array.from(state.world.heyas.values()) as Heya[];
   }, [state?.world]);
 
@@ -58,6 +62,7 @@ export default function MainMenu() {
       let count = 0;
       for (const rid of (h.rikishiIds ?? []) as string[]) {
         const r = state.world.rikishi.get(rid);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RANK_HIERARCHY type mismatch
         if (r && (RANK_HIERARCHY as any)?.[r.rank]?.isSekitori) count += 1;
       }
       map.set(h.id, count);
@@ -158,7 +163,6 @@ export default function MainMenu() {
               loadFromAutosave={loadFromAutosave}
               hasAutosave={hasAutosave}
               onLoadSuccess={() => navigate({ to: "/" })}
-              loadWorldDirect={game.loadWorldDirect}
               createWorld={createWorld}
             />
           </div>
@@ -352,7 +356,9 @@ export default function MainMenu() {
           onClose={() => setPreviewHeya(null)}
           onConfirm={beginWithHeya}
           sekitoriCount={previewHeya ? (sekitoriCounts.get(previewHeya.id) ?? 0) : 0}
-          world={state.world}
+          rosterWithAge={
+            previewHeya && state.world ? projectHeyaRosterWithAge(state.world, previewHeya.id) : []
+          }
         />
 
         <footer className="w-full border-t border-border/20 py-12 px-6 flex flex-col items-center opacity-30 gap-1">

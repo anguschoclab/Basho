@@ -39,22 +39,16 @@ const LeaderboardRow = React.memo(
           {i + 1}
         </span>
         {i === 0 && <Crown className="h-3.5 w-3.5 text-gold" />}
-        <RikishiName
-          id={id}
-          name={shikona}
-          className="flex-1 font-medium truncate"
-        />
+        <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
         <span className="font-mono text-muted-foreground tabular-nums">
           {wins}-{losses}
         </span>
         {isPlayer && (
-          <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">
-            YOU
-          </Badge>
+          <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
         )}
       </div>
     );
-  },
+  }
 );
 
 export function BashoWidget() {
@@ -63,10 +57,10 @@ export function BashoWidget() {
   const headerAction = useMemo(
     () => ({
       label: "View",
-      onClick: () => navigate({ to: "/basho" as any }),
+      onClick: () => navigate({ to: "/basho" }),
       tooltip: "Review current tournament standings and bracket details",
     }),
-    [navigate],
+    [navigate]
   );
   const world = state.world;
 
@@ -84,7 +78,7 @@ export function BashoWidget() {
     for (const m of matches) {
       if (m.result) {
         completedCount++;
-        if ((m.result as any)?.isKinboshi) kinboshi++;
+        if ((m.result as { isKinboshi?: boolean })?.isKinboshi) kinboshi++;
         if (m.result?.upset) upsets++;
       }
     }
@@ -103,7 +97,7 @@ export function BashoWidget() {
       injuries,
       top5: standingsArr.slice(0, 5),
     };
-  }, [world?.currentBasho?.day, world?.currentBasho?.matches?.length]);
+  }, [world]);
 
   if (!world) return null;
 
@@ -114,9 +108,7 @@ export function BashoWidget() {
           <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
             <Trophy className="h-6 w-6 text-muted-foreground/30" />
           </div>
-          <div className="text-sm text-muted-foreground font-medium">
-            No active basho
-          </div>
+          <div className="text-sm text-muted-foreground font-medium">No active basho</div>
           <div className="text-xs text-muted-foreground/60 mt-1">
             Advance time to begin the tournament
           </div>
@@ -160,17 +152,11 @@ export function BashoWidget() {
             label: "Injuries",
             value: stats.injuries,
             icon: HeartPulse,
-            color:
-              stats.injuries > 2 ? "text-destructive" : "text-muted-foreground",
+            color: stats.injuries > 2 ? "text-destructive" : "text-muted-foreground",
           },
         ].map((s) => (
-          <div
-            key={s.label}
-            className="text-center p-1.5 rounded-md bg-muted/30"
-          >
-            <div className={`text-lg font-bold font-display ${s.color}`}>
-              {s.value}
-            </div>
+          <div key={s.label} className="text-center p-1.5 rounded-md bg-muted/30">
+            <div className={`text-lg font-bold font-display ${s.color}`}>{s.value}</div>
             <div className="text-[10px] text-muted-foreground">{s.label}</div>
           </div>
         ))}

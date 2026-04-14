@@ -1,25 +1,15 @@
 // ProgressionTracker.tsx — Ozeki Run, Yokozuna Deliberation, Kadoban Drama narratives
 // Shows multi-season progression arcs for the player's rikishi
 
-import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Crown, ShieldAlert, TrendingUp, Flame, AlertTriangle } from "lucide-react";
+import { Crown, ShieldAlert, TrendingUp, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
-import type { OzekiKadobanMap } from "@/engine/banzuke";
 import React from "react";
-import {
-  OzekiRunCandidate,
-  RANK_HIERARCHY,
-  YokozunaCandidate,
-  getKadobanDrama,
-  getOzekiRunCandidates,
-  getYokozunaCandidates,
-} from "@/presenters/uiDigest";
+import { OzekiRunCandidate, RANK_HIERARCHY, YokozunaCandidate } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
 
 const YokozunaRow = React.memo(
   ({
@@ -89,7 +79,7 @@ const OzekiRow = React.memo(
             <RikishiName id={rikishiId} name={shikona} />
           </span>
           <Badge variant="outline" className="capitalize text-xs">
-            {RANK_HIERARCHY[rank]?.nameJa ?? rank}
+            {RANK_HIERARCHY[rank as Rank]?.nameJa ?? rank}
           </Badge>
           {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
         </div>
@@ -143,22 +133,22 @@ const KadobanRow = React.memo(
 
 /** Defines the structure for progression tracker props. */
 interface ProgressionTrackerProps {
-  world: WorldState;
+  ozekiRuns: OzekiRunCandidate[];
+  yokozunaCandidates: YokozunaCandidate[];
+  kadobanDrama: Array<{ rikishi: UIRikishi; narrative: string; isDemoted: boolean }>;
+  playerHeyaId: string;
 }
-
-/** Defines the structure for ozeki run candidate. */
-
-/** Defines the structure for yokozuna candidate. */
 
 /**
  * progression tracker.
- *  * @param { world } - The { world }.
+ *  * @param { ozekiRuns, yokozunaCandidates, kadobanDrama, playerHeyaId } - The computed data from UIDigest.
  */
-export function ProgressionTracker({ world }: ProgressionTrackerProps) {
-  const ozekiRuns = useMemo(() => getOzekiRunCandidates(world), [world]);
-  const yokozunaCandidates = useMemo(() => getYokozunaCandidates(world), [world]);
-  const kadobanDrama = useMemo(() => getKadobanDrama(world), [world]);
-
+export function ProgressionTracker({
+  ozekiRuns,
+  yokozunaCandidates,
+  kadobanDrama,
+  playerHeyaId,
+}: ProgressionTrackerProps) {
   const hasContent =
     ozekiRuns.length > 0 || yokozunaCandidates.length > 0 || kadobanDrama.length > 0;
   if (!hasContent) return null;
@@ -186,7 +176,7 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
                     rikishiId={c.rikishi.id}
                     shikona={c.rikishi.shikona}
                     isStrong={c.isStrong}
-                    isPlayer={c.rikishi.heyaId === world.playerHeyaId}
+                    isPlayer={c.rikishi.heyaId === playerHeyaId}
                     narrative={c.narrative}
                     consecutiveYushos={c.consecutiveYushos}
                     recentYushos={c.recentYushos}
@@ -220,7 +210,7 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
                     rikishiId={c.rikishi.id}
                     shikona={c.rikishi.shikona}
                     rank={c.rikishi.rank}
-                    isPlayer={c.rikishi.heyaId === world.playerHeyaId}
+                    isPlayer={c.rikishi.heyaId === playerHeyaId}
                     narrative={c.narrative}
                     progress={c.progress}
                     recentWins={c.recentWins}
@@ -255,7 +245,7 @@ export function ProgressionTracker({ world }: ProgressionTrackerProps) {
                     rikishiId={entry.rikishi.id}
                     shikona={entry.rikishi.shikona}
                     isDemoted={entry.isDemoted}
-                    isPlayer={entry.rikishi.heyaId === world.playerHeyaId}
+                    isPlayer={entry.rikishi.heyaId === playerHeyaId}
                     narrative={entry.narrative}
                   />
                 );

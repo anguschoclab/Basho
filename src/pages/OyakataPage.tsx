@@ -10,6 +10,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown } from "lucide-react";
 import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
+import { RikishiName, OyakataName, StableName } from "@/components/ClickableName";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -73,7 +74,9 @@ export default function OyakataPage() {
 
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold">{selectedOyakata.name}</h1>
+              <h1 className="text-4xl font-bold">
+                <OyakataName id={selectedOyakata.id} name={selectedOyakata.name} />
+              </h1>
               <Badge variant="outline" className="text-lg capitalize">
                 {selectedOyakata.archetype?.replace("_", " ")}
               </Badge>
@@ -176,12 +179,19 @@ export default function OyakataPage() {
                 {mentorshipPairs.map((pair) => (
                   <div key={pair.mentor.id} className="p-4 bg-muted/30 rounded-lg">
                     <div className="font-medium mb-2">
-                      {pair.mentor.shikona || pair.mentor.name}
+                      <RikishiName
+                        id={pair.mentor.id}
+                        name={pair.mentor.shikona || pair.mentor.name || "Unknown"}
+                      />
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {pair.mentees.map((mentee) => (
                         <Badge key={mentee.id} variant="outline" className="text-sm">
-                          {mentee.shikona || mentee.name} ({mentee.rank})
+                          <RikishiName
+                            id={mentee.id}
+                            name={mentee.shikona || mentee.name || "Unknown"}
+                          />{" "}
+                          ({mentee.rank})
                         </Badge>
                       ))}
                     </div>
@@ -217,7 +227,7 @@ export default function OyakataPage() {
                         <div className="flex-1">
                           <p className="font-medium">{o.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {heya?.name || "Unknown Stable"}
+                            {heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"}
                           </p>
                         </div>
                       </div>

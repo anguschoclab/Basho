@@ -5,15 +5,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PerceptionSnapshot } from "@/engine/perception";
-import {
-  Swords,
-  Search,
-  Shield,
-  Flame,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-} from "lucide-react";
+import { Swords, Search, Shield, Flame } from "lucide-react";
 import React, { useMemo } from "react";
 import { getCachedPerception } from "@/presenters/uiDigest";
 
@@ -43,8 +35,7 @@ const RivalRow = React.memo(
     trainingIntensity: string;
     scoutingPriority: string;
   }) => {
-    const intensityInfo =
-      INTENSITY_DISPLAY[trainingIntensity] ?? INTENSITY_DISPLAY.balanced;
+    const intensityInfo = INTENSITY_DISPLAY[trainingIntensity] ?? INTENSITY_DISPLAY.balanced;
     const moraleColor = MORALE_COLOR[moraleBand] ?? "text-muted-foreground";
 
     return (
@@ -55,10 +46,7 @@ const RivalRow = React.memo(
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm truncate">{heyaName}</span>
-            <Badge
-              variant="outline"
-              className="text-[10px] shrink-0 capitalize"
-            >
+            <Badge variant="outline" className="text-[10px] shrink-0 capitalize">
               {prestigeBand}
             </Badge>
           </div>
@@ -119,17 +107,14 @@ const RivalRow = React.memo(
               !
             </Badge>
           )}
-          {(stableMediaHeatBand === "blazing" ||
-            stableMediaHeatBand === "hot") && (
+          {(stableMediaHeatBand === "blazing" || stableMediaHeatBand === "hot") && (
             <Flame className="h-3.5 w-3.5 text-destructive/70" />
           )}
-          {rivalryPressureBand === "fierce" && (
-            <Swords className="h-3.5 w-3.5 text-destructive" />
-          )}
+          {rivalryPressureBand === "fierce" && <Swords className="h-3.5 w-3.5 text-destructive" />}
         </div>
       </div>
     );
-  },
+  }
 );
 
 const INTENSITY_DISPLAY: Record<
@@ -145,13 +130,12 @@ const INTENSITY_DISPLAY: Record<
   punishing: { label: "Punishing", variant: "destructive" },
 };
 
-const SCOUTING_DISPLAY: Record<string, { label: string; icon: typeof Search }> =
-  {
-    none: { label: "Inactive", icon: Search },
-    passive: { label: "Passive", icon: Search },
-    active: { label: "Active", icon: Search },
-    aggressive: { label: "Aggressive", icon: Search },
-  };
+const SCOUTING_DISPLAY: Record<string, { label: string; icon: typeof Search }> = {
+  none: { label: "Inactive", icon: Search },
+  passive: { label: "Passive", icon: Search },
+  active: { label: "Active", icon: Search },
+  aggressive: { label: "Aggressive", icon: Search },
+};
 
 const MORALE_COLOR: Record<string, string> = {
   inspired: "text-primary",
@@ -184,12 +168,8 @@ export function RivalStablesPanel() {
 
       // Infer NPC training intensity from perception bands (mirrors npcAI logic)
       let trainingIntensity = "balanced";
-      if (perception.welfareRiskBand === "critical")
-        trainingIntensity = "conservative";
-      else if (
-        perception.moraleBand === "mutinous" ||
-        perception.moraleBand === "disgruntled"
-      )
+      if (perception.welfareRiskBand === "critical") trainingIntensity = "conservative";
+      else if (perception.moraleBand === "mutinous" || perception.moraleBand === "disgruntled")
         trainingIntensity = "balanced";
       else if (
         perception.rosterStrengthBand === "dominant" ||
@@ -198,35 +178,22 @@ export function RivalStablesPanel() {
         trainingIntensity = "intensive";
 
       let scoutingPriority = "passive";
-      if (
-        perception.runwayBand === "desperate" ||
-        perception.runwayBand === "critical"
-      )
+      if (perception.runwayBand === "desperate" || perception.runwayBand === "critical")
         scoutingPriority = "none";
-      else if (
-        perception.rosterSize < 8 ||
-        perception.rosterStrengthBand === "weak"
-      )
+      else if (perception.rosterSize < 8 || perception.rosterStrengthBand === "weak")
         scoutingPriority = "aggressive";
-      else if (perception.rosterStrengthBand === "dominant")
-        scoutingPriority = "passive";
+      else if (perception.rosterStrengthBand === "dominant") scoutingPriority = "passive";
       else scoutingPriority = "active";
 
       entries.push({ perception, trainingIntensity, scoutingPriority });
     }
 
     // Sort by prestige band (best first)
-    const PRESTIGE_ORDER = [
-      "elite",
-      "respected",
-      "modest",
-      "struggling",
-      "unknown",
-    ];
+    const PRESTIGE_ORDER = ["elite", "respected", "modest", "struggling", "unknown"];
     entries.sort(
       (a, b) =>
         PRESTIGE_ORDER.indexOf(a.perception.prestigeBand) -
-        PRESTIGE_ORDER.indexOf(b.perception.prestigeBand),
+        PRESTIGE_ORDER.indexOf(b.perception.prestigeBand)
     );
 
     return entries.slice(0, 8); // Show top 8 rivals

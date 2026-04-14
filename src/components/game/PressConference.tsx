@@ -1,11 +1,9 @@
 // PressConference.tsx — Interactive media/press conference events
 import { useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Newspaper, Mic, Camera, MessageSquare, TrendingUp, TrendingDown } from "lucide-react";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Mic, MessageSquare, TrendingUp, Camera, TrendingDown, Newspaper } from "lucide-react";
 
 /** Defines the structure for press question. */
 interface PressQuestion {
@@ -23,26 +21,24 @@ interface PressQuestion {
 
 /**
  * Generate press questions.
- *  * @param world - The World.
+ *  * @param pressData - The press conference data from UIDigest.
  *  * @returns The result.
  */
-function generatePressQuestions(world: WorldState): PressQuestion[] {
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+function generatePressQuestions(pressData: {
+  playerHeya: {
+    name: string;
+    rikishiIds?: string[];
+  } | null;
+  lastBasho: {
+    yusho?: string;
+  } | null;
+  rosterStats: { totalWins: number; totalLosses: number; winRate: number };
+}): PressQuestion[] {
+  const { playerHeya, lastBasho, rosterStats } = pressData;
   if (!playerHeya) return [];
 
   const questions: PressQuestion[] = [];
-  const lastBasho = world.history[world.history.length - 1];
-
-  // Question about basho performance
-  const totalWins = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
-    const r = world.rikishi.get(id);
-    return sum + (r?.currentBashoWins ?? 0);
-  }, 0);
-  const totalLosses = (playerHeya.rikishiIds ?? []).reduce((sum, id) => {
-    const r = world.rikishi.get(id);
-    return sum + (r?.currentBashoLosses ?? 0);
-  }, 0);
-  const winRate = totalWins + totalLosses > 0 ? totalWins / (totalWins + totalLosses) : 0.5;
+  const winRate = rosterStats.winRate;
 
   questions.push({
     id: "basho_performance",
@@ -119,17 +115,29 @@ function generatePressQuestions(world: WorldState): PressQuestion[] {
 
 /** Defines the structure for press conference props. */
 interface PressConferenceProps {
-  world: WorldState;
+  pressData: {
+    playerHeya: {
+      name: string;
+      rikishiIds?: string[];
+    } | null;
+    lastBasho: {
+      yusho?: string;
+    } | null;
+    rosterStats: { totalWins: number; totalLosses: number; winRate: number };
+  } | null;
   open: boolean;
   onClose: (effects: { reputation: number; morale: number; mediaHeat: number }) => void;
 }
 
 /**
  * press conference.
- *  * @param { world, open, onClose } - The { world, open, on close }.
+ *  * @param { pressData, open, onClose } - The component props.
  */
-export function PressConference({ world, open, onClose }: PressConferenceProps) {
-  const questions = useMemo(() => generatePressQuestions(world), [world]);
+export function PressConference({ pressData, open, onClose }: PressConferenceProps) {
+  const questions = useMemo(() => {
+    if (!pressData) return [];
+    return generatePressQuestions(pressData);
+  }, [pressData]);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [totalEffects, setTotalEffects] = useState({ reputation: 0, morale: 0, mediaHeat: 0 });

@@ -1,11 +1,13 @@
 /**
  * src/utils/engineUtils.ts
- * 
+ *
  * Centralized utility functions for engine-related UI logic.
  * Ensures consistent seed generation, rank sorting, and data formatting.
  */
 
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
+import type { Side } from "@/engine/types/index";
 
 /**
  * Generates a deterministic-friendly seed string.
@@ -32,8 +34,8 @@ export function safeShortSeed(seed: string | undefined | null, maxLength = 14): 
  * Uses the canonical tier from RANK_HIERARCHY. Lower tier = Higher rank.
  * @param rank - The rank string (e.g., "yokozuna")
  */
-export function safeRankSortKey(rank: any): number {
-  const tier = (RANK_HIERARCHY as any)?.[rank]?.tier;
+export function safeRankSortKey(rank: Rank | string): number {
+  const tier = (RANK_HIERARCHY as Record<string, { tier: number }>)[rank]?.tier;
   return Number.isFinite(tier) ? tier : 999;
 }
 
@@ -47,12 +49,19 @@ export function formatYenToMan(amount: number): string {
   return `${man.toLocaleString("en-US", { maximumFractionDigits: 1 })}万`;
 }
 
+interface RikishiForSort {
+  rank: Rank | string;
+  rankNumber?: number;
+  side?: Side;
+  shikona?: string;
+}
+
 /**
  * Stable sort for a list of rikishi based on rank, then side.
  * @param a - Rikishi A
  * @param b - Rikishi B
  */
-export function sortRikishiByRank(a: any, b: any): number {
+export function sortRikishiByRank(a: RikishiForSort, b: RikishiForSort): number {
   const ta = safeRankSortKey(a.rank);
   const tb = safeRankSortKey(b.rank);
   if (ta !== tb) return ta - tb;

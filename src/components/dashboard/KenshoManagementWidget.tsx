@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
+import { RikishiName } from "@/components/ClickableName";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
 
@@ -32,6 +33,7 @@ export function KenshoManagementWidget() {
 
   // Get recent bout results with kensho
   const recentBoutsWithKensho: Array<{
+    rikishiId: string;
     rikishiName: string;
     boutId: string;
     kenshoEnvelopes: number;
@@ -50,6 +52,7 @@ export function KenshoManagementWidget() {
 
       if (eastRikishi && heya.rikishiIds?.includes(eastRikishi.id) && result.kenshoEnvelopes > 0) {
         recentBoutsWithKensho.push({
+          rikishiId: eastRikishi.id,
           rikishiName: eastRikishi.shikona || eastRikishi.id,
           boutId: match.boutId,
           kenshoEnvelopes: result.kenshoEnvelopes,
@@ -59,6 +62,7 @@ export function KenshoManagementWidget() {
 
       if (westRikishi && heya.rikishiIds?.includes(westRikishi.id) && result.kenshoEnvelopes > 0) {
         recentBoutsWithKensho.push({
+          rikishiId: westRikishi.id,
           rikishiName: westRikishi.shikona || westRikishi.id,
           boutId: match.boutId,
           kenshoEnvelopes: result.kenshoEnvelopes,
@@ -133,7 +137,9 @@ export function KenshoManagementWidget() {
                       className="flex items-center justify-between p-2 rounded border bg-card"
                     >
                       <div>
-                        <div className="font-medium text-sm">{bout.rikishiName}</div>
+                        <div className="font-medium text-sm">
+                          <RikishiName id={bout.rikishiId} name={bout.rikishiName} />
+                        </div>
                         <div className="text-xs text-muted-foreground">{bout.boutId}</div>
                       </div>
                       <div className="text-right">
@@ -172,7 +178,9 @@ export function KenshoManagementWidget() {
                       className="flex items-center justify-between p-2 rounded border bg-card"
                     >
                       <div>
-                        <div className="font-medium text-sm">{rikishi.shikona || rikishi.id}</div>
+                        <div className="font-medium text-sm">
+                          <RikishiName id={rikishi.id} name={rikishi.shikona || rikishi.id} />
+                        </div>
                         <Badge variant="outline" className="text-xs">
                           {rank}
                         </Badge>

@@ -105,12 +105,14 @@ export interface UIRikishi {
     ginboshiConceded: number;
   };
   salaryBreakdown: SalaryBreakdown;
-  careerHistory: any[];
-  milestones: any[];
+  careerHistory: unknown[];
+  milestones: unknown[];
   h2h?: Record<string, { wins: number; losses: number; streak: number }>;
 }
 
-function calculateMostFrequentKimarite(history: any[]): { kimarite: string; percentage: number }[] {
+function calculateMostFrequentKimarite(
+  history: unknown[]
+): { kimarite: string; percentage: number }[] {
   if (!history || history.length === 0) return [];
   const winCounts: Record<string, number> = {};
   let totalWins = 0;
@@ -245,7 +247,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const archEntry = BardEngine.getRegistryEntry("archetypes", combatArchetype);
   const archetypeName = archEntry?.label ?? combatArchetype;
 
-  const derivedArchetype = r.derivedArchetype || ("all_rounder" as any);
+  const derivedArchetype = r.derivedArchetype || "all_rounder";
   const dArchEntry = BardEngine.getRegistryEntry("archetypes", derivedArchetype);
   const derivedArchetypeName = dArchEntry?.label ?? derivedArchetype;
 
@@ -434,7 +436,7 @@ export function projectRosterEntry(
     archetypeLabel:
       BardEngine.getRegistryEntry(
         "archetypes",
-        r.combatProfile?.archetype ?? r.archetype ?? (r as any).derivedArchetype
+        r.combatProfile?.archetype ?? r.archetype ?? r.derivedArchetype
       )?.label || "Rikishi",
     rankDelta,
   };

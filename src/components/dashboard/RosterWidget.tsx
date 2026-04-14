@@ -87,7 +87,7 @@ export function RosterWidget() {
   const headerAction = useMemo(
     () => ({
       label: "All Rikishi",
-      onClick: () => navigate({ to: "/rikishi" as any }),
+      onClick: () => navigate({ to: "/rikishi" }),
     }),
     [navigate]
   );

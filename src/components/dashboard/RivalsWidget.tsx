@@ -23,11 +23,7 @@ const RivalRow = React.memo(
   }) => {
     return (
       <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors">
-        <StableName
-          id={id}
-          name={name}
-          className="font-medium flex-1 truncate"
-        />
+        <StableName id={id} name={name} className="font-medium flex-1 truncate" />
         <Badge variant="outline" className="text-[10px] capitalize shrink-0">
           {prestige}
         </Badge>
@@ -39,7 +35,7 @@ const RivalRow = React.memo(
         )}
       </div>
     );
-  },
+  }
 );
 
 /** rivals widget. */
@@ -49,10 +45,10 @@ export function RivalsWidget() {
   const headerAction = useMemo(
     () => ({
       label: "All",
-      onClick: () => navigate({ to: "/rivalries" as any }),
+      onClick: () => navigate({ to: "/rivalries" }),
       tooltip: "Analyze rival stables and their relative prestige",
     }),
-    [navigate],
+    [navigate]
   );
   const world = state.world;
 

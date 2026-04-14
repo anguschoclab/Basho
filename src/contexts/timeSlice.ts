@@ -1,8 +1,6 @@
 import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
-import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
-import { autosaveWithSignal } from "./gameHelpers";
 
 export function timeSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -36,7 +34,8 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
       if (!state.world) return state;
       const world = cloneWorldForTick(state.world);
       const hPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
-      return { ...state, world, phase: hPhase as any }; // Cast for strict phase typing if needed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase type narrowing limitation
+      return { ...state, world, phase: hPhase as any };
     }
 
     case "RUN_AUTO_SIM": {

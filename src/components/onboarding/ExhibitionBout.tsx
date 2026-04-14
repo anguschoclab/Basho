@@ -4,7 +4,7 @@
  * with step-by-step PbP log entries and MentorOverlay tooltips.
  */
 
-import React, { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
@@ -21,12 +21,12 @@ const MENTOR_SEQUENCE: MentorStep[] = ["stamina", "grip", "momentum", "basho_rec
 /** Picks two makuuchi rikishi from the world to fight. */
 function pickExhibitionPair(world: import("@/engine/types/world").WorldState) {
   const candidates = Array.from(world.rikishi.values()).filter(
-    r => r.division === "makuuchi" || r.division === "juryo"
+    (r) => r.division === "makuuchi" || r.division === "juryo"
   );
   if (candidates.length < 2) {
     // Fallback: any two rikishi
     const all = Array.from(world.rikishi.values());
-    return all.length >= 2 ? [all[0], all[1]] as const : null;
+    return all.length >= 2 ? ([all[0], all[1]] as const) : null;
   }
   return [candidates[0], candidates[1]] as const;
 }
@@ -39,7 +39,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
   const { state, advanceTutorialStep, setTutorialFlag, completeTutorial } = useGame();
   const world = state.world;
 
-  const pair = useMemo(() => world ? pickExhibitionPair(world) : null, [world]);
+  const pair = useMemo(() => (world ? pickExhibitionPair(world) : null), [world]);
 
   // Resolve bout once, deterministically, on mount
   const boutResult = useMemo<BoutResult | null>(() => {
@@ -66,7 +66,8 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
     } as unknown as BashoState;
 
     try {
-      return resolveBout(ctx, east, west, mockBasho);
+      const resolved = resolveBout(ctx, east, west, mockBasho);
+      return resolved?.result ?? null;
     } catch {
       return null;
     }
@@ -75,7 +76,6 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
   const [revealedCount, setRevealedCount] = useState(0);
   const [mentorStepIdx, setMentorStepIdx] = useState(0);
   const [mentorDismissed, setMentorDismissed] = useState(false);
-  const [done, setDone] = useState(false);
 
   const logLines = boutResult?.pbpLines ?? [];
   const isFullyRevealed = revealedCount >= logLines.length;
@@ -86,9 +86,14 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
 
   const handleNextLine = useCallback(() => {
     if (!isFullyRevealed) {
-      setRevealedCount(c => c + 1);
+      setRevealedCount((c) => c + 1);
     }
   }, [isFullyRevealed]);
+
+  const handleMentorDismiss = useCallback(() => {
+    setMentorDismissed(true);
+    setTutorialFlag("seenBashoRecordTooltip");
+  }, [setTutorialFlag]);
 
   const handleMentorNext = useCallback(() => {
     if (mentorStepIdx < MENTOR_SEQUENCE.length - 1) {
@@ -100,22 +105,16 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
       };
       const current = MENTOR_SEQUENCE[mentorStepIdx];
       if (current && flagMap[current]) setTutorialFlag(flagMap[current]);
-      setMentorStepIdx(i => i + 1);
+      setMentorStepIdx((i) => i + 1);
     } else {
       handleMentorDismiss();
     }
-  }, [mentorStepIdx, setTutorialFlag]);
-
-  const handleMentorDismiss = useCallback(() => {
-    setMentorDismissed(true);
-    setTutorialFlag("seenBashoRecordTooltip");
-  }, [setTutorialFlag]);
+  }, [mentorStepIdx, setTutorialFlag, handleMentorDismiss]);
 
   const handleFinish = useCallback(() => {
     setTutorialFlag("finishedExhibition");
     advanceTutorialStep("FIRST_BASHO_STARTED");
     completeTutorial();
-    setDone(true);
     onComplete();
   }, [setTutorialFlag, advanceTutorialStep, completeTutorial, onComplete]);
 
@@ -146,15 +145,23 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
       {/* Rikishi matchup */}
       <div className="flex items-center gap-4">
         <div className="flex-1 text-center">
-          <div className="text-lg font-display font-black uppercase">{east.shikona ?? east.name}</div>
-          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">{east.rank}</Badge>
+          <div className="text-lg font-display font-black uppercase">
+            {east.shikona ?? east.name}
+          </div>
+          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">
+            {east.rank}
+          </Badge>
         </div>
         <div className="shrink-0">
           <Swords className="h-6 w-6 text-muted-foreground" />
         </div>
         <div className="flex-1 text-center">
-          <div className="text-lg font-display font-black uppercase">{west.shikona ?? west.name}</div>
-          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">{west.rank}</Badge>
+          <div className="text-lg font-display font-black uppercase">
+            {west.shikona ?? west.name}
+          </div>
+          <Badge variant="outline" className="text-[9px] uppercase tracking-wider mt-1">
+            {west.rank}
+          </Badge>
         </div>
       </div>
 
@@ -168,11 +175,13 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
               i === revealedCount - 1 ? "text-foreground font-medium" : "text-muted-foreground"
             )}
           >
-            {typeof line === "string" ? line : (line as any).text ?? JSON.stringify(line)}
+            {typeof line === "string" ? line : JSON.stringify(line)}
           </div>
         ))}
         {revealedCount === 0 && (
-          <p className="text-sm text-muted-foreground italic">Press "Next" to watch the bout unfold...</p>
+          <p className="text-sm text-muted-foreground italic">
+            Press "Next" to watch the bout unfold...
+          </p>
         )}
       </div>
 
@@ -198,7 +207,10 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
           {revealedCount}/{logLines.length} actions
         </p>
         {!isFullyRevealed ? (
-          <Button onClick={handleNextLine} className="gap-2 font-display font-black uppercase tracking-wide">
+          <Button
+            onClick={handleNextLine}
+            className="gap-2 font-display font-black uppercase tracking-wide"
+          >
             Next <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (

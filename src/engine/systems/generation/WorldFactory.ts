@@ -6,7 +6,7 @@
 import { SeededRNG, rngFromSeed } from "../../rng";
 import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";
-import { Oyakata } from "../../types/oyakata";
+import { Oyakata, OyakataArchetype } from "../../types/oyakata";
 import { Rikishi } from "../../types/rikishi";
 import { generateOyakataName } from "../../shikona";
 import { seededPick } from "../../utils/random";
@@ -38,8 +38,7 @@ export function createHeyaWithOyakata(args: {
     "nurturer",
     "tyrant",
     "strategist",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ]) as any;
+  ]) as OyakataArchetype;
   const age = 45 + rng.int(0, 20);
 
   const oyakata = generateOyakata(
@@ -179,8 +178,6 @@ export function createRosters(
     { rank: "jonokuchi", division: "jonokuchi", count: 150 }, // Increased from 110 for more junior wrestlers
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let totalGenerated = 0;
   rankConfigs.forEach((config) => {
     for (let i = 0; i < config.count; i++) {
       const side: Side = i % 2 === 0 ? "east" : "west";
@@ -215,7 +212,6 @@ export function createRosters(
       r.heyaId = heyaId;
       heya?.rikishiIds?.push(r.id);
       rikishiMap.set(r.id, r);
-      totalGenerated++;
     }
   });
 
@@ -263,7 +259,7 @@ export function generateInitialWorld(seed: string): WorldState {
     isInitialSeed: true,
     sponsorPool: generateInitialSponsorPool(seed),
     trainingState: new Map(),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Object has extra properties (planetRating, isInitialSeed) not in WorldState interface
   } as any;
 
   // 3. Establish Initial Koenkai Relationships (Constitution A6)

@@ -8,35 +8,135 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Flame, Swords, Users, Trophy, Zap, Shield, Search, X } from "lucide-react";
-import type { RivalryPairState, RivalryHeatBand, RivalryTone, RivalryTrigger } from "@/engine/rivalries";
+import type {
+  RivalryPairState,
+  RivalryHeatBand,
+  RivalryTone,
+  RivalryTrigger,
+} from "@/engine/rivalries";
 import { clamp, formatRank } from "@/presenters/uiDigest";
 
 // Display config
-const HEAT_BAND_CONFIG: Record<RivalryHeatBand, { label: string; color: string; bgColor: string; barColor: string; glowClass: string }> = {
-  inferno:   { label: "Inferno",   color: "text-destructive",      bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent", glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
-  hot:       { label: "Hot",       color: "text-accent",           bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-warning",      glowClass: "" },
-  warm:      { label: "Warm",      color: "text-warning",          bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
-  cold:      { label: "Cold",      color: "text-muted-foreground", bgColor: "bg-muted border-border",                  barColor: "bg-muted-foreground",                           glowClass: "" },
-  dormant:   { label: "Dormant",   color: "text-muted-foreground", bgColor: "bg-muted border-border",                  barColor: "bg-muted-foreground/50",                        glowClass: "" },
-  simmering: { label: "Simmering", color: "text-warning/80",       bgColor: "bg-warning/10 border-warning/20",         barColor: "bg-warning/60",                                 glowClass: "" },
-  heated:    { label: "Heated",    color: "text-warning",          bgColor: "bg-warning/15 border-warning/30",         barColor: "bg-warning",                                    glowClass: "" },
-  fierce:    { label: "Fierce",    color: "text-accent",           bgColor: "bg-accent/15 border-accent/30",           barColor: "bg-gradient-to-r from-accent to-destructive",   glowClass: "" },
-  legendary: { label: "Legendary", color: "text-destructive",      bgColor: "bg-destructive/15 border-destructive/30", barColor: "bg-gradient-to-r from-destructive to-accent",   glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]" },
+const HEAT_BAND_CONFIG: Record<
+  RivalryHeatBand,
+  { label: string; color: string; bgColor: string; barColor: string; glowClass: string }
+> = {
+  inferno: {
+    label: "Inferno",
+    color: "text-destructive",
+    bgColor: "bg-destructive/15 border-destructive/30",
+    barColor: "bg-gradient-to-r from-destructive to-accent",
+    glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]",
+  },
+  hot: {
+    label: "Hot",
+    color: "text-accent",
+    bgColor: "bg-accent/15 border-accent/30",
+    barColor: "bg-gradient-to-r from-accent to-warning",
+    glowClass: "",
+  },
+  warm: {
+    label: "Warm",
+    color: "text-warning",
+    bgColor: "bg-warning/15 border-warning/30",
+    barColor: "bg-warning",
+    glowClass: "",
+  },
+  cold: {
+    label: "Cold",
+    color: "text-muted-foreground",
+    bgColor: "bg-muted border-border",
+    barColor: "bg-muted-foreground",
+    glowClass: "",
+  },
+  dormant: {
+    label: "Dormant",
+    color: "text-muted-foreground",
+    bgColor: "bg-muted border-border",
+    barColor: "bg-muted-foreground/50",
+    glowClass: "",
+  },
+  simmering: {
+    label: "Simmering",
+    color: "text-warning/80",
+    bgColor: "bg-warning/10 border-warning/20",
+    barColor: "bg-warning/60",
+    glowClass: "",
+  },
+  heated: {
+    label: "Heated",
+    color: "text-warning",
+    bgColor: "bg-warning/15 border-warning/30",
+    barColor: "bg-warning",
+    glowClass: "",
+  },
+  fierce: {
+    label: "Fierce",
+    color: "text-accent",
+    bgColor: "bg-accent/15 border-accent/30",
+    barColor: "bg-gradient-to-r from-accent to-destructive",
+    glowClass: "",
+  },
+  legendary: {
+    label: "Legendary",
+    color: "text-destructive",
+    bgColor: "bg-destructive/15 border-destructive/30",
+    barColor: "bg-gradient-to-r from-destructive to-accent",
+    glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]",
+  },
 };
 
-const TONE_CONFIG: Record<RivalryTone, { label: string; description: string; icon: any; ja: string }> = {
-  respect:        { label: "Mutual Respect",   description: "A rivalry built on admiration and competitive fire.",    icon: Trophy,     ja: "敬意" },
-  grudge:         { label: "Grudge",           description: "Bad blood simmers beneath the surface.",                icon: Flame,      ja: "恨み" },
-  bad_blood:      { label: "Bad Blood",        description: "Open hostility — every bout is personal.",              icon: Swords,     ja: "因縁" },
-  mentor_student: { label: "Mentor vs Student", description: "The student seeks to surpass the master.",             icon: Shield,     ja: "師弟" },
-  unstable:       { label: "Volatile",         description: "Unpredictable clashes with explosive outcomes.",        icon: Zap,        ja: "不安定" },
-  public_hype:    { label: "Fan Favorite",     description: "The crowd lives for this matchup.",                     icon: Users,      ja: "人気" },
+const TONE_CONFIG: Record<
+  RivalryTone,
+  { label: string; description: string; icon: React.ElementType; ja: string }
+> = {
+  respect: {
+    label: "Mutual Respect",
+    description: "A rivalry built on admiration and competitive fire.",
+    icon: Trophy,
+    ja: "敬意",
+  },
+  grudge: {
+    label: "Grudge",
+    description: "Bad blood simmers beneath the surface.",
+    icon: Flame,
+    ja: "恨み",
+  },
+  bad_blood: {
+    label: "Bad Blood",
+    description: "Open hostility — every bout is personal.",
+    icon: Swords,
+    ja: "因縁",
+  },
+  mentor_student: {
+    label: "Mentor vs Student",
+    description: "The student seeks to surpass the master.",
+    icon: Shield,
+    ja: "師弟",
+  },
+  unstable: {
+    label: "Volatile",
+    description: "Unpredictable clashes with explosive outcomes.",
+    icon: Zap,
+    ja: "不安定",
+  },
+  public_hype: {
+    label: "Fan Favorite",
+    description: "The crowd lives for this matchup.",
+    icon: Users,
+    ja: "人気",
+  },
 };
 
 const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
-  repeat_matches: "Frequent bouts", close_finish: "Close finishes", upset: "Upsets",
-  kinboshi: "Kinboshi", title_stakes: "Title stakes", injury_incident: "Injury incident",
-  personal_history: "Personal history", heya_feud: "Stable feud",
+  repeat_matches: "Frequent bouts",
+  close_finish: "Close finishes",
+  upset: "Upsets",
+  kinboshi: "Kinboshi",
+  title_stakes: "Title stakes",
+  injury_incident: "Injury incident",
+  personal_history: "Personal history",
+  heya_feud: "Stable feud",
 };
 
 /**
@@ -53,9 +153,20 @@ function getHeatBand(heat: number): RivalryHeatBand {
 /**
  * h2 h bar.
  */
-function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; aName: string; bName: string }) {
+function H2HBar({
+  aWins,
+  bWins,
+  aName,
+  bName,
+}: {
+  aWins: number;
+  bWins: number;
+  aName: string;
+  bName: string;
+}) {
   const total = aWins + bWins;
-  if (total === 0) return <div className="text-xs text-muted-foreground text-center py-2">No bouts yet</div>;
+  if (total === 0)
+    return <div className="text-xs text-muted-foreground text-center py-2">No bouts yet</div>;
   const aPct = (aWins / total) * 100;
   const bPct = (bWins / total) * 100;
   const dominant = aWins > bWins ? "a" : bWins > aWins ? "b" : null;
@@ -63,11 +174,17 @@ function H2HBar({ aWins, bWins, aName, bName }: { aWins: number; bWins: number; 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
-        <span className={`font-display font-bold ${dominant === "a" ? "text-primary" : "text-muted-foreground"}`}>
+        <span
+          className={`font-display font-bold ${dominant === "a" ? "text-primary" : "text-muted-foreground"}`}
+        >
           {aName}
         </span>
-        <span className="font-mono text-[10px] text-muted-foreground">{total} bout{total !== 1 ? "s" : ""}</span>
-        <span className={`font-display font-bold ${dominant === "b" ? "text-primary" : "text-muted-foreground"}`}>
+        <span className="font-mono text-[10px] text-muted-foreground">
+          {total} bout{total !== 1 ? "s" : ""}
+        </span>
+        <span
+          className={`font-display font-bold ${dominant === "b" ? "text-primary" : "text-muted-foreground"}`}
+        >
           {bName}
         </span>
       </div>
@@ -98,11 +215,16 @@ function HeatGauge({ heat, band }: { heat: number; band: RivalryHeatBand }) {
   return (
     <div className="space-y-1">
       <div className="flex justify-between items-center">
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Rivalry Heat</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+          Rivalry Heat
+        </span>
         <span className={`text-[10px] font-semibold ${config.color}`}>{Math.round(heat)}%</span>
       </div>
       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-500 ${config.barColor}`} style={{ width: `${heat}%` }} />
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${config.barColor}`}
+          style={{ width: `${heat}%` }}
+        />
       </div>
     </div>
   );
@@ -127,7 +249,7 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
 
   const heyaA = world.heyas.get(rikishiA.heyaId);
   const heyaB = world.heyas.get(rikishiB.heyaId);
-  
+
   const heat = clamp(pair.heat || 0, 0, 100);
   const heatBand = getHeatBand(heat);
   const heatConfig = HEAT_BAND_CONFIG[heatBand];
@@ -139,17 +261,28 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
     .slice(0, 3)
     .filter(([t]) => t in TRIGGER_LABELS)
     .map(([t]) => t as RivalryTrigger);
-    
+
   const aWins = pair.aWins || 0;
   const bWins = pair.bWins || 0;
 
-  const rankA = formatRank({ rank: rikishiA.rank as any, side: rikishiA.side ?? "east", rankNumber: rikishiA.rankNumber ?? 0 });
-  const rankB = formatRank({ rank: rikishiB.rank as any, side: rikishiB.side ?? "east", rankNumber: rikishiB.rankNumber ?? 0 });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rank type includes yokozuna which is not a NumberedRank
+  const rankA = formatRank({
+    rank: rikishiA.rank as any,
+    side: rikishiA.side ?? "east",
+    rankNumber: rikishiA.rankNumber ?? 0,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rank type includes yokozuna which is not a NumberedRank
+  const rankB = formatRank({
+    rank: rikishiB.rank as any,
+    side: rikishiB.side ?? "east",
+    rankNumber: rikishiB.rankNumber ?? 0,
+  });
 
   return (
-    <Card className={`overflow-hidden bout-enter ${isPlayerRivalry ? "ring-1 ring-primary/30" : ""} ${heatConfig.glowClass}`}
-      style={{ animationDelay: `${index * 60}ms` }}>
+    <Card
+      className={`overflow-hidden bout-enter ${isPlayerRivalry ? "ring-1 ring-primary/30" : ""} ${heatConfig.glowClass}`}
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
       {/* Heat intensity bar at top */}
       <div className={`h-1 ${heatConfig.barColor}`} />
 
@@ -162,7 +295,9 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
               {heatConfig.label}
             </Badge>
             {isPlayerRivalry && (
-              <Badge variant="default" className="text-[10px] h-5">Your Stable</Badge>
+              <Badge variant="default" className="text-[10px] h-5">
+                Your Stable
+              </Badge>
             )}
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -179,7 +314,11 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
               <RikishiName id={rikishiA.id} name={rikishiA.shikona} />
             </div>
             <div className="text-[10px] text-muted-foreground">{rankA}</div>
-            {heyaA && <div className="text-[10px]"><StableName id={heyaA.id} name={heyaA.name} className="text-muted-foreground" /></div>}
+            {heyaA && (
+              <div className="text-[10px]">
+                <StableName id={heyaA.id} name={heyaA.name} className="text-muted-foreground" />
+              </div>
+            )}
           </div>
           <div className="shrink-0 flex flex-col items-center">
             <div className="h-10 w-10 rounded-full bg-muted/80 border border-border flex items-center justify-center">
@@ -191,7 +330,11 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
               <RikishiName id={rikishiB.id} name={rikishiB.shikona} />
             </div>
             <div className="text-[10px] text-muted-foreground">{rankB}</div>
-            {heyaB && <div className="text-[10px]"><StableName id={heyaB.id} name={heyaB.name} className="text-muted-foreground" /></div>}
+            {heyaB && (
+              <div className="text-[10px]">
+                <StableName id={heyaB.id} name={heyaB.name} className="text-muted-foreground" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -204,8 +347,10 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
         {/* Triggers */}
         {topTriggers.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {topTriggers.map(t => (
-              <Badge key={t} variant="outline" className="text-[10px] font-normal">{TRIGGER_LABELS[t]}</Badge>
+            {topTriggers.map((t) => (
+              <Badge key={t} variant="outline" className="text-[10px] font-normal">
+                {TRIGGER_LABELS[t]}
+              </Badge>
             ))}
           </div>
         )}
@@ -216,7 +361,6 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
     </Card>
   );
 }
-
 
 import { createDefaultRivalriesState, type RivalriesState } from "@/engine/rivalries";
 
@@ -229,6 +373,7 @@ export default function RivalriesPage() {
 
   const rivalriesState = useMemo<RivalriesState>(() => {
     if (!world) return createDefaultRivalriesState();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
     const rs = (world as any).rivalries;
     return rs && typeof rs === "object" && rs.pairs ? rs : createDefaultRivalriesState();
   }, [world]);
@@ -242,23 +387,25 @@ export default function RivalriesPage() {
   const { playerRivalries, hotRivalries, coolRivalries, stats } = useMemo(() => {
     const rawPairs = Object.values(rivalriesState.pairs);
     const normalized: RivalryPairState[] = rawPairs
-      .filter(p => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string")
-      .map(p => ({ 
-        ...p, 
-        heat: Math.max(0, Math.min(100, Number(p.heat) || 0)), 
-        aWins: p.aWins || 0, 
-        bWins: p.bWins || 0, 
-        triggers: p.triggers || {}, 
-        tone: p.tone || "respect" 
+      .filter(
+        (p) => p && typeof p === "object" && typeof p.aId === "string" && typeof p.bId === "string"
+      )
+      .map((p) => ({
+        ...p,
+        heat: Math.max(0, Math.min(100, Number(p.heat) || 0)),
+        aWins: p.aWins || 0,
+        bWins: p.bWins || 0,
+        triggers: p.triggers || {},
+        tone: p.tone || "respect",
       })) as RivalryPairState[];
 
     // Search filter
     const filtered = searchQuery
-      ? normalized.filter(p => {
+      ? normalized.filter((p) => {
           const a = world?.rikishi.get(p.aId);
           const b = world?.rikishi.get(p.bId);
           const q = searchQuery.toLowerCase();
-          return (a?.shikona?.toLowerCase().includes(q)) || (b?.shikona?.toLowerCase().includes(q));
+          return a?.shikona?.toLowerCase().includes(q) || b?.shikona?.toLowerCase().includes(q);
         })
       : normalized;
 
@@ -274,22 +421,36 @@ export default function RivalriesPage() {
     }
 
     const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
-    player.sort(byHeat); hot.sort(byHeat); cool.sort(byHeat);
+    player.sort(byHeat);
+    hot.sort(byHeat);
+    cool.sort(byHeat);
 
-    const { infernoCount, hotCount } = normalized.reduce((acc, p) => {
-      const heat = p.heat ?? 0;
-      if (heat >= 80) acc.infernoCount++;
-      else if (heat >= 55) acc.hotCount++;
-      return acc;
-    }, { infernoCount: 0, hotCount: 0 });
+    const { infernoCount, hotCount } = normalized.reduce(
+      (acc, p) => {
+        const heat = p.heat ?? 0;
+        if (heat >= 80) acc.infernoCount++;
+        else if (heat >= 55) acc.hotCount++;
+        return acc;
+      },
+      { infernoCount: 0, hotCount: 0 }
+    );
 
-    return { playerRivalries: player, hotRivalries: hot, coolRivalries: cool, stats: { total: normalized.length, inferno: infernoCount, hot: hotCount } };
+    return {
+      playerRivalries: player,
+      hotRivalries: hot,
+      coolRivalries: cool,
+      stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
+    };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);
 
   if (!world) {
     return (
       <AppLayout pageTitle="Rivalries & Feuds">
-        <Card><CardContent className="p-12 text-center text-muted-foreground">No world loaded.</CardContent></Card>
+        <Card>
+          <CardContent className="p-12 text-center text-muted-foreground">
+            No world loaded.
+          </CardContent>
+        </Card>
       </AppLayout>
     );
   }
@@ -298,7 +459,9 @@ export default function RivalriesPage() {
 
   return (
     <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={TOURNAMENT_TABS} activeSubTab="rivalries">
-      <Helmet><title>Rivalries & Feuds - Basho</title></Helmet>
+      <Helmet>
+        <title>Rivalries & Feuds - Basho</title>
+      </Helmet>
 
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
@@ -319,7 +482,9 @@ export default function RivalriesPage() {
                     <Flame className="h-3 w-3" /> {stats.hot} Hot
                   </Badge>
                 )}
-                <span className="text-[10px] text-muted-foreground">{stats.total} total rivalries</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {stats.total} total rivalries
+                </span>
               </div>
             </div>
           </div>
@@ -328,13 +493,13 @@ export default function RivalriesPage() {
             <Input
               placeholder="Search rikishi…"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8 w-48 pl-8 pr-8 text-xs"
             />
             {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery("")} 
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" 
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5" />
@@ -348,7 +513,10 @@ export default function RivalriesPage() {
             <CardContent className="p-12 text-center">
               <Swords className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="font-display text-xl font-semibold mb-2">No Rivalries Yet</h3>
-              <p className="text-muted-foreground">Rivalries develop as rikishi meet repeatedly. Complete tournaments to see tensions form.</p>
+              <p className="text-muted-foreground">
+                Rivalries develop as rikishi meet repeatedly. Complete tournaments to see tensions
+                form.
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -358,11 +526,19 @@ export default function RivalriesPage() {
                 <h2 className="font-display text-lg font-semibold flex items-center gap-2">
                   <Users className="h-4 w-4 text-primary" />
                   Your Stable's Rivalries
-                  <span className="text-xs text-muted-foreground font-normal">({playerRivalries.length})</span>
+                  <span className="text-xs text-muted-foreground font-normal">
+                    ({playerRivalries.length})
+                  </span>
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
                   {playerRivalries.map((pair, i) => (
-                    <RivalryCard key={pair.key} pair={pair} world={world} isPlayerRivalry index={i} />
+                    <RivalryCard
+                      key={pair.key}
+                      pair={pair}
+                      world={world}
+                      isPlayerRivalry
+                      index={i}
+                    />
                   ))}
                 </div>
               </section>
@@ -390,9 +566,15 @@ export default function RivalriesPage() {
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
                   {coolRivalries.slice(0, 8).map((pair, i) => (
-                    <RivalryCard key={pair.key} pair={pair} world={world}
-                      isPlayerRivalry={playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)}
-                      index={i} />
+                    <RivalryCard
+                      key={pair.key}
+                      pair={pair}
+                      world={world}
+                      isPlayerRivalry={
+                        playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId)
+                      }
+                      index={i}
+                    />
                   ))}
                 </div>
               </section>
@@ -402,7 +584,7 @@ export default function RivalriesPage() {
 
         {/* Heat legend */}
         <div className="flex items-center gap-4 text-[10px] text-muted-foreground border border-border/50 rounded-md px-3 py-2 bg-muted/20 w-fit flex-wrap">
-          {(["inferno", "hot", "warm", "cold"] as RivalryHeatBand[]).map(band => {
+          {(["inferno", "hot", "warm", "cold"] as RivalryHeatBand[]).map((band) => {
             const c = HEAT_BAND_CONFIG[band];
             return (
               <span key={band} className="flex items-center gap-1.5">
@@ -416,4 +598,3 @@ export default function RivalriesPage() {
     </AppLayout>
   );
 }
-

@@ -10,15 +10,18 @@ import {
   RotateCcw,
   AlertTriangle,
   Wrench,
-  Coins,
-  Shield,
   ChevronRight,
   Activity,
   TrendingUp,
-  Search,
 } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { StableName } from "@/components/ClickableName";
+import {
+  getOzekiRunCandidates,
+  getYokozunaCandidates,
+  getKadobanDrama,
+} from "@/presenters/uiDigest";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
@@ -30,7 +33,6 @@ import { NewsWidget } from "@/components/dashboard/NewsWidget";
 import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
 import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
 import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
-import { FacilitiesWidget } from "@/components/dashboard/FacilitiesWidget";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
 import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
@@ -53,13 +55,6 @@ const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "scouting", order: 11, span: 4, component: ScoutingWidget, label: "Scouting" },
   { id: "institution", order: 12, span: 6, component: InstitutionWidget, label: "Institution" },
 ];
-
-const PHASE_ACCENT: Record<string, string> = {
-  active_basho: "from-accent/20 via-accent/5 to-transparent",
-  pre_basho: "from-primary/15 via-primary/5 to-transparent",
-  post_basho: "from-primary/10 via-transparent to-transparent",
-  interim: "from-muted/30 via-transparent to-transparent",
-};
 
 /** dashboard. */
 export default function Dashboard() {
@@ -96,7 +91,7 @@ export default function Dashboard() {
 
   const alerts = useMemo(() => {
     if (!digest) return [];
-    const a: { icon: any; text: string; color: string; link: string }[] = [];
+    const a: { icon: React.ElementType; text: string; color: string; link: string }[] = [];
 
     // Alert logic now uses pre-formatted digest data
     if (digest.finances.status === "critical") {
@@ -156,7 +151,7 @@ export default function Dashboard() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <h1 className="text-3xl font-display font-bold leading-none tracking-tight">
-                  {playerHeya?.name || "Stable"}
+                  {playerHeya ? <StableName id={playerHeya.id} name={playerHeya.name} /> : "Stable"}
                 </h1>
                 <Badge
                   variant="outline"
@@ -206,7 +201,8 @@ export default function Dashboard() {
                     <TrendingUp className="h-3 w-3" /> Year {digest?.currentYear}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Activity className="h-3 w-3" /> {digest?.heya.name} Center
+                    <Activity className="h-3 w-3" />{" "}
+                    <StableName id={playerHeya?.id || ""} name={digest?.heya.name || ""} /> Center
                   </span>
                   <span className="italic">Week {digest?.currentWeek}</span>
                 </div>
@@ -251,6 +247,7 @@ export default function Dashboard() {
             {alerts.map((alert, i) => (
               <TooltipWrap key={i} content={`Analyze ${alert.text}`} side="top">
                 <button
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Alert link type mismatch
                   onClick={() => navigate({ to: alert.link as any })}
                   className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
                 >
@@ -275,7 +272,12 @@ export default function Dashboard() {
         {/* ═══════════ PROGRESSION ARCS ═══════════ */}
         {world && (
           <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
-            <ProgressionTracker world={world} />
+            <ProgressionTracker
+              ozekiRuns={getOzekiRunCandidates(world)}
+              yokozunaCandidates={getYokozunaCandidates(world)}
+              kadobanDrama={getKadobanDrama(world)}
+              playerHeyaId={world.playerHeyaId || ""}
+            />
           </div>
         )}
 
@@ -305,7 +307,6 @@ export default function Dashboard() {
                 <DraggableWidget
                   widgetId={placement.id}
                   column={placement.column}
-                  label={def.label}
                   isEditMode={editMode}
                   onDragStart={onDragStart}
                   onDragOver={onDragOver}

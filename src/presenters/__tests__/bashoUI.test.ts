@@ -1,11 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { projectBashoSummary, projectBoutRow } from "../bashoUI";
 import { mockRikishi } from "../../engine/__tests__/utils";
-import type {
-  BashoState,
-  BashoResult,
-  MatchSchedule,
-} from "../../engine/types/basho";
+import type { BashoState, BashoResult, MatchSchedule } from "../../engine/types/basho";
 import type { WorldState } from "../../engine/types/world";
 import type { IdMapRuntime } from "../../engine/types/common";
 import type { Rikishi } from "../../engine/types/rikishi";
@@ -56,10 +52,7 @@ describe("Basho UI Presenters", () => {
         ginoSho: "r_gino",
       };
 
-      const result = projectBashoSummary(
-        state as BashoState,
-        bashoResult as BashoResult,
-      );
+      const result = projectBashoSummary(state as BashoState, bashoResult as BashoResult);
 
       expect(result.yushoId).toBe("r_yusho");
       expect(result.yushoShikona).toBeUndefined(); // Needs world to resolve
@@ -94,7 +87,7 @@ describe("Basho UI Presenters", () => {
       const result = projectBashoSummary(
         state as BashoState,
         bashoResult as BashoResult,
-        world as WorldState,
+        world as WorldState
       );
 
       expect(result.yushoId).toBe("r_123");
@@ -115,10 +108,7 @@ describe("Basho UI Presenters", () => {
         rikishi: new Map() as unknown as IdMapRuntime<Rikishi>,
       };
 
-      const result = projectBoutRow(
-        match as MatchSchedule,
-        world as WorldState,
-      );
+      const result = projectBoutRow(match as MatchSchedule, world as WorldState);
 
       expect(result.eastShikona).toBe("Unknown");
       expect(result.eastRank).toBe("??");
@@ -155,7 +145,7 @@ describe("Basho UI Presenters", () => {
           rankNumber: 1,
           currentBashoWins: 4,
           currentBashoLosses: 0,
-        }),
+        })
       );
       mockMap.set(
         "w_2",
@@ -165,17 +155,14 @@ describe("Basho UI Presenters", () => {
           rankNumber: 1,
           currentBashoWins: 3,
           currentBashoLosses: 1,
-        }),
+        })
       );
 
       const world: Partial<WorldState> = {
         rikishi: mockMap as unknown as IdMapRuntime<Rikishi>,
       };
 
-      const result = projectBoutRow(
-        match as MatchSchedule,
-        world as WorldState,
-      );
+      const result = projectBoutRow(match as MatchSchedule, world as WorldState);
 
       expect(result.eastShikona).toBe("Asashoryu");
       expect(result.eastRankShort).toBe("Y1");
@@ -208,15 +195,16 @@ describe("Basho UI Presenters", () => {
         shikona: "Rikishi A",
         rank: "maegashira",
         rankNumber: undefined,
-      }),
+      })
     );
     mockMap.set(
       "w_3",
       mockRikishi("w_3", {
         shikona: "Rikishi B",
         rank: "juryo",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid rankNumber
         rankNumber: 0 as any,
-      }),
+      })
     );
 
     const world: Partial<WorldState> = {

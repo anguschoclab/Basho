@@ -6,10 +6,9 @@
 import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
 import type { Heya } from "../engine/types/heya";
-import type { EngineEvent, EventCategory } from "../engine/types/events";
+import type { EngineEvent } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
 import { getCachedPerception } from "./uiDigest";
-
 
 /**
  * Simple memoization helper for selectors that depend only on WorldState.
@@ -41,7 +40,7 @@ const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
  */
 export const selectInjuredRikishi = createSelector((world: WorldState): Rikishi[] => {
   const all = selectAllRikishi(world);
-  return all.filter(r => r.injury?.isInjured || r.injured);
+  return all.filter((r) => r.injury?.isInjured || r.injured);
 });
 
 /**
@@ -50,7 +49,7 @@ export const selectInjuredRikishi = createSelector((world: WorldState): Rikishi[
 export const selectRecentEvents = createSelector((world: WorldState) => {
   const recentEvents = world.events?.log ? queryEvents(world, { limit: 120 }) : [];
   const thisWeek = world.week ?? 0;
-  
+
   // Categorized bucket
   const buckets = {
     media: [] as EngineEvent[],
@@ -72,8 +71,14 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
     else if (e.category === "training") buckets.training.push(e);
     else if (e.category === "career") buckets.career.push(e);
     else if (e.category === "rivalry") buckets.rivalry.push(e);
-    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline") buckets.governance.push(e);
-    else if (e.category === "welfare" || e.type.startsWith("COMPLIANCE") || e.type.startsWith("WELFARE")) buckets.welfare.push(e);
+    else if (e.type.startsWith("GOVERNANCE") || e.category === "discipline")
+      buckets.governance.push(e);
+    else if (
+      e.category === "welfare" ||
+      e.type.startsWith("COMPLIANCE") ||
+      e.type.startsWith("WELFARE")
+    )
+      buckets.welfare.push(e);
   }
 
   return buckets;
@@ -83,8 +88,8 @@ export const selectRecentEvents = createSelector((world: WorldState) => {
  * Select all Sekiwake and Komusubi for Ozeki promotion tracking.
  */
 export const selectPromotionCandidates = createSelector((world: WorldState) => {
-  return selectAllRikishi(world).filter(r => 
-    !r.isRetired && (r.rank === "sekiwake" || r.rank === "komusubi")
+  return selectAllRikishi(world).filter(
+    (r) => !r.isRetired && (r.rank === "sekiwake" || r.rank === "komusubi")
   );
 });
 
@@ -92,9 +97,7 @@ export const selectPromotionCandidates = createSelector((world: WorldState) => {
  * Select all Ozeki for Yokozuna promotion tracking.
  */
 export const selectYokozunaCandidates = createSelector((world: WorldState) => {
-  return selectAllRikishi(world).filter(r => 
-    !r.isRetired && r.rank === "ozeki"
-  );
+  return selectAllRikishi(world).filter((r) => !r.isRetired && r.rank === "ozeki");
 });
 
 /**
@@ -109,13 +112,6 @@ export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[
     if (r) entries.push(r);
   }
   return entries;
-});
-
-/**
- * Select all Sekitori (Makuuchi + Juryo).
- */
-const selectSekitori = createSelector((world: WorldState): Rikishi[] => {
-  return selectAllRikishi(world).filter(r => r.division === "makuuchi" || r.division === "juryo");
 });
 
 /**
@@ -135,7 +131,14 @@ export const selectRikishiByHeya = createSelector((world: WorldState): Map<strin
  * Select top rivals for the dashboard widget.
  */
 export const selectTopRivals = createSelector((world: WorldState) => {
-  const entries: { id: string; name: string; prestige: string; roster: string; morale: string; heat: string }[] = [];
+  const entries: {
+    id: string;
+    name: string;
+    prestige: string;
+    roster: string;
+    morale: string;
+    heat: string;
+  }[] = [];
   const playerHeyaId = world.playerHeyaId;
   if (!world.heyas) return entries;
   for (const heya of world.heyas.values()) {
@@ -166,11 +169,17 @@ export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[
  * Select heyas with critical welfare risk (welfareRisk >= 55 or non-compliant).
  */
 export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState): Heya[] => {
-  return world.heyas ? Array.from(world.heyas.values()).filter(h => {
-    const ws = h.welfareState;
-    if (!ws) return false;
-    return ws.welfareRisk >= 55 || ws.complianceState === "sanctioned" || ws.complianceState === "investigation";
-  }) : [];
+  return world.heyas
+    ? Array.from(world.heyas.values()).filter((h) => {
+        const ws = h.welfareState;
+        if (!ws) return false;
+        return (
+          ws.welfareRisk >= 55 ||
+          ws.complianceState === "sanctioned" ||
+          ws.complianceState === "investigation"
+        );
+      })
+    : [];
 });
 
 /**
@@ -178,9 +187,13 @@ export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState)
  * Excludes the player stable.
  */
 export const selectMergerCandidates = createSelector((world: WorldState): Heya[] => {
-  return world.heyas ? Array.from(world.heyas.values()).filter(h => {
-    if (h.id === world.playerHeyaId) return false;
-    const rosterSize = h.rikishiIds?.length ?? 0;
-    return h.funds < 0 && rosterSize <= 3;
-  }).sort((a, b) => a.funds - b.funds) : []; // worst debt first
+  return world.heyas
+    ? Array.from(world.heyas.values())
+        .filter((h) => {
+          if (h.id === world.playerHeyaId) return false;
+          const rosterSize = h.rikishiIds?.length ?? 0;
+          return h.funds < 0 && rosterSize <= 3;
+        })
+        .sort((a, b) => a.funds - b.funds)
+    : []; // worst debt first
 });

@@ -75,6 +75,8 @@ describe("projectRosterEntry", () => {
     balance: 55,
     momentum: 5,
     talentSeed: 90,
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid archetype
     derivedArchetype: "Defensive_Stalwart" as any,
   });
 
@@ -100,6 +102,7 @@ describe("projectRosterEntry", () => {
 
   it("should resolve heya ownership correctly when world state is provided", () => {
     const world = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing with partial world object
       heyas: new Map([["h1", { id: "h1", isPlayerOwned: true } as any]]),
     } as unknown as WorldState;
 
@@ -112,28 +115,18 @@ describe("projectRosterEntry", () => {
     expect(entryWithoutWorld.isPlayerOwned).toBe(false);
 
     const worldWithDifferentHeya = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
       heyas: new Map([["h2", { id: "h2", isPlayerOwned: true } as any]]),
     } as unknown as WorldState;
-    const entryNotFound = projectRosterEntry(
-      baseRikishi,
-      worldWithDifferentHeya,
-    );
+    const entryNotFound = projectRosterEntry(baseRikishi, worldWithDifferentHeya);
     expect(entryNotFound.isPlayerOwned).toBe(false);
   });
 
   it("should calculate rankDelta correctly based on prevScore", () => {
-    const currScore = rankScore(
-      baseRikishi.rank,
-      baseRikishi.rankNumber,
-      baseRikishi.side,
-    ); // M5 East
+    const currScore = rankScore(baseRikishi.rank, baseRikishi.rankNumber, baseRikishi.side); // M5 East
 
     // Unchanged
-    const unchangedEntry = projectRosterEntry(
-      baseRikishi,
-      undefined,
-      currScore,
-    );
+    const unchangedEntry = projectRosterEntry(baseRikishi, undefined, currScore);
     expect(unchangedEntry.rankDelta).toEqual({ type: "unchanged", steps: 0 });
 
     // Up (prevScore > currScore, lower score means higher rank)

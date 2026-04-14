@@ -5,48 +5,40 @@ import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { Sun, Moon, ChevronRight, Wallet, Calendar, Settings, Clock } from "lucide-react";
+import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const RUNWAY_COLORS: Record<string, string> = {
-  secure:      "hsl(var(--success))",
+  secure: "hsl(var(--success))",
   comfortable: "hsl(145 55% 48%)",
-  tight:       "hsl(var(--warning))",
-  critical:    "hsl(var(--destructive))",
-  desperate:   "hsl(var(--destructive))",
+  tight: "hsl(var(--warning))",
+  critical: "hsl(var(--destructive))",
+  desperate: "hsl(var(--destructive))",
 };
 
 const PHASE_LABELS: Record<string, { label: string; color: string }> = {
-  active_basho:   { label: "Tournament",   color: "hsl(var(--gold))" },
-  pre_basho:      { label: "Pre-Basho",    color: "hsl(var(--west))" },
-  post_basho:     { label: "Post-Basho",   color: "hsl(var(--success))" },
-  interim:        { label: "Interim",      color: "hsl(var(--muted-foreground))" },
-  banzuke_reveal: { label: "Banzuke",      color: "hsl(var(--primary))" },
+  active_basho: { label: "Tournament", color: "hsl(var(--gold))" },
+  pre_basho: { label: "Pre-Basho", color: "hsl(var(--west))" },
+  post_basho: { label: "Post-Basho", color: "hsl(var(--success))" },
+  interim: { label: "Interim", color: "hsl(var(--muted-foreground))" },
+  banzuke_reveal: { label: "Banzuke", color: "hsl(var(--primary))" },
 };
 
-export function TopNavBar({
-  eventLogOpen,
-  onToggleEventLog,
-}: {
-  eventLogOpen: boolean;
-  onToggleEventLog: () => void;
-}) {
+export function TopNavBar() {
   const { state, advanceOneDay } = useGame();
   const { setTheme, resolvedTheme } = useTheme();
   const autosaveStatus = useAutosaveIndicator();
   const navigate = useNavigate();
   const world = state.world;
 
-  const playerHeya    = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
-  const inBasho       = world?.cyclePhase === "active_basho";
-  const bashoDay      = world?.currentBasho?.day ?? 1;
-  const cyclePhase    = world?.cyclePhase ?? "interim";
-  const phaseMeta     = PHASE_LABELS[cyclePhase] ?? PHASE_LABELS.interim;
+  const playerHeya = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const inBasho = world?.cyclePhase === "active_basho";
+  const bashoDay = world?.currentBasho?.day ?? 1;
+  const cyclePhase = world?.cyclePhase ?? "interim";
+  const phaseMeta = PHASE_LABELS[cyclePhase] ?? PHASE_LABELS.interim;
 
   const yearLabel = world ? `Year ${world.calendar?.year ?? world.year}` : "—";
   const weekLabel = world ? `Wk ${world.calendar?.currentWeek ?? world.week}` : "—";
-
-  const dayLabel  = inBasho ? `Day ${bashoDay} / 15` : null;
 
   return (
     <header
@@ -69,7 +61,6 @@ export function TopNavBar({
 
         {/* ─ Context Info: Date + Phase ─ */}
         <div className="hidden lg:flex items-center gap-4 flex-1">
-
           {/* Date block */}
           <div className="flex items-center gap-2">
             <div className="flex flex-col">
@@ -139,12 +130,14 @@ export function TopNavBar({
                   className="text-[12px] font-semibold leading-tight tabular-nums"
                   style={{
                     fontFamily: "var(--font-mono)",
-                    color: playerHeya.funds < 0
-                      ? "hsl(var(--destructive))"
-                      : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "hsl(var(--foreground))"),
+                    color:
+                      playerHeya.funds < 0
+                        ? "hsl(var(--destructive))"
+                        : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "hsl(var(--foreground))"),
                   }}
                 >
-                  ¥{playerHeya.funds >= 0
+                  ¥
+                  {playerHeya.funds >= 0
                     ? playerHeya.funds.toLocaleString()
                     : `-${Math.abs(playerHeya.funds).toLocaleString()}`}
                 </span>
@@ -163,9 +156,8 @@ export function TopNavBar({
             <div
               className="w-1.5 h-1.5 rounded-full"
               style={{
-                background: autosaveStatus === "saving"
-                  ? "hsl(var(--primary))"
-                  : "hsl(var(--success))",
+                background:
+                  autosaveStatus === "saving" ? "hsl(var(--primary))" : "hsl(var(--success))",
                 animation: autosaveStatus === "saving" ? "pulse 1s ease-in-out infinite" : "none",
               }}
             />
@@ -173,7 +165,10 @@ export function TopNavBar({
 
           <SaveLoadDialog />
 
-          <TooltipWrap content={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`} side="bottom">
+          <TooltipWrap
+            content={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+            side="bottom"
+          >
             <Button
               variant="ghost"
               size="icon"
@@ -181,10 +176,11 @@ export function TopNavBar({
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Toggle theme"
             >
-              {resolvedTheme === "dark"
-                ? <Sun className="h-3.5 w-3.5" />
-                : <Moon className="h-3.5 w-3.5" />
-              }
+              {resolvedTheme === "dark" ? (
+                <Sun className="h-3.5 w-3.5" />
+              ) : (
+                <Moon className="h-3.5 w-3.5" />
+              )}
             </Button>
           </TooltipWrap>
 
@@ -193,7 +189,7 @@ export function TopNavBar({
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-              onClick={() => navigate({ to: "/settings" as any })}
+              onClick={() => navigate({ to: "/settings" })}
               aria-label="Settings"
             >
               <Settings className="h-3.5 w-3.5" />
@@ -206,7 +202,9 @@ export function TopNavBar({
           {/* ─ CONTINUE BUTTON — The hero action ─ */}
           {world && (
             <TooltipWrap
-              content={inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"}
+              content={
+                inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"
+              }
               side="left"
             >
               <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
@@ -229,7 +227,8 @@ export function TopNavBar({
                   <span
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     style={{
-                      background: "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
+                      background:
+                        "linear-gradient(90deg, transparent 0%, hsl(38 80% 80% / 0.2) 50%, transparent 100%)",
                       transform: "skewX(-20deg)",
                     }}
                   />
@@ -246,10 +245,7 @@ export function TopNavBar({
 
       {/* ─ Basho Progress Rail ─ */}
       {inBasho && (
-        <div
-          className="h-0.5 w-full"
-          style={{ background: "hsl(var(--border))" }}
-        >
+        <div className="h-0.5 w-full" style={{ background: "hsl(var(--border))" }}>
           <div
             className="h-full transition-all duration-700"
             style={{

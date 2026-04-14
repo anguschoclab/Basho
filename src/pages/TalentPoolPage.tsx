@@ -16,29 +16,42 @@ import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/Tale
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
-    case "high_school": return "High School";
-    case "university": return "University";
-    case "foreign": return "Foreign";
-    default: return pool;
+    case "high_school":
+      return "High School";
+    case "university":
+      return "University";
+    case "foreign":
+      return "Foreign";
+    default:
+      return pool;
   }
 }
 
 function poolIcon(pool: TalentPoolType) {
   switch (pool) {
-    case "high_school": return School;
-    case "university": return GraduationCap;
-    case "foreign": return Globe;
-    default: return School;
+    case "high_school":
+      return School;
+    case "university":
+      return GraduationCap;
+    case "foreign":
+      return Globe;
+    default:
+      return School;
   }
 }
 
 function visibilityLabel(v: VisibilityBand) {
   switch (v) {
-    case "public": return "Public Record";
-    case "rumored": return "Rumored Talent";
-    case "obscure": return "Deep Prospect";
-    case "hidden": return "Hidden Potential";
-    default: return v;
+    case "public":
+      return "Public Record";
+    case "rumored":
+      return "Rumored Talent";
+    case "obscure":
+      return "Deep Prospect";
+    case "hidden":
+      return "Hidden Potential";
+    default:
+      return v;
   }
 }
 
@@ -77,7 +90,10 @@ export default function TalentPoolPage() {
     const res = talentpool.scoutPool(world, activePool, { revealCount: 1 });
     updateWorld({ ...world });
     if (res.revealed.length === 0) {
-      toast({ title: "No new leads", description: "Your scouts found nobody new this week (or you lack funds)." });
+      toast({
+        title: "No new leads",
+        description: "Your scouts found nobody new this week (or you lack funds).",
+      });
       return;
     }
     toast({
@@ -104,10 +120,16 @@ export default function TalentPoolPage() {
     const res = talentpool.offerCandidate(world, candidateId, playerHeyaId, "standard", "high");
     updateWorld({ ...world });
     if (!res.ok) {
-      toast({ title: "Offer blocked", description: (res as any).reason ?? "Unknown reason" });
+      toast({
+        title: "Offer blocked",
+        description: (res as { reason?: string }).reason ?? "Unknown reason",
+      });
       return;
     }
-    toast({ title: "Offer submitted", description: "The prospect will decide within a few weeks." });
+    toast({
+      title: "Offer submitted",
+      description: "The prospect will decide within a few weeks.",
+    });
   };
 
   return (
@@ -116,7 +138,8 @@ export default function TalentPoolPage() {
         <CardHeader>
           <CardTitle>Talent Pools</CardTitle>
           <CardDescription>
-            Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal, then make offers.
+            Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal,
+            then make offers.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -127,8 +150,15 @@ export default function TalentPoolPage() {
                 <div className="font-semibold">{playerHeya.name}</div>
               </div>
               <div className="text-sm text-muted-foreground flex flex-col items-end">
-                <div>Runway: <span className="font-medium capitalize">{playerHeya.runwayBand ?? "unknown"}</span></div>
-                <div className="text-xs">Foreigners: {foreignCount}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}</div>
+                <div>
+                  Runway:{" "}
+                  <span className="font-medium capitalize">
+                    {playerHeya.runwayBand ?? "unknown"}
+                  </span>
+                </div>
+                <div className="text-xs">
+                  Foreigners: {foreignCount}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}
+                </div>
               </div>
             </div>
           )}
@@ -138,7 +168,8 @@ export default function TalentPoolPage() {
               Search for leads
             </Button>
             <div className="text-xs text-muted-foreground">
-              This reveals hidden candidates into the list. Scouting a candidate increases intel quality.
+              This reveals hidden candidates into the list. Scouting a candidate increases intel
+              quality.
             </div>
           </div>
         </CardContent>
@@ -164,7 +195,9 @@ export default function TalentPoolPage() {
                 <Card className="md:col-span-2 lg:col-span-3">
                   <CardHeader>
                     <CardTitle>No visible prospects</CardTitle>
-                    <CardDescription>Use “Search for leads” to surface candidates from the hidden reserve.</CardDescription>
+                    <CardDescription>
+                      Use “Search for leads” to surface candidates from the hidden reserve.
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               ) : (
@@ -184,7 +217,9 @@ export default function TalentPoolPage() {
                             <CardDescription>{sub}</CardDescription>
                           </div>
                           {c.tags.includes("amateur_star") && <Badge>Star</Badge>}
-                          {(c.nationality ?? "Japan") !== "Japan" && <Badge variant="secondary">Foreign</Badge>}
+                          {(c.nationality ?? "Japan") !== "Japan" && (
+                            <Badge variant="secondary">Foreign</Badge>
+                          )}
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
@@ -218,11 +253,19 @@ export default function TalentPoolPage() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button variant="secondary" className="flex-1" onClick={() => onScout(c.candidateId)}>
+                          <Button
+                            variant="secondary"
+                            className="flex-1"
+                            onClick={() => onScout(c.candidateId)}
+                          >
                             <Search className="h-4 w-4 mr-2" />
                             Scout
                           </Button>
-                          <Button className="flex-1" onClick={() => onOffer(c.candidateId)} disabled={!playerHeyaId}>
+                          <Button
+                            className="flex-1"
+                            onClick={() => onOffer(c.candidateId)}
+                            disabled={!playerHeyaId}
+                          >
                             <UserPlus className="h-4 w-4 mr-2" />
                             Offer
                           </Button>
@@ -230,7 +273,8 @@ export default function TalentPoolPage() {
 
                         {c.availabilityState === "in_talks" && (
                           <div className="text-xs text-muted-foreground">
-                            In talks with {c.competingSuitors.length} stable{c.competingSuitors.length === 1 ? "" : "s"}.
+                            In talks with {c.competingSuitors.length} stable
+                            {c.competingSuitors.length === 1 ? "" : "s"}.
                             {intel >= 35 && c.competingSuitors.length > 0 && (
                               <div className="mt-1 space-y-0.5">
                                 {c.competingSuitors.slice(0, 4).map((s) => {
@@ -238,8 +282,12 @@ export default function TalentPoolPage() {
                                   const oy = h ? world.oyakata.get(h.oyakataId) : null;
                                   return (
                                     <div key={s.heyaId} className="flex justify-between">
-                                      <span>{h ? <StableName id={h.id} name={h.name} /> : s.heyaId}</span>
-                                      <span className="opacity-80">{oy?.archetype ?? "oyakata"}</span>
+                                      <span>
+                                        {h ? <StableName id={h.id} name={h.name} /> : s.heyaId}
+                                      </span>
+                                      <span className="opacity-80">
+                                        {oy?.archetype ?? "oyakata"}
+                                      </span>
                                     </div>
                                   );
                                 })}

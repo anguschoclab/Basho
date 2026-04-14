@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from "react";
-import { useGame } from "@/contexts/GameContext";
 import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +19,8 @@ import {
   Wrench,
 } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "@/engine/types/world";
-import { formatEventTime } from "@/presenters/uiDigest";
 import type { LucideIcon } from "lucide-react";
+import { formatEventTime } from "@/presenters/uiDigest";
 
 const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; label: string }> = {
   match: { icon: Swords, color: "text-primary", label: "Match" },
@@ -121,32 +118,35 @@ function getEventRoute(e: EngineEvent): string | null {
 
 /** Defines the structure for event log panel props. */
 interface EventLogPanelProps {
+  eventLogData: {
+    events: EngineEvent[];
+    rikishiMap: Map<string, { id: string; shikona: string }>;
+    heyaMap: Map<string, { id: string; name: string }>;
+    playerHeyaId?: string;
+  } | null;
   className?: string;
 }
 
 /**
  * event log panel.
- *  * @param { className = "" } - The { class name = "" }.
+ *  * @param { eventLogData, className } - The component props.
  */
-export function EventLogPanel({ className = "" }: EventLogPanelProps) {
-  const { state } = useGame();
+export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const world = state.world;
-
   /** Render inline clickable entity tags for rikishi/stable referenced by an event */
   const renderEntityTags = useCallback(
     (e: EngineEvent) => {
-      if (!world) return null;
+      if (!eventLogData) return null;
       const tags: React.ReactNode[] = [];
       const seen = new Set<string>();
 
       const addRikishi = (id: string) => {
         if (seen.has(id)) return;
         seen.add(id);
-        const r = world.rikishi.get(id);
+        const r = eventLogData.rikishiMap.get(id);
         if (r)
           tags.push(
             <RikishiName
@@ -158,7 +158,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
           );
       };
 
-      // Primary entity
       if (e.rikishiId) addRikishi(e.rikishiId);
 
       // Bout events: show winner & loser as clickable names with "vs" separator
@@ -169,8 +168,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
           // Clear primary tag, show bout-specific layout instead
           tags.length = 0;
           seen.clear();
-          const winner = world.rikishi.get(winnerId);
-          const loser = world.rikishi.get(loserId);
+          const winner = eventLogData.rikishiMap.get(winnerId);
+          const loser = eventLogData.rikishiMap.get(loserId);
           if (winner && loser) {
             tags.push(
               <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
@@ -185,8 +184,8 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                   name={loser.shikona || loser.id}
                   className="text-[11px] font-medium"
                 />
-                {e.data.kimarite && (
-                  <span className="text-muted-foreground">({e.data.kimarite})</span>
+                {winnerId === loserId && (
+                  <span className="text-[10px] font-bold text-destructive">Fusen</span>
                 )}
               </span>
             );
@@ -197,7 +196,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       }
 
       if (e.heyaId) {
-        const h = world.heyas.get(e.heyaId);
+        const h = eventLogData.heyaMap.get(e.heyaId);
         if (h)
           tags.push(
             <StableName
@@ -211,14 +210,14 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
       if (tags.length === 0) return null;
       return <span className="inline-flex items-center gap-1.5 flex-wrap">{tags}</span>;
     },
-    [world]
+    [eventLogData]
   );
   const events = useMemo(() => {
-    if (!world?.events?.log) return [];
-    const all = [...world.events.log];
+    if (!eventLogData?.events) return [];
+    const all = [...eventLogData.events];
     all.reverse();
     return all.slice(0, 100);
-  }, [world?.events?.log?.length]);
+  }, [eventLogData?.events]);
 
   const filteredEvents = useMemo(() => {
     if (filter === "all") return events;
@@ -249,6 +248,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     (e: EngineEvent) => {
       const route = getEventRoute(e);
       if (route) {
+        navigate({ to: route });
       }
     },
     [navigate]
@@ -262,8 +262,6 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
     { value: "economy", label: "Economy" },
     { value: "career", label: "Career" },
   ];
-
-  if (!world) return null;
 
   return (
     <aside className={`flex flex-col border-r border-border bg-card/50 ${className}`}>
@@ -308,7 +306,7 @@ export function EventLogPanel({ className = "" }: EventLogPanelProps) {
                 const meta = getCategoryMeta(e.category);
                 const Icon = meta.icon;
                 const isExpanded = expandedId === e.id;
-                const isPlayerRelevant = e.heyaId === world.playerHeyaId;
+                const isPlayerRelevant = e.heyaId === eventLogData?.playerHeyaId;
                 const route = getEventRoute(e);
                 const hasLink = !!route;
 

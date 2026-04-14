@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
@@ -7,18 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShieldAlert, Scale, Gavel, FileWarning, Landmark, Users, AlertTriangle, ArrowRightLeft } from "lucide-react";
+import {
+  ShieldAlert,
+  Scale,
+  Gavel,
+  FileWarning,
+  Landmark,
+  Users,
+  AlertTriangle,
+  ArrowRightLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { GovernanceStatus, GovernanceRuling } from "@/engine/types/economy";
+import { StableName } from "@/components/ClickableName";
 import type { Heya } from "@/engine/types/heya";
-import { PRIZE_LABELS, SCANDAL_LABELS, formatFinePenalty, getStatusColor, getStatusLabel, spendPoliticalCapital, toPrizeBand, toScandalBand, projectMergerWarnings } from "@/presenters/uiDigest";
+import {
+  SCANDAL_LABELS,
+  formatFinePenalty,
+  getStatusColor,
+  getStatusLabel,
+  spendPoliticalCapital,
+  toScandalBand,
+  projectMergerWarnings,
+} from "@/presenters/uiDigest";
 
 /**
  * Format fine penalty.
  *  * @param amount - The Amount.
  *  * @returns The result.
  */
-
 
 /** governance page. */
 export default function GovernancePage() {
@@ -53,14 +69,17 @@ export default function GovernancePage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground">
-            Official records of the Sumo Association regarding {heya.name}.
+            Official records of the Sumo Association regarding{" "}
+            <StableName id={heya.id} name={heya.name} />.
           </p>
-          <Badge variant={status === "good_standing" ? "outline" : "destructive"} className="text-lg px-4 py-1">
+          <Badge
+            variant={status === "good_standing" ? "outline" : "destructive"}
+            className="text-lg px-4 py-1"
+          >
             <Scale className="mr-2 h-4 w-4" />
             {getStatusLabel(world, status)}
           </Badge>
         </div>
-
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:w-[400px] mb-6">
@@ -71,199 +90,218 @@ export default function GovernancePage() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-<div className="grid gap-6 md:grid-cols-4">
-          {/* Scandal Perception */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <ShieldAlert className="h-4 w-4" />
-                Public Perception
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {(() => {
-                const band = toScandalBand(scandal);
-                return (
-                  <div>
-                    <div className="text-2xl font-bold">{SCANDAL_LABELS[band]}</div>
-                    <Progress value={Math.min(scandal, 100)} className="mt-2" />
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {band === "clean" ? "Clean record — no concerns." :
-                       band === "whispers" ? "Minor concerns circulating." :
-                       band === "scrutiny" ? "Under increasing public scrutiny." :
-                       band === "scandal" ? "Significant reputational damage." :
-                       "Crisis-level public perception."}
-                    </p>
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-
-          
-          {/* Welfare / Compliance */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <ShieldAlert className="h-4 w-4" />
-                Welfare & Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {(() => {
-                const welfare = heya.welfareState;
-                const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
-                const compState = String(welfare?.complianceState ?? "compliant");
-                const { bandWelfareLabel } = (() => {
-                  if (risk <= 20) return { bandWelfareLabel: "Safe" };
-                  if (risk <= 44) return { bandWelfareLabel: "Cautious" };
-                  if (risk <= 69) return { bandWelfareLabel: "Elevated" };
-                  return { bandWelfareLabel: "Critical" };
-                })();
-                return (
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold">{bandWelfareLabel}</div>
-                      <Badge variant={compState === "compliant" ? "outline" : compState === "watch" ? "secondary" : "destructive"} className="text-xs">
-                        {compState.toUpperCase()}
-                      </Badge>
-                    </div>
-                    <Progress value={risk} className="mt-2" />
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {compState === "compliant"
-                        ? "No active concerns."
-                        : compState === "watch"
-                        ? "Under monitoring for welfare risk."
-                        : compState === "investigation"
-                        ? "Investigation open — remediation required."
-                        : "Sanctions active — recruitment/training may be restricted."}
-                    </p>
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-
-          {/* Status Card */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Gavel className="h-4 w-4" />
-                Council Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getStatusColor(status)}`}>
-                {getStatusLabel(world, status)}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                {status === "good_standing" 
-                  ? "Your stable is in good standing with the Association."
-                  : status === "warning"
-                  ? "The Council has noted concerns."
-                  : status === "probation"
-                  ? "Formal probation is in effect."
-                  : "Serious sanctions have been applied."
-                }
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Rulings Count */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <FileWarning className="h-4 w-4" />
-                Past Rulings
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{history.length}</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Total disciplinary actions on record.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* History Tab */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ruling History</CardTitle>
-            <CardDescription>Official council decisions affecting your stable.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {history.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                No rulings on record. Keep it that way.
-              </p>
-            ) : (
-              <ScrollArea className="h-[300px]">
-                <div className="space-y-4">
-                  {history.map((ruling, i) => (
-                    <div key={ruling.id || i} className="border-l-4 border-destructive pl-4 py-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">{ruling.type.toUpperCase()}</p>
-                          <p className="text-sm text-muted-foreground">{ruling.reason}</p>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {ruling.severity}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">{ruling.date}</p>
-                      {ruling.effects?.fineAmount && (
-                        <p className="text-sm text-destructive mt-1">
-                          Fine: {formatFinePenalty(ruling.effects.fineAmount)}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </CardContent>
-        </Card>
-
-          {/* Merger Candidates Panel */}
-          {(() => {
-            const mergerWarnings = projectMergerWarnings(world);
-            if (mergerWarnings.length === 0) return null;
-            return (
-              <Card className="border-destructive/40">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2 text-destructive">
-                    <ArrowRightLeft className="h-4 w-4" />
-                    Merger Risk — Stables in Crisis
+            <div className="grid gap-6 md:grid-cols-4">
+              {/* Scandal Perception */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4" />
+                    Public Perception
                   </CardTitle>
-                  <CardDescription>
-                    These stables are in debt with critically small rosters and may face Association-mandated merger.
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {mergerWarnings.map(w => (
-                      <div key={w.heyaId} className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">{w.heyaName}</p>
-                            <p className="text-xs text-muted-foreground">{w.rosterSize} rikishi — {w.governanceStatus.replace("_", " ")}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-bold text-destructive">
-                            ¥{Math.abs(w.funds / 1_000_000).toFixed(1)}M in debt
-                          </p>
-                        </div>
+                  {(() => {
+                    const band = toScandalBand(scandal);
+                    return (
+                      <div>
+                        <div className="text-2xl font-bold">{SCANDAL_LABELS[band]}</div>
+                        <Progress value={Math.min(scandal, 100)} className="mt-2" />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {band === "clean"
+                            ? "Clean record — no concerns."
+                            : band === "whispers"
+                              ? "Minor concerns circulating."
+                              : band === "scrutiny"
+                                ? "Under increasing public scrutiny."
+                                : band === "scandal"
+                                  ? "Significant reputational damage."
+                                  : "Crisis-level public perception."}
+                        </p>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
-            );
-          })()}
 
+              {/* Welfare / Compliance */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4" />
+                    Welfare & Compliance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const welfare = heya.welfareState;
+                    const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
+                    const compState = String(welfare?.complianceState ?? "compliant");
+                    const { bandWelfareLabel } = (() => {
+                      if (risk <= 20) return { bandWelfareLabel: "Safe" };
+                      if (risk <= 44) return { bandWelfareLabel: "Cautious" };
+                      if (risk <= 69) return { bandWelfareLabel: "Elevated" };
+                      return { bandWelfareLabel: "Critical" };
+                    })();
+                    return (
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-2xl font-bold">{bandWelfareLabel}</div>
+                          <Badge
+                            variant={
+                              compState === "compliant"
+                                ? "outline"
+                                : compState === "watch"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                            className="text-xs"
+                          >
+                            {compState.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <Progress value={risk} className="mt-2" />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {compState === "compliant"
+                            ? "No active concerns."
+                            : compState === "watch"
+                              ? "Under monitoring for welfare risk."
+                              : compState === "investigation"
+                                ? "Investigation open — remediation required."
+                                : "Sanctions active — recruitment/training may be restricted."}
+                        </p>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              {/* Status Card */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Gavel className="h-4 w-4" />
+                    Council Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${getStatusColor(status)}`}>
+                    {getStatusLabel(world, status)}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {status === "good_standing"
+                      ? "Your stable is in good standing with the Association."
+                      : status === "warning"
+                        ? "The Council has noted concerns."
+                        : status === "probation"
+                          ? "Formal probation is in effect."
+                          : "Serious sanctions have been applied."}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Rulings Count */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <FileWarning className="h-4 w-4" />
+                    Past Rulings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{history.length}</div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Total disciplinary actions on record.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* History Tab */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Ruling History</CardTitle>
+                <CardDescription>Official council decisions affecting your stable.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {history.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    No rulings on record. Keep it that way.
+                  </p>
+                ) : (
+                  <ScrollArea className="h-[300px]">
+                    <div className="space-y-4">
+                      {history.map((ruling, i) => (
+                        <div
+                          key={ruling.id || i}
+                          className="border-l-4 border-destructive pl-4 py-2"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium">{ruling.type.toUpperCase()}</p>
+                              <p className="text-sm text-muted-foreground">{ruling.reason}</p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {ruling.severity}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{ruling.date}</p>
+                          {ruling.effects?.fineAmount && (
+                            <p className="text-sm text-destructive mt-1">
+                              Fine: {formatFinePenalty(ruling.effects.fineAmount)}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Merger Candidates Panel */}
+            {(() => {
+              const mergerWarnings = projectMergerWarnings(world);
+              if (mergerWarnings.length === 0) return null;
+              return (
+                <Card className="border-destructive/40">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-destructive">
+                      <ArrowRightLeft className="h-4 w-4" />
+                      Merger Risk — Stables in Crisis
+                    </CardTitle>
+                    <CardDescription>
+                      These stables are in debt with critically small rosters and may face
+                      Association-mandated merger.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {mergerWarnings.map((w) => (
+                        <div
+                          key={w.heyaId}
+                          className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3">
+                            <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">{w.heyaName}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {w.rosterSize} rikishi — {w.governanceStatus.replace("_", " ")}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-destructive">
+                              ¥{Math.abs(w.funds / 1_000_000).toFixed(1)}M in debt
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
           </TabsContent>
 
           {/* Politics Tab */}
@@ -275,14 +313,16 @@ export default function GovernancePage() {
                   Ichimon Politics (The Game of Thrones)
                 </CardTitle>
                 <CardDescription>
-                  Your stable belongs to the <strong>{heya.ichimon} Ichimon</strong>.
-                  Use Political Capital to sway JSA Board elections, forge alliances, and dominate the sumo world.
+                  Your stable belongs to the <strong>{heya.ichimon} Ichimon</strong>. Use Political
+                  Capital to sway JSA Board elections, forge alliances, and dominate the sumo world.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Your Political Standing</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-4">
+                      Your Political Standing
+                    </h3>
                     <div className="bg-muted p-4 rounded-md mb-4 flex justify-between items-center">
                       <div>
                         <p className="font-semibold text-lg">{heya.politicalCapital || 0}</p>
@@ -305,32 +345,68 @@ export default function GovernancePage() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Spending capital boosts your Ichimon's influence by 20 points, helping secure the JSA Chairman seat in the next bi-annual election.
+                      Spending capital boosts your Ichimon's influence by 20 points, helping secure
+                      the JSA Chairman seat in the next bi-annual election.
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">Ichimon Influence Rankings</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-4">
+                      Ichimon Influence Rankings
+                    </h3>
                     <div className="space-y-3">
-                      {world.factions ? Object.values(world.factions).sort((a, b) => b.influence - a.influence).map(fac => {
-                        const isChairman = Math.max(...Object.values(world.factions!).map(f => f.influence)) === fac.influence;
-                        return (
-                          <div key={fac.id} className="flex justify-between items-center border-b pb-2">
-                            <div>
-                              <p className="font-medium flex items-center gap-2">
-                                {fac.name}
-                                {isChairman && <Badge variant="default" className="text-[10px] px-1.5 py-0 h-4">Chairman</Badge>}
-                                {heya.ichimon === fac.id && <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary text-primary">Your Faction</Badge>}
-                              </p>
-                              <p className="text-xs text-muted-foreground">Leader: {world.oyakata.get(fac.oyakataLeaderId || "")?.name || "Unknown"}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold">{fac.influence}</p>
-                              <p className="text-[10px] text-muted-foreground uppercase">Influence</p>
-                            </div>
-                          </div>
-                        );
-                      }) : <p className="text-sm text-muted-foreground">No faction data available.</p>}
+                      {world.factions ? (
+                        Object.values(world.factions)
+                          .sort((a, b) => b.influence - a.influence)
+                          .map((fac) => {
+                            const isChairman = world.factions
+                              ? Math.max(
+                                  ...Object.values(world.factions).map((f) => f.influence)
+                                ) === fac.influence
+                              : false;
+                            return (
+                              <div
+                                key={fac.id}
+                                className="flex justify-between items-center border-b pb-2"
+                              >
+                                <div>
+                                  <p className="font-medium flex items-center gap-2">
+                                    {fac.name}
+                                    {isChairman && (
+                                      <Badge
+                                        variant="default"
+                                        className="text-[10px] px-1.5 py-0 h-4"
+                                      >
+                                        Chairman
+                                      </Badge>
+                                    )}
+                                    {heya.ichimon === fac.id && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-[10px] px-1.5 py-0 h-4 border-primary text-primary"
+                                      >
+                                        Your Faction
+                                      </Badge>
+                                    )}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Leader:{" "}
+                                    {world.oyakata.get(fac.oyakataLeaderId || "")?.name ||
+                                      "Unknown"}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-bold">{fac.influence}</p>
+                                  <p className="text-[10px] text-muted-foreground uppercase">
+                                    Influence
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No faction data available.</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -338,7 +414,7 @@ export default function GovernancePage() {
             </Card>
           </TabsContent>
         </Tabs>
-  </div>
+      </div>
     </AppLayout>
   );
 }

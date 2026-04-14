@@ -7,6 +7,7 @@ import { useGame } from "@/contexts/GameContext";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2 } from "lucide-react";
+import { projectHeyaData } from "@/presenters/uiDigest";
 
 export function InstitutionWidget() {
   const { state } = useGame();
@@ -39,7 +40,18 @@ export function InstitutionWidget() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <InstitutionPanel world={world} heya={heya} />
+        {(() => {
+          const data = projectHeyaData(world, heya.id);
+          if (!data) return null;
+          return (
+            <InstitutionPanel
+              heya={heya}
+              oyakata={data.oyakata}
+              oyakataQuirks={data.oyakataQuirks}
+              oyakataTraits={data.oyakataTraits}
+            />
+          );
+        })()}
       </CardContent>
     </Card>
   );

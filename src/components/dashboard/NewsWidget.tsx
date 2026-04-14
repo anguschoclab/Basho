@@ -16,7 +16,6 @@ import {
   AlertTriangle,
   Scale,
 } from "lucide-react";
-import type { EngineEvent } from "@/engine/types/events";
 import type { LucideIcon } from "lucide-react";
 
 const CAT_ICON: Record<string, LucideIcon> = {
@@ -52,7 +51,6 @@ const CAT_COLOR: Record<string, string> = {
 
 const NewsEventRow = React.memo(
   ({
-    id,
     category,
     title,
     summary,
@@ -60,7 +58,6 @@ const NewsEventRow = React.memo(
     outlet,
     isPlayer,
   }: {
-    id: string;
     category: string;
     title: string;
     summary: string;
@@ -78,8 +75,7 @@ const NewsEventRow = React.memo(
       } else if (outlet === "SPORTS_DAILY") {
         color = "text-west font-semibold";
       } else if (outlet === "JSA_OFFICIAL") {
-        color =
-          "text-foreground font-mono uppercase border-b border-foreground/20";
+        color = "text-foreground font-mono uppercase border-b border-foreground/20";
         Icon = Scale;
       }
 
@@ -96,9 +92,7 @@ const NewsEventRow = React.memo(
             >
               {title}
             </div>
-            <div className="text-[11px] text-muted-foreground truncate">
-              {summary}
-            </div>
+            <div className="text-[11px] text-muted-foreground truncate">{summary}</div>
           </div>
           <span className="text-[10px] text-muted-foreground/60 shrink-0 tabular-nums">
             W{week}
@@ -111,7 +105,7 @@ const NewsEventRow = React.memo(
         <span>News</span>
       </div>
     );
-  },
+  }
 );
 
 /** news widget. */
@@ -128,7 +122,7 @@ export function NewsWidget() {
       result.unshift(log[i]);
     }
     return result;
-  }, [world?.events?.log?.length]);
+  }, [world?.events?.log]);
 
   return (
     <BaseWidget
@@ -160,12 +154,11 @@ export function NewsWidget() {
                 nodes[i] = (
                   <NewsEventRow
                     key={e.id}
-                    id={e.id}
                     category={e.category}
                     title={e.title}
                     summary={e.summary}
                     week={e.week}
-                    outlet={(e.data as any)?.outlet}
+                    outlet={(e.data as { outlet?: string })?.outlet}
                     isPlayer={e.heyaId === world?.playerHeyaId}
                   />
                 );

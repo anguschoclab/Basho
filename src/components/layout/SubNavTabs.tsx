@@ -1,6 +1,5 @@
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 export interface SubNavTab {
@@ -17,7 +16,13 @@ interface SubNavTabsProps {
   className?: string;
 }
 
-export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className }: SubNavTabsProps) {
+export function SubNavTabs({
+  tabs,
+  activeTab,
+  onTabChange,
+  pageTitle,
+  className,
+}: SubNavTabsProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,7 +50,7 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
               <button
                 onClick={() => {
                   if (tab.href) {
-                    navigate({ to: tab.href as any });
+                    navigate({ to: tab.href });
                   } else {
                     onTabChange?.(tab.id);
                   }
@@ -72,7 +77,8 @@ export function SubNavTabs({ tabs, activeTab, onTabChange, pageTitle, className 
                   <span
                     className="absolute bottom-0 left-1 right-1 h-[2px] rounded-t"
                     style={{
-                      background: "linear-gradient(to right, hsl(var(--gold) / 0.6), hsl(var(--primary)), hsl(var(--gold) / 0.6))",
+                      background:
+                        "linear-gradient(to right, hsl(var(--gold) / 0.6), hsl(var(--primary)), hsl(var(--gold) / 0.6))",
                       boxShadow: "0 -1px 8px hsl(var(--primary) / 0.3)",
                       animation: "fadeIn 0.2s ease-out",
                     }}

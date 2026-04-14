@@ -46,7 +46,7 @@ export function FacilitiesWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Manage",
-      onClick: () => navigate({ to: "/stable" as any }),
+      onClick: () => navigate({ to: "/stable" }),
     }),
     [navigate]
   );
@@ -69,14 +69,7 @@ export function FacilitiesWidget() {
 
   if (!heya || !facilitiesStats) return null;
 
-  const {
-    maintenance,
-    canAfford,
-    atRisk,
-    lowestAxis: _lowestAxis,
-    lowestLevel: _lowestLevel,
-    isLow,
-  } = facilitiesStats;
+  const { maintenance, canAfford, atRisk, isLow } = facilitiesStats;
 
   return (
     <BaseWidget

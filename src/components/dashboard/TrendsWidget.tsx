@@ -2,15 +2,7 @@ import React from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Globe, TrendingUp, Info } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMetaTrends } from "@/presenters/uiDigest";
 
@@ -21,10 +13,10 @@ export function TrendsWidget() {
   const headerAction = React.useMemo(
     () => ({
       label: "History",
-      onClick: () => navigate({ to: "/jsa/trends" as any }),
+      onClick: () => navigate({ to: "/jsa/trends" }),
       tooltip: "View historical meta shifts and tactical evolution in the JSA",
     }),
-    [navigate],
+    [navigate]
   );
 
   if (!world) return null;
@@ -35,9 +27,7 @@ export function TrendsWidget() {
       <BaseWidget title="JSA Meta Trends" icon={Globe}>
         <div className="h-40 flex flex-col items-center justify-center text-muted-foreground gap-2">
           <Info className="h-5 w-5 opacity-20" />
-          <p className="text-[10px] uppercase font-bold tracking-widest">
-            Insufficient Data
-          </p>
+          <p className="text-[10px] uppercase font-bold tracking-widest">Insufficient Data</p>
           <p className="text-[9px] max-w-[150px] text-center opacity-70">
             Complete {6 - data.length} more Basho to surface macro trends.
           </p>
@@ -47,11 +37,7 @@ export function TrendsWidget() {
   }
 
   return (
-    <BaseWidget
-      title="JSA Meta Trends"
-      icon={Globe}
-      headerAction={headerAction}
-    >
+    <BaseWidget title="JSA Meta Trends" icon={Globe} headerAction={headerAction}>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 border border-primary/20">
@@ -67,10 +53,7 @@ export function TrendsWidget() {
 
         <div className="h-40 w-full mt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
-            >
+            <AreaChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <XAxis dataKey="basho" hide />
               <YAxis hide domain={[0, 100]} />
               <Tooltip
@@ -119,8 +102,7 @@ export function TrendsWidget() {
             <div className="w-2 h-2 rounded-full bg-accent" /> Yotsu-Zumo
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-muted-foreground/30" />{" "}
-            Hybrid
+            <div className="w-2 h-2 rounded-full bg-muted-foreground/30" /> Hybrid
           </div>
         </div>
       </div>

@@ -5,11 +5,10 @@
  * Uses a "Dossier" style aesthetic for a premium feel.
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -38,30 +37,31 @@ import type { Heya } from "@/engine/types/heya";
 import { STATURE_CONFIG } from "./HeyaCard";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { sortRikishiByRank } from "@/utils/engineUtils";
-import { cn } from "@/lib/utils";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "../../engine/types/world";
+import { StableName } from "@/components/ClickableName";
+import type { UIRikishi } from "@/presenters/uiModels";
 
 interface HeyaPreviewProps {
   heya: Heya | null;
   onClose: () => void;
   onConfirm: (heyaId: string) => void;
   sekitoriCount: number;
-  world: WorldState;
+  rosterWithAge: Array<{ rikishi: UIRikishi; age: number }>;
 }
 
-export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: HeyaPreviewProps) {
-  const [selectedRikishi, setSelectedRikishi] = useState<any>(null);
+export function HeyaPreview({
+  heya,
+  onClose,
+  onConfirm,
+  sekitoriCount,
+  rosterWithAge,
+}: HeyaPreviewProps) {
+  const [selectedRikishi, setSelectedRikishi] = useState<UIRikishi | null>(null);
 
-  if (!heya || !world) return null;
+  if (!heya) return null;
 
   const config = STATURE_CONFIG[heya.statureBand];
-  const Icon = config.icon;
 
-  const roster = (heya.rikishiIds ?? [])
-    .map((id: string) => world.rikishi.get(id))
-    .filter(Boolean)
-    .sort(sortRikishiByRank);
+  const roster = rosterWithAge.sort((a, b) => sortRikishiByRank(a.rikishi, b.rikishi));
 
   return (
     <Dialog open={!!heya} onOpenChange={(open) => !open && onClose()}>
@@ -87,7 +87,7 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                   </Badge>
                 </div>
                 <h2 className="text-3xl font-display font-black tracking-tight">
-                  {heya.name} Stable
+                  <StableName id={heya.id} name={heya.name} /> Stable
                 </h2>
                 {heya.nameJa && <p className="text-lg font-display opacity-80">{heya.nameJa}</p>}
               </div>
@@ -155,14 +155,14 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
 
               <ScrollArea className="flex-1 pr-2">
                 <div className="space-y-2">
-                  {roster.map((r: any, idx: number) => {
-                    const rankInfo = (RANK_HIERARCHY as any)?.[r.rank];
+                  {roster.map((r, idx: number) => {
+                    const rankInfo = RANK_HIERARCHY[r.rikishi.rank as keyof typeof RANK_HIERARCHY];
                     const isSekitori = !!rankInfo?.isSekitori;
-                    const rankLabel = rankInfo?.nameEn ?? String(r.rank ?? "");
+                    const rankLabel = rankInfo?.nameJa ?? String(r.rikishi.rank ?? "");
 
                     return (
                       <div
-                        key={r.id}
+                        key={r.rikishi.id}
                         className={`flex items-center justify-between p-3 rounded-lg border transition-all animate-in slide-in-from-left-2 duration-300 fill-mode-both`}
                         style={{ animationDelay: `${idx * 30}ms` }}
                       >
@@ -170,15 +170,15 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                           <div
                             className={`h-8 w-8 rounded-full flex items-center justify-center font-display font-bold text-xs ${isSekitori ? "bg-primary text-white shadow-lg" : "bg-muted text-muted-foreground"}`}
                           >
-                            {r.shikona.charAt(0)}
+                            {r.rikishi.shikona.charAt(0)}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
                               <span
                                 className={`font-display font-black truncate cursor-pointer hover:underline underline-offset-2 transition-colors ${isSekitori ? "text-primary" : "text-foreground"}`}
-                                onClick={() => setSelectedRikishi(r)}
+                                onClick={() => setSelectedRikishi(r.rikishi)}
                               >
-                                {r.shikona}
+                                {r.rikishi.shikona}
                               </span>
                               {isSekitori && (
                                 <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[9px] h-4 font-black">
@@ -187,7 +187,8 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                               )}
                             </div>
                             <div className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest flex items-center gap-1">
-                              <MapPin className="h-2 w-2" /> {r.origin || "Japan"} • {r.age} Cycles
+                              <MapPin className="h-2 w-2" /> {r.rikishi.origin || "Japan"} • {r.age}{" "}
+                              Cycles
                             </div>
                           </div>
                         </div>
@@ -196,11 +197,11 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                           <div className="text-xs font-display font-black uppercase">
                             {rankLabel}{" "}
                             <span className="opacity-40">
-                              {r.rankNumber > 0 ? r.rankNumber : ""}
+                              {r.rikishi.rankNumber > 0 ? r.rikishi.rankNumber : ""}
                             </span>
                           </div>
                           <div className="text-[9px] font-bold text-muted-foreground uppercase">
-                            {r.side || "East"} Division
+                            {r.rikishi.side || "East"} Division
                           </div>
                         </div>
                       </div>
@@ -262,7 +263,8 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                       Rikishi Dossier
                     </Badge>
                     <Badge className="bg-gold/20 text-gold-foreground border-gold/30 text-[9px] h-5 font-black">
-                      {(RANK_HIERARCHY as any)?.[selectedRikishi.rank]?.isSekitori
+                      {RANK_HIERARCHY[selectedRikishi.rank as keyof typeof RANK_HIERARCHY]
+                        ?.isSekitori
                         ? "SEKITORI"
                         : "JUNIOR"}
                     </Badge>
@@ -323,10 +325,12 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                         <Calendar className="h-3 w-3" /> Age
                       </div>
                       <div className="font-display font-bold text-sm">
-                        {selectedRikishi.birthYear && world?.year
-                          ? world.year - selectedRikishi.birthYear
-                          : "--"}{" "}
-                        Cycles
+                        {(() => {
+                          const entry = rosterWithAge.find(
+                            (r) => r.rikishi.id === selectedRikishi.id
+                          );
+                          return entry ? `${entry.age} Cycles` : "-- Cycles";
+                        })()}
                       </div>
                     </div>
                     <div className="bg-muted/30 p-2.5 rounded-lg">
@@ -382,7 +386,9 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                             {stat.icon} {stat.label}
                           </div>
                           <div className="text-xl font-display font-black text-foreground">
-                            {selectedRikishi[stat.key] ?? "--"}
+                            {((selectedRikishi as UIRikishi & Record<string, unknown>)[
+                              stat.key
+                            ] as number) ?? "--"}
                           </div>
                         </div>
                       ))}
@@ -435,7 +441,7 @@ export function HeyaPreview({ heya, onClose, onConfirm, sekitoriCount, world }: 
                             <div className="flex flex-wrap gap-1.5">
                               {selectedRikishi.favoredKimariteDetailed
                                 .slice(0, 5)
-                                .map((k: any, i: number) => (
+                                .map((k, i: number) => (
                                   <Badge
                                     key={i}
                                     variant="outline"

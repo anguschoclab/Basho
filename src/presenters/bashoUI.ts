@@ -1,7 +1,6 @@
 import type { Id } from "../engine/types/common";
-import type { MatchSchedule, BoutResult, BashoState, BashoResult } from "../engine/types/basho";
+import type { MatchSchedule, BashoState, BashoResult } from "../engine/types/basho";
 import type { WorldState } from "../engine/types/world";
-import { projectRosterEntry, UIRosterEntry } from "./rikishiUI";
 
 export interface UIBoutRow {
   boutId: string;
@@ -43,19 +42,19 @@ export interface UIBashoSummary {
 export function projectBoutRow(m: MatchSchedule, world: WorldState): UIBoutRow {
   const east = world.rikishi.get(m.eastRikishiId);
   const west = world.rikishi.get(m.westRikishiId);
-  
+
   return {
     boutId: m.boutId,
     day: m.day,
     eastId: m.eastRikishiId,
     eastShikona: east?.shikona ?? "Unknown",
     eastRank: east?.rank ?? "??",
-    eastRankShort: east?.rank ? (east.rank.charAt(0).toUpperCase() + (east.rankNumber || "")) : "??",
+    eastRankShort: east?.rank ? east.rank.charAt(0).toUpperCase() + (east.rankNumber || "") : "??",
     eastRecord: east ? `${east.currentBashoWins}-${east.currentBashoLosses}` : "0-0",
     westId: m.westRikishiId,
     westShikona: west?.shikona ?? "Unknown",
     westRank: west?.rank ?? "??",
-    westRankShort: west?.rank ? (west.rank.charAt(0).toUpperCase() + (west.rankNumber || "")) : "??",
+    westRankShort: west?.rank ? west.rank.charAt(0).toUpperCase() + (west.rankNumber || "") : "??",
     westRecord: west ? `${west.currentBashoWins}-${west.currentBashoLosses}` : "0-0",
     winner: m.result?.winner,
     kimarite: m.result?.kimariteName,
@@ -65,7 +64,11 @@ export function projectBoutRow(m: MatchSchedule, world: WorldState): UIBoutRow {
   };
 }
 
-export function projectBashoSummary(state: BashoState, result?: BashoResult, world?: WorldState): UIBashoSummary {
+export function projectBashoSummary(
+  state: BashoState,
+  result?: BashoResult,
+  world?: WorldState
+): UIBashoSummary {
   const yushoRikishi = result?.yusho && world ? world.rikishi.get(result.yusho) : undefined;
 
   return {

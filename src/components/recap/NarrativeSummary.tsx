@@ -9,27 +9,32 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Clock,
   TrendingUp,
   TrendingDown,
-  UserPlus,
-  UserMinus,
+  Building2,
   UserX,
   ShieldAlert,
-  Building2,
-  Clock,
-  History,
   Info,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { EngineEvent } from "@/engine/types/events";
-import type { Heya } from "../../engine/types/heya";
-// eslint-disable-next-line no-restricted-imports -- TODO: Refactor to use UIDigest instead of WorldState
-import type { WorldState } from "../../engine/types/world";
 
 interface NarrativeSummaryProps {
-  groupedEvents: Record<string, EngineEvent[]>;
-  prestigeChanges: Array<{ heya: Heya; change: string }>;
-  world: WorldState;
+  groupedEvents: {
+    promotions: { title: string; summary: string; type: string }[];
+    retirements: { title: string; summary: string }[];
+    governance: { title: string; summary: string }[];
+  };
+  prestigeChanges: {
+    heya: { name: string; prestigeBand: string; reputation: number };
+    change: string;
+  }[];
+  narrativeSummaryData: {
+    governanceLog: { date?: string; summary?: string; message?: string }[];
+    year: number;
+    activeHeyasCount: number;
+  };
 }
 
 function EventCard({
@@ -43,7 +48,7 @@ function EventCard({
   summary: string;
   isPromotion?: boolean;
   isRetirement?: boolean;
-  icon: any;
+  icon: React.ElementType;
 }) {
   const isDemotion = isPromotion === false;
   return (
@@ -100,12 +105,16 @@ function EventCard({
   );
 }
 
-export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: NarrativeSummaryProps) {
+export function NarrativeSummary({
+  groupedEvents,
+  prestigeChanges,
+  narrativeSummaryData,
+}: NarrativeSummaryProps) {
   const hasPrestige = prestigeChanges.length > 0;
   const hasPromotions = groupedEvents.promotions?.length > 0;
   const hasRetirements = groupedEvents.retirements?.length > 0;
   const hasGovernance =
-    groupedEvents.governance?.length > 0 || (world.governanceLog?.length ?? 0) > 0;
+    groupedEvents.governance?.length > 0 || (narrativeSummaryData.governanceLog?.length ?? 0) > 0;
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 delay-300 fill-mode-both">
@@ -171,18 +180,20 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
             </div>
 
             <div className="space-y-3">
-              {groupedEvents.promotions.map((e, i) => {
-                const isPromotion = !e.type.includes("DEMOTION");
-                return (
-                  <EventCard
-                    key={i}
-                    title={e.title}
-                    summary={e.summary}
-                    isPromotion={isPromotion}
-                    icon={isPromotion ? TrendingUp : TrendingDown}
-                  />
-                );
-              })}
+              {groupedEvents.promotions.map(
+                (e: { title: string; summary: string; type: string }, i: number) => {
+                  const isPromotion = !e.type.includes("DEMOTION");
+                  return (
+                    <EventCard
+                      key={i}
+                      title={e.title}
+                      summary={e.summary}
+                      isPromotion={isPromotion}
+                      icon={isPromotion ? TrendingUp : TrendingDown}
+                    />
+                  );
+                }
+              )}
             </div>
           </section>
         )}
@@ -202,7 +213,7 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
             </div>
 
             <div className="space-y-3">
-              {groupedEvents.retirements.map((e, i) => (
+              {groupedEvents.retirements.map((e: { title: string; summary: string }, i: number) => (
                 <EventCard key={i} title={e.title} summary={e.summary} isRetirement icon={UserX} />
               ))}
               {groupedEvents.retirements.length === 0 && (
@@ -232,24 +243,26 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {(groupedEvents.governance ?? []).map((e, i) => (
-                    <div
-                      key={i}
-                      className="flex gap-4 p-3 bg-white/50 border-2 border-indigo-500/10 rounded-lg"
-                    >
-                      <div className="h-8 w-8 bg-indigo-500/10 rounded-full flex items-center justify-center shrink-0">
-                        <Info className="h-4 w-4 text-indigo-500" />
-                      </div>
-                      <div className="space-y-1">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">
-                          {e.title}
+                  {(groupedEvents.governance ?? []).map(
+                    (e: { title: string; summary: string }, i: number) => (
+                      <div
+                        key={i}
+                        className="flex gap-4 p-3 bg-white/50 border-2 border-indigo-500/10 rounded-lg"
+                      >
+                        <div className="h-8 w-8 bg-indigo-500/10 rounded-full flex items-center justify-center shrink-0">
+                          <Info className="h-4 w-4 text-indigo-500" />
                         </div>
-                        <p className="text-xs text-muted-foreground italic leading-relaxed">
-                          "{e.summary}"
-                        </p>
+                        <div className="space-y-1">
+                          <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">
+                            {e.title}
+                          </div>
+                          <p className="text-xs text-muted-foreground italic leading-relaxed">
+                            "{e.summary}"
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                   {groupedEvents.governance.length === 0 && (
                     <p className="text-xs italic text-muted-foreground opacity-50 py-4">
                       No disciplinary or political directives issued.
@@ -259,26 +272,31 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
               </CardContent>
             </Card>
 
-            {world.governanceLog && world.governanceLog.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
-                  <Clock className="h-3 w-3" /> Historical Timeline Drift
-                </h4>
-                <div className="space-y-3 pl-4 border-l-2 border-border/40">
-                  {world.governanceLog.slice(-5).map((log: any, i: number) => (
-                    <div key={i} className="relative">
-                      <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
-                      <div className="text-[10px] font-bold text-muted-foreground mb-1">
-                        {log.date || "Association Record"}
-                      </div>
-                      <p className="text-xs font-display italic leading-snug">
-                        {log.summary || log.message}
-                      </p>
-                    </div>
-                  ))}
+            {narrativeSummaryData.governanceLog &&
+              narrativeSummaryData.governanceLog.length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+                    <Clock className="h-3 w-3" /> Historical Timeline Drift
+                  </h4>
+                  <div className="space-y-3 pl-4 border-l-2 border-border/40">
+                    {narrativeSummaryData.governanceLog
+                      .slice(-5)
+                      .map(
+                        (log: { date?: string; summary?: string; message?: string }, i: number) => (
+                          <div key={i} className="relative">
+                            <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
+                            <div className="text-[10px] font-bold text-muted-foreground mb-1">
+                              {log.date || "Association Record"}
+                            </div>
+                            <p className="text-xs font-display italic leading-snug">
+                              {log.summary || log.message}
+                            </p>
+                          </div>
+                        )
+                      )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </section>
       )}
@@ -300,13 +318,15 @@ export function NarrativeSummary({ groupedEvents, prestigeChanges, world }: Narr
           </div>
           <div className="bg-primary/5 p-4 rounded-lg flex items-center justify-center gap-12">
             <div className="text-center">
-              <div className="text-2xl font-display font-black text-primary">{world.year}</div>
+              <div className="text-2xl font-display font-black text-primary">
+                {narrativeSummaryData.year}
+              </div>
               <div className="text-[8px] uppercase font-black opacity-40">Association Year</div>
             </div>
             <div className="w-px h-8 bg-primary/10" />
             <div className="text-center">
               <div className="text-2xl font-display font-black text-primary">
-                {world.heyas.size}
+                {narrativeSummaryData.activeHeyasCount}
               </div>
               <div className="text-[8px] uppercase font-black opacity-40">Active Stables</div>
             </div>

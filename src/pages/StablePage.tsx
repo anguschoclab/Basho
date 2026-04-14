@@ -11,6 +11,8 @@ import { Building, Medal, Star, Trophy, Users, Users2, Scroll } from "lucide-rea
 import { useMemo } from "react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
+import { StableName } from "@/components/ClickableName";
+import { projectHeyaData } from "@/presenters/uiDigest";
 
 export default function StablePage() {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ export default function StablePage() {
           <div>
             <h1 className="text-4xl font-display font-bold flex items-center gap-3">
               <Building className="h-10 w-10 text-primary" />
-              {heya.name}
+              <StableName id={heya.id} name={heya.name} />
               {heya.nameJa && (
                 <span className="text-2xl text-muted-foreground font-normal ml-2">
                   {heya.nameJa}
@@ -89,7 +91,7 @@ export default function StablePage() {
                   <Card
                     className="paper hover:border-primary transition-colors cursor-pointer"
                     onClick={() =>
-                      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } as any })
+                      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })
                     }
                   >
                     <CardContent className="p-4 flex justify-between items-center">
@@ -108,7 +110,20 @@ export default function StablePage() {
           </TabsContent>
 
           <TabsContent value="institution" className="space-y-4">
-            <InstitutionPanel world={world} heya={heya} />
+            {world &&
+              heya &&
+              (() => {
+                const data = projectHeyaData(world, heya.id);
+                if (!data) return null;
+                return (
+                  <InstitutionPanel
+                    heya={heya}
+                    oyakata={data.oyakata}
+                    oyakataQuirks={data.oyakataQuirks}
+                    oyakataTraits={data.oyakataTraits}
+                  />
+                );
+              })()}
           </TabsContent>
 
           <TabsContent value="history" className="space-y-8">
