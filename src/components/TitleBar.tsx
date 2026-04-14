@@ -10,40 +10,45 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
 
   useEffect(() => {
     // Check if running in Electron
-    const isElectron = typeof window !== "undefined" && (window as any).__ELECTRON__;
+    const isElectron = typeof window !== "undefined" && window.__ELECTRON__;
     if (!isElectron) return;
 
-    // Listen for window maximize state changes
+    // Sync maximize state with actual window state
     const checkMaximized = async () => {
-      if ((window as any).electronCustom?.window) {
-        // We'd need to add an IPC handler to check current state
-        // For now, just track local state
+      if (window.electronCustom?.window) {
+        const maximized = await window.electronCustom.window.isMaximized();
+        setIsMaximized(maximized);
       }
     };
 
     checkMaximized();
+
+    // Check periodically to sync with external changes (keyboard shortcuts, etc.)
+    const interval = setInterval(checkMaximized, 500);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleMinimize = () => {
-    if ((window as any).electronCustom?.window) {
-      (window as any).electronCustom.window.minimize();
+    if (window.electronCustom?.window) {
+      window.electronCustom.window.minimize();
     }
   };
 
   const handleMaximize = () => {
-    if ((window as any).electronCustom?.window) {
-      (window as any).electronCustom.window.maximize();
+    if (window.electronCustom?.window) {
+      window.electronCustom.window.maximize();
       setIsMaximized(!isMaximized);
     }
   };
 
   const handleClose = () => {
-    if ((window as any).electronCustom?.window) {
-      (window as any).electronCustom.window.close();
+    if (window.electronCustom?.window) {
+      window.electronCustom.window.close();
     }
   };
 
-  const isElectron = typeof window !== "undefined" && (window as any).__ELECTRON__;
+  const isElectron = typeof window !== "undefined" && window.__ELECTRON__;
 
   if (!isElectron) {
     return null; // Don't show title bar in web builds

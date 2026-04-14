@@ -1,12 +1,11 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { electronAPI } from "@electron-toolkit/preload";
 
 // Custom API for Electron-specific functionality
 const electronCustomAPI = {
   // Storage operations using electron-store
   storage: {
     get: (key: string) => ipcRenderer.invoke("storage:get", key),
-    set: (key: string, value: any) => ipcRenderer.invoke("storage:set", key, value),
+    set: (key: string, value: unknown) => ipcRenderer.invoke("storage:set", key, value),
     delete: (key: string) => ipcRenderer.invoke("storage:delete", key),
     clear: () => ipcRenderer.invoke("storage:clear"),
     keys: () => ipcRenderer.invoke("storage:keys"),
@@ -62,13 +61,21 @@ const electronCustomAPI = {
   // Menu event listeners
   onMenuEvent: (callback: (event: string) => void) => {
     const events = ["menu:new-game", "menu:save-game", "menu:load-game", "menu:about"];
-    events.forEach((event) => {
-      ipcRenderer.on(event, () => callback(event));
+    const listeners = events.map((event) => {
+      const listener = () => callback(event);
+      ipcRenderer.on(event, listener);
+      return { event, listener };
     });
+
+    // Return cleanup function
+    return () => {
+      listeners.forEach(({ event, listener }) => {
+        ipcRenderer.removeListener(event, listener);
+      });
+    };
   },
 };
 
-contextBridge.exposeInMainWorld("electron", electronAPI);
 contextBridge.exposeInMainWorld("electronCustom", electronCustomAPI);
 // Signals to the renderer that it is running inside Electron.
 // Used in src/routes.tsx to activate hash routing when loading from file://.

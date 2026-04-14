@@ -77,7 +77,7 @@ class HistoryLRUCache {
   private async loadFromOPFS(year: number): Promise<ArchivedYear | null> {
     // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
     const archiveService =
-      typeof window !== "undefined" && (window as any).__ELECTRON__
+      typeof window !== "undefined" && window.__ELECTRON__ === true
         ? electronArchiveService
         : opfsArchiveService;
 

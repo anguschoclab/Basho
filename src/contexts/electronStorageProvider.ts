@@ -13,24 +13,38 @@ import { type IStorageProvider, setStorageProvider } from "@/engine/storageProvi
  * Falls back to localStorage if electron-store is not available (for web builds).
  */
 export class ElectronStorageProvider implements IStorageProvider {
-  private storage: any;
+  private storage: {
+    get: (key: string) => unknown;
+    set: (key: string, value: unknown) => void;
+    delete: (key: string) => void;
+    clear: () => void;
+    keys: () => Record<string, unknown>;
+  };
   private isElectron: boolean;
   private cachedKeys: string[] = [];
 
   constructor() {
     // Check if running in Electron with electronCustom API
-    this.isElectron = typeof window !== "undefined" && (window as any).electronCustom?.storage;
+    this.isElectron = typeof window !== "undefined" && !!window.electronCustom?.storage;
     if (this.isElectron) {
-      this.storage = (window as any).electronCustom.storage;
-      // Preload keys synchronously for Electron
-      this.loadKeys();
+      this.storage = window.electronCustom!.storage;
+      // Load keys asynchronously
+      this.loadKeys().catch((e) => console.error("Failed to load keys from electron-store:", e));
     } else {
       // Fallback to localStorage for web builds
       this.storage = {
         get: (key: string) => localStorage.getItem(key),
-        set: (key: string, value: string) => localStorage.setItem(key, value),
+        set: (key: string, value: unknown) => localStorage.setItem(key, value as string),
         delete: (key: string) => localStorage.removeItem(key),
         clear: () => localStorage.clear(),
+        keys: () => {
+          const keys: Record<string, unknown> = {};
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key) keys[key] = localStorage.getItem(key);
+          }
+          return keys;
+        },
       };
     }
   }
@@ -48,7 +62,8 @@ export class ElectronStorageProvider implements IStorageProvider {
   }
 
   getItem(key: string): string | null {
-    return this.storage.get(key);
+    const value = this.storage.get(key);
+    return value as string | null;
   }
 
   setItem(key: string, value: string): void {

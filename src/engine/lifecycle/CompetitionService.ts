@@ -223,17 +223,17 @@ function recordBashoHistory(
     },
   };
 
-  builder.appendToWorldArray('history', [result]);
+  builder.appendToWorldArray("history", [result]);
 
   safeCall(() => {
     const snapshot = buildAlmanacSnapshot(world);
     if (snapshot) {
-      builder.appendToWorldArray('almanacSnapshots', [snapshot]);
+      builder.appendToWorldArray("almanacSnapshots", [snapshot]);
 
       // FM v2.0 Archival: Move to cold storage immediately
       // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
       const archiveService =
-        typeof window !== "undefined" && (window as any).__ELECTRON__
+        typeof window !== "undefined" && window.__ELECTRON__ === true
           ? electronArchiveService
           : opfsArchiveService;
 
@@ -245,7 +245,7 @@ function recordBashoHistory(
       // Collect specific prizes from the current result
       const yearAwards = (world.history || []).filter((h) => h.year === world.year);
       const archiveService =
-        typeof window !== "undefined" && (window as any).__ELECTRON__
+        typeof window !== "undefined" && window.__ELECTRON__ === true
           ? electronArchiveService
           : opfsArchiveService;
 
@@ -272,7 +272,10 @@ function recordBashoHistory(
 
   safeCall(() => {
     if (world.mediaState) {
-      builder.updateWorldField('mediaState', snapshotMediaHeatForBasho(world.mediaState, basho.bashoName));
+      builder.updateWorldField(
+        "mediaState",
+        snapshotMediaHeatForBasho(world.mediaState, basho.bashoName)
+      );
     }
   });
 
@@ -280,7 +283,7 @@ function recordBashoHistory(
     const newFtue = { ...world.ftue };
     newFtue.bashoCompleted += 1;
     if (newFtue.bashoCompleted >= 1) newFtue.isActive = false;
-    builder.updateWorldField('ftue', newFtue);
+    builder.updateWorldField("ftue", newFtue);
   }
 
   builder.logEvent(
@@ -368,7 +371,15 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   }
 
   // Record basho history and phase transitions
-  const historyImpact = recordBashoHistory(world, basho, yusho, topCandidates, playoffMatches, prizes, bestWins);
+  const historyImpact = recordBashoHistory(
+    world,
+    basho,
+    yusho,
+    topCandidates,
+    playoffMatches,
+    prizes,
+    bestWins
+  );
 
   // Merge impacts together
   const { mergeImpacts } = require("../core/ImpactResolver");

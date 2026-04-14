@@ -314,7 +314,7 @@ const routeTree = rootRoute.addChildren([
 // In the PWA browser __ELECTRON__ is undefined so browser history is used.
 const isElectronProd =
   typeof window !== "undefined" &&
-  (window as unknown as { __ELECTRON__?: boolean }).__ELECTRON__ === true &&
+  window.__ELECTRON__ === true &&
   !window.location.href.startsWith("http");
 
 export const router = createRouter({

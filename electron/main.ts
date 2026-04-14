@@ -58,7 +58,6 @@ async function createWindow(): Promise<void> {
   mainWindow.setSize(windowState.width, windowState.height);
 
   // Save window state on close
-  // Save window state on close
   mainWindow.on("close", (e) => {
     if (process.platform === "darwin") {
       // On macOS, hide to tray instead of closing
@@ -282,6 +281,10 @@ ipcMain.handle("window:maximize", () => {
   }
 });
 
+ipcMain.handle("window:isMaximized", () => {
+  return mainWindow?.isMaximized() || false;
+});
+
 ipcMain.handle("window:close", () => {
   mainWindow?.close();
 });
@@ -318,8 +321,21 @@ ipcMain.handle("notification:show", async (event, options: { title: string; body
   return true;
 });
 
+// Path validation - restrict file system operations to app data directory only
+const allowedBaseDir = app.getPath("userData");
+
+function validatePath(filePath: string): boolean {
+  const resolvedPath = path.resolve(filePath);
+  const resolvedBase = path.resolve(allowedBaseDir);
+  return resolvedPath.startsWith(resolvedBase + path.sep) || resolvedPath === resolvedBase;
+}
+
 // IPC Handlers for file system operations
 ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) => {
+  if (!validatePath(filePath)) {
+    console.error("Path validation failed - not in allowed directory:", filePath);
+    return false;
+  }
   try {
     await fs.writeFile(filePath, content, "utf-8");
     return true;
@@ -330,6 +346,10 @@ ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) 
 });
 
 ipcMain.handle("fs:readFile", async (event, filePath: string) => {
+  if (!validatePath(filePath)) {
+    console.error("Path validation failed - not in allowed directory:", filePath);
+    return null;
+  }
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return content;
@@ -340,6 +360,10 @@ ipcMain.handle("fs:readFile", async (event, filePath: string) => {
 });
 
 ipcMain.handle("fs:exists", async (event, filePath: string) => {
+  if (!validatePath(filePath)) {
+    console.error("Path validation failed - not in allowed directory:", filePath);
+    return false;
+  }
   try {
     await fs.access(filePath);
     return true;
@@ -349,6 +373,10 @@ ipcMain.handle("fs:exists", async (event, filePath: string) => {
 });
 
 ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = true) => {
+  if (!validatePath(dirPath)) {
+    console.error("Path validation failed - not in allowed directory:", dirPath);
+    return false;
+  }
   try {
     await fs.mkdir(dirPath, { recursive });
     return true;
@@ -359,6 +387,10 @@ ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = t
 });
 
 ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
+  if (!validatePath(dirPath)) {
+    console.error("Path validation failed - not in allowed directory:", dirPath);
+    return [];
+  }
   try {
     const files = await fs.readdir(dirPath);
     return files;
@@ -369,6 +401,10 @@ ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
 });
 
 ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
+  if (!validatePath(filePath)) {
+    console.error("Path validation failed - not in allowed directory:", filePath);
+    return false;
+  }
   try {
     await fs.unlink(filePath);
     return true;
@@ -380,16 +416,41 @@ ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
 
 // IPC Handler for getting app data path
 ipcMain.handle("app:getPath", (event, name: string) => {
-  return app.getPath(name as any);
+  return app.getPath(
+    name as
+      | "home"
+      | "appData"
+      | "userData"
+      | "temp"
+      | "desktop"
+      | "documents"
+      | "downloads"
+      | "music"
+      | "pictures"
+      | "videos"
+  );
 });
 
 app.whenReady().then(async () => {
-  await createWindow();
-  createMenu();
-  createTray();
+  try {
+    await createWindow();
+    createMenu();
+    createTray();
+  } catch (error) {
+    console.error("Failed to initialize Electron app:", error);
+    dialog.showErrorBox(
+      "Startup Error",
+      "Failed to initialize the application. Please check the console for details."
+    );
+    app.quit();
+  }
 
   app.on("activate", async () => {
-    if (BrowserWindow.getAllWindows().length === 0) await createWindow();
+    try {
+      if (BrowserWindow.getAllWindows().length === 0) await createWindow();
+    } catch (error) {
+      console.error("Failed to create window on activate:", error);
+    }
   });
 });
 

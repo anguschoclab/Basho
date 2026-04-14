@@ -1,6 +1,7 @@
 {
   appId: "com.sumo-manager-pro.app",
   productName: "Sumo Manager Pro",
+  version: "0.0.0",
   copyright: "Copyright © 2026",
   directories: {
     buildResources: "resources",

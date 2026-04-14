@@ -19,9 +19,9 @@ export class ElectronArchiveService implements ArchiveService {
   private baseDir: string = "";
 
   constructor() {
-    this.isElectron = typeof window !== "undefined" && (window as any).__ELECTRON__;
+    this.isElectron = typeof window !== "undefined" && window.__ELECTRON__ === true;
 
-    if (this.isElectron && (window as any).electronCustom?.appPath) {
+    if (this.isElectron && window.electronCustom?.appPath) {
       // Get app data path for storage
       this.initBaseDir();
     }
@@ -35,11 +35,11 @@ export class ElectronArchiveService implements ArchiveService {
     if (!this.isElectron) return;
 
     try {
-      const appDataPath = await (window as any).electronCustom.appPath.getPath("userData");
+      const appDataPath = await window.electronCustom!.appPath.getPath("userData");
       this.baseDir = `${appDataPath}/archives`;
 
       // Create base directory
-      await (window as any).electronCustom.fs.mkdir(this.baseDir, true);
+      await window.electronCustom!.fs.mkdir(this.baseDir, true);
     } catch (error) {
       console.error("Failed to initialize archive directory:", error);
     }
@@ -49,7 +49,7 @@ export class ElectronArchiveService implements ArchiveService {
     if (!this.isElectron) return;
 
     const fullPath = `${this.baseDir}/${dirPath}`;
-    await (window as any).electronCustom.fs.mkdir(fullPath, true);
+    await window.electronCustom!.fs.mkdir(fullPath, true);
   }
 
   public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
@@ -64,7 +64,7 @@ export class ElectronArchiveService implements ArchiveService {
 
       const filePath = `${this.baseDir}/${dirPath}/${boutId}.json`;
       const content = JSON.stringify(logData, null, 2);
-      await (window as any).electronCustom.fs.writeFile(filePath, content);
+      await window.electronCustom!.fs.writeFile(filePath, content);
     } catch (error) {
       console.error(`Failed to archive bout log for season ${season}, bout ${boutId}:`, error);
     }
@@ -78,7 +78,7 @@ export class ElectronArchiveService implements ArchiveService {
 
     try {
       const filePath = `${this.baseDir}/season_${season}/bouts/${boutId}.json`;
-      const content = await (window as any).electronCustom.fs.readFile(filePath);
+      const content = await window.electronCustom!.fs.readFile(filePath);
 
       if (content) {
         return destr<BoutResult>(content);
@@ -101,7 +101,7 @@ export class ElectronArchiveService implements ArchiveService {
       await this.ensureDir(dirPath);
 
       const filePath = `${this.baseDir}/${dirPath}/${week}.md`;
-      await (window as any).electronCustom.fs.writeFile(filePath, markdown);
+      await window.electronCustom!.fs.writeFile(filePath, markdown);
     } catch (error) {
       console.error(`Failed to archive gazette for season ${season}, week ${week}:`, error);
     }
@@ -115,7 +115,7 @@ export class ElectronArchiveService implements ArchiveService {
 
     try {
       const filePath = `${this.baseDir}/season_${season}/gazettes/${week}.md`;
-      const content = await (window as any).electronCustom.fs.readFile(filePath);
+      const content = await window.electronCustom!.fs.readFile(filePath);
       return content;
     } catch (error) {
       console.error(`Failed to retrieve gazette for season ${season}, week ${week}:`, error);
@@ -131,7 +131,7 @@ export class ElectronArchiveService implements ArchiveService {
 
     try {
       const dirPath = `${this.baseDir}/season_${season}/bouts`;
-      const files = await (window as any).electronCustom.fs.readDir(dirPath);
+      const files = await window.electronCustom!.fs.readDir(dirPath);
 
       // Remove .json extension
       return files.map((file: string) => file.replace(".json", ""));
@@ -153,7 +153,7 @@ export class ElectronArchiveService implements ArchiveService {
 
       const filePath = `${this.baseDir}/${dirPath}/awards.json`;
       const content = JSON.stringify(awards, null, 2);
-      await (window as any).electronCustom.fs.writeFile(filePath, content);
+      await window.electronCustom!.fs.writeFile(filePath, content);
     } catch (error) {
       console.error(`Failed to archive awards for season ${season}:`, error);
     }
@@ -167,7 +167,7 @@ export class ElectronArchiveService implements ArchiveService {
 
     try {
       const filePath = `${this.baseDir}/season_${season}/awards/awards.json`;
-      const content = await (window as any).electronCustom.fs.readFile(filePath);
+      const content = await window.electronCustom!.fs.readFile(filePath);
 
       if (content) {
         return destr<any[]>(content);
@@ -191,7 +191,7 @@ export class ElectronArchiveService implements ArchiveService {
 
       const filePath = `${this.baseDir}/${dirPath}/${bashoNumber}.json`;
       const content = JSON.stringify(snapshot, null, 2);
-      await (window as any).electronCustom.fs.writeFile(filePath, content);
+      await window.electronCustom!.fs.writeFile(filePath, content);
     } catch (error) {
       console.error(`Failed to archive banzuke for season ${season}, basho ${bashoNumber}:`, error);
     }
@@ -205,7 +205,7 @@ export class ElectronArchiveService implements ArchiveService {
 
     try {
       const filePath = `${this.baseDir}/season_${season}/banzuke/${bashoNumber}.json`;
-      const content = await (window as any).electronCustom.fs.readFile(filePath);
+      const content = await window.electronCustom!.fs.readFile(filePath);
 
       if (content) {
         return destr(content);
