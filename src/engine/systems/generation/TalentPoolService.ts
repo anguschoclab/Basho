@@ -441,6 +441,8 @@ export function fillVacanciesForNPC(
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
+
   // First, map target heyas by prestige band index for weighting
   // Elite stables get first pick in the logic, or we weight the scores by reputation
   const sortedHeyas = Object.keys(targetHeyas).sort((a, b) => {
