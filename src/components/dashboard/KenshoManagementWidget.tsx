@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,81 +12,91 @@ export function KenshoManagementWidget() {
   const { state } = useGame();
   const world = state.world;
 
-  if (!world?.playerHeyaId) {
-    return null;
-  }
+  const heya = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
 
-  const heya = world.heyas.get(world.playerHeyaId);
-  if (!heya) return null;
+  // Single pass to gather rikishi and calculate earnings/projections
+  const { playerRikishi, totalKenshoEarnings, projectedKensho } = useMemo(() => {
+    const result = {
+      playerRikishi: [] as Rikishi[],
+      totalKenshoEarnings: 0,
+      projectedKensho: 0,
+    };
 
-  // Get player's rikishi
-  const playerRikishi = (heya.rikishiIds || [])
-    .map((id) => world.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined);
+    if (!heya?.rikishiIds) return result;
 
-  // Calculate total kensho earnings from recent bouts
-  const totalKenshoEarnings = playerRikishi.reduce((sum, rikishi) => {
-    const economics = rikishi.economics;
-    if (!economics) return sum;
-    // careerKenshoWon is the count, multiply by ¥70,000 per envelope
-    return sum + (economics.careerKenshoWon || 0) * 70000;
-  }, 0);
+    for (const id of heya.rikishiIds) {
+      const rikishi = world.rikishi.get(id);
+      if (rikishi) {
+        result.playerRikishi.push(rikishi);
 
-  // Get recent bout results with kensho
-  const recentBoutsWithKensho: Array<{
-    rikishiId: string;
-    rikishiName: string;
-    boutId: string;
-    kenshoEnvelopes: number;
-    awardFact?: string;
-  }> = [];
+        // Earnings
+        if (rikishi.economics?.careerKenshoWon) {
+          result.totalKenshoEarnings += rikishi.economics.careerKenshoWon * 70000;
+        }
 
-  // Look through recent basho results
-  if (world.currentBasho?.matches) {
-    for (const match of world.currentBasho.matches) {
-      const result = match.result as BoutResult | undefined;
-      if (!result) continue;
+        // Projection based on rank
+        const rank = rikishi.rank;
+        if (rank) {
+          let baseProjection = 0;
+          if (rank === "yokozuna" || rank === "ozeki") baseProjection = 15;
+          else if (rank === "sekiwake" || rank === "komusubi") baseProjection = 10;
+          else if (rank.includes("maegashira")) baseProjection = 5;
 
-      // Check if either rikishi is from player's heya
-      const eastRikishi = world.rikishi.get(match.eastRikishiId);
-      const westRikishi = world.rikishi.get(match.westRikishiId);
-
-      if (eastRikishi && heya.rikishiIds?.includes(eastRikishi.id) && result.kenshoEnvelopes > 0) {
-        recentBoutsWithKensho.push({
-          rikishiId: eastRikishi.id,
-          rikishiName: eastRikishi.shikona || eastRikishi.id,
-          boutId: match.boutId,
-          kenshoEnvelopes: result.kenshoEnvelopes,
-          awardFact: result.awardFact || undefined,
-        });
-      }
-
-      if (westRikishi && heya.rikishiIds?.includes(westRikishi.id) && result.kenshoEnvelopes > 0) {
-        recentBoutsWithKensho.push({
-          rikishiId: westRikishi.id,
-          rikishiName: westRikishi.shikona || westRikishi.id,
-          boutId: match.boutId,
-          kenshoEnvelopes: result.kenshoEnvelopes,
-          awardFact: result.awardFact || undefined,
-        });
+          result.projectedKensho += baseProjection * 70000;
+        }
       }
     }
+
+    return result;
+  }, [heya?.rikishiIds, world.rikishi]);
+
+  // Get recent bout results with kensho
+  const recentBoutsWithKensho = useMemo(() => {
+    const recent: Array<{
+      rikishiId: string;
+      rikishiName: string;
+      boutId: string;
+      kenshoEnvelopes: number;
+      awardFact?: string;
+    }> = [];
+
+    if (world.currentBasho?.matches) {
+      for (const match of world.currentBasho.matches) {
+        const result = match.result as BoutResult | undefined;
+        if (!result || result.kenshoEnvelopes <= 0) continue;
+
+        // Check if either rikishi is from player's heya
+        const eastRikishi = world.rikishi.get(match.eastRikishiId);
+        const westRikishi = world.rikishi.get(match.westRikishiId);
+
+        if (eastRikishi && heya.rikishiIds?.includes(eastRikishi.id)) {
+          recent.push({
+            rikishiId: eastRikishi.id,
+            rikishiName: eastRikishi.shikona || eastRikishi.id,
+            boutId: match.boutId,
+            kenshoEnvelopes: result.kenshoEnvelopes,
+            awardFact: result.awardFact || undefined,
+          });
+        }
+
+        if (westRikishi && heya.rikishiIds?.includes(westRikishi.id)) {
+          recent.push({
+            rikishiId: westRikishi.id,
+            rikishiName: westRikishi.shikona || westRikishi.id,
+            boutId: match.boutId,
+            kenshoEnvelopes: result.kenshoEnvelopes,
+            awardFact: result.awardFact || undefined,
+          });
+        }
+      }
+    }
+
+    return recent;
+  }, [world?.currentBasho?.matches, world?.rikishi, heya?.rikishiIds]);
+
+  if (!world?.playerHeyaId || !heya) {
+    return null;
   }
-
-  // Calculate projected kensho for upcoming bouts
-  // This is a simplified projection based on rank
-  const projectedKensho = playerRikishi.reduce((sum, rikishi) => {
-    const rank = rikishi.rank;
-    if (!rank) return sum;
-
-    // Higher ranks get more kensho opportunities
-    let baseProjection = 0;
-    if (rank === "yokozuna" || rank === "ozeki") baseProjection = 15;
-    else if (rank === "sekiwake" || rank === "komusubi") baseProjection = 10;
-    else if (rank.includes("maegashira")) baseProjection = 5;
-
-    return sum + baseProjection * 70000; // ¥70,000 per envelope
-  }, 0);
 
   return (
     <Card className="paper">

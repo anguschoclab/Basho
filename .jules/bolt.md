@@ -1,3 +1,4 @@
 ## 2024-04-11 - Optimize OPFS Archive Directory Iteration
 **Learning:** Sequential `for await` loops over `FileSystemDirectoryHandle.values()` cause unnecessary I/O blocking per iteration.
 **Action:** Replaced sequential `for await` with a `Promise.all` batch chunking strategy in `getArchivedBoutIdsForSeason`, significantly improving parallelized iterator resolution speed while maintaining memory safety.
+## 2024-04-14 - Optimize Kensho Widget Earnings Iterations\n**Learning:** In React components, multiple consecutive array operations (like `.map().filter().reduce()`) executed inside a render function are expensive, and placing `useMemo` hooks below conditional early returns violates hook rules.\n**Action:** Consolidate array iterations into a single-pass loop within a `useMemo` block, and ensure all hooks are unconditionally declared *above* early return statements.
