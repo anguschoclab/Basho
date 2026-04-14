@@ -199,7 +199,7 @@ export function resolveBout(
     (result as any).kenshoBanners = banners;
 
     const awardFact = result.awardFact ?? undefined;
-    result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, awardFact, kenshoRng);
+    result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, banners, awardFact, kenshoRng);
   }
 
   // Merge rivalry impact into main builder

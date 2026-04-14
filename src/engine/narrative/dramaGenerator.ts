@@ -10,6 +10,7 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { rngForWorld } from "../rng";
 import { stableSort } from "../utils/sort";
+import type { ActiveCrisis, CrisisType } from "../types/crises";
 
 export interface DramaEvent {
   id: string;
@@ -35,9 +36,10 @@ export function processDramaTick(world: WorldState): StateImpact {
   }
 
   // Specific triggers (e.g., high debt, low compliance)
-  checkTriggeredDrama(world);
+  const triggeredImpact = checkTriggeredDrama(world);
 
-  return builder.build();
+  const { mergeImpacts } = require("../core/ImpactResolver");
+  return mergeImpacts([builder.build(), triggeredImpact]);
 }
 
 function generateRandomDrama(world: WorldState): StateImpact {
@@ -112,8 +114,10 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
           { heyaId: heya.id }
         );
         if (heya.isPlayerOwned) {
-            // This would trigger a CrisisModal in the UI
-            triggerCrisis(world, heya.id, "BANKRUPTCY_THREAT");
+            // This triggers a CrisisModal in the UI by attaching an ActiveCrisis to the heya
+            const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
+            const { mergeImpacts } = require("../core/ImpactResolver");
+            return mergeImpacts([builder.build(), crisisImpact]);
         }
     }
   }
@@ -121,10 +125,56 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
   return builder.build();
 }
 
-function triggerCrisis(world: WorldState, heyaId: string, type: string): StateImpact {
+function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {
   const builder = createImpactBuilder('triggerCrisis');
-    // In a worker-based engine, we emit a special event that the UI catches
-    // or log a high-importance event.
-    console.log(`[DramaGenerator] CRISIS TRIGGERED: ${type} for heya ${heyaId}`);
-    return builder.build();
+  const rng = rngForWorld(world, "narrative", `crisis_${heyaId}_${world.week}`);
+
+  let crisis: ActiveCrisis | undefined;
+
+  if (type === "financial_insolvency") {
+    crisis = {
+      id: rng.uuid("CRISIS"),
+      type: "financial_insolvency",
+      title: "Imminent Bankruptcy",
+      description: "The stable's funds are dangerously close to zero. Creditors are demanding immediate action before forcing liquidation.",
+      severity: "critical",
+      generatedAtWeek: world.week,
+      options: [
+        {
+          id: "seek_pardon",
+          label: "Plead with JSA",
+          description: "Beg the JSA for a grace period. High risk of prestige loss and sanctions.",
+          prestigeCost: 15,
+          consequences: {
+            resolutionSuccess: true,
+            narrativeText: "The JSA grants a temporary reprieve, but the stable's reputation suffers greatly."
+          }
+        },
+        {
+          id: "emergency_loan",
+          label: "Take Predatory Loan",
+          description: "Borrow ¥10,000,000 from loan sharks at exorbitant interest rates.",
+          consequences: {
+            resolutionSuccess: true,
+            narrativeText: "You secure the funds, but the stable's future is heavily mortgaged."
+          }
+        }
+      ]
+    };
+  }
+
+  if (crisis) {
+    builder.updateHeya(heyaId, { activeCrisis: crisis });
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "narrative",
+      {
+        incident: "crisis_triggered",
+        reason: crisis.type
+      },
+      { heyaId, importance: "headline" }
+    );
+  }
+
+  return builder.build();
 }

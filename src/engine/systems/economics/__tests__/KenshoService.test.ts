@@ -80,37 +80,39 @@ describe("KenshoService", () => {
       const rng = rngFromSeed("test-kinboshi", "kensho", "envelopes");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
-      const res = calculateKenshoEnvelopes(world, rikishi, "kinboshi", rng);
+      const banners = new Array(0).fill({} as any);
+      const res = calculateKenshoEnvelopes(world, rikishi, banners, "kinboshi", rng);
       expect(res).toBeGreaterThanOrEqual(15);
-      expect(res).toBeLessThanOrEqual(25);
+      expect(res).toBeLessThanOrEqual(19);
     });
 
     it("calculates correctly with ginboshi", () => {
       const rng = rngFromSeed("test-ginboshi", "kensho", "envelopes");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
-      const res = calculateKenshoEnvelopes(world, rikishi, "ginboshi", rng);
+      const banners = new Array(0).fill({} as any);
+      const res = calculateKenshoEnvelopes(world, rikishi, banners, "ginboshi", rng);
       expect(res).toBeGreaterThanOrEqual(5);
-      expect(res).toBeLessThanOrEqual(8);
+      expect(res).toBeLessThanOrEqual(7);
     });
 
     it("calculates correctly with normal awards", () => {
       const rng = rngFromSeed("test-normal", "kensho", "envelopes");
       const rikishi = mockRikishi("r1");
       const world = {} as WorldState;
-      const res = calculateKenshoEnvelopes(world, rikishi, undefined, rng);
-      expect(res).toBeGreaterThanOrEqual(1);
-      expect(res).toBeLessThanOrEqual(3);
+      const banners = new Array(3).fill({} as any);
+      const res = calculateKenshoEnvelopes(world, rikishi, banners, undefined, rng);
+      expect(res).toBe(3);
     });
 
     it("applies buzz modifier correctly", () => {
       const rng = rngFromSeed("test-buzz", "kensho", "envelopes");
       const rikishi = mockRikishi("r1");
       const world = { mediaState: { mediaHeat: { "r1": 80 } } } as unknown as WorldState;
-      // Normal envelope: ~1-3. Mod: 1.0 + 80/80 = 2.0. Result ~ 2-6.
-      const res = calculateKenshoEnvelopes(world, rikishi, undefined, rng);
-      expect(res).toBeGreaterThanOrEqual(2);
-      expect(res).toBeLessThanOrEqual(6);
+      const banners = new Array(4).fill({} as any);
+      // count is 4. Mod is 80/80 = 1.0. Bonus = 4 * 1.0 = 4. Total = 8.
+      const res = calculateKenshoEnvelopes(world, rikishi, banners, undefined, rng);
+      expect(res).toBe(8);
     });
   });
 });

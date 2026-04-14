@@ -132,6 +132,8 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
   }
 
   // Apply world field updates (preserve entity maps)
+  if (impact.worldFields) {
+    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } = impact.worldFields;
     result = {
       ...result,
       ...otherFields,

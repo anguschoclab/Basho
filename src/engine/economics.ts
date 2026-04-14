@@ -102,7 +102,7 @@ export function onBoutResolvedEconomics(
       "kensho",
       `kensho-${winner.id}-${world.dayIndexGlobal}`
     );
-    kenshoCount = calculateKenshoEnvelopes(world, winner, result.awardFact ?? undefined, kenshoRng);
+    kenshoCount = calculateKenshoEnvelopes(world, winner, (result as any).kenshoBanners || [], result.awardFact ?? undefined, kenshoRng);
     result.kenshoEnvelopes = kenshoCount;
   }
 

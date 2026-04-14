@@ -148,24 +148,26 @@ export function assignKenshoBanners(
 export function calculateKenshoEnvelopes(
   world: WorldState,
   rikishi: Rikishi,
+  banners: KenshoBannerSlot[],
   awardFact: string | undefined,
   rng: SeededRNG
 ): number {
-  let count = 0;
-
-  if (awardFact === 'kinboshi') {
-    count = Math.floor(15 + rng.next() * 11);
-  } else if (awardFact === 'ginboshi') {
-    count = Math.floor(5 + rng.next() * 4);
-  } else {
-    count = Math.floor(1 + rng.next() * 3);
-  }
+  // Baseline count reflects the actual sponsors who paid for banners
+  let count = banners.length;
 
   const mediaState = world.mediaState;
   if (mediaState && mediaState.mediaHeat) {
     const heat = mediaState.mediaHeat[rikishi.id] || 0;
-    const buzzMod = 1.0 + (heat / 80);
-    count = Math.round(count * buzzMod);
+    const buzzMod = (heat / 80); // Up to +1.25x
+    // Fan donations/anonymous envelopes scale with buzz
+    count += Math.round(count * buzzMod);
+  }
+
+  // Minimum guarantees for historic wins even if un-sponsored
+  if (awardFact === 'kinboshi' && count < 15) {
+    count = 15 + Math.floor(rng.next() * 5);
+  } else if (awardFact === 'ginboshi' && count < 5) {
+    count = 5 + Math.floor(rng.next() * 3);
   }
 
   return count;

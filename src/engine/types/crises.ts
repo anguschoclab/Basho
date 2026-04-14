@@ -1,0 +1,38 @@
+/**
+ * src/engine/types/crises.ts
+ *
+ * Defines the Interactive Crisis System imported from Studio-Boss.
+ * Crises represent ongoing narrative threats that require a player's
+ * interactive choice to resolve, rather than passive logging.
+ */
+
+export type CrisisType =
+  | "financial_insolvency"
+  | "talent_poaching"
+  | "conduct_scandal"
+  | "oyakata_succession"
+  | "medical_emergency";
+
+export interface CrisisOption {
+  id: string;
+  label: string;
+  description: string;
+  cost?: number; // Financial cost to execute
+  prestigeCost?: number; // Reputation/Prestige cost
+  consequences: {
+    resolutionSuccess: boolean;
+    narrativeText: string;
+    // We can expand this with StateImpact payloads later
+  };
+}
+
+export interface ActiveCrisis {
+  id: string;
+  type: CrisisType;
+  title: string;
+  description: string;
+  severity: "low" | "medium" | "high" | "critical";
+  generatedAtWeek: number;
+  deadlineWeek?: number; // if unresolved by this week, auto-fails
+  options: CrisisOption[];
+}
