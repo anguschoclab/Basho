@@ -19,17 +19,17 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
     case "ADVANCE_INTERIM": {
       if (!state.world) return state;
       const world = cloneWorldForTick(state.world);
-      worldEngine.advanceInterim(world, action.weeks);
-      const newPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
-      return { ...state, world, phase: newPhase };
+      const nextWorld = worldEngine.advanceInterim(world, action.weeks);
+      const newPhase = nextWorld.cyclePhase === "active_basho" ? "day_preview" : "interim";
+      return { ...state, world: nextWorld, phase: newPhase };
     }
 
     case "ADVANCE_ONE_DAY": {
       if (!state.world) return state;
       const world = cloneWorldForTick(state.world);
-      worldEngine.advanceDay(world);
-      const dayPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
-      return { ...state, world, phase: dayPhase };
+      const nextWorld = worldEngine.advanceDay(world) ?? world;
+      const dayPhase = nextWorld.cyclePhase === "active_basho" ? "day_preview" : "interim";
+      return { ...state, world: nextWorld, phase: dayPhase };
     }
 
     case "RUN_HOLIDAY": {

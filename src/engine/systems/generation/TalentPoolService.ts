@@ -441,22 +441,62 @@ export function fillVacanciesForNPC(
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
+  // First, map target heyas by prestige band index for weighting
+  // Elite stables get first pick in the logic, or we weight the scores by reputation
+  const sortedHeyas = Object.keys(targetHeyas).sort((a, b) => {
+    const heyaA = world.heyas.get(a);
+    const heyaB = world.heyas.get(b);
+    return (heyaB?.reputation || 0) - (heyaA?.reputation || 0);
+  });
 
-  for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
+  for (const heyaId of sortedHeyas) {
+    const vacancyCount = targetHeyas[heyaId];
     const heya = world.heyas.get(heyaId);
     if (!heya) continue;
 
-    for (let i = 0; i < vacancyCount; i++) {
-      // Pick a random visible candidate
-      const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
-      const pt = poolTypes[rng.int(0, 2)];
-      const pool = tp.pools[pt];
+    const hasForeigner = Array.from(world.rikishi.values())
+      .filter((r) => r.heyaId === heyaId && r.origin === "foreign" && !r.isRetired).length > 0;
 
-      if (pool.candidatesVisible.length > 0) {
-        const cId = pool.candidatesVisible[rng.int(0, pool.candidatesVisible.length - 1)];
-        const c = tp.candidates[cId];
-        if (c && c.availabilityState === "available") {
+    for (let i = 0; i < vacancyCount; i++) {
+        
+      // Collect all available visible candidates
+      const availableCandidates: string[] = [];
+      for (const pt of ["high_school", "university", "foreign"] as const) {
+        if (pt === "foreign" && hasForeigner) continue;
+        const pool = tp.pools[pt];
+        for (const cId of pool.candidatesVisible) {
+          const c = tp.candidates[cId];
+          if (c && c.availabilityState === "available") {
+            availableCandidates.push(cId);
+          }
+        }
+      }
+
+      if (availableCandidates.length > 0) {
+        // Score candidates based on talent and heya reputation/prestige
+        const candidatesWithScores = availableCandidates.map((cId) => {
+          const c = tp.candidates[cId];
+          const talent = c.talentSeed;
+          // Reputation match: higher reputation heyas attract higher talent
+          // The penalty is high for a low-rep heya trying to grab an 85+ talent
+          const repScore = heya.reputation || 50;
+          let affinity = 1.0;
+          if (talent >= 80 && repScore < 70) affinity = 0.1; // Elite candidates largely reject small stables
+          if (talent >= 90 && repScore < 85) affinity = 0.05; // Generational candidates strictly reject
+          
+          const score = (talent * affinity) + rng.int(0, 20); // Add variance
+          return { cId, score, c };
+        });
+
+        // Sort by highest score
+        candidatesWithScores.sort((a, b) => b.score - a.score);
+        
+        // Pick from top 3
+        const pickIdx = rng.int(0, Math.min(2, candidatesWithScores.length - 1));
+        const bestCandidate = candidatesWithScores[pickIdx];
+        const cId = bestCandidate.cId;
+        const c = bestCandidate.c;
+
           // NPC fast-path signing: bypass multi-week negotiation to stabilize world
           const updatedCandidate = {
             ...c,

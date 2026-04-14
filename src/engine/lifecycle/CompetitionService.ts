@@ -202,7 +202,9 @@ function recordBashoHistory(
   playoffMatches: MatchSchedule[],
   prizes: ReturnType<typeof determineSpecialPrizes>,
   bestWins: number
-) {
+): StateImpact {
+  const builder = createImpactBuilder("recordBashoHistory");
+
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
 
   const result: BashoResult = {
@@ -221,14 +223,12 @@ function recordBashoHistory(
     },
   };
 
-  if (!world.history) world.history = [];
-  world.history.push(result);
+  builder.appendToWorldArray('history', [result]);
 
   safeCall(() => {
     const snapshot = buildAlmanacSnapshot(world);
     if (snapshot) {
-      if (!world.almanacSnapshots) world.almanacSnapshots = [];
-      world.almanacSnapshots.push(snapshot);
+      builder.appendToWorldArray('almanacSnapshots', [snapshot]);
 
       // FM v2.0 Archival: Move to cold storage immediately
       // Use electronArchiveService in Electron builds, opfsArchiveService in web builds
@@ -258,37 +258,52 @@ function recordBashoHistory(
 
   runPostBashoResolution(world);
   const yushoRikishi = world.rikishi.get(yusho);
-  EventBus.bashoStatus(world, {
-    status: "ended",
-    incident: basho.bashoName,
-    winner: yushoRikishi?.shikona || "Unknown",
-    winnerRikishiId: yusho,
-  });
+  builder.logEvent(
+    "BASHO_STATUS",
+    "basho",
+    {
+      status: "ended",
+      incident: basho.bashoName,
+      winner: yushoRikishi?.shikona || "Unknown",
+      winnerRikishiId: yusho,
+    },
+    { rikishiId: yusho }
+  );
 
   safeCall(() => {
     if (world.mediaState) {
-      world.mediaState = snapshotMediaHeatForBasho(world.mediaState, basho.bashoName);
+      builder.updateWorldField('mediaState', snapshotMediaHeatForBasho(world.mediaState, basho.bashoName));
     }
   });
 
   if (world.ftue?.isActive) {
-    world.ftue.bashoCompleted += 1;
-    if (world.ftue.bashoCompleted >= 1) world.ftue.isActive = false;
+    const newFtue = { ...world.ftue };
+    newFtue.bashoCompleted += 1;
+    if (newFtue.bashoCompleted >= 1) newFtue.isActive = false;
+    builder.updateWorldField('ftue', newFtue);
   }
 
-  EventBus.bashoStatus(world, {
-    status: "concluded_summary",
-    incident: basho.bashoName,
-    shikona: yushoRikishi?.shikona || "Unknown",
-    score: bestWins,
-    delta: 15 - bestWins,
-  });
+  builder.logEvent(
+    "BASHO_STATUS",
+    "basho",
+    {
+      status: "concluded_summary",
+      incident: basho.bashoName,
+      shikona: yushoRikishi?.shikona || "Unknown",
+      score: bestWins,
+      delta: 15 - bestWins,
+    },
+    { rikishiId: yusho }
+  );
 
-  enterPostBasho(world);
+  builder.updateWorldField("cyclePhase", "post_basho");
+  builder.updateWorldField("_postBashoDays", 7);
 
   safeCall(() => {
     autosave(world);
   });
+
+  return builder.build();
 }
 
 /**
@@ -352,9 +367,10 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     }
   }
 
-  // Record basho history - this needs to be migrated to StateImpact as well
-  // For now, we'll call it directly and let it mutate (will be fixed later)
-  recordBashoHistory(world, basho, yusho, topCandidates, playoffMatches, prizes, bestWins);
+  // Record basho history and phase transitions
+  const historyImpact = recordBashoHistory(world, basho, yusho, topCandidates, playoffMatches, prizes, bestWins);
 
-  return builder.build();
+  // Merge impacts together
+  const { mergeImpacts } = require("../core/ImpactResolver");
+  return mergeImpacts([builder.build(), historyImpact]);
 }

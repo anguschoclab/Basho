@@ -246,6 +246,10 @@ export function runGovernanceReview(world: WorldState): StateImpact {
     }
   }
 
+  if (impacts.length > 0) {
+    const { mergeImpacts } = require("../core/ImpactResolver");
+    return mergeImpacts([builder.build(), ...impacts]);
+  }
   return builder.build();
 }
 

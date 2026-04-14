@@ -402,15 +402,15 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   builder.updateWorldField("currentBashoName", next);
   builder.updateWorldField("currentBasho", undefined);
 
-  // Note: enterInterim mutates world state - this would need to be migrated separately
-  // For now, we'll call it directly and let it mutate
-  const interimWorld = {
+  const interimWorld = enterInterim({
     ...world,
     year: nextYear,
     currentBashoName: next,
     currentBasho: undefined,
-  };
-  enterInterim(interimWorld);
+  });
+
+  builder.updateWorldField("cyclePhase", interimWorld.cyclePhase);
+  builder.updateWorldField("_interimDaysRemaining", interimWorld._interimDaysRemaining);
 
   return builder.build();
 }
@@ -431,14 +431,15 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
 
   // Convert weeks to days and run through the daily tick pipeline
   const days = Math.max(1, Math.trunc(weeks)) * 7;
+  let currentWorld = world;
 
   for (let i = 0; i < days; i++) {
-    advanceOneDay(world);
+    currentWorld = advanceOneDay(currentWorld);
     // Stop if we've transitioned into active_basho (UI should handle this)
-    if ((world.cyclePhase as string) === "active_basho") break;
+    if ((currentWorld.cyclePhase as string) === "active_basho") break;
   }
 
-  return world;
+  return currentWorld;
 }
 
 /**
