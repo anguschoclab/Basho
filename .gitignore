@@ -1,7 +1,7 @@
 # ─── Logs ──────────────────────────────────────────────────────────────────────
 logs
 *.log
-npm-debug.log*
+bun-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
@@ -50,7 +50,7 @@ test_failures.txt
 .lovable/
 
 # ─── Package manager caches and redundant lock files ───────────────────────────
-npm_cache/
+bun_cache/
 package-lock.json
 
 # ─── Scratch / dev files ───────────────────────────────────────────────────────

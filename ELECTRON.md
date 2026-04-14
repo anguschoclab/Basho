@@ -53,7 +53,7 @@ This starts the **Vite dev server** for the renderer, then launches Electron poi
 ### Build only (no packaging)
 
 ```bash
-npx electron-vite build
+bunx electron-vite build
 ```
 
 Outputs to `out/`:

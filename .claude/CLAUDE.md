@@ -8,7 +8,7 @@ When running shell commands or passing file paths, **always wrap paths in double
 ## Stack
 - **Vite + React 19 + TypeScript** (NOT Next.js — never add "use client")
 - **TanStack Router** (routes.tsx), **shadcn/ui + Tailwind**, **Recharts**, **Framer Motion**
-- **Vitest** (unit), **Playwright** (E2E), `npm test -- --run` to run all tests
+- **Vitest** (unit), **Playwright** (E2E), `bun test -- --run` to run all tests
 - **Python** is installed and available
 
 ## Directory Map
@@ -118,7 +118,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 ```
 
 ## Test Setup
-- **Runner:** `npm test -- --run` (Vitest, jsdom environment)
+- **Runner:** `bun test -- --run` (Vitest, jsdom environment)
 - **Mock factory:** `src/engine/__tests__/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 60%, branches 50% (v8 provider)
