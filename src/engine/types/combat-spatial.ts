@@ -64,7 +64,7 @@ export interface HandGrip {
 
 export type GripDepthV2 = "shallow" | "standard" | "deep" | "maemitsu";
 
-export type GripClass = "uwate" | "shitate" | "outside" | "none";
+export type GripClass = "morozashi" | "uwate" | "shitate" | "outside" | "none";
 
 export interface BeltBattleState {
   eastLeft: HandGrip | null;
@@ -141,6 +141,8 @@ export interface EngineStateV2 {
   east: PhysicalBody;
   west: PhysicalBody;
   grappleState: GrappleState;
+  /** Tracks who won the initial tachiai clash (may differ from bout winner) */
+  tachiaiWinner: Side;
 }
 
 // ---------------------------------------------------------------------------
@@ -167,6 +169,10 @@ export interface SpatialBoutContext {
   westMomentumX: number;
   eastGrip: GripClass;
   westGrip: GripClass;
+  /** Net torque differential: positive = east advantage */
+  torqueDiff: number;
+  /** True when either fighter's lead foot is near the tawara boundary */
+  atEdge: boolean;
 }
 
 // ---------------------------------------------------------------------------

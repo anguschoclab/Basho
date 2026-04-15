@@ -61,18 +61,20 @@ export function tawaraBounceResistance(toePos: number): number {
 export function computePushForce(
   rikishi: Rikishi,
   action: CombatAction,
-  stanceWidth: number,
+  _stanceWidth: number,
   fatigue: number
 ): number {
-  const strength = stat(rikishi, "strength");
+  // Rikishi.power is the primary strength stat (not "strength")
+  const power = stat(rikishi, "power");
   const weight = stat(rikishi, "weight");
   const w = action.statWeighting;
 
-  let force = strength * (w.strength || 0) + weight * (w.weight || 0);
-  force *= 1 - fatigue * 0.004;
-  force *= stanceWidth;
+  // Base force from power + weight contribution; stanceWidth affects CoG stability, not raw force
+  let force = power * (w.strength || 0.5) + weight * (w.weight || 0.3);
+  // Fatigue penalty: -0.4% per fatigue point (same curve as old engine)
+  force *= Math.max(0.6, 1 - fatigue * 0.004);
 
-  return Math.max(0, force);
+  return Math.max(1, force);
 }
 
 export function computePushAngle(
@@ -91,8 +93,13 @@ export function computePushAngle(
 export function deriveGripClass(left: HandGrip | null, right: HandGrip | null): GripClass {
   const insideCount = (left?.isInside ? 1 : 0) + (right?.isInside ? 1 : 0);
 
-  if (insideCount === 2) return "uwate";
-  if (insideCount === 1) return "shitate";
+  // Both arms inside = morozashi (most dominant grip)
+  if (insideCount === 2) return "morozashi";
+  // One arm inside: deep reach = uwate (dominant inside), shallow = shitate (weaker inside)
+  if (insideCount === 1) {
+    const insideGrip = left?.isInside ? left : right;
+    return (insideGrip?.armReach ?? 0) > 0.12 ? "uwate" : "shitate";
+  }
   if (left || right) return "outside";
   return "none";
 }
@@ -112,18 +119,32 @@ export function classifyBeltFallKimarite(
   _st: EngineStateV2,
   fallenSide: Side
 ): KimariteId {
-  const torque = fallenSide === "east" ? belt.torqueEast : belt.torqueWest;
-  if (torque > 20) return "uwatenage";
+  // Use the WINNER'S torque (opponent of fallen side) to classify the throw
+  const winnerTorque = fallenSide === "east" ? belt.torqueWest : belt.torqueEast;
+  const winnerGrip = fallenSide === "east" ? belt.westGripClass : belt.eastGripClass;
+
+  if (winnerTorque > 20) {
+    // High-torque throw: uwate (outside arm over) or shitate (inside arm under)
+    return winnerGrip === "uwate" || winnerGrip === "morozashi" ? "uwatenage" : "shitatenage";
+  }
   return "yoritaoshi";
 }
 
 export function classifyEdgeExitKimarite(
   crisis: EdgeCrisisState,
-  _st: EngineStateV2,
-  _rng: SeededRNG
+  st: EngineStateV2,
+  rng: SeededRNG
 ): KimariteId {
-  // eslint-disable-line @typescript-eslint/no-unused-vars
-  if (crisis.escaped) return "koshikudake";
-  if (crisis.recoveryProbability < 0.1) return "yorikiri";
-  return "oshidashi";
+  // This is called when the fighter FAILS to escape (rng failed recoveryProbability).
+  // Classify by which phase drove them to the edge and how long they resisted.
+  const fromBelt = st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle";
+
+  if (fromBelt) {
+    // Belt-driven edge exit: walk-out (yorikiri) or throw-down (yoritaoshi)
+    return crisis.ticksInCrisis > 4 ? "yoritaoshi" : "yorikiri";
+  }
+
+  // Push-driven edge exit: clean push-out or thrust variant
+  if (crisis.ticksInCrisis <= 2) return "oshidashi";
+  return rng.next() < 0.25 ? "tsukidashi" : "oshidashi";
 }

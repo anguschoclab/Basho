@@ -11,6 +11,8 @@ export type EngineEventType =
   | "BOUT_RESOLVED"
   | "RECRUIT_DISCOVERED"
   | "MONTHLY_FINANCE_REPORT"
+  | "MANAGEMENT_DECISION"
+  | "STRATEGY_SHIFT"
   | "RIVALRY_HEAT_SPIKE"
   | "MEDICAL_REPORT"
   | "TRAINING_UPDATE"
@@ -60,21 +62,35 @@ export interface NarrativeContext {
   winner?: string;
   loser?: string;
   kimarite?: string;
-  
+  rikishiId?: string;
+  heyaId?: string;
+
   // Economy
-  money?: number;   // Auto-formatted
-  kensho?: number;  // Auto-formatted
-  cost?: number;    // Auto-formatted
+  money?: number; // Auto-formatted
+  kensho?: number; // Auto-formatted
+  cost?: number; // Auto-formatted
   revenue?: number;
   profit?: number;
-  
+
   // Physics / Stats
-  rate?: number;    // Auto-formatted %
-  chance?: number;  // Auto-formatted %
+  rate?: number; // Auto-formatted %
+  chance?: number; // Auto-formatted %
   score?: number;
   delta?: number;
-  intensity?: "high_stakes" | "technical" | "neutral" | "conservative" | "balanced" | "intensive" | "punishing" | "low" | "normal" | "high" | "extreme" | number;
-  
+  intensity?:
+    | "high_stakes"
+    | "technical"
+    | "neutral"
+    | "conservative"
+    | "balanced"
+    | "intensive"
+    | "punishing"
+    | "low"
+    | "normal"
+    | "high"
+    | "extreme"
+    | number;
+
   // Domain Specific
   severity?: "minor" | "moderate" | "serious" | "critical";
   incident?: string;
@@ -84,8 +100,8 @@ export interface NarrativeContext {
   threshold?: number;
   heat?: number;
   day?: number;
-  
-  [key: string]: string | number | boolean | undefined | any;
+
+  [key: string]: string | number | boolean | undefined;
 }
 
 /** Defines the structure for engine event. */

@@ -5,7 +5,9 @@ import type {
   BeltBattleState,
   EngineStateV2,
   KimariteAttempt,
+  SpatialBoutContext,
 } from "../types/combat-spatial";
+import { EDGE_THRESHOLD } from "../types/combat-spatial";
 
 /**
  * Evaluates whether a kimarite technique can be attempted mid-fight
@@ -23,7 +25,12 @@ export function evaluateKimariteAttempt(
   belt: BeltBattleState | null,
   st: EngineStateV2
 ): KimariteAttempt | null {
-  // Build spatial context for evaluation
+  // Build spatial context for evaluation — use current PhysicalBody positions
+  // (boutPhysics.ts syncs leadingFootX / x every tick)
+  const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;
+  const eastAbsFoot = Math.abs(st.east.leadingFootX);
+  const westAbsFoot = Math.abs(st.west.leadingFootX);
+
   const ctx: SpatialBoutContext = {
     eastLeadFoot: st.east.leadingFootX,
     westLeadFoot: st.west.leadingFootX,
@@ -33,6 +40,8 @@ export function evaluateKimariteAttempt(
     westMomentumX: st.west.velocityX,
     eastGrip: belt?.eastGripClass ?? "none",
     westGrip: belt?.westGripClass ?? "none",
+    torqueDiff,
+    atEdge: eastAbsFoot > EDGE_THRESHOLD || westAbsFoot > EDGE_THRESHOLD,
   };
 
   // Check for edge crisis conditions first
@@ -51,17 +60,6 @@ export function evaluateKimariteAttempt(
   }
 
   return null;
-}
-
-interface SpatialBoutContext {
-  eastLeadFoot: number;
-  westLeadFoot: number;
-  eastCoGOffset: number;
-  westCoGOffset: number;
-  eastMomentumX: number;
-  westMomentumX: number;
-  eastGrip: "uwate" | "shitate" | "outside" | "none";
-  westGrip: "uwate" | "shitate" | "outside" | "none";
 }
 
 function classifyEdgeKimarite(ctx: SpatialBoutContext): KimariteAttempt | null {
@@ -84,11 +82,13 @@ function classifyEdgeKimarite(ctx: SpatialBoutContext): KimariteAttempt | null {
   // Check grip for determining technique
   const attackerGrip = defenderSide === "east" ? ctx.westGrip : ctx.eastGrip;
 
-  if (attackerGrip === "uwate" || attackerGrip === "shitate") {
+  if (attackerGrip === "morozashi" || attackerGrip === "uwate" || attackerGrip === "shitate") {
+    // morozashi gives higher success probability — dominant inside-arm grip
+    const prob = attackerGrip === "morozashi" ? 0.92 : 0.8;
     return {
       technique: "yorikiri",
       side: attackerSide,
-      successProbability: 0.8,
+      successProbability: prob,
       requiredConditions: ["defender_near_edge", "attacker_belt_grip"],
     };
   }
@@ -115,7 +115,14 @@ function classifyBeltKimarite(
     const throwerSide = torqueAdvantage > 0 ? "east" : "west";
     const throwerGrip = throwerSide === "east" ? ctx.eastGrip : ctx.westGrip;
 
-    if (throwerGrip === "uwate") {
+    if (throwerGrip === "morozashi") {
+      return {
+        technique: "uwatenage",
+        side: throwerSide,
+        successProbability: 0.75,
+        requiredConditions: ["high_torque_advantage", "morozashi_grip"],
+      };
+    } else if (throwerGrip === "uwate") {
       return {
         technique: "uwatenage",
         side: throwerSide,

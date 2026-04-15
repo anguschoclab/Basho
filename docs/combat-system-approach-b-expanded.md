@@ -591,6 +591,44 @@ tsuriotoshi: {
 
 ---
 
+## Kimarite Distribution Design Constraints
+
+The spatial conditions in `KIMARITE_STRATEGIES_V2` must reproduce professional sumo's real kimarite distribution. These are the acceptance targets for Phase 8 verification (10,000-bout simulation, 50/50 push-dominant vs belt-dominant fighter split):
+
+| Rank | Technique | Real Frequency | Phase 8 Target (±5pp) |
+|------|-----------|---------------|----------------------|
+| 1 | Yorikiri | ~32.4% | 27–38% |
+| 2 | Oshidashi | ~20.9–25.8% | 17–28% |
+| 3 | Hatakikomi | ~7.8–8.5% | 5–12% |
+| 4 | Tsukidashi | ~5.7% | 3–9% |
+| 5 | Yoritaoshi | ~4.7% | 2–8% |
+| 6–8 | Uwatenage, Shitatenage, Hikiotoshi | ~2–4% each | 1–6% each |
+| — | Top 10 combined | ~85% | ≥80% |
+| — | Top 20 combined | ~96% | ≥90% |
+| — | Henka (as finishing move) | 63–92% success rate | 55–95% |
+
+### Why `weight` ≠ frequency
+
+The `weight` field is a **selection bias within a phase/condition bucket** — it does not directly map to overall frequency. The dominant frequency driver is **how often each phase tag is reached**, not the weight of individual entries within it.
+
+For example, Yorikiri dominates at ~32% not because `weight: 90` is highest, but because `belt_battle` with forward momentum and an opponent near the edge is the single most common end-state in professional sumo. Likewise, Oshidashi at ~23% reflects how often a pure push battle resolves with the defender walking out — not a weight value.
+
+Implication for calibration: **tune phase entry probabilities** (the tachiai belt establishment rate, `push_battle → belt_battle` transition threshold) against the target distribution. Adjusting `weight` values is only effective for shifting the relative frequency *within the same phase bucket*.
+
+Current concerns about `weight` miscalibration in V2:
+- `uwatenage` (weight 85) rivals `oshidashi` (85) — but uwatenage is ~3% vs oshidashi ~23%. These are in different phase buckets (belt vs push) so the weight comparison is misleading, but the weight should still reflect relative throw frequency within belt_battle.
+- `yoritaoshi` (72) vs `tsukidashi` (60) — real ratio is roughly equal (~5% each), but they are in different buckets (belt vs push) so the absolute weight gap doesn't matter as long as each is the top candidate in its bucket condition.
+
+### Henka note
+
+The historical henka success rate of 63–92% is consistent with the current check:
+```
+stat(r, 'technique') + jitter(rng, 10) > opponent.balance + jitter(rng, 10)
+```
+This does not require a tuning change, but must be verified explicitly in Phase 8 with a run of 500 henka bouts at varying technique/balance levels.
+
+---
+
 ## Center of Mass: What It Changes
 
 CoG tracking enables four kimarite families that are physically impossible in the current system:

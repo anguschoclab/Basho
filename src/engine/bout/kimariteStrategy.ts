@@ -43,6 +43,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "寄り切り",
     category: "kihon",
     weight: 90,
+    appliesTo: ["push_battle", "belt_battle"],
     condition: (w, l) =>
       hasBelt(w) &&
       atEdge(l) &&
@@ -57,6 +58,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "押し出し",
     category: "kihon",
     weight: 85,
+    appliesTo: ["push_battle", "edge_crisis"],
     condition: (w, l) =>
       noBelt(w) &&
       isPusher(w) &&
@@ -71,6 +73,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "押し倒し",
     category: "kihon",
     weight: 70,
+    appliesTo: ["push_battle"],
     condition: (w, l) =>
       noBelt(w) &&
       isPusher(w) &&
@@ -85,6 +88,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "寄り倒し",
     category: "kihon",
     weight: 72,
+    appliesTo: ["belt_battle"],
     condition: (w, l) =>
       hasBelt(w) &&
       w.forwardMomentum > 0 &&
@@ -309,6 +313,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "上手投げ",
     category: "nage",
     weight: 85,
+    appliesTo: ["belt_battle"],
     condition: (w, l) =>
       (w.grip === "uwate" || w.grip === "morozashi") &&
       w.power > l.balanceResistance &&
@@ -330,6 +335,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "下手投げ",
     category: "nage",
     weight: 70,
+    appliesTo: ["belt_battle"],
     condition: (w, l) =>
       (w.grip === "shitate" || w.grip === "morozashi") &&
       w.power > l.balanceResistance &&
@@ -425,6 +431,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "突き落とし",
     category: "hineri",
     weight: 75,
+    appliesTo: ["push_battle"],
     condition: (w, l) => overCommitting(l) && noBelt(w) && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -433,6 +440,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "とったり",
     category: "hineri",
     weight: 22,
+    appliesTo: ["belt_battle"],
     condition: (w, l) => nearCenter(l) && l.balance <= 0 && w.style !== "oshi",
   },
   {
@@ -836,8 +844,31 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
 ];
 
 /**
- * V2 strategies with spatial context support.
- * Same as KIMARITE_STRATEGIES but condition() accepts SpatialBoutContext for
- * B+ spatial phase-gate integration.
+ * V2 weight overrides — recalibrated against real professional sumo kimarite
+ * distribution data. Weights reflect relative selection priority within each
+ * phase bucket (push_battle, belt_battle, edge_crisis), NOT overall frequency.
+ *
+ * Real-world targets (10,000-bout simulation):
+ *   Yorikiri   ~32.4%  →  27–38%   (keep 90 — dominant belt walk-out finish)
+ *   Oshidashi  ~20.9%  →  17–28%   (keep 85 — dominant push-out finish)
+ *   Hatakikomi  ~8.1%  →   5–12%   (raise 80→88 — slap-down is very high within its condition)
+ *   Tsukidashi  ~5.7%  →   3–9%    (raise 60→72 — closer to oshidashi within thrust sub-family)
+ *   Yoritaoshi  ~4.7%  →   2–8%    (raise 72→75 — belt throw-down, slightly above throws)
+ *   Uwatenage   ~3.0%  →   1–6%    (lower 85→60 — was over-weighted vs real frequency)
+ *   Shitatenage ~2.0%  →   1–5%    (lower 70→50 — less common than uwatenage)
+ *
+ * Note: KIMARITE_STRATEGIES (V1) is left unchanged to preserve the legacy
+ * evaluator behavior behind ENABLE_LEGACY_KIMARITE_OVERRIDE = true.
  */
-export const KIMARITE_STRATEGIES_V2: KimariteStrategy[] = KIMARITE_STRATEGIES;
+const V2_WEIGHT_OVERRIDES: Partial<Record<string, number>> = {
+  hatakikomi: 88,
+  tsukidashi: 72,
+  yoritaoshi: 75,
+  uwatenage: 60,
+  shitatenage: 50,
+};
+
+export const KIMARITE_STRATEGIES_V2: KimariteStrategy[] = KIMARITE_STRATEGIES.map((s) => {
+  const overrideWeight = V2_WEIGHT_OVERRIDES[s.id];
+  return overrideWeight !== undefined ? { ...s, weight: overrideWeight } : s;
+});

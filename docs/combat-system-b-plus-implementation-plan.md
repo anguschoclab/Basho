@@ -329,17 +329,20 @@ interface KimariteStrategyV2 extends KimariteStrategy {
 
 This is additive — strategies without `appliesTo` fall back to the old `condition` system. Migrate incrementally:
 
-**Priority order for migration (highest-frequency kimarite first):**
-1. `yorikiri` — belt + push + edge (most common, ~40% of bouts)
-2. `oshidashi` — pure push + edge
-3. `oshitaoshi` — push + CoG fall
-4. `yoritaoshi` — belt + CoG fall
-5. `hatakikomi` — slap pull + opponent overextended
-6. `uwatenage` — belt + torque + throw vector
-7. `shitatenage` — belt + torque + lower grip
-8. `tsukiotoshi` — thrust push + pivot
-9. `isamiashi` — winner momentum out after dodge
-10. `sotogake` / `uchigake` — stance width + facing angle + torque
+**Priority order for migration (highest real-world frequency first):**
+1. `yorikiri` — belt + push + edge (~32.4% of real bouts — most common by far)
+2. `oshidashi` — pure push + edge (~20.9–25.8%)
+3. `hatakikomi` — slap-down on overextended opponent (~7.8–8.5%)
+4. `tsukidashi` — thrust push-out (~5.7%)
+5. `yoritaoshi` — belt + CoG fall (~4.7%)
+6. `uwatenage` — belt + torque throw (~3%, currently overweighted in V1)
+7. `shitatenage` — lower belt + torque throw (~2%)
+8. `hikiotoshi` — pull-down after dodge (~2%)
+9. `oshitaoshi` — push-down fall
+10. `isamiashi` — winner momentum out after opponent dodges
+11. `sotogake` / `uchigake` — stance width + facing angle + torque
+
+> **Weight calibration note:** `weight` values within a phase bucket are a selection bias, not a frequency proxy. The primary frequency driver is how often each phase tag is reached. Calibrate **phase entry probabilities** (tachiai belt establishment rate, `push_battle → belt_battle` transition threshold) against the real-world distribution, not individual `weight` values. Within a bucket, weight should reflect relative frequency among same-phase techniques only.
 
 ### 5.2 — Export `KIMARITE_STRATEGIES_V2`
 
@@ -466,8 +469,29 @@ bun run scripts/compare-engines.ts --seed test-001 --count 100 --mode determinis
 
 ### Kimarite distribution check
 ```bash
-# Run 5000 bouts, verify no kimarite has 0 occurrence for likely archetypes
-bun run scripts/compare-engines.ts --seed perf-001 --count 5000 --mode distribution
+# Run 10,000 bouts — verify distribution matches real-world targets
+bun run scripts/compare-engines.ts --seed perf-001 --count 10000 --mode distribution
+```
+
+**Acceptance criteria (real-world professional sumo distribution):**
+
+| Technique | Real Frequency | Acceptance Range |
+|-----------|---------------|-----------------|
+| Yorikiri | ~32.4% | 27–38% |
+| Oshidashi | ~20.9–25.8% | 17–28% |
+| Hatakikomi | ~7.8–8.5% | 5–12% |
+| Tsukidashi | ~5.7% | 3–9% |
+| Yoritaoshi | ~4.7% | 2–8% |
+| Uwatenage | ~3% | 1–6% |
+| Shitatenage | ~2% | 1–5% |
+| Hikiotoshi | ~2% | 1–5% |
+| Top 10 total | ~85% | ≥80% |
+| Fusensho / edge cases | — | ≤3% |
+
+**Henka verification:**
+```bash
+# 500 bouts with henka tactic forced — verify success rate 55–95% (historical 63–92%)
+bun run scripts/test-henka.ts --count 500
 ```
 
 ### Edge crisis validation
@@ -481,7 +505,7 @@ bun run scripts/test-edge-crisis.ts
 - Start dev server, play 10 bouts in the UI
 - Verify: pbp lines show edge crisis events when they occur
 - Verify: morozashi grip produces noticeably shorter bouts vs outside-only grip
-- Verify: yorikiri and oshidashi remain the most common kimarite (~60% combined)
+- Verify: yorikiri and oshidashi are the two most common kimarite, together ≥45% of bouts
 
 ---
 

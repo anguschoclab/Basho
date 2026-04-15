@@ -50,9 +50,9 @@ describe("initBeltBattle", () => {
     if (belt.eastLeft) belt.eastLeft.isInside = true;
     if (belt.eastRight) belt.eastRight.isInside = true;
 
-    // After evolution, grip class should be uwate
+    // Both arms inside = morozashi (most dominant grip class)
     evolveGripGeometry(rng, east, west, belt);
-    expect(belt.eastGripClass).toBe("uwate");
+    expect(belt.eastGripClass).toBe("morozashi");
   });
 });
 

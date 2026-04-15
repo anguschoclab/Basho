@@ -2,7 +2,7 @@
  * phase01_week_npc_ai.ts
  * =======================
  * Pipeline Phase: NPC Management AI.
- * 
+ *
  * Responsibilities:
  * 1. Build perception snapshots for all NPC stables.
  * 2. Consolidate oyakata memory.
@@ -12,23 +12,20 @@
 
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { Oyakata } from "../../types/oyakata";
+import { createImpactBuilder, type ImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { 
-  getAvailableStables, 
-} from "../../selectors";
-import { 
-  buildPerceptionSnapshot 
-} from "../../perception";
-import {
-  makeNPCWeeklyDecision,
-} from "../../npcAI";
+import type { NPCWeeklyDecision } from "../../npcAI";
+import { getAvailableStables } from "../../selectors";
+import { buildPerceptionSnapshot, type PerceptionSnapshot } from "../../perception";
+import { makeNPCWeeklyDecision } from "../../npcAI";
 import { TrainingService } from "../../systems/training/TrainingService";
 import { enforceHardCapRosterOverflow } from "../../overflow";
 import { getMediaStrategy } from "../../npcMediaStrategy";
+import type { HeyaTrainingState } from "../../types/training";
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_week_npc_ai');
+  const builder = createImpactBuilder("phase01_week_npc_ai");
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
   const playerHeyaId = world.playerHeyaId;
 
@@ -37,11 +34,11 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
     const perception = buildPerceptionSnapshot(world, heya.id);
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
-    
+
     if (oyakata) {
       const nextOya = { ...oyakata };
       consolidateOyakataMemoryPure(world, nextOya, perception);
-      
+
       const decision = makeNPCWeeklyDecision(world, heya.id);
       // Note: applyNPCDecisionPure mutates world.trainingState
       applyNPCDecisionPure(world, world.trainingState || new Map(), decision);
@@ -53,7 +50,9 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
       // Handle media events for NPCs
       if (world.governanceLog) {
-        const mediaEvents = world.governanceLog.filter(r => r.heyaId === heya.id && !r.playerChoice);
+        const mediaEvents = world.governanceLog.filter(
+          (r) => r.heyaId === heya.id && !r.playerChoice
+        );
         const mediaStrat = getMediaStrategy(oyakata.archetype);
         for (const event of mediaEvents) {
           mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id);
@@ -76,15 +75,20 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
 // --- Helper Functions ---
 
-function processOyakataMood(oyakata: any, decision: any, heyaId: Id, builder: any): void {
+function processOyakataMood(
+  oyakata: Oyakata,
+  decision: NPCWeeklyDecision,
+  heyaId: Id,
+  builder: ImpactBuilder
+): void {
   const oldMood = oyakata.mood ?? "content";
   const newMood = decision.mood;
   if (newMood) oyakata.mood = newMood;
 
   if (oldMood !== newMood) {
     builder.logEvent(
-      'OYAKATA_MOOD_SHIFT',
-      'narrative',
+      "OYAKATA_MOOD_SHIFT",
+      "narrative",
       {
         oldMood,
         newMood,
@@ -94,10 +98,14 @@ function processOyakataMood(oyakata: any, decision: any, heyaId: Id, builder: an
   }
 }
 
-function collectManagementDecisionEvents(heyaId: Id, decision: any, builder: any): void {
+function collectManagementDecisionEvents(
+  heyaId: Id,
+  decision: NPCWeeklyDecision,
+  builder: ImpactBuilder
+): void {
   builder.logEvent(
-    'MANAGEMENT_DECISION',
-    'narrative',
+    "MANAGEMENT_DECISION",
+    "narrative",
     {
       archetype: decision.archetype,
       intensity: decision.trainingIntensity,
@@ -107,21 +115,28 @@ function collectManagementDecisionEvents(heyaId: Id, decision: any, builder: any
       protectedCount: decision.individualProtects.length,
       reasoningLog: decision.reasoning.join(" | "),
     },
-    { 
-      heyaId, 
-      importance: decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative" ? "notable" : "minor"
+    {
+      heyaId,
+      importance:
+        decision.trainingIntensity === "punishing" || decision.trainingIntensity === "conservative"
+          ? "notable"
+          : "minor",
     }
   );
 }
 
-function collectStrategyShiftEvents(heyaId: Id, decision: any, builder: any): void {
+function collectStrategyShiftEvents(
+  heyaId: Id,
+  decision: NPCWeeklyDecision,
+  builder: ImpactBuilder
+): void {
   if (decision.trainingIntensity === "punishing") {
     builder.logEvent(
-      'STRATEGY_SHIFT',
-      'narrative',
-      { 
-        intensity: "punishing", 
-        reasoning: decision.reasoning[0] 
+      "STRATEGY_SHIFT",
+      "narrative",
+      {
+        intensity: "punishing",
+        reasoning: decision.reasoning[0],
       },
       { heyaId }
     );
@@ -130,12 +145,26 @@ function collectStrategyShiftEvents(heyaId: Id, decision: any, builder: any): vo
 
 // Note: fireNPCEvents is no longer needed as events are logged directly via builder.logEvent
 
-function consolidateOyakataMemoryPure(world: WorldState, oyakata: any, perception: any): void {
+interface OyakataObservation {
+  tick: number;
+  type: string;
+  summary: string;
+  importance: number;
+}
+
+function consolidateOyakataMemoryPure(
+  world: WorldState,
+  oyakata: Oyakata,
+  perception: PerceptionSnapshot
+): void {
   if (!oyakata.memory) {
     oyakata.memory = {
       observations: [],
-      coreDirectives: [`Maintain the excellence of stable`, `Prioritize ${oyakata.archetype} values`],
-      lastConsolidationTick: world.week
+      coreDirectives: [
+        `Maintain the excellence of stable`,
+        `Prioritize ${oyakata.archetype} values`,
+      ],
+      lastConsolidationTick: world.week,
     };
   }
 
@@ -143,26 +172,32 @@ function consolidateOyakataMemoryPure(world: WorldState, oyakata: any, perceptio
   memory.observations = [...memory.observations];
   const tick = world.week;
 
-  if (perception.moraleBand === 'mutinous' && oyakata.mood !== 'furious' && oyakata.mood !== 'anxious') {
+  if (
+    perception.moraleBand === "mutinous" &&
+    oyakata.mood !== "furious" &&
+    oyakata.mood !== "anxious"
+  ) {
     memory.observations.push({
       tick,
-      type: 'alignment',
+      type: "alignment",
       summary: `Unexpected morale collapse detected.`,
-      importance: 8
+      importance: 8,
     });
   }
 
-  if (perception.runwayBand === 'desperate' || perception.runwayBand === 'critical') {
+  if (perception.runwayBand === "desperate" || perception.runwayBand === "critical") {
     memory.observations.push({
       tick,
-      type: 'perception',
+      type: "perception",
       summary: `Financial runway is ${perception.runwayBand}.`,
-      importance: 10
+      importance: 10,
     });
   }
 
   if (memory.observations.length > 10) {
-    memory.observations.sort((a: any, b: any) => b.importance - a.importance);
+    memory.observations.sort(
+      (a: OyakataObservation, b: OyakataObservation) => b.importance - a.importance
+    );
     memory.observations = memory.observations.slice(0, 10);
   }
 
@@ -170,7 +205,11 @@ function consolidateOyakataMemoryPure(world: WorldState, oyakata: any, perceptio
   oyakata.memory = memory;
 }
 
-function applyNPCDecisionPure(world: WorldState, nextTrainingStates: Map<Id, any>, decision: any): void {
+function applyNPCDecisionPure(
+  world: WorldState,
+  nextTrainingStates: Map<Id, HeyaTrainingState>,
+  decision: NPCWeeklyDecision
+): void {
   const state = TrainingService.ensureHeyaTrainingState(world, decision.heyaId);
   const nextState = { ...state };
 
@@ -178,7 +217,7 @@ function applyNPCDecisionPure(world: WorldState, nextTrainingStates: Map<Id, any
     ...state.activeProfile,
     intensity: decision.trainingIntensity,
     focus: decision.trainingFocus,
-    recovery: decision.recovery
+    recovery: decision.recovery,
   };
 
   const allManagedIds = new Set([
@@ -187,16 +226,19 @@ function applyNPCDecisionPure(world: WorldState, nextTrainingStates: Map<Id, any
     ...decision.individualDevelops,
   ]);
 
-  const existingFocus = state.focusSlots.filter((f: any) => !allManagedIds.has(f.rikishiId));
+  const existingFocus = state.focusSlots.filter((f) => !allManagedIds.has(f.rikishiId));
 
   const protectSlots = decision.individualProtects.map((id: string) => ({
-    rikishiId: id, focusType: "protect" as const
+    rikishiId: id,
+    focusType: "protect" as const,
   }));
   const pushSlots = decision.individualPushes.map((id: string) => ({
-    rikishiId: id, focusType: "push" as const
+    rikishiId: id,
+    focusType: "push" as const,
   }));
   const developSlots = decision.individualDevelops.map((id: string) => ({
-    rikishiId: id, focusType: "develop" as const
+    rikishiId: id,
+    focusType: "develop" as const,
   }));
 
   nextState.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];

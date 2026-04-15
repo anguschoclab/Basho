@@ -18,6 +18,12 @@ import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
+// B+ is now the only engine (CR-07: old no-op flag removed).
+// Legacy kimarite override: the old evaluator runs as a safety net while the
+// spatial classifier (kimariteClassifier.ts) is being validated against real
+// kimarite distributions. Set to false once Phase 8 verification passes.
+const ENABLE_LEGACY_KIMARITE_OVERRIDE = true;
+
 /**
  * Pre-physics fusensho check.
  * If either rikishi is injured/absent, return a walkover result immediately
@@ -108,7 +114,7 @@ export function resolveBout(
 
   const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
 
-  // 1. Run deterministic physics (B+ spatial system)
+  // 1. Run B+ spatial physics engine
   const { result, engineSnapshot } = resolveBoutPhysics(
     ctxFinal,
     eastBout as Rikishi,
@@ -116,15 +122,18 @@ export function resolveBout(
     basho
   );
 
-  // 1.5. Override kimarite via strategy evaluator
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
-  const overrideId = determineKimarite(result, winner, loser, engineSnapshot);
-  if (overrideId !== result.kimarite) {
-    const k = KIMARITE_REGISTRY.find((k) => k.id === overrideId);
-    result.kimarite = overrideId as BoutResult["kimarite"];
-    if (k) result.kimariteName = k.name;
+  // 1.5. CI-06: Legacy kimarite override — old evaluator runs as safety net while
+  // the spatial classifier's distribution is validated. Disable once Phase 8 passes.
+  if (ENABLE_LEGACY_KIMARITE_OVERRIDE) {
+    const overrideId = determineKimarite(result, winner, loser, engineSnapshot);
+    if (overrideId !== result.kimarite) {
+      const k = KIMARITE_REGISTRY.find((k) => k.id === overrideId);
+      result.kimarite = overrideId as BoutResult["kimarite"];
+      if (k) result.kimariteName = k.name;
+    }
   }
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
@@ -141,6 +150,7 @@ export function resolveBout(
     kinboshiConceded: 0,
     ginboshiConceded: 0,
     specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    mochikyukinPoints: 0,
   });
 
   const winnerAchievements = winner.stats.achievements || defaultAchievements();
@@ -175,24 +185,23 @@ export function resolveBout(
   // 3. Henka prestige penalty
   // Using henka wins the bout but costs momentum — crowd disapproval and
   // psychological debt from a dishonorable tachiai carry into the next bout.
-  const tacticUsed =
-    bout.playerTactic ?? (bout as BoutContext & { cpuTacticOverride?: string }).cpuTacticOverride;
-  if (tacticUsed === "HENKA") {
-    // Only penalise the side that actually used it and won
-    const cpuTacticOverride = (bout as BoutContext & { cpuTacticOverride?: string })
-      .cpuTacticOverride;
-    const winnerUsedHenka =
-      (result.winner === "east" &&
-        (bout.playerSide === "east" ||
-          (cpuTacticOverride !== undefined && result.winner !== bout.playerSide))) ||
-      (result.winner === "west" &&
-        (bout.playerSide === "west" ||
-          (cpuTacticOverride !== undefined && result.winner !== bout.playerSide)));
-    if (winnerUsedHenka) {
-      builder.updateRikishi(winner.id, {
-        momentum: clamp((winner.momentum ?? 50) - 15, 0, 100),
-      });
-    }
+  // CI-05: Simplified logic using resolved cpuTacticOverride (not re-read from bout).
+  const playerHenkaWon =
+    bout.playerTactic === "HENKA" &&
+    result.winner === bout.playerSide &&
+    result.kimarite !== "fusensho";
+
+  const cpuHenkaWon =
+    cpuTacticOverride === "HENKA" &&
+    result.kimarite !== "fusensho" &&
+    ((bout.playerSide === "east" && result.winner === "west") ||
+      (bout.playerSide === "west" && result.winner === "east") ||
+      !bout.playerSide);
+
+  if (playerHenkaWon || cpuHenkaWon) {
+    builder.updateRikishi(winner.id, {
+      momentum: clamp((winner.momentum ?? 50) - 15, 0, 100),
+    });
   }
 
   // 4. Update Rivalry State

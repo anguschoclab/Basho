@@ -99,6 +99,11 @@ export interface KimariteStrategy {
    */
   weight: number;
   /**
+   * B+ spatial: Which combat phases this technique applies to.
+   * If undefined, applies to all phases (legacy behavior).
+   */
+  appliesTo?: ("push_battle" | "belt_battle" | "edge_crisis")[];
+  /**
    * Pure evaluation function — no side effects.
    * @param winner  FinalBoutState for the winning rikishi.
    * @param loser   FinalBoutState for the losing rikishi.
