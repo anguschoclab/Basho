@@ -27,9 +27,9 @@ import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative"
 export default function MainMenu() {
   const navigate = useNavigate();
   const game = useGame();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- GameContextValue type mismatch
+
   const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
-    game as any;
+    game as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);

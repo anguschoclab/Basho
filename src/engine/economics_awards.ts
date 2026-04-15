@@ -4,9 +4,10 @@
  * Designed to be imported by both the simulation tick and UI rendering layers.
  */
 
+import { SIMULATION_CONFIG } from "./core/SimulationConfig";
+
 // Assumptions based on canonical world logic
-const KINBOSHI_STIPEND_PER_BOSHI = 40000; // Persistent monthly bonus
-const SANSHO_PRIZE_MONEY = 2000000; // One-time cash injection to stable
+// Note: Constants now centralized in SimulationConfig.ts
 
 export interface SalaryBreakdown {
   base: number;
@@ -32,7 +33,7 @@ export function getSalaryBreakdown(
   // Kinboshi stipends are strictly only paid out while competing in the top division.
   // Note: Division names are lowercase ('makuuchi') in the engine.
   if (division.toLowerCase() === "makuuchi" && kinboshiCount > 0) {
-    kinboshiBonus = kinboshiCount * KINBOSHI_STIPEND_PER_BOSHI;
+    kinboshiBonus = kinboshiCount * SIMULATION_CONFIG.prizes.kinboshiStipend;
   }
 
   return {
@@ -56,7 +57,7 @@ export function generateSanshoLedgerEntry(
   };
 
   return {
-    amount: SANSHO_PRIZE_MONEY,
+    amount: SIMULATION_CONFIG.prizes.specialPrize,
     description: `Special Prize (${prizeNames[prizeType]}): ${rikishiName}`,
     category: "Prize Money",
   };

@@ -158,11 +158,10 @@ describe("banzukeUI", () => {
 
     it("should handle edge cases like unknown rank", () => {
       const entries: Partial<UIRosterEntry>[] = [
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid rank
         {
           id: "1",
           division: "makuuchi",
-          rank: "unknown_rank" as any,
+          rank: "unknown_rank" as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           rankNumber: undefined,
           side: "east",
         },

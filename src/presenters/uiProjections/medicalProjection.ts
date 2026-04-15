@@ -54,13 +54,14 @@ export function projectMedicalUIDigest(world: WorldState) {
       return {
         id: r.id,
         shikona: r.shikona,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         severity:
-          typeof (injuryStatus as any)?.severity === "string"
-            ? (injuryStatus as any).severity
+          typeof (injuryStatus as unknown as Record<string, unknown>)?.severity === "string"
+            ? ((injuryStatus as unknown as Record<string, unknown>).severity as string)
             : "unknown",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        location: (injuryStatus as any)?.location || "unknown",
+
+        location:
+          ((injuryStatus as unknown as Record<string, unknown>)?.location as string) || "unknown",
         weeksRemaining,
         weeksTotal,
         recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),

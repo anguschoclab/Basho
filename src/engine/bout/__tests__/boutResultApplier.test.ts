@@ -60,7 +60,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -107,7 +107,7 @@ describe("boutResultApplier", () => {
       expect(impact.entities?.rikishiUpdates).toBeDefined();
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const eastUpdate = rikishiUpdates!.get("east");
+      const eastUpdate = rikishiUpdates?.get("east");
       expect(eastUpdate?.careerWins).toBe(101); // 100 + 1
     });
 
@@ -164,7 +164,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -210,7 +210,7 @@ describe("boutResultApplier", () => {
 
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const westUpdate = rikishiUpdates!.get("west");
+      const westUpdate = rikishiUpdates?.get("west");
       expect(westUpdate?.careerLosses).toBe(71); // 70 + 1
     });
 
@@ -267,7 +267,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -313,7 +313,7 @@ describe("boutResultApplier", () => {
 
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const eastUpdate = rikishiUpdates!.get("east");
+      const eastUpdate = rikishiUpdates?.get("east");
       expect(eastUpdate?.makuuchiWins).toBe(11); // 10 + 1
     });
 
@@ -370,7 +370,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -416,7 +416,7 @@ describe("boutResultApplier", () => {
 
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const eastUpdate = rikishiUpdates!.get("east");
+      const eastUpdate = rikishiUpdates?.get("east");
       expect(eastUpdate?.makuuchiWins).toBeUndefined(); // Should not update makuuchiWins
     });
 
@@ -473,7 +473,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -519,7 +519,7 @@ describe("boutResultApplier", () => {
 
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const eastUpdate = rikishiUpdates!.get("east");
+      const eastUpdate = rikishiUpdates?.get("east");
       expect(eastUpdate?.divisionRecords?.juryo.wins).toBe(21); // 20 + 1
       expect(eastUpdate?.divisionRecords?.juryo.losses).toBe(10); // unchanged
     });
@@ -577,7 +577,7 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
+            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -623,7 +623,7 @@ describe("boutResultApplier", () => {
 
       const rikishiUpdates = impact.entities?.rikishiUpdates;
       expect(rikishiUpdates).toBeDefined();
-      const westUpdate = rikishiUpdates!.get("west");
+      const westUpdate = rikishiUpdates?.get("west");
       expect(westUpdate?.divisionRecords?.juryo.wins).toBe(15); // unchanged
       expect(westUpdate?.divisionRecords?.juryo.losses).toBe(26); // 25 + 1
     });

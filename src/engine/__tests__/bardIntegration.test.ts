@@ -70,9 +70,10 @@ describe("Bard Engine Integration", () => {
 
     // runCareerJournalUpdates now returns StateImpact with logged events
     // Check that the impact contains a wins_milestone event
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+
     const milestoneEvent = impact.events?.find(
-      (e: any) => e.data?.status === "wins_milestone" && e.data?.rikishiId === "r1"
+      (e: { data?: { status?: string; rikishiId?: string } }) =>
+        e.data?.status === "wins_milestone" && e.data?.rikishiId === "r1"
     );
     expect(milestoneEvent).toBeDefined();
   });

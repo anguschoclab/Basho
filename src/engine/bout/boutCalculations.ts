@@ -1,6 +1,12 @@
 import { SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
-import type { CombatAction, TacticalFamily, TacticalArchetype, KimariteClass, CombatArchetype } from "../types/combat";
+import type {
+  CombatAction,
+  TacticalFamily,
+  TacticalArchetype,
+  KimariteClass,
+  CombatArchetype,
+} from "../types/combat";
 import { ARCHETYPE_PROFILES } from "../types/combat";
 import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
 
@@ -11,14 +17,14 @@ import { KIMARITE_REGISTRY, type Kimarite } from "../kimarite";
  * back to all_rounder.
  */
 export const ARCHETYPE_MAP: Record<CombatArchetype, TacticalArchetype> = {
-  oshi:      'oshi_specialist',
-  yotsu:     'yotsu_specialist',
-  trickster: 'trickster',
-  speedster: 'speedster',
-  giant:     'yotsu_specialist',   // mass-dominant — belt profile closest behavioral match
-  hybrid:    'hybrid_oshi_yotsu',
-  tsuppari:  'oshi_specialist',    // high-push variant; mapped until tsuppari profile added to ARCHETYPE_PROFILES
-  defensive: 'counter_specialist', // read-react; maps to counter_specialist profile
+  oshi: "oshi_specialist",
+  yotsu: "yotsu_specialist",
+  trickster: "trickster",
+  speedster: "speedster",
+  giant: "yotsu_specialist", // mass-dominant — belt profile closest behavioral match
+  hybrid: "hybrid_oshi_yotsu",
+  tsuppari: "oshi_specialist", // high-push variant; mapped until tsuppari profile added to ARCHETYPE_PROFILES
+  defensive: "counter_specialist", // read-react; maps to counter_specialist profile
 };
 
 /** State used for physics engine, simplified here for calculation purposes. */
@@ -32,90 +38,107 @@ export interface CalculationState {
   advantage: "east" | "west" | "none";
   position: "front" | "lateral" | "rear";
   stance: string;
-  grappleState: any;
+  grappleState: {
+    gripAdvantage: string;
+    east: { rightHand: string; leftHand: string; depth: string };
+    west: { rightHand: string; leftHand: string; depth: string };
+  };
 }
 
 /** Safe read stat helper */
-function stat(r: any, key: string, fallback = 50): number {
-  const v = r?.[key];
-  return Number.isFinite(v) ? v : fallback;
+function stat(r: Rikishi | Record<string, unknown>, key: string, fallback = 50): number {
+  const v = r ? (r as Record<string, unknown>)[key] : undefined;
+  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
 /**
  * Height Leverage Helper: Calculates Gravity Delta bonuses.
  */
-export function calculateHeightLeverage(attacker: Rikishi, defender: Rikishi, targetFamily: TacticalFamily): number {
+export function calculateHeightLeverage(
+  attacker: Rikishi,
+  defender: Rikishi,
+  targetFamily: TacticalFamily
+): number {
   const heightA = attacker.height || 180;
   const heightD = defender.height || 180;
-  
+
   // High center of gravity bonus (Taller)
   if (heightA > heightD + 10) {
-    if (targetFamily === 'belt') return 1.15; // Nageite / Lifting bonus
+    if (targetFamily === "belt") return 1.15; // Nageite / Lifting bonus
   }
-  
+
   // Low center of gravity bonus (Shorter)
   if (heightA < heightD - 10) {
-    if (targetFamily === 'push' || targetFamily === 'speed') return 1.15; // Push / Kakeite (leg trips) bonus
+    if (targetFamily === "push" || targetFamily === "speed") return 1.15; // Push / Kakeite (leg trips) bonus
   }
-  
+
   return 1.0;
 }
 
 /**
  * Calculate Action Power based on Move-Specific Math.
  */
-export function calculateActionPower(r: Rikishi, action: CombatAction, opponent: Rikishi, st: CalculationState): number {
+export function calculateActionPower(
+  r: Rikishi,
+  action: CombatAction,
+  opponent: Rikishi,
+  st: CalculationState
+): number {
   const w = action.statWeighting;
-  const s = r.stats || r;
-  const oppS = opponent.stats || opponent;
-  
+
   let power = 0;
-  
+
   // 1. Base Physicals Logic
-  let strengthPower = stat(r, 'strength', s.strength);
-  
+  let strengthPower = stat(r, "strength");
+
   // Weight (Mass / Momentum) Interaction
-  if (action.family === 'belt') {
+  if (action.family === "belt") {
     // Weight acts as a multiplier to strength for belt moves
-    strengthPower *= (1 + (r.weight || 150) / 500);
+    strengthPower *= 1 + (r.weight || 150) / 500;
   }
-  
-  power += (strengthPower * (w.strength || 0));
-  power += (stat(r, 'weight', r.weight) * (w.weight || 0));
-  power += (stat(r, 'technique', s.technique) * (w.technique || 0));
-  power += (stat(r, 'speed', s.speed) * (w.speed || 0));
+
+  power += strengthPower * (w.strength || 0);
+  power += stat(r, "weight", r.weight) * (w.weight || 0);
+  power += stat(r, "technique") * (w.technique || 0);
+  power += stat(r, "speed") * (w.speed || 0);
 
   // 2. Center of Gravity Leverage
   const leverage = calculateHeightLeverage(r, opponent, action.family);
   power *= leverage;
 
   // 3. Speed/Flanking: High speed temporarily zeros out Strength defense
-  let opponentStrengthDefense = stat(opponent, 'strength', oppS.strength);
-  if (action.family === 'speed' && stat(r, 'speed') > stat(opponent, 'speed') + 20) {
-    opponentStrengthDefense = 0; // Out of position
+  if (action.family === "speed" && stat(r, "speed") > stat(opponent, "speed") + 20) {
+    // Out of position - opponent's strength defense is zeroed
   }
 
   // 4. Weight Liability
   // A heavy wrestler being slapped down or countered suffers Balance penalties
   let weightLiability = 1.0;
-  if ((action.family === 'trick' || action.intent === 'counter') && (opponent.weight || 150) > 160) {
+  if (
+    (action.family === "trick" || action.intent === "counter") &&
+    (opponent.weight || 150) > 160
+  ) {
     weightLiability = 1.3; // Mass weaponized against them
   }
 
   // 5. Fatigue drain
-  const fatiguePenalty = (stat(r, 'fatigue', 0)) * 0.4;
+  const fatiguePenalty = stat(r, "fatigue", 0) * 0.4;
   power -= fatiguePenalty;
 
   // Grip Multipliers
-  if (action.family === 'belt') {
-    if (st.grappleState.gripAdvantage === (r.id === st.eastId ? 'moro_zashi_east' : 'moro_zashi_west')) {
+  if (action.family === "belt") {
+    if (
+      st.grappleState.gripAdvantage === (r.id === st.eastId ? "moro_zashi_east" : "moro_zashi_west")
+    ) {
       power *= 1.3; // Double inside bonus
-    } else if (st.grappleState.gripAdvantage === (r.id === st.eastId ? 'west_strong' : 'east_strong')) {
+    } else if (
+      st.grappleState.gripAdvantage === (r.id === st.eastId ? "west_strong" : "east_strong")
+    ) {
       power *= 0.85; // Awkward grip penalty
     }
 
     const depth = r.id === st.eastId ? st.grappleState.east.depth : st.grappleState.west.depth;
-    if (depth === 'maemitsu') {
+    if (depth === "maemitsu") {
       power *= 1.15; // Pulling leverage bonus
     }
   }
@@ -126,19 +149,26 @@ export function calculateActionPower(r: Rikishi, action: CombatAction, opponent:
 /**
  * Check if a move's state gates are met.
  */
-export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defender: Rikishi, st: CalculationState): boolean {
-  const isGrappling = st.grappleState.gripAdvantage !== 'neutral' || 
-                      st.stance === 'belt-dominant' || 
-                      st.stance === 'migi-yotsu' || 
-                      st.stance === 'hidari-yotsu';
+export function checkKimariteRequirements(
+  k: Kimarite,
+  attacker: Rikishi,
+  defender: Rikishi,
+  st: CalculationState
+): boolean {
+  const isGrappling =
+    st.grappleState.gripAdvantage !== "neutral" ||
+    st.stance === "belt-dominant" ||
+    st.stance === "migi-yotsu" ||
+    st.stance === "hidari-yotsu";
 
   if (k.requiresBeltGrip && !isGrappling) return false;
   if (!k.requirements) return true;
   const req = k.requirements;
 
   if (req.edgeOfRing) {
-    const isAtEdge = st.advantage === (attacker.id === st.eastId ? 'west' : 'east') || 
-                     (attacker.id === st.eastId ? st.balanceEast : st.balanceWest) < 25;
+    const isAtEdge =
+      st.advantage === (attacker.id === st.eastId ? "west" : "east") ||
+      (attacker.id === st.eastId ? st.balanceEast : st.balanceWest) < 25;
     if (!isAtEdge) return false;
   }
 
@@ -148,12 +178,12 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
   }
 
   if (req.minStrengthDifferential !== undefined) {
-    const diff = stat(attacker, 'strength') - stat(defender, 'strength');
+    const diff = stat(attacker, "strength") - stat(defender, "strength");
     if (diff < req.minStrengthDifferential) return false;
   }
 
   if (req.canFlank) {
-    if (st.position !== 'lateral' && st.position !== 'rear') return false;
+    if (st.position !== "lateral" && st.position !== "rear") return false;
   }
 
   if (req.requiresWeightAdvantage) {
@@ -162,7 +192,7 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
 
   if (req.isDesperation) {
     const bal = attacker.id === st.eastId ? st.balanceEast : st.balanceWest;
-    const isLosing = st.advantage === (attacker.id === st.eastId ? 'west' : 'east');
+    const isLosing = st.advantage === (attacker.id === st.eastId ? "west" : "east");
     if (bal > 30 || !isLosing) return false;
   }
 
@@ -170,7 +200,12 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
     const grip = attacker.id === st.eastId ? st.grappleState.east : st.grappleState.west;
     if (req.requiredGrip.rightHand && grip.rightHand !== req.requiredGrip.rightHand) return false;
     if (req.requiredGrip.leftHand && grip.leftHand !== req.requiredGrip.leftHand) return false;
-    if (req.requiredGrip.anyHand && grip.rightHand !== req.requiredGrip.anyHand && grip.leftHand !== req.requiredGrip.anyHand) return false;
+    if (
+      req.requiredGrip.anyHand &&
+      grip.rightHand !== req.requiredGrip.anyHand &&
+      grip.leftHand !== req.requiredGrip.anyHand
+    )
+      return false;
     if (req.requiredGrip.depth && grip.depth !== req.requiredGrip.depth) return false;
   }
 
@@ -180,35 +215,59 @@ export function checkKimariteRequirements(k: Kimarite, attacker: Rikishi, defend
 /**
  * Picker for moves from a class.
  */
-export function pickMoveFromClass(rng: SeededRNG, moveClass: KimariteClass | undefined, attacker: Rikishi, defender: Rikishi, st: CalculationState, family?: TacticalFamily, moveId?: string): Kimarite {
+export function pickMoveFromClass(
+  rng: SeededRNG,
+  moveClass: KimariteClass | undefined,
+  attacker: Rikishi,
+  defender: Rikishi,
+  st: CalculationState,
+  family?: TacticalFamily,
+  moveId?: string
+): Kimarite {
   if (moveId) {
-    const m = KIMARITE_REGISTRY.find(k => k.id === moveId);
+    const m = KIMARITE_REGISTRY.find((k) => k.id === moveId);
     if (m) return m;
   }
 
-  let possible = KIMARITE_REGISTRY.filter(k => checkKimariteRequirements(k, attacker, defender, st));
-  
+  let possible = KIMARITE_REGISTRY.filter((k) =>
+    checkKimariteRequirements(k, attacker, defender, st)
+  );
+
   if (moveClass) {
-    possible = possible.filter(k => (k as any).kimariteClass === moveClass);
+    possible = possible.filter(
+      (k) =>
+        "kimariteClass" in k &&
+        (k as Kimarite & { kimariteClass: string }).kimariteClass === moveClass
+    );
   } else if (family) {
-    possible = possible.filter(k => k.tacticalFamily === family);
-  }
-  
-  if (possible.length === 0) {
-    possible = KIMARITE_REGISTRY.filter(k => checkKimariteRequirements(k, attacker, defender, st));
-    if (possible.length === 0) return KIMARITE_REGISTRY[0]; 
+    possible = possible.filter((k) => k.tacticalFamily === family);
   }
 
-  const arch = ARCHETYPE_PROFILES[ARCHETYPE_MAP[attacker.combatProfile.archetype as CombatArchetype]] ?? ARCHETYPE_PROFILES.all_rounder;
+  if (possible.length === 0) {
+    possible = KIMARITE_REGISTRY.filter((k) =>
+      checkKimariteRequirements(k, attacker, defender, st)
+    );
+    if (possible.length === 0) return KIMARITE_REGISTRY[0];
+  }
+
+  const arch =
+    ARCHETYPE_PROFILES[ARCHETYPE_MAP[attacker.combatProfile.archetype as CombatArchetype]] ??
+    ARCHETYPE_PROFILES.all_rounder;
   const favored = attacker.combatProfile.favoredKimarite || [];
 
-  const weights = possible.map(m => {
+  const weights = possible.map((m) => {
     let w = m.baseWeight || 1;
-    if (m.rarity === 'uncommon') w *= 0.55;
-    else if (m.rarity === 'rare') w *= 0.20;
-    else if (m.rarity === 'legendary') w *= 0.05;
+    if (m.rarity === "uncommon") w *= 0.55;
+    else if (m.rarity === "rare") w *= 0.2;
+    else if (m.rarity === "legendary") w *= 0.05;
 
-    if (arch.preferredClasses.includes((m as any).kimariteClass)) w *= 1.5;
+    if (
+      "kimariteClass" in m &&
+      arch.preferredClasses.includes(
+        (m as Kimarite & { kimariteClass: string }).kimariteClass as KimariteClass
+      )
+    )
+      w *= 1.5;
     if (favored.includes(m.id)) w *= 3.0;
     return w;
   });

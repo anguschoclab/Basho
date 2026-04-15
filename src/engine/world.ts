@@ -17,14 +17,13 @@ import { toRankPosition, type Side } from "./types/index";
 import type { BashoPerformance, BanzukeEntry } from "./banzuke";
 import { getNextBasho } from "./calendar";
 import { resolveBout } from "./bout/boutResolver";
-import { EventBus } from "./events";
 import { advanceOneDay, enterInterim } from "./tick/tickDaily";
 import * as governance from "./governance/GovernanceService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
 import { updateBanzuke } from "./banzuke";
 import { applyBoutResult } from "./bout/boutResultApplier";
-import { resolveImpacts } from "./core/ImpactResolver";
 import { createImpactBuilder } from "./core/ImpactBuilder";
+import { resolveImpacts } from "./core/ImpactResolver";
 import type { StateImpact } from "./core/StateImpact";
 import { getActiveRikishi, getStableRikishi } from "./queries";
 import { checkShikonaChange, recordShikonaChange } from "./history";
@@ -81,10 +80,20 @@ export function advanceBashoDay(world: WorldState): WorldState {
     Object.assign(world, resolvedWorld);
   }
 
-  EventBus.bashoStatus(world, {
-    status: "day_advanced",
-    day: nextDay,
-  });
+  const eventImpact = createImpactBuilder("advanceDay")
+    .logEvent(
+      "BASHO_STATUS",
+      "basho",
+      {
+        status: "day_advanced",
+        day: nextDay,
+      },
+      { importance: nextDay === 15 ? "headline" : "notable" }
+    )
+    .build();
+  const eventResolved = resolveImpacts(world, [eventImpact]);
+  Object.assign(world, eventResolved);
+
   return world;
 }
 

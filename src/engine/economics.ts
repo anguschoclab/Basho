@@ -38,13 +38,7 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
 
   const pool = world.sponsorPool;
   const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
-  const rng = RNGRegistry.getSystemRNG(
-    world,
-    "economics",
-    `bailout-${heya.id}-${world.dayIndexGlobal}`
-  );
-
-  const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai, rng) : null;
+  const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai) : null;
 
   if (benefactor) {
     heya.funds += BENEFACTOR_BAILOUT_AMOUNT;
@@ -102,7 +96,13 @@ export function onBoutResolvedEconomics(
       "kensho",
       `kensho-${winner.id}-${world.dayIndexGlobal}`
     );
-    kenshoCount = calculateKenshoEnvelopes(world, winner, (result as any).kenshoBanners || [], result.awardFact ?? undefined, kenshoRng);
+    kenshoCount = calculateKenshoEnvelopes(
+      world,
+      winner,
+      (result as any).kenshoBanners || [],
+      result.awardFact ?? undefined,
+      kenshoRng
+    ); // eslint-disable-line @typescript-eslint/no-explicit-any
     result.kenshoEnvelopes = kenshoCount;
   }
 

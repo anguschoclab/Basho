@@ -1,165 +1,184 @@
-import { rngFromSeed, SeededRNG } from "../rng";
+import { SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
-import type { GrappleState } from "../types/combat";
+import type { Side } from "../types/banzuke";
+import type { HandGrip, BeltBattleState } from "../types/combat-spatial";
+import { deriveGripClass } from "./boutSpatial";
 
-/** Establishment of a deterministic small noise */
-function jitter(rng: SeededRNG, scale = 1): number {
-  return (rng.next() - 0.5) * scale;
+function stat(r: Rikishi, key: string, fallback = 50): number {
+  const v = (r as unknown as Record<string, unknown>)[key];
+  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
-/** Safe read stat helper */
-function stat(r: any, key: string, fallback = 50): number {
-  const v = r?.[key];
-  return Number.isFinite(v) ? v : fallback;
-}
-
-/**
- * Establishment of symmetric grip.
- * In Ai-Yotsu, both get one hand inside on their preferred side.
- */
-export function establishSymmetricGrip(east: Rikishi, west: Rikishi, pref: 'migi' | 'hidari'): GrappleState {
-  return {
-    east: { 
-      rightHand: pref === 'migi' ? 'inside' : 'outside', 
-      leftHand: pref === 'migi' ? 'outside' : 'inside',
-      depth: east.combatProfile.preferredGripDepth
-    },
-    west: { 
-      rightHand: pref === 'migi' ? 'inside' : 'outside', 
-      leftHand: pref === 'migi' ? 'outside' : 'inside',
-      depth: west.combatProfile.preferredGripDepth
-    },
-    gripAdvantage: 'neutral'
-  };
-}
-
-/**
- * Establishment of asymmetric grip (Kenka-Yotsu).
- */
-export function establishAsymmetricGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): GrappleState {
-  const eastPower = stat(east, 'technique') + stat(east, 'speed') / 2 + jitter(rng, 10);
-  const westPower = stat(west, 'technique') + stat(west, 'speed') / 2 + jitter(rng, 10);
-
-  const winner = eastPower > westPower ? 'east' : 'west';
-  
-  if (winner === 'east') {
-    const pref = east.combatProfile.preferredGrip;
-    return {
-      east: { 
-        rightHand: pref === 'migi' ? 'inside' : 'outside', 
-        leftHand: pref === 'hidari' ? 'inside' : 'outside',
-        depth: east.combatProfile.preferredGripDepth
-      },
-      west: { 
-        rightHand: pref === 'migi' ? 'blocked' : 'outside', 
-        leftHand: pref === 'hidari' ? 'blocked' : 'outside',
-        depth: 'standard' 
-      },
-      gripAdvantage: 'east_strong'
-    };
-  } else {
-    const pref = west.combatProfile.preferredGrip;
-    return {
-      east: { 
-        rightHand: pref === 'migi' ? 'blocked' : 'outside', 
-        leftHand: pref === 'hidari' ? 'blocked' : 'outside',
-        depth: 'standard'
-      },
-      west: { 
-        rightHand: pref === 'migi' ? 'inside' : 'outside', 
-        leftHand: pref === 'hidari' ? 'inside' : 'outside',
-        depth: west.combatProfile.preferredGripDepth
-      },
-      gripAdvantage: 'west_strong'
-    };
-  }
-}
-
-/**
- * Establishment of messy/scrambled grip.
- */
-export function establishMessyGrip(rng: SeededRNG, east: Rikishi, west: Rikishi): GrappleState {
-  const roll = rng.next();
-  if (roll < 0.03) {
-    // Rare Moro-zashi (reduced from 10% → 3% to match real JSA rate)
-    const winner = rng.next() < 0.5 ? 'east' : 'west';
-    return {
-      east: { rightHand: winner === 'east' ? 'inside' : 'blocked', leftHand: winner === 'east' ? 'inside' : 'blocked', depth: 'deep' },
-      west: { rightHand: winner === 'west' ? 'inside' : 'blocked', leftHand: winner === 'west' ? 'inside' : 'blocked', depth: 'deep' },
-      gripAdvantage: winner === 'east' ? 'moro_zashi_east' : 'moro_zashi_west'
-    };
-  }
-  return {
-    east: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
-    west: { rightHand: 'outside', leftHand: 'outside', depth: 'standard' },
-    gripAdvantage: 'neutral'
-  };
-}
-
-/**
- * Evolves grip depth and hand positions per engagement tick.
- *
- * Called every tick during belt-dominant stances instead of re-rolling from
- * scratch, giving realistic per-tick grip contest evolution. A significant
- * technique differential shifts the winning side's grip progressively deeper.
- *
- * Depth progression: standard → deep → maemitsu
- * Hand progression: outside → inside (requires margin > 15)
- */
-export function contestGripTick(
+export function initBeltBattle(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  current: GrappleState
-): GrappleState {
-  const eastTech = stat(east, 'technique') + (rng.next() - 0.5) * 8;
-  const westTech = stat(west, 'technique') + (rng.next() - 0.5) * 8;
-  const margin = Math.abs(eastTech - westTech);
+  tachiaiWinner: Side
+): BeltBattleState {
+  const preferredGripEast = east.combatProfile?.preferredGrip ?? "none";
+  const preferredGripWest = west.combatProfile?.preferredGrip ?? "none";
 
-  // Small margins (< 12) — stalemate, grip unchanged
-  if (margin < 12) return current;
+  // Small random variation in initial grip strength
+  const rngVariation = () => 0.95 + rng.next() * 0.1;
 
-  const winner: 'east' | 'west' = eastTech > westTech ? 'east' : 'west';
-  const next: GrappleState = {
-    east: { ...current.east },
-    west: { ...current.west },
-    gripAdvantage: current.gripAdvantage,
+  const eastLeft: HandGrip = {
+    armReach: 0.08,
+    isInside: false,
+    leverArm: 0.24,
+    gripStrength: rngVariation(),
+    isBlocked: false,
   };
 
-  const winningSide = next[winner];
+  const eastRight: HandGrip = {
+    armReach: 0.08,
+    isInside: false,
+    leverArm: 0.24,
+    gripStrength: rngVariation(),
+    isBlocked: false,
+  };
 
-  // Depth evolution: requires increasingly larger margins
-  if (margin > 20 && winningSide.depth === 'standard') {
-    winningSide.depth = 'deep';
-  } else if (margin > 30 && winningSide.depth === 'deep') {
-    winningSide.depth = 'maemitsu';
-  }
+  const westLeft: HandGrip = {
+    armReach: 0.08,
+    isInside: false,
+    leverArm: 0.24,
+    gripStrength: rngVariation(),
+    isBlocked: false,
+  };
 
-  // Hand position improvement: outside → inside (probabilistic, requires margin > 15)
-  if (margin > 15) {
-    if (winningSide.rightHand === 'outside' && rng.next() < 0.30) {
-      winningSide.rightHand = 'inside';
+  const westRight: HandGrip = {
+    armReach: 0.08,
+    isInside: false,
+    leverArm: 0.24,
+    gripStrength: rngVariation(),
+    isBlocked: false,
+  };
+
+  // Tachiai winner gets inside arm advantage
+  if (tachiaiWinner === "east") {
+    if (preferredGripEast === "migi") {
+      eastRight.armReach = 0.12;
+      eastRight.isInside = true;
+      eastRight.leverArm = 0.29;
+    } else if (preferredGripEast === "hidari") {
+      eastLeft.armReach = 0.12;
+      eastLeft.isInside = true;
+      eastLeft.leverArm = 0.29;
     }
-    if (winningSide.leftHand === 'outside' && rng.next() < 0.30) {
-      winningSide.leftHand = 'inside';
+    // Winner's other hand
+    if (preferredGripEast === "migi") {
+      eastLeft.armReach = 0.08;
+      eastLeft.isInside = false;
+      eastLeft.leverArm = 0.26;
+    } else {
+      eastRight.armReach = 0.08;
+      eastRight.isInside = false;
+      eastRight.leverArm = 0.26;
     }
-  }
-
-  // Recompute grip advantage based on inside hands
-  const eastInside = (next.east.rightHand === 'inside' ? 1 : 0) + (next.east.leftHand === 'inside' ? 1 : 0);
-  const westInside = (next.west.rightHand === 'inside' ? 1 : 0) + (next.west.leftHand === 'inside' ? 1 : 0);
-
-  if (eastInside === 2 && westInside < 2) {
-    next.gripAdvantage = 'moro_zashi_east';
-  } else if (westInside === 2 && eastInside < 2) {
-    next.gripAdvantage = 'moro_zashi_west';
-  } else if (eastInside > westInside) {
-    next.gripAdvantage = 'east_strong';
-  } else if (westInside > eastInside) {
-    next.gripAdvantage = 'west_strong';
   } else {
-    next.gripAdvantage = 'neutral';
+    if (preferredGripWest === "migi") {
+      westRight.armReach = 0.12;
+      westRight.isInside = true;
+      westRight.leverArm = 0.29;
+    } else if (preferredGripWest === "hidari") {
+      westLeft.armReach = 0.12;
+      westLeft.isInside = true;
+      westLeft.leverArm = 0.29;
+    }
+    // Winner's other hand
+    if (preferredGripWest === "migi") {
+      westLeft.armReach = 0.08;
+      westLeft.isInside = false;
+      westLeft.leverArm = 0.26;
+    } else {
+      westRight.armReach = 0.08;
+      westRight.isInside = false;
+      westRight.leverArm = 0.26;
+    }
   }
 
-  return next;
+  const eastGripClass = deriveGripClass(eastLeft, eastRight);
+  const westGripClass = deriveGripClass(westLeft, westRight);
+
+  const torqueEast = computeNetTorque(eastLeft, eastRight, 0);
+  const torqueWest = computeNetTorque(westLeft, westRight, 0);
+
+  return {
+    eastLeft,
+    eastRight,
+    westLeft,
+    westRight,
+    eastGripClass,
+    westGripClass,
+    eastDepth: "standard",
+    westDepth: "standard",
+    torqueEast,
+    torqueWest,
+  };
+}
+
+export function evolveGripGeometry(
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  belt: BeltBattleState
+): void {
+  const eastTechnique = stat(east, "technique");
+  const westTechnique = stat(west, "technique");
+  const eastFatigue = east.fatigue ?? 0;
+  const westFatigue = west.fatigue ?? 0;
+
+  const techniqueMargin = eastTechnique - westTechnique;
+
+  // Random factor in grip evolution
+  const rngFactor = 0.9 + rng.next() * 0.2;
+
+  // Arm reach increases when technique margin > 12
+  if (techniqueMargin > 12) {
+    if (belt.eastLeft && !belt.eastLeft.isBlocked) {
+      belt.eastLeft.armReach = Math.min(0.15, belt.eastLeft.armReach + 0.005 * rngFactor);
+    }
+    if (belt.eastRight && !belt.eastRight.isBlocked) {
+      belt.eastRight.armReach = Math.min(0.15, belt.eastRight.armReach + 0.005 * rngFactor);
+    }
+  } else if (techniqueMargin < -12) {
+    if (belt.westLeft && !belt.westLeft.isBlocked) {
+      belt.westLeft.armReach = Math.min(0.15, belt.westLeft.armReach + 0.005 * rngFactor);
+    }
+    if (belt.westRight && !belt.westRight.isBlocked) {
+      belt.westRight.armReach = Math.min(0.15, belt.westRight.armReach + 0.005 * rngFactor);
+    }
+  }
+
+  // Grip strength decays with fatigue
+  const eastFatigueDecay = 1 - eastFatigue * 0.003;
+  const westFatigueDecay = 1 - westFatigue * 0.003;
+
+  if (belt.eastLeft) belt.eastLeft.gripStrength *= eastFatigueDecay;
+  if (belt.eastRight) belt.eastRight.gripStrength *= eastFatigueDecay;
+  if (belt.westLeft) belt.westLeft.gripStrength *= westFatigueDecay;
+  if (belt.westRight) belt.westRight.gripStrength *= westFatigueDecay;
+
+  // Update grip class
+  belt.eastGripClass = deriveGripClass(belt.eastLeft, belt.eastRight);
+  belt.westGripClass = deriveGripClass(belt.westLeft, belt.westRight);
+
+  // Update torques
+  belt.torqueEast = computeNetTorque(belt.eastLeft, belt.eastRight, 0);
+  belt.torqueWest = computeNetTorque(belt.westLeft, belt.westRight, 0);
+}
+
+export function calculateTorque(grip: HandGrip, force: number): number {
+  if (grip.isBlocked) return 0;
+  return grip.leverArm * force * grip.gripStrength;
+}
+
+export function computeNetTorque(
+  left: HandGrip | null,
+  right: HandGrip | null,
+  force: number
+): number {
+  let torque = 0;
+  if (left) torque += calculateTorque(left, force);
+  if (right) torque += calculateTorque(right, force);
+  return torque;
 }

@@ -743,6 +743,44 @@
             "%NAME% methodically breaks down his opponent's posture!"
           ]
         },
+        "edge_crisis": {
+          "approach": [
+            "%NAME% is dangerously close to the edge!",
+            "The tawara looms behind %NAME%—one slip and it's over!",
+            "%NAME% is backed against the rope!",
+            "The crowd gasps as %NAME% teeters on the brink!",
+            "%NAME%'s lead foot hovers over the straw bales—disaster awaits!",
+            "A precarious position! %NAME% has inches to spare before the tawara!",
+            "The center of gravity shifts—%NAME% fights for balance at the edge!",
+            "Tension mounts! %NAME% is in full edge crisis mode!"
+          ],
+          "recovery": [
+            "Incredible recovery! %NAME% escapes the edge!",
+            "%NAME% fights his way back from the precipice!",
+            "A miraculous save by %NAME%!",
+            "%NAME% refuses to go down at the rope!",
+            "Against all odds, %NAME% regains his footing!",
+            "%NAME% battles the tawara and wins back center ring!",
+            "A stunning recovery! %NAME% uses the tawara bounce to survive!",
+            "The crowd erupts as %NAME% claws his way back from disaster!"
+          ],
+          "failure": [
+            "%NAME% has nowhere left to go!",
+            "The edge claims %NAME%!",
+            "%NAME% is forced out at the tawara!",
+            "No escape for %NAME%!",
+            "The tawara bounce wasn't enough! %NAME% goes down!",
+            "%NAME%'s center of gravity gives way at the worst moment!",
+            "A tragic end to the edge crisis—%NAME% is forced out!",
+            "The straw bales claim another victim. %NAME% is done!"
+          ],
+          "tawara_drama": [
+            "%NAME% rides the tawara—will he hold or fall?",
+            "A moment of pure drama at the rope! %NAME% hangs in the balance!",
+            "The tawara groans under %NAME%'s desperate resistance!",
+            "Inches from defeat! %NAME% clings to the edge of existence!"
+          ]
+        },
         "finish": {
           "common": [
             "And that is the conclusion. %WINNER% takes the victory.",

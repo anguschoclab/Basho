@@ -39,7 +39,7 @@ export interface EngineSnapshot {
   advantage: Advantage;
   winnerConsecutiveAdvantage: number; // ticks where winner held continuous advantage
   loserLastActionFamily?: TacticalFamily; // push/speed = over-committing
-  finalLoserBalanceDrain: number;         // damage on fatal tick
+  finalLoserBalanceDrain: number; // damage on fatal tick
 }
 
 // ── Grip derivation ────────────────────────────────────────────────────────
@@ -77,10 +77,7 @@ function deriveGrip(
  * Low remaining loser balance → at edge (being pushed out).
  * High remaining loser balance → center ring (threw or dominated from center).
  */
-function estimateEdgeDistance(
-  loserBalance: number,
-  winnerBalance: number
-): number {
+function estimateEdgeDistance(loserBalance: number): number {
   // Loser balance at/near 0 = being driven to edge. Higher = center win.
   // Scale: 0 (at tawara) to 15+ (center ring).
   const loserPct = Math.max(0, loserBalance) / 100; // normalize to 0-1
@@ -96,20 +93,16 @@ function buildFinalBoutState(
   boutResult: BoutResult,
   snapshot: EngineSnapshot
 ): FinalBoutState {
-  const runtimeBalance =
-    side === "east" ? snapshot.balanceEast : snapshot.balanceWest;
-  const opponentBalance =
-    side === "east" ? snapshot.balanceWest : snapshot.balanceEast;
+  const runtimeBalance = side === "east" ? snapshot.balanceEast : snapshot.balanceWest;
+  const opponentBalance = side === "east" ? snapshot.balanceWest : snapshot.balanceEast;
 
   // over-committing: loser was attacking (push/speed family) when they lost
   const loserWasOverCommitting =
     !isWinner &&
-    (snapshot.loserLastActionFamily === "push" ||
-      snapshot.loserLastActionFamily === "speed");
+    (snapshot.loserLastActionFamily === "push" || snapshot.loserLastActionFamily === "speed");
 
   // passive win: winner's advantage was minimal (< 2 ticks consecutive)
-  const wasPassiveWin =
-    isWinner && snapshot.winnerConsecutiveAdvantage <= 2;
+  const wasPassiveWin = isWinner && snapshot.winnerConsecutiveAdvantage <= 2;
 
   return {
     grip: deriveGrip(side, snapshot.stance, snapshot.grappleState),
@@ -120,21 +113,22 @@ function buildFinalBoutState(
     // forwardMomentum: winner gets streak count; loser gets 1 if they were pushing, else 0
     forwardMomentum: isWinner
       ? snapshot.winnerConsecutiveAdvantage
-      : loserWasOverCommitting ? 1 : 0,
+      : loserWasOverCommitting
+        ? 1
+        : 0,
 
     // offensiveOutput: 0 = passive win (utchari, isamiashi eligible), 1 = dominant
     offensiveOutput: isWinner
-      ? wasPassiveWin ? 0 : Math.min(1, snapshot.winnerConsecutiveAdvantage / 5)
+      ? wasPassiveWin
+        ? 0
+        : Math.min(1, snapshot.winnerConsecutiveAdvantage / 5)
       : 0,
 
     balance: isWinner ? Math.max(runtimeBalance, 1) : 0,
-    stamina: Math.max(0, 1 - ((rikishi.fatigue ?? 0) / 100)),
+    stamina: Math.max(0, 1 - (rikishi.fatigue ?? 0) / 100),
 
     // edgeDistance: derived from actual balance (not duration guess)
-    edgeDistance: estimateEdgeDistance(
-      isWinner ? opponentBalance : runtimeBalance,
-      isWinner ? runtimeBalance : opponentBalance
-    ),
+    edgeDistance: estimateEdgeDistance(isWinner ? opponentBalance : runtimeBalance),
   };
 }
 
@@ -147,10 +141,7 @@ function buildFinalBoutState(
  *
  * Pulls from the top 5 eligible strategies to keep selection meaningful.
  */
-function stochasticKimariteSelect(
-  eligible: typeof KIMARITE_STRATEGIES,
-  boutId: string
-): string {
+function stochasticKimariteSelect(eligible: typeof KIMARITE_STRATEGIES, boutId: string): string {
   if (eligible.length === 0) return "";
 
   // Sort by weight and take top 5

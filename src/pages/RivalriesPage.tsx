@@ -265,15 +265,14 @@ function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCardProps) 
   const aWins = pair.aWins || 0;
   const bWins = pair.bWins || 0;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rank type includes yokozuna which is not a NumberedRank
   const rankA = formatRank({
-    rank: rikishiA.rank as any,
+    rank: rikishiA.rank as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     side: rikishiA.side ?? "east",
     rankNumber: rikishiA.rankNumber ?? 0,
   });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rank type includes yokozuna which is not a NumberedRank
+
   const rankB = formatRank({
-    rank: rikishiB.rank as any,
+    rank: rikishiB.rank as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     side: rikishiB.side ?? "east",
     rankNumber: rikishiB.rankNumber ?? 0,
   });

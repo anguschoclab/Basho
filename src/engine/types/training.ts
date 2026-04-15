@@ -31,9 +31,9 @@ export interface IndividualFocus {
   focusType: FocusMode;
 }
 
-/** Defines the structure for beya training state. */
-export interface BeyaTrainingState {
-  beyaId: Id;
+/** Defines the structure for heya training state. */
+export interface HeyaTrainingState {
+  heyaId: Id;
   activeProfile: TrainingProfile;
   focusSlots: IndividualFocus[];
 }

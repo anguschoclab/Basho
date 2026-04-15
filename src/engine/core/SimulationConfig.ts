@@ -9,6 +9,7 @@ export const SIMULATION_CONFIG = {
     yusho: 10_000_000,
     junYusho: 2_000_000,
     specialPrize: 2_000_000,
+    kinboshiStipend: 40_000, // Per kinboshi per basho
   },
 
   /** Career milestones */
@@ -36,7 +37,7 @@ export const SIMULATION_CONFIG = {
     maxWeeklyChance: 0.12,
     boutBaseChance: 0.008,
     maxBoutChance: 0.06,
-  }
+  },
 };
 
 /**

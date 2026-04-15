@@ -1,6 +1,6 @@
 /**
  * StateImpact Types
- * 
+ *
  * Defines the structure for state impact patches used in the Collector-Resolver pattern.
  * Simulation passes return StateImpact objects describing what should change,
  * and a resolver applies these patches atomically to produce the final state.
@@ -11,11 +11,12 @@ import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 import type { WorldState } from "../types/world";
-import type { 
-  EngineEventType, 
-  EventCategory, 
-  EventImportance, 
-  NarrativeContext 
+import type { Sponsor, Koenkai } from "../types/sponsors";
+import type {
+  EngineEventType,
+  EventCategory,
+  EventImportance,
+  NarrativeContext,
 } from "../types/events";
 
 /**
@@ -35,7 +36,9 @@ export interface StateImpact {
     /** Map of oyakata ID → partial oyakata update */
     oyakataUpdates?: Map<string, Partial<Oyakata>>;
     /** Map of sponsor ID → partial sponsor update */
-    sponsorUpdates?: Map<string, any>;
+    sponsorUpdates?: Map<string, Partial<Sponsor>>;
+    /** Map of koenkai ID → partial koenkai update */
+    koenkaiUpdates?: Map<string, Partial<Koenkai>>;
     // Add other entity types as needed
   };
 
@@ -71,37 +74,40 @@ export interface StateImpact {
    * Top-level world field updates.
    * Used for scalar fields on WorldState that don't fit entity/collection patterns.
    */
-  worldFields?: Partial<Pick<WorldState,
-    | 'year'
-    | 'week'
-    | 'dayIndexGlobal'
-    | 'cyclePhase'
-    | '_postBashoMeta'
-    | '_recruitmentWindow'
-    | 'closedHeyas'
-    | 'currentBasho'
-    | 'currentBashoName'
-    | 'ozekiKadoban'
-    | '_interimDaysRemaining'
-    | '_postBashoDays'
-    | 'calendar'
-    | 'history'
-    | 'almanacSnapshots'
-    | 'mediaState'
-    | 'ftue'
-    | 'rivalriesState'
-    | 'sponsorPool'
-    | 'myosekiMarket'
-    | '_daysSinceLastWeeklyTick'
-  >>;
+  worldFields?: Partial<
+    Pick<
+      WorldState,
+      | "year"
+      | "week"
+      | "dayIndexGlobal"
+      | "cyclePhase"
+      | "_postBashoMeta"
+      | "_recruitmentWindow"
+      | "closedHeyas"
+      | "currentBasho"
+      | "currentBashoName"
+      | "ozekiKadoban"
+      | "_interimDaysRemaining"
+      | "_postBashoDays"
+      | "calendar"
+      | "history"
+      | "almanacSnapshots"
+      | "mediaState"
+      | "ftue"
+      | "rivalriesState"
+      | "sponsorPool"
+      | "myosekiMarket"
+      | "_daysSinceLastWeeklyTick"
+    >
+  >;
 
   /**
    * Array append operations for world arrays.
    * Used to append items to world arrays like history, almanacSnapshots, basho.matches.
    */
   arrayAppends?: Array<{
-    field: 'history' | 'almanacSnapshots' | 'basho.matches';
-    items: any[];
+    field: "history" | "almanacSnapshots" | "basho.matches";
+    items: unknown[];
   }>;
 
   /**
@@ -128,7 +134,7 @@ export interface StateImpact {
     /** Optional timestamp for ordering/debugging */
     timestamp?: number;
     /** Optional additional metadata */
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -136,12 +142,12 @@ export interface StateImpact {
  * Type guard to check if an object is a valid StateImpact.
  */
 export function isStateImpact(value: unknown): value is StateImpact {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return false;
   }
 
   const impact = value as Partial<StateImpact>;
-  
+
   // At least one of the main fields should be present
   return !!(
     impact.entities ||
@@ -156,12 +162,12 @@ export function isStateImpact(value: unknown): value is StateImpact {
  * Creates an empty StateImpact with optional metadata.
  * Always generates a timestamp for tracking.
  */
-export function createEmptyImpact(metadata?: StateImpact['metadata']): StateImpact {
+export function createEmptyImpact(metadata?: StateImpact["metadata"]): StateImpact {
   return {
     metadata: {
       ...metadata,
-      source: metadata?.source || 'unknown',
-      timestamp: metadata?.timestamp ?? Date.now()
-    }
+      source: metadata?.source || "unknown",
+      timestamp: metadata?.timestamp ?? Date.now(),
+    },
   };
 }

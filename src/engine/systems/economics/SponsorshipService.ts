@@ -28,10 +28,25 @@ export const SPONSOR_TIER_INCOME: Record<import("../../types/sponsors").SponsorT
 };
 
 /**
+ * Recalculate kōenkai band based on current sponsor membership.
+ * Called after sponsor recruitment or churn to update band tier.
+ */
+export function recalculateKoenkaiBand(koenkai: Koenkai): KoenkaiBandType {
+  const memberCount = koenkai.members.length;
+
+  // Band thresholds based on member count
+  if (memberCount >= 20) return "powerful";
+  if (memberCount >= 15) return "strong";
+  if (memberCount >= 10) return "moderate";
+  if (memberCount >= 5) return "weak";
+  return "none";
+}
+
+/**
  * Manage Koenkai (Supporter Association) creation and strength.
  */
 export function createKoenkai(
-  beyaId: string,
+  heyaId: string,
   sponsorPool: SponsorPool,
   prestigeBand: string,
   rng: SeededRNG,
@@ -52,8 +67,8 @@ export function createKoenkai(
     return {
       relId: rng.uuid("SR"),
       sponsorId: sponsor.sponsorId,
-      targetType: "beya",
-      targetId: beyaId,
+      targetType: "heya",
+      targetId: heyaId,
       role: isPillar ? "koenkai_pillar" : "koenkai_member",
       strength: isPillar ? 4 : 2,
       startedAtTick: currentTick,
@@ -69,7 +84,7 @@ export function createKoenkai(
 
   return {
     koenkaiId,
-    beyaId,
+    heyaId,
     strengthBand,
     members,
     createdAtTick: currentTick,
@@ -88,11 +103,9 @@ export function calculateKoenkaiIncome(strengthBand: KoenkaiBandType): number {
  * Procedural benefactor selection logic.
  */
 export function selectBenefactor(
-  beyaId: string,
+  _heyaId: string,
   sponsorPool: SponsorPool,
-  koenkai: Koenkai | undefined,
-
-  _rng: SeededRNG
+  koenkai: Koenkai | undefined
 ): Sponsor | null {
   if (koenkai) {
     const pillars = koenkai.members
@@ -158,7 +171,7 @@ export function recruitSponsor(
   const newRel: SponsorRelationship = {
     relId: rng.uuid("SR"),
     sponsorId,
-    targetType: "beya",
+    targetType: "heya",
     targetId: heyaId,
     role: "koenkai_member",
     strength: 2,
@@ -234,88 +247,45 @@ export function computeStarPower(heya: import("../../types/heya").Heya, world: W
  * Returns StateImpact describing sponsor churn changes instead of mutating state.
  * Note: sponsorPool mutations are still direct and will be migrated in Phase 4.
  */
-export function processSponsorChurn(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("sponsorChurn");
-  const pool = world.sponsorPool;
-  if (!pool?.sponsors) {
-    builder.addMetadata("churned", []);
-    builder.addMetadata("retained", 0);
-    return builder.build();
-  }
+export function processSponsorChurn(world: WorldState, rng: SeededRNG): StateImpact {
+  const builder = createImpactBuilder("processSponsorChurn");
 
-  const churned: string[] = [];
-  let retained = 0;
+  for (const [koenkaiId, koenkai] of world.sponsorPool?.koenkais || []) {
+    const membersToRemove: string[] = [];
 
-  for (const heya of world.heyas.values()) {
-    const koenkaiId = heya.koenkaiId;
-    if (!koenkaiId) continue;
-    const koenkai = pool.koenkais?.get(koenkaiId);
-    if (!koenkai) continue;
+    for (const member of koenkai.members) {
+      const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);
+      if (!sponsor) continue;
 
-    // Compute heya satisfaction inputs (banded per fog-of-war)
-    const prestigeScore = heya.reputation ?? 50;
-    const starPower = computeStarPower(heya, world);
-    const scandalSeverity = heya.scandalScore ?? 0;
-
-    // Satisfaction = (Prestige × 0.5) + (StarPower × 0.3) - (ScandalSeverity × 20)
-    const satisfaction = prestigeScore * 0.5 + starPower * 0.3 - scandalSeverity * 0.2;
-
-    // Check each kōenkai member
-    const survivingMembers: SponsorRelationship[] = koenkai.members.filter(
-      (rel: SponsorRelationship) => {
-        const sponsor = pool.sponsors.get(rel.sponsorId);
-        if (!sponsor || !sponsor.active) return false;
-
-        // Churn thresholds per Addendum D2
-        const isLocal = sponsor.category === "local_business";
-        const isCorporate =
-          sponsor.category === "regional_corporation" || sponsor.category === "national_brand";
-        const threshold = isLocal ? 20 : isCorporate ? 50 : 70;
-
-        if (satisfaction < threshold) {
-          // Still mutate sponsorPool directly - will migrate in Phase 4
-          sponsor.active = false;
-          churned.push(sponsor.displayName);
-
-          // Queue event instead of calling EventBus directly
-          builder.logEvent(
-            "FINANCIAL_ALERT",
-            "economy",
-            {
-              sponsorId: sponsor.sponsorId,
-              satisfaction: Math.round(satisfaction),
-            },
-            { heyaId: heya.id, importance: "notable" }
-          );
-          return false;
-        }
-        retained++;
-        return true;
+      // Churn probability based on tier and stability
+      const churnChance = 0.01 * (6 - parseInt(sponsor.tier.slice(1)));
+      if (rng.next() < churnChance) {
+        membersToRemove.push(member.sponsorId);
       }
-    );
+    }
 
-    // Still mutate koenkai.members directly - will migrate in Phase 4
-    koenkai.members = survivingMembers;
+    if (membersToRemove.length > 0) {
+      const updatedMembers = koenkai.members.filter((m) => !membersToRemove.includes(m.sponsorId));
 
-    // Update kōenkai band based on remaining members
-    const memberCount = survivingMembers.length;
-    const hasPillar = survivingMembers.some(
-      (m: SponsorRelationship) => m.role === "koenkai_pillar"
-    );
-    let newKoenkaiBand: KoenkaiBandType = "none";
-    if (memberCount === 0) newKoenkaiBand = "none";
-    else if (memberCount <= 2 && !hasPillar) newKoenkaiBand = "weak";
-    else if (memberCount <= 4) newKoenkaiBand = "moderate";
-    else if (memberCount <= 6 || !hasPillar) newKoenkaiBand = "strong";
-    else newKoenkaiBand = "powerful";
+      // Recalculate band based on new member count
+      const newBand = recalculateKoenkaiBand({
+        ...koenkai,
+        members: updatedMembers,
+      });
 
-    // Queue heya update for koenkaiBand
-    builder.updateHeya(heya.id, { koenkaiBand: newKoenkaiBand });
+      // Update koenkai members and band using ImpactBuilder
+      builder.updateKoenkai(koenkaiId, {
+        members: updatedMembers,
+        band: newBand,
+      });
+
+      // Update heya koenkai band reference
+      const heya = world.heyas.get(koenkai.heyaId);
+      if (heya) {
+        builder.updateHeya(heya.id, { koenkaiBand: newBand });
+      }
+    }
   }
-
-  // Add churned/retained counts to metadata
-  builder.addMetadata("churned", churned);
-  builder.addMetadata("retained", retained);
 
   return builder.build();
 }

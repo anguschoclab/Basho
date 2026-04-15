@@ -122,9 +122,14 @@ export default function RecapPage() {
     if (world && world.playerHeyaId) {
       const heya = world.heyas.get(world.playerHeyaId);
       if (heya) {
-        heya.reputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+        const updatedHeya = {
+          ...heya,
+          reputation: Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation)),
+        };
+        const updatedHeyas = new Map(world.heyas);
+        updatedHeyas.set(world.playerHeyaId, updatedHeya);
+        updateWorld({ ...world, heyas: updatedHeyas });
       }
-      updateWorld({ ...world });
     }
   };
 

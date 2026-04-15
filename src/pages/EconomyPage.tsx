@@ -26,6 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
 import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { toast } from "sonner";
 
 // Runway narrative descriptions
@@ -119,25 +120,25 @@ const KOENKAI_CONFIG: Record<
 };
 
 // Expense categories (narrative)
-const EXPENSE_CATEGORIES = [
-  { name: "Wrestler Support", description: "Food, housing, and daily needs for the roster." },
-  { name: "Heya Operations", description: "Utilities, maintenance, and administration." },
-  { name: "Training & Equipment", description: "Dohyo upkeep, supplies, and coaching costs." },
-  { name: "Medical & Recovery", description: "Treatment, rehab, and injury prevention." },
-  { name: "Travel & Appearances", description: "Exhibitions, tours, and sanctioned events." },
-];
+// const EXPENSE_CATEGORIES = [
+//   { name: "Wrestler Support", description: "Food, housing, and daily needs for the roster." },
+//   { name: "Heya Operations", description: "Utilities, maintenance, and administration." },
+//   { name: "Training & Equipment", description: "Dohyo upkeep, supplies, and coaching costs." },
+//   { name: "Medical & Recovery", description: "Treatment, rehab, and injury prevention." },
+//   { name: "Travel & Appearances", description: "Exhibitions, tours, and sanctioned events." },
+// ];
 
 // Income sources (narrative)
-const INCOME_SOURCES = [
-  {
-    name: "League Distributions",
-    description: "Official payments influenced by rank presence and prestige.",
-  },
-  { name: "Kōenkai Contributions", description: "Recurring supporter donations and patronage." },
-  { name: "Kenshō Winnings", description: "Sponsor banner prizes earned through headline bouts." },
-  { name: "Prize Money", description: "Tournament awards and special prizes." },
-  { name: "Appearances", description: "Exhibitions, tours, and sanctioned events." },
-];
+// const INCOME_SOURCES = [
+//   {
+//     name: "League Distributions",
+//     description: "Official payments influenced by rank presence and prestige.",
+//   },
+//   { name: "Kōenkai Contributions", description: "Recurring supporter donations and patronage." },
+//   { name: "Kenshō Winnings", description: "Sponsor banner prizes earned through headline bouts." },
+//   { name: "Prize Money", description: "Tournament awards and special prizes." },
+//   { name: "Appearances", description: "Exhibitions, tours, and sanctioned events." },
+// ];
 
 // Kensho tiering (narrative). This function uses counts internally but never shows them.
 function kenshoTierLabel(total: number): { label: string; detail: string } {
@@ -239,6 +240,17 @@ export default function EconomyPage() {
       })
       .slice(0, 5);
   }, [playerRikishi]);
+
+  // Calculate actual weekly finances - moved before early return for React Hook rules
+  const weeklyFinances = useMemo(() => {
+    if (!world || !playerHeya) return null;
+    try {
+      return calculateHeyaWeeklyFinances(playerHeya, world);
+    } catch (e) {
+      console.error("Failed to calculate finances:", e);
+      return null;
+    }
+  }, [world, playerHeya]);
 
   if (!playerHeya) {
     return <div className="p-6 text-center text-muted-foreground">No heya selected.</div>;
@@ -550,19 +562,56 @@ export default function EconomyPage() {
               <TrendingUp className="h-5 w-5 text-green-400" />
               Income Sources
             </CardTitle>
-            <CardDescription>Where your heya’s support typically comes from</CardDescription>
+            <CardDescription>Where your heya's support typically comes from</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {INCOME_SOURCES.map((source) => (
-                <div key={source.name} className="flex items-start gap-3 py-2">
-                  <div className="w-2 h-2 rounded-full bg-green-400 mt-2" />
-                  <div>
-                    <p className="font-medium">{source.name}</p>
-                    <p className="text-sm text-muted-foreground">{source.description}</p>
+              {weeklyFinances ? (
+                <>
+                  <div className="flex items-center justify-between py-2 border-b border-border/30">
+                    <span className="text-muted-foreground">Weekly Revenue</span>
+                    <span className="font-display font-bold text-green-400">
+                      ¥{weeklyFinances.revenue.toLocaleString()}
+                    </span>
                   </div>
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Kōenkai Support</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.revenue * 0.4).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-400 mt-2" />
+                      <div>
+                        <p className="font-medium">JSA Subsidies</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.revenue * 0.35).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Sponsor Tier Income</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.revenue * 0.25).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground italic">
+                  Financial data unavailable
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
@@ -578,15 +627,62 @@ export default function EconomyPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {EXPENSE_CATEGORIES.map((expense) => (
-                <div key={expense.name} className="flex items-start gap-3 py-2">
-                  <div className="w-2 h-2 rounded-full bg-red-400 mt-2" />
-                  <div>
-                    <p className="font-medium">{expense.name}</p>
-                    <p className="text-sm text-muted-foreground">{expense.description}</p>
+              {weeklyFinances ? (
+                <>
+                  <div className="flex items-center justify-between py-2 border-b border-border/30">
+                    <span className="text-muted-foreground">Weekly Expenses</span>
+                    <span className="font-display font-bold text-red-400">
+                      ¥{weeklyFinances.expenses.toLocaleString()}
+                    </span>
                   </div>
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Facility Maintenance</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.expenses * 0.3).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Staff Salaries</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.expenses * 0.25).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Food Costs</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.expenses * 0.25).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-400 mt-2" />
+                      <div>
+                        <p className="font-medium">Other Operations</p>
+                        <p className="text-sm text-muted-foreground">
+                          ¥{(weeklyFinances.expenses * 0.2).toFixed(0).toLocaleString()} / week
+                          (estimated)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground italic">
+                  Financial data unavailable
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>

@@ -22,7 +22,10 @@ import { createEmptyImpact } from "./StateImpact";
 /**
  * Deep merge two objects, handling nested structures.
  */
-function deepMerge(target: any, source: any): any {
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
   if (!target || typeof target !== "object") return source;
   if (!source || typeof source !== "object") return source;
 
@@ -31,7 +34,10 @@ function deepMerge(target: any, source: any): any {
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       if (typeof source[key] === "object" && source[key] !== null && !Array.isArray(source[key])) {
-        output[key] = deepMerge(target[key], source[key]);
+        output[key] = deepMerge(
+          target[key] as Record<string, unknown>,
+          source[key] as Record<string, unknown>
+        );
       } else {
         output[key] = source[key];
       }
@@ -44,18 +50,24 @@ function deepMerge(target: any, source: any): any {
 /**
  * Set a nested field value using a dot-separated path.
  */
-function setNestedField(obj: any, path: string, value: any): any {
+function setNestedField(
+  obj: Record<string, unknown>,
+  path: string,
+  value: unknown
+): Record<string, unknown> {
   const keys = path.split(".");
   const result = { ...obj };
-  let current = result;
+  let current = result as Record<string, unknown>;
 
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
     if (!(key in current)) {
       current[key] = {};
     }
-    current[key] = { ...current[key] };
-    current = current[key];
+    const currentValue = current[key];
+    current[key] =
+      typeof currentValue === "object" && currentValue !== null ? { ...currentValue } : {};
+    current = current[key] as Record<string, unknown>;
   }
 
   current[keys[keys.length - 1]] = value;
@@ -68,8 +80,10 @@ function setNestedField(obj: any, path: string, value: any): any {
  */
 export class ImpactBuilder {
   private impact: StateImpact;
+  private source: string;
 
   constructor(source: string) {
+    this.source = source;
     this.impact = createEmptyImpact({
       source,
       timestamp: Date.now(),
@@ -109,7 +123,7 @@ export class ImpactBuilder {
   /**
    * Update a nested field in a rikishi (e.g., h2h[opponentId]).
    */
-  updateRikishiNestedField(id: string, fieldPath: string, value: any): ImpactBuilder {
+  updateRikishiNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
     if (!this.impact.entities) {
       this.impact.entities = {};
     }
@@ -140,7 +154,7 @@ export class ImpactBuilder {
   /**
    * Add a partial sponsor update to the impact.
    */
-  updateSponsor(id: string, update: any): ImpactBuilder {
+  updateSponsor(id: string, update: Record<string, unknown>): ImpactBuilder {
     if (!this.impact.entities) {
       this.impact.entities = {};
     }
@@ -149,6 +163,21 @@ export class ImpactBuilder {
     }
     const existing = this.impact.entities.sponsorUpdates.get(id);
     this.impact.entities.sponsorUpdates.set(id, existing ? { ...existing, ...update } : update);
+    return this;
+  }
+
+  /**
+   * Add a partial koenkai update to the impact.
+   */
+  updateKoenkai(id: string, update: Record<string, unknown>): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.koenkaiUpdates) {
+      this.impact.entities.koenkaiUpdates = new Map();
+    }
+    const existing = this.impact.entities.koenkaiUpdates.get(id);
+    this.impact.entities.koenkaiUpdates.set(id, existing ? { ...existing, ...update } : update);
     return this;
   }
 
@@ -255,7 +284,7 @@ export class ImpactBuilder {
     if (!this.impact.worldFields) {
       this.impact.worldFields = {};
     }
-    (this.impact.worldFields as any)[field] = value;
+    (this.impact.worldFields as Record<string, unknown>)[field] = value;
     return this;
   }
 
@@ -266,7 +295,7 @@ export class ImpactBuilder {
    */
   appendToWorldArray<K extends "history" | "almanacSnapshots" | "basho.matches">(
     field: K,
-    items: any[]
+    items: unknown[]
   ): ImpactBuilder {
     if (!this.impact.arrayAppends) {
       this.impact.arrayAppends = [];
@@ -305,11 +334,14 @@ export class ImpactBuilder {
   /**
    * Add custom metadata to the impact.
    */
-  addMetadata(key: string, value: any): ImpactBuilder {
+  addMetadata(key: string, value: unknown): ImpactBuilder {
     if (!this.impact.metadata) {
-      this.impact.metadata = { source: "unknown" };
+      this.impact.metadata = {
+        source: this.source,
+        timestamp: Date.now(),
+      };
     }
-    (this.impact.metadata as any)[key] = value;
+    (this.impact.metadata as Record<string, unknown>)[key] = value;
     return this;
   }
 

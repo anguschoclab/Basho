@@ -268,11 +268,12 @@ export function generateInitialWorld(seed: string): WorldState {
       const koenkai = createKoenkai(
         heya.id,
         world.sponsorPool,
-        heya.prestigeBand || "respected",
+        "unknown",
         worldRng,
-        0
+        world.dayIndexGlobal
       );
       world.sponsorPool.koenkais.set(koenkai.koenkaiId, koenkai);
+      // Link heya to koenkai
       heya.koenkaiId = koenkai.koenkaiId;
       heya.koenkaiBand = koenkai.strengthBand;
     }

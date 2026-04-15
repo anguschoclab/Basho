@@ -9,7 +9,6 @@
 import type { WorldState } from "../types/world";
 import type { BoutResult, MatchSchedule } from "../types/basho";
 import { updateH2H } from "../h2h";
-import { EventBus } from "../events";
 import * as injuries from "../systems/health/InjuryService";
 import * as rivalries from "../rivalries";
 import * as economics from "../economics";
@@ -17,8 +16,7 @@ import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
 import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
-import { safeCall } from "../utils/safe";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
 /**
@@ -115,6 +113,7 @@ export function applyBoutResult(
         ginboshiEarned: 0,
         kinboshiConceded: 0,
         ginboshiConceded: 0,
+        mochikyukinPoints: 0,
         specialPrizes: {
           shukunSho: 0,
           kantoSho: 0,
@@ -123,7 +122,7 @@ export function applyBoutResult(
       };
     }
 
-    if (result.awardFact === "kinboshi") {
+    if (result.awardFact === "kinboshi" && winnerAchievements) {
       winnerAchievements.kinboshiEarned++;
 
       // Update legacy kinboshiCount for backward compatibility
@@ -139,7 +138,7 @@ export function applyBoutResult(
         };
       }
       winnerEconomics.kinboshiCount = (winnerEconomics.kinboshiCount || 0) + 1;
-    } else if (result.awardFact === "ginboshi") {
+    } else if (result.awardFact === "ginboshi" && winnerAchievements) {
       winnerAchievements.ginboshiEarned++;
     }
 
@@ -158,7 +157,7 @@ export function applyBoutResult(
       }
       const tempWinner = { ...winner, economics: { ...winnerEconomics } };
       applyAchievementImpact(world, tempWinner, result.awardFact);
-      winnerEconomics = tempWinner.economics!;
+      winnerEconomics = tempWinner.economics;
     }
   }
 
@@ -252,7 +251,7 @@ function calculateMatchIntensity(
 /**
  * Merge multiple StateImpact objects into a single builder.
  */
-function mergeImpacts(builder: any, ...impacts: StateImpact[]): void {
+function mergeImpacts(builder: ImpactBuilder, ...impacts: StateImpact[]): void {
   for (const impact of impacts) {
     if (impact.entities?.rikishiUpdates) {
       for (const [id, update] of impact.entities.rikishiUpdates) {
@@ -266,7 +265,11 @@ function mergeImpacts(builder: any, ...impacts: StateImpact[]): void {
     }
     if (impact.worldFields) {
       for (const [field, value] of Object.entries(impact.worldFields)) {
-        (builder as any).updateWorldField(field, value);
+        (
+          builder as ImpactBuilder & {
+            updateWorldField: (field: string, value: unknown) => ImpactBuilder;
+          }
+        ).updateWorldField(field, value);
       }
     }
     if (impact.events) {

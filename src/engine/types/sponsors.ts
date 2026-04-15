@@ -17,14 +17,19 @@ export type SponsorCategory =
 export type SponsorTone = "traditional" | "modern" | "luxury" | "local" | "industrial" | "civic";
 
 /** Type representing sponsor role. */
-export type SponsorRole = "kensho" | "koenkai_member" | "koenkai_pillar" | "benefactor" | "creditor";
+export type SponsorRole =
+  | "kensho"
+  | "koenkai_member"
+  | "koenkai_pillar"
+  | "benefactor"
+  | "creditor";
 
 /** Defines the structure for sponsor relationship. */
 export interface SponsorRelationship {
-  relId: string;
-  sponsorId: string;
-  targetType: "league" | "basho" | "beya" | "rikishi";
-  targetId: string;
+  relId: Id;
+  sponsorId: Id;
+  targetType: "league" | "basho" | "heya" | "rikishi";
+  targetId: Id;
   role: SponsorRole;
   strength: 1 | 2 | 3 | 4 | 5;
   startedAtTick: number;
@@ -58,14 +63,13 @@ export interface Sponsor {
   relationships: SponsorRelationship[];
 }
 
-
 /** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 
 /** Defines the structure for koenkai. */
 export interface Koenkai {
   koenkaiId: string;
-  beyaId: string;
+  heyaId: string;
   strengthBand: KoenkaiBandType;
   members: SponsorRelationship[];
   createdAtTick: number;

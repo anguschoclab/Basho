@@ -20,9 +20,9 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Id } from "./types/common";
 import type { FacilitiesBand } from "./types/narrative";
-import type { OyakataTraits } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { calculateHeyaWeeklyFinances } from "./systems/economy/FinanceCalculator";
 
 // === CONSTANTS ===
 
@@ -97,7 +97,7 @@ export function investInFacility(
   axis: FacilityAxis,
   points: number = 5
 ): StateImpact {
-  const builder = createImpactBuilder('investInFacility');
+  const builder = createImpactBuilder("investInFacility");
   const heya = world.heyas.get(heyaId);
   if (!heya) return builder.build();
 
@@ -123,17 +123,21 @@ export function investInFacility(
   const newFunds = heya.funds - totalCost;
   const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
 
-  builder.updateHeya(heyaId, { funds: newFunds, facilities: newFacilities, facilitiesBand: newFacilitiesBand });
+  builder.updateHeya(heyaId, {
+    funds: newFunds,
+    facilities: newFacilities,
+    facilitiesBand: newFacilitiesBand,
+  });
 
   builder.logEvent(
-    'FACILITY_UPGRADED',
-    'facility',
+    "FACILITY_UPGRADED",
+    "facility",
     {
       axis,
       oldLevel,
       newLevel,
       cost: totalCost,
-      band: newFacilitiesBand
+      band: newFacilitiesBand,
     },
     { heyaId }
   );
@@ -150,7 +154,7 @@ export function investInFacility(
  * Returns StateImpact describing monthly facility updates instead of mutating directly.
  */
 export function tickMonthlyFacilities(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickMonthlyFacilities');
+  const builder = createImpactBuilder("tickMonthlyFacilities");
 
   for (const heya of world.heyas.values()) {
     const decayImpact = applyMonthlyDecayOrMaintenance(world, heya);
@@ -160,8 +164,8 @@ export function tickMonthlyFacilities(world: WorldState): StateImpact {
       }
     }
     if (decayImpact.events) {
-      decayImpact.events.forEach(event => {
-        (builder as any).logEvent(event.type, event.category, event.data, { heyaId: heya.id });
+      decayImpact.events.forEach((event) => {
+        builder.logEvent(event.type, event.category, event.data, { heyaId: heya.id });
       });
     }
 
@@ -183,8 +187,8 @@ export function tickMonthlyFacilities(world: WorldState): StateImpact {
  * Apply monthly decay or maintenance.
  * Returns StateImpact describing decay/maintenance instead of mutating directly.
  */
-function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): StateImpact {
-  const builder = createImpactBuilder('applyMonthlyDecayOrMaintenance');
+function applyMonthlyDecayOrMaintenance(_world: WorldState, heya: Heya): StateImpact {
+  const builder = createImpactBuilder("applyMonthlyDecayOrMaintenance");
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
   const totalMaintenance = axes.reduce((sum, a) => sum + maintenanceCost(heya.facilities[a]), 0);
 
@@ -207,21 +211,24 @@ function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): StateImp
 
       if (newFacilitiesBand !== oldBand) {
         builder.logEvent(
-          'FACILITY_DEGRADED',
-          'facility',
+          "FACILITY_DEGRADED",
+          "facility",
           {
             oldBand,
             newBand: newFacilitiesBand,
             training: newFacilities.training,
             recovery: newFacilities.recovery,
-            nutrition: newFacilities.nutrition
+            nutrition: newFacilities.nutrition,
           },
           { heyaId: heya.id }
         );
       }
     }
 
-    builder.updateHeya(heya.id, { facilities: newFacilities, facilitiesBand: computeFacilitiesBand({ ...heya, facilities: newFacilities }) });
+    builder.updateHeya(heya.id, {
+      facilities: newFacilities,
+      facilitiesBand: computeFacilitiesBand({ ...heya, facilities: newFacilities }),
+    });
   }
 
   return builder.build();
@@ -235,13 +242,14 @@ function applyMonthlyDecayOrMaintenance(world: WorldState, heya: Heya): StateImp
  * Returns StateImpact describing NPC investment instead of mutating directly.
  */
 function npcFacilityInvestment(world: WorldState, heya: Heya): StateImpact {
-  const builder = createImpactBuilder('npcFacilityInvestment');
-  const oyakata = world.oyakata.get(heya.oyakataId);
+  const builder = createImpactBuilder("npcFacilityInvestment");
+  const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
   if (!oyakata) return builder.build();
 
   // Only invest if funds are healthy (> 6 months runway)
-  const avgFacility = (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-  const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
+  // Use actual calculated expenses instead of hardcoded estimate to avoid inflated burn
+  const weeklyFinances = calculateHeyaWeeklyFinances(heya, world);
+  const monthlyBurn = Math.max(1, weeklyFinances.expenses * 4); // Convert weekly to monthly
 
   const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 
@@ -280,12 +288,20 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): StateImpact {
   let cost = 0;
   for (let i = 0; i < points; i++) cost += upgradeCost(minLevel + i);
 
-  if (heya.funds >= cost * 2) { // Only if they can afford double (conservative)
+  if (heya.funds >= cost * 2) {
+    // Only if they can afford double (conservative)
     const newFunds = heya.funds - cost;
-    const newFacilities = { ...heya.facilities, [priorityAxis]: Math.min(MAX_FACILITY, heya.facilities[priorityAxis] + points) };
+    const newFacilities = {
+      ...heya.facilities,
+      [priorityAxis]: Math.min(MAX_FACILITY, heya.facilities[priorityAxis] + points),
+    };
     const newFacilitiesBand = computeFacilitiesBand({ ...heya, facilities: newFacilities });
 
-    builder.updateHeya(heya.id, { funds: newFunds, facilities: newFacilities, facilitiesBand: newFacilitiesBand });
+    builder.updateHeya(heya.id, {
+      funds: newFunds,
+      facilities: newFacilities,
+      facilitiesBand: newFacilitiesBand,
+    });
   }
 
   return builder.build();
@@ -314,7 +330,9 @@ export function getUpgradeCostEstimate(heya: Heya, axis: FacilityAxis, points: n
  *  * @returns The result.
  */
 export function getMonthlyMaintenanceCost(heya: Heya): number {
-  return maintenanceCost(heya.facilities.training)
-    + maintenanceCost(heya.facilities.recovery)
-    + maintenanceCost(heya.facilities.nutrition);
+  return (
+    maintenanceCost(heya.facilities.training) +
+    maintenanceCost(heya.facilities.recovery) +
+    maintenanceCost(heya.facilities.nutrition)
+  );
 }

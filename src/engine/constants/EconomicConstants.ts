@@ -30,6 +30,64 @@ export const BENEFACTOR_BAILOUT_AMOUNT = 10_000_000;
 /** Kensho payout per envelope (¥). Constitution §6. */
 export const KENSHO_AMOUNT_PER_ENVELOPE = 70_000;
 
+/** Kensho split per envelope (¥). */
+export const KENSHO_SPLIT = {
+  cash: 10_000,
+  retirement: 50_000,
+  jsaFee: 10_000,
+} as const;
+
+/** Mochikyukin (cumulative bonus) point value (¥ per point). */
+export const MOCHIKYUKIN_POINT_VALUE = 4_000;
+
+/** Mochikyukin points earned per kachi-koshi (winning record). */
+export const MOCHIKYUKIN_POINTS_KACHI_KOSHI = 1;
+
+/** Mochikyukin points earned per yusho (championship). */
+export const MOCHIKYUKIN_POINTS_YUSHO = 10;
+
+/** Mochikyukin points earned per kinboshi (v Yokozuna). */
+export const MOCHIKYUKIN_POINTS_KINBOSHI = 3;
+
+/** Mochikyukin points earned per jun-yusho (runner-up). */
+export const MOCHIKYUKIN_POINTS_JUN_YUSHO = 5;
+
+/** Travel/jungyo allowance per sekitori per year (¥). */
+export const TRAVEL_ALLOWANCE_YEARLY = {
+  yokozuna: 1_500_000,
+  ozeki: 1_200_000,
+  sekiwake: 900_000,
+  komusubi: 750_000,
+  maegashira: 600_000,
+  juryo: 450_000,
+} as const;
+
+/** JSA per-wrestler monthly subsidy by division (¥). */
+export const JSA_PER_WRESTLER_SUBSIDY_MONTHLY = {
+  makuuchi: 150_000,
+  juryo: 100_000,
+  makushita: 50_000,
+  sandanme: 30_000,
+  jonidan: 20_000,
+  jonokuchi: 15_000,
+} as const;
+
+/** Tsukebito (personal attendant) costs per sekitori rank (¥ per month). */
+export const TSUKEBITO_COSTS_MONTHLY = {
+  yokozuna: 300_000,
+  ozeki: 250_000,
+  sekiwake: 200_000,
+  komusubi: 150_000,
+  maegashira: 100_000,
+  juryo: 50_000,
+} as const;
+
+/** Kōenkai income split: portion to heya vs sekitori */
+export const KOENKAI_INCOME_SPLIT = {
+  heyaPortion: 0.7, // 70% to heya operations
+  sekitoriPortion: 0.3, // 30% distributed to sekitori
+} as const;
+
 /** Per-facility upkeep multipliers (¥ per quality point per week). */
 export const FACILITY_UPKEEP = {
   training: 1_000,
@@ -45,7 +103,7 @@ export const DIET_COSTS: Record<string, number> = {
   austerity: 1_000,
   maintenance: 3_000,
   heavy_bulk: 6_000,
-  premium: 10_000
+  premium: 10_000,
 } as const;
 
 /** Loan issuance threshold (¥) - when funds drop below this, bailouts are considered. */

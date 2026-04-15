@@ -6,6 +6,7 @@
 export * from "./common";
 export * from "./events";
 export * from "./combat";
+export * from "./combat-spatial";
 export * from "./banzuke";
 export * from "./basho";
 export * from "./economy";
@@ -18,4 +19,4 @@ export * from "./heya";
 export * from "./talent";
 export * from "./world";
 export * from "./save";
-export * from './myoseki';
+export * from "./myoseki";

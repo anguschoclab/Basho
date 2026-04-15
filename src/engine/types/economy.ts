@@ -2,18 +2,6 @@
  * Economics & Governance Types
  */
 
-import type { Id } from "./common";
-import type { BashoName } from "./basho";
-
-/** Defines the structure for kensho record. */
-interface KenshoRecord {
-  bashoName: BashoName;
-  day: number;
-  opponentId: Id;
-  kenshoCount: number;
-  amount: number;
-}
-
 /** Defines the structure for rikishi economics. */
 export interface RikishiEconomics {
   cash: number;
@@ -23,6 +11,7 @@ export interface RikishiEconomics {
   totalEarnings: number;
   currentBashoEarnings: number;
   popularity: number;
+  mochikyukinLastPayoutMonth?: number; // Track last payout month for cadence
 }
 
 // Governance Types
@@ -99,7 +88,6 @@ export interface Loan {
   issuedAtMonth: number;
   stringsAttached?: string[];
 }
-
 
 // Faction & Politics Types
 /** Type representing the 5 historical Ichimons. */

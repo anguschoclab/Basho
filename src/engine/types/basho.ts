@@ -5,9 +5,9 @@
 import type { Id } from "./common";
 import type { Side, BanzukeSnapshot } from "./banzuke";
 import type { KimariteId, Stance } from "./combat";
-import type { PbpLine } from '../bout/boutNarrative';
-import type { PromotionEvent, DemotionEvent } from './banzuke';
-import type { WorldState } from './world';
+import type { PbpLine } from "../bout/boutNarrative";
+import type { PromotionEvent, DemotionEvent } from "./banzuke";
+import type { WorldState } from "./world";
 
 /** Type representing basho name. */
 export type BashoName = "hatsu" | "haru" | "natsu" | "nagoya" | "aki" | "kyushu";
@@ -30,7 +30,7 @@ export interface BashoInfo {
 
 /** Defines the structure for bout log entry. */
 export interface BoutLogEntry {
-  phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement";
+  phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement" | "edge_crisis";
   description?: string;
   data?: Record<string, unknown>;
 }
@@ -49,7 +49,7 @@ export interface BoutResult {
   upset: boolean;
   isKinboshi?: boolean;
   isTitleStakes?: boolean;
-  awardFact?: 'kinboshi' | 'ginboshi' | null;
+  awardFact?: "kinboshi" | "ginboshi" | null;
   kenshoEnvelopes: number;
   log: BoutLogEntry[];
   narrative?: string[];

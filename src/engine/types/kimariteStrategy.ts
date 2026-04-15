@@ -41,6 +41,46 @@ export interface FinalBoutState {
   stamina: number;
   /** Estimated ring position: 0 = at tawara (edge), higher = nearer center. */
   edgeDistance: number;
+  /** B+ spatial: center of gravity offset from foot spread center (meters). */
+  cogOffset?: number;
+  /** B+ spatial: distance from ring center (meters). */
+  distanceFromCenter?: number;
+  /** B+ spatial: whether in edge crisis state. */
+  inEdgeCrisis?: boolean;
+  /** B+ spatial: grip depth classification. */
+  gripDepth?: "shallow" | "standard" | "deep" | "maemitsu";
+  /** B+ spatial: net torque applied to opponent. */
+  torque?: number;
+  /** B+ spatial: position of leading foot from center (meters). */
+  leadFootX?: number;
+  /** B+ spatial: momentum in X direction (m/s). */
+  momentumX?: number;
+  /** B+ spatial: grip class (uwate, shitate, outside, none). */
+  gripClass?: "uwate" | "shitate" | "outside" | "none";
+}
+
+/**
+ * B+ Spatial context for kimarite evaluation.
+ * Provides cross-fighter spatial relationships.
+ */
+export interface SpatialBoutContext {
+  edgeDistance: number;
+  /** East rikishi leading foot position (meters from center). */
+  eastLeadFoot: number;
+  /** West rikishi leading foot position (meters from center). */
+  westLeadFoot: number;
+  /** East rikishi center of gravity offset (meters). */
+  eastCoGOffset: number;
+  /** West rikishi center of gravity offset (meters). */
+  westCoGOffset: number;
+  /** East rikishi momentum in X direction (m/s). */
+  eastMomentumX: number;
+  /** West rikishi momentum in X direction (m/s). */
+  westMomentumX: number;
+  /** East rikishi grip class. */
+  eastGrip: "uwate" | "shitate" | "outside" | "none";
+  /** West rikishi grip class. */
+  westGrip: "uwate" | "shitate" | "outside" | "none";
 }
 
 /**
@@ -67,6 +107,6 @@ export interface KimariteStrategy {
   condition: (
     winner: FinalBoutState,
     loser: FinalBoutState,
-    ctx: { edgeDistance: number }
+    ctx: { edgeDistance: number } | SpatialBoutContext
   ) => boolean;
 }

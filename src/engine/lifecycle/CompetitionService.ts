@@ -1,16 +1,14 @@
-import { EventBus } from "../events";
 import { stableTieBreak } from "../utils/sort";
-import { determineSpecialPrizes, generateSanshoLedgerEntry } from "../banzuke";
+import { determineSpecialPrizes } from "../banzuke";
+import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
 import { runPostBashoResolution } from "../core/SimulationRunner";
 import { buildAlmanacSnapshot } from "../almanac";
 import { snapshotMediaHeatForBasho } from "../systems/media/MediaService";
 import { autosave } from "../saveload";
 import { safeCall } from "../utils/safe";
-import { enterPostBasho } from "../tick/tickDaily";
-import { rngForWorld, rngFromSeed } from "../rng";
+import { rngForWorld } from "../rng";
 import { opfsArchiveService } from "../storage/opfsArchive";
 import { electronArchiveService } from "../storage/electronArchive";
-import { BardEngine } from "../narrative/BardEngine";
 import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState, BashoResult, MatchSchedule } from "../types/basho";
@@ -19,6 +17,9 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
 import { historyCache } from "../historyCache";
+import { SIMULATION_CONFIG } from "../core/SimulationConfig";
+import { mergeImpacts } from "../core/ImpactResolver";
+import { accumulateMochikyukinPoints } from "../systems/economics/MochikyukinService";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -106,7 +107,7 @@ function distributePrizes(
   world: WorldState,
   basho: BashoState,
   yusho: Id
-): { prizes: any; impact: StateImpact } {
+): { prizes: SpecialPrizesResult; impact: StateImpact } {
   const builder = createImpactBuilder("distributePrizes");
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
@@ -118,7 +119,7 @@ function distributePrizes(
   } as const;
 
   for (const [key, type] of Object.entries(awardTypes)) {
-    const rikishiId = (prizes as Record<string, any>)[key] as string | undefined;
+    const rikishiId = (prizes as Record<string, string | undefined>)[key];
     if (rikishiId) {
       const r = world.rikishi.get(rikishiId);
       if (r) {
@@ -127,6 +128,7 @@ function distributePrizes(
           ginboshiEarned: 0,
           kinboshiConceded: 0,
           ginboshiConceded: 0,
+          mochikyukinPoints: 0,
           specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
         };
         const currentSp = currentAchievements.specialPrizes || {
@@ -167,26 +169,28 @@ function distributePrizes(
           { rikishiId: r.id, heyaId: r.heyaId }
         );
 
-        const heya = world.heyas.get(r.heyaId);
-        if (heya) {
-          builder.updateHeya(r.heyaId, {
-            funds: heya.funds + SANSHO_PRIZE_AMOUNT,
-          });
+        // Credit sansho prize to rikishi economics (not heya funds under JSA model)
+        const economics = r.economics || {
+          cash: 0,
+          retirementFund: 0,
+          careerKenshoWon: 0,
+          kinboshiCount: 0,
+          totalEarnings: 0,
+          currentBashoEarnings: 0,
+          popularity: 50,
+        };
+        // Split sansho: 50% cash, 50% retirement fund
+        const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
+        const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;
 
-          // Generate ledger entry for sansho prize
-          const rikishiName = r.shikona || r.name || "Unknown";
-          const ledgerEntry = generateSanshoLedgerEntry(
-            rikishiName,
-            type as "Shukun" | "Kanto" | "Gino"
-          );
-          const currentLedger = heya.ledger || [];
-          builder.updateHeya(r.heyaId, {
-            ledger: [
-              ...currentLedger,
-              { ...ledgerEntry, date: { year: world.year, month: world.calendar.month } },
-            ],
-          });
-        }
+        builder.updateRikishi(r.id, {
+          economics: {
+            ...economics,
+            cash: economics.cash + sanshoCash,
+            retirementFund: economics.retirementFund + sanshoRetirement,
+            totalEarnings: economics.totalEarnings + SANSHO_PRIZE_AMOUNT,
+          },
+        });
       }
     }
   }
@@ -207,19 +211,74 @@ function recordBashoHistory(
 
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
 
+  // Credit yusho prize to rikishi economics (JSA model: paid directly to rikishi)
+  const yushoRikishi = world.rikishi.get(yusho);
+  if (yushoRikishi) {
+    const yushoEconomics = yushoRikishi.economics || {
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    };
+    // Split yusho: 50% cash, 50% retirement fund
+    const yushoCash = SIMULATION_CONFIG.prizes.yusho * 0.5;
+    const yushoRetirement = SIMULATION_CONFIG.prizes.yusho * 0.5;
+
+    builder.updateRikishi(yusho, {
+      economics: {
+        ...yushoEconomics,
+        cash: yushoEconomics.cash + yushoCash,
+        retirementFund: yushoEconomics.retirementFund + yushoRetirement,
+        totalEarnings: yushoEconomics.totalEarnings + SIMULATION_CONFIG.prizes.yusho,
+      },
+    });
+  }
+
+  // Credit jun-yusho prizes to rikishi economics
+  const junYushoIds = topCandidates.filter((id) => id !== yusho);
+  for (const junYushoId of junYushoIds) {
+    const junRikishi = world.rikishi.get(junYushoId);
+    if (junRikishi) {
+      const junEconomics = junRikishi.economics || {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      };
+      // Split jun-yusho: 50% cash, 50% retirement fund
+      const junCash = SIMULATION_CONFIG.prizes.junYusho * 0.5;
+      const junRetirement = SIMULATION_CONFIG.prizes.junYusho * 0.5;
+
+      builder.updateRikishi(junYushoId, {
+        economics: {
+          ...junEconomics,
+          cash: junEconomics.cash + junCash,
+          retirementFund: junEconomics.retirementFund + junRetirement,
+          totalEarnings: junEconomics.totalEarnings + SIMULATION_CONFIG.prizes.junYusho,
+        },
+      });
+    }
+  }
+
   const result: BashoResult = {
     id: rng.uuid("HI"),
     year: world.year,
     bashoNumber: basho.bashoNumber,
     bashoName: basho.bashoName,
     yusho,
-    junYusho: topCandidates.filter((id) => id !== yusho),
+    junYusho: junYushoIds,
     ...prizes,
     playoffMatches,
     prizes: {
-      yushoAmount: 10000000,
-      junYushoAmount: 2000000,
-      specialPrizes: 2000000,
+      yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+      junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+      specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
     },
   };
 
@@ -257,14 +316,14 @@ function recordBashoHistory(
   });
 
   runPostBashoResolution(world);
-  const yushoRikishi = world.rikishi.get(yusho);
+  const yushoRikishiForLog = world.rikishi.get(yusho);
   builder.logEvent(
     "BASHO_STATUS",
     "basho",
     {
       status: "ended",
       incident: basho.bashoName,
-      winner: yushoRikishi?.shikona || "Unknown",
+      winner: yushoRikishiForLog?.shikona || "Unknown",
       winnerRikishiId: yusho,
     },
     { rikishiId: yusho }
@@ -292,7 +351,7 @@ function recordBashoHistory(
     {
       status: "concluded_summary",
       incident: basho.bashoName,
-      shikona: yushoRikishi?.shikona || "Unknown",
+      shikona: yushoRikishiForLog?.shikona || "Unknown",
       score: bestWins,
       delta: 15 - bestWins,
     },
@@ -305,6 +364,100 @@ function recordBashoHistory(
   safeCall(() => {
     autosave(world);
   });
+
+  return builder.build();
+}
+
+/**
+ * Pay basho teate (tournament allowance) to non-sekitori rikishi.
+ * Paid by JSA directly to rikishi economics.
+ */
+function payBashoTeate(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("payBashoTeate");
+
+  for (const [id, r] of world.rikishi) {
+    if (r.isRetired) continue;
+
+    // Only non-sekitori receive basho teate
+    if (r.division === "makuuchi" || r.division === "juryo") continue;
+
+    let teateAmount = 0;
+    switch (r.division) {
+      case "makushita":
+        teateAmount = 175_000;
+        break;
+      case "sandanme":
+        teateAmount = 85_000;
+        break;
+      case "jonidan":
+        teateAmount = 75_000;
+        break;
+      case "jonokuchi":
+        teateAmount = 70_000;
+        break;
+    }
+
+    if (teateAmount > 0) {
+      const economics = r.economics || {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      };
+      builder.updateRikishi(id, {
+        economics: {
+          ...economics,
+          cash: economics.cash + teateAmount,
+          totalEarnings: economics.totalEarnings + teateAmount,
+        },
+      });
+    }
+  }
+
+  return builder.build();
+}
+
+/**
+ * Pay kinboshi stipends to rikishi who earned kinboshi this basho.
+ * Paid per-basho, not per-month (JSA model).
+ */
+function payKinboshiStipends(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("payKinboshiStipends");
+
+  for (const [id, r] of world.rikishi) {
+    if (r.isRetired) continue;
+    if (r.division !== "makuuchi") continue; // Only makuuchi wrestlers receive kinboshi stipends
+
+    // Get kinboshi earned this basho (not cumulative career kinboshi)
+    // We need to track kinboshi per-basho, but for now we'll use the career count
+    // TODO: Track kinboshi earned in current basho separately from career total
+    const kinboshiCount = r.stats?.achievements?.kinboshiEarned ?? 0;
+
+    // For now, we'll pay based on career total since we don't track per-basho kinboshi yet
+    // This is a temporary fix - the proper solution requires tracking kinboshi per basho
+    if (kinboshiCount > 0) {
+      const stipend = kinboshiCount * SIMULATION_CONFIG.prizes.kinboshiStipend;
+      const economics = r.economics || {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      };
+      builder.updateRikishi(id, {
+        economics: {
+          ...economics,
+          cash: economics.cash + stipend,
+          totalEarnings: economics.totalEarnings + stipend,
+        },
+      });
+    }
+  }
 
   return builder.build();
 }
@@ -381,7 +534,46 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     bestWins
   );
 
+  // Pay basho teate to non-sekitori rikishi
+  const teateImpact = payBashoTeate(world);
+
+  // Pay kinboshi stipends (per-basho, not per-month)
+  const kinboshiImpact = payKinboshiStipends(world);
+
+  // Accumulate mochikyukin points for sekitori
+  const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
+  for (const [id, r] of world.rikishi) {
+    if (r.isRetired) continue;
+    if (r.division !== "makuuchi" && r.division !== "juryo") continue;
+
+    const bashoWins = r.currentBashoWins ?? 0;
+    const bashoLosses = r.currentBashoLosses ?? 0;
+    const isKachiKoshi = bashoWins > bashoLosses;
+    const isYusho = id === yusho;
+    const isJunYusho = topCandidates.length > 1 && id === topCandidates[1];
+    // TODO: Track per-basho kinboshi separately instead of using 0
+    const kinboshiThisBasho = 0;
+
+    const impact = accumulateMochikyukinPoints(world, id, {
+      isKachiKoshi,
+      isYusho,
+      isJunYusho,
+      kinboshiEarned: kinboshiThisBasho,
+    });
+
+    if (impact.entities?.rikishiUpdates) {
+      for (const [rid, update] of impact.entities.rikishiUpdates) {
+        mochikyukinImpact.updateRikishi(rid, update);
+      }
+    }
+  }
+
   // Merge impacts together
-  const { mergeImpacts } = require("../core/ImpactResolver");
-  return mergeImpacts([builder.build(), historyImpact]);
+  return mergeImpacts([
+    builder.build(),
+    historyImpact,
+    teateImpact,
+    kinboshiImpact,
+    mochikyukinImpact.build(),
+  ]);
 }

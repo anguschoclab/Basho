@@ -41,6 +41,7 @@ export interface RikishiAchievements {
     kantoSho: number; // Fighting Spirit
     ginoSho: number; // Technique
   };
+  mochikyukinPoints: number; // Cumulative bonus points for sekitori
 }
 
 /** Defines the structure for rikishi stats. */

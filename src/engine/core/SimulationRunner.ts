@@ -4,8 +4,8 @@
  */
 
 import { WorldState } from "../types/world";
-import { SIMULATION_CONFIG } from "./SimulationConfig";
 import * as MediaService from "../systems/media/MediaService";
+import { rngForWorld } from "../rng";
 import { resolveImpacts } from "./ImpactResolver";
 import type { StateImpact } from "./StateImpact";
 
@@ -17,7 +17,6 @@ import {
   runRetirements,
 } from "../governance/governanceReview";
 import { onBashoEnded } from "../records";
-import * as talentpool from "../systems/generation/TalentPoolService";
 import { processSponsorChurn } from "../systems/economics/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
@@ -32,6 +31,7 @@ import { runElections } from "../governance/GovernanceService";
  */
 export function runPostBashoResolution(world: WorldState): void {
   const impacts: StateImpact[] = [];
+  const rng = rngForWorld(world, "postBasho", "sponsorChurn");
 
   // Collect impacts from migrated functions
   const prestigeImpact = runPrestigeDecay(world);
@@ -46,7 +46,7 @@ export function runPostBashoResolution(world: WorldState): void {
   const retirementImpact = runRetirements(world);
   impacts.push(retirementImpact);
 
-  const sponsorImpact = processSponsorChurn(world);
+  const sponsorImpact = processSponsorChurn(world, rng);
   impacts.push(sponsorImpact);
 
   const careerJournalImpact = runCareerJournalUpdates(world);
@@ -76,12 +76,16 @@ export function runPostBashoResolution(world: WorldState): void {
 
   // Resolve all collected impacts atomically
   const resolvedWorld = resolveImpacts(world, impacts);
-  
+
   // Apply resolved changes to the shared world reference
   Object.assign(world, resolvedWorld);
 
   // Extract vacancies from retirement impact metadata for talent pool
-  const vacancies = (retirementImpact.metadata as any)?.vacanciesByHeyaId || {};
+  const vacancies =
+    ((retirementImpact.metadata as unknown as Record<string, unknown>)?.vacanciesByHeyaId as Record<
+      string,
+      number
+    >) || {};
 
   // Run recruitment window (now returns StateImpact, but we need to handle its direct mutation)
   const recruitmentImpact = runRecruitmentWindow(world, vacancies);

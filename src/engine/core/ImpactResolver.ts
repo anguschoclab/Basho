@@ -71,6 +71,21 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         },
       };
     }
+
+    if (impact.entities.koenkaiUpdates && result.sponsorPool) {
+      const nextKoenkais = new Map(result.sponsorPool.koenkais);
+      for (const [id, update] of impact.entities.koenkaiUpdates) {
+        const existing = nextKoenkais.get(id);
+        nextKoenkais.set(id, existing ? { ...existing, ...update } : update);
+      }
+      result = {
+        ...result,
+        sponsorPool: {
+          ...result.sponsorPool,
+          koenkais: nextKoenkais,
+        },
+      };
+    }
   }
 
   // Apply collection operations
@@ -246,6 +261,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       rikishiUpdates: new Map(),
       oyakataUpdates: new Map(),
       sponsorUpdates: new Map(),
+      koenkaiUpdates: new Map(),
     },
     collections: {
       rikishiToAdd: [],

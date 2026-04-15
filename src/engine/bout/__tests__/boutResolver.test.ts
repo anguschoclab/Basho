@@ -1,10 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../boutResolver";
 import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
-import type { KimariteId } from "../../types/combat";
 import type { BoutContext } from "../boutPhysics";
-import type { BashoState } from "../../types/basho";
-import { resolveImpacts } from "../../core/ImpactResolver";
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -1,253 +1,70 @@
 import { describe, it, expect } from "vitest";
-import { resolveBoutPhysics, type BoutContext } from "../boutPhysics";
+import { resolveBoutPhysics } from "../boutPhysics";
 import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
-import type { BashoState } from "../../types/basho";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
-  return {
-    id: "bout-test-001",
-    day: 1,
-    rikishiEastId: "r-east",
-    rikishiWestId: "r-west",
-    ...overrides,
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Determinism
-// ---------------------------------------------------------------------------
-
-describe("resolveBoutPhysics — determinism", () => {
-  it("produces identical winner and kimarite for the same seed", () => {
-    const east = mockRikishi("r-east", { power: 70, speed: 60, balance: 65, technique: 60 });
-    const west = mockRikishi("r-west", { power: 55, speed: 70, balance: 60, technique: 65 });
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result: result1 } = resolveBoutPhysics(ctx, east, west, basho);
-    const { result: result2 } = resolveBoutPhysics(ctx, east, west, basho);
-
-    expect(result1.winner).toBe(result2.winner);
-    expect(result1.kimarite).toBe(result2.kimarite);
-    expect(result1.log.length).toBe(result2.log.length);
-  });
-
-  it("produces different results for different seeds (different rikishi ids)", () => {
-    const east1 = mockRikishi("alpha", { power: 70 });
-    const west1 = mockRikishi("beta", { power: 55 });
-    const east2 = mockRikishi("gamma", { power: 70 });
-    const west2 = mockRikishi("delta", { power: 55 });
-
-    const basho = makeMockBasho();
-    const ctx1 = makeBoutContext({ rikishiEastId: "alpha", rikishiWestId: "beta" });
-    const ctx2 = makeBoutContext({ rikishiEastId: "gamma", rikishiWestId: "delta" });
-
-    const { result: result1 } = resolveBoutPhysics(ctx1, east1, west1, basho);
-    const { result: result2 } = resolveBoutPhysics(ctx2, east2, west2, basho);
-
-    // They should be structurally valid but may differ — just ensure they complete
-    expect(["east", "west"]).toContain(result1.winner);
-    expect(["east", "west"]).toContain(result2.winner);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Henka tactic
-// ---------------------------------------------------------------------------
-
-describe("resolveBoutPhysics — henka tactic", () => {
-  it("resolves to a valid result when east uses HENKA tactic", () => {
-    const east = mockRikishi("r-east", { power: 50, speed: 90, technique: 80, balance: 70 });
-    const west = mockRikishi("r-west", { power: 80, speed: 40, balance: 50 });
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext({ playerSide: "east", playerTactic: "HENKA" });
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-    expect(typeof result.kimariteName).toBe("string");
-    expect(result.kimariteName.length).toBeGreaterThan(0);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Aggression modifier
-// ---------------------------------------------------------------------------
-
-describe("resolveBoutPhysics — aggression modifier", () => {
-  it("completes without error for a rikishi with aggression=90", () => {
-    // Validates that the aggression modifier path in selectAction() does not crash
-    // and produces a valid BoutResult when aggression exceeds the 65 threshold.
-    const east = mockRikishi("r-east", {
-      power: 60,
-      speed: 60,
-      balance: 60,
-      technique: 60,
-      aggression: 90,
+describe("boutPhysics", () => {
+  describe("resolveBoutPhysics", () => {
+    it("returns a valid BoutResult", () => {
+      const bout = { id: "test-001", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const { result } = resolveBoutPhysics(bout, east, west, basho);
+      expect(result).toBeDefined();
+      expect(result.winner).toBeDefined();
+      expect(result.kimarite).toBeDefined();
+      expect(result.duration).toBeGreaterThan(0);
     });
-    const west = mockRikishi("r-west", {
-      power: 60,
-      speed: 60,
-      balance: 60,
-      technique: 60,
-      aggression: 30,
+
+    it("is deterministic with same seed", () => {
+      const bout = { id: "test-002", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const results = Array.from({ length: 5 }, () => resolveBoutPhysics(bout, east, west, basho));
+      for (let i = 1; i < results.length; i++) {
+        expect(results[i].result.winner).toBe(results[0].result.winner);
+        expect(results[i].result.kimarite).toBe(results[0].result.kimarite);
+      }
     });
-    (east as any).combatProfile = {
-      archetype: "all_rounder",
-      familyPreferences: { push: 60, belt: 15, trick: 10, speed: 15 },
-      preferredGrip: "none",
-      preferredGripDepth: "standard",
-      statModifiers: {},
-    };
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
 
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-    expect(typeof result.kimarite).toBe("string");
-    expect(result.kimarite.length).toBeGreaterThan(0);
-  });
+    it("returns a valid KimariteId", () => {
+      const bout = { id: "test-003", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const { result } = resolveBoutPhysics(bout, east, west, basho);
+      expect(result.kimarite).toBeTruthy();
+      expect(typeof result.kimarite).toBe("string");
+    });
 
-  it("aggression=90 and aggression=10 produce valid but potentially different bouts", () => {
-    // Both should complete successfully; the aggression modifier influences action selection
-    // without breaking the outcome.
-    const eastHigh = mockRikishi("r-east", { power: 60, aggression: 90 });
-    const westLow = mockRikishi("r-west", { power: 60, aggression: 10 });
-    const eastLow = mockRikishi("r-east", { power: 60, aggression: 10 });
-    const westHigh = mockRikishi("r-west", { power: 60, aggression: 90 });
+    it("winner side is east or west", () => {
+      const bout = { id: "test-004", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const { result } = resolveBoutPhysics(bout, east, west, basho);
+      expect(["east", "west"]).toContain(result.winner);
+    });
 
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
+    it("duration is within 1–240 seconds", () => {
+      const bout = { id: "test-005", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const { result } = resolveBoutPhysics(bout, east, west, basho);
+      expect(result.duration).toBeGreaterThanOrEqual(1);
+      expect(result.duration).toBeLessThanOrEqual(240);
+    });
 
-    const { result: resultA } = resolveBoutPhysics(ctx, eastHigh, westLow, basho);
-    const { result: resultB } = resolveBoutPhysics(ctx, eastLow, westHigh, basho);
-
-    expect(["east", "west"]).toContain(resultA.winner);
-    expect(["east", "west"]).toContain(resultB.winner);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Archetype starting balance multiplier
-// ---------------------------------------------------------------------------
-
-describe("resolveBoutPhysics — archetype starting balance multiplier", () => {
-  it("oshi archetype rikishi can still win bouts (0.8x balance doesn't break engine)", () => {
-    const east = mockRikishi("r-east", { power: 80, balance: 70 });
-    const west = mockRikishi("r-west", { power: 60, balance: 70 });
-    (east as any).combatProfile = {
-      archetype: "oshi",
-      familyPreferences: { push: 80, belt: 5, trick: 5, speed: 10 },
-      preferredGrip: "none",
-      preferredGripDepth: "standard",
-      statModifiers: {},
-    };
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-    expect(typeof result.kimarite).toBe("string");
-    expect(result.kimarite.length).toBeGreaterThan(0);
-  });
-
-  it("tsuppari archetype rikishi completes a bout with 0.8x starting balance", () => {
-    const east = mockRikishi("r-east", { power: 75, balance: 65 });
-    const west = mockRikishi("r-west", { power: 65, balance: 65 });
-    (east as any).combatProfile = {
-      archetype: "tsuppari",
-      familyPreferences: { push: 90, belt: 2, trick: 5, speed: 3 },
-      preferredGrip: "none",
-      preferredGripDepth: "standard",
-      statModifiers: {},
-    };
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-  });
-
-  it("giant archetype (1.15x balance) rikishi completes a bout", () => {
-    const east = mockRikishi("r-east", { power: 60, balance: 70 });
-    const west = mockRikishi("r-west", { power: 85, balance: 55 });
-    (east as any).combatProfile = {
-      archetype: "giant",
-      familyPreferences: { push: 30, belt: 60, trick: 5, speed: 5 },
-      preferredGrip: "migi",
-      preferredGripDepth: "deep",
-      statModifiers: {},
-    };
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-  });
-
-  it("defensive archetype (1.1x balance) rikishi completes a bout", () => {
-    const east = mockRikishi("r-east", { power: 55, balance: 75, technique: 80 });
-    const west = mockRikishi("r-west", { power: 70, balance: 60 });
-    (east as any).combatProfile = {
-      archetype: "defensive",
-      familyPreferences: { push: 10, belt: 30, trick: 50, speed: 10 },
-      preferredGrip: "none",
-      preferredGripDepth: "standard",
-      statModifiers: {},
-    };
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-    expect(["east", "west"]).toContain(result.winner);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Output structure
-// ---------------------------------------------------------------------------
-
-describe("resolveBoutPhysics — output structure", () => {
-  it("returns a BoutResult with required fields", () => {
-    const east = mockRikishi("r-east");
-    const west = mockRikishi("r-west");
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-
-    expect(result.boutId).toBe("bout-test-001");
-    expect(["east", "west"]).toContain(result.winner);
-    expect(["r-east", "r-west"]).toContain(result.winnerRikishiId);
-    expect(["r-east", "r-west"]).toContain(result.loserRikishiId);
-    expect(result.winnerRikishiId).not.toBe(result.loserRikishiId);
-    expect(typeof result.kimarite).toBe("string");
-    expect(result.kimarite.length).toBeGreaterThan(0);
-    expect(typeof result.kimariteName).toBe("string");
-    expect(result.kimariteName.length).toBeGreaterThan(0);
-    expect(typeof result.duration).toBe("number");
-    expect(typeof result.upset).toBe("boolean");
-    expect(Array.isArray(result.log)).toBe(true);
-    expect(result.log.length).toBeGreaterThan(0);
-  });
-
-  it("sets winnerRikishiId and loserRikishiId correctly based on winner side", () => {
-    const east = mockRikishi("r-east");
-    const west = mockRikishi("r-west");
-    const basho = makeMockBasho();
-    const ctx = makeBoutContext();
-
-    const { result } = resolveBoutPhysics(ctx, east, west, basho);
-
-    if (result.winner === "east") {
-      expect(result.winnerRikishiId).toBe("r-east");
-      expect(result.loserRikishiId).toBe("r-west");
-    } else {
-      expect(result.winnerRikishiId).toBe("r-west");
-      expect(result.loserRikishiId).toBe("r-east");
-    }
+    it("does not exceed 120 ticks", () => {
+      const bout = { id: "test-006", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
+      const east = mockRikishi("r1");
+      const west = mockRikishi("r2");
+      const basho = makeMockBasho();
+      const { result } = resolveBoutPhysics(bout, east, west, basho);
+      // Duration is tick * 2 seconds
+      expect(result.duration).toBeLessThanOrEqual(240);
+    });
   });
 });

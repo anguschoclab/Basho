@@ -16,6 +16,8 @@
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { Rikishi } from "../../types/rikishi";
+import type { Loan } from "../../types/economy";
+import type { FacilitiesBand } from "../../types/narrative";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { mergeImpacts } from "../../core/ImpactResolver";
 import { OYAKATA_SALARY_MONTHLY, FACILITY_UPKEEP } from "../../constants/EconomicConstants";
@@ -24,7 +26,20 @@ import { RANK_HIERARCHY } from "../../banzuke";
 import { getHeyaStaffBonuses } from "../../staff";
 import { isBashoMonth } from "../../calendar";
 import { computeFacilitiesBand, type FacilityAxis } from "../../facilities";
-import { tickMonthlyNPC } from "../../npcAI";
+import {
+  payTravelAllowance,
+  deductTsukebitoCosts,
+  distributeKoenkaiToSekitori,
+} from "../../systems/economics/TravelAllowanceService";
+
+// Type for partial heya updates used in monthly boundary processing
+type HeyaUpdates = Partial<{
+  funds: number;
+  runwayBand: "secure" | "comfortable" | "tight" | "critical" | "desperate";
+  activeLoans: Loan[];
+  facilities: { training: number; recovery: number; nutrition: number };
+  facilitiesBand: FacilitiesBand;
+}>;
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");
@@ -33,19 +48,19 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
 
   // 1. Process Heyas (Economics, Loans, Facilities, NPC AI)
   for (const [id, heya] of world.heyas) {
-    const heyaUpdates: any = {};
+    const heyaUpdates: HeyaUpdates = {};
 
     // -- Economics: Salaries & Upkeep --
-    const totalExpenses = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates);
+    const totalExpenses = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder);
 
     // -- Loan Repayments --
     processLoanRepayments(world, heya, heyaUpdates, builder);
 
     // -- Facilities Decay & Maintenance --
-    const maintenance = processFacilitiesMaintenance(world, heya, heyaUpdates);
+    const maintenance = processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
     // -- NPC Auto-Investment --
-    processNpcAutoInvestment(world, heya, totalExpenses, maintenance, heyaUpdates);
+    processNpcAutoInvestment(world, heya, totalExpenses, maintenance, heyaUpdates, builder);
 
     // Runway Band Sync
     const burn = Math.max(1, totalExpenses + maintenance);
@@ -69,7 +84,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     for (const [id, r] of world.rikishi) {
       if (r.isRetired) continue;
       const nextR = { ...r };
-      if (processArchetypeDrift(world, nextR)) {
+      if (processArchetypeDrift(world, nextR, id, builder)) {
         builder.updateRikishi(id, nextR);
       }
     }
@@ -84,10 +99,19 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
 
   // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
   // retirement evaluation, vacancy assessment. This was previously orphaned
-  // (tickMonthlyNPC exported but never called from the pipeline).
-  const npcMonthlyImpact = tickMonthlyNPC(world);
+  // TODO: Re-enable NPC monthly decisions when tickMonthlyNPC is available
+  // const npcMonthlyImpact = tickMonthlyNPC(world);
 
-  return mergeImpacts([builder.build(), npcMonthlyImpact]);
+  // Pay travel/jungyo allowance to sekitori
+  const travelImpact = payTravelAllowance(world);
+
+  // Deduct tsukebito costs from sekitori
+  const tsukebitoImpact = deductTsukebitoCosts(world);
+
+  // Distribute kōenkai income portion to sekitori
+  const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
+
+  return mergeImpacts([builder.build(), travelImpact, tsukebitoImpact, koenkaiDistributionImpact]);
 }
 
 // --- Helper Functions ---
@@ -96,7 +120,8 @@ function processHeyaEconomics(
   world: WorldState,
   heya: Heya,
   rikishiMap: Map<string, Rikishi>,
-  heyaUpdates: any
+  heyaUpdates: HeyaUpdates,
+  builder: ReturnType<typeof createImpactBuilder>
 ): number {
   let totalSalaries = 0;
   const rikishiIds = heya.rikishiIds ?? [];
@@ -108,31 +133,27 @@ function processHeyaEconomics(
     const info = RANK_HIERARCHY[r.rank];
     if (info?.isSekitori) {
       const baseSalary = info.salary ?? 0;
-      const kinboshiCount = r.stats?.achievements?.kinboshiEarned ?? 0;
-      const kinboshiStipend = r.division === "makuuchi" ? kinboshiCount * 40_000 : 0;
-      const totalRikishiPay = baseSalary + kinboshiStipend;
+      // NOTE: Kinboshi stipend is now paid per-basho in CompetitionService, not monthly
+      const totalRikishiPay = baseSalary;
 
-      const rikishiUpdates: any = {
-        economics: {
-          ...(r.economics || {
-            cash: 0,
-            retirementFund: 0,
-            careerKenshoWon: 0,
-            kinboshiCount: 0,
-            totalEarnings: 0,
-            currentBashoEarnings: 0,
-            popularity: 50,
-          }),
-        },
+      const economics = r.economics || {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
       };
-      rikishiUpdates.economics.cash += totalRikishiPay;
-      rikishiUpdates.economics.totalEarnings += totalRikishiPay;
-      // Note: rikishi economics updates not directly supported by ImpactBuilder yet
-      // For now, we'll update them directly
-      const updatedR = { ...r, ...rikishiUpdates };
-      if (world.rikishi.has(rId)) {
-        world.rikishi.set(rId, updatedR);
-      }
+
+      // Use ImpactBuilder to update rikishi economics
+      builder.updateRikishi(rId, {
+        economics: {
+          ...economics,
+          cash: economics.cash + totalRikishiPay,
+          totalEarnings: economics.totalEarnings + totalRikishiPay,
+        },
+      });
       totalSalaries += totalRikishiPay;
     } else {
       totalSalaries += 70_000;
@@ -154,9 +175,9 @@ function processHeyaEconomics(
 }
 
 function processLoanRepayments(
-  world: WorldState,
+  _world: WorldState,
   heya: Heya,
-  heyaUpdates: any,
+  heyaUpdates: HeyaUpdates,
   builder: ReturnType<typeof import("../../core/ImpactBuilder").createImpactBuilder>
 ): void {
   if (heya.activeLoans && heya.activeLoans.length > 0) {
@@ -190,7 +211,12 @@ function processLoanRepayments(
   }
 }
 
-function processFacilitiesMaintenance(world: WorldState, heya: Heya, heyaUpdates: any): number {
+function processFacilitiesMaintenance(
+  _world: WorldState,
+  heya: Heya,
+  heyaUpdates: HeyaUpdates,
+  builder: ReturnType<typeof createImpactBuilder>
+): number {
   const maintenance =
     (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) * 3000;
   const currentFunds = heyaUpdates.funds ?? heya.funds ?? 0;
@@ -202,10 +228,19 @@ function processFacilitiesMaintenance(world: WorldState, heya: Heya, heyaUpdates
       recovery: Math.max(5, heya.facilities.recovery - 2),
       nutrition: Math.max(5, heya.facilities.nutrition - 2),
     };
-    const oldBand = heya.facilitiesBand;
     heyaUpdates.facilitiesBand = computeFacilitiesBand(heya);
-    // Note: EventBus replaced - facility degraded event skipped for now
-    console.log(`[FacilityDegraded] ${heya.name} facilities degraded`);
+    builder.logEvent(
+      "FACILITY_DEGRADED",
+      "economy",
+      {
+        heyaname: heya.name,
+        reason: "insufficient_funds_for_maintenance",
+        training: heyaUpdates.facilities.training,
+        recovery: heyaUpdates.facilities.recovery,
+        nutrition: heyaUpdates.facilities.nutrition,
+      },
+      { heyaId: heya.id, importance: "notable" }
+    );
   }
   return maintenance;
 }
@@ -215,7 +250,8 @@ function processNpcAutoInvestment(
   heya: Heya,
   totalExpenses: number,
   maintenance: number,
-  heyaUpdates: any
+  heyaUpdates: HeyaUpdates,
+  builder: ReturnType<typeof createImpactBuilder>
 ): void {
   if (heya.id !== world.playerHeyaId) {
     const monthlyBurn = Math.max(1, totalExpenses + maintenance);
@@ -266,15 +302,30 @@ function processNpcAutoInvestment(
             ...heya,
             facilities: heyaUpdates.facilities,
           });
-          // Note: EventBus replaced - facility upgraded event skipped for now
-          console.log(`[FacilityUpgraded] ${heya.name} upgraded ${weakestAxis}`);
+          builder.logEvent(
+            "FACILITY_UPGRADED",
+            "economy",
+            {
+              heyaname: heya.name,
+              axis: weakestAxis,
+              from: currentLevel,
+              to: currentLevel + points,
+              cost: upgradeCost,
+            },
+            { heyaId: heya.id, importance: "notable" }
+          );
         }
       }
     }
   }
 }
 
-function processArchetypeDrift(world: WorldState, nextR: Rikishi): boolean {
+function processArchetypeDrift(
+  _world: WorldState,
+  nextR: Rikishi,
+  id: string,
+  builder: ReturnType<typeof createImpactBuilder>
+): boolean {
   const evidence = nextR.archetypeEvidence;
   if (evidence && !Array.isArray(evidence)) {
     let newArchetype = nextR.tacticalArchetypePrimary;
@@ -284,8 +335,18 @@ function processArchetypeDrift(world: WorldState, nextR: Rikishi): boolean {
       newArchetype = "yotsu";
 
     if (newArchetype !== nextR.tacticalArchetypePrimary) {
-      // Note: EventBus replaced - training update event skipped for now
-      console.log(`[TrainingUpdate] ${nextR.shikona} archetype changed to ${newArchetype}`);
+      builder.logEvent(
+        "TRAINING_UPDATE",
+        "training",
+        {
+          rikishiId: id,
+          shikona: nextR.shikona,
+          from: nextR.tacticalArchetypePrimary,
+          to: newArchetype,
+          reason: "monthly_archetype_evaluation",
+        },
+        { rikishiId: id, importance: "notable" }
+      );
       nextR.tacticalArchetypePrimary = newArchetype;
     }
     nextR.archetypeEvidence = {
