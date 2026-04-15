@@ -84,31 +84,36 @@ export function ScoutingWidget() {
   );
   const world = state.world;
 
-  const prospects = useMemo(() => {
-    if (!world) return [];
+  // ⚡ Bolt Performance Optimization: Combine prospects parsing, pool counting, and top prospects derivation
+  // into a single useMemo hook to avoid multiple array iterations on every render.
+  const { prospects, poolCounts, topProspects } = useMemo(() => {
+    const defaultRes = { prospects: [], poolCounts: { high_school: 0, university: 0, foreign: 0 }, topProspects: [] };
+    if (!world) return defaultRes;
+
     const all: (TalentCandidate & { pool: TalentPoolType })[] = [];
+    const counts: Record<TalentPoolType, number> = {
+      high_school: 0,
+      university: 0,
+      foreign: 0,
+    };
+
     for (const pool of ["high_school", "university", "foreign"] as TalentPoolType[]) {
       for (const c of talentpool.listVisibleCandidates(world, pool)) {
         all.push({ ...c, pool });
+        counts[pool]++;
       }
     }
-    return all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
-  }, [world]);
+
+    all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
+
+    return {
+      prospects: all,
+      poolCounts: counts,
+      topProspects: all.slice(0, 6)
+    };
+  }, [world?.talentPool]);
 
   if (!world) return null;
-
-  const poolCounts: Record<TalentPoolType, number> = {
-    high_school: 0,
-    university: 0,
-    foreign: 0,
-  };
-  for (const p of prospects) {
-    if (p.pool === "high_school" || p.pool === "university" || p.pool === "foreign") {
-      poolCounts[p.pool]++;
-    }
-  }
-
-  const topProspects = prospects.slice(0, 6);
 
   return (
     <BaseWidget title="Scouting" icon={Search} headerAction={headerAction}>
