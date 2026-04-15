@@ -14,7 +14,7 @@ import { RNGRegistry } from "../core/RNGRegistry";
 describe("Facilities Engine", () => {
   describe("computeFacilitiesBand", () => {
     it("returns 'minimal' when average < 25", () => {
-      const heya = makeMockHeya("heya-1", { facilities: { training: 20, recovery: 20, nutrition: 20, housing: 20 } });
+      const heya = makeMockHeya("heya-1", { facilities: { training: 20, recovery: 20, nutrition: 20 } });
       expect(computeFacilitiesBand(heya)).toBe("minimal");
     });
     it("returns 'basic' when average >= 25 and < 45", () => {
