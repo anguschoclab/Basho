@@ -173,7 +173,7 @@ describe("Facilities Engine", () => {
       // Priority axis is training (default).
       // Cost: 5 * 200,000 = 1,000,000
       // Total funds spent: 1,270,000
-      expect(update.funds).toBe(5_000_000 - 1_000_000);
+      expect(update.funds).toBe(5_000_000 - 1_270_000);
       expect(update.facilities?.training).toBe(35);
     });
   });
