@@ -111,7 +111,7 @@ export function ScoutingWidget() {
       poolCounts: counts,
       topProspects: all.slice(0, 6)
     };
-  }, [world]);
+  }, [world?.talentPool]);
 
   if (!world) return null;
 
