@@ -3,7 +3,6 @@ import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { stableSort } from "./utils/sort";
-import { buyMyoseki } from "./myosekiMarket";
 import { buyAvailableMyoseki } from "./utils/strategy";
 
 interface FinanceStrategy {
