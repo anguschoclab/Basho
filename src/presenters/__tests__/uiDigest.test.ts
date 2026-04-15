@@ -25,6 +25,11 @@ import type { WorldState } from "../../engine/types/world";
 vi.mock("../rikishiUI", () => ({
   calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
+  projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({
+    id: r.id,
+    shikona: r.shikona,
+    perceivedStats: { strength: "Dominant" },
+  })),
 }));
 
 describe("UI Digest: Rikishi Perception Boundary", () => {

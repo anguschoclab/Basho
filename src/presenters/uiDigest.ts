@@ -5,10 +5,6 @@ import { queryEvents } from "../engine/events";
 import { generateH2HCommentary, getH2HReport } from "../engine/h2h";
 import { RivalryService } from "../engine/systems/narrative/RivalryService";
 import { getRivalry } from "../engine/rivalries";
-import {
-  KOENKAI_MONTHLY_INCOME,
-  SPONSOR_TIER_INCOME,
-} from "../engine/systems/economics/SponsorshipService";
 import type { BoutPreviewUI } from "./boutPreviewUI";
 import {
   selectInjuredRikishi,
@@ -18,15 +14,12 @@ import {
   selectKadobanRikishi,
   selectTopRivals,
 } from "./selectors";
-import { projectRikishi } from "./uiModels";
+import { projectRikishi } from "./rikishiUI";
 export { projectRikishi };
-import type { UIRikishi } from "./uiModels";
+import type { UIRikishi } from "./rikishiUI";
 import type { Rikishi } from "../engine/types/rikishi";
 import { getHallOfFame } from "../engine/hallOfFame";
 export { getHallOfFame };
-import { buildMediaDigest as buildRawMediaDigest } from "../engine/systems/media/MediaService";
-import type { HoFInductee } from "../engine/hallOfFame";
-import type { MediaState } from "../engine/types/media";
 import * as talentpool from "../engine/systems/generation/TalentPoolService";
 import {
   warmScoutingForRikishiList,
@@ -36,12 +29,72 @@ import {
 import { getScoutedAttributes, describeScoutingLevel } from "../engine";
 import { RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
 import { getHeyaRoster, getSekitoriInHeya } from "../engine/queries";
-import { buildPerceptionSnapshot } from "../engine/perception";
 import { buildPrevRankScores, buildBanzukeRows } from "./banzukeUI";
 import { projectRosterEntry } from "./rikishiUI";
 import { BASHO_CALENDAR, isKeyDay, getSeasonalFlavor } from "../engine/calendar";
 import { BardEngine } from "../engine/narrative/BardEngine";
 import { SeededRNG } from "../engine/rng";
+
+// Re-exports from extracted modules
+export { formatRadarData, formatMetaTrends } from "./uiFormatters";
+export {
+  FATIGUE_LABELS,
+  POTENTIAL_LABELS,
+  TRAIT_LABELS,
+  SCANDAL_LABELS,
+  PRIZE_LABELS,
+  clamp,
+  clampInt,
+  formatRank,
+  formatStance,
+  HOF_CATEGORY_LABELS,
+  RANK_NAMES,
+  RANK_HIERARCHY,
+  compareRanks,
+  getRankTitleJa,
+  isKachiKoshi,
+  isMakeKoshi,
+  createDefaultMediaState,
+  buildPerceptionSnapshot,
+  getCachedPerception,
+  buyMyoseki,
+  leaseMyoseki,
+  clearInjury,
+  toInjuryEvent,
+  deleteSave,
+  exportSave,
+  importSave,
+  ensureHeyaWelfareState,
+  formatEventTime,
+  formatFinePenalty,
+  formatSaveDate,
+  generateH2HCommentary,
+  generateNarrative,
+  getArchetypeDescription,
+  getKimarite,
+  getOrCreateScouted,
+  getScoutingLevel,
+  setScoutingInvestment,
+  warmScoutingForRikishiList,
+  getStatusColor,
+  getStatusLabel,
+  spendPoliticalCapital,
+  scoutPool,
+  scoutCandidate,
+  offerCandidate,
+  getCandidateScoutingLevel,
+  KOENKAI_MONTHLY_INCOME,
+  SPONSOR_TIER_INCOME,
+  recruitSponsor,
+} from "./uiConstants";
+export { renewSponsorContract, setHeyaDietAction } from "./uiActions";
+export {
+  projectRikishiWithHeya,
+  projectMediaUIDigest,
+  projectHOFUIDigest,
+  projectSponsorUIDigest,
+  projectMedicalUIDigest,
+} from "./uiProjections";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -257,69 +310,6 @@ function buildMatchupItems(world: WorldState): { items: DigestItem[]; section?: 
     }
   }
   return { items: matchupItems };
-}
-
-/**
- * FM v2.0: Formats Rikishi attribute data for Radar Charts (C5 compliant).
- * Maps 0-100 internal truths into 5 banded tiers (1-5) for visual shape only.
- */
-export function formatRadarData(rikishi: Rikishi) {
-  const mapValue = (val: number) => {
-    if (val >= 85) return 5;
-    if (val >= 65) return 4;
-    if (val >= 45) return 3;
-    if (val >= 25) return 2;
-    return 1;
-  };
-
-  const rng = new SeededRNG(rikishi.id + "_radar");
-  return [
-    {
-      subject: BardEngine.resolve(rng, "ui.labels.stats.power").text,
-      A: mapValue(rikishi.power || 50),
-      fullMark: 5,
-    },
-    {
-      subject: BardEngine.resolve(rng, "ui.labels.stats.speed").text,
-      A: mapValue(rikishi.speed || 50),
-      fullMark: 5,
-    },
-    {
-      subject: BardEngine.resolve(rng, "ui.labels.stats.technique").text,
-      A: mapValue(rikishi.technique || 50),
-      fullMark: 5,
-    },
-    {
-      subject: BardEngine.resolve(rng, "ui.labels.stats.spirit").text,
-      A: mapValue(rikishi.momentum || 50),
-      fullMark: 5,
-    },
-    {
-      subject: BardEngine.resolve(rng, "ui.labels.stats.ring_sense").text,
-      A: mapValue(rikishi.condition || 50),
-      fullMark: 5,
-    },
-  ];
-}
-
-/**
- * FM v2.0: Formats Meta-State history for Streamgraph (Stacked Area Chart).
- */
-export function formatMetaTrends(world: WorldState) {
-  if (!world.history || world.history.length === 0) return [];
-
-  return world.history.slice(-6).map((h) => {
-    // Determine meta bias values based on actual historical data if available
-    // Otherwise fallback to balanced defaults
-    const bias = (h as any).metaBias || "neutral";
-
-    return {
-      basho: `${h.bashoName.charAt(0).toUpperCase()}${h.year % 100}`,
-      oshi: bias === "oshi" ? 50 : bias === "neutral" ? 33 : 25,
-      yotsu: bias === "yotsu" ? 50 : bias === "neutral" ? 33 : 25,
-      hybrid: bias === "hybrid" ? 50 : bias === "neutral" ? 34 : 25,
-    };
-  });
 }
 
 /** Defines the structure for ozeki run candidate. */
@@ -556,95 +546,6 @@ export {
   toScandalBand,
   toTraitBand,
 } from "../engine/descriptorBands";
-import type {
-  FatigueBand,
-  PotentialBand,
-  ScandalBand,
-  TraitBand,
-  PrizeBand,
-} from "../engine/systems/narrative/NarrativeBands";
-export const FATIGUE_LABELS: Record<FatigueBand, string> = {
-  fresh: "Fresh",
-  light: "Light",
-  tired: "Tired",
-  exhausted: "Exhausted",
-  spent: "Spent",
-};
-export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; color: string }> = {
-  generational: { label: "Generational Talent", color: "text-yellow-400" },
-  star: { label: "Star Potential", color: "text-blue-400" },
-  solid: { label: "Solid Prospect", color: "text-green-400" },
-  average: { label: "Average Prospect", color: "text-muted-foreground" },
-  limited: { label: "Limited Upside", color: "text-orange-400" },
-  unknown: { label: "Unknown", color: "text-muted-foreground" },
-};
-export const TRAIT_LABELS: Record<TraitBand, string> = {
-  negligible: "Negligible",
-  minor: "Minor",
-  moderate: "Moderate",
-  strong: "Strong",
-  dominant: "Dominant",
-};
-export const SCANDAL_LABELS: Record<ScandalBand, string> = {
-  clean: "Clean",
-  whispers: "Whispers",
-  scrutiny: "Under Scrutiny",
-  scandal: "Scandal",
-  crisis: "Crisis",
-};
-export const PRIZE_LABELS: Record<PrizeBand, string> = {
-  nominal: "Nominal",
-  modest: "Modest",
-  notable: "Notable",
-  prestigious: "Prestigious",
-  grand: "Grand",
-};
-export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
-export { RANK_NAMES } from "../engine/systems/recruitment/RecruitmentConstants";
-export {
-  RANK_HIERARCHY,
-  compareRanks,
-  formatRank,
-  getRankTitleJa,
-  isKachiKoshi,
-  isMakeKoshi,
-} from "../engine/banzuke";
-export { createDefaultMediaState } from "../engine/systems/media/MediaService";
-export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
-export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
-export { clamp, clampInt } from "../engine/utils";
-export { clearInjury, toInjuryEvent } from "../engine/systems/health/InjuryService";
-export { deleteSave, exportSave, importSave } from "../engine/saveload";
-export { ensureHeyaWelfareState } from "../engine/systems/welfare/WelfareService";
-export {
-  formatEventTime,
-  formatFinePenalty,
-  formatSaveDate,
-  formatStance,
-} from "../engine/utils/formatters";
-export { generateH2HCommentary } from "../engine/h2h";
-export { generateNarrative } from "../engine/narrative";
-export { getArchetypeDescription } from "../engine/oyakataPersonalities";
-export { getKimarite } from "../engine/kimarite";
-export {
-  getOrCreateScouted,
-  getScoutingLevel,
-  setScoutingInvestment,
-  warmScoutingForRikishiList,
-} from "../engine/scoutingStore";
-export {
-  getStatusColor,
-  getStatusLabel,
-  spendPoliticalCapital,
-} from "../engine/governance/GovernanceService";
-export {
-  scoutPool,
-  scoutCandidate,
-  offerCandidate,
-  getCandidateScoutingLevel,
-} from "../engine/systems/generation/TalentPoolService";
-export { KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME };
-export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -670,88 +571,6 @@ export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPrevi
     h2hReport: getH2HReport(east, west),
     rivalryHeat,
   };
-}
-
-/**
- * Project a list of recent headlines for the Media Page.
- */
-export function projectMediaUIDigest(world: WorldState) {
-  const mediaState = (world.mediaState as MediaState) || buildRawMediaDigest(world as any);
-  const headlines = [...(mediaState.headlines || [])].sort(
-    (a, b) => b.impact - a.impact || b.week - a.week
-  );
-
-  const hotRikishi = Object.entries(mediaState.mediaHeat || {})
-    .map(([id, heat]) => {
-      const rikishi = world.rikishi.get(id);
-      return {
-        id,
-        heat: heat as number,
-        rikishi: rikishi ? projectRikishi(rikishi, world) : null,
-        history: (mediaState.mediaHeatHistory?.[id] as any[]) ?? [],
-      };
-    })
-    .filter((x) => x.rikishi)
-    .sort((a, b) => b.heat - a.heat)
-    .slice(0, 10);
-
-  const pressuredHeya = Object.entries(mediaState.heyaPressure || {})
-    .map(([id, pressure]) => ({
-      id,
-      pressure: pressure as number,
-      heya: world.heyas.get(id),
-    }))
-    .filter((x) => x.heya)
-    .sort((a, b) => b.pressure - a.pressure)
-    .slice(0, 8);
-
-  return {
-    headlines,
-    hotRikishi,
-    pressuredHeya,
-    currentWeek: world.week,
-  };
-}
-
-/**
- * Project Hall of Fame data for the HOF Page.
- */
-export function projectHOFUIDigest(world: WorldState) {
-  const rawHof = getHallOfFame(world);
-
-  const inductees = rawHof.inductees.map((ind: HoFInductee) => {
-    const rikishi = world.rikishi.get(ind.rikishiId);
-    const heya = rikishi ? world.heyas.get(rikishi.heyaId) : null;
-
-    // Greatest fights projection
-    const greatestFights =
-      (rikishi as Rikishi)?.history
-        ?.filter((m) => m.win)
-        .slice(-10)
-        .map((m) => ({
-          bashoName: m.bashoId ?? "",
-          kimarite: m.kimarite,
-          opponentName: world.rikishi.get(m.opponentId)?.shikona ?? "Unknown",
-          isWin: m.win,
-        }))
-        .reverse()
-        .slice(0, 5) ?? [];
-
-    // Yusho list projection
-    const yushoList = world.history
-      .filter((br) => br.yusho === ind.rikishiId)
-      .map((br) => ({ year: br.year, bashoName: (br as any).bashoName }));
-
-    return {
-      ...ind,
-      rikishi: rikishi ? projectRikishi(rikishi, world) : null,
-      heyaName: heya?.name ?? "Independent",
-      greatestFights,
-      yushoList,
-    };
-  });
-
-  return { inductees };
 }
 
 /**
@@ -931,216 +750,6 @@ export function projectDashboardUIDigest(world: WorldState) {
     currentYear: world.year,
     phase: world.cyclePhase,
   };
-}
-
-function buildSponsorData(sponsor: any, rel: any, heya: any, world: WorldState): any {
-  const monthlyIncome =
-    SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] * (rel.strength / 3);
-  const satisfactionEstimate = Math.min(100, sponsor.loyalty * 0.6 + (heya.reputation ?? 50) * 0.4);
-  const expiryWeek = rel.endsAtTick ?? null;
-  const isExpiringSoon = expiryWeek !== null && expiryWeek - (world.week ?? 0) < 8;
-
-  return {
-    relId: rel.relId,
-    sponsorId: sponsor.sponsorId,
-    name: sponsor.displayName,
-    tier: sponsor.tier,
-    category: sponsor.category.replace("_", " "),
-    monthlyIncome,
-    satisfaction: satisfactionEstimate,
-    expiryWeek,
-    isExpiringSoon,
-    strength: rel.strength,
-    loyalty: sponsor.loyalty,
-    role: rel.role.replace("_", " "),
-  };
-}
-
-function buildAndSortActiveSponsors(
-  pool: any,
-  playerHeyaId: string,
-  heya: any,
-  world: WorldState
-): any[] {
-  const activeSponsors: any[] = [];
-  for (const sponsor of pool.sponsors.values()) {
-    if (!sponsor.active) continue;
-    for (const rel of sponsor.relationships) {
-      if (rel.targetId !== playerHeyaId) continue;
-      activeSponsors.push(buildSponsorData(sponsor, rel, heya, world));
-    }
-  }
-
-  const tierOrder: Record<string, number> = {
-    T5: 0,
-    T4: 1,
-    T3: 2,
-    T2: 3,
-    T1: 4,
-    T0: 5,
-  };
-  return activeSponsors.sort((a, b) => (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6));
-}
-
-function calculateKoenkaiIncome(heya: any): number {
-  const koenkaiStrength = heya.koenkaiBand ?? "none";
-  return KOENKAI_MONTHLY_INCOME[koenkaiStrength as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
-}
-
-/**
- * Project sponsorship management data.
- */
-export function projectSponsorUIDigest(world: WorldState) {
-  const playerHeyaId = world.playerHeyaId;
-  if (!playerHeyaId) return null;
-  const heya = world.heyas.get(playerHeyaId);
-  if (!heya) return null;
-
-  const pool = world.sponsorPool;
-  if (!pool) return null;
-
-  const activeSponsors = buildAndSortActiveSponsors(pool, playerHeyaId, heya, world);
-  const koenkaiIncome = calculateKoenkaiIncome(heya);
-  const koenkaiStrength = heya.koenkaiBand ?? "none";
-
-  return {
-    koenkaiName: `${heya.name} Supporters Association`,
-    strength: koenkaiStrength,
-    activeSponsors,
-    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
-    expiringCount: activeSponsors.filter((s) => s.isExpiringSoon).length,
-    koenkaiIncome,
-  };
-}
-
-/**
- * Perform a contract renewal.
- * Decouples the UI from direct engine mutations.
- */
-export function renewSponsorContract(
-  world: WorldState,
-  relId: string,
-  sponsorId?: string
-): boolean {
-  const pool = world.sponsorPool;
-  if (!pool) return false;
-
-  if (sponsorId) {
-    const sponsor = pool.sponsors.get(sponsorId);
-    if (sponsor) {
-      const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);
-      if (relIdx >= 0) {
-        const rel = sponsor.relationships[relIdx];
-        sponsor.relationships[relIdx] = {
-          ...rel,
-          endsAtTick: (world.week ?? 0) + 52,
-          strength: Math.min(5, rel.strength + 1) as any,
-        };
-        sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
-        return true;
-      }
-    }
-  }
-
-  for (const sponsor of pool.sponsors.values()) {
-    const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);
-    if (relIdx >= 0) {
-      const rel = sponsor.relationships[relIdx];
-      sponsor.relationships[relIdx] = {
-        ...rel,
-        endsAtTick: (world.week ?? 0) + 52,
-        strength: Math.min(5, rel.strength + 1) as any,
-      };
-      sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Project medical and injury recovery data.
- */
-export function projectMedicalUIDigest(world: WorldState) {
-  const playerHeyaId = world.playerHeyaId;
-  if (!playerHeyaId) return null;
-  const heya = world.heyas.get(playerHeyaId);
-  if (!heya) return null;
-
-  const roster = getHeyaRoster(world, playerHeyaId);
-  const injured = roster.filter((r) => r.injured);
-  const perception = buildPerceptionSnapshot(world, playerHeyaId);
-  const rng = world.rng || new SeededRNG(world.seed || "medical_digest");
-
-  const recoveryFacility = heya.facilities?.recovery ?? 50;
-  const facilityLabel = getFacilityLevelLabel(rng, recoveryFacility);
-
-  return {
-    heyaName: heya.name,
-    facilityLevel: recoveryFacility,
-    facilityLabel,
-    injuredRikishi: injured.map((r) => {
-      const injuryStatus = r.injuryStatus;
-      const weeksRemaining = r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
-      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
-      const recoveryProgress =
-        weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
-      const facilityBonus = Math.round((recoveryFacility - 50) / 10);
-
-      return {
-        id: r.id,
-        shikona: r.shikona,
-        severity:
-          typeof (injuryStatus as any)?.severity === "string"
-            ? (injuryStatus as any).severity
-            : "unknown",
-        location: (injuryStatus as any)?.location || "unknown",
-        weeksRemaining,
-        weeksTotal,
-        recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
-        facilityBonus,
-      };
-    }),
-    welfare: {
-      welfareRisk: heya.welfareState?.welfareRisk ?? 0,
-      activeDiet: heya.welfareState?.activeDiet ?? "maintenance",
-      complianceState: heya.welfareState?.complianceState ?? "compliant",
-      weeksInState: heya.welfareState?.weeksInState ?? 0,
-    },
-    perception: {
-      welfareRiskBand: perception.welfareRiskBand,
-      moraleBand: perception.moraleBand,
-      rosterStrengthBand: perception.rosterStrengthBand,
-      stableMediaHeatBand: perception.stableMediaHeatBand,
-      rivalryPressureBand: perception.rivalryPressureBand,
-      rikishiHealthPerceptions: perception.rikishiPerceptions.map((rp: any) => ({
-        rikishiId: rp.rikishiId,
-        shikona: rp.shikona,
-        rank: rp.rank,
-        healthBand: rp.healthBand,
-        momentum: rp.momentum,
-      })),
-    },
-  };
-}
-
-/**
- * Update heya diet via presenter.
- */
-export function setHeyaDietAction(world: WorldState, heyaId: string, diet: any): boolean {
-  const heya = world.heyas.get(heyaId);
-  if (!heya) return false;
-  if (!heya.welfareState) {
-    heya.welfareState = {
-      welfareRisk: 0,
-      activeDiet: diet,
-      complianceState: "compliant",
-      weeksInState: 0,
-    };
-  } else {
-    heya.welfareState.activeDiet = diet;
-  }
-  return true;
 }
 
 /**
@@ -1334,25 +943,6 @@ export function projectMergerWarnings(world: WorldState) {
 // Projection functions for no-restricted-imports migration
 // These functions replace direct WorldState access in UI components
 // ─────────────────────────────────────────
-
-/**
- * Project rikishi with heya data for ceremony components.
- * Used by: HoFInductionCeremony, TournamentCeremony, HoFTimeline
- */
-export function projectRikishiWithHeya(
-  world: WorldState,
-  rikishiId: string
-): { rikishi: UIRikishi; heyaName: string; isPlayerRikishi: boolean } | null {
-  const rikishi = world.rikishi.get(rikishiId);
-  if (!rikishi) return null;
-
-  const heya = rikishi.heyaId ? world.heyas.get(rikishi.heyaId) : null;
-  return {
-    rikishi: projectRikishi(rikishi, world),
-    heyaName: heya?.name ?? "Unknown Stable",
-    isPlayerRikishi: rikishi.heyaId === world.playerHeyaId,
-  };
-}
 
 /**
  * Project heya data with oyakata for ceremony components.
