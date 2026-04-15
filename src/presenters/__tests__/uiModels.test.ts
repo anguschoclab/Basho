@@ -3,7 +3,8 @@ import { vi } from "vitest";
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 import { describe, it, expect } from "vitest";
-import { projectRikishi, projectHeya, getLocalizedArchetype } from "../uiModels";
+import { projectHeya, getLocalizedArchetype } from "../uiModels";
+import { projectRikishi } from "../rikishiUI";
 import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
 import type { TacticalArchetype } from "../../engine/types/combat";
 

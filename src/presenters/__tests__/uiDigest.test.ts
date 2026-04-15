@@ -22,10 +22,14 @@ import type { RikishiStats, Rikishi } from "../../engine/types/rikishi";
 import type { WorldState } from "../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
-vi.mock("../rikishiUI", () => ({
+vi.mock("../rikishiUI", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
   calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
-}));
+  }
+});
 
 describe("UI Digest: Rikishi Perception Boundary", () => {
   it("MUST NOT leak raw numerical stats into the UI model", () => {

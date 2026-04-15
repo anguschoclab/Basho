@@ -18,7 +18,7 @@ import {
   selectKadobanRikishi,
   selectTopRivals,
 } from "./selectors";
-import { projectRikishi } from "./uiModels";
+import { projectRikishi } from "./rikishiUI";
 export { projectRikishi };
 import type { UIRikishi } from "./uiModels";
 import type { Rikishi } from "../engine/types/rikishi";
