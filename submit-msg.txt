@@ -1,3 +1,0 @@
-🎯 **What:** The testing gap addressed is the lack of unit tests for the Web Worker environment in `src/engine/worker/engine.worker.ts`, which processes vital simulation commands asynchronously.
-📊 **Coverage:** The new tests cover all supported commands (`START_WORLD`, `LOAD_WORLD`, `TICK_DAY`, `AUTO_SIM_DAYS`, `GET_DIGEST`), invalid commands (warning log validation), and specific error handling including generic Errors and string error throws.
-✨ **Result:** Test coverage for the web worker orchestration layer has been substantially increased, providing a safety net for any future refactoring in how the simulation runner is executed off the main thread.
