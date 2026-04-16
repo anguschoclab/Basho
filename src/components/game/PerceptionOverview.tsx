@@ -152,7 +152,7 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
   }, [world, playerHeyaId]);
 
   const handleNavigate = (heyaId: string) => {
-    navigate({ to: "/heya/$heyaId", params: { heyaId } });
+    navigate({ to: `/stable?id=${heyaId}` });
   };
 
   const handleToggleCompare = (heyaId: string) => {
