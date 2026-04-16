@@ -372,9 +372,10 @@ export interface UIRosterEntry {
   balanceBand: string;
   momentum: number;
   potentialBand: PotentialBand;
-  archetypeLabel?: string;
-  rankDelta?: UIRankDelta;
+  keshoMawashi?: KeshoMawashi;
   avatarConfig?: AvatarConfig;
+  rankDelta?: UIRankDelta;
+  archetypeLabel?: string;
 }
 
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
@@ -458,5 +459,6 @@ export function projectRosterEntry(
       )?.label || "Rikishi",
     rankDelta,
     avatarConfig: r.avatarConfig,
+    keshoMawashi: r.keshoMawashi,
   };
 }

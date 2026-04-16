@@ -4,6 +4,7 @@ import { RankChangeIndicator } from "./RankChangeIndicator";
 import type { UIRosterEntry } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { KeshoMiniIndicator } from "@/components/kesho/KeshoMiniIndicator";
 
 interface Props {
   entry: UIRosterEntry | null;
@@ -43,6 +44,12 @@ export function RikishiCell({
           showHairstyle={entry.division === "makuuchi" || entry.division === "juryo"}
           fallback={entry.shikona}
         />
+        {/* Kesho indicator for sekitori */}
+        {entry.keshoMawashi && (
+          <TooltipWrap content={`Kesho-mawashi (${entry.keshoMawashi.tier})`} side="top">
+            <KeshoMiniIndicator kesho={entry.keshoMawashi} />
+          </TooltipWrap>
+        )}
         <RikishiName
           id={entry.id}
           name={entry.shikona}

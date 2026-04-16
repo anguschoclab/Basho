@@ -52,6 +52,7 @@ export interface BoutResult {
   isTitleStakes?: boolean;
   awardFact?: "kinboshi" | "ginboshi" | null;
   kenshoEnvelopes: number;
+  kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
   log: BoutLogEntry[];
   narrative?: string[];
   pbpLines?: PbpLine[];

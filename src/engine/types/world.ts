@@ -8,7 +8,7 @@ import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, BashoState, BashoResult } from "./basho";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { FTUEState } from "./narrative";
-import type { BeyaTrainingState } from "./training";
+import type { HeyaTrainingState } from "./training";
 import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
@@ -148,7 +148,8 @@ export interface WorldState {
   factions?: Record<IchimonName, Faction>;
 
   almanacSnapshots?: AlmanacSnapshot[];
-  ftue: FTUEState;
+  /** @deprecated Superseded by tutorialState - retained for save compatibility */
+  ftue?: FTUEState;
   tutorialState?: TutorialState;
   playerHeyaId?: Id;
 
@@ -157,7 +158,7 @@ export interface WorldState {
 
   ozekiKadoban?: OzekiKadobanMap;
 
-  trainingState?: IdMapRuntime<BeyaTrainingState>;
+  trainingState?: IdMapRuntime<HeyaTrainingState>;
 
   talentPool?: TalentPoolWorldState;
   candidatePool?: TalentPoolWorldState;
@@ -187,13 +188,6 @@ export interface WorldState {
   };
 
   _preBashoAssessment?: PreBashoAssessment;
-
-  calendar: {
-    year: number;
-    month: number;
-    currentWeek: number;
-    currentDay: number;
-  };
 
   myosekiMarket?: MyosekiMarket;
 

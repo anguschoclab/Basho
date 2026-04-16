@@ -1,17 +1,15 @@
 import { stableTieBreak } from "../utils/sort";
 import { phase02_context } from "../tick/phases/phase02_context";
-import { 
-  WorldState, 
-  SerializedWorldState, 
-  BashoState, 
+import { resolveImpacts } from "../core/ImpactResolver";
+import {
+  WorldState,
+  SerializedWorldState,
+  BashoState,
   SerializedBashoState,
   Rikishi,
   Heya,
-  Oyakata,
-  Id,
-  SerializedSponsorPoolFixed as SerializedSponsorPool
+  SerializedSponsorPoolFixed as SerializedSponsorPool,
 } from "../types/index";
-
 
 import type { SponsorPool } from "../types/sponsors";
 
@@ -28,7 +26,10 @@ export const SerializationService = {
     if (!(map instanceof Map)) return map;
     const obj: Record<string, T> = {};
     const keys = Array.from(map.keys()).sort(stableTieBreak);
-    for (const key of keys) obj[key] = map.get(key)!;
+    for (const key of keys) {
+      const value = map.get(key);
+      if (value !== undefined) obj[key] = value;
+    }
     return obj;
   },
 
@@ -55,7 +56,7 @@ export const SerializationService = {
       bashoName: basho.bashoName,
       day: basho.day,
       matches: basho.matches,
-      standings: this.mapToObject(basho.standings)
+      standings: this.mapToObject(basho.standings),
     };
   },
 
@@ -70,7 +71,7 @@ export const SerializationService = {
       day: basho.day,
       matches: basho.matches,
       standings: this.objectToMap(basho.standings),
-      isActive: true
+      isActive: true,
     };
   },
 
@@ -80,9 +81,7 @@ export const SerializationService = {
    * must be rebuilt by rebuildTransientContext() on load.
    */
   serializeWorld(world: WorldState): SerializedWorldState {
-    // Destructure to explicitly drop transientContext before serialization
-    const { transientContext: _dropped, ...persistableWorld } = world as any;
-    void _dropped; // suppress unused-var lint
+    // transientContext is intentionally excluded — it is ephemeral
     return {
       seed: world.seed,
       year: world.year,
@@ -109,14 +108,13 @@ export const SerializationService = {
       currentBanzuke: world.currentBanzuke,
       dayIndexGlobal: world.dayIndexGlobal,
       almanacSnapshots: world.almanacSnapshots || [],
-      calendar: world.calendar,
       sponsorPool: this.serializeSponsorPool(world.sponsorPool),
       ozekiKadoban: world.ozekiKadoban || {},
       mediaState: world.mediaState,
       talentPool: world.talentPool,
       candidatePool: world.candidatePool,
       trainingState: this.mapToObject(world.trainingState || new Map()),
-      settings: world.settings
+      settings: world.settings,
     };
   },
 
@@ -127,12 +125,18 @@ export const SerializationService = {
    */
   deserializeWorld(serialized: SerializedWorldState): WorldState {
     const s = serialized;
-    
+
     // Sanitization Pass
     const heyasObj = s.heyas || {};
     const rikishiObj = s.rikishi || {};
-    for (const k of Object.keys(heyasObj)) this.sanitizeHeya(heyasObj[k]!);
-    for (const k of Object.keys(rikishiObj)) this.sanitizeRikishi(rikishiObj[k]!);
+    for (const k of Object.keys(heyasObj)) {
+      const heya = heyasObj[k];
+      if (heya) this.sanitizeHeya(heya);
+    }
+    for (const k of Object.keys(rikishiObj)) {
+      const rikishi = rikishiObj[k];
+      if (rikishi) this.sanitizeRikishi(rikishi);
+    }
 
     const liveWorld = {
       id: `world_${serialized.seed}`,
@@ -150,13 +154,21 @@ export const SerializationService = {
       oyakata: this.objectToMap(s.oyakata || {}),
       staff: this.objectToMap(s.staff || {}),
 
-      currentBasho: serialized.currentBasho ? this.deserializeBashoState(serialized.currentBasho) : undefined,
+      currentBasho: serialized.currentBasho
+        ? this.deserializeBashoState(serialized.currentBasho)
+        : undefined,
       history: serialized.history || [],
       historyIndex: s.historyIndex,
       lineage: s.lineage || [],
       records: s.records || {
-        allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-        active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+        allTime: {
+          careerWins: [],
+          makuuchiWins: [],
+          yusho: [],
+          consecutiveYusho: [],
+          kinboshi: [],
+        },
+        active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       },
       hallOfFame: s.hallOfFame,
       events: s.events || { version: "1.0.0", log: [], dedupe: {} },
@@ -173,18 +185,13 @@ export const SerializationService = {
       mediaState: s.mediaState,
       trainingState: this.objectToMap(s.trainingState || {}),
       settings: s.settings || { archiveMode: "standard" },
-      calendar: s.calendar || {
-        year: serialized.year,
-        month: 1,
-        currentWeek: serialized.week || 1,
-        currentDay: 1
-      }
     };
 
     // Rebuild ephemeral transientContext so the UI has valid activeModifiers
     // immediately after a save is loaded, without requiring an advance.
     try {
-      return phase02_context(liveWorld);
+      const contextImpact = phase02_context(liveWorld);
+      return resolveImpacts(liveWorld, [contextImpact]);
     } catch {
       // Non-fatal: UI falls back to raw multipliers if context rebuild fails
       return liveWorld;
@@ -207,7 +214,6 @@ export const SerializationService = {
     };
   },
 
-
   sanitizeRikishi(r: Rikishi): void {
     if (r.economics) {
       const e = r.economics;
@@ -225,5 +231,5 @@ export const SerializationService = {
 
   sanitizeHeya(h: Heya): void {
     if (typeof h.funds !== "number") h.funds = 0;
-  }
+  },
 };

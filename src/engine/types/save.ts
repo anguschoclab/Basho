@@ -13,19 +13,19 @@ import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
 import type { CyclePhase } from "./world";
 import type { BashoResult } from "./basho";
-import type { Sponsor, Koenkai } from './sponsors';
-import type { ClosedHeyaRecord } from './world';
-import type { Staff } from './staff';
-import type { HistoryIndex } from '../historyIndex';
-import type { LineageEdge } from '../lineage';
-import type { WorldRecords } from './records';
-import type { HallOfFameState } from '../hallOfFame';
-import type { RivalriesState } from '../rivalries';
-import type { MyosekiMarket } from './myoseki';
-import type { OzekiKadobanMap } from '../banzuke';
-import type { MediaState } from './media';
-import type { AlmanacSnapshot } from '../almanac';
-import type { BeyaTrainingState } from './training';
+import type { Sponsor, Koenkai } from "./sponsors";
+import type { ClosedHeyaRecord } from "./world";
+import type { Staff } from "./staff";
+import type { HistoryIndex } from "../historyIndex";
+import type { LineageEdge } from "../lineage";
+import type { WorldRecords } from "./records";
+import type { HallOfFameState } from "../hallOfFame";
+import type { RivalriesState } from "../rivalries";
+import type { MyosekiMarket } from "./myoseki";
+import type { OzekiKadobanMap } from "../banzuke";
+import type { MediaState } from "./media";
+import type { AlmanacSnapshot } from "../almanac";
+import type { HeyaTrainingState } from "./training";
 
 /** Serialized form of sponsor pool for JSON storage. */
 export interface SerializedSponsorPool {
@@ -38,7 +38,6 @@ export interface SerializedSponsorPoolFixed {
   sponsors: Record<string, Sponsor>;
   koenkais: Record<string, Koenkai>;
 }
-
 
 /** Defines the structure for serialized basho state. */
 export interface SerializedBashoState {
@@ -68,7 +67,7 @@ export interface SerializedWorldState {
   currentBasho?: SerializedBashoState;
   history: BashoResult[];
   historyIndex?: HistoryIndex;
-  
+
   lineage: LineageEdge[];
   records: WorldRecords;
   hallOfFame?: HallOfFameState;
@@ -77,7 +76,8 @@ export interface SerializedWorldState {
   rivalriesState?: RivalriesState;
   myosekiMarket?: MyosekiMarket;
 
-  ftue: FTUEState;
+  /** @deprecated Superseded by tutorialState - retained for save compatibility */
+  ftue?: FTUEState;
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;
@@ -87,24 +87,15 @@ export interface SerializedWorldState {
   sponsorPool?: SerializedSponsorPoolFixed;
   mediaState?: MediaState;
 
-
   dayIndexGlobal: number;
   almanacSnapshots: AlmanacSnapshot[];
 
-  calendar: {
-    year: number;
-    month: number;
-    currentWeek: number;
-    currentDay: number;
-  };
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
-
   };
-  trainingState?: Record<Id, BeyaTrainingState>;
+  trainingState?: Record<Id, HeyaTrainingState>;
   candidatePool?: TalentPoolWorldState; // Talent acquisition pool
 }
-
 
 /** Type representing save version. */
 export type SaveVersion = "1.0.0";

@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Sparkles, Building2, TrendingDown, AlertTriangle, Plus } from "lucide-react";
 import { StableName } from "@/components/ClickableName";
+import { HeyaBrandBadge } from "@/components/heya/HeyaBrandBadge";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand } from "@/engine/types/narrative";
 import type { LucideIcon } from "lucide-react";
+import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const STATURE_CONFIG: Record<
@@ -76,6 +78,7 @@ interface HeyaCardProps {
   onPreview?: () => void;
   isRecommended?: boolean;
   sekitoriCount: number;
+  brandIdentity?: HeyaBrandIdentity;
 }
 
 export function HeyaCard({
@@ -85,6 +88,7 @@ export function HeyaCard({
   onPreview,
   isRecommended,
   sekitoriCount,
+  brandIdentity,
 }: HeyaCardProps) {
   const config = STATURE_CONFIG[heya.statureBand];
   const Icon = config.icon;
@@ -113,25 +117,28 @@ export function HeyaCard({
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <span className="truncate">
-                <StableName id={heya.id} name={heya.name} />
-              </span>
-              {isRecommended && (
-                <Badge
-                  variant="secondary"
-                  className="text-xs font-bold uppercase tracking-tighter h-5"
-                >
-                  REC
-                </Badge>
+          <div className="flex items-center gap-3 min-w-0">
+            {brandIdentity && <HeyaBrandBadge brand={brandIdentity} size="sm" />}
+            <div className="min-w-0">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span className="truncate">
+                  <StableName id={heya.id} name={heya.name} />
+                </span>
+                {isRecommended && (
+                  <Badge
+                    variant="secondary"
+                    className="text-xs font-bold uppercase tracking-tighter h-5"
+                  >
+                    REC
+                  </Badge>
+                )}
+              </CardTitle>
+              {heya.nameJa && (
+                <p className="text-sm text-muted-foreground font-display truncate opacity-70">
+                  {heya.nameJa}
+                </p>
               )}
-            </CardTitle>
-            {heya.nameJa && (
-              <p className="text-sm text-muted-foreground font-display truncate opacity-70">
-                {heya.nameJa}
-              </p>
-            )}
+            </div>
           </div>
           <Badge className={`${config.color} border shrink-0 font-bold`}>
             <Icon className="w-3 h-3 mr-1" />

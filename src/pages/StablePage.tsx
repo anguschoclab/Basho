@@ -13,6 +13,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableName } from "@/components/ClickableName";
 import { projectHeyaData } from "@/presenters/uiDigest";
+import { HeyaBrandHeader } from "@/components/heya/HeyaBrandHeader";
 
 export default function StablePage() {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ export default function StablePage() {
 
   const viewingHeyaId = world && playerHeyaId ? routeId || playerHeyaId : "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
+
+  // Get heya brand identity if available
+  const brandIdentity =
+    heya?.brandIdentityId && world?.heyaBrandIdentities
+      ? world.heyaBrandIdentities.get(heya.brandIdentityId)
+      : null;
 
   // Compute rikishi list before any early returns
   const rikishiList = useMemo(() => {
@@ -45,33 +52,42 @@ export default function StablePage() {
       </Helmet>
 
       <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-          <div>
-            <h1 className="text-4xl font-display font-bold flex items-center gap-3">
-              <Building className="h-10 w-10 text-primary" />
-              <StableName id={heya.id} name={heya.name} />
-              {heya.nameJa && (
-                <span className="text-2xl text-muted-foreground font-normal ml-2">
-                  {heya.nameJa}
-                </span>
-              )}
-            </h1>
-            <p className="text-muted-foreground mt-1 flex items-center gap-2">
-              <Users className="h-4 w-4" /> {rikishiList.length} Active Rikishi
-            </p>
+        {/* Header with brand theming */}
+        {brandIdentity ? (
+          <HeyaBrandHeader
+            brand={brandIdentity}
+            heyaName={heya.name}
+            subtitle={`${rikishiList.length} Active Rikishi • ${heya.ichimon || "Independent"}`}
+            size="lg"
+          />
+        ) : (
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+            <div>
+              <h1 className="text-4xl font-display font-bold flex items-center gap-3">
+                <Building className="h-10 w-10 text-primary" />
+                <StableName id={heya.id} name={heya.name} />
+                {heya.nameJa && (
+                  <span className="text-2xl text-muted-foreground font-normal ml-2">
+                    {heya.nameJa}
+                  </span>
+                )}
+              </h1>
+              <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                <Users className="h-4 w-4" /> {rikishiList.length} Active Rikishi
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <TooltipWrap
+                content="Ichimon: A group of affiliated stables within the Association"
+                side="bottom"
+              >
+                <Badge variant="outline" className="px-3 py-1 text-sm bg-secondary/50 cursor-help">
+                  {heya.ichimon || "Independent"}
+                </Badge>
+              </TooltipWrap>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <TooltipWrap
-              content="Ichimon: A group of affiliated stables within the Association"
-              side="bottom"
-            >
-              <Badge variant="outline" className="px-3 py-1 text-sm bg-secondary/50 cursor-help">
-                {heya.ichimon || "Independent"}
-              </Badge>
-            </TooltipWrap>
-          </div>
-        </div>
+        )}
 
         <Tabs defaultValue="roster" className="space-y-6">
           <TabsList className="grid w-[400px] grid-cols-3">

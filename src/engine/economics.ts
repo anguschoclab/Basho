@@ -99,10 +99,10 @@ export function onBoutResolvedEconomics(
     kenshoCount = calculateKenshoEnvelopes(
       world,
       winner,
-      (result as any).kenshoBanners || [],
+      result.kenshoBanners || [],
       result.awardFact ?? undefined,
       kenshoRng
-    ); // eslint-disable-line @typescript-eslint/no-explicit-any
+    );
     result.kenshoEnvelopes = kenshoCount;
   }
 

@@ -58,10 +58,11 @@ export class BardEngine {
     let idx = 0;
     let template = "";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Process is a global object
     const isTest =
-      typeof (globalThis as any).process !== "undefined" &&
-      (globalThis as any).process.env?.NODE_ENV === "test";
+      typeof (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process !==
+        "undefined" &&
+      (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV ===
+        "test";
 
     do {
       idx = rng.int(0, options.length - 1);

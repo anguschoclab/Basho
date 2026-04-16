@@ -25,9 +25,9 @@ export function generateAvatarConfig(params: AvatarGenerationParams): AvatarConf
   // Determine age stage
   let ageStage: AvatarConfig["ageStage"];
   if (age < 20) ageStage = "teen";
-  else if (age < 30) ageStage = "young";
-  else if (age < 36) ageStage = "prime";
-  else if (age < 41) ageStage = "veteran";
+  else if (age < 25) ageStage = "young";
+  else if (age < 35) ageStage = "prime";
+  else if (age < 45) ageStage = "veteran";
   else ageStage = "elder";
 
   // Calculate aging effects
@@ -68,9 +68,9 @@ export function generateAvatarConfig(params: AvatarGenerationParams): AvatarConf
 export function updateAvatarForAging(config: AvatarConfig, newAge: number): AvatarConfig {
   let ageStage: AvatarConfig["ageStage"];
   if (newAge < 20) ageStage = "teen";
-  else if (newAge < 30) ageStage = "young";
-  else if (newAge < 36) ageStage = "prime";
-  else if (newAge < 41) ageStage = "veteran";
+  else if (newAge < 25) ageStage = "young";
+  else if (newAge < 35) ageStage = "prime";
+  else if (newAge < 45) ageStage = "veteran";
   else ageStage = "elder";
 
   const rng = new SeededRNG(config.seed + "_age_" + newAge);

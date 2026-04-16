@@ -13,6 +13,7 @@ import { Zap, Activity, Filter, SortAsc, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 
 interface RosterListProps {
   rikishiList: UIRikishi[];
@@ -99,6 +100,12 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                         }
                         fallback={r.shikona}
                       />
+                      {/* Kesho badge for sekitori */}
+                      {r.keshoMawashi && (
+                        <TooltipWrap content={`Kesho-mawashi (${r.keshoMawashi.tier})`} side="top">
+                          <KeshoBadge kesho={r.keshoMawashi} size="sm" />
+                        </TooltipWrap>
+                      )}
                       <Badge
                         className={cn(
                           "text-[9px] font-black uppercase tracking-widest px-2 h-5 border-0",
