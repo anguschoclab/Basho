@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { Button } from "@/components/ui/button";
 
 export interface SubNavTab {
   id: string;
@@ -47,44 +48,50 @@ export function SubNavTabs({
           const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
           return (
             <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
-              <button
-                onClick={() => {
-                  if (tab.href) {
-                    navigate({ to: tab.href });
-                  } else {
-                    onTabChange?.(tab.id);
-                  }
-                }}
-                className={cn(
-                  "relative h-full px-4 flex items-center transition-all duration-150 group",
-                  isActive
-                    ? "text-[hsl(var(--primary))]"
-                    : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-                )}
-                style={{ fontFamily: "var(--font-mono)" }}
+              <Button
+                variant="ghost"
+                className="h-full p-0 rounded-none hover:bg-transparent"
+                asChild
               >
-                <span className="text-[11px] font-semibold tracking-wider uppercase relative z-10">
-                  {tab.label}
-                </span>
+                <button
+                  onClick={() => {
+                    if (tab.href) {
+                      navigate({ to: tab.href });
+                    } else {
+                      onTabChange?.(tab.id);
+                    }
+                  }}
+                  className={cn(
+                    "relative h-full px-4 flex items-center transition-all duration-150 group",
+                    isActive
+                      ? "text-[hsl(var(--primary))]"
+                      : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+                  )}
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  <span className="text-[11px] font-semibold tracking-wider uppercase relative z-10">
+                    {tab.label}
+                  </span>
 
-                {/* Hover background */}
-                {!isActive && (
-                  <span className="absolute inset-x-1 inset-y-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-[hsl(var(--muted)/0.5)]" />
-                )}
+                  {/* Hover background */}
+                  {!isActive && (
+                    <span className="absolute inset-x-1 inset-y-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-[hsl(var(--muted)/0.5)]" />
+                  )}
 
-                {/* Active underline — gold rule */}
-                {isActive && (
-                  <span
-                    className="absolute bottom-0 left-1 right-1 h-[2px] rounded-t"
-                    style={{
-                      background:
-                        "linear-gradient(to right, hsl(var(--gold) / 0.6), hsl(var(--primary)), hsl(var(--gold) / 0.6))",
-                      boxShadow: "0 -1px 8px hsl(var(--primary) / 0.3)",
-                      animation: "fadeIn 0.2s ease-out",
-                    }}
-                  />
-                )}
-              </button>
+                  {/* Active underline — gold rule */}
+                  {isActive && (
+                    <span
+                      className="absolute bottom-0 left-1 right-1 h-[2px] rounded-t"
+                      style={{
+                        background:
+                          "linear-gradient(to right, hsl(var(--gold) / 0.6), hsl(var(--primary)), hsl(var(--gold) / 0.6))",
+                        boxShadow: "0 -1px 8px hsl(var(--primary) / 0.3)",
+                        animation: "fadeIn 0.2s ease-out",
+                      }}
+                    />
+                  )}
+                </button>
+              </Button>
             </TooltipWrap>
           );
         })}

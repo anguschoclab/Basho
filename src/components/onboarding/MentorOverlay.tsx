@@ -8,14 +8,12 @@ import { Button } from "@/components/ui/button";
 import { X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type MentorStep =
-  | "stamina"
-  | "grip"
-  | "momentum"
-  | "basho_record"
-  | null;
+export type MentorStep = "stamina" | "grip" | "momentum" | "basho_record" | null;
 
-const MENTOR_CONTENT: Record<NonNullable<MentorStep>, { title: string; titleJa: string; body: string }> = {
+const MENTOR_CONTENT: Record<
+  NonNullable<MentorStep>,
+  { title: string; titleJa: string; body: string }
+> = {
   stamina: {
     title: "Stamina",
     titleJa: "体力",
@@ -74,17 +72,21 @@ export function MentorOverlay({
             Coach — Step {stepIndex + 1}/{totalSteps}
           </p>
           <div className="flex items-baseline gap-2">
-            <h3 className="font-display font-black text-lg uppercase tracking-tight">{content.title}</h3>
+            <h3 className="font-display font-black text-lg uppercase tracking-tight">
+              {content.title}
+            </h3>
             <span className="text-xs text-muted-foreground opacity-60">{content.titleJa}</span>
           </div>
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onDismiss}
-          className="text-muted-foreground hover:text-foreground transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background rounded-sm"
+          className="h-6 w-6 text-muted-foreground hover:text-foreground transition-colors mt-0.5 rounded-sm"
           aria-label="Dismiss"
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       {/* Progress dots */}
@@ -94,7 +96,11 @@ export function MentorOverlay({
             key={i}
             className={cn(
               "h-1 rounded-full transition-all duration-300",
-              i === stepIndex ? "w-6 bg-primary" : i < stepIndex ? "w-3 bg-primary/40" : "w-3 bg-muted"
+              i === stepIndex
+                ? "w-6 bg-primary"
+                : i < stepIndex
+                  ? "w-3 bg-primary/40"
+                  : "w-3 bg-muted"
             )}
           />
         ))}
@@ -106,11 +112,19 @@ export function MentorOverlay({
       {/* Action */}
       <div className="flex justify-end">
         {stepIndex < totalSteps - 1 ? (
-          <Button size="sm" onClick={onNext} className="gap-2 font-display font-black uppercase tracking-wide text-xs">
+          <Button
+            size="sm"
+            onClick={onNext}
+            className="gap-2 font-display font-black uppercase tracking-wide text-xs"
+          >
             Next <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         ) : (
-          <Button size="sm" onClick={onDismiss} className="gap-2 font-display font-black uppercase tracking-wide text-xs bg-primary">
+          <Button
+            size="sm"
+            onClick={onDismiss}
+            className="gap-2 font-display font-black uppercase tracking-wide text-xs bg-primary"
+          >
             Got it!
           </Button>
         )}
