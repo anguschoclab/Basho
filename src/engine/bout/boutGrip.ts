@@ -128,12 +128,14 @@ export function evolveGripGeometry(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  belt: BeltBattleState
+  belt: BeltBattleState,
+  eastBoutFatigue = 0,
+  westBoutFatigue = 0
 ): void {
   const eastTechnique = stat(east, "technique");
   const westTechnique = stat(west, "technique");
-  const eastFatigue = east.fatigue ?? 0;
-  const westFatigue = west.fatigue ?? 0;
+  const eastFatigue = (east.fatigue ?? 0) + eastBoutFatigue;
+  const westFatigue = (west.fatigue ?? 0) + westBoutFatigue;
 
   const techniqueMargin = eastTechnique - westTechnique;
 
@@ -154,6 +156,32 @@ export function evolveGripGeometry(
     }
     if (belt.westRight && !belt.westRight.isBlocked) {
       belt.westRight.armReach = Math.min(0.15, belt.westRight.armReach + 0.005 * rngFactor);
+    }
+  }
+
+  // Grip depth evolution based on technique margin
+  // When technique margin > 15, winner can deepen grip
+  if (techniqueMargin > 15) {
+    if (belt.eastDepth === "standard") {
+      belt.eastDepth = "deep";
+      // Update lever arms for deeper grip
+      if (belt.eastLeft) belt.eastLeft.leverArm = 0.29;
+      if (belt.eastRight) belt.eastRight.leverArm = 0.29;
+    } else if (belt.eastDepth === "deep") {
+      belt.eastDepth = "maemitsu";
+      // Update lever arms for maemitsu grip
+      if (belt.eastLeft) belt.eastLeft.leverArm = 0.33;
+      if (belt.eastRight) belt.eastRight.leverArm = 0.33;
+    }
+  } else if (techniqueMargin < -15) {
+    if (belt.westDepth === "standard") {
+      belt.westDepth = "deep";
+      if (belt.westLeft) belt.westLeft.leverArm = 0.29;
+      if (belt.westRight) belt.westRight.leverArm = 0.29;
+    } else if (belt.westDepth === "deep") {
+      belt.westDepth = "maemitsu";
+      if (belt.westLeft) belt.westLeft.leverArm = 0.33;
+      if (belt.westRight) belt.westRight.leverArm = 0.33;
     }
   }
 

@@ -43,6 +43,8 @@ export interface PhysicalBody {
   velocityZ: number;
   /** Is the body falling (cogOffset exceeds footSpread/2)? */
   isFalling: boolean;
+  /** Ticks of active exertion; accumulated per push/belt tick */
+  boutFatigue: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -128,7 +130,13 @@ export type CombatPhase =
   | { tag: "tachiai"; impactVelocity: number; contactAngle: number }
   | { tag: "push_battle"; state: PushBattleState }
   | { tag: "belt_battle"; state: BeltBattleState; push: PushBattleState }
-  | { tag: "edge_crisis"; crisis: EdgeCrisisState; prev: "push_battle" | "belt_battle" }
+  | {
+      tag: "edge_crisis";
+      crisis: EdgeCrisisState;
+      prev: "push_battle" | "belt_battle";
+      savedPush: PushBattleState;
+      savedBelt?: BeltBattleState;
+    }
   | { tag: "resolved"; winner: Side; exitVector: { x: number; z: number }; technique: KimariteId };
 
 // ---------------------------------------------------------------------------
@@ -143,8 +151,6 @@ export interface EngineStateV2 {
   grappleState: GrappleState;
   /** Tracks who won the initial tachiai clash (may differ from bout winner) */
   tachiaiWinner: Side;
-  /** Accumulated bout log entries — copied to BoutResult.log after physics resolve */
-  logEntries: import("./basho").BoutLogEntry[];
 }
 
 // ---------------------------------------------------------------------------

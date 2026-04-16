@@ -38,6 +38,7 @@ export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
     velocityX: 0,
     velocityZ: 0,
     isFalling: false,
+    boutFatigue: 0,
   };
 }
 
@@ -119,14 +120,25 @@ export function classifyBeltFallKimarite(
   _st: EngineStateV2,
   fallenSide: Side
 ): KimariteId {
-  // Use the WINNER'S torque (opponent of fallen side) to classify the throw
-  const winnerTorque = fallenSide === "east" ? belt.torqueWest : belt.torqueEast;
+  const winnerSide = fallenSide === "east" ? "west" : "east";
+  const winnerTorque = winnerSide === "east" ? belt.torqueEast : belt.torqueWest;
   const winnerGrip = fallenSide === "east" ? belt.westGripClass : belt.eastGripClass;
 
   if (winnerTorque > 20) {
     // High-torque throw: uwate (outside arm over) or shitate (inside arm under)
     return winnerGrip === "uwate" || winnerGrip === "morozashi" ? "uwatenage" : "shitatenage";
   }
+
+  // E2: kotenage (arm-lock throw) when winner has shitate grip and moderate torque
+  if (winnerGrip === "shitate" && winnerTorque > 10 && winnerTorque <= 20) {
+    return "kotenage";
+  }
+
+  // E2: sukuinage (underarm throw) when winner has uwate grip and moderate torque
+  if (winnerGrip === "uwate" && winnerTorque > 10 && winnerTorque <= 20) {
+    return "sukuinage";
+  }
+
   return "yoritaoshi";
 }
 
@@ -138,6 +150,14 @@ export function classifyEdgeExitKimarite(
   // This is called when the fighter FAILS to escape (rng failed recoveryProbability).
   // Classify by which phase drove them to the edge and how long they resisted.
   const fromBelt = st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle";
+  const crisisSide = crisis.side;
+  const defenderSide = crisisSide === "east" ? "west" : "east";
+  const defenderBody = defenderSide === "east" ? st.east : st.west;
+
+  // E1: okuridashi when defender has positive momentum while exiting (overruns edge)
+  if (Math.abs(defenderBody.velocityX) > 0.5) {
+    return "okuridashi";
+  }
 
   if (fromBelt) {
     // Belt-driven edge exit: walk-out (yorikiri) or throw-down (yoritaoshi)
