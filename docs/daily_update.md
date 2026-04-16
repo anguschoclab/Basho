@@ -1,18 +1,22 @@
 📝 Daily Progress & Docs Update
- 🏗️ Codebase Status:
- Recently, massive additions have been integrated into the core engine systems, specifically expanding the `welfare`, `training`, `recruitment`, and `narrative` modules, alongside fleshing out the daily and weekly pipeline orchestrators in `src/engine/tick/`. A strong separation of concerns is actively maintained, ensuring simulation outputs strictly translate to observable UI descriptors rather than raw numerical values.
+ 🏗️ Codebase Status: The engine has been massively restructured into a Strict Pipeline Architecture (`src/engine/tick/phases/`). All daily and weekly ticks are now compartmentalized into pure impact-returning phases (e.g., `phase01_daily_economy`, `phase01_week_economy`). Finances correctly calculate JSA subsidies and sponsor income via `FinanceCalculator.ts`. UI components strictly rely on `UIDigest` and presenters.
 
- [WIP focus]
- The current focus is stabilizing the daily and weekly pipeline orchestrators (e.g., `tickDaily.ts`, `phase*.ts` files) to ensure game loop integrity, appropriately handle institutional operations like NPC AI decision-making and roster overflow (via `overflow.ts`), and manage state transitions for training and welfare mechanics correctly.
+ WIP focus: Migration of existing simulation logic into the strict phase pipelines and ensuring canonical daily order resolution.
 
  📖 Basho Constitution Alignment:
- ✅ Aligned: The codebase implements `HYSTERESIS_DELTA = 5` correctly within `src/engine/systems/narrative/NarrativeService.ts`, fully satisfying the hysteresis buffer required by section C5.3 of the Constitution. Additionally, the NPC AI roster overflow logic (`enforceHardCapRosterOverflow` used in `phase01_week_npc_ai.ts`) aligns perfectly with section C4.3.
+ ✅ Aligned:
+- C2.4 / C2.5 Economy minimums: `KOENKAI_SURVIVAL_FLOOR` of ¥28,000 is present and applied in `FinanceCalculator.ts`.
+- C3.3 Daily tick order: `advanceOneDay` correctly sequences preflight, economy, welfare, sponsors, basho, and boundary gates.
+- C4.3 Roster Caps: Hard cap of 30 enforced in `src/engine/overflow.ts` with correct deterministic scoring (potential, loyalty, injury, trend, foreign bias).
+- C5.3 Hysteresis Buffer: Present and utilized in `NarrativeService.ts` to translate 0-100 values to bands without oscillation.
 
- ⚠️ Missing/Deviations: The narrative presentation utilities do not yet fully implement all specified modifier tags for injury perception required by section C5.4. While `sidelined`, `hampered` and `taped_up` are present in `src/engine/descriptorBands.ts`, `favoring_it` and `moving_gingerly` are completely missing. Furthermore, the `toDescriptorBand` function, which is formally defined as an implementation contract in C5.5, is currently missing from the codebase.
+ ⚠️ Missing/Deviations:
+- C1.2 PBP Grammar: The required file `src/engine/bout/grammarDefinitions.ts` is completely missing. PBP strings are not using the structured, version-controlled repository contract.
+- C5.4 Injury Modifiers: UI perception generation in `perception.ts` is missing the specific injury modifier tags (`hampered`, `favoring_it`, `taped_up`, `moving_gingerly`) to reflect combat status without leaking raw attributes.
 
  📄 Proposed Documentation Updates:
- docs/daily_update.md: Add a new entry summarizing the implementation of the tick pipeline architecture, NPC AI overflow logic constraints, and hysteresis integration.
+ docs/Basho_Constitution_v1.2_HARMONIZED_NONLOSSY.md: Add notes acknowledging the successful pipeline architecture migration while flagging the pending PBP grammar implementation.
 
- Code Paths Covered: `src/engine/tick/`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/descriptorBands.ts`
+ Code Paths Covered: `src/engine/tick/tickDaily.ts`, `src/engine/tick/phases/*`, `src/engine/systems/economy/FinanceCalculator.ts`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/perception.ts`
 
- Key Knowledge Gaps Addressed: Documents that fundamental pipeline execution ordering and hysteresis protections are established, while explicitly flagging the need to complete the C5.4 injury modifier hooks and the C5.5 implementation contract within the narrative presentation layer.
+ Key Knowledge Gaps Addressed: Validated that the new phase-based tick system correctly preserves the required constitutional ordering and limits.
