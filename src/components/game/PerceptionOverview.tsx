@@ -57,7 +57,7 @@ function RikishiSelectorList({
   onSelect,
 }: {
   perceptions: Array<{ rikishiId: string; shikona: string; rank: string }>;
-  selectedId: string;
+  selectedId: string | undefined;
   onSelect: (id: string) => void;
 }) {
   return (
