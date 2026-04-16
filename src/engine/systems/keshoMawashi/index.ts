@@ -8,6 +8,7 @@ export {
   generateKeshoForPromotions,
   generateKeshoMawashi,
   generateYokozunaTsuna,
+  upgradeKeshoMawashi,
 } from "./KeshoMawashiGenerator";
 
 export {

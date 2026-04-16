@@ -116,6 +116,7 @@ export function makeMockHeya(id: string, overrides: Partial<Heya> = {}): Heya {
 // ── WorldState ─────────────────────────────────────────────────────────────
 
 export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
+  const seed = overrides.seed || "test-seed";
   return {
     rikishi: new Map(),
     historicalRikishi: new Map(),
@@ -131,11 +132,12 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     week: 1,
     dayIndexGlobal: 0,
     id: "world-test",
-    seed: "test-seed",
+    seed,
     cyclePhase: "interim",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     records: {} as any,
     settings: { archiveMode: "standard" },
+    rng: new SeededRNG(seed),
     ...overrides,
   } as unknown as WorldState;
 }
@@ -163,26 +165,17 @@ export function mockHeyaBrandIdentity(
   overrides: Partial<HeyaBrandIdentity> = {}
 ): HeyaBrandIdentity {
   const rng = new SeededRNG(id);
-  const traditionLevels: Array<"reformist" | "balanced" | "traditionalist" | "ultra_traditional"> =
-    ["reformist", "balanced", "traditionalist", "ultra_traditional"];
 
   return {
     id: `brand-${id}`,
     heyaId: id,
-    baseColors: {
-      primary: rng.pick(["#1a365d", "#744210", "#276749", "#742a2a", "#2d3748"]),
-      secondary: rng.pick(["#2c5282", "#975a16", "#2f855a", "#9b2c2c", "#4a5568"]),
-      accent: rng.pick(["#d69e2e", "#ecc94b", "#f6ad55", "#fc8181", "#90cdf4"]),
-    },
+    primaryColor: rng.pick(["#1a365d", "#744210", "#276749", "#742a2a", "#2d3748"]),
+    secondaryColor: rng.pick(["#2c5282", "#975a16", "#2f855a", "#9b2c2c", "#4a5568"]),
+    accentColor: rng.pick(["#d69e2e", "#ecc94b", "#f6ad55", "#fc8181", "#90cdf4"]),
     crestMotif: rng.pick(["sakura", "pine", "waves", "mountain", "rising_sun"]),
-    traditionLevel: rng.pick(traditionLevels),
-    designPaletteId: rng.pick([
-      "tokoname",
-      "edo_elegant",
-      "imperial_court",
-      "kansai_warm",
-      "northern_snow",
-    ]),
+    crestStyle: rng.pick(["circular", "shield", "diamond", "oval", "square"]),
+    traditionLevel: 0.5 + rng.next() * 0.5, // 0.5-1.0
+    createdAt: { year: 2025, basho: "hatsu" },
     ...overrides,
   };
 }

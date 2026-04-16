@@ -74,6 +74,7 @@ const BanzukeEntryRow = React.memo(
                 rank === "komusubi" ||
                 rank === "maegashira"
               }
+              rankTier={rank}
               fallback={shikona}
             />
             <span

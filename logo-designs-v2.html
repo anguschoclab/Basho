@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BASHO Logo Design V2</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      padding: 40px;
+      color: #fff;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .option {
+      background: #d4a020;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .option h2 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+    }
+    .option p {
+      font-size: 12px;
+      color: #5a4a10;
+      margin-bottom: 20px;
+    }
+    .logo-box {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .logo-box svg {
+      width: 90px;
+      height: 90px;
+    }
+    .in-context {
+      margin-top: 50px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #d4a020;
+      padding: 40px;
+      border-radius: 20px;
+    }
+    .in-context h3 {
+      color: rgba(0,0,0,0.5);
+      margin-bottom: 30px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .header-mock {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .header-mock .logo-wrap {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-mock .logo-wrap svg {
+      width: 60px;
+      height: 60px;
+    }
+    .header-text h4 {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin: 0;
+    }
+    .header-text .jp { font-size: 18px; opacity: 0.7; margin-top: 4px; }
+    .context-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .context-item {
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .context-item .mini-logo {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 8px;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .context-item .mini-logo svg {
+      width: 36px;
+      height: 36px;
+    }
+    .context-item span {
+      font-size: 11px;
+      color: rgba(0,0,0,0.6);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <h1>BASHO Logo — Take 2</h1>
+  <p class="subtitle">Better proportions, bolder shide zigzags, more iconic presence</p>
+
+  <div class="grid">
+    <!-- Design 1: Bold Zigzags -->
+    <div class="option">
+      <h2>1. Bold Zigzags</h2>
+      <p>Emphasizes the iconic shide paper streamers with thick, dramatic zigzags</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Back loop -->
+          <ellipse cx="50" cy="22" rx="10" ry="12" stroke="#d4a020" stroke-width="3" fill="none"/>
+          <!-- Main thick belt body -->
+          <path d="M22 32 Q50 28 78 32 L80 52 Q50 48 20 52 Z" fill="#d4a020"/>
+          <!-- Large knot -->
+          <circle cx="50" cy="38" r="10" fill="white" stroke="#d4a020" stroke-width="2"/>
+          <!-- Inner knot detail -->
+          <circle cx="50" cy="38" r="5" fill="#d4a020"/>
+          <!-- Left shide - dramatic zigzags -->
+          <path d="M28 52 L22 68 L34 74 L28 90 L40 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M42 50 L36 66 L48 72 L42 88 L54 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Right shide -->
+          <path d="M58 50 L52 66 L64 72 L58 88 L70 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M72 52 L66 68 L78 74 L72 90 L84 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Design 2: Classic Crest -->
+    <div class="option">
+      <h2>2. Classic Crest</h2>
+      <p>Traditional mon-style with thick rope and five distinct shide</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer decorative ring -->
+          <circle cx="50" cy="50" r="46" stroke="#d4a020" stroke-width="2" fill="none"/>
+          <!-- Belt structure -->
+          <path d="M28 30 Q50 26 72 30 L74 50 Q50 46 26 50 Z" fill="#d4a020"/>
+          <!-- Loop -->
+          <ellipse cx="50" cy="18" rx="8" ry="10" stroke="#d4a020" stroke-width="3" fill="none"/>
+          <!-- Knot -->
+          <circle cx="50" cy="35" r="7" fill="white" stroke="#d4a020" stroke-width="2"/>
+          <!-- Five shide zigzags -->
+          <path d="M32 50 L28 62 L38 67 L34 79 L44 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M42 50 L38 62 L48 67 L44 79 L54 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M52 50 L48 62 L58 67 L54 79 L64 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M62 50 L58 62 L68 67 L64 79 L74 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Design 3: Minimal Rope -->
+    <div class="option">
+      <h2>3. Minimal Rope</h2>
+      <p>Clean thick rope outline with negative space shide</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Thick rope outline -->
+          <path d="M20 30 Q50 24 80 30 L82 55 Q50 50 18 55 Z" stroke="#d4a020" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <!-- Loop -->
+          <ellipse cx="50" cy="15" rx="12" ry="14" stroke="#d4a020" stroke-width="6" fill="none"/>
+          <!-- Shide cutouts (white lines on rope) -->
+          <path d="M30 48 L26 60 L36 65 L32 77 L42 82" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M45 46 L41 58 L51 63 L47 75 L57 80" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M60 46 L56 58 L66 63 L62 75 L72 80" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M75 48 L71 60 L81 65 L77 77 L87 82" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Center circle -->
+          <circle cx="50" cy="38" r="6" fill="#d4a020"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Design 4: Layered Depth -->
+    <div class="option">
+      <h2>4. Layered Depth</h2>
+      <p>Shadow layers creating dimensional rope with prominent shide</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Shadow layer -->
+          <path d="M24 34 Q50 30 76 34 L78 54 Q50 50 22 54 Z" fill="#b8941a"/>
+          <!-- Main belt -->
+          <path d="M22 32 Q50 28 78 32 L80 52 Q50 48 20 52 Z" fill="#d4a020"/>
+          <!-- Loop shadow -->
+          <ellipse cx="52" cy="24" rx="10" ry="12" stroke="#b8941a" stroke-width="4" fill="none"/>
+          <!-- Loop main -->
+          <ellipse cx="50" cy="22" rx="10" ry="12" stroke="#d4a020" stroke-width="4" fill="none"/>
+          <!-- Knot shadow -->
+          <circle cx="52" cy="40" r="9" fill="#b8941a"/>
+          <!-- Knot main -->
+          <circle cx="50" cy="38" r="9" fill="white" stroke="#d4a020" stroke-width="2"/>
+          <!-- Shide -->
+          <path d="M28 52 L22 70 L36 76 L30 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M44 50 L38 68 L52 74 L46 92" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M60 50 L54 68 L68 74 L62 92" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M76 52 L70 70 L84 76 L78 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Design 5: Geometric Zig -->
+    <div class="option">
+      <h2>5. Geometric Zig</h2>
+      <p>Sharp angular interpretation of the shide streamers</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Back hexagon loop -->
+          <polygon points="50,12 60,20 60,32 50,40 40,32 40,20" fill="#d4a020"/>
+          <!-- Belt body -->
+          <polygon points="25,30 75,30 78,50 50,48 22,50" fill="#d4a020"/>
+          <!-- Center diamond knot -->
+          <polygon points="50,32 58,40 50,48 42,40" fill="white" stroke="#d4a020" stroke-width="2"/>
+          <!-- Geometric shide left -->
+          <polygon points="30,50 35,50 28,65 38,70 31,85 21,80 28,65 18,60" fill="#d4a020"/>
+          <polygon points="45,48 50,48 43,63 53,68 46,83 36,78 43,63 33,58" fill="#d4a020"/>
+          <!-- Geometric shide right -->
+          <polygon points="55,48 60,48 53,63 63,68 56,83 46,78 53,63 43,58" fill="#d4a020"/>
+          <polygon points="70,50 75,50 68,65 78,70 71,85 61,80 68,65 58,60" fill="#d4a020"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Design 6: Pure Shide -->
+    <div class="option">
+      <h2>6. Pure Shide</h2>
+      <p>Just the iconic zigzag streamers - most minimal and recognizable</p>
+      <div class="logo-box">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Thick central bar (rope) -->
+          <rect x="30" y="25" width="40" height="15" rx="7" fill="#d4a020"/>
+          <!-- Left shide -->
+          <path d="M25 40 L20 55 L32 62 L27 77 L39 84 L34 99" stroke="#d4a020" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M40 40 L35 55 L47 62 L42 77 L54 84 L49 99" stroke="#d4a020" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Right shide -->
+          <path d="M60 40 L55 55 L67 62 L62 77 L74 84 L69 99" stroke="#d4a020" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M75 40 L70 55 L82 62 L77 77 L89 84 L84 99" stroke="#d4a020" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Center knot -->
+          <circle cx="50" cy="32" r="8" fill="white" stroke="#d4a020" stroke-width="3"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-context preview -->
+  <div class="in-context">
+    <h3>In App Header Context</h3>
+    <div class="header-mock">
+      <div class="logo-wrap">
+        <!-- Design 1 in context -->
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="22" rx="10" ry="12" stroke="#d4a020" stroke-width="3" fill="none"/>
+          <path d="M22 32 Q50 28 78 32 L80 52 Q50 48 20 52 Z" fill="#d4a020"/>
+          <circle cx="50" cy="38" r="10" fill="white" stroke="#d4a020" stroke-width="2"/>
+          <circle cx="50" cy="38" r="5" fill="#d4a020"/>
+          <path d="M28 52 L22 68 L34 74 L28 90 L40 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M42 50 L36 66 L48 72 L42 88 L54 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M58 50 L52 66 L64 72 L58 88 L70 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M72 52 L66 68 L78 74 L72 90 L84 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h4>BASHO</h4>
+        <div class="jp">相撲経営シミュレーション</div>
+      </div>
+    </div>
+
+    <div class="context-row">
+      <div class="context-item">
+        <div class="mini-logo">
+          <svg viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="22" rx="10" ry="12" stroke="#d4a020" stroke-width="3" fill="none"/><path d="M22 32 Q50 28 78 32 L80 52 Q50 48 20 52 Z" fill="#d4a020"/><circle cx="50" cy="38" r="10" fill="white" stroke="#d4a020" stroke-width="2"/><circle cx="50" cy="38" r="5" fill="#d4a020"/><path d="M28 52 L22 68 L34 74 L28 90 L40 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 50 L36 66 L48 72 L42 88 L54 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 50 L52 66 L64 72 L58 88 L70 94" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 52 L66 68 L78 74 L72 90 L84 96" stroke="#d4a020" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Bold Zigzags</span>
+      </div>
+      <div class="context-item">
+        <div class="mini-logo">
+          <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="#d4a020" stroke-width="2" fill="none"/><path d="M28 30 Q50 26 72 30 L74 50 Q50 46 26 50 Z" fill="#d4a020"/><ellipse cx="50" cy="18" rx="8" ry="10" stroke="#d4a020" stroke-width="3" fill="none"/><circle cx="50" cy="35" r="7" fill="white" stroke="#d4a020" stroke-width="2"/><path d="M32 50 L28 62 L38 67 L34 79 L44 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 50 L38 62 L48 67 L44 79 L54 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 50 L48 62 L58 67 L54 79 L64 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 50 L58 62 L68 67 L64 79 L74 84" stroke="#d4a020" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Classic Crest</span>
+      </div>
+      <div class="context-item">
+        <div class="mini-logo">
+          <svg viewBox="0 0 100 100" fill="none"><path d="M20 30 Q50 24 80 30 L82 55 Q50 50 18 55 Z" stroke="#d4a020" stroke-width="8" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="15" rx="12" ry="14" stroke="#d4a020" stroke-width="6" fill="none"/><path d="M30 48 L26 60 L36 65 L32 77 L42 82" stroke="#d4a020" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 46 L41 58 L51 63 L47 75 L57 80" stroke="#d4a020" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 46 L56 58 L66 63 L62 75 L72 80" stroke="#d4a020" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M75 48 L71 60 L81 65 L77 77 L87 82" stroke="#d4a020" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="38" r="6" fill="#d4a020"/></svg>
+        </div>
+        <span>Minimal Rope</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

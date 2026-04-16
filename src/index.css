@@ -590,7 +590,49 @@
     50% { transform: scale(1.02); }
   }
 
+  @keyframes avatar-glow {
+    0%, 100% { box-shadow: 0 0 5px 2px hsl(var(--primary) / 0.3); }
+    50% { box-shadow: 0 0 15px 5px hsl(var(--primary) / 0.5); }
+  }
+
+  @keyframes avatar-pulse {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.05); filter: brightness(1.1); }
+  }
+
+  @keyframes avatar-victory {
+    0% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(-5px) scale(1.05); }
+    50% { transform: translateY(-8px) scale(1.08); }
+    75% { transform: translateY(-3px) scale(1.03); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  @keyframes avatar-defeat {
+    0% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(3px) scale(0.98); }
+    50% { transform: translateY(5px) scale(0.95); }
+    75% { transform: translateY(2px) scale(0.97); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
   .avatar-animate {
     animation: avatar-breathe 3s ease-in-out infinite;
+  }
+
+  .avatar-glow {
+    animation: avatar-glow 2s ease-in-out infinite;
+  }
+
+  .avatar-pulse {
+    animation: avatar-pulse 1s ease-in-out;
+  }
+
+  .avatar-victory {
+    animation: avatar-victory 0.8s ease-out;
+  }
+
+  .avatar-defeat {
+    animation: avatar-defeat 0.8s ease-out;
   }
 }

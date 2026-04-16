@@ -137,18 +137,87 @@ export default function MainMenu() {
             <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
               <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-2xl">
                 <svg
-                  viewBox="0 0 40 40"
-                  className="h-10 w-10 text-primary"
+                  viewBox="0 0 100 100"
+                  className="h-14 w-14 text-primary"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Dohyo outer ring */}
-                  <circle cx="20" cy="20" r="16" />
-                  {/* Shikiri-sen - starting lines */}
-                  <line x1="12" y1="18" x2="18" y2="18" />
-                  <line x1="22" y1="18" x2="28" y2="18" />
+                  {/* Apron base (kesho mawashi silhouette) */}
+                  <path
+                    d="M25 45 Q25 85 50 90 Q75 85 75 45 L70 35 L30 35 Z"
+                    fill="currentColor"
+                    opacity="0.9"
+                  />
+                  {/* Shimekomi rope loop at back */}
+                  <ellipse
+                    cx="50"
+                    cy="28"
+                    rx="8"
+                    ry="10"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="none"
+                  />
+                  {/* Main shimekomi belt */}
+                  <path d="M30 35 Q50 32 70 35 L72 50 Q50 48 28 50 Z" fill="currentColor" />
+                  {/* The knot */}
+                  <circle
+                    cx="50"
+                    cy="38"
+                    r="6"
+                    fill="white"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  {/* Shide zigzag streamers - left side */}
+                  <path
+                    d="M35 48 L32 55 L38 58 L35 65 L41 68"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M42 48 L39 55 L45 58 L42 65 L48 68"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Shide zigzag streamers - right side */}
+                  <path
+                    d="M58 48 L55 55 L61 58 L58 65 L64 68"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M65 48 L62 55 L68 58 L65 65 L71 68"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Apron decorative pattern hints */}
+                  <path
+                    d="M35 75 Q50 78 65 75"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    opacity="0.5"
+                    fill="none"
+                  />
+                  <path
+                    d="M38 82 Q50 85 62 82"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    opacity="0.5"
+                    fill="none"
+                  />
                 </svg>
               </div>
               <div className="text-left py-2 pr-6 border-r border-white/10">

@@ -48,9 +48,16 @@ export function generateKeshoForPromotions(
     const isJuryoPromotion = event.from.includes("makushita") && event.to.includes("juryo");
 
     // Check if this is a juryo -> makuuchi promotion (tier upgrade)
-    const isMakuuchiPromotion = event.from.includes("juryo") && event.to.includes("makuuchi");
+    // Makuuchi division ranks: maegashira, sekiwake, komusubi, ozeki, yokozuna
+    const isMakuuchiPromotion =
+      event.from.includes("juryo") &&
+      (event.to.includes("maegashira") ||
+        event.to.includes("sekiwake") ||
+        event.to.includes("komusubi") ||
+        event.to.includes("ozeki") ||
+        event.to.includes("yokozuna"));
 
-    // Check if this is a sanyaku promotion
+    // Check if this is a sanyaku promotion (ranks: sekiwake, komusubi, ozeki, yokozuna)
     const isSanyakuPromotion =
       (event.from.includes("maegashira") || event.from.includes("juryo")) &&
       (event.to.includes("sekiwake") ||
@@ -116,6 +123,24 @@ export function generateKeshoForPromotions(
           description: `${rikishi.shikona} receives the yokozuna tsuna.`,
         },
         { rikishiId: rikishi.id }
+      );
+    }
+
+    // Generate yokozuna-tier kesho for direct yokozuna promotions (if no kesho exists)
+    if (event.to.includes("yokozuna") && !rikishi.keshoMawashi) {
+      const kesho = generateKeshoMawashi(world, rikishi, "yokozuna");
+      builder.updateRikishi(rikishi.id, { keshoMawashi: kesho });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (builder as any).logEvent?.(
+        "KESHO_MAWASHI_CREATED",
+        "narrative",
+        {
+          rikishiId: rikishi.id,
+          tier: "yokozuna",
+          description: `${rikishi.shikona} receives a magnificent yokozuna-tier kesho-mawashi.`,
+        },
+        { rikishiId: rikishi.id, heyaId: rikishi.heyaId }
       );
     }
   }
@@ -185,7 +210,7 @@ export function generateKeshoMawashi(
 }
 
 /** Upgrade an existing kesho-mawashi to a higher tier */
-function upgradeKeshoMawashi(
+export function upgradeKeshoMawashi(
   mawashi: KeshoMawashi,
   newTier: KeshoTier,
   world: WorldState

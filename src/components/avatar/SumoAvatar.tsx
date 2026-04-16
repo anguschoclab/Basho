@@ -15,6 +15,8 @@ interface SumoAvatarProps {
   showHairstyle?: boolean;
   expression?: "neutral" | "determined" | "confident" | "intense";
   fallback?: string; // Initials fallback
+  rankTier?: string;
+  showGlow?: boolean;
 }
 
 const SIZE_MAP: Record<string, number> = {
@@ -25,6 +27,29 @@ const SIZE_MAP: Record<string, number> = {
   xl: 120,
 };
 
+const RANK_BORDER_COLORS: Record<string, string> = {
+  yokozuna: "border-yellow-500",
+  ozeki: "border-gray-300",
+  sekiwake: "border-amber-600",
+  komusubi: "border-amber-600",
+  maegashira: "border-blue-400",
+  juryo: "border-blue-600",
+  makushita: "border-green-500",
+  sandanme: "border-orange-500",
+  jonidan: "border-purple-500",
+  jonokuchi: "border-gray-400",
+};
+
+// Helper to lighten a hex color
+const lightenColor = (hex: string, percent: number): string => {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.min(255, (num >> 16) + amt);
+  const G = Math.min(255, ((num >> 8) & 0x00ff) + amt);
+  const B = Math.min(255, (num & 0x0000ff) + amt);
+  return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+};
+
 export const SumoAvatar: React.FC<SumoAvatarProps> = ({
   config,
   size = "md",
@@ -33,6 +58,8 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
   showHairstyle = true,
   expression,
   fallback,
+  rankTier,
+  showGlow,
 }) => {
   const pixelSize = SIZE_MAP[size];
 
@@ -57,6 +84,9 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
 
   // Determine expression override or from config
   const finalExpression = expression ?? config.expression;
+
+  // Calculate stroke width based on size
+  const strokeWidth = size === "xs" ? 1.5 : size === "sm" ? 2 : 2.5;
 
   // Calculate eye positions based on eye type
   const eyeRadius = config.eyeType === "wide" ? 5 : config.eyeType === "narrow" ? 3 : 4;
@@ -105,11 +135,34 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
       className={cn(
         "rounded-full overflow-hidden shrink-0",
         animate && "avatar-animate",
+        rankTier && RANK_BORDER_COLORS[rankTier] && `border-2 ${RANK_BORDER_COLORS[rankTier]}`,
+        showGlow && "avatar-glow",
         className
       )}
     >
-      {/* Face base */}
-      <circle cx="50" cy="55" r="40" fill={config.skinTone} stroke="#1a1a1a" strokeWidth="2" />
+      <defs>
+        {/* Face gradient for 3D effect */}
+        <radialGradient id={`faceGradient-${config.seed}`} cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor={lightenColor(config.skinTone, 15)} />
+          <stop offset="70%" stopColor={config.skinTone} />
+          <stop offset="100%" stopColor={lightenColor(config.skinTone, -10)} />
+        </radialGradient>
+        {/* Shadow filter */}
+        <filter id={`shadow-${config.seed}`} x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3" />
+        </filter>
+      </defs>
+
+      {/* Face base with gradient */}
+      <circle
+        cx="50"
+        cy="55"
+        r="40"
+        fill={`url(#faceGradient-${config.seed})`}
+        stroke="#1a1a1a"
+        strokeWidth={strokeWidth}
+        filter={`url(#shadow-${config.seed})`}
+      />
 
       {/* Ears */}
       <ellipse
@@ -131,10 +184,15 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
         strokeWidth="1.5"
       />
 
-      {/* Eyes */}
+      {/* Eyes with highlights */}
       <g fill="#1a1a1a">
         <circle cx={leftEyeX} cy={eyeY} r={eyeRadius} />
         <circle cx={rightEyeX} cy={eyeY} r={eyeRadius} />
+      </g>
+      {/* Eye highlights for life-like appearance */}
+      <g fill="#ffffff" opacity="0.6">
+        <circle cx={leftEyeX - 1} cy={eyeY - 1} r={eyeRadius * 0.3} />
+        <circle cx={rightEyeX - 1} cy={eyeY - 1} r={eyeRadius * 0.3} />
       </g>
 
       {/* Eyebrows */}
