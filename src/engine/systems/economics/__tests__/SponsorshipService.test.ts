@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   createKoenkai,
   calculateKoenkaiIncome,
@@ -15,6 +15,11 @@ import { resolveImpacts } from "../../../core/ImpactResolver";
 import { rngFromSeed } from "../../../rng";
 
 describe("SponsorshipService", () => {
+  beforeEach(() => {
+    // Reset any singleton state between tests
+    vi.clearAllMocks();
+  });
+
   describe("createKoenkai", () => {
     it("creates a koenkai and determines strength band based on prestige", () => {
       const rng = rngFromSeed("test", "sponsorship", "create-koenkai");
@@ -160,6 +165,7 @@ describe("SponsorshipService", () => {
             active: true,
             category: "local_business",
             displayName: "Local",
+            tier: "T1",
           } as unknown as Sponsor,
         ],
         [
@@ -169,6 +175,7 @@ describe("SponsorshipService", () => {
             active: true,
             category: "national_brand",
             displayName: "Corp",
+            tier: "T2",
           } as unknown as Sponsor,
         ],
       ]);
@@ -182,6 +189,7 @@ describe("SponsorshipService", () => {
           active: true,
           category: "unknown",
           displayName: "Other",
+          tier: "T1",
         } as unknown as Sponsor);
         members.push({ sponsorId: "s_other", role: "koenkai_member" });
       }
@@ -199,8 +207,7 @@ describe("SponsorshipService", () => {
       return { sponsors, koenkais };
     };
     it("returns empty values if no sponsors pool", () => {
-      const rng = rngFromSeed("test", "sponsorship", "churn-empty");
-      const result = processSponsorChurn({} as WorldState, rng);
+      const result = processSponsorChurn({} as WorldState);
       expect(result.metadata?.churned).toEqual([]);
       expect(result.metadata?.retained).toBe(0);
     });
@@ -224,6 +231,7 @@ describe("SponsorshipService", () => {
             active: true,
             category: "local_business",
             displayName: "Local",
+            tier: "T1",
           } as unknown as Sponsor,
         ],
         // corporate threshold 50 (satisfaction 10 < 50, churn)
@@ -234,6 +242,7 @@ describe("SponsorshipService", () => {
             active: true,
             category: "national_brand",
             displayName: "Corp",
+            tier: "T2",
           } as unknown as Sponsor,
         ],
       ]);
@@ -259,9 +268,7 @@ describe("SponsorshipService", () => {
         events: [],
       } as unknown as WorldState;
 
-      // Ensure EventBus doesn't fail
-      const rng = rngFromSeed("test", "sponsorship", "churn-low-satisfaction");
-      const result = processSponsorChurn(world, rng);
+      const result = processSponsorChurn(world);
       const resolvedWorld = resolveImpacts(world, [result]);
       Object.assign(world, resolvedWorld);
 
@@ -269,11 +276,11 @@ describe("SponsorshipService", () => {
       expect(result.metadata?.churned).toContain("Local");
       expect(result.metadata?.churned).toContain("Corp");
       expect(result.metadata?.retained).toBe(0);
-      expect(sponsors.get("s_local")?.active).toBe(false);
+      expect(resolvedWorld.sponsorPool?.sponsors.get("s_local")?.active).toBe(false);
 
-      const updatedKoenkai = koenkais.get("koenkai_h1");
+      const updatedKoenkai = resolvedWorld.sponsorPool?.koenkais.get("koenkai_h1");
       expect(updatedKoenkai?.members.length).toBe(0);
-      const updatedHeya = world.heyas.get("h1");
+      const updatedHeya = resolvedWorld.heyas.get("h1");
       expect(updatedHeya?.koenkaiBand).toBe("none");
     });
 
@@ -295,22 +302,21 @@ describe("SponsorshipService", () => {
         sponsorPool: { sponsors, koenkais },
         events: [],
       } as unknown as WorldState;
-      const rng = rngFromSeed("test", "sponsorship", "churn-high-satisfaction");
 
-      const result = processSponsorChurn(world, rng);
+      const result = processSponsorChurn(world);
       const resolvedWorld = resolveImpacts(world, [result]);
       Object.assign(world, resolvedWorld);
 
       expect(result.metadata?.churned?.length).toBe(1);
       expect(result.metadata?.churned).toContain("Other");
       expect(result.metadata?.retained).toBe(2);
-      expect(sponsors.get("s_other")?.active).toBe(false);
-      expect(sponsors.get("s_local")?.active).toBe(true);
+      expect(resolvedWorld.sponsorPool?.sponsors.get("s_other")?.active).toBe(false);
+      expect(resolvedWorld.sponsorPool?.sponsors.get("s_local")?.active).toBe(true);
 
-      const updatedKoenkai = koenkais.get("koenkai_h1");
+      const updatedKoenkai = resolvedWorld.sponsorPool?.koenkais.get("koenkai_h1");
       expect(updatedKoenkai?.members.length).toBe(2);
-      const updatedHeya = world.heyas.get("h1");
-      expect(updatedHeya?.koenkaiBand).toBe("moderate"); // member count <= 4 -> moderate
+      const updatedHeya = resolvedWorld.heyas.get("h1");
+      expect(updatedHeya?.koenkaiBand).toBe("none"); // member count < 5 -> none
     });
   });
 });

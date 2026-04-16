@@ -105,7 +105,7 @@ describe("NPC AI Agentic Refactor", () => {
 
   describe("Phase 2 & 3: Delegation & Lead Review", () => {
     it("should override worker caution with punishing intensity when furious", () => {
-      vi.mocked(PersonaService.getManagerPersona).mockReturnValue({
+      (PersonaService.getManagerPersona as ReturnType<typeof vi.fn>).mockReturnValue({
         ...mockPersona,
         perception: {
           ...mockPersona.perception,

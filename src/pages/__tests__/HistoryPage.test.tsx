@@ -1,17 +1,9 @@
-// Set up jsdom-like environment manually
-import { JSDOM } from "jsdom";
-const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
-Object.defineProperty(global, "document", { value: dom.window.document, writable: true });
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-Object.defineProperty(global, "window", { value: dom.window as any, writable: true });
-Object.defineProperty(global, "navigator", { value: dom.window.navigator, writable: true });
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import HistoryPage from "../HistoryPage";
@@ -38,6 +30,13 @@ vi.mock("react-helmet", () => ({
 }));
 
 describe("HistoryPage", () => {
+  beforeEach(() => {
+    // Ensure document.body exists for @testing-library/react
+    if (!document.body) {
+      document.body = document.createElement("body");
+    }
+  });
+
   it("renders correctly with no world", () => {
     vi.spyOn(GameContext, "useGame").mockReturnValue({
       state: { world: null },

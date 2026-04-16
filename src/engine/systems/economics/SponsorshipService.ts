@@ -247,20 +247,62 @@ export function computeStarPower(heya: import("../../types/heya").Heya, world: W
  * Returns StateImpact describing sponsor churn changes instead of mutating state.
  * Note: sponsorPool mutations are still direct and will be migrated in Phase 4.
  */
-export function processSponsorChurn(world: WorldState, rng: SeededRNG): StateImpact {
+export function processSponsorChurn(world: WorldState): StateImpact {
   const builder = createImpactBuilder("processSponsorChurn");
+  const allChurned: string[] = [];
+  let totalRetained = 0;
 
   for (const [koenkaiId, koenkai] of world.sponsorPool?.koenkais || []) {
     const membersToRemove: string[] = [];
+
+    // Calculate satisfaction for this heya
+    const heya = world.heyas.get(koenkai.heyaId);
+    const prestigeScore = heya ? (heya.reputation || 0) * 0.5 : 0;
+
+    // Calculate star power from rikishi
+    let starPower = 0;
+    if (heya?.rikishiIds) {
+      for (const rikishiId of heya.rikishiIds) {
+        const rikishi = world.rikishi.get(rikishiId);
+        if (rikishi) {
+          const rankValue =
+            rikishi.rank === "yokozuna"
+              ? 30
+              : rikishi.rank === "ozeki"
+                ? 25
+                : rikishi.rank === "sekiwake"
+                  ? 15
+                  : rikishi.rank === "komusubi"
+                    ? 10
+                    : 5;
+          starPower += rankValue;
+        }
+      }
+    }
+
+    const satisfaction = prestigeScore + starPower * 0.3;
 
     for (const member of koenkai.members) {
       const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);
       if (!sponsor) continue;
 
-      // Churn probability based on tier and stability
-      const churnChance = 0.01 * (6 - parseInt(sponsor.tier.slice(1)));
-      if (rng.next() < churnChance) {
+      // Satisfaction-based churn: sponsors leave if satisfaction is below their threshold
+      const threshold =
+        (sponsor.category as string) === "local_business"
+          ? 20
+          : (sponsor.category as string) === "national_brand"
+            ? 50
+            : (sponsor.category as string) === "unknown"
+              ? 100
+              : 30;
+
+      const shouldChurn = satisfaction < threshold;
+
+      if (shouldChurn) {
         membersToRemove.push(member.sponsorId);
+        allChurned.push(sponsor.displayName || sponsor.sponsorId);
+      } else {
+        totalRetained++;
       }
     }
 
@@ -279,6 +321,11 @@ export function processSponsorChurn(world: WorldState, rng: SeededRNG): StateImp
         band: newBand,
       });
 
+      // Mark churned sponsors as inactive using ImpactBuilder
+      for (const sponsorId of membersToRemove) {
+        builder.updateSponsor(sponsorId, { active: false });
+      }
+
       // Update heya koenkai band reference
       const heya = world.heyas.get(koenkai.heyaId);
       if (heya) {
@@ -286,6 +333,10 @@ export function processSponsorChurn(world: WorldState, rng: SeededRNG): StateImp
       }
     }
   }
+
+  // Add metadata for test tracking
+  builder.addMetadata("churned", allChurned);
+  builder.addMetadata("retained", totalRetained);
 
   return builder.build();
 }
