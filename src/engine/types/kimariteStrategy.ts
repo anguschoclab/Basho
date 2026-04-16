@@ -55,8 +55,8 @@ export interface FinalBoutState {
   leadFootX?: number;
   /** B+ spatial: momentum in X direction (m/s). */
   momentumX?: number;
-  /** B+ spatial: grip class (uwate, shitate, outside, none). */
-  gripClass?: "uwate" | "shitate" | "outside" | "none";
+  /** B+ spatial: grip class. */
+  gripClass?: "uwate" | "shitate" | "morozashi" | "outside" | "none";
 }
 
 /**
@@ -78,9 +78,13 @@ export interface SpatialBoutContext {
   /** West rikishi momentum in X direction (m/s). */
   westMomentumX: number;
   /** East rikishi grip class. */
-  eastGrip: "uwate" | "shitate" | "outside" | "none";
+  eastGrip: "uwate" | "shitate" | "morozashi" | "outside" | "none";
   /** West rikishi grip class. */
-  westGrip: "uwate" | "shitate" | "outside" | "none";
+  westGrip: "uwate" | "shitate" | "morozashi" | "outside" | "none";
+  /** Net torque differential: positive = east advantage (optional — B+ belt battle only). */
+  torqueDiff?: number;
+  /** True when either fighter's lead foot is near the tawara boundary. */
+  atEdge?: boolean;
 }
 
 /**

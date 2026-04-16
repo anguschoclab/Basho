@@ -38,7 +38,14 @@
       "Bash(npm view:*)",
       "Bash(npx electron-vite:*)",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k,v\\) for k,v in {**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}.items\\(\\)]\")",
-      "Bash(wc -l /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/bout/*.ts)"
+      "Bash(wc -l /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/bout/*.ts)",
+      "Bash(wc -l src/engine/bout/*.ts)",
+      "Bash(rm src/engine/bout/boutCalculations.ts)",
+      "Bash(rmdir \"src/engine/bout/bout\")",
+      "Bash(rm -f src/engine/bout/boutCalculations.ts)",
+      "Bash(echo \"boutCalculations deleted: $?\")",
+      "Bash(rm -rf \"src/engine/bout/bout\")",
+      "Bash(echo \"bout/bout deleted: $?\")"
     ]
   },
   "outputStyle": "default"

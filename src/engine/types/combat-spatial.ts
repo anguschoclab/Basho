@@ -143,6 +143,34 @@ export interface EngineStateV2 {
   grappleState: GrappleState;
   /** Tracks who won the initial tachiai clash (may differ from bout winner) */
   tachiaiWinner: Side;
+  /** Accumulated bout log entries — copied to BoutResult.log after physics resolve */
+  logEntries: import("./basho").BoutLogEntry[];
+}
+
+// ---------------------------------------------------------------------------
+// Engine Snapshot Types (moved from kimariteEvaluator.ts — Phase 8)
+// ---------------------------------------------------------------------------
+
+/**
+ * Enriched slice of EngineState extracted by resolveBoutPhysics.
+ * Kept for API compatibility; the legacy evaluator that consumed it
+ * has been deleted as of Phase 8.
+ */
+export interface EngineSnapshot {
+  stance: import("./basho").Stance;
+  grappleState: GrappleState;
+  /** East rikishi balance (0–100, derived from cogOffset) */
+  balanceEast: number;
+  /** West rikishi balance (0–100, derived from cogOffset) */
+  balanceWest: number;
+  /** Rough positional label derived from foot positions */
+  position: "front" | "lateral" | "rear";
+  /** Who held advantage at resolution */
+  advantage: "none" | "east" | "west";
+  /** How many ticks the winner held continuous advantage */
+  winnerConsecutiveAdvantage: number;
+  loserLastActionFamily?: string;
+  finalLoserBalanceDrain: number;
 }
 
 // ---------------------------------------------------------------------------

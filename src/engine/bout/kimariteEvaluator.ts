@@ -1,6 +1,12 @@
 /**
  * src/engine/bout/kimariteEvaluator.ts
  * ======================================
+ * @deprecated
+ * LEGACY SAFETY NET — kept while ENABLE_LEGACY_KIMARITE_OVERRIDE = true in boutResolver.ts.
+ * The B+ spatial classifier (kimariteClassifier.ts) is the production path.
+ * Once Phase 8 verification passes and the flag is flipped to false, this file
+ * and its re-export in kimarite/index.ts can be deleted.
+ *
  * Post-physics kimarite override. After resolveBoutPhysics() determines a
  * winner, determineKimarite() evaluates every KimariteStrategy condition
  * against a FinalBoutState constructed from the bout's EngineSnapshot and
