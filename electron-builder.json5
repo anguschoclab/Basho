@@ -15,7 +15,8 @@
       { target: "dmg", arch: ["x64", "arm64"] },
       { target: "zip", arch: ["x64", "arm64"] }
     ],
-    icon: "resources/icon.icns"
+    icon: "resources/icon.icns",
+    identity: null
   },
   win: {
     target: [
