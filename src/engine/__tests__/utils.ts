@@ -174,7 +174,7 @@ export function mockHeyaBrandIdentity(
       secondary: rng.pick(["#2c5282", "#975a16", "#2f855a", "#9b2c2c", "#4a5568"]),
       accent: rng.pick(["#d69e2e", "#ecc94b", "#f6ad55", "#fc8181", "#90cdf4"]),
     },
-    crestMotif: rng.pick(["sakura", "pine", "waves", "mountain", "sun"]),
+    crestMotif: rng.pick(["sakura", "pine", "waves", "mountain", "rising_sun"]),
     traditionLevel: rng.pick(traditionLevels),
     designPaletteId: rng.pick([
       "tokoname",
