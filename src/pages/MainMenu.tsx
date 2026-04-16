@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RefreshCw, Dices, ChevronRight, History } from "lucide-react";
+import { RefreshCw, Dices, ChevronRight } from "lucide-react";
 
 import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
 import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
@@ -136,7 +136,20 @@ export default function MainMenu() {
           <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-6">
             <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
               <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-2xl">
-                <History className="h-10 w-10 text-primary" />
+                <svg
+                  viewBox="0 0 40 40"
+                  className="h-10 w-10 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  {/* Dohyo outer ring */}
+                  <circle cx="20" cy="20" r="16" />
+                  {/* Shikiri-sen - starting lines */}
+                  <line x1="12" y1="18" x2="18" y2="18" />
+                  <line x1="22" y1="18" x2="28" y2="18" />
+                </svg>
               </div>
               <div className="text-left py-2 pr-6 border-r border-white/10">
                 <h1 className="text-primary-foreground font-display text-5xl font-black tracking-tighter leading-none mb-1 uppercase">
