@@ -125,7 +125,6 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
               rx="8"
               fill="url(#goldShimmer2)"
               opacity={goldOpacity * 0.2}
-              className="animate-shimmer"
             />
           </>
         )}
@@ -384,12 +383,25 @@ function renderSecondarySymbol(
   color: string,
   isTertiary = false
 ): React.ReactNode {
+  // Simple hash function for deterministic positioning
+  const hashPosition = (str: string, seed: number) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash) % seed;
+  };
+
   const positionMap: Record<string, { x: number; y: number }> = {
     left: { x: 50, y: 120 },
     right: { x: 150, y: 120 },
     upper: { x: 100, y: 60 },
     lower: { x: 100, y: 180 },
-    scattered: { x: 50 + Math.random() * 100, y: 60 + Math.random() * 120 },
+    scattered: {
+      x: 50 + hashPosition(symbol.value, 100),
+      y: 60 + hashPosition(symbol.value + "y", 120),
+    },
     center: { x: 100, y: 120 },
   };
 

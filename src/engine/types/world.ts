@@ -148,7 +148,7 @@ export interface WorldState {
   factions?: Record<IchimonName, Faction>;
 
   almanacSnapshots?: AlmanacSnapshot[];
-  /** @deprecated Superseded by tutorialState - retained for save compatibility */
+  /** @deprecated Legacy field for first basho event suppression. TutorialState handles onboarding steps - different purpose. Retained for save compatibility. */
   ftue?: FTUEState;
   tutorialState?: TutorialState;
   playerHeyaId?: Id;
