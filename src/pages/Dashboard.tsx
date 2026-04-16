@@ -21,7 +21,7 @@ import {
   getOzekiRunCandidates,
   getYokozunaCandidates,
   getKadobanDrama,
-} from "@/presenters/uiDigest";
+} from "@/presenters/projections/promotionProjections";
 
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";

@@ -7,7 +7,7 @@ import { useGame } from "@/contexts/GameContext";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2 } from "lucide-react";
-import { projectHeyaData } from "@/presenters/uiDigest";
+import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 
 export function InstitutionWidget() {
   const { state } = useGame();

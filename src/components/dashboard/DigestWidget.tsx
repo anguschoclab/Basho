@@ -3,7 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BaseWidget } from "./BaseWidget";
-import { buildWeeklyDigest, type DigestItem } from "@/presenters/uiDigest";
+import { buildWeeklyDigest, type DigestItem } from "@/presenters/projections/digestProjections";
 import {
   AlertTriangle,
   TrendingUp,

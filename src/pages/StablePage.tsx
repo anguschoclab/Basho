@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableName } from "@/components/ClickableName";
-import { projectHeyaData } from "@/presenters/uiDigest";
+import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { HeyaBrandHeader } from "@/components/heya/HeyaBrandHeader";
 
 export default function StablePage() {
