@@ -105,6 +105,28 @@ export function initBeltBattle(
   const eastGripClass = deriveGripClass(eastLeft, eastRight);
   const westGripClass = deriveGripClass(westLeft, westRight);
 
+  // Apply preferredGripDepth — deep/maemitsu fighters start with higher lever arms
+  const eastGripDepth = east.combatProfile?.preferredGripDepth ?? "standard";
+  const westGripDepth = west.combatProfile?.preferredGripDepth ?? "standard";
+
+  // deep/maemitsu fighters start with superior lever arm geometry regardless of tachiai outcome.
+  // Values exceed the tachiai-winner inside-arm bonus (0.29) so deep grippers always lead.
+  const applyDepthLeverArm = (left: typeof eastLeft, right: typeof eastRight, depth: typeof eastGripDepth) => {
+    if (depth === "deep") {
+      const lever = 0.31;
+      if (left) { left.leverArm = lever; }
+      if (right) { right.leverArm = lever; }
+    } else if (depth === "maemitsu") {
+      const lever = 0.34;
+      if (left) { left.leverArm = lever; }
+      if (right) { right.leverArm = lever; }
+    }
+    // standard stays at whatever the tachiai-winner code set
+  };
+
+  applyDepthLeverArm(eastLeft, eastRight, eastGripDepth);
+  applyDepthLeverArm(westLeft, westRight, westGripDepth);
+
   const eastInitialForce = stat(east, "power");
   const westInitialForce = stat(west, "power");
   const torqueEast = computeNetTorque(eastLeft, eastRight, eastInitialForce);
@@ -117,8 +139,8 @@ export function initBeltBattle(
     westRight,
     eastGripClass,
     westGripClass,
-    eastDepth: "standard",
-    westDepth: "standard",
+    eastDepth: eastGripDepth,
+    westDepth: westGripDepth,
     torqueEast,
     torqueWest,
   };

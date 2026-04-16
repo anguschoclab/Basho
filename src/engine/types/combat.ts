@@ -30,7 +30,8 @@ export interface CombatProfile {
   preferredGripDepth: GripDepthPreference;
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
-  statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height', number>>;
+  // Note: 'power' maps to RikishiStats.strength → Rikishi.power in the generation pipeline.
+  statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height' | 'power', number>>;
   favoredKimarite?: string[];
 }
 

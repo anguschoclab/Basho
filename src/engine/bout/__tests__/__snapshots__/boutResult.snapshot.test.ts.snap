@@ -1,45 +1,9 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
-{
-  "boutId": "test-001",
-  "duration": 28,
-  "isKinboshi": false,
-  "kenshoEnvelopes": 0,
-  "kimarite": "oshitaoshi",
-  "kimariteName": "oshitaoshi",
-  "log": [],
-  "loserRikishiId": "r1",
-  "stance": "push-dominant",
-  "tachiaiWinner": "west",
-  "upset": false,
-  "winner": "west",
-  "winnerRikishiId": "r2",
-}
-`;
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
   "duration": 28,
-  "isKinboshi": false,
-  "kenshoEnvelopes": 0,
-  "kimarite": "oshitaoshi",
-  "kimariteName": "oshitaoshi",
-  "log": [],
-  "loserRikishiId": "r1",
-  "stance": "push-dominant",
-  "tachiaiWinner": "west",
-  "upset": false,
-  "winner": "west",
-  "winnerRikishiId": "r2",
-}
-`;
-
-exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
-{
-  "boutId": "test-001",
-  "duration": 4,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
   "kimarite": "oshitaoshi",

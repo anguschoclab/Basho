@@ -78,6 +78,8 @@ export interface Rikishi {
   balance: number;
   technique: number;
   aggression: number;
+  /** Mental composure — governs edge-crisis recovery. Same source stat as aggression but distinct semantic. */
+  mental: number;
   experience: number;
   adaptability: number;
 

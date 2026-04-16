@@ -56,6 +56,54 @@ function jitter(rng: SeededRNG, scale = 1): number {
 }
 
 // ---------------------------------------------------------------------------
+// Exported pure helpers (unit-testable, used internally)
+// ---------------------------------------------------------------------------
+
+/**
+ * Computes a rikishi's tachiai power score without RNG jitter.
+ * When `henkaVulnerabilityMode` is true, returns how susceptible this fighter
+ * is as the OPPONENT of a henka attempt (high aggression = commits harder = easier
+ * to sidestep).
+ */
+export function computeTachiaiPower(
+  r: Rikishi,
+  options?: { henkaVulnerabilityMode?: boolean }
+): number {
+  if (options?.henkaVulnerabilityMode) {
+    // High aggression = overcommits = easier to sidestep
+    return stat(r, "speed") * 1.5 + stat(r, "aggression") * 0.5;
+  }
+  // Tachiai power: power 50%, speed 30%, aggression 20%
+  return stat(r, "power") * 0.5 + stat(r, "speed") * 0.3 + stat(r, "aggression") * 0.2;
+}
+
+/**
+ * Per-tick boutFatigue increment based on stamina.
+ * High-stamina fighters accumulate fatigue more slowly.
+ *   stamina=100 → 0.5/tick (half rate)
+ *   stamina=50  → 1.0/tick (baseline)
+ *   stamina=25  → 2.0/tick (double, capped)
+ */
+export function boutFatigueIncrement(stamina: number): number {
+  return 1 / Math.max(0.5, stamina * 0.02);
+}
+
+/**
+ * Computes edge-crisis recovery probability for the defending fighter.
+ * Mental composure is the dominant factor; balance is secondary.
+ */
+export function edgeCrisisRecoveryChance(
+  defender: Rikishi,
+  baseProbability: number,
+  bounceBonus: number,
+  tickDecay: number
+): number {
+  const mentalFactor = stat(defender, "mental") * 0.005; // 0–0.5 (dominant)
+  const balanceFactor = stat(defender, "balance") * 0.002; // 0–0.2 (secondary)
+  return (baseProbability + mentalFactor + balanceFactor + bounceBonus) * tickDecay;
+}
+
+// ---------------------------------------------------------------------------
 // Initialisation
 // ---------------------------------------------------------------------------
 
@@ -92,9 +140,9 @@ function resolveTachiaiV2(
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
 
-  // CR-01: Use actual power and speed stats with jitter (60/40 blend)
-  const eastPower = stat(east, "power") * 0.6 + stat(east, "speed") * 0.4 + jitter(rng, 8);
-  const westPower = stat(west, "power") * 0.6 + stat(west, "speed") * 0.4 + jitter(rng, 8);
+  // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
+  const eastPower = computeTachiaiPower(east) + jitter(rng, 8);
+  const westPower = computeTachiaiPower(west) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 
@@ -111,8 +159,9 @@ function resolveTachiaiV2(
   if (henkaSide !== null) {
     const trickster = henkaSide === "east" ? east : west;
     const opponent = henkaSide === "east" ? west : east;
+    // High-aggression opponents overcommit → more vulnerable to henka
     const henkaScore =
-      stat(trickster, "technique") + stat(opponent, "speed") * 1.5 + jitter(rng, 8);
+      stat(trickster, "technique") + computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) + jitter(rng, 8);
     const defenseScore = stat(opponent, "balance") + jitter(rng, 8);
 
     if (henkaScore > defenseScore) {
@@ -167,9 +216,9 @@ function tickPushBattle(
   // --- Fix Bug 1 & 2: Force-differential physics ---
   // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
 
-  // Accumulate per-tick exertion
-  st.east.boutFatigue += 1;
-  st.west.boutFatigue += 1;
+  // Accumulate per-tick exertion — rate governed by stamina
+  st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
+  st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
 
   // Effective fatigue = pre-bout fatigue + in-bout accumulation
   const eastEffFatigue = stat(east, "fatigue") + st.east.boutFatigue * 0.4;
@@ -247,9 +296,9 @@ function tickBeltBattle(
   const belt = st.phase.state;
   const push = st.phase.push;
 
-  // Accumulate per-tick exertion
-  st.east.boutFatigue += 1;
-  st.west.boutFatigue += 1;
+  // Accumulate per-tick exertion — rate governed by stamina
+  st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
+  st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
 
   // Evolve grip geometry (arm reach, depth, grip strength decay)
   // Pass additional in-bout fatigue to grip decay
@@ -387,12 +436,16 @@ function tickEdgeCrisis(
     return { winner, kimarite };
   }
 
-  // Stat-based recovery: balance + tawara bounce resistance
+  // Recovery: mental composure (dominant) + balance (secondary) + tawara bounce
   const defenderRikishi = crisis.side === "east" ? east : west;
-  const balanceFactor = stat(defenderRikishi, "balance") * 0.003; // 0–0.3
   const bounceBonus = bounceForce / 100; // 0.15 at heel contact, 0.08 at toe
   const tickDecay = Math.max(0.1, 1 - crisis.ticksInCrisis * 0.05);
-  const recoveryChance = (crisis.recoveryProbability + balanceFactor + bounceBonus) * tickDecay;
+  const recoveryChance = edgeCrisisRecoveryChance(
+    defenderRikishi,
+    crisis.recoveryProbability,
+    bounceBonus,
+    tickDecay
+  );
 
   const didEscape = rng.next() < recoveryChance;
 
