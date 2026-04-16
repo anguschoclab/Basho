@@ -146,18 +146,6 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
             <stop offset="50%" stopColor="#FFD700" stopOpacity="0.5" />
             <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
           </linearGradient>
-          <style>
-            {`
-              @keyframes shimmer {
-                0% { opacity: 0.2; }
-                50% { opacity: 0.5; }
-                100% { opacity: 0.2; }
-              }
-              .animate-shimmer {
-                animation: shimmer 3s ease-in-out infinite;
-              }
-            `}
-          </style>
         </defs>
       </svg>
 
