@@ -1,6 +1,7 @@
 // MatchDayViewer.tsx - Polished match day panel with staggered animations,
 // east/west color coding, and immersive bout cards
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { BoutCard } from "./BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +31,6 @@ interface MatchDayViewerProps {
 export function MatchDayViewer({
   matches,
   world,
-  playerRikishiIds: _playerRikishiIds,
   onBoutClick,
   onTacticChange,
   playerTactics = {},

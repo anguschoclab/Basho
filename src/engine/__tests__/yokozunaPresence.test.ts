@@ -4,6 +4,7 @@
  * Internal validation test for Yokozuna logic.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import { runHistoryUpdates } from "../history";

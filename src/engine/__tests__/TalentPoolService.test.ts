@@ -7,6 +7,7 @@
  *   - finalizeSignedCandidates converts all signed candidates
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya } from "./utils";
 import {
@@ -32,9 +33,10 @@ function makeTalentPool(candidateId: string, availabilityState = "available") {
         originRegion: "Tokyo",
         talentSeed: 50,
         availabilityState,
-        competingSuitors: availabilityState === "signed"
-          ? [{ heyaId: "npc-heya", offerType: "standard", interestBand: "high", deadlineWeek: 1 }]
-          : [],
+        competingSuitors:
+          availabilityState === "signed"
+            ? [{ heyaId: "npc-heya", offerType: "standard", interestBand: "high", deadlineWeek: 1 }]
+            : [],
         combatProfile: { archetype: "oshi", statModifiers: {} },
         archetype: "oshi",
         temperament: { discipline: 60, volatility: 30 },

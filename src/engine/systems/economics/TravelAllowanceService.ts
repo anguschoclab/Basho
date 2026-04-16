@@ -114,8 +114,7 @@ export function deductTsukebitoCosts(world: WorldState): StateImpact {
 export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
   const builder = createImpactBuilder("distributeKoenkaiToSekitori");
 
-  for (const [heyaId, heya] of world.heyas) {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
+  for (const [, heya] of world.heyas) {
     const monthlyKoenkai = calculateKoenkaiIncome(heya.koenkaiBand ?? "none");
     const sekitoriPortion = monthlyKoenkai * KOENKAI_INCOME_SPLIT.sekitoriPortion;
 

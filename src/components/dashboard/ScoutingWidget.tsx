@@ -27,7 +27,6 @@ const POOL_ICONS: Record<TalentPoolType, typeof Globe> = {
 
 const ProspectRow = React.memo(
   ({
-    candidateId: _candidateId,
     name,
     archetype,
     talentSeed,
@@ -87,7 +86,11 @@ export function ScoutingWidget() {
   // ⚡ Bolt Performance Optimization: Combine prospects parsing, pool counting, and top prospects derivation
   // into a single useMemo hook to avoid multiple array iterations on every render.
   const { prospects, poolCounts, topProspects } = useMemo(() => {
-    const defaultRes = { prospects: [], poolCounts: { high_school: 0, university: 0, foreign: 0 }, topProspects: [] };
+    const defaultRes = {
+      prospects: [],
+      poolCounts: { high_school: 0, university: 0, foreign: 0 },
+      topProspects: [],
+    };
     if (!world) return defaultRes;
 
     const all: (TalentCandidate & { pool: TalentPoolType })[] = [];
@@ -109,9 +112,9 @@ export function ScoutingWidget() {
     return {
       prospects: all,
       poolCounts: counts,
-      topProspects: all.slice(0, 6)
+      topProspects: all.slice(0, 6),
     };
-  }, [world?.talentPool]);
+  }, [world, world?.talentPool]);
 
   if (!world) return null;
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { checkRetirement } from "../lifecycle";
 import { mockRikishi } from "./utils";
@@ -76,7 +77,7 @@ describe("checkRetirement", () => {
     vi.mocked(rngModule.rngFromSeed).mockReturnValue(mockRng as any);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
-    
+
     expect(rngModule.rngFromSeed).toHaveBeenCalledWith("test-seed", "lifecycle", "retirement::r4");
     expect(mockRng.bool).toHaveBeenCalledWith(0.3);
     expect(result).toBe("Lack of Performance");

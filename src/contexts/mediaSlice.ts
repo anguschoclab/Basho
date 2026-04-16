@@ -10,14 +10,17 @@ export function mediaSlice(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case "HANDLE_MEDIA_EVENT": {
-      const { eventId, choice } = action as any;
+      const { eventId, choice } = action as GameAction & { eventId: string; choice: string };
       const clonedWorld = cloneWorldForTick(state.world);
       worldEngine.handleMediaEvent(clonedWorld, eventId, choice);
       return { ...state, world: clonedWorld };
     }
 
     case "ISSUE_RULING": {
-      const { rulingId, severity } = action as any;
+      const { rulingId, severity } = action as GameAction & {
+        rulingId: string;
+        severity: "lenient" | "standard" | "harsh";
+      };
       const clonedWorld = cloneWorldForTick(state.world);
       worldEngine.issueGovernanceRuling(clonedWorld, rulingId, severity);
       return { ...state, world: clonedWorld };

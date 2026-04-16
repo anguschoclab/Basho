@@ -10,6 +10,7 @@
  *                                      30-59 = probation, 60+ = sanctioned
  */
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { reportScandal, tickWeekGovernance } from "../../governance/GovernanceService";
 import { resolveImpacts } from "../../core/ImpactResolver";
@@ -19,7 +20,10 @@ import type { WorldState } from "../../types/world";
 // ── Setup ──────────────────────────────────────────────────────────────────
 
 function makeWorld(heyaId = "h1", initialScore = 0): WorldState {
-  const heya = makeMockHeya(heyaId, { scandalScore: initialScore, governanceStatus: "good_standing" });
+  const heya = makeMockHeya(heyaId, {
+    scandalScore: initialScore,
+    governanceStatus: "good_standing",
+  });
   const world = makeMockWorld();
   (world as any).playerHeyaId = heyaId;
   world.heyas.set(heyaId, heya);
@@ -52,9 +56,9 @@ describe("reportScandal — score bumps", () => {
 
   it("accumulates across multiple scandals", () => {
     const world = makeWorld();
-    const impact1 = reportScandal(world, "h1", "minor", "incident 1");   // +5
+    const impact1 = reportScandal(world, "h1", "minor", "incident 1"); // +5
     const updatedWorld1 = resolveImpacts(world, [impact1]);
-    const impact2 = reportScandal(updatedWorld1, "h1", "major", "incident 2");   // +15
+    const impact2 = reportScandal(updatedWorld1, "h1", "major", "incident 2"); // +15
     const updatedWorld2 = resolveImpacts(updatedWorld1, [impact2]);
     expect(updatedWorld2.heyas.get("h1")!.scandalScore).toBe(20);
   });
@@ -159,8 +163,14 @@ describe("tickWeekGovernance — status threshold transitions", () => {
   it("handles multiple heyas independently", () => {
     const world = makeMockWorld();
     (world as any).playerHeyaId = "h1";
-    world.heyas.set("h1", makeMockHeya("h1", { scandalScore: 31, governanceStatus: "good_standing" }));
-    world.heyas.set("h2", makeMockHeya("h2", { scandalScore: 5, governanceStatus: "good_standing" }));
+    world.heyas.set(
+      "h1",
+      makeMockHeya("h1", { scandalScore: 31, governanceStatus: "good_standing" })
+    );
+    world.heyas.set(
+      "h2",
+      makeMockHeya("h2", { scandalScore: 5, governanceStatus: "good_standing" })
+    );
 
     const impact = tickWeekGovernance(world);
     const updatedWorld = resolveImpacts(world, [impact]);

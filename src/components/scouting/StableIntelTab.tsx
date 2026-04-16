@@ -6,31 +6,23 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight } from "lucide-react";
-import { 
-  projectRikishi, 
-  RANK_HIERARCHY, 
-  RANK_NAMES 
-} from "@/presenters/uiDigest";
+import { projectRikishi, RANK_HIERARCHY, RANK_NAMES } from "@/presenters/uiDigest";
 
-export function StableIntelTab({
-  playerHeyaId,
-}: {
-  playerHeyaId: string | null;
-}) {
+export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;
 
   const roster = useMemo(() => {
     if (!world || !playerHeyaId) return [];
-    const list: any[] = [];
+    const list: ReturnType<typeof projectRikishi>[] = [];
     for (const r of world.rikishi.values()) {
       if (r.heyaId !== playerHeyaId || r.isRetired) continue;
       list.push(projectRikishi(r, world));
     }
     list.sort((a, b) => {
-      const ta = (RANK_HIERARCHY as any)?.[a.rank]?.tier ?? 99;
-      const tb = (RANK_HIERARCHY as any)?.[b.rank]?.tier ?? 99;
+      const ta = (RANK_HIERARCHY as Record<string, { tier: number }>)?.[a.rank]?.tier ?? 99;
+      const tb = (RANK_HIERARCHY as Record<string, { tier: number }>)?.[b.rank]?.tier ?? 99;
       return ta - tb || (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
     });
     return list;
@@ -39,8 +31,7 @@ export function StableIntelTab({
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Full intel on your own wrestlers. You know everything about those who
-        train under your roof.
+        Full intel on your own wrestlers. You know everything about those who train under your roof.
       </p>
 
       <ScrollArea className="h-[600px]">
@@ -55,7 +46,7 @@ export function StableIntelTab({
                 onClick={() =>
                   navigate({
                     to: "/rikishi/$rikishiId",
-                    params: { rikishiId: r.id } as any,
+                    params: { rikishiId: r.id },
                   })
                 }
               >
@@ -63,13 +54,11 @@ export function StableIntelTab({
                   className={`w-1 h-10 rounded-full ${r.side === "east" ? "bg-east" : "bg-west"}`}
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="font-display font-medium truncate">
-                    {r.shikona}
-                  </div>
+                  <div className="font-display font-medium truncate">{r.shikona}</div>
                   <div className="text-xs text-muted-foreground">
                     {rankNames.ja}
-                    {r.rankNumber ? ` ${r.rankNumber}` : ""} • {r.powerBand}{" "}
-                    power • {r.techniqueBand} technique
+                    {r.rankNumber ? ` ${r.rankNumber}` : ""} • {r.powerBand} power •{" "}
+                    {r.techniqueBand} technique
                   </div>
                 </div>
                 <div className="text-right text-sm">

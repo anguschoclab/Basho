@@ -6,38 +6,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Search,
-  Eye,
-  UserPlus,
-  Binoculars,
-  Globe,
-  GraduationCap,
-  School,
-} from "lucide-react";
+import { Search, Eye, UserPlus, Binoculars, Globe, GraduationCap, School } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { TacticalArchetype } from "@/engine/types/combat";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
-import { 
-  projectRecruitmentUIDigest, 
-  scoutPool, 
-  scoutCandidate, 
-  offerCandidate, 
-  describeScoutingLevel, 
-  resolveRegistryLabel 
+import {
+  projectRecruitmentUIDigest,
+  scoutPool,
+  scoutCandidate,
+  offerCandidate,
+  describeScoutingLevel,
+  resolveRegistryLabel,
 } from "@/presenters/uiDigest";
 
-export function RecruitingTab({
-  playerHeyaId,
-}: {
-  playerHeyaId: string | null;
-}) {
+export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const { state, updateWorld } = useGame();
   const world = state.world;
   const { toast } = useToast();
-  const [activePool, setActivePool] = useState<
-    "high_school" | "university" | "foreign"
-  >("high_school");
+  const [activePool, setActivePool] = useState<"high_school" | "university" | "foreign">(
+    "high_school"
+  );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
   const [signingCandidate, setSigningCandidate] = useState<any>(null);
 
   const digest = useMemo(() => {
@@ -89,11 +77,15 @@ export function RecruitingTab({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
   const handleOfferClick = (candidate: any) => {
     setSigningCandidate(candidate);
   };
 
-  const handleConfirmSigning = (offer: any) => {
+  const handleConfirmSigning = (offer: {
+    offerType: "standard" | "aggressive";
+    interest: "low" | "medium" | "high" | "all_in";
+  }) => {
     if (!world || !playerHeyaId || !signingCandidate) return;
     try {
       const result = offerCandidate(
@@ -101,7 +93,7 @@ export function RecruitingTab({
         signingCandidate.candidateId,
         playerHeyaId,
         offer.offerType,
-        offer.interest,
+        offer.interest
       );
       updateWorld({ ...world });
       if (result.ok) {
@@ -152,12 +144,7 @@ export function RecruitingTab({
           </Button>
         ))}
 
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleScoutPool}
-          className="ml-auto gap-2"
-        >
+        <Button variant="secondary" size="sm" onClick={handleScoutPool} className="ml-auto gap-2">
           <Binoculars className="h-4 w-4" />
           Scout Pool
         </Button>
@@ -165,6 +152,7 @@ export function RecruitingTab({
 
       <ScrollArea className="h-[550px]">
         <div className="space-y-3 pr-2">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest */}
           {digest.candidates.map((c: any) => {
             const visLabel =
               c.visibilityBand === "public"
@@ -188,25 +176,20 @@ export function RecruitingTab({
                           {visLabel}
                         </Badge>
                         <Badge variant="outline" className="text-xs capitalize">
-                          {c.poolType?.replace("_", " ") ??
-                            activePool.replace("_", " ")}
+                          {c.poolType?.replace("_", " ") ?? activePool.replace("_", " ")}
                         </Badge>
                       </div>
 
                       <div className="text-xs text-muted-foreground mt-1">
                         {c.nationality ?? "Unknown origin"} •{" "}
-                        {c.age ? `Age ${c.age}` : "Age unknown"} •{" "}
-                        {c.height ? `${c.height}cm` : ""}{" "}
+                        {c.age ? `Age ${c.age}` : "Age unknown"} • {c.height ? `${c.height}cm` : ""}{" "}
                         {c.weight ? `${c.weight}kg` : ""}
                       </div>
 
                       {c.scoutLevel >= 35 && (
                         <div className="mt-2 text-xs text-muted-foreground">
                           {c.archetype && (
-                            <span>
-                              Style:{" "}
-                              {resolveRegistryLabel('archetypes', c.archetype)}
-                            </span>
+                            <span>Style: {resolveRegistryLabel("archetypes", c.archetype)}</span>
                           )}
                           {c.scoutLevel >= 65 && c.talentSeed && (
                             <span className="ml-3">
@@ -225,9 +208,7 @@ export function RecruitingTab({
                     <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1">
                         <Search className={`h-3 w-3 ${c.scoutInfo.color}`} />
-                        <span className={`text-xs ${c.scoutInfo.color}`}>
-                          {c.scoutInfo.label}
-                        </span>
+                        <span className={`text-xs ${c.scoutInfo.color}`}>{c.scoutInfo.label}</span>
                       </div>
 
                       <div className="flex gap-1">
@@ -269,9 +250,7 @@ export function RecruitingTab({
             <div className="text-center py-12 text-muted-foreground">
               <Binoculars className="h-8 w-8 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No visible prospects in this pool yet.</p>
-              <p className="text-xs mt-1">
-                Use "Scout Pool" to reveal hidden prospects.
-              </p>
+              <p className="text-xs mt-1">Use "Scout Pool" to reveal hidden prospects.</p>
             </div>
           )}
         </div>

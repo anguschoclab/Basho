@@ -13,13 +13,22 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, GraduationCap, Globe, School, Send } from "lucide-react";
 import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
 /** Defines the structure for recruit signing dialog props. */
 interface RecruitSigningDialogProps {
   open: boolean;
-  onConfirm: (offer: { offerType: "standard" | "aggressive", interest: "low" | "medium" | "high" | "all_in" }) => void;
+  onConfirm: (offer: {
+    offerType: "standard" | "aggressive";
+    interest: "low" | "medium" | "high" | "all_in";
+  }) => void;
   onCancel: () => void;
   candidate: {
     shikona?: string;
@@ -73,9 +82,10 @@ export function RecruitSigningDialog({
 
   if (!candidate) return null;
 
-  const name = candidate.visibilityBand === "hidden"
-    ? "Unknown Prospect"
-    : candidate.shikona || candidate.candidateId.slice(0, 8);
+  const name =
+    candidate.visibilityBand === "hidden"
+      ? "Unknown Prospect"
+      : candidate.shikona || candidate.candidateId.slice(0, 8);
 
   const poolLabel = candidate.poolType?.replace("_", " ") ?? "recruit";
 
@@ -101,16 +111,19 @@ export function RecruitSigningDialog({
                     {poolLabel}
                   </Badge>
                 )}
-                {candidate.nationality && (
-                  <Badge variant="outline">{candidate.nationality}</Badge>
-                )}
+                {candidate.nationality && <Badge variant="outline">{candidate.nationality}</Badge>}
               </div>
 
               {/* Offer Controls */}
               <div className="space-y-4 pt-4 border-t border-border/50">
                 <div className="grid gap-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider">Offer Strategy</Label>
-                  <Select value={offerType} onValueChange={(v: any) => setOfferType(v)}>
+                  <Label className="text-xs font-bold uppercase tracking-wider">
+                    Offer Strategy
+                  </Label>
+                  <Select
+                    value={offerType}
+                    onValueChange={(v) => setOfferType(v as "standard" | "aggressive")}
+                  >
                     <SelectTrigger className="h-9">
                       <SelectValue placeholder="Select strategy" />
                     </SelectTrigger>
@@ -122,8 +135,13 @@ export function RecruitSigningDialog({
                 </div>
 
                 <div className="grid gap-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider">Interest Level</Label>
-                  <Select value={interest} onValueChange={(v: any) => setInterest(v)}>
+                  <Label className="text-xs font-bold uppercase tracking-wider">
+                    Interest Level
+                  </Label>
+                  <Select
+                    value={interest}
+                    onValueChange={(v) => setInterest(v as "low" | "medium" | "high" | "all_in")}
+                  >
                     <SelectTrigger className="h-9">
                       <SelectValue placeholder="Select interest" />
                     </SelectTrigger>
@@ -147,10 +165,7 @@ export function RecruitSigningDialog({
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-6">
           <AlertDialogCancel>Withdraw</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={() => onConfirm({ offerType, interest })}
-            className="gap-2"
-          >
+          <AlertDialogAction onClick={() => onConfirm({ offerType, interest })} className="gap-2">
             <Send className="h-3.5 w-3.5" />
             Submit Offer
           </AlertDialogAction>

@@ -31,6 +31,7 @@ export interface BashoInfo {
 /** Defines the structure for bout log entry. */
 export interface BoutLogEntry {
   phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement" | "edge_crisis";
+  clock?: number;
   description?: string;
   data?: Record<string, unknown>;
 }

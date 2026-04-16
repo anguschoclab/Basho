@@ -1,9 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya } from "./utils";
 import { phase01_week_recruitment } from "../tick/phases/phase01_week_recruitment";
 import { resolveImpacts } from "../core/ImpactResolver";
-import { WorldState } from "../types/world";
-import { TalentCandidate } from "../types/talent";
 
 describe("TalentPoolConversion", () => {
   it("should convert a signed candidate into a Rikishi during the recruitment phase", () => {
@@ -18,7 +17,7 @@ describe("TalentPoolConversion", () => {
     });
 
     const candidateId = "test-candidate";
-    const candidate: any = {
+    const candidate = {
       candidateId,
       personId: "test-person",
       name: "Future Sekitori",
@@ -39,7 +38,7 @@ describe("TalentPoolConversion", () => {
     world.talentPool = {
       version: "1.0.0",
       lastYearlyRefreshYear: 2024,
-      candidates: { [candidateId]: candidate },
+      candidates: { [candidateId]: candidate as any },
       pools: {
         high_school: {
           poolId: "pool-1",

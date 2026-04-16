@@ -12,27 +12,54 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     case "START_BASHO": {
       const world = cloneWorldForTick(state.world);
       worldEngine.startBasho(world, world.currentBashoName);
-      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null, boutTactics: {} };
+      return {
+        ...state,
+        world,
+        phase: "day_preview",
+        currentBoutIndex: 0,
+        lastBoutResult: null,
+        boutTactics: {},
+      };
     }
 
     case "ADVANCE_DAY": {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
       worldEngine.advanceBashoDay(world);
-      const day = world.currentBasho!.day;
+      const day = world.currentBasho?.day ?? 0;
       if (day > 15) {
-        try { autosaveWithSignal(world); } catch { /* silent */ }
+        try {
+          autosaveWithSignal(world);
+        } catch {
+          /* silent */
+        }
         return { ...state, world, phase: "basho_results" };
       }
-      try { autosaveWithSignal(world); } catch { /* silent */ }
-      return { ...state, world, phase: "day_preview", currentBoutIndex: 0, lastBoutResult: null, boutTactics: {} };
+      try {
+        autosaveWithSignal(world);
+      } catch {
+        /* silent */
+      }
+      return {
+        ...state,
+        world,
+        phase: "day_preview",
+        currentBoutIndex: 0,
+        lastBoutResult: null,
+        boutTactics: {},
+      };
     }
 
     case "SIMULATE_BOUT": {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
       const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex);
-      return { ...state, world, lastBoutResult: result ?? state.lastBoutResult, currentBoutIndex: action.boutIndex + 1 };
+      return {
+        ...state,
+        world,
+        lastBoutResult: result ?? state.lastBoutResult,
+        currentBoutIndex: action.boutIndex + 1,
+      };
     }
 
     case "SET_BOUT_TACTIC":
@@ -40,8 +67,8 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         ...state,
         boutTactics: {
           ...state.boutTactics,
-          [action.boutId]: action.tactic
-        }
+          [action.boutId]: action.tactic,
+        },
       };
 
     case "SIMULATE_ALL_BOUTS": {
@@ -53,7 +80,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         if (!result) break;
         lastResult = result;
       }
-      try { autosaveWithSignal(world); } catch { /* silent */ }
+      try {
+        autosaveWithSignal(world);
+      } catch {
+        /* silent */
+      }
       return { ...state, world, lastBoutResult: lastResult, phase: "day_results" };
     }
 
@@ -73,7 +104,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     case "SIM_FULL_BASHO": {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
-      const currentDay = world.currentBasho!.day;
+      const currentDay = world.currentBasho?.day ?? 1;
       for (let d = currentDay; d <= 15; d++) {
         // Unroll to prevent excessive inner loop evaluations and memory leaks
         // Bout processing handles its own queue safely up to 64
@@ -83,7 +114,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         }
         if (d < 15) worldEngine.advanceBashoDay(world);
       }
-      try { autosaveWithSignal(world); } catch { /* silent */ }
+      try {
+        autosaveWithSignal(world);
+      } catch {
+        /* silent */
+      }
       return { ...state, world, phase: "basho_results", currentBoutIndex: 0, lastBoutResult: null };
     }
 

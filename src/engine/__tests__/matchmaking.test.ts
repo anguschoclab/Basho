@@ -1,10 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
-import {
-  buildSwissTorikumi,
-  scorePairing,
-  buildCandidatePairs,
-  type MatchPairing,
-} from "../matchmaking/index";
+import { buildSwissTorikumi, scorePairing } from "../matchmaking/index";
 import { mockRikishi, makeMockBasho } from "./utils";
 import type { BashoState } from "../types/basho";
 import type { Rikishi } from "../types/rikishi";

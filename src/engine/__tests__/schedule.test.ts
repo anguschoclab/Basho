@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { scheduleDivisionDay, needsScheduleForDay, getTotalBashodays } from "../schedule";
 import { mockRikishi, makeMockBasho, makeMockWorld } from "./utils";
 import type { BashoState } from "../types/basho";
-import type { WorldState } from "../types/world";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -80,8 +80,6 @@ describe("scheduleDivisionDay", () => {
     world.rikishi.set(r1.id, r1);
     world.rikishi.set(r2.id, r2);
     world.rikishi.set(r3.id, r3);
-
-    const initialCount = basho.matches.length;
 
     const { impact } = scheduleDivisionDay({
       world,

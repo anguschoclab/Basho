@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { getOyakataStyleProfile, scoreRecruitForOyakata } from "../oyakataStylePreferences";
 import type { WorldState } from "../types/world";
@@ -47,7 +48,10 @@ describe("getOyakataStyleProfile — innovator includes defensive", () => {
     // The direct unit check below validates the archetype list regardless
     if (!foundInnovator) {
       // Directly construct the expected profile to confirm the code path
-      const innovatorProfile = getOyakataStyleProfile(world, makeOyakata({ archetype: "strategist" as any }));
+      const innovatorProfile = getOyakataStyleProfile(
+        world,
+        makeOyakata({ archetype: "strategist" as any })
+      );
       if (innovatorProfile.philosophy === "innovator") {
         expect(innovatorProfile.preferredArchetypes).toContain("defensive");
       }

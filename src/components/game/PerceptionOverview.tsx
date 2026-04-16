@@ -1,8 +1,8 @@
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,7 +122,6 @@ const MOMENTUM_COLOR: Record<string, string> = {
 };
 
 export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | null }) {
-  const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;
   const [compareIds, setCompareIds] = useState<[string | null, string | null]>([null, null]);
@@ -340,7 +339,7 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapA.heyaName}</label>
           <RikishiSelectorList
             perceptions={snapA.rikishiPerceptions}
-            selectedId={selectedA!}
+            selectedId={selectedA ?? undefined}
             onSelect={setSelectedA}
           />
         </div>
@@ -348,7 +347,7 @@ function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
           <label className="text-[10px] text-muted-foreground mb-1 block">{snapB.heyaName}</label>
           <RikishiSelectorList
             perceptions={snapB.rikishiPerceptions}
-            selectedId={selectedB!}
+            selectedId={selectedB ?? undefined}
             onSelect={setSelectedB}
           />
         </div>

@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "../h2h";
 import { mockRikishi } from "./utils";
-import type { MatchResultLog } from "../types/rikishi";
-import { resolveImpacts } from "../core/ImpactResolver";
+import type { MatchResultLog } from "../types/records";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -84,8 +84,8 @@ describe("getH2HReport — win counting", () => {
     const a = mockRikishi("a", {
       history: [
         makeLog("b", true),
-        makeLog("c", false),   // against someone else
-        makeLog("d", true),    // against someone else
+        makeLog("c", false), // against someone else
+        makeLog("d", true), // against someone else
       ],
     });
     const b = mockRikishi("b", {
@@ -108,9 +108,9 @@ describe("getH2HReport — recent meetings ordering", () => {
   it("returns recent meetings sorted newest-first by year then day", () => {
     const a = mockRikishi("a", {
       history: [
-        makeLog("b", true,  { year: 2024, day: 1,  bashoId: "2024-01" }),
+        makeLog("b", true, { year: 2024, day: 1, bashoId: "2024-01" }),
         makeLog("b", false, { year: 2025, day: 15, bashoId: "2025-01" }),
-        makeLog("b", true,  { year: 2024, day: 9,  bashoId: "2024-03" }),
+        makeLog("b", true, { year: 2024, day: 9, bashoId: "2024-03" }),
       ],
     });
     const b = mockRikishi("b", { history: [] });
@@ -140,7 +140,7 @@ describe("getH2HReport — recent meetings ordering", () => {
   it("sets winnerId correctly for each meeting", () => {
     const a = mockRikishi("a", {
       history: [
-        makeLog("b", true,  { year: 2025, day: 3 }),
+        makeLog("b", true, { year: 2025, day: 3 }),
         makeLog("b", false, { year: 2025, day: 1 }),
       ],
     });
@@ -148,15 +148,13 @@ describe("getH2HReport — recent meetings ordering", () => {
 
     const { recentMeetings } = getH2HReport(a, b);
 
-    expect(recentMeetings[0].winnerId).toBe("a");  // a won on day 3 (newer)
-    expect(recentMeetings[1].winnerId).toBe("b");  // b won on day 1
+    expect(recentMeetings[0].winnerId).toBe("a"); // a won on day 3 (newer)
+    expect(recentMeetings[1].winnerId).toBe("b"); // b won on day 1
   });
 
   it("records kimarite from MatchResultLog", () => {
     const a = mockRikishi("a", {
-      history: [
-        makeLog("b", true, { kimarite: "uwatenage" }),
-      ],
+      history: [makeLog("b", true, { kimarite: "uwatenage" })],
     });
     const b = mockRikishi("b", { history: [] });
 
@@ -278,7 +276,18 @@ describe("generateH2HCommentary", () => {
   it("returns a non-empty string for established rivalry", () => {
     const a = mockRikishi("a", {
       h2h: {
-        b: { wins: 8, losses: 3, streak: 3, lastMatch: { winnerId: "a", kimarite: "yorikiri", bashoId: "2025-01", day: 14, year: 2025 } },
+        b: {
+          wins: 8,
+          losses: 3,
+          streak: 3,
+          lastMatch: {
+            winnerId: "a",
+            kimarite: "yorikiri",
+            bashoId: "2025-01",
+            day: 14,
+            year: 2025,
+          },
+        },
       },
     });
     const b = mockRikishi("b");

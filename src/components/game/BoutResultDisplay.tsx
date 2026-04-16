@@ -1,6 +1,7 @@
 // BoutResultDisplay.tsx — Polished bout result with dramatic winner reveal
 // Supports kimarite/kimariteId/kimariteName fields across engine revisions
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -67,9 +68,11 @@ export function BoutResultDisplay({
   const loser = result.winner === "east" ? westRikishi : eastRikishi;
   const winnerSide = result.winner;
 
-  const kimariteId = safeString((result as any).kimarite) || safeString((result as any).kimariteId) || "";
+  const kimariteId =
+    safeString((result as any).kimarite) || safeString((result as any).kimariteId) || "";
   const kimariteFromLookup = kimariteId ? getKimarite(kimariteId) : null;
-  const kimariteName = safeString((result as any).kimariteName) || safeString(kimariteFromLookup?.name) || "—";
+  const kimariteName =
+    safeString((result as any).kimariteName) || safeString(kimariteFromLookup?.name) || "—";
   const kimariteNameJa = safeString(kimariteFromLookup?.nameJa);
   const kimariteDescription = safeString(kimariteFromLookup?.description);
   const rarity = safeString((kimariteFromLookup as any)?.rarity, "").toLowerCase();
@@ -81,8 +84,12 @@ export function BoutResultDisplay({
     <div className={cn("paper p-0 overflow-hidden text-center", className)}>
       {/* Top color accent bar */}
       <div className="flex h-1">
-        <div className={cn("flex-1 transition-all", winnerSide === "east" ? "bg-east" : "bg-east/20")} />
-        <div className={cn("flex-1 transition-all", winnerSide === "west" ? "bg-west" : "bg-west/20")} />
+        <div
+          className={cn("flex-1 transition-all", winnerSide === "east" ? "bg-east" : "bg-east/20")}
+        />
+        <div
+          className={cn("flex-1 transition-all", winnerSide === "west" ? "bg-west" : "bg-west/20")}
+        />
       </div>
 
       <div className="p-6 space-y-5">
@@ -110,12 +117,16 @@ export function BoutResultDisplay({
         </div>
 
         {/* Kimarite card */}
-        <div className={cn(
-          "rounded-lg p-4 border",
-          rarity === "legendary" ? "kimarite-rare border-gold/30" :
-          rarity === "rare" ? "kimarite-rare" :
-          "bg-secondary/40 border-border/50"
-        )}>
+        <div
+          className={cn(
+            "rounded-lg p-4 border",
+            rarity === "legendary"
+              ? "kimarite-rare border-gold/30"
+              : rarity === "rare"
+                ? "kimarite-rare"
+                : "bg-secondary/40 border-border/50"
+          )}
+        >
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
             Winning Technique
           </p>
@@ -124,7 +135,9 @@ export function BoutResultDisplay({
             <p className="text-base text-muted-foreground/80 mt-0.5">{kimariteNameJa}</p>
           )}
           {kimariteDescription && (
-            <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{kimariteDescription}</p>
+            <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">
+              {kimariteDescription}
+            </p>
           )}
           {rarity && rarity !== "common" && (
             <Badge
@@ -146,28 +159,38 @@ export function BoutResultDisplay({
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
             <Zap className="h-3.5 w-3.5 text-muted-foreground" />
             <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
-            <p className={cn(
-              "font-medium text-sm",
-              tachiaiWinner === "east" ? "text-east" : tachiaiWinner === "west" ? "text-west" : "text-muted-foreground"
-            )}>
+            <p
+              className={cn(
+                "font-medium text-sm",
+                tachiaiWinner === "east"
+                  ? "text-east"
+                  : tachiaiWinner === "west"
+                    ? "text-west"
+                    : "text-muted-foreground"
+              )}
+            >
               {tachiaiWinner === "east"
-                ? eastRikishi?.shikona ?? "—"
+                ? (eastRikishi?.shikona ?? "—")
                 : tachiaiWinner === "west"
-                ? westRikishi?.shikona ?? "—"
-                : "—"}
+                  ? (westRikishi?.shikona ?? "—")
+                  : "—"}
             </p>
           </div>
 
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
             <Shield className="h-3.5 w-3.5 text-muted-foreground" />
             <p className="text-[10px] text-muted-foreground uppercase">Stance</p>
-            <p className="font-medium text-sm text-foreground">{formatStance((result as any).stance)}</p>
+            <p className="font-medium text-sm text-foreground">
+              {formatStance((result as any).stance)}
+            </p>
           </div>
 
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
             <Timer className="h-3.5 w-3.5 text-muted-foreground" />
             <p className="text-[10px] text-muted-foreground uppercase">Duration</p>
-            <p className="font-medium text-sm text-foreground">{duration > 0 ? `${duration} ticks` : "—"}</p>
+            <p className="font-medium text-sm text-foreground">
+              {duration > 0 ? `${duration} ticks` : "—"}
+            </p>
           </div>
         </div>
       </div>

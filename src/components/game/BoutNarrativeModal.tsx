@@ -1,6 +1,7 @@
 // BoutNarrativeModal.tsx — Polished bout detail modal with dramatic header,
 // animated phase commentary, and immersive result display
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,11 +21,11 @@ import { generateNarrative } from "@/presenters/uiDigest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
-  tactical: { label: "策略", color: "text-primary",        bg: "bg-primary/10 border-primary/20" },
-  tachiai:  { label: "立合", color: "text-east",           bg: "bg-east/10 border-east/20" },
-  clinch:   { label: "組合", color: "text-warning",        bg: "bg-warning/10 border-warning/20" },
-  momentum: { label: "攻防", color: "text-accent",         bg: "bg-accent/10 border-accent/20" },
-  finish:   { label: "決着", color: "text-success",        bg: "bg-success/10 border-success/20" },
+  tactical: { label: "策略", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  tachiai: { label: "立合", color: "text-east", bg: "bg-east/10 border-east/20" },
+  clinch: { label: "組合", color: "text-warning", bg: "bg-warning/10 border-warning/20" },
+  momentum: { label: "攻防", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
+  finish: { label: "決着", color: "text-success", bg: "bg-success/10 border-success/20" },
 };
 
 const TAG_ICONS: Record<string, string> = {
@@ -105,7 +106,9 @@ export function BoutNarrativeModal({
         <div className="bg-muted/20 border-b border-border/50 px-6 pt-4 pb-2">
           <div className="flex items-center justify-between mb-3">
             <div className="text-right flex-1 min-w-0">
-              <p className={`font-display text-lg font-bold truncate ${result.winner === "east" ? "winner-glow text-success" : "text-foreground"}`}>
+              <p
+                className={`font-display text-lg font-bold truncate ${result.winner === "east" ? "winner-glow text-success" : "text-foreground"}`}
+              >
                 {east.shikona}
               </p>
               <p className="text-[10px] text-east uppercase tracking-widest">East</p>
@@ -116,7 +119,9 @@ export function BoutNarrativeModal({
               </div>
             </div>
             <div className="text-left flex-1 min-w-0">
-              <p className={`font-display text-lg font-bold truncate ${result.winner === "west" ? "winner-glow text-success" : "text-foreground"}`}>
+              <p
+                className={`font-display text-lg font-bold truncate ${result.winner === "west" ? "winner-glow text-success" : "text-foreground"}`}
+              >
                 {west.shikona}
               </p>
               <p className="text-[10px] text-west uppercase tracking-widest">West</p>
@@ -133,7 +138,12 @@ export function BoutNarrativeModal({
             className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
           />
           <div className="flex justify-center mt-1.5 mb-1">
-            <Button variant="ghost" size="sm" onClick={() => setReplayKey((k) => k + 1)} className="text-xs text-muted-foreground gap-1.5 h-7">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setReplayKey((k) => k + 1)}
+              className="text-xs text-muted-foreground gap-1.5 h-7"
+            >
               <RotateCcw className="h-3 w-3" /> Replay
             </Button>
           </div>
@@ -225,7 +235,10 @@ export function BoutNarrativeModal({
 
               {/* ── Technical log ── */}
               <TabsContent value="log" className="mt-4">
-                <BoutLog log={(result as any).log} className="border rounded-md p-4 bg-background" />
+                <BoutLog
+                  log={(result as any).log}
+                  className="border rounded-md p-4 bg-background"
+                />
               </TabsContent>
             </Tabs>
           </div>

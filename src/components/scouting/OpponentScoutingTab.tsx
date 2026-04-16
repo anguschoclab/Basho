@@ -10,18 +10,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  projectOpponentScoutingUIDigest, 
+import {
+  projectOpponentScoutingUIDigest,
   setScoutingInvestment,
-  RANK_NAMES 
+  RANK_NAMES,
 } from "@/presenters/uiDigest";
 import { AttrChip } from "./AttrChip";
 
-export function OpponentScoutingTab({
-  playerHeyaId,
-}: {
-  playerHeyaId: string | null;
-}) {
+export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
   const { state, updateWorld } = useGame();
   const world = state.world;
@@ -35,7 +31,7 @@ export function OpponentScoutingTab({
 
   const handleInvestScouting = (
     rikishiId: string,
-    level: any,
+    level: "none" | "light" | "standard" | "deep"
   ) => {
     if (!world) return;
     setScoutingInvestment(world, rikishiId, level);
@@ -75,7 +71,7 @@ export function OpponentScoutingTab({
                 onClick={() =>
                   navigate({
                     to: "/rikishi/$rikishiId",
-                    params: { rikishiId: r.id } as any,
+                    params: { rikishiId: r.id },
                   })
                 }
               >
@@ -84,9 +80,7 @@ export function OpponentScoutingTab({
                     {/* Identity */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-display font-semibold text-lg truncate">
-                          {r.shikona}
-                        </h3>
+                        <h3 className="font-display font-semibold text-lg truncate">{r.shikona}</h3>
                         <Badge variant="secondary" className="text-xs">
                           {rankNames.ja}
                           {r.rankNumber ? ` ${r.rankNumber}` : ""}
@@ -111,34 +105,18 @@ export function OpponentScoutingTab({
                     <div className="flex flex-col items-end gap-2 shrink-0 min-w-[140px]">
                       <div className="flex items-center gap-2">
                         <Search className={`h-4 w-4 ${r.scoutInfo.color}`} />
-                        <span
-                          className={`text-sm font-medium ${r.scoutInfo.color}`}
-                        >
+                        <span className={`text-sm font-medium ${r.scoutInfo.color}`}>
                           {r.scoutInfo.label}
                         </span>
                       </div>
-                      <Progress
-                        value={r.scoutedProgress}
-                        className="h-1.5 w-24"
-                      />
+                      <Progress value={r.scoutedProgress} className="h-1.5 w-24" />
 
                       {/* Investment buttons */}
                       <div className="flex gap-1 mt-1">
-                        {(
-                          [
-                            "none",
-                            "light",
-                            "standard",
-                            "deep",
-                          ] as const
-                        ).map((inv) => (
+                        {(["none", "light", "standard", "deep"] as const).map((inv) => (
                           <Button
                             key={inv}
-                            variant={
-                              r.scoutingInvestment === inv
-                                ? "default"
-                                : "ghost"
-                            }
+                            variant={r.scoutingInvestment === inv ? "default" : "ghost"}
                             size="sm"
                             className="h-6 px-2 text-[10px]"
                             onClick={(e) => {

@@ -1,15 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from "vitest";
-import { 
-  consolidateOyakataMemory, 
-  makeNPCWeeklyDecision 
-} from "../npcAI";
+import { consolidateOyakataMemory, makeNPCWeeklyDecision } from "../npcAI";
 import { resolveImpacts } from "../core/ImpactResolver";
 import * as PersonaService from "../systems/NPCPersonaService";
 import { WorldState } from "../types/world";
 import { Id } from "../types/common";
 
 vi.mock("../systems/NPCPersonaService", () => ({
-  getManagerPersona: vi.fn()
+  getManagerPersona: vi.fn(),
 }));
 
 const mockPersona = {
@@ -18,7 +16,7 @@ const mockPersona = {
     runwayBand: "comfortable",
     rosterSize: 5,
     rosterStrengthBand: "competitive",
-    rikishiPerceptions: []
+    rikishiPerceptions: [],
   },
   riskAppetite: 0.5,
   welfareDiscipline: 0.5,
@@ -26,7 +24,7 @@ const mockPersona = {
   archetype: "traditionalist",
   traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
   quirks: [],
-  styleBias: "neutral"
+  styleBias: "neutral",
 };
 
 describe("NPC AI Agentic Refactor", () => {
@@ -36,7 +34,7 @@ describe("NPC AI Agentic Refactor", () => {
     heyas: new Map(),
     oyakata: new Map(),
     rikishi: new Map(),
-    npcScoutingPriorities: {}
+    npcScoutingPriorities: {},
   } as unknown as WorldState;
 
   const heyaId = "heya-1" as Id;
@@ -46,14 +44,14 @@ describe("NPC AI Agentic Refactor", () => {
     id: heyaId,
     name: "Test Heya",
     oyakataId: oyakataId,
-    rikishiIds: []
+    rikishiIds: [],
   };
 
   const mockOyakata = {
     id: oyakataId,
     archetype: "traditionalist",
     mood: "content",
-    memory: undefined
+    memory: undefined,
   };
 
   mockWorld.heyas.set(heyaId, mockHeya as any);
@@ -65,7 +63,9 @@ describe("NPC AI Agentic Refactor", () => {
       const updatedWorld = resolveImpacts(mockWorld, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
       expect(updatedOyakata?.memory).toBeDefined();
-      expect((updatedOyakata?.memory as any).coreDirectives).toContain("Prioritize traditionalist values");
+      expect((updatedOyakata?.memory as any).coreDirectives).toContain(
+        "Prioritize traditionalist values"
+      );
     });
 
     it("should flag skeptical conflicts (e.g. morale drop vs content mood)", () => {
@@ -73,14 +73,20 @@ describe("NPC AI Agentic Refactor", () => {
       const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "mutinous" });
       const updatedWorld = resolveImpacts(mockWorld, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
-      const obs = (updatedOyakata?.memory as any).observations.find((o: any) => o.type === "alignment");
+      const obs = (updatedOyakata?.memory as any).observations.find(
+        (o: any) => o.type === "alignment"
+      );
       expect(obs).toBeDefined();
       expect(obs.summary).toContain("Unexpected morale collapse");
     });
 
     it("should prune noise (limit to 10 observations)", () => {
       if (!mockOyakata.memory) {
-        (mockOyakata as any).memory = { observations: [], coreDirectives: [], lastConsolidationTick: 0 };
+        (mockOyakata as any).memory = {
+          observations: [],
+          coreDirectives: [],
+          lastConsolidationTick: 0,
+        };
       }
       const memory = mockOyakata.memory as any;
       memory.observations = [];
@@ -103,15 +109,15 @@ describe("NPC AI Agentic Refactor", () => {
         ...mockPersona,
         perception: {
           ...mockPersona.perception,
-          welfareRiskBand: "critical" // This forces the Training Worker to be conservative
+          welfareRiskBand: "critical", // This forces the Training Worker to be conservative
         },
-        mood: "furious"
+        mood: "furious",
       } as any);
 
       const decision = makeNPCWeeklyDecision(mockWorld, heyaId);
       expect(decision.mood).toBe("furious");
       expect(decision.trainingIntensity).toBe("punishing");
-      expect(decision.reasoning.some(r => r.includes("[Lead Review]"))).toBe(true);
+      expect(decision.reasoning.some((r) => r.includes("[Lead Review]"))).toBe(true);
     });
   });
 });
