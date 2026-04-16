@@ -4,6 +4,7 @@ import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/heal
  */
 
 import type { Id } from "./common";
+import type { AvatarConfig } from "./avatar";
 import {
   Style,
   CombatArchetype,
@@ -161,7 +162,8 @@ export interface Rikishi {
   stats: RikishiStats;
   careerRecord?: { wins: number; losses: number; yusho: number };
 
-  faceAvatarUrl?: string;
+  faceAvatarUrl?: string; // DEPRECATED - kept for backward compatibility
+  avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
   personalityTraits: string[];
   condition: number;
   motivation: number;
@@ -196,4 +198,10 @@ export interface Rikishi {
 
   // Fan appeal score, bumped by kinboshi/ginboshi upsets
   marketability?: number;
+
+  // Ceremonial kesho-mawashi (worn by sekitori during dohyo-iri)
+  keshoMawashi?: import("./keshoMawashi").KeshoMawashi;
+
+  // Yokozuna ceremonial rope belt (only for yokozuna rank)
+  yokozunaTsuna?: import("./keshoMawashi").YokozunaTsuna;
 }

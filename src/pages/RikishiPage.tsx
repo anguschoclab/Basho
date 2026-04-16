@@ -37,6 +37,8 @@ import {
   Users,
 } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { KeshoMawashiDisplay, YokozunaTsunaDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import {
   LineChart,
   Line,
@@ -60,6 +62,7 @@ import { rngFromSeed } from "@/engine/rng";
 import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import { RikishiRadarChart } from "@/components/rikishi/RikishiRadarChart";
+import type { CareerSnapshot, Milestone } from "@/engine/types/history";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -78,7 +81,7 @@ export default function RikishiPage() {
 
   // Get raw rikishi data safely
   const rawRikishi = world?.rikishi.get(rikishiId || "");
-  const rikishi = rawRikishi ? projectRikishi(rawRikishi, world!) : null;
+  const rikishi = rawRikishi && world ? projectRikishi(rawRikishi, world) : null;
   const history = rikishi?.careerHistory;
 
   // Prepare career progression data for chart (called before early returns)
@@ -96,10 +99,10 @@ export default function RikishiPage() {
       jonidan: 10,
       jonokuchi: 5,
     };
-    return history
+    return (history as CareerSnapshot[])
       .slice()
       .reverse()
-      .map((snap: any) => ({
+      .map((snap) => ({
         basho: `${snap.bashoName} ${snap.year}`,
         rankValue: (rankOrder[snap.rank] || 0) + (snap.rankNumber || 0),
         wins: snap.wins,
@@ -115,13 +118,13 @@ export default function RikishiPage() {
   const kimariteDistributionData = useMemo(() => {
     if (!rikishi?.favoredKimariteDetailed || rikishi.favoredKimariteDetailed.length === 0)
       return [];
-    return rikishi.favoredKimariteDetailed
+    return (rikishi.favoredKimariteDetailed as { kimarite: string; percentage: number }[])
       .slice(0, 8)
-      .map((k: any) => ({
+      .map((k) => ({
         kimarite: k.kimarite,
         percentage: k.percentage,
       }))
-      .sort((a: any, b: any) => b.percentage - a.percentage);
+      .sort((a, b) => b.percentage - a.percentage);
   }, [rikishi?.favoredKimariteDetailed]);
 
   if (!world) return null;
@@ -136,7 +139,7 @@ export default function RikishiPage() {
         <RosterList
           rikishiList={rikishiList}
           onRikishiClick={(id) =>
-            navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } as any })
+            navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } })
           }
         />
       </AppLayout>
@@ -190,67 +193,78 @@ export default function RikishiPage() {
             </div>
 
             <div className="flex flex-col md:flex-row items-start justify-between gap-8 relative z-10">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Badge
-                    className={cn(
-                      "text-[10px] font-black uppercase tracking-widest px-3 h-6 border-0",
-                      `rank-${rikishi.rank}`
-                    )}
-                  >
-                    {rikishi.rankLabel}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "font-bold h-6 uppercase text-[9px] tracking-widest",
-                      healthBadge === "Fresh" && "border-success text-success bg-success/10",
-                      healthBadge === "Worn" &&
-                        "border-yellow-500 text-yellow-500 bg-yellow-500/10",
-                      healthBadge === "Struggling" &&
-                        "border-orange-500 text-orange-500 bg-orange-500/10",
-                      healthBadge === "Critical" &&
-                        "border-destructive text-destructive bg-destructive/10",
-                      healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
-                    )}
-                  >
-                    {healthBadge}
-                  </Badge>
-                  {isOwned && (
+              <div className="flex items-center gap-6">
+                <SumoAvatar
+                  config={rikishi.avatarConfig}
+                  size="lg"
+                  showHairstyle={true}
+                  expression={rikishi.isInjured ? "intense" : "determined"}
+                  fallback={rikishi.shikona}
+                  className="border-4 border-white/20 shadow-2xl"
+                />
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      className={cn(
+                        "text-[10px] font-black uppercase tracking-widest px-3 h-6 border-0",
+                        `rank-${rikishi.rank}`
+                      )}
+                    >
+                      {rikishi.rankLabel}
+                    </Badge>
                     <Badge
                       variant="outline"
-                      className="bg-white/10 text-white border-white/20 font-bold h-6 uppercase text-[9px] tracking-widest"
+                      className={cn(
+                        "font-bold h-6 uppercase text-[9px] tracking-widest",
+                        healthBadge === "Fresh" && "border-success text-success bg-success/10",
+                        healthBadge === "Worn" &&
+                          "border-yellow-500 text-yellow-500 bg-yellow-500/10",
+                        healthBadge === "Struggling" &&
+                          "border-orange-500 text-orange-500 bg-orange-500/10",
+                        healthBadge === "Critical" &&
+                          "border-destructive text-destructive bg-destructive/10",
+                        healthBadge === "Recovering" &&
+                          "border-blue-500 text-blue-500 bg-blue-500/10"
+                      )}
                     >
-                      Active Roster
+                      {healthBadge}
                     </Badge>
-                  )}
-                  {rikishi.nationality !== "Japan" && (
-                    <Badge
-                      variant="outline"
-                      className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest"
-                    >
-                      <Globe className="h-3 w-3" /> Foreign Slot
-                    </Badge>
-                  )}
-                </div>
+                    {isOwned && (
+                      <Badge
+                        variant="outline"
+                        className="bg-white/10 text-white border-white/20 font-bold h-6 uppercase text-[9px] tracking-widest"
+                      >
+                        Active Roster
+                      </Badge>
+                    )}
+                    {rikishi.nationality !== "Japan" && (
+                      <Badge
+                        variant="outline"
+                        className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest"
+                      >
+                        <Globe className="h-3 w-3" /> Foreign Slot
+                      </Badge>
+                    )}
+                  </div>
 
-                <h1 className="text-6xl font-display font-black tracking-tighter sumi-e-ink leading-none">
-                  {rikishi.shikona}
-                </h1>
+                  <h1 className="text-6xl font-display font-black tracking-tighter sumi-e-ink leading-none">
+                    {rikishi.shikona}
+                  </h1>
 
-                <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.2em] opacity-80 pt-2">
-                  <span className="flex items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg
-                  </span>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.2em] opacity-80 pt-2">
+                    <span className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -335,14 +349,16 @@ export default function RikishiPage() {
                         Mentees
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {mentees.map((m) => (
-                          <div key={m!.id} className="flex items-center gap-2">
-                            <RikishiName id={m!.id} name={m!.shikona} className="text-sm" />
-                            <Badge variant="outline" className="text-[10px]">
-                              {m!.rank}
-                            </Badge>
-                          </div>
-                        ))}
+                        {mentees.map((m) =>
+                          m ? (
+                            <div key={m.id} className="flex items-center gap-2">
+                              <RikishiName id={m.id} name={m.shikona} className="text-sm" />
+                              <Badge variant="outline" className="text-[10px]">
+                                {m.rank}
+                              </Badge>
+                            </div>
+                          ) : null
+                        )}
                       </div>
                     </div>
                   )}
@@ -368,6 +384,54 @@ export default function RikishiPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Kesho-Mawashi Display (for Sekitori) */}
+            {rikishi.hasKeshoMawashi && rikishi.keshoMawashi && (
+              <div className="mb-10 p-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10 rounded-lg relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
+                      <Medal className="h-5 w-5 text-primary" /> Ceremonial Apron
+                    </h3>
+                    <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground">
+                      Kesho-Mawashi • {rikishi.keshoMawashi.tier} Tier
+                    </p>
+                  </div>
+                  {rikishi.isYokozuna && rikishi.yokozunaTsuna && (
+                    <div className="flex items-center gap-3">
+                      <YokozunaTsunaDisplay tsuna={rikishi.yokozunaTsuna} size="md" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-yellow-600">
+                        Yokozuna Tsuna
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-start gap-6">
+                  <KeshoMawashiDisplay mawashi={rikishi.keshoMawashi} size="lg" />
+                  <div className="flex-1 space-y-2">
+                    <p className="text-sm text-muted-foreground italic">
+                      {rikishi.keshoMawashi.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <Badge variant="outline" className="text-[10px] uppercase">
+                        {rikishi.keshoMawashi.origin} Design
+                      </Badge>
+                      <Badge variant="outline" className="text-[10px] uppercase">
+                        {rikishi.keshoMawashi.basePattern} Pattern
+                      </Badge>
+                      {rikishi.keshoMawashi.sponsorInfo && (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] uppercase bg-gold/10 border-gold/30 text-gold"
+                        >
+                          Sponsored by {rikishi.keshoMawashi.sponsorInfo.name}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -718,7 +782,9 @@ export default function RikishiPage() {
                         ] as const
                       ).map(({ label, key, color }) => {
                         const rawPref =
-                          (rawRikishi.combatProfile?.familyPreferences as any)?.[key] ?? 25;
+                          (rawRikishi.combatProfile?.familyPreferences as Record<string, number>)?.[
+                            key
+                          ] ?? 25;
                         const total = Object.values(
                           rawRikishi.combatProfile?.familyPreferences ?? {
                             push: 25,
@@ -917,10 +983,10 @@ export default function RikishiPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border/40">
-                          {(history || [])
+                          {((history as CareerSnapshot[]) || [])
                             .slice()
                             .reverse()
-                            .map((snap: any, i: number) => (
+                            .map((snap, i: number) => (
                               <tr key={i} className="hover:bg-primary/5 transition-colors group">
                                 <td className="py-4 pr-6 font-display font-black text-sm uppercase tracking-tighter">
                                   {snap.bashoName} {snap.year}
@@ -1025,10 +1091,10 @@ export default function RikishiPage() {
                         </p>
                       </div>
                     ) : (
-                      milestones
+                      (milestones as Milestone[])
                         .slice()
                         .reverse()
-                        .map((m: any, i: number) => (
+                        .map((m, i: number) => (
                           <div
                             key={i}
                             className="relative animate-in slide-in-from-left-2 duration-500 fill-mode-both"

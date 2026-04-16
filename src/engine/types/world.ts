@@ -53,10 +53,10 @@ export interface TransientContext {
     monthBoundary: boolean;
     yearBoundary: boolean;
   };
-  lastReport?: any;
+  lastReport?: Record<string, unknown>;
   preGeneratedSchedules?: {
-    day1: any[];
-    day2: any[];
+    day1: unknown[];
+    day2: unknown[];
     announcedAtWeek: number;
   };
 }
@@ -181,8 +181,8 @@ export interface WorldState {
   rivalriesState?: RivalriesState;
 
   _preGeneratedSchedules?: {
-    day1: any[];
-    day2: any[];
+    day1: unknown[];
+    day2: unknown[];
     announcedAtWeek: number;
   };
 
@@ -212,4 +212,7 @@ export interface WorldState {
    * Populated by phase02_context at the start of each pipeline run.
    */
   transientContext?: TransientContext;
+
+  // Heya brand identities for kesho-mawashi generation
+  heyaBrandIdentities?: IdMapRuntime<import("./keshoMawashi").HeyaBrandIdentity>;
 }

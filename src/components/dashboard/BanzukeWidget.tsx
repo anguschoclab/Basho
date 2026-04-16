@@ -4,8 +4,10 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollText } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
+import type { AvatarConfig } from "@/engine/types/avatar";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,
@@ -40,6 +42,7 @@ const BanzukeEntryRow = React.memo(
     record,
     isPlayer,
     i,
+    avatarConfig,
   }: {
     id: string;
     shikona: string;
@@ -49,6 +52,7 @@ const BanzukeEntryRow = React.memo(
     record: string;
     isPlayer: boolean;
     i: number;
+    avatarConfig: AvatarConfig | undefined;
   }) => {
     return (
       <div
@@ -58,25 +62,41 @@ const BanzukeEntryRow = React.memo(
             : RANK_BG[rank] || (i % 2 === 0 ? "bg-muted/30" : "")
         } hover:bg-muted/40`}
       >
-        <span
-          className={`w-12 sm:w-16 shrink-0 capitalize text-[10px] sm:text-[11px] font-display ${RANK_STYLE[rank] || ""}`}
-        >
-          {rank === "maegashira"
-            ? `M${rankNumber || ""}`
-            : rank === "juryo"
-              ? `J${rankNumber || ""}`
-              : rank}
-        </span>
-        <span className={`text-[10px] w-4 ${side === "east" ? "text-east" : "text-west"}`}>
-          {side === "east" ? "E" : "W"}
-        </span>
-        <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
-        <span className="text-[10px] text-muted-foreground font-mono tabular-nums hidden sm:inline">
-          {record}
-        </span>
-        {isPlayer && (
-          <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
-        )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <SumoAvatar
+              config={avatarConfig}
+              size="xs"
+              showHairstyle={
+                rank === "yokozuna" ||
+                rank === "ozeki" ||
+                rank === "sekiwake" ||
+                rank === "komusubi" ||
+                rank === "maegashira"
+              }
+              fallback={shikona}
+            />
+            <span
+              className={`w-12 sm:w-16 shrink-0 capitalize text-[10px] sm:text-[11px] font-display ${RANK_STYLE[rank] || ""}`}
+            >
+              {rank === "maegashira"
+                ? `M${rankNumber || ""}`
+                : rank === "juryo"
+                  ? `J${rankNumber || ""}`
+                  : rank}
+            </span>
+          </div>
+          <span className={`text-[10px] w-4 ${side === "east" ? "text-east" : "text-west"}`}>
+            {side === "east" ? "E" : "W"}
+          </span>
+          <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
+          <span className="text-[10px] text-muted-foreground font-mono tabular-nums hidden sm:inline">
+            {record}
+          </span>
+          {isPlayer && (
+            <Badge className="text-[8px] h-3.5 bg-primary/20 text-primary px-1">YOU</Badge>
+          )}
+        </div>
       </div>
     );
   }
@@ -117,6 +137,7 @@ export function BanzukeWidget() {
       result.push({
         entry: projectRosterEntry(r),
         isPlayer: r.heyaId === world.playerHeyaId,
+        avatarConfig: r.avatarConfig,
       });
     }
     return result;
@@ -131,7 +152,7 @@ export function BanzukeWidget() {
           const limit = topRanked.length;
           const nodes = new Array(limit);
           for (let i = 0; i < limit; i++) {
-            const { entry, isPlayer } = topRanked[i];
+            const { entry, isPlayer, avatarConfig } = topRanked[i];
             nodes[i] = (
               <BanzukeEntryRow
                 key={entry.id}
@@ -143,6 +164,7 @@ export function BanzukeWidget() {
                 record={entry.record}
                 isPlayer={isPlayer}
                 i={i}
+                avatarConfig={avatarConfig}
               />
             );
           }

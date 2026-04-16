@@ -4,10 +4,11 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown } from "lucide-react";
+import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown, Award } from "lucide-react";
+import { YokozunaTsunaDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
 import { RikishiName, OyakataName, StableName } from "@/components/ClickableName";
@@ -66,11 +67,13 @@ export default function OyakataPage() {
       <div className="space-y-6">
         {/* HEADER */}
         <div className="flex items-start gap-6">
-          <Avatar className="h-32 w-32 border-4 border-muted">
-            <AvatarFallback className="text-4xl font-bold bg-slate-800 text-white">
-              {selectedOyakata.name[0]}
-            </AvatarFallback>
-          </Avatar>
+          <SumoAvatar
+            config={selectedOyakata.avatarConfig}
+            size="xl"
+            showHairstyle={true}
+            fallback={selectedOyakata.name}
+            className="border-4 border-primary/30 shadow-xl"
+          />
 
           <div className="flex-1">
             <div className="flex items-center gap-3">
@@ -160,6 +163,34 @@ export default function OyakataPage() {
                     </div>
                   </div>
                 )}
+                {/* Former Yokozuna Tsuna Display */}
+                {selectedOyakata.highestRank?.toLowerCase() === "yokozuna" && (
+                  <div className="space-y-2 md:col-span-2 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm text-yellow-800">
+                      <Award className="h-4 w-4" />
+                      <span className="font-medium">Yokozuna Legacy</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <YokozunaTsunaDisplay
+                        tsuna={{
+                          rikishiId: selectedOyakata.id,
+                          conferredAt: { year: 2020, basho: "unknown" },
+                          style: "traditional",
+                          ropeColor: "gold_accented",
+                          paperTassels: 5,
+                          displayedOnProfile: true,
+                          isRetired: true,
+                        }}
+                        size="md"
+                        variant="retired"
+                      />
+                      <p className="text-sm text-yellow-700 italic">
+                        Former yokozuna ceremonial rope, displayed as a symbol of the highest
+                        achievement in sumo.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -221,9 +252,12 @@ export default function OyakataPage() {
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarFallback>{o.name[0]}</AvatarFallback>
-                        </Avatar>
+                        <SumoAvatar
+                          config={o.avatarConfig}
+                          size="sm"
+                          showHairstyle={true}
+                          fallback={o.name}
+                        />
                         <div className="flex-1">
                           <p className="font-medium">{o.name}</p>
                           <p className="text-sm text-muted-foreground">

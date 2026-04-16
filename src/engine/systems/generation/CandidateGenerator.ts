@@ -8,6 +8,7 @@ import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 import type { TalentCandidate, TalentPoolType } from "../../types/talent";
+import { generateAvatarConfig } from "../../avatarGenerator";
 
 interface GeneratedStats extends RikishiStats {
   height: number;
@@ -296,6 +297,7 @@ export function generateFullRikishi(args: {
       kinboshiConceded: 0,
       ginboshiConceded: 0,
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+      mochikyukinPoints: 0,
     },
   };
 
@@ -311,7 +313,8 @@ export function generateFullRikishi(args: {
       statsBase.height,
       statsBase.weight,
       rng,
-      nationality
+      nationality,
+      currentYear
     ),
     ...createCombatStats(rikishiStats, division, archetype, profile),
     ...createCareerHistory(records),
@@ -331,8 +334,12 @@ function createBaseInfo(
   height: number,
   weight: number,
   rng: SeededRNG,
-  nationality: string
+  nationality: string,
+  currentYear: number
 ) {
+  const age = currentYear - birthYear;
+  const isSekitori = division === "makuuchi" || division === "juryo";
+
   return {
     id,
     shikona: name,
@@ -352,6 +359,12 @@ function createBaseInfo(
     personalityTraits: [],
 
     faceAvatarUrl: "",
+    avatarConfig: generateAvatarConfig({
+      seed: id,
+      nationality,
+      age,
+      isSekitori,
+    }),
     talentSeed: rng.int(0, 1000000),
   };
 }
@@ -462,7 +475,7 @@ export function convertCandidateToRikishi(args: {
   currentYear: number;
   heyaId: string;
 }): Rikishi {
-  const { candidate, rng, heyaId } = args;
+  const { candidate, rng, currentYear, heyaId } = args;
 
   // New recruits start at the bottom of the banzuke
   const rank: Rank = "jonokuchi";
@@ -480,6 +493,7 @@ export function convertCandidateToRikishi(args: {
       kinboshiConceded: 0,
       ginboshiConceded: 0,
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+      mochikyukinPoints: 0,
     },
   };
 
@@ -495,7 +509,8 @@ export function convertCandidateToRikishi(args: {
       statsBase.height,
       statsBase.weight,
       rng,
-      candidate.nationality
+      candidate.nationality,
+      currentYear
     ),
     ...createCombatStats(rikishiStats, division, candidate.archetype, candidate.combatProfile),
     ...createCareerHistory({ careerWins: 0, careerLosses: 0, yushoCount: 0 }),

@@ -12,6 +12,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Button } from "@/components/ui/button";
 import { Swords } from "lucide-react";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
@@ -171,7 +172,39 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
 
           {/* Rivalry heat badge */}
           {showHeat && (
-            <div className="flex justify-center mt-3">
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <SumoAvatar
+                  config={eastRikishi.avatarConfig}
+                  size="md"
+                  showHairstyle={
+                    eastRikishi.division === "makuuchi" || eastRikishi.division === "juryo"
+                  }
+                  fallback={eastRikishi.shikona}
+                  className="mb-1"
+                />
+                <RikishiName
+                  id={eastRikishi.id}
+                  name={eastRikishi.shikona}
+                  className="font-bold text-sm"
+                />
+              </div>
+              <div className="text-left">
+                <SumoAvatar
+                  config={westRikishi.avatarConfig}
+                  size="md"
+                  showHairstyle={
+                    westRikishi.division === "makuuchi" || westRikishi.division === "juryo"
+                  }
+                  fallback={westRikishi.shikona}
+                  className="mb-1"
+                />
+                <RikishiName
+                  id={westRikishi.id}
+                  name={westRikishi.shikona}
+                  className="font-bold text-sm"
+                />
+              </div>
               <Badge variant="outline" className={`gap-1.5 text-xs ${heatConfig.classes}`}>
                 {heatConfig.icon}
                 {heatConfig.label}

@@ -12,6 +12,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Zap, Activity, Filter, SortAsc, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 interface RosterListProps {
   rikishiList: UIRikishi[];
@@ -88,14 +89,25 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
               <CardContent className="p-5 relative z-10">
                 <div className="flex justify-between items-start mb-6">
                   <div className="space-y-1">
-                    <Badge
-                      className={cn(
-                        "text-[9px] font-black uppercase tracking-widest px-2 h-5 border-0",
-                        `rank-${r.rank}`
-                      )}
-                    >
-                      {r.rankLabel}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <SumoAvatar
+                        config={r.avatarConfig}
+                        size="xs"
+                        showHairstyle={true}
+                        expression={
+                          r.isInjured ? "intense" : r.motivation > 70 ? "confident" : "neutral"
+                        }
+                        fallback={r.shikona}
+                      />
+                      <Badge
+                        className={cn(
+                          "text-[9px] font-black uppercase tracking-widest px-2 h-5 border-0",
+                          `rank-${r.rank}`
+                        )}
+                      >
+                        {r.rankLabel}
+                      </Badge>
+                    </div>
                     <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
                       {r.shikona}
                     </div>

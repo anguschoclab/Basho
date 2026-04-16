@@ -7,6 +7,7 @@ import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Zap, Timer, Shield } from "lucide-react";
 import { formatStance, getKimarite } from "@/presenters/uiDigest";
 
@@ -100,6 +101,37 @@ export function BoutResultDisplay({
               <Zap className="h-3 w-3" /> UPSET!
             </Badge>
           )}
+
+          {/* Winner/Loser avatars */}
+          <div className="flex items-center justify-center gap-6 mb-3">
+            {winner && (
+              <div className="flex flex-col items-center gap-1">
+                <SumoAvatar
+                  config={winner.avatarConfig}
+                  size="lg"
+                  showHairstyle={true}
+                  expression="confident"
+                  fallback={winner.shikona}
+                  className="border-2 border-gold/50 shadow-lg"
+                />
+                <span className="text-xs text-muted-foreground">Winner</span>
+              </div>
+            )}
+            <div className="text-2xl font-bold text-muted-foreground">VS</div>
+            {loser && (
+              <div className="flex flex-col items-center gap-1">
+                <SumoAvatar
+                  config={loser.avatarConfig}
+                  size="lg"
+                  showHairstyle={true}
+                  expression="neutral"
+                  fallback={loser.shikona}
+                  className="border-2 border-muted opacity-70"
+                />
+                <span className="text-xs text-muted-foreground">Loser</span>
+              </div>
+            )}
+          </div>
 
           <div className="flex items-center justify-center gap-2 mb-1">
             <Trophy className="h-5 w-5 text-gold" />

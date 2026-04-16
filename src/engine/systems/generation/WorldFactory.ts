@@ -15,9 +15,11 @@ import { Division, Rank, Side } from "../../types/banzuke";
 import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
 import { createKoenkai } from "../economics/SponsorshipService";
+import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
 import { generateOyakata } from "../../oyakataPersonalities";
+import { generateAvatarConfig } from "../../avatarGenerator";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -52,6 +54,15 @@ export function createHeyaWithOyakata(args: {
     undefined,
     tier
   );
+
+  // Generate oyakata avatar
+  oyakata.avatarConfig = generateAvatarConfig({
+    seed: oyakataId,
+    nationality: "Japan", // Most oyakata are Japanese
+    age,
+    isSekitori: false,
+    isOyakata: true,
+  });
 
   const heya: Heya = {
     id,
@@ -262,7 +273,10 @@ export function generateInitialWorld(seed: string): WorldState {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Object has extra properties (planetRating, isInitialSeed) not in WorldState interface
   } as any;
 
-  // 3. Establish Initial Koenkai Relationships (Constitution A6)
+  // 3. Generate Heya Brand Identities (for kesho-mawashi designs)
+  world.heyaBrandIdentities = generateHeyaBrandIdentities(worldRng, world.heyas);
+
+  // 4. Establish Initial Koenkai Relationships (Constitution A6)
   if (world.sponsorPool) {
     for (const heya of world.heyas.values()) {
       const koenkai = createKoenkai(

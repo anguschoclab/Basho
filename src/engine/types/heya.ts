@@ -21,13 +21,13 @@ import type { BeyaTrainingState } from "./training";
 import type { HistoricalOyakata } from "./history";
 import type { ActiveCrisis } from "./crises";
 
-
 /** Defines the structure for heya. */
 export interface Heya {
   id: Id;
   name: string;
   nameJa?: string;
   oyakataId: Id;
+  brandIdentityId?: Id; // Reference to HeyaBrandIdentity
   koenkaiId?: Id;
   staffIds?: Id[];
   rikishiIds?: Id[];
@@ -66,7 +66,7 @@ export interface Heya {
   trainingState?: BeyaTrainingState;
 
   activeCrisis?: ActiveCrisis;
-  
+
   descriptor?: string;
   isPlayerOwned?: boolean;
   ichimon?: IchimonName;

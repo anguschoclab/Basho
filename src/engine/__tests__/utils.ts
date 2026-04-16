@@ -10,6 +10,8 @@ import type { TacticalArchetype } from "../types/combat";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { Heya } from "../types/heya";
+import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "../types/keshoMawashi";
+import { SeededRNG } from "../rng";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
@@ -17,10 +19,13 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
   const power = overrides.power ?? (overrides.stats as unknown as RikishiStats)?.strength ?? 50;
   const speed = overrides.speed ?? (overrides.stats as unknown as RikishiStats)?.speed ?? 50;
   const balance = overrides.balance ?? (overrides.stats as unknown as RikishiStats)?.balance ?? 50;
-  const technique = overrides.technique ?? (overrides.stats as unknown as RikishiStats)?.technique ?? 50;
-  const aggression = overrides.aggression ?? (overrides.stats as unknown as RikishiStats)?.aggression ?? 50;
+  const technique =
+    overrides.technique ?? (overrides.stats as unknown as RikishiStats)?.technique ?? 50;
+  const aggression =
+    overrides.aggression ?? (overrides.stats as unknown as RikishiStats)?.aggression ?? 50;
   const mental = overrides.mental ?? (overrides.stats as unknown as RikishiStats)?.mental ?? 50;
-  const experience = overrides.experience ?? (overrides.stats as unknown as RikishiStats)?.experience ?? 50;
+  const experience =
+    overrides.experience ?? (overrides.stats as unknown as RikishiStats)?.experience ?? 50;
 
   return {
     id,
@@ -119,6 +124,7 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     oyakata: new Map(),
     events: { version: "1.0.0", log: [], dedupe: {} },
     history: [],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ftue: {} as any,
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     year: 2025,
@@ -127,6 +133,7 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     id: "world-test",
     seed: "test-seed",
     cyclePhase: "interim",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     records: {} as any,
     settings: { archiveMode: "standard" },
     ...overrides,
@@ -147,4 +154,130 @@ export function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
     isActive: true,
     ...overrides,
   } as unknown as BashoState;
+}
+
+// ── Kesho-Mawashi / Heya Brand Identity ────────────────────────────────────
+
+export function mockHeyaBrandIdentity(
+  id: string,
+  overrides: Partial<HeyaBrandIdentity> = {}
+): HeyaBrandIdentity {
+  const rng = new SeededRNG(id);
+  const traditionLevels: Array<"reformist" | "balanced" | "traditionalist" | "ultra_traditional"> =
+    ["reformist", "balanced", "traditionalist", "ultra_traditional"];
+
+  return {
+    id: `brand-${id}`,
+    heyaId: id,
+    baseColors: {
+      primary: rng.pick(["#1a365d", "#744210", "#276749", "#742a2a", "#2d3748"]),
+      secondary: rng.pick(["#2c5282", "#975a16", "#2f855a", "#9b2c2c", "#4a5568"]),
+      accent: rng.pick(["#d69e2e", "#ecc94b", "#f6ad55", "#fc8181", "#90cdf4"]),
+    },
+    crestMotif: rng.pick(["sakura", "pine", "waves", "mountain", "sun"]),
+    traditionLevel: rng.pick(traditionLevels),
+    designPaletteId: rng.pick([
+      "tokoname",
+      "edo_elegant",
+      "imperial_court",
+      "kansai_warm",
+      "northern_snow",
+    ]),
+    ...overrides,
+  };
+}
+
+export function mockHeyaWithBrand(
+  id: string,
+  overrides: Partial<Heya> = {}
+): { heya: Heya; brand: HeyaBrandIdentity } {
+  const brand = mockHeyaBrandIdentity(id);
+  const heya = makeMockHeya(id, {
+    brandIdentityId: brand.id,
+    ...overrides,
+  });
+
+  return { heya, brand };
+}
+
+export function mockKeshoMawashi(overrides: Partial<KeshoMawashi> = {}): KeshoMawashi {
+  return {
+    rikishiId: overrides.rikishiId || "test-rikishi",
+    createdAt: overrides.createdAt || { year: 2025, basho: "hatsu", tier: "juryo" },
+    tier: (overrides.tier as KeshoMawashi["tier"]) || "juryo",
+    origin: (overrides.origin as KeshoMawashi["origin"]) || "traditional",
+    basePattern: (overrides.basePattern as KeshoMawashi["basePattern"]) || "striped",
+    primaryColor: overrides.primaryColor || "#1a365d",
+    secondaryColor: overrides.secondaryColor || "#2c5282",
+    accentColor: overrides.accentColor || "#d69e2e",
+    goldThreadDensity: overrides.goldThreadDensity ?? 0.3,
+    mainSymbol: overrides.mainSymbol || {
+      type: "motif",
+      value: "dragon",
+      position: "center",
+      size: "large",
+      prominence: 0.8,
+    },
+    description: overrides.description || "An elegant ceremonial apron",
+    ...overrides,
+  } as KeshoMawashi;
+}
+
+export function mockYokozunaTsuna(overrides: Partial<YokozunaTsuna> = {}): YokozunaTsuna {
+  return {
+    rikishiId: overrides.rikishiId || "test-rikishi",
+    conferredAt: overrides.conferredAt || { year: 2025, basho: "hatsu" },
+    style: (overrides.style as YokozunaTsuna["style"]) || "traditional",
+    ropeColor: (overrides.ropeColor as YokozunaTsuna["ropeColor"]) || "gold_accented",
+    paperTassels: overrides.paperTassels ?? 5,
+    displayedOnProfile: overrides.displayedOnProfile ?? true,
+    isRetired: overrides.isRetired ?? false,
+    ...overrides,
+  } as YokozunaTsuna;
+}
+
+export function mockRikishiWithKesho(
+  id: string,
+  tier: KeshoMawashi["tier"] = "juryo",
+  overrides: Partial<Rikishi> = {}
+): Rikishi {
+  const rikishi = mockRikishi(id, {
+    rank:
+      tier === "yokozuna"
+        ? "yokozuna"
+        : tier === "sanyaku"
+          ? "sekiwake"
+          : tier === "makuuchi"
+            ? "maegashira"
+            : "juryo",
+    rankNumber: 1,
+    division: tier === "juryo" ? "juryo" : "makuuchi",
+    ...overrides,
+  });
+
+  (rikishi as Rikishi & { keshoMawashi: KeshoMawashi }).keshoMawashi = mockKeshoMawashi({
+    rikishiId: id,
+    tier,
+  });
+
+  return rikishi as Rikishi & { keshoMawashi: KeshoMawashi };
+}
+
+export function makeMockWorldWithBrands(
+  heyaCount: number = 5,
+  overrides: Partial<WorldState> = {}
+): WorldState & { heyaBrandIdentities: Map<string, HeyaBrandIdentity> } {
+  const world = makeMockWorld(overrides);
+  const heyaBrandIdentities = new Map<string, HeyaBrandIdentity>();
+
+  for (let i = 0; i < heyaCount; i++) {
+    const { heya, brand } = mockHeyaWithBrand(`heya-${i + 1}`);
+    world.heyas.set(heya.id, heya as unknown as Heya);
+    heyaBrandIdentities.set(brand.id, brand);
+  }
+
+  return {
+    ...world,
+    heyaBrandIdentities,
+  } as WorldState & { heyaBrandIdentities: Map<string, HeyaBrandIdentity> };
 }

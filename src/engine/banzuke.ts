@@ -13,7 +13,6 @@ import {
   type MovementEvent,
   type BanzukeSnapshot,
   type DivisionBanzukeSnapshot,
-  type BanzukeAssignment,
 } from "./types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
 import type { Rikishi } from "./types/rikishi";
@@ -32,8 +31,9 @@ export * from "./banzuke/ozekiLogic";
 export * from "./banzuke/specialPrizes";
 export { RANK_HIERARCHY };
 export { generateSanshoLedgerEntry } from "./economics_awards";
+export { generateKeshoForPromotions } from "./systems/keshoMawashi/KeshoMawashiGenerator";
 
-import { compareRanks, formatRank, kachiKoshiThreshold } from "./banzuke/banzukeHelpers";
+import { formatRank } from "./banzuke/banzukeHelpers";
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";

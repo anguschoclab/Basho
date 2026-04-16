@@ -1,6 +1,7 @@
 // HoFInductionCeremony.tsx — Hall of Fame induction narrative ceremony
 import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Shield, Target } from "lucide-react";
 import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
@@ -75,11 +76,14 @@ export function HoFInductionCeremony({
       cardClassName="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-muted/80 to-muted/30 border"
       cardContent={
         <>
-          <div
-            className={`h-16 w-16 rounded-full flex items-center justify-center bg-background border-2`}
-          >
-            <CatIcon className={`h-8 w-8 ${ceremony.color}`} />
-          </div>
+          <SumoAvatar
+            config={undefined}
+            size="lg"
+            showHairstyle={true}
+            fallback={inductee.shikona}
+            expression={inductee.category === "champion" ? "confident" : "determined"}
+            className={`border-2 ${ceremony.color}`}
+          />
           <div>
             <p className="text-xl font-display font-bold">
               <RikishiName id={inductee.rikishiId} name={inductee.shikona} />

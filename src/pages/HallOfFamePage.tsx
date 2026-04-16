@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -69,14 +70,18 @@ function RikishiPortrait({
   category: HoFCategory;
 }) {
   const accent = CATEGORY_ACCENT[category];
-  const initials = rikishi?.shikona?.slice(0, 2) ?? "??";
 
   return (
-    <div
-      className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-display font-bold border-2 ${accent} bg-gradient-to-br ${CATEGORY_GRADIENT[category]}`}
-    >
-      {initials}
-    </div>
+    <SumoAvatar
+      config={rikishi?.avatarConfig}
+      size="lg"
+      showHairstyle={true}
+      fallback={rikishi?.shikona}
+      expression={
+        category === "champion" ? "confident" : category === "technician" ? "determined" : "neutral"
+      }
+      className={`border-2 ${accent}`}
+    />
   );
 }
 

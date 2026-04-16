@@ -3,6 +3,7 @@
  */
 
 import type { Id } from "./common";
+import type { AvatarConfig } from "./avatar";
 
 /** Mood state for an Oyakata — affects training intensity and decision risk. */
 export type OyakataMood =
@@ -53,10 +54,11 @@ export interface Oyakata {
 
   mood?: OyakataMood;
   quirks?: string[];
-  
+  avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
+
   /** Drama Pass (Initiative 4) */
   grudges?: Id[]; // Heya or Oyakata IDs this person hates
-  temperament?: 'Stoic' | 'Volatile' | 'Vindictive';
+  temperament?: "Stoic" | "Volatile" | "Vindictive";
 
   managerFlags?: {
     welfareHawk?: boolean;
@@ -65,28 +67,28 @@ export interface Oyakata {
     nepotist?: boolean;
   };
 
-  /** 
+  /**
    * AI Agent Architecture Components (Canon Directive 2026.04)
    * Implements "Skeptical Memory" and "Background Consolidation"
    */
   memory?: {
-    /** 
+    /**
      * Recent observations (hints) about the roster/financials.
      * Used to resolve conflicting information over multiple ticks.
      */
     observations: Array<{
       tick: number;
-      type: 'perception' | 'incident' | 'alignment';
+      type: "perception" | "incident" | "alignment";
       summary: string;
       importance: number;
     }>;
-    
-    /** 
-     * The "Active Alignment" context. 
+
+    /**
+     * The "Active Alignment" context.
      * Reinserted into the decision loop to prevent instruction drift.
      */
     coreDirectives: string[];
-    
+
     /** Timestamp of last consolidation routine. */
     lastConsolidationTick: number;
   };

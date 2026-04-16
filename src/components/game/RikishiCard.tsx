@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
 import { UserPlus } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;
@@ -32,18 +33,29 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
     >
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-2xl font-display text-primary">
-              <RikishiName id={rikishi.id} name={rikishi.shikona} />
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {rikishi.heyaId ? (
-                <StableName id={rikishi.heyaId} name={rikishi.heyaName} />
-              ) : (
-                rikishi.heyaName
-              )}{" "}
-              Heya | {rikishi.rankLabel}
-            </p>
+          <div className="flex items-center gap-3">
+            <SumoAvatar
+              config={rikishi.avatarConfig}
+              size="md"
+              showHairstyle={true}
+              expression={
+                rikishi.isInjured ? "intense" : rikishi.motivation > 70 ? "confident" : "neutral"
+              }
+              fallback={rikishi.shikona}
+            />
+            <div>
+              <CardTitle className="text-2xl font-display text-primary">
+                <RikishiName id={rikishi.id} name={rikishi.shikona} />
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {rikishi.heyaId ? (
+                  <StableName id={rikishi.heyaId} name={rikishi.heyaName} />
+                ) : (
+                  rikishi.heyaName
+                )}{" "}
+                Heya | {rikishi.rankLabel}
+              </p>
+            </div>
           </div>
           <Badge variant="outline" className="font-mono">
             {rikishi.archetypeName}

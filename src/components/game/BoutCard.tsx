@@ -17,6 +17,7 @@ import {
   Users,
 } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 
 export type RivalryHeatBand = "cold" | "warm" | "hot" | "inferno";
 
@@ -234,6 +235,13 @@ export const BoutCard = React.memo(
             <Star className="h-3.5 w-3.5 text-primary shrink-0" fill="currentColor" />
           )}
 
+          <SumoAvatar
+            config={match.east.avatarConfig}
+            size="sm"
+            showHairstyle={match.east.division === "makuuchi" || match.east.division === "juryo"}
+            fallback={match.east.shikona}
+            expression={match.east.condition < 50 ? "intense" : "neutral"}
+          />
           <RikishiSide
             rikishi={match.east}
             side="east"
@@ -252,6 +260,13 @@ export const BoutCard = React.memo(
             onClick={() =>
               navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: match.west.id } })
             }
+          />
+          <SumoAvatar
+            config={match.west.avatarConfig}
+            size="sm"
+            showHairstyle={match.west.division === "makuuchi" || match.west.division === "juryo"}
+            fallback={match.west.shikona}
+            expression={match.west.condition < 50 ? "intense" : "neutral"}
           />
 
           <div className="shrink-0 ml-1 flex items-center gap-1.5">

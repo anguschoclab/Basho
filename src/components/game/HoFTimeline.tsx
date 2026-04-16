@@ -3,70 +3,8 @@
 
 import { useMemo } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Shield, Target } from "lucide-react";
-import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
+import type { HoFInductee } from "@/engine/hallOfFame";
 import type { UIRikishi } from "@/presenters/uiModels";
-
-const CATEGORY_ACCENT: Record<HoFCategory, string> = {
-  champion: "text-gold border-gold/40",
-  iron_man: "text-west border-west/40",
-  technician: "text-success border-success/40",
-};
-
-const CATEGORY_BG: Record<HoFCategory, string> = {
-  champion: "bg-gold/15",
-  iron_man: "bg-west/15",
-  technician: "bg-success/15",
-};
-
-const CATEGORY_ICON: Record<HoFCategory, React.ElementType> = {
-  champion: Trophy,
-  iron_man: Shield,
-  technician: Target,
-};
-
-/**
- * timeline portrait.
- *  * @param {
- *   inductee,
- *   rikishi,
- * } - The {
- *   inductee,
- *   rikishi,
- * }.
- */
-function TimelinePortrait({
-  inductee,
-  rikishi,
-}: {
-  inductee: HoFInductee;
-  rikishi: UIRikishi | undefined;
-}) {
-  const accent = CATEGORY_ACCENT[inductee.category];
-  const bg = CATEGORY_BG[inductee.category];
-  const Icon = CATEGORY_ICON[inductee.category];
-  const initials = rikishi?.shikona?.slice(0, 2) ?? "??";
-
-  return (
-    <div className="flex flex-col items-center gap-1 group relative">
-      {/* Portrait circle */}
-      <div
-        className={`w-11 h-11 rounded-full flex items-center justify-center text-xs font-display font-bold border-2 ${accent} ${bg} transition-transform group-hover:scale-110`}
-      >
-        {initials}
-      </div>
-      {/* Category icon badge */}
-      <Icon className={`h-3 w-3 ${accent.split(" ")[0]}`} />
-      {/* Name on hover */}
-      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-        <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5 shadow-lg">
-          {inductee.shikona}
-        </Badge>
-      </div>
-    </div>
-  );
-}
 
 /** Defines the structure for ho f timeline props. */
 interface HoFTimelineProps {

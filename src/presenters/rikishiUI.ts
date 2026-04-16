@@ -3,6 +3,8 @@ import type { Rikishi, RikishiArchetype } from "../engine/types/rikishi";
 import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
 import type { Style, TacticalArchetype } from "../engine/types/combat";
+import type { AvatarConfig } from "../engine/types/avatar";
+import type { KeshoMawashi, YokozunaTsuna } from "../engine/types/keshoMawashi";
 import {
   toRikishiDescriptor,
   toPotentialBand,
@@ -108,10 +110,20 @@ export interface UIRikishi {
   careerHistory: unknown[];
   milestones: unknown[];
   h2h?: Record<string, { wins: number; losses: number; streak: number }>;
+  avatarConfig?: AvatarConfig;
+  keshoMawashi?: KeshoMawashi;
+  yokozunaTsuna?: YokozunaTsuna;
+  hasKeshoMawashi: boolean;
+  isYokozuna: boolean;
+}
+
+interface MatchHistoryEntry {
+  win?: boolean;
+  kimarite?: string;
 }
 
 function calculateMostFrequentKimarite(
-  history: unknown[]
+  history: MatchHistoryEntry[]
 ): { kimarite: string; percentage: number }[] {
   if (!history || history.length === 0) return [];
   const winCounts: Record<string, number> = {};
@@ -321,6 +333,11 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerHistory,
     milestones,
     h2h: r.h2h as UIRikishi["h2h"],
+    avatarConfig: r.avatarConfig,
+    keshoMawashi: r.keshoMawashi,
+    yokozunaTsuna: r.yokozunaTsuna,
+    hasKeshoMawashi: !!r.keshoMawashi,
+    isYokozuna: r.rank === "yokozuna",
   };
 }
 
@@ -357,6 +374,7 @@ export interface UIRosterEntry {
   potentialBand: PotentialBand;
   archetypeLabel?: string;
   rankDelta?: UIRankDelta;
+  avatarConfig?: AvatarConfig;
 }
 
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
@@ -439,5 +457,6 @@ export function projectRosterEntry(
         r.combatProfile?.archetype ?? r.archetype ?? r.derivedArchetype
       )?.label || "Rikishi",
     rankDelta,
+    avatarConfig: r.avatarConfig,
   };
 }

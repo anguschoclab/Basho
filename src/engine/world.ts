@@ -20,7 +20,7 @@ import { resolveBout } from "./bout/boutResolver";
 import { advanceOneDay, enterInterim } from "./tick/tickDaily";
 import * as governance from "./governance/GovernanceService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
-import { updateBanzuke } from "./banzuke";
+import { updateBanzuke, generateKeshoForPromotions } from "./banzuke";
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import { resolveImpacts } from "./core/ImpactResolver";
@@ -367,6 +367,11 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
   const perfMap = new Map(performanceList.map((p) => [p.rikishiId, p]));
   const result = updateBanzuke(currentBanzukeList, perfMap, world.ozekiKadoban ?? {}, world.heyas);
+
+  // Generate kesho-mawashi for promoted rikishi and apply impacts
+  const keshoImpacts = generateKeshoForPromotions(world, result.events);
+  const worldWithKesho = resolveImpacts(world, [keshoImpacts]);
+  Object.assign(world, worldWithKesho);
 
   // Update ozekiKadoban world field
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);

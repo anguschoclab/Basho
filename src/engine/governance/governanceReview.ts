@@ -17,10 +17,12 @@ import { findMergerTarget, executeMerger } from "../mergers";
 import { checkRetirement } from "../lifecycle";
 import { generateOyakata } from "../oyakataPersonalities";
 import { onRikishiRetired } from "../records";
+import { updateAvatarForAging } from "../avatarGenerator";
 import { recordOyakataHandover } from "../lineage";
 import { rngForWorld } from "../rng";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { mergeImpacts } from "../core/ImpactResolver";
 import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
@@ -247,7 +249,6 @@ export function runGovernanceReview(world: WorldState): StateImpact {
   }
 
   if (impacts.length > 0) {
-    const { mergeImpacts } = require("../core/ImpactResolver");
     return mergeImpacts([builder.build(), ...impacts]);
   }
   return builder.build();
@@ -358,6 +359,14 @@ export function runRetirements(world: WorldState): StateImpact {
               r.rank,
               r.shikona
             );
+
+            // Transfer and update rikishi avatar to oyakata
+            if (r.avatarConfig) {
+              newOyakata.avatarConfig = {
+                ...updateAvatarForAging(r.avatarConfig, age),
+                hairstyle: "oyakata",
+              };
+            }
 
             availableStock.ownerId = newOyakataId;
             availableStock.holderId = newOyakataId;

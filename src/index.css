@@ -583,4 +583,14 @@
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
   }
+
+  /* Avatar animations */
+  @keyframes avatar-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .avatar-animate {
+    animation: avatar-breathe 3s ease-in-out infinite;
+  }
 }
