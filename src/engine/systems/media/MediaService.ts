@@ -8,10 +8,8 @@ import { MediaState, MediaHeadline, MediaTone, MediaBeat, HeadlineTier } from ".
 import { BoutResult, BashoName } from "../../types/basho";
 import type { GovernanceRuling } from "../../types/economy";
 import { Division } from "../../types/banzuke";
-import { rngForWorld } from "../../rng";
-import { Id } from "../../types/common";
+import { rngForWorld, SeededRNG } from "../../rng";
 import { getRivalryBoutModifiers, RivalriesState } from "../../rivalries";
-import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { clampInt } from "../../utils/math";
 
@@ -21,7 +19,7 @@ import {
   calculateHeatBump,
   calculatePressureBump,
   decayHeat,
-  decayPressure
+  decayPressure,
 } from "./MediaImpactService";
 import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -41,9 +39,13 @@ export function updateMediaFromBout(args: {
   rivalries?: RivalriesState;
 }): StateImpact {
   const { state, world, result, day, bashoName, division, rivalries } = args;
-  const builder = createImpactBuilder('updateMediaFromBout');
+  const builder = createImpactBuilder("updateMediaFromBout");
   const week = world.week ?? 0;
-  const rng = rngForWorld(world, "media", `bout::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`);
+  const rng = rngForWorld(
+    world,
+    "media",
+    `bout::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`
+  );
 
   const winner = world.rikishi.get(result.winnerRikishiId);
   const loser = world.rikishi.get(result.loserRikishiId);
@@ -51,7 +53,11 @@ export function updateMediaFromBout(args: {
   // 1. Calculate Impact
   let rivalryTension = 0;
   if (rivalries) {
-    const mods = getRivalryBoutModifiers({ state: rivalries, aId: result.winnerRikishiId, bId: result.loserRikishiId });
+    const mods = getRivalryBoutModifiers({
+      state: rivalries,
+      aId: result.winnerRikishiId,
+      bId: result.loserRikishiId,
+    });
     rivalryTension = mods.tension || 0;
   }
 
@@ -59,7 +65,7 @@ export function updateMediaFromBout(args: {
     upset: result.upset,
     rivalryTension,
     winnerRank: winner?.rank,
-    loserRank: loser?.rank
+    loserRank: loser?.rank,
   });
 
   const tier = determineTier(impact);
@@ -74,11 +80,11 @@ export function updateMediaFromBout(args: {
     loserId: result.loserRikishiId,
     kimariteName: result.kimariteName,
     upset: result.upset,
-    tier
+    tier,
   });
 
   const headline: MediaHeadline = {
-    id: rng.uuid('MH'),
+    id: rng.uuid("MH"),
     week,
     bashoName,
     tier,
@@ -96,18 +102,18 @@ export function updateMediaFromBout(args: {
       kimarite: result.kimarite,
       upset: result.upset,
       day,
-      division
-    }
+      division,
+    },
   };
 
   // 3. Apply Effects
   let nextState = applyHeadlineEffects(state, world, headline);
 
   // 4. Log significant headlines
-  if (tier === 'main_event' || tier === 'national') {
+  if (tier === "main_event" || tier === "national") {
     builder.logEvent(
-      'BOUT_RESOLVED',
-      'training',
+      "BOUT_RESOLVED",
+      "training",
       {
         status: "meta_shift",
         incident: title,
@@ -115,14 +121,22 @@ export function updateMediaFromBout(args: {
         winner: winner?.shikona,
         winnerRikishiId: result.winnerRikishiId,
         day: day,
-        score: impact
+        score: impact,
       },
       { rikishiId: result.winnerRikishiId }
     );
   }
 
   // 5. Handle Streaks
-  const streakResult = processStreak(nextState, world, result.winnerRikishiId, result.loserRikishiId, day, bashoName, rng);
+  const streakResult = processStreak(
+    nextState,
+    world,
+    result.winnerRikishiId,
+    result.loserRikishiId,
+    day,
+    bashoName,
+    rng
+  );
   if (streakResult.headline) {
     nextState = applyHeadlineEffects(streakResult.state, world, streakResult.headline);
   } else {
@@ -130,7 +144,8 @@ export function updateMediaFromBout(args: {
   }
 
   // Update the mediaState world field
-  (builder as any).updateWorldField('mediaState', nextState);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MediaState is not a standard WorldState field
+  (builder as any).updateWorldField("mediaState", nextState);
 
   return builder.build();
 }
@@ -140,8 +155,8 @@ export function updateMediaFromBout(args: {
  * Returns StateImpact describing media boundary updates instead of mutating state directly.
  */
 export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('processWeeklyMediaBoundary');
-  
+  const builder = createImpactBuilder("processWeeklyMediaBoundary");
+
   if (!world.mediaState) return builder.build();
 
   const state = world.mediaState;
@@ -157,10 +172,10 @@ export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
     if (nv > 0) nextPressure[id] = nv;
   }
 
-  builder.updateWorldField('mediaState', {
+  builder.updateWorldField("mediaState", {
     ...state,
     mediaHeat: nextHeat,
-    heyaPressure: nextPressure
+    heyaPressure: nextPressure,
   });
 
   return builder.build();
@@ -169,7 +184,11 @@ export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
 /**
  * Internal: Apply heat/pressure shifts based on a headline's impact.
  */
-function applyHeadlineEffects(state: MediaState, world: WorldState, headline: MediaHeadline): MediaState {
+function applyHeadlineEffects(
+  state: MediaState,
+  _world: WorldState,
+  headline: MediaHeadline
+): MediaState {
   const nextHeat = { ...state.mediaHeat };
   const heatBump = calculateHeatBump(headline.impact);
   for (const id of headline.rikishiIds) {
@@ -196,16 +215,22 @@ function applyHeadlineEffects(state: MediaState, world: WorldState, headline: Me
     mediaHeat: nextHeat,
     heyaPressure: nextPressure,
     headlines: [...state.headlines, headline].slice(-250), // Maintain cap
-    mediaHeatHistory: nextHistory
+    mediaHeatHistory: nextHistory,
   };
 }
 
 /**
  * Internal: Deterministic tone assignment logic.
  */
-function determineBoutTone(result: BoutResult, rivalryTension: number, winnerRank: string | undefined, loserRank: string | undefined, roll: number): MediaTone {
+function determineBoutTone(
+  result: BoutResult,
+  rivalryTension: number,
+  winnerRank: string | undefined,
+  loserRank: string | undefined,
+  roll: number
+): MediaTone {
   if (result.upset) {
-    return roll < 0.3 && (getRankImpact(loserRank) >= 8) ? "controversy" : "hype";
+    return roll < 0.3 && getRankImpact(loserRank) >= 8 ? "controversy" : "hype";
   }
   if (rivalryTension > 0.1) {
     return roll < 0.5 ? "hype" : "praise";
@@ -218,18 +243,31 @@ function determineBoutTone(result: BoutResult, rivalryTension: number, winnerRan
 
 function getRankImpact(rank?: string): number {
   switch (rank) {
-    case "yokozuna": return 10;
-    case "ozeki": return 8;
-    case "sekiwake": return 6;
-    case "komusubi": return 5;
-    default: return 3;
+    case "yokozuna":
+      return 10;
+    case "ozeki":
+      return 8;
+    case "sekiwake":
+      return 6;
+    case "komusubi":
+      return 5;
+    default:
+      return 3;
   }
 }
 
 /**
  * Internal: Streak tracking and headline firing.
  */
-function processStreak(state: MediaState, world: WorldState, winnerId: string, loserId: string, day: number | undefined, bashoName: BashoName | undefined, rng: any): { state: MediaState; headline: MediaHeadline | null } {
+function processStreak(
+  state: MediaState,
+  world: WorldState,
+  winnerId: string,
+  loserId: string,
+  _day: number | undefined,
+  bashoName: BashoName | undefined,
+  rng: SeededRNG
+): { state: MediaState; headline: MediaHeadline | null } {
   const nextStreaks = { ...state.bashoStreaks };
   const nextFired = { ...state.streakHeadlinesFired };
 
@@ -239,7 +277,7 @@ function processStreak(state: MediaState, world: WorldState, winnerId: string, l
   const streak = nextStreaks[winnerId];
   const milestones = [5, 8, 10, 12, 15];
   const firedList = nextFired[winnerId] ?? [];
-  const nextMilestone = milestones.find(m => streak >= m && !firedList.includes(m));
+  const nextMilestone = milestones.find((m) => streak >= m && !firedList.includes(m));
 
   if (!nextMilestone) {
     return { state: { ...state, bashoStreaks: nextStreaks }, headline: null };
@@ -247,14 +285,14 @@ function processStreak(state: MediaState, world: WorldState, winnerId: string, l
 
   nextFired[winnerId] = [...firedList, nextMilestone];
   const rikishi = world.rikishi.get(winnerId);
-  const { title, subtitle } = generateStreakHeadline({ 
-    rng, 
-    shikona: rikishi?.shikona ?? "Unknown", 
-    streak 
+  const { title, subtitle } = generateStreakHeadline({
+    rng,
+    shikona: rikishi?.shikona ?? "Unknown",
+    streak,
   });
 
   const headline: MediaHeadline = {
-    id: rng.uuid('MH'),
+    id: rng.uuid("MH"),
     week: world.week,
     bashoName,
     tier: streak >= 10 ? "main_event" : "national",
@@ -265,10 +303,13 @@ function processStreak(state: MediaState, world: WorldState, winnerId: string, l
     title,
     subtitle,
     impact: 35 + streak * 4,
-    tags: ["basho", "streak", `streak_${streak}`]
+    tags: ["basho", "streak", `streak_${streak}`],
   };
 
-  return { state: { ...state, bashoStreaks: nextStreaks, streakHeadlinesFired: nextFired }, headline };
+  return {
+    state: { ...state, bashoStreaks: nextStreaks, streakHeadlinesFired: nextFired },
+    headline,
+  };
 }
 /**
  * Reset basho-scoped tracking state.
@@ -305,7 +346,7 @@ export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string):
 
   return {
     ...state,
-    mediaHeatHistory: nextHistory
+    mediaHeatHistory: nextHistory,
   };
 }
 
@@ -325,6 +366,7 @@ export function createDefaultMediaState(): MediaState {
     retirementWatchFired: {},
     titleRaceDayFired: {},
     injuryWithdrawalFired: {},
+    absenceAnnouncements: [],
   };
 }
 
@@ -338,34 +380,34 @@ export function generateGovernanceHeadline(args: {
   templatePath: string; // e.g., 'institutional.welfare.watch_headline'
   severity?: HeadlineTier;
 }): StateImpact {
-  const { world, heyaId, templatePath, severity = 'local' } = args;
-  const builder = createImpactBuilder('generateGovernanceHeadline');
+  const { world, heyaId, templatePath, severity = "local" } = args;
+  const builder = createImpactBuilder("generateGovernanceHeadline");
 
   if (!world.mediaState || !world.mediaState.headlines) return builder.build();
 
   const heya = world.heyas.get(heyaId);
   const context = {
-    heyaname: heya?.name ?? 'Heya',
-    heya: heya?.name ?? 'Heya'
+    heyaname: heya?.name ?? "Heya",
+    heya: heya?.name ?? "Heya",
   };
 
   const week = world.week ?? 0;
   const rng = rngForWorld(world, "media", `gov::${heyaId}::${templatePath}::${week}`);
-  
+
   // Resolve title from archive
   const { text: title } = BardEngine.resolve(rng, templatePath, context);
 
   const headline: MediaHeadline = {
-    id: rng.uuid('MH'),
+    id: rng.uuid("MH"),
     week,
     tier: severity,
-    beat: templatePath.includes('welfare') ? 'discipline' : 'controversy',
-    tone: severity === 'main_event' || severity === 'national' ? 'controversy' : 'neutral',
+    beat: templatePath.includes("welfare") ? "discipline" : "controversy",
+    tone: severity === "main_event" || severity === "national" ? "controversy" : "neutral",
     rikishiIds: [],
     heyaIds: [heyaId],
     title,
     subtitle: "", // Optional for now
-    impact: severity === 'main_event' ? 60 : severity === 'national' ? 40 : 20,
+    impact: severity === "main_event" ? 60 : severity === "national" ? 40 : 20,
     tags: ["governance", "institutional"],
   };
 
@@ -373,13 +415,13 @@ export function generateGovernanceHeadline(args: {
   const updatedHeadlines = [...world.mediaState.headlines, headline];
   if (updatedHeadlines.length > 250) updatedHeadlines.shift();
 
-  builder.updateWorldField('mediaState', {
+  builder.updateWorldField("mediaState", {
     ...world.mediaState,
     headlines: updatedHeadlines,
     heyaPressure: {
       ...world.mediaState.heyaPressure,
-      [heyaId]: Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + (headline.impact / 2))
-    }
+      [heyaId]: Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + headline.impact / 2),
+    },
   });
 
   console.log(`MediaService: Generated Governance Headline: ${title}`);
@@ -393,19 +435,25 @@ export function generateGovernanceHeadline(args: {
  * Note: governanceLog updates are handled separately as it's not a supported world field in ImpactBuilder.
  */
 export function handleMediaEvent(world: WorldState, eventId: string, choice: string): StateImpact {
-  const builder = createImpactBuilder('handleMediaEvent');
+  const builder = createImpactBuilder("handleMediaEvent");
 
   if (!world.mediaState) return builder.build();
 
   // Find the event in the governance log or media state
-  const eventIndex = world.governanceLog?.findIndex(r => r.id === eventId);
+  const eventIndex = world.governanceLog?.findIndex((r) => r.id === eventId);
   if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
-    // Update the ruling with the player's choice
-    // Note: governanceLog is not a supported world field in ImpactBuilder, so we update it directly
-    // This will be migrated in a future update when ImpactBuilder is extended
+    // Update the ruling with the player's choice via ImpactBuilder
     const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
-    ruling.playerChoice = choice;
-    ruling.playerResponse = `Player chose: ${choice}`;
+    const updatedRuling: GovernanceRuling = {
+      ...ruling,
+      playerChoice: choice,
+      playerResponse: `Player chose: ${choice}`,
+    };
+
+    // Replace the ruling in governanceLog by updating the entire array
+    const updatedGovernanceLog = [...world.governanceLog];
+    updatedGovernanceLog[eventIndex] = updatedRuling;
+    builder.updateWorldField("governanceLog", updatedGovernanceLog);
   }
 
   // Apply choice effects to media state
@@ -428,10 +476,10 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
     // Natural decay will happen in weekly boundary
   }
 
-  builder.updateWorldField('mediaState', {
+  builder.updateWorldField("mediaState", {
     ...world.mediaState,
     mediaHeat: updatedMediaHeat,
-    heyaPressure: updatedHeyaPressure
+    heyaPressure: updatedHeyaPressure,
   });
 
   return builder.build();
@@ -443,27 +491,24 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
  * Returns StateImpact describing scandal evaluation instead of mutating state directly.
  */
 export function evaluateScandals(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('evaluateScandals');
+  const builder = createImpactBuilder("evaluateScandals");
 
   if (!world.mediaState) return builder.build();
 
   // Scandal pressure: stables with high scandalScore get persistent heyaPressure bumps
   const updatedHeyaPressure = { ...world.mediaState.heyaPressure };
-  
+
   for (const heya of world.heyas.values()) {
     if (!heya.scandalScore || heya.scandalScore <= 0) continue;
     const pressBump = Math.floor(heya.scandalScore / 10); // 0-3 per week
     if (pressBump > 0) {
-      updatedHeyaPressure[heya.id] = Math.min(
-        100,
-        (updatedHeyaPressure[heya.id] ?? 0) + pressBump
-      );
+      updatedHeyaPressure[heya.id] = Math.min(100, (updatedHeyaPressure[heya.id] ?? 0) + pressBump);
     }
   }
 
-  builder.updateWorldField('mediaState', {
+  builder.updateWorldField("mediaState", {
     ...world.mediaState,
-    heyaPressure: updatedHeyaPressure
+    heyaPressure: updatedHeyaPressure,
   });
 
   return builder.build();
@@ -503,7 +548,7 @@ export function buildMediaDigest(world: WorldState): {
     .sort((a, b) => b.pressure - a.pressure)
     .slice(0, 5);
 
-  const weeklyGazette = topHeadlines.map(h => h.title).filter(Boolean);
+  const weeklyGazette = topHeadlines.map((h) => h.title).filter(Boolean);
 
   return { topHeadlines, hotRikishi, hotHeya, weeklyGazette };
 }

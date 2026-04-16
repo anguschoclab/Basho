@@ -98,15 +98,16 @@ export interface StateImpact {
       | "sponsorPool"
       | "myosekiMarket"
       | "_daysSinceLastWeeklyTick"
+      | "governanceLog"
     >
   >;
 
   /**
    * Array append operations for world arrays.
-   * Used to append items to world arrays like history, almanacSnapshots, basho.matches.
+   * Used to append items to world arrays like history, almanacSnapshots, basho.matches, governanceLog.
    */
   arrayAppends?: Array<{
-    field: "history" | "almanacSnapshots" | "basho.matches";
+    field: "history" | "almanacSnapshots" | "basho.matches" | "governanceLog";
     items: unknown[];
   }>;
 

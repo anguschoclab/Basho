@@ -18,14 +18,13 @@ function setStandings(
   }
 }
 
-let _rikishiCounter = 0;
 /**
  * Create a mock Rikishi with flexible rank/rankNumber.
  * Uses mockRikishi from utils.ts with sensible defaults.
  */
+let mockCounter = 0;
 function createRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
-  _rikishiCounter++;
-  const id = overrides.id || `r-mock-${_rikishiCounter}`;
+  const id = overrides.id || `r-mock-${(mockCounter++).toString(36)}`;
   return mockRikishi(id, {
     rank: "maegashira",
     rankNumber: 5,

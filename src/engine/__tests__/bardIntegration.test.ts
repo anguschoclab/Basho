@@ -1,25 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as TalentPoolService from "../systems/generation/TalentPoolService";
 import * as RegistryService from "../lifecycle/RegistryService";
 import * as NPCStrategyService from "../strategy/NPCStrategyService";
 import { SeededRNG } from "../rng";
-
-vi.mock("../events", () => ({
-  logEngineEvent: vi.fn(),
-  EventBus: {
-    recruitDiscovered: vi.fn(),
-    lifecycleEvent: vi.fn(),
-    bashoStatus: vi.fn(),
-    financialAlert: vi.fn(),
-    trainingUpdate: vi.fn(),
-    medicalReportBase: vi.fn(),
-    welfareCompliance: vi.fn(),
-  },
-}));
-
 import { EventBus } from "../events";
 
 describe("Bard Engine Integration", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+    vi.spyOn(EventBus, "recruitDiscovered").mockImplementation(() => ({}) as any);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("TalentPoolService logs RECRUIT_DISCOVERED with high_talent_signed status", () => {
     const world = {
       week: 2,

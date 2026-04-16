@@ -14,6 +14,7 @@ export interface BardResult {
  * The Bard Engine v2.2: A Data-Driven Reactive Narrative System.
  * Ref: Phase 2 exhaustive refactor.
  */
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- Static utility class pattern
 export class BardEngine {
   private static archive = archData;
   private static lruCache: string[] = [];
@@ -57,7 +58,10 @@ export class BardEngine {
     let idx = 0;
     let template = "";
 
-    const isTest = typeof process !== "undefined" && process.env?.NODE_ENV === "test";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Process is a global object
+    const isTest =
+      typeof (globalThis as any).process !== "undefined" &&
+      (globalThis as any).process.env?.NODE_ENV === "test";
 
     do {
       idx = rng.int(0, options.length - 1);
@@ -83,7 +87,12 @@ export class BardEngine {
    * Retrieves a raw registry entry (metadata object) from the archive.
    * Useful for the UI/Presenters to get 'label', 'labelJa', and 'description'.
    */
-  public static getRegistryEntry(domain: string, id: string): any {
+  public static getRegistryEntry(
+    domain: string,
+    id: string
+  ): // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry entries are dynamic objects
+  any {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry is a dynamic object
     const registry = (this.archive as any).registry;
     if (!registry || !registry[domain]) return null;
     return registry[domain][id] || null;
@@ -94,6 +103,7 @@ export class BardEngine {
    */
   private static getOptions(path: string, intensity: number): string[] {
     const keys = path.split(".");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Archive traversal requires dynamic access
     let current: any = this.archive;
 
     // Check if path starts with root-level keys (registry, matrix, digests)
@@ -101,6 +111,7 @@ export class BardEngine {
 
     if (!isRootKey && keys[0] !== "domains") {
       // Legacy support: auto-prefix with 'domains' if not explicitly provided
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Archive traversal requires dynamic access
       current = (this.archive as any).domains;
     }
 
@@ -138,7 +149,7 @@ export class BardEngine {
   private static interpolate(text: string, context: NarrativeContext): string {
     const pattern = /%([A-Z0-9_]+)%|\{\{([a-zA-Z0-9_]+)\}\}/g;
 
-    const result = text.replace(pattern, (match, p1, p2) => {
+    const result = text.replace(pattern, (_match, p1, p2) => {
       const key = p1 || p2;
       const value = context[key] ?? context[key.toLowerCase()];
 
@@ -179,6 +190,7 @@ export class BardEngine {
 
     if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
       const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Process is a global object
       const proc = (globalThis as any).process;
       const shouldThrow =
         typeof proc !== "undefined" && (proc.env?.NODE_ENV === "test" || proc.env?.CI);
@@ -209,5 +221,12 @@ export class BardEngine {
     if (normalized < 0.33) return 1;
     if (normalized < 0.66) return 2;
     return 3;
+  }
+
+  /**
+   * Reset the LRU cache. Used in test cleanup to prevent state pollution.
+   */
+  public static resetCache(): void {
+    this.lruCache = [];
   }
 }

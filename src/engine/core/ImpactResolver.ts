@@ -162,17 +162,29 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
 
   // Apply world field updates (preserve entity maps)
   if (impact.worldFields) {
-    const { heyas, rikishi, oyakata, historicalRikishi, staff, ...otherFields } =
-      impact.worldFields;
+    // Entity maps may or may not be present in worldFields
+    // Only apply them if they exist
+    const entityMaps: Record<string, unknown> = {};
+    if ("heyas" in impact.worldFields && impact.worldFields.heyas) {
+      entityMaps.heyas = impact.worldFields.heyas;
+    }
+    if ("rikishi" in impact.worldFields && impact.worldFields.rikishi) {
+      entityMaps.rikishi = impact.worldFields.rikishi;
+    }
+    if ("oyakata" in impact.worldFields && impact.worldFields.oyakata) {
+      entityMaps.oyakata = impact.worldFields.oyakata;
+    }
+    if ("historicalRikishi" in impact.worldFields && impact.worldFields.historicalRikishi) {
+      entityMaps.historicalRikishi = impact.worldFields.historicalRikishi;
+    }
+    if ("staff" in impact.worldFields && impact.worldFields.staff) {
+      entityMaps.staff = impact.worldFields.staff;
+    }
+
     result = {
       ...result,
-      ...otherFields,
-      // Preserve entity maps if they exist in the impact
-      ...(heyas && { heyas }),
-      ...(rikishi && { rikishi }),
-      ...(oyakata && { oyakata }),
-      ...(historicalRikishi && { historicalRikishi }),
-      ...(staff && { staff }),
+      ...impact.worldFields,
+      ...entityMaps,
     };
   }
 
@@ -193,6 +205,11 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
             ...result.currentBasho,
             matches: [...(result.currentBasho.matches || []), ...append.items],
           },
+        };
+      } else if (append.field === "governanceLog") {
+        result = {
+          ...result,
+          governanceLog: [...(result.governanceLog || []), ...append.items],
         };
       }
     }

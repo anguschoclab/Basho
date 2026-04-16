@@ -42,3 +42,10 @@ export function getStorageProvider(): IStorageProvider | null {
 export function hasStorageProvider(): boolean {
   return _storageProvider !== null;
 }
+
+/**
+ * Reset the storage provider to null. Used in test cleanup to prevent state pollution.
+ */
+export function resetStorageProvider(): void {
+  _storageProvider = null;
+}

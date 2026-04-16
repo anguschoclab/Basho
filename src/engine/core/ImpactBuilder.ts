@@ -279,6 +279,7 @@ export class ImpactBuilder {
       | "sponsorPool"
       | "myosekiMarket"
       | "_daysSinceLastWeeklyTick"
+      | "governanceLog"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -290,10 +291,10 @@ export class ImpactBuilder {
 
   /**
    * Append items to a world array field.
-   * @param field - The world field array to append to (history, almanacSnapshots, basho.matches)
+   * @param field - The world field array to append to (history, almanacSnapshots, basho.matches, governanceLog)
    * @param items - Items to append
    */
-  appendToWorldArray<K extends "history" | "almanacSnapshots" | "basho.matches">(
+  appendToWorldArray<K extends "history" | "almanacSnapshots" | "basho.matches" | "governanceLog">(
     field: K,
     items: unknown[]
   ): ImpactBuilder {
@@ -429,6 +430,7 @@ export function updateWorldFieldImpact<
     | "sponsorPool"
     | "myosekiMarket"
     | "_daysSinceLastWeeklyTick"
+    | "governanceLog"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

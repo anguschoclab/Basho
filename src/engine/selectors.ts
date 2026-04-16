@@ -11,6 +11,8 @@ interface SelectorCache {
 }
 
 // Attach a non-enumerable property to WorldState at runtime, or use a WeakMap.
+// WeakMap automatically garbage collects entries when WorldState objects are no longer referenced,
+// so no manual reset is needed for test isolation.
 const cacheMap = new WeakMap<WorldState, SelectorCache>();
 
 function getCache(world: WorldState): SelectorCache {
@@ -105,7 +107,8 @@ export function selectHeyasWithCriticalWelfare(world: WorldState): Heya[] {
   for (const h of world.heyas.values()) {
     const ws = h.welfareState;
     if (!ws) continue;
-    const criticalCompliance = ws.complianceState === "investigation" || ws.complianceState === "sanctioned";
+    const criticalCompliance =
+      ws.complianceState === "investigation" || ws.complianceState === "sanctioned";
     if (ws.welfareRisk >= 55 || criticalCompliance) result.push(h);
   }
   return result;
