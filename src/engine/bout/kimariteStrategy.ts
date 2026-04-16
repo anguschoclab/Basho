@@ -5,7 +5,7 @@
  * plus 5 hi_waza (non-winning results) and 2 forfeits.
  *
  * Each entry has a pure condition() function evaluated against FinalBoutState.
- * The evaluator (kimariteEvaluator.ts) selects the highest-weight match.
+ * The B+ spatial classifier (kimariteClassifier.ts) selects techniques mid-fight.
  *
  * Condition paradigms by category:
  *   kihon    — edge proximity + grip/style alignment
@@ -858,7 +858,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
  *   Shitatenage ~2.0%  →   1–5%    (lower 70→50 — less common than uwatenage)
  *
  * Note: KIMARITE_STRATEGIES (V1) is left unchanged to preserve the legacy
- * evaluator behavior behind ENABLE_LEGACY_KIMARITE_OVERRIDE = true.
+ * evaluator (deleted in Phase 8). V1 is kept for reference only.
  */
 const V2_WEIGHT_OVERRIDES: Partial<Record<string, number>> = {
   hatakikomi: 88,

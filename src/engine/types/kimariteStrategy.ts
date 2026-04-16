@@ -3,9 +3,9 @@
  * =====================================
  * Strategy Pattern types for kimarite (finishing technique) selection.
  *
- * After the physics engine determines a winner, determineKimarite() evaluates
- * all KimariteStrategy condition functions against the FinalBoutState and returns
- * the highest-weight matching technique ID.
+ * Kept for legacy condition functions in KIMARITE_STRATEGIES (V1).
+ * The B+ spatial classifier (kimariteClassifier.ts) is the active path.
+ * KIMARITE_STRATEGIES_V2 conditions will migrate to spatial logic in a future pass.
  */
 
 export type KimariteCategory =
@@ -20,7 +20,7 @@ export type KimariteCategory =
 
 /**
  * Snapshot of both fighters' state at the moment the bout ends.
- * Constructed from BoutResult + rikishi data in kimariteEvaluator.ts.
+ * Snapshot of both fighters' state at bout resolution (legacy evaluator format).
  */
 export interface FinalBoutState {
   /** Grip classification derived from bout stance + grapple state. */
