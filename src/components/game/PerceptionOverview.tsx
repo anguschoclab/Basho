@@ -3,6 +3,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,7 @@ const MOMENTUM_COLOR: Record<string, string> = {
 };
 
 export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | null }) {
+  const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;
   const [compareIds, setCompareIds] = useState<[string | null, string | null]>([null, null]);
@@ -148,6 +150,10 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
     });
     return { snapshots: results, snapMap: map };
   }, [world, playerHeyaId]);
+
+  const handleNavigate = (heyaId: string) => {
+    navigate({ to: "/heya/$heyaId", params: { heyaId } });
+  };
 
   const handleToggleCompare = (heyaId: string) => {
     setCompareIds((prev) => {
