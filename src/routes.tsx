@@ -36,9 +36,29 @@ import MyosekiMarketPage from "./pages/MyosekiMarketPage";
 import NotFound from "./pages/NotFound";
 import { HistoryDashboard } from "./pages/HistoryDashboard";
 
+// In Electron production the app loads from file://, where browser history
+// path traversal fails (e.g. /dashboard → file:///dashboard — not found).
+// Use hash routing (#/dashboard) in that case only.
+// In Electron dev mode ELECTRON_RENDERER_URL is http://localhost:5173 so
+// window.location.href starts with 'http' and browser history is used.
+// In the PWA browser __ELECTRON__ is undefined so browser history is used.
+const isElectronProd =
+  typeof window !== "undefined" &&
+  window.__ELECTRON__ === true &&
+  !window.location.href.startsWith("http");
+
 // Root route
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
+  // Redirect to dashboard in Electron production to handle file:// initial load
+  beforeLoad: () => {
+    if (isElectronProd) {
+      // In Electron production, redirect from root to dashboard with hash
+      if (window.location.hash === "" || window.location.hash === "#/") {
+        window.location.hash = "#/dashboard";
+      }
+    }
+  },
 });
 
 // Auth/Main Menu routes
@@ -305,17 +325,6 @@ const routeTree = rootRoute.addChildren([
 
   notFoundRoute,
 ]);
-
-// In Electron production the app loads from file://, where browser history
-// path traversal fails (e.g. /dashboard → file:///dashboard — not found).
-// Use hash routing (#/dashboard) in that case only.
-// In Electron dev mode ELECTRON_RENDERER_URL is http://localhost:5173 so
-// window.location.href starts with 'http' and browser history is used.
-// In the PWA browser __ELECTRON__ is undefined so browser history is used.
-const isElectronProd =
-  typeof window !== "undefined" &&
-  window.__ELECTRON__ === true &&
-  !window.location.href.startsWith("http");
 
 export const router = createRouter({
   routeTree,
