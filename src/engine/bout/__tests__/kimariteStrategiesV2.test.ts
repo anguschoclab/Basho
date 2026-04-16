@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { KIMARITE_STRATEGIES_V2 } from "../kimariteStrategy";
-import type { FinalBoutState, SpatialBoutContext } from "../../types/kimariteStrategy";
+import type { FinalBoutState, StrategyBoutContext } from "../../types/kimariteStrategy";
 
 describe("kimariteStrategiesV2", () => {
   it("exports KIMARITE_STRATEGIES_V2", () => {
@@ -20,7 +20,7 @@ describe("kimariteStrategiesV2", () => {
     });
   });
 
-  it("condition functions accept SpatialBoutContext", () => {
+  it("condition functions accept StrategyBoutContext", () => {
     const winner: FinalBoutState = {
       grip: "uwate",
       style: "yotsu",
@@ -59,7 +59,7 @@ describe("kimariteStrategiesV2", () => {
       gripClass: "outside",
     };
 
-    const spatialCtx: SpatialBoutContext = {
+    const spatialCtx: StrategyBoutContext = {
       edgeDistance: 2,
       eastLeadFoot: 3.0,
       westLeadFoot: 2.5,
@@ -71,7 +71,7 @@ describe("kimariteStrategiesV2", () => {
       westGrip: "outside",
     };
 
-    // Test that at least one strategy can be evaluated with SpatialBoutContext
+    // Test that at least one strategy can be evaluated with StrategyBoutContext
     const yorikiri = KIMARITE_STRATEGIES_V2.find((s) => s.id === "yorikiri");
     expect(yorikiri).toBeDefined();
     if (yorikiri) {

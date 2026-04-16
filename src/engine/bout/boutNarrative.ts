@@ -82,25 +82,40 @@ export function generateBoutNarrative(
         side?: "east" | "west";
         escaped?: boolean;
         recoveryProbability?: number;
+        tawaraToePosition?: number;
+        forced?: boolean;
       };
       const sideName = crisisData.side === "east" ? east.shikona : west.shikona;
+      const toePos = crisisData.tawaraToePosition ?? 0;
 
       if (crisisData.escaped) {
+        // Fighter claws back from the brink
         pbpLines.push({
           text: BardEngine.resolve(rng, "combat.phases.edge_crisis.recovery", { NAME: sideName })
             .text,
           id: `${result.boutId}-edge-crisis-recovery-${idx}`,
         });
       } else if (
-        crisisData.recoveryProbability !== undefined &&
-        crisisData.recoveryProbability < 0.2
+        crisisData.forced ||
+        (crisisData.recoveryProbability !== undefined && crisisData.recoveryProbability < 0.2)
       ) {
+        // forced: true — toe past 1.5, no return possible.
+        // Low recovery prob — bout ends here.
         pbpLines.push({
           text: BardEngine.resolve(rng, "combat.phases.edge_crisis.failure", { NAME: sideName })
             .text,
           id: `${result.boutId}-edge-crisis-failure-${idx}`,
         });
+      } else if (toePos > 0.6) {
+        // Deep on the tawara — use the high-drama tawara_drama template
+        pbpLines.push({
+          text: BardEngine.resolve(rng, "combat.phases.edge_crisis.tawara_drama", {
+            NAME: sideName,
+          }).text,
+          id: `${result.boutId}-edge-crisis-drama-${idx}`,
+        });
       } else {
+        // Standard edge approach — fighter just reached the tawara zone
         pbpLines.push({
           text: BardEngine.resolve(rng, "combat.phases.edge_crisis.approach", { NAME: sideName })
             .text,

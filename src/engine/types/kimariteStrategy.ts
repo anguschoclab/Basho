@@ -60,10 +60,16 @@ export interface FinalBoutState {
 }
 
 /**
- * B+ Spatial context for kimarite evaluation.
- * Provides cross-fighter spatial relationships.
+ * Legacy spatial context for KIMARITE_STRATEGIES condition functions.
+ *
+ * NOTE: This type is intentionally separate from `SpatialBoutContext` in
+ * `types/combat-spatial.ts`. That type is used by the B+ mid-fight classifier
+ * (kimariteClassifier.ts). This type was the evaluator-layer interface; the
+ * evaluator was deleted in Phase 8. The condition functions are now reference-only.
+ *
+ * Use `SpatialBoutContext` from `types/combat-spatial.ts` for all new code.
  */
-export interface SpatialBoutContext {
+export interface StrategyBoutContext {
   edgeDistance: number;
   /** East rikishi leading foot position (meters from center). */
   eastLeadFoot: number;
@@ -77,9 +83,9 @@ export interface SpatialBoutContext {
   eastMomentumX: number;
   /** West rikishi momentum in X direction (m/s). */
   westMomentumX: number;
-  /** East rikishi grip class. */
+  /** East rikishi grip class (includes morozashi for double-inside grip). */
   eastGrip: "uwate" | "shitate" | "morozashi" | "outside" | "none";
-  /** West rikishi grip class. */
+  /** West rikishi grip class (includes morozashi for double-inside grip). */
   westGrip: "uwate" | "shitate" | "morozashi" | "outside" | "none";
   /** Net torque differential: positive = east advantage (optional — B+ belt battle only). */
   torqueDiff?: number;
@@ -116,6 +122,6 @@ export interface KimariteStrategy {
   condition: (
     winner: FinalBoutState,
     loser: FinalBoutState,
-    ctx: { edgeDistance: number } | SpatialBoutContext
+    ctx: { edgeDistance: number } | StrategyBoutContext
   ) => boolean;
 }
