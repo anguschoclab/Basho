@@ -82,13 +82,6 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
           </span>
         </div>
       )}
-
-      <style>{`
-        @keyframes shimmer {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.4; }
-        }
-      `}</style>
     </div>
   );
 }
