@@ -7,7 +7,6 @@ import type { Side } from "../types/banzuke";
 import { resolveBoutPhysics } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
-import { determineKimarite } from "./kimariteEvaluator";
 import { KIMARITE_REGISTRY } from "../kimarite";
 import { RivalryService } from "../systems/narrative/RivalryService";
 import { RNGRegistry } from "../core/RNGRegistry";
@@ -18,11 +17,8 @@ import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
-// B+ is now the only engine (CR-07: old no-op flag removed).
-// Legacy kimarite override: the old evaluator runs as a safety net while the
-// spatial classifier (kimariteClassifier.ts) is being validated against real
-// kimarite distributions. Set to false once Phase 8 verification passes.
-const ENABLE_LEGACY_KIMARITE_OVERRIDE = true;
+// Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
+// kimariteEvaluator.ts has been deleted.
 
 /**
  * Pre-physics fusensho check.
@@ -115,26 +111,14 @@ export function resolveBout(
   const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
 
   // 1. Run B+ spatial physics engine
-  const { result, engineSnapshot } = resolveBoutPhysics(
-    ctxFinal,
-    eastBout as Rikishi,
-    westBout as Rikishi,
-    basho
-  );
+  const { result } = resolveBoutPhysics(ctxFinal, eastBout as Rikishi, westBout as Rikishi, basho);
 
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
 
-  // 1.5. CI-06: Legacy kimarite override — old evaluator runs as safety net while
-  // the spatial classifier's distribution is validated. Disable once Phase 8 passes.
-  if (ENABLE_LEGACY_KIMARITE_OVERRIDE) {
-    const overrideId = determineKimarite(result, winner, loser, engineSnapshot);
-    if (overrideId !== result.kimarite) {
-      const k = KIMARITE_REGISTRY.find((k) => k.id === overrideId);
-      result.kimarite = overrideId as BoutResult["kimarite"];
-      if (k) result.kimariteName = k.name;
-    }
-  }
+  // Enrich kimariteName from registry (classifier returns id; registry has display name)
+  const k = KIMARITE_REGISTRY.find((k) => k.id === result.kimarite);
+  if (k) result.kimariteName = k.name;
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
 

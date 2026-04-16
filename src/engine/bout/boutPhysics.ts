@@ -1,25 +1,26 @@
 import { rngFromSeed, SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoState } from "../types/basho";
+import type { BoutResult, BashoState, BoutLogEntry } from "../types/basho";
 import type { Side } from "../types/banzuke";
 import type { KimariteId, GrappleState, HandPosition } from "../types/combat";
-import { TAWARA_RADIUS } from "../types/combat-spatial";
+import { TAWARA_RADIUS, EDGE_THRESHOLD } from "../types/combat-spatial";
 import type {
   CombatPhase,
   EngineStateV2,
+  EngineSnapshot,
   PushBattleState,
   BeltBattleState,
 } from "../types/combat-spatial";
 import {
   initPhysicalBody,
   isBodyFalling,
+  tawaraBounceResistance,
   classifyFallKimarite,
   classifyBeltFallKimarite,
   classifyEdgeExitKimarite,
 } from "./boutSpatial";
 import { initBeltBattle, evolveGripGeometry } from "./boutGrip";
 import { evaluateKimariteAttempt } from "./kimariteClassifier";
-import type { EngineSnapshot } from "./kimariteEvaluator";
 
 const MAX_TICKS = 120;
 
@@ -36,6 +37,9 @@ export interface BoutContext {
   playerTactic?: import("../types/combat").BoutTactic;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
 }
+
+// Re-export EngineSnapshot for consumers that imported it here previously
+export type { EngineSnapshot };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -56,12 +60,14 @@ function jitter(rng: SeededRNG, scale = 1): number {
 // ---------------------------------------------------------------------------
 
 function initEngineStateV2(bout: BoutContext, east: Rikishi, west: Rikishi): EngineStateV2 {
+  void bout; // id/day used in seed; kept for signature clarity
   return {
     tick: 0,
     phase: { tag: "approach" },
     east: initPhysicalBody(east, "east"),
     west: initPhysicalBody(west, "west"),
     tachiaiWinner: "east", // placeholder; set in resolveTachiaiV2
+    logEntries: [],
     grappleState: {
       east: { rightHand: "outside", leftHand: "outside", depth: "standard" },
       west: { rightHand: "outside", leftHand: "outside", depth: "standard" },
@@ -87,7 +93,7 @@ function resolveTachiaiV2(
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
 
-  // CR-01: Use actual power stats with jitter (not `.power || 50` which fails at power=0)
+  // CR-01: Use actual power stats with jitter
   const eastPower = stat(east, "power") + jitter(rng, 10);
   const westPower = stat(west, "power") + jitter(rng, 10);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
@@ -106,13 +112,11 @@ function resolveTachiaiV2(
   if (henkaSide !== null) {
     const trickster = henkaSide === "east" ? east : west;
     const opponent = henkaSide === "east" ? west : east;
-    // Henka succeeds when technique + opponent.speed combo clears opponent balance
     const henkaScore =
       stat(trickster, "technique") + stat(opponent, "speed") * 1.5 + jitter(rng, 8);
     const defenseScore = stat(opponent, "balance") + jitter(rng, 8);
 
     if (henkaScore > defenseScore) {
-      // Early victory — skip phase loop
       st.phase = {
         tag: "resolved",
         winner: henkaSide,
@@ -121,10 +125,9 @@ function resolveTachiaiV2(
       };
       return;
     }
-    // Henka failed — opponent's forward momentum carries into normal engagement
   }
 
-  // Decide push vs belt battle (30% belt initiation probability, biased by combatProfile)
+  // Decide push vs belt battle (biased by combatProfile)
   const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
   const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
   const beltThreshold = Math.min(0.7, (eastBeltBias + westBeltBias) / 200);
@@ -162,20 +165,32 @@ function tickPushBattle(
 
   const push = st.phase.state;
 
-  // Advance position — each tick represents ~0.2s of real engagement
-  push.contestLine += (push.eastForce - push.westForce) * 0.01;
-  push.eastLeadFoot += push.eastMomentum * 0.01;
-  push.westLeadFoot -= push.westMomentum * 0.01; // west is pushed in negative x direction
+  // --- Fix Bug 1 & 2: Force-differential physics ---
+  // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
+  const jitteredForceDiff = push.eastForce - push.westForce + jitter(rng, 3);
+  const displacement = Math.abs(jitteredForceDiff) * 0.04; // meters per tick
+
+  push.contestLine += jitteredForceDiff * 0.01;
+
+  if (jitteredForceDiff > 0) {
+    // East dominant — west retreats toward west's tawara (−4.55)
+    push.westLeadFoot -= displacement;
+    st.west.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    st.east.velocityX = jitteredForceDiff * 0.1;
+    st.west.velocityX = 0;
+  } else if (jitteredForceDiff < 0) {
+    // West dominant — east retreats toward east's tawara (+4.55)
+    push.eastLeadFoot += displacement;
+    st.east.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
+    st.east.velocityX = 0;
+  }
 
   // CR-03: Sync PhysicalBody positions so kimariteClassifier reads current state
   st.east.x = push.eastLeadFoot;
   st.west.x = push.westLeadFoot;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
-
-  // Update CoG offset from momentum (more momentum = more forward lean)
-  st.east.cogOffset += push.westMomentum * 0.002;
-  st.west.cogOffset += push.eastMomentum * 0.002;
 
   // CI-03: Mid-fight kimarite attempt — emergent classification
   const attempt = evaluateKimariteAttempt(east, west, null, null, push, null, st);
@@ -194,8 +209,7 @@ function tickPushBattle(
     return { winner: "east", kimarite: classifyFallKimarite(push, st, "west") };
   }
 
-  // CR-04: Boundary check using TAWARA_RADIUS with correct signed comparisons
-  // east starts positive and is pushed further positive; west starts negative, pushed more negative
+  // CR-04: Boundary check using TAWARA_RADIUS with signed comparisons
   if (push.eastLeadFoot >= TAWARA_RADIUS) {
     st.phase = buildEdgeCrisis("east", push, undefined, "push_battle");
   } else if (push.westLeadFoot <= -TAWARA_RADIUS) {
@@ -219,26 +233,30 @@ function tickBeltBattle(
   // Evolve grip geometry (arm reach, depth, grip strength decay)
   evolveGripGeometry(rng, east, west, belt);
 
-  // Torques are now updated inside evolveGripGeometry with real force values
-
   const torqueAdvantage = belt.torqueEast - belt.torqueWest;
 
-  // Apply torque to CoG offsets (belt pressure destabilises the opponent)
+  // Apply torque to CoG — only the losing side destabilises
   if (torqueAdvantage > 0) {
     st.west.cogOffset += torqueAdvantage * 0.003;
   } else {
     st.east.cogOffset += Math.abs(torqueAdvantage) * 0.003;
   }
 
-  // Torque also translates to positional displacement
-  push.eastLeadFoot += Math.abs(Math.max(0, belt.torqueWest - belt.torqueEast)) * 0.005;
-  push.westLeadFoot -= Math.abs(Math.max(0, belt.torqueEast - belt.torqueWest)) * 0.005;
+  // Torque translates to positional displacement — only the retreating fighter moves
+  const torqueDisplacementEast = Math.max(0, belt.torqueWest - belt.torqueEast) * 0.005;
+  const torqueDisplacementWest = Math.max(0, belt.torqueEast - belt.torqueWest) * 0.005;
+  push.eastLeadFoot += torqueDisplacementEast; // east retreats when west has more torque
+  push.westLeadFoot -= torqueDisplacementWest; // west retreats when east has more torque
 
   // CR-03: Sync PhysicalBody
   st.east.x = push.eastLeadFoot;
   st.west.x = push.westLeadFoot;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
+
+  // Set velocityX for classifier (torque-driven movement)
+  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * 0.05 : 0;
+  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
 
   // CI-03: Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, null, null, push, belt, st);
@@ -257,10 +275,9 @@ function tickBeltBattle(
     return { winner: "east", kimarite: classifyBeltFallKimarite(belt, st, "west") };
   }
 
-  // CR-05A: Edge crisis when torque advantage is overwhelming.
-  // The LOSING side (less torque) goes into crisis — fix: inverted from original.
+  // CR-05A: Edge crisis — the LOSING side (less torque) goes into crisis
   if (Math.abs(torqueAdvantage) > 30) {
-    const crisisSide: Side = torqueAdvantage > 0 ? "west" : "east"; // west loses when east has more torque
+    const crisisSide: Side = torqueAdvantage > 0 ? "west" : "east";
     st.phase = buildEdgeCrisis(crisisSide, push, belt, "belt_battle");
   } else if (push.eastLeadFoot >= TAWARA_RADIUS) {
     st.phase = buildEdgeCrisis("east", push, belt, "belt_battle");
@@ -279,14 +296,20 @@ function buildEdgeCrisis(
 ): Extract<CombatPhase, { tag: "edge_crisis" }> {
   const opponentPressure = crisisSide === "east" ? push.westMomentum : push.eastMomentum;
 
+  // Fix Bug 3: Compute initial tawaraToePosition from how far foot is past edge threshold
+  const footPos = crisisSide === "east" ? push.eastLeadFoot : Math.abs(push.westLeadFoot);
+  const overage = Math.max(0, footPos - EDGE_THRESHOLD);
+  // Scale overage (0–0.75m) to toePosition (0–1.0)
+  const initialToePos = Math.min(1.0, overage / 0.75);
+
   return {
     tag: "edge_crisis",
     crisis: {
       side: crisisSide,
       ticksInCrisis: 0,
       recoveryProbability: 0.3,
-      tawaraToePosition: 0,
-      tawaraBounceForce: 0,
+      tawaraToePosition: initialToePos,
+      tawaraBounceForce: tawaraBounceResistance(initialToePos),
       escapeAngle: 0,
       escapeForceAvailable: crisisSide === "east" ? push.eastForce : push.westForce,
       opponentPressureX: opponentPressure,
@@ -294,7 +317,6 @@ function buildEdgeCrisis(
       escaped: false,
     },
     prev,
-    // Preserve current push/belt state for phase restoration on escape
     _savedPush: push,
     _savedBelt: belt,
   } as Extract<CombatPhase, { tag: "edge_crisis" }> & {
@@ -307,7 +329,8 @@ function tickEdgeCrisis(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[]
 ): { winner?: Side; kimarite?: KimariteId; escaped?: true } | undefined {
   if (st.phase.tag !== "edge_crisis") return undefined;
 
@@ -315,16 +338,56 @@ function tickEdgeCrisis(
   const prev = st.phase.prev;
   crisis.ticksInCrisis++;
 
+  // Fix Bug 3: Update tawaraToePosition each tick using real opponent pressure
+  const pressureIncrease = crisis.opponentPressureX * 0.02;
+  const escapeResistance = crisis.escapeForceAvailable * 0.008;
+  crisis.tawaraToePosition = Math.max(
+    0,
+    Math.min(2.0, crisis.tawaraToePosition + pressureIncrease - escapeResistance)
+  );
+
+  // Wire up tawaraBounceResistance from boutSpatial.ts
+  const bounceForce = tawaraBounceResistance(crisis.tawaraToePosition);
+  crisis.tawaraBounceForce = bounceForce;
+
+  // When fully past tawara (toe > 1.5), no more recovery possible
+  if (crisis.tawaraToePosition >= 1.5) {
+    const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
+    const winner: Side = crisis.side === "east" ? "west" : "east";
+    boutLog.push({
+      phase: "edge_crisis",
+      data: {
+        side: crisis.side,
+        escaped: false,
+        tawaraToePosition: crisis.tawaraToePosition,
+        forced: true,
+      },
+    });
+    return { winner, kimarite };
+  }
+
   // Stat-based recovery: balance + tawara bounce resistance
   const defenderRikishi = crisis.side === "east" ? east : west;
   const balanceFactor = stat(defenderRikishi, "balance") * 0.003; // 0–0.3
-  const bounceResistance = crisis.tawaraToePosition < 1.0 ? 0.05 : 0;
-  // Recovery probability decreases as crisis extends (tires out)
-  const tickDecay = Math.max(0, 1 - crisis.ticksInCrisis * 0.05);
-  const recoveryChance =
-    (crisis.recoveryProbability + balanceFactor + bounceResistance) * tickDecay;
+  const bounceBonus = bounceForce / 100; // 0.15 at heel contact, 0.08 at toe
+  const tickDecay = Math.max(0.1, 1 - crisis.ticksInCrisis * 0.05);
+  const recoveryChance = (crisis.recoveryProbability + balanceFactor + bounceBonus) * tickDecay;
 
-  if (rng.next() < recoveryChance) {
+  const didEscape = rng.next() < recoveryChance;
+
+  // Log this crisis tick for narrative
+  boutLog.push({
+    phase: "edge_crisis",
+    data: {
+      side: crisis.side,
+      escaped: didEscape,
+      recoveryProbability: recoveryChance,
+      tawaraToePosition: crisis.tawaraToePosition,
+      ticksInCrisis: crisis.ticksInCrisis,
+    },
+  });
+
+  if (didEscape) {
     // CI-04: Tawara drama — fighter escapes. Restore previous phase with absorbed momentum.
     const saved = st.phase as typeof st.phase & {
       _savedPush?: PushBattleState;
@@ -332,7 +395,6 @@ function tickEdgeCrisis(
     };
 
     if (prev === "belt_battle" && saved._savedBelt && saved._savedPush) {
-      // Restore belt battle with reduced momentum (tawara bounce absorbed ~60%)
       const restoredPush: PushBattleState = {
         ...saved._savedPush,
         eastMomentum: saved._savedPush.eastMomentum * 0.4,
@@ -365,7 +427,8 @@ function runPhaseLoop(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[]
 ): { winner: Side; kimarite: KimariteId } {
   // CR-02: Henka may have resolved the bout at tachiai
   if (st.phase.tag === "resolved") {
@@ -385,19 +448,18 @@ function runPhaseLoop(
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }
 
-    const crisisResult = tickEdgeCrisis(rng, east, west, st);
-    // CI-04: escaped: true means phase was restored, keep looping — don't declare a winner
+    const crisisResult = tickEdgeCrisis(rng, east, west, st, boutLog);
+    // CI-04: escaped: true means phase was restored — keep looping
     if (crisisResult?.winner && crisisResult?.kimarite) {
       return { winner: crisisResult.winner, kimarite: crisisResult.kimarite };
     }
   }
 
-  // MI-04: Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
+  // Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
   const eastInstability = Math.abs(st.east.cogOffset) / Math.max(0.01, st.east.footSpread);
   const westInstability = Math.abs(st.west.cogOffset) / Math.max(0.01, st.west.footSpread);
   const winner: Side = eastInstability <= westInstability ? "east" : "west";
 
-  // Timeout kimarite based on whether grip was involved
   const hadBelt =
     st.phase.tag === "belt_battle" ||
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle");
@@ -416,11 +478,11 @@ function buildBoutResultV2(
   west: Rikishi,
   st: EngineStateV2,
   winner: Side,
-  kimarite: KimariteId
+  kimarite: KimariteId,
+  boutLog: BoutLogEntry[]
 ): BoutResult {
   const duration = Math.max(1, st.tick * 2);
 
-  // MI-03: Derive stance from actual phase at resolution
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle") ||
@@ -428,7 +490,6 @@ function buildBoutResultV2(
       ? "belt-dominant"
       : "push-dominant";
 
-  // Upset: winner is lower ranked (higher rank number = lower rank in sumo)
   const winnerRikishi = winner === "east" ? east : west;
   const loserRikishi = winner === "east" ? west : east;
   const winnerRankNum = winnerRikishi.rankNumber ?? 99;
@@ -447,29 +508,20 @@ function buildBoutResultV2(
     duration,
     upset,
     isKinboshi: false, // set by boutResolver
-    log: [],
+    log: boutLog,
     kenshoEnvelopes: 0,
   };
 }
 
 /**
- * CR-06: Build EngineSnapshot compatible with kimariteEvaluator.
- * Maps B+ spatial state back to the legacy snapshot format.
+ * Build EngineSnapshot from final spatial state.
+ * Provides real derived values for position, advantage, balance.
  */
-function buildEngineSnapshotV2(st: EngineStateV2): EngineSnapshot {
-  // Derive grapple state from belt battle if active
-  const beltPhase =
-    st.phase.tag === "belt_battle"
-      ? st.phase
-      : st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle"
-        ? null // crisis — use stored grapple
-        : null;
-
+function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSnapshot {
+  const beltPhase = st.phase.tag === "belt_battle" ? st.phase : null;
   const grappleState: GrappleState = beltPhase
     ? deriveGrappleStateFromBelt(beltPhase.state)
     : st.grappleState;
-
-  // Update st.grappleState so subsequent snapshot reads are consistent
   st.grappleState = grappleState;
 
   const resolvedStance =
@@ -478,21 +530,34 @@ function buildEngineSnapshotV2(st: EngineStateV2): EngineSnapshot {
       ? ("belt-dominant" as const)
       : ("push-dominant" as const);
 
+  // Derive position from average foot position
+  const avgFoot = (Math.abs(st.east.leadingFootX) + Math.abs(st.west.leadingFootX)) / 2;
+  const position: "front" | "lateral" | "rear" =
+    avgFoot > 3.5 ? "rear" : avgFoot > 2.0 ? "lateral" : "front";
+
+  // Derive advantage from CoG stability differential
+  const advantage: "none" | "east" | "west" =
+    st.east.cogOffset < st.west.cogOffset - 0.05
+      ? "east"
+      : st.west.cogOffset < st.east.cogOffset - 0.05
+        ? "west"
+        : "none";
+
   return {
     stance: resolvedStance,
     grappleState,
-    // CR-06A: Clamp balance to [0, 100] — cogOffset of 10 → balance 0 (floor)
     balanceEast: Math.max(0, Math.min(100, 100 - Math.abs(st.east.cogOffset) * 10)),
     balanceWest: Math.max(0, Math.min(100, 100 - Math.abs(st.west.cogOffset) * 10)),
-    position: "front",
-    advantage: "none",
-    winnerConsecutiveAdvantage: 0,
+    position,
+    advantage,
+    winnerConsecutiveAdvantage: st.tick,
     loserLastActionFamily: undefined,
-    finalLoserBalanceDrain: 0,
+    finalLoserBalanceDrain:
+      winner === "east" ? Math.abs(st.west.cogOffset) * 10 : Math.abs(st.east.cogOffset) * 10,
   };
 }
 
-/** Maps B+ BeltBattleState to legacy GrappleState for kimariteEvaluator compatibility. */
+/** Maps B+ BeltBattleState to legacy GrappleState. */
 function deriveGrappleStateFromBelt(belt: BeltBattleState): GrappleState {
   const toHandPos = (grip: { isInside: boolean; isBlocked: boolean } | null): HandPosition =>
     grip === null ? "outside" : grip.isBlocked ? "blocked" : grip.isInside ? "inside" : "outside";
@@ -547,10 +612,11 @@ export function resolveBoutPhysics(
   const st = initEngineStateV2(bout, east, west);
   resolveTachiaiV2(rng, bout, east, west, st);
 
-  const { winner, kimarite } = runPhaseLoop(rng, east, west, st);
+  const boutLog: BoutLogEntry[] = [];
+  const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog);
 
-  const result = buildBoutResultV2(bout, east, west, st, winner, kimarite);
-  const engineSnapshot = buildEngineSnapshotV2(st);
+  const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);
+  const engineSnapshot = buildEngineSnapshotV2(st, winner);
 
   return { result, engineSnapshot };
 }
