@@ -19,6 +19,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
   const balance = overrides.balance ?? (overrides.stats as unknown as RikishiStats)?.balance ?? 50;
   const technique = overrides.technique ?? (overrides.stats as unknown as RikishiStats)?.technique ?? 50;
   const aggression = overrides.aggression ?? (overrides.stats as unknown as RikishiStats)?.aggression ?? 50;
+  const mental = overrides.mental ?? (overrides.stats as unknown as RikishiStats)?.mental ?? 50;
   const experience = overrides.experience ?? (overrides.stats as unknown as RikishiStats)?.experience ?? 50;
 
   return {
@@ -41,6 +42,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     balance,
     technique,
     aggression,
+    mental,
     experience,
     momentum: 0,
     stamina: 100,

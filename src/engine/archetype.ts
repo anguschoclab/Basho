@@ -24,58 +24,65 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     familyPreferences: { push: 10, belt: 15, trick: 55, speed: 20 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { technique: 1.2, speed: 1.1, weight: 0.9, strength: 0.85 },
+    // Technique-heavy; lower power and aggression (waits for the right moment)
+    statModifiers: { technique: 1.2, speed: 1.1, weight: 0.9, power: 0.85, mental: 0.9 },
   },
   oshi: {
     familyPreferences: { push: 75, belt: 10, trick: 5, speed: 10 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { strength: 1.1, speed: 1.1, technique: 0.8 },
+    // High power and aggression (charges decisively); lower technique and composure
+    statModifiers: { power: 1.1, speed: 1.1, technique: 0.8, mental: 0.85 },
   },
   yotsu: {
     familyPreferences: { push: 15, belt: 75, trick: 5, speed: 5 },
     preferredGrip: "migi",
-    preferredGripDepth: "standard",
-    statModifiers: { strength: 1.15, weight: 1.1, speed: 0.85 },
+    preferredGripDepth: "deep",
+    // Strong and patient; deep grip fighters start with preferred grip depth advantage
+    statModifiers: { power: 1.15, weight: 1.1, speed: 0.85, mental: 1.1 },
   },
   speedster: {
     familyPreferences: { push: 10, belt: 5, trick: 15, speed: 70 },
     preferredGrip: "none",
     preferredGripDepth: "maemitsu",
-    statModifiers: { speed: 1.25, technique: 1.1, weight: 0.85, strength: 0.8 },
+    // Fast and technical but physically weaker; moderate composure
+    statModifiers: { speed: 1.25, technique: 1.1, weight: 0.85, power: 0.8 },
   },
   giant: {
     familyPreferences: { push: 40, belt: 50, trick: 5, speed: 5 },
     preferredGrip: "none",
     preferredGripDepth: "deep",
-    statModifiers: { weight: 1.3, strength: 1.2, speed: 0.7, balance: 0.9 },
+    // Maximum mass and power; unshakeable at edge; poor balance and technique
+    statModifiers: { weight: 1.3, power: 1.2, speed: 0.7, balance: 0.9, mental: 1.1 },
   },
   hybrid: {
     familyPreferences: { push: 40, belt: 40, trick: 10, speed: 10 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { strength: 1.05, technique: 1.05, weight: 1.05 },
+    // Balanced across all dimensions
+    statModifiers: { power: 1.05, technique: 1.05, weight: 1.05 },
   },
   /**
    * Tsuppari — rapid open-palm thrusting (Takakeisho style).
-   * High aggression, no belt contact, tires quickly under grappling.
+   * High aggression, no belt contact, tires quickly, poor edge composure (overcommits).
    */
   tsuppari: {
     familyPreferences: { push: 85, belt: 2, trick: 8, speed: 5 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { strength: 1.15, speed: 1.05, stamina: 0.85, technique: 0.9 },
+    statModifiers: { power: 1.15, speed: 1.05, stamina: 0.85, technique: 0.9, mental: 0.8 },
     favoredKimarite: ["tsukidashi", "tsukitaoshi", "tsukiotoshi", "oshidashi", "hatakikomi"],
   },
   /**
    * Defensive — counter-wrestler archetype.
    * Low tachiai investment; reads and punishes opponent's aggression.
+   * Highest mental composure — thrives in edge crisis situations.
    */
   defensive: {
     familyPreferences: { push: 10, belt: 35, trick: 40, speed: 15 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { technique: 1.2, speed: 1.1, strength: 0.9, balance: 1.15, weight: 0.95 },
+    statModifiers: { technique: 1.2, speed: 1.1, power: 0.9, balance: 1.15, weight: 0.95, mental: 1.25 },
     favoredKimarite: [
       "hatakikomi",
       "hikiotoshi",

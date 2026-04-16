@@ -54,8 +54,12 @@ export function generateRikishiStats(args: {
   const weight = clampInt(rng.gaussian(150 * (mods.weight ?? 1.0), 20), 80, 250);
   const height = clampInt(rng.gaussian(180 * (mods.height ?? 1.0), 8), 160, 210);
 
+  // 'power' key in statModifiers maps to strength in RikishiStats → Rikishi.power
+  const powerMod = (mods as Record<string, number | undefined>)["power"] ?? mods["strength"] ?? 1.0;
+  const strengthMean = baseMean * powerMod;
+
   return {
-    strength: genStat("strength"),
+    strength: clampInt(rng.gaussian(strengthMean, stdDev), 10, 100),
     technique: genStat("technique"),
     speed: genStat("speed"),
     stamina: genStat("stamina"),
@@ -373,6 +377,7 @@ function createCombatStats(
     balance: rikishiStats.balance,
     technique: rikishiStats.technique,
     aggression: rikishiStats.mental,
+    mental: rikishiStats.mental, // composure under pressure (edge crisis recovery)
     stamina: rikishiStats.stamina,
     adaptability: rikishiStats.adaptability,
     experience: division === "makuuchi" ? 40 : 10,
