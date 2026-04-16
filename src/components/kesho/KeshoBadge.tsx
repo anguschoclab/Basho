@@ -55,16 +55,10 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
       {/* Gold thread overlay */}
       {kesho.goldThreadDensity > 0.3 && (
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-30 animate-shimmer"
           style={{
             background: `linear-gradient(135deg, ${kesho.accentColor} 0%, transparent 50%, ${kesho.accentColor} 100%)`,
             backgroundSize: "200% 200%",
-            animation: "shimmer 3s ease-in-out infinite",
-            animationDelay: "0s",
-            animationDuration: "3s",
-            animationIterationCount: "infinite",
-            animationTimingFunction: "ease-in-out",
-            animationFillMode: "both",
           }}
         />
       )}
