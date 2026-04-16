@@ -8,7 +8,7 @@
  *   - Archival pruning only runs in November (month 11).
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makeMockWorld } from "../utils";
 
 // ── Module mocks (vi.mock is hoisted before all imports) ──────────────────
@@ -59,9 +59,8 @@ vi.mock("../../systems/media/MediaService", () => ({
   snapshotMediaHeatForBasho: vi.fn((s: unknown) => s),
 }));
 
-vi.mock("../../core/ImpactResolver", () => ({
-  resolveImpacts: vi.fn((world: unknown) => ({ ...(world as object) })),
-}));
+// NOTE: ImpactResolver is NOT mocked here to avoid polluting other test files
+// We'll spy on it in beforeEach instead
 
 vi.mock("../../systems/generation/TalentPoolService", () => ({
   fillVacanciesForNPC: vi.fn(),
@@ -82,9 +81,25 @@ import {
   runAIMetaDrift,
 } from "../../governance/governanceReview";
 import { onBashoEnded } from "../../records";
-import { resolveImpacts } from "../../core/ImpactResolver";
+import * as ImpactResolver from "../../core/ImpactResolver";
 import { runRecruitmentWindow } from "../../lifecycle/RegistryService";
 import { runArchivalPruning } from "../../archival";
+import type { WorldState } from "../../types/world";
+import type { StateImpact } from "../../core/StateImpact";
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  // Spy on real resolveImpacts instead of mocking it
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation(
+    (world: WorldState, _impacts: StateImpact[]) => ({ ...world })
+  );
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -128,12 +143,12 @@ describe("runPostBashoResolution", () => {
 
   it("calls resolveImpacts twice: once for main batch, once for recruitment", () => {
     runPostBashoResolution(makeWorld());
-    expect((resolveImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(2);
+    expect((ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(2);
   });
 
   it("calls runRecruitmentWindow after main resolveImpacts", () => {
     runPostBashoResolution(makeWorld());
-    const resolveCalls = (resolveImpacts as ReturnType<typeof vi.fn>).mock.calls;
+    const resolveCalls = (ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls;
     const recruitCalls = (runRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls;
     expect(recruitCalls.length).toBeGreaterThan(0);
     expect(resolveCalls.length).toBeGreaterThan(0);
