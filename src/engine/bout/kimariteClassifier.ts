@@ -50,20 +50,37 @@ export function evaluateKimariteAttempt(
 
   // Check for edge crisis conditions first
   if (Math.abs(ctx.eastLeadFoot) > 3.8 || Math.abs(ctx.westLeadFoot) > 3.8) {
-    return classifyEdgeKimarite(ctx, east, west);
+    return applyFavoredBoost(classifyEdgeKimarite(ctx, east, west), east, west);
   }
 
   // Check for belt battle conditions
   if (belt && (belt.eastGripClass !== "none" || belt.westGripClass !== "none")) {
-    return classifyBeltKimarite(ctx, belt, st, east, west);
+    return applyFavoredBoost(classifyBeltKimarite(ctx, belt, st, east, west), east, west);
   }
 
   // Check for push battle conditions
   if (push) {
-    return classifyPushKimarite(ctx, push, st, east, west, rng);
+    return applyFavoredBoost(classifyPushKimarite(ctx, push, st, east, west, rng), east, west);
   }
 
   return null;
+}
+
+/**
+ * Applies a +0.08 successProbability bonus when the winning rikishi's
+ * favoredKimarite list includes the classified technique. Capped at 0.97.
+ */
+function applyFavoredBoost(
+  attempt: KimariteAttempt | null,
+  east: Rikishi,
+  west: Rikishi
+): KimariteAttempt | null {
+  if (!attempt) return null;
+  const winner = attempt.side === "east" ? east : west;
+  if (winner.favoredKimarite?.includes(attempt.technique)) {
+    attempt.successProbability = Math.min(0.97, attempt.successProbability + 0.08);
+  }
+  return attempt;
 }
 
 function classifyEdgeKimarite(

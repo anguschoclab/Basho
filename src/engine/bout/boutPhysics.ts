@@ -78,6 +78,21 @@ export function computeTachiaiPower(
 }
 
 /**
+ * Computes tachiai power with optional style-matchup penalty.
+ * Applies a 8% reduction when the opponent's style appears in the rikishi's
+ * weakAgainstStyles list.
+ */
+export function tachiaiPowerWithMatchupPenalty(r: Rikishi, opponent: Rikishi): number {
+  const base = computeTachiaiPower(r);
+  const opponentStyle = (opponent as unknown as Record<string, unknown>).style as string | undefined;
+  const weaknesses: string[] = (r as unknown as Record<string, unknown>).weakAgainstStyles as string[] ?? [];
+  if (opponentStyle && weaknesses.includes(opponentStyle)) {
+    return base * 0.92;
+  }
+  return base;
+}
+
+/**
  * Per-tick boutFatigue increment based on stamina.
  * High-stamina fighters accumulate fatigue more slowly.
  *   stamina=100 → 0.5/tick (half rate)
@@ -141,8 +156,9 @@ function resolveTachiaiV2(
   st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
 
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
-  const eastPower = computeTachiaiPower(east) + jitter(rng, 8);
-  const westPower = computeTachiaiPower(west) + jitter(rng, 8);
+  // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
+  const eastPower = tachiaiPowerWithMatchupPenalty(east, west) + jitter(rng, 8);
+  const westPower = tachiaiPowerWithMatchupPenalty(west, east) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 
