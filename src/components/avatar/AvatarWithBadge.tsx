@@ -32,14 +32,14 @@ interface AvatarWithBadgeProps {
 }
 
 const BADGE_CONFIG: Record<BadgeType, { icon: React.ElementType; color: string; bg: string }> = {
-  yokozuna: { icon: Crown, color: "text-yellow-600", bg: "bg-yellow-100" },
-  champion: { icon: Trophy, color: "text-amber-600", bg: "bg-amber-100" },
-  kinboshi: { icon: Star, color: "text-blue-600", bg: "bg-blue-100" },
-  injured: { icon: AlertCircle, color: "text-red-600", bg: "bg-red-100" },
-  training: { icon: Dumbbell, color: "text-green-600", bg: "bg-green-100" },
-  resting: { icon: Heart, color: "text-pink-600", bg: "bg-pink-100" },
-  "fan-favorite": { icon: Heart, color: "text-rose-600", bg: "bg-rose-100" },
-  "rising-star": { icon: Medal, color: "text-purple-600", bg: "bg-purple-100" },
+  yokozuna: { icon: Crown, color: "text-gold", bg: "bg-gold/20" },
+  champion: { icon: Trophy, color: "text-gold", bg: "bg-gold/20" },
+  kinboshi: { icon: Star, color: "text-west", bg: "bg-west/20" },
+  injured: { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/20" },
+  training: { icon: Dumbbell, color: "text-success", bg: "bg-success/20" },
+  resting: { icon: Heart, color: "text-primary", bg: "bg-primary/20" },
+  "fan-favorite": { icon: Heart, color: "text-primary", bg: "bg-primary/20" },
+  "rising-star": { icon: Medal, color: "text-primary", bg: "bg-primary/20" },
 };
 
 export const AvatarWithBadge: React.FC<AvatarWithBadgeProps> = ({

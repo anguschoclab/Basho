@@ -43,7 +43,7 @@ export function BoutReplayViewer({
     <div
       className={cn(
         "rounded-lg overflow-hidden border border-border bg-card flex flex-col",
-        className,
+        className
       )}
     >
       {/* Header: fighters */}
@@ -57,7 +57,7 @@ export function BoutReplayViewer({
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground text-xs">{westRikishi.rankLabel}</span>
           <span className="font-semibold">{westRikishi.shikona}</span>
-          <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" />
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-destructive" />
         </div>
       </div>
 
@@ -76,7 +76,9 @@ export function BoutReplayViewer({
           <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1 border border-white/10">
             <span className="text-white/50 text-xs font-medium">{label.ja}</span>
             <span className="text-white/20 text-xs">·</span>
-            <span className="text-white text-xs font-semibold tracking-wider uppercase">{label.en}</span>
+            <span className="text-white text-xs font-semibold tracking-wider uppercase">
+              {label.en}
+            </span>
           </div>
         </div>
 
@@ -85,7 +87,9 @@ export function BoutReplayViewer({
           <div className="absolute top-3 right-3 pointer-events-none">
             <div className="flex items-center gap-1 bg-gold/20 rounded px-2 py-1 border border-gold/40">
               <span className="text-gold text-xs">¥</span>
-              <span className="text-gold text-xs font-semibold">{result.kenshoEnvelopes} kensho</span>
+              <span className="text-gold text-xs font-semibold">
+                {result.kenshoEnvelopes} kensho
+              </span>
             </div>
           </div>
         )}
@@ -98,7 +102,7 @@ export function BoutReplayViewer({
                 "text-xs font-medium transition-opacity duration-500 px-2 py-0.5 rounded-full",
                 uiPhase === "tachiai" || uiPhase === "finish" || uiPhase === "ceremony"
                   ? "text-gold bg-black/50"
-                  : "text-white/50",
+                  : "text-white/50"
               )}
             >
               {CROWD_TEXT[uiPhase]}

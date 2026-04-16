@@ -134,8 +134,8 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
                   {rikishi.achievements.kinboshiEarned}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 p-2 rounded bg-slate-400/5 border border-slate-400/10">
-                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-300">
+              <div className="flex flex-col gap-1 p-2 rounded bg-silver/5 border border-silver/10">
+                <span className="text-[10px] uppercase font-bold text-silver dark:text-silver/70">
                   Silver Stars Won
                 </span>
                 <span className="font-display text-xl font-bold">
@@ -143,11 +143,11 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
                 </span>
               </div>
               {rikishi.rank === "yokozuna" && (
-                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-red-500/5 border border-red-500/10">
-                  <span className="text-[10px] uppercase font-bold text-red-600 dark:text-red-400">
+                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10">
+                  <span className="text-[10px] uppercase font-bold text-destructive dark:text-destructive/70">
                     Stars Conceded
                   </span>
-                  <span className="font-display font-bold text-red-600 dark:text-red-400">
+                  <span className="font-display font-bold text-destructive dark:text-destructive/70">
                     {rikishi.achievements.kinboshiConceded}
                   </span>
                 </div>

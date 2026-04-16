@@ -106,7 +106,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                           </h4>
                           <Badge
                             variant="outline"
-                            className="border-blue-500 text-blue-500 bg-blue-500/10 font-bold text-[9px] tracking-widest"
+                            className="border-west text-west bg-west/10 font-bold text-[9px] tracking-widest"
                           >
                             Recovering
                           </Badge>

@@ -78,9 +78,9 @@ function RikishiSelectorList({
 
 const STATURE_COLOR: Record<string, string> = {
   legendary: "text-gold",
-  powerful: "text-purple-400",
+  powerful: "text-primary",
   established: "text-west",
-  rebuilding: "text-orange-400",
+  rebuilding: "text-warning",
   fragile: "text-destructive",
   new: "text-success",
 };
@@ -97,14 +97,14 @@ const MORALE_COLOR: Record<string, string> = {
   inspired: "text-success",
   content: "text-success",
   neutral: "text-muted-foreground",
-  disgruntled: "text-orange-400",
+  disgruntled: "text-warning",
   mutinous: "text-destructive",
 };
 
 const WELFARE_COLOR: Record<string, string> = {
   safe: "text-success",
   cautious: "text-gold",
-  elevated: "text-orange-400",
+  elevated: "text-warning",
   critical: "text-destructive",
 };
 
@@ -112,7 +112,7 @@ const HEALTH_COLOR: Record<string, string> = {
   peak: "text-success",
   good: "text-success",
   fair: "text-gold",
-  worn: "text-orange-400",
+  worn: "text-warning",
   fragile: "text-destructive",
 };
 

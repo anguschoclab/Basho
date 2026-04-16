@@ -56,11 +56,11 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
 
   return (
     <div
-      className="flex items-center justify-between h-8 bg-slate-900 select-none"
+      className="flex items-center justify-between h-8 bg-background select-none"
       style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
     >
       <div className="flex items-center px-3">
-        <span className="text-xs text-slate-300 font-medium">{title}</span>
+        <span className="text-xs text-muted-foreground font-medium">{title}</span>
       </div>
 
       <div
@@ -69,21 +69,21 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
       >
         <button
           onClick={handleMinimize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Minimize"
         >
           <Minus size={14} />
         </button>
         <button
           onClick={handleMaximize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           aria-label={isMaximized ? "Restore" : "Maximize"}
         >
           <Square size={12} />
         </button>
         <button
           onClick={handleClose}
-          className="w-8 h-8 flex items-center justify-center hover:bg-red-600 text-slate-400 hover:text-white transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-destructive text-muted-foreground hover:text-white transition-colors"
           aria-label="Close"
         >
           <X size={14} />

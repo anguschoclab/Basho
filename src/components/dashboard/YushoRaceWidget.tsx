@@ -22,9 +22,9 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
   const navigate = useNavigate();
 
   const medals = [
-    { icon: Trophy, color: "text-yellow-500", bg: "bg-yellow-100", label: "1st" },
-    { icon: Medal, color: "text-gray-400", bg: "bg-gray-100", label: "2nd" },
-    { icon: Award, color: "text-amber-600", bg: "bg-amber-100", label: "3rd" },
+    { icon: Trophy, color: "text-gold", bg: "bg-gold/10", label: "1st" },
+    { icon: Medal, color: "text-muted-foreground", bg: "bg-muted/30", label: "2nd" },
+    { icon: Award, color: "text-gold", bg: "bg-gold/10", label: "3rd" },
   ];
 
   const medal = medals[rank - 1] || null;
@@ -45,7 +45,7 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
           showGlow={rank === 1}
           expression={rank === 1 ? "confident" : rank <= 3 ? "determined" : "neutral"}
           fallback={entry.shikona}
-          className={rank === 1 ? "ring-2 ring-yellow-400 ring-offset-2" : ""}
+          className={rank === 1 ? "ring-2 ring-gold ring-offset-2" : ""}
         />
         {medal && MedalIcon && (
           <div
@@ -62,17 +62,17 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
           variant="outline"
           className={`text-[10px] font-display ${
             rank === 1
-              ? "border-yellow-400 text-yellow-700"
+              ? "border-gold text-gold"
               : rank === 2
-                ? "border-gray-400 text-gray-700"
+                ? "border-muted-foreground text-muted-foreground"
                 : rank === 3
-                  ? "border-amber-600 text-amber-700"
+                  ? "border-gold text-gold"
                   : ""
           }`}
         >
           {entry.rankLabel}
         </Badge>
-        <p className="text-xs font-mono mt-1 text-muted-foreground">{entry.record}</p>
+        <p className="text-xs font-mono mt-1 text-muted-foreground tabular-nums">{entry.record}</p>
       </div>
 
       {/* Shikona */}
@@ -106,7 +106,7 @@ export const YushoRaceWidget: React.FC = () => {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-display flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-500" />
+            <Trophy className="w-5 h-5 text-gold" />
             Yūshō Race
           </CardTitle>
           <Badge
@@ -128,7 +128,8 @@ export const YushoRaceWidget: React.FC = () => {
         {/* Race summary */}
         <div className="mt-4 pt-4 border-t text-center">
           <p className="text-xs text-muted-foreground">
-            Top {topContenders.length} contenders based on current tournament record
+            Top <span className="tabular-nums">{topContenders.length}</span> contenders based on
+            current tournament record
           </p>
         </div>
       </CardContent>

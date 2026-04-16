@@ -7,33 +7,73 @@ import { Utensils, Shield, AlertTriangle, Heart, Activity, CheckCircle } from "l
 import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
-const COMPLIANCE_DISPLAY: Record<string, { label: string; color: string; description: string; icon: React.ElementType }> = {
-  compliant: { label: "Compliant", color: "text-success", description: "No concerns from the JSA. Your stable operates within regulations.", icon: CheckCircle },
-  watch: { label: "Under Watch", color: "text-gold", description: "The JSA has flagged minor concerns. Improve conditions to avoid escalation.", icon: AlertTriangle },
-  investigation: { label: "Investigation", color: "text-orange-400", description: "An active investigation is underway. Serious consequences may follow.", icon: Shield },
-  sanctioned: { label: "Sanctioned", color: "text-destructive", description: "The JSA has imposed sanctions. Financial penalties and reputation damage are in effect.", icon: AlertTriangle },
+const COMPLIANCE_DISPLAY: Record<
+  string,
+  { label: string; color: string; description: string; icon: React.ElementType }
+> = {
+  compliant: {
+    label: "Compliant",
+    color: "text-success",
+    description: "No concerns from the JSA. Your stable operates within regulations.",
+    icon: CheckCircle,
+  },
+  watch: {
+    label: "Under Watch",
+    color: "text-gold",
+    description: "The JSA has flagged minor concerns. Improve conditions to avoid escalation.",
+    icon: AlertTriangle,
+  },
+  investigation: {
+    label: "Investigation",
+    color: "text-warning",
+    description: "An active investigation is underway. Serious consequences may follow.",
+    icon: Shield,
+  },
+  sanctioned: {
+    label: "Sanctioned",
+    color: "text-destructive",
+    description:
+      "The JSA has imposed sanctions. Financial penalties and reputation damage are in effect.",
+    icon: AlertTriangle,
+  },
 };
 
 const WELFARE_RISK_DISPLAY: Record<string, { label: string; color: string }> = {
   safe: { label: "Safe", color: "text-success" },
   cautious: { label: "Cautious", color: "text-gold" },
-  elevated: { label: "Elevated", color: "text-orange-400" },
+  elevated: { label: "Elevated", color: "text-warning" },
   critical: { label: "Critical", color: "text-destructive" },
 };
 
 const MORALE_DISPLAY: Record<string, { label: string; color: string }> = {
   inspired: { label: "Inspired", color: "text-success" },
-  content: { label: "Content", color: "text-green-400" },
+  content: { label: "Content", color: "text-success" },
   neutral: { label: "Neutral", color: "text-muted-foreground" },
-  disgruntled: { label: "Disgruntled", color: "text-orange-400" },
+  disgruntled: { label: "Disgruntled", color: "text-warning" },
   mutinous: { label: "Mutinous", color: "text-destructive" },
 };
 
 const DIET_DISPLAY: Record<DietRegimen, { label: string; cost: string; desc: string }> = {
-  austerity: { label: "Austerity", cost: "¥1,000/day", desc: "Minimal portions. High morale penalty, weight loss." },
-  maintenance: { label: "Maintenance", cost: "¥3,000/day", desc: "Standard stew. Balanced weight and morale." },
-  heavy_bulk: { label: "Heavy Bulk", cost: "¥6,000/day", desc: "Force-feeding. Fast weight gain, minor morale drop." },
-  premium: { label: "Premium Nutrition", cost: "¥10,000/day", desc: "High-grade wagyu. Boosts weight, morale, and recovery." }
+  austerity: {
+    label: "Austerity",
+    cost: "¥1,000/day",
+    desc: "Minimal portions. High morale penalty, weight loss.",
+  },
+  maintenance: {
+    label: "Maintenance",
+    cost: "¥3,000/day",
+    desc: "Standard stew. Balanced weight and morale.",
+  },
+  heavy_bulk: {
+    label: "Heavy Bulk",
+    cost: "¥6,000/day",
+    desc: "Force-feeding. Fast weight gain, minor morale drop.",
+  },
+  premium: {
+    label: "Premium Nutrition",
+    cost: "¥10,000/day",
+    desc: "High-grade wagyu. Boosts weight, morale, and recovery.",
+  },
 };
 
 const ROSTER_DISPLAY: Record<string, { label: string; color: string }> = {
@@ -106,21 +146,29 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
             </div>
             <Progress value={riskPct} className="h-2" />
             <p className="text-[11px] text-muted-foreground">
-              {perception.welfareRiskBand === "safe" && "No welfare concerns. Rikishi are well cared for."}
-              {perception.welfareRiskBand === "cautious" && "Minor concerns detected. Monitor injured rikishi closely."}
-              {perception.welfareRiskBand === "elevated" && "Elevated risk. Consider reducing training intensity for injured wrestlers."}
-              {perception.welfareRiskBand === "critical" && "Critical welfare issues. Immediate action needed to prevent sanctions."}
+              {perception.welfareRiskBand === "safe" &&
+                "No welfare concerns. Rikishi are well cared for."}
+              {perception.welfareRiskBand === "cautious" &&
+                "Minor concerns detected. Monitor injured rikishi closely."}
+              {perception.welfareRiskBand === "elevated" &&
+                "Elevated risk. Consider reducing training intensity for injured wrestlers."}
+              {perception.welfareRiskBand === "critical" &&
+                "Critical welfare issues. Immediate action needed to prevent sanctions."}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Stable Morale</div>
-              <div className={`font-medium text-sm ${moraleDisplay.color}`}>{moraleDisplay.label}</div>
+              <div className={`font-medium text-sm ${moraleDisplay.color}`}>
+                {moraleDisplay.label}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Roster Strength</div>
-              <div className={`font-medium text-sm ${rosterDisplay.color}`}>{rosterDisplay.label}</div>
+              <div className={`font-medium text-sm ${rosterDisplay.color}`}>
+                {rosterDisplay.label}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-muted-foreground">Media Attention</div>
@@ -134,7 +182,6 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
         </CardContent>
       </Card>
 
-
       {/* Diet Management */}
       <Card className="paper">
         <CardHeader>
@@ -145,7 +192,7 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {(Object.keys(DIET_DISPLAY) as DietRegimen[]).map(diet => {
+            {(Object.keys(DIET_DISPLAY) as DietRegimen[]).map((diet) => {
               const info = DIET_DISPLAY[diet];
               const isActive = welfare.activeDiet === diet;
               return (
@@ -178,12 +225,12 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {perception.rikishiHealthPerceptions.slice(0, 12).map(rp => {
+              {perception.rikishiHealthPerceptions.slice(0, 12).map((rp) => {
                 const healthColors: Record<string, string> = {
                   peak: "text-success",
-                  good: "text-green-400",
+                  good: "text-success",
                   fair: "text-gold",
-                  worn: "text-orange-400",
+                  worn: "text-warning",
                   fragile: "text-destructive",
                 };
                 return (
@@ -192,13 +239,21 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
                       <span className="font-medium">{rp.shikona}</span>
                       <span className="text-xs text-muted-foreground ml-1">({rp.rank})</span>
                     </div>
-                    <Badge variant="outline" className={`text-[10px] ${healthColors[rp.healthBand] ?? ""}`}>
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] ${healthColors[rp.healthBand] ?? ""}`}
+                    >
                       {rp.healthBand}
                     </Badge>
-                    <span className={`text-[10px] capitalize ${
-                      rp.momentum === "rising" ? "text-success" :
-                      rp.momentum === "declining" ? "text-destructive" : "text-muted-foreground"
-                    }`}>
+                    <span
+                      className={`text-[10px] capitalize ${
+                        rp.momentum === "rising"
+                          ? "text-success"
+                          : rp.momentum === "declining"
+                            ? "text-destructive"
+                            : "text-muted-foreground"
+                      }`}
+                    >
                       {rp.momentum}
                     </span>
                   </div>

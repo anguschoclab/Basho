@@ -42,16 +42,11 @@ export function BaseWidget({
 }: BaseWidgetProps) {
   // If no specific actions are provided but onInteract is, we could use it for a generic footer action, but let's just make it available.
   return (
-    <div
-      className={`widget-card p-4 space-y-3 ${className || ""}`}
-      onClick={onInteract}
-    >
+    <div className={`widget-card p-4 space-y-3 ${className || ""}`} onClick={onInteract}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon className={`h-4 w-4 ${iconClassName || "text-primary"}`} />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {title}
-          </span>
+          <span className="text-sm font-display font-semibold text-muted-foreground">{title}</span>
         </div>
 
         <div className="flex items-center gap-1.5 ml-auto">
@@ -66,9 +61,7 @@ export function BaseWidget({
               }}
               className="h-6 text-xs gap-1 text-muted-foreground"
               aria-label={
-                headerAction.tooltip ||
-                headerAction.label ||
-                `View more ${title} details`
+                headerAction.tooltip || headerAction.label || `View more ${title} details`
               }
               tooltip={headerAction.tooltip || `View more ${title} details`}
               tooltipSide="left"
@@ -98,9 +91,7 @@ export function BaseWidget({
           }}
           className="w-full h-7 text-xs gap-1 text-muted-foreground hover:text-primary transition-colors mt-1"
           aria-label={
-            footerAction.tooltip ||
-            footerAction.label ||
-            `Navigate to ${footerAction.label}`
+            footerAction.tooltip || footerAction.label || `Navigate to ${footerAction.label}`
           }
           tooltip={footerAction.tooltip || `Navigate to ${footerAction.label}`}
           tooltipSide="top"

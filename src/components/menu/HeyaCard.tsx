@@ -38,7 +38,7 @@ export const STATURE_CONFIG: Record<
     label: "Powerful",
     labelJa: "強豪",
     difficulty: "Easy",
-    color: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    color: "bg-primary/20 text-primary border-primary/30",
     icon: Sparkles,
   },
   established: {
@@ -52,14 +52,14 @@ export const STATURE_CONFIG: Record<
     label: "Rebuilding",
     labelJa: "再建中",
     difficulty: "Hard",
-    color: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+    color: "bg-warning/20 text-warning border-warning/30",
     icon: TrendingDown,
   },
   fragile: {
     label: "Fragile",
     labelJa: "危機",
     difficulty: "Very Hard",
-    color: "bg-red-500/20 text-red-400 border-red-500/30",
+    color: "bg-destructive/20 text-destructive border-destructive/30",
     icon: AlertTriangle,
   },
   new: {
@@ -166,7 +166,7 @@ export function HeyaCard({
             {financial && (
               <Badge
                 variant="outline"
-                className="text-[9px] bg-red-500/10 text-red-500 border-red-500/20 font-bold"
+                className="text-[9px] bg-destructive/10 text-destructive border-destructive/20 font-bold"
               >
                 💴 FINANCIAL RISK
               </Badge>
@@ -182,7 +182,7 @@ export function HeyaCard({
             {rivalry && (
               <Badge
                 variant="outline"
-                className="text-[9px] bg-purple-500/10 text-purple-500 border-purple-500/20 font-bold"
+                className="text-[9px] bg-primary/10 text-primary border-primary/20 font-bold"
               >
                 🔥 RIVALRY
               </Badge>

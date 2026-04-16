@@ -42,10 +42,10 @@ const RosterEntryRow = React.memo(
           className={cn(
             "text-[8px] font-bold uppercase tracking-widest px-1.5 h-4 shrink-0",
             healthBadge === "Fresh" && "border-success text-success bg-success/10",
-            healthBadge === "Worn" && "border-yellow-500 text-yellow-500 bg-yellow-500/10",
-            healthBadge === "Struggling" && "border-orange-500 text-orange-500 bg-orange-500/10",
+            healthBadge === "Worn" && "border-warning text-warning bg-warning/10",
+            healthBadge === "Struggling" && "border-warning text-warning bg-warning/10",
             healthBadge === "Critical" && "border-destructive text-destructive bg-destructive/10",
-            healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
+            healthBadge === "Recovering" && "border-west text-west bg-west/10"
           )}
         >
           {healthBadge === "Fresh" ? "OK" : healthBadge.slice(0, 3)}
@@ -159,19 +159,21 @@ export function RosterWidget() {
       <div className="flex gap-3 text-xs">
         <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md">
           <Users className="h-3 w-3 text-primary" />
-          <span className="font-bold text-primary">{roster.length}</span>
+          <span className="font-bold text-primary tabular-nums">{roster.length}</span>
           <span className="text-muted-foreground">active</span>
         </div>
         {injuredCount > 0 && (
           <div className="flex items-center gap-1 bg-destructive/10 px-2 py-1 rounded-md text-destructive">
             <HeartPulse className="h-3 w-3" />
-            <span className="font-bold">{injuredCount}</span>
+            <span className="font-bold tabular-nums">{injuredCount}</span>
             <span>hurt</span>
           </div>
         )}
         <div className="flex items-center gap-1 text-muted-foreground ml-auto">
           <AlertTriangle className="h-3 w-3" />
-          <span className="text-[10px]">Avg fatigue: {avgFatigue}%</span>
+          <span className="text-[10px]">
+            Avg fatigue: <span className="tabular-nums">{avgFatigue}%</span>
+          </span>
         </div>
       </div>
 
@@ -215,7 +217,7 @@ export function RosterWidget() {
               onClick={handleViewAllRikishi}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
-              +{roster.length - 8} more wrestlers →
+              +<span className="tabular-nums">{roster.length - 8}</span> more wrestlers →
             </Button>
           </TooltipWrap>
         )}

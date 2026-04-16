@@ -111,7 +111,7 @@ export function KenshoManagementWidget() {
             </div>
             <div className="p-4 rounded-lg border bg-card">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-4 w-4 text-success" />
                 <span className="text-sm font-medium">Projected (Basho)</span>
               </div>
               <div className="text-2xl font-bold">¥{projectedKensho.toLocaleString()}</div>

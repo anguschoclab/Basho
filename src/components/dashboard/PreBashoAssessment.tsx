@@ -104,7 +104,7 @@ export function PreBashoAssessment() {
                         side="left"
                       >
                         <Shield
-                          className={`h-3 w-3 ${rikishiAssessment.recommendedFocus === "protect" ? "text-destructive" : "text-yellow-500"}`}
+                          className={`h-3 w-3 ${rikishiAssessment.recommendedFocus === "protect" ? "text-destructive" : "text-warning"}`}
                         />
                       </TooltipWrap>
                     )}

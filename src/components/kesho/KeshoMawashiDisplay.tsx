@@ -462,34 +462,34 @@ function renderFringe(density: number, color: string): React.ReactNode {
 function TierBadge({ tier }: { tier: string }) {
   const tierConfig: Record<string, { bg: string; border: string; icon: string; label: string }> = {
     juryo: {
-      bg: "bg-slate-600",
-      border: "border-slate-400",
+      bg: "bg-muted-foreground",
+      border: "border-muted-foreground/70",
       icon: "J",
       label: "Juryo",
     },
     makuuchi: {
-      bg: "bg-blue-600",
-      border: "border-blue-400",
+      bg: "bg-west",
+      border: "border-west/70",
       icon: "M",
       label: "Makuuchi",
     },
     sanyaku: {
-      bg: "bg-purple-600",
-      border: "border-purple-400",
+      bg: "bg-primary",
+      border: "border-primary/70",
       icon: "S",
       label: "Sanyaku",
     },
     yokozuna: {
-      bg: "bg-gradient-to-br from-yellow-400 to-yellow-600",
-      border: "border-yellow-300",
+      bg: "bg-gradient-to-br from-gold to-gold/80",
+      border: "border-gold/70",
       icon: "Y",
       label: "Yokozuna",
     },
   };
 
   const config = tierConfig[tier] || {
-    bg: "bg-gray-500",
-    border: "border-gray-400",
+    bg: "bg-muted",
+    border: "border-muted-foreground",
     icon: "?",
     label: "Unknown",
   };
@@ -506,7 +506,7 @@ function TierBadge({ tier }: { tier: string }) {
       <span className="text-[10px] font-bold text-white">{config.icon}</span>
       {/* Yokozuna gets a crown glow effect */}
       {tier === "yokozuna" && (
-        <div className="absolute inset-0 rounded-full animate-pulse-glow bg-yellow-400/20" />
+        <div className="absolute inset-0 rounded-full animate-pulse-glow bg-gold/20" />
       )}
     </div>
   );
@@ -573,7 +573,7 @@ export function YokozunaTsunaDisplay({
       </svg>
 
       {/* Yokozuna crown icon */}
-      <div className="absolute -top-1 -right-1 text-yellow-500">
+      <div className="absolute -top-1 -right-1 text-gold">
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
           <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z" />
         </svg>

@@ -10,11 +10,11 @@ import { recruitSponsor } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
-  T1: { label: "Regional", color: "text-blue-500" },
-  T2: { label: "National", color: "text-green-500" },
-  T3: { label: "Major", color: "text-purple-500" },
-  T4: { label: "Premier", color: "text-orange-500" },
-  T5: { label: "Elite", color: "text-red-500" },
+  T1: { label: "Regional", color: "text-west" },
+  T2: { label: "National", color: "text-success" },
+  T3: { label: "Major", color: "text-primary" },
+  T4: { label: "Premier", color: "text-warning" },
+  T5: { label: "Elite", color: "text-destructive" },
 };
 
 const RECRUITMENT_COSTS: Record<string, number> = {

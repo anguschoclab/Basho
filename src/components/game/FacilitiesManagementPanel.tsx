@@ -50,10 +50,10 @@ const AXIS_META: Record<
 
 const BAND_COLORS: Record<FacilitiesBand, string> = {
   world_class: "text-gold",
-  excellent: "text-purple-400",
+  excellent: "text-primary",
   adequate: "text-west",
-  basic: "text-orange-400",
-  minimal: "text-red-400",
+  basic: "text-warning",
+  minimal: "text-destructive",
 };
 
 const BAND_LABELS: Record<FacilitiesBand, string> = {

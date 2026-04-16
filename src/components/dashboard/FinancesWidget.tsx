@@ -18,9 +18,9 @@ const RUNWAY_CONFIG: Record<
   },
   comfortable: {
     label: "Comfortable",
-    color: "text-green-500",
+    color: "text-success",
     icon: TrendingUp,
-    bgAccent: "bg-green-500/10",
+    bgAccent: "bg-success/10",
   },
   tight: {
     label: "Tight",
@@ -30,15 +30,15 @@ const RUNWAY_CONFIG: Record<
   },
   critical: {
     label: "Critical",
-    color: "text-orange-500",
+    color: "text-warning",
     icon: TrendingDown,
-    bgAccent: "bg-orange-500/10",
+    bgAccent: "bg-warning/10",
   },
   desperate: {
     label: "Desperate",
-    color: "text-red-500",
+    color: "text-destructive",
     icon: TrendingDown,
-    bgAccent: "bg-red-500/15",
+    bgAccent: "bg-destructive/15",
   },
 };
 
@@ -86,17 +86,19 @@ export function FinancesWidget() {
               <config.icon className={`h-5 w-5 ${config.color}`} />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+              <div className="text-xs text-muted-foreground font-mono font-bold tracking-tight">
                 Status
               </div>
               <div className={`text-lg font-bold leading-none ${config.color}`}>{config.label}</div>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+            <div className="text-xs text-muted-foreground font-mono font-bold tracking-tight">
               Balance
             </div>
-            <div className="text-lg font-bold leading-none">¥{heya.funds.toLocaleString()}</div>
+            <div className="text-lg font-bold leading-none tabular-nums">
+              ¥{heya.funds.toLocaleString()}
+            </div>
           </div>
         </div>
 
@@ -126,18 +128,18 @@ export function FinancesWidget() {
         {/* Bottom: Mini Stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="p-2 rounded-md bg-muted/30 border border-border/50">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
+            <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-muted-foreground tracking-tight">
               <ArrowUpRight className="h-3 w-3 text-success" />
               Monthly Revenue
             </div>
-            <div className="text-sm font-bold">¥1,250,000</div>
+            <div className="text-sm font-bold tabular-nums">¥1,250,000</div>
           </div>
           <div className="p-2 rounded-md bg-muted/30 border border-border/50">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">
-              <ArrowDownRight className="h-3 w-3 text-red-500" />
+            <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-muted-foreground tracking-tight">
+              <ArrowDownRight className="h-3 w-3 text-destructive" />
               Maintenance
             </div>
-            <div className="text-sm font-bold">¥450,000</div>
+            <div className="text-sm font-bold tabular-nums">¥450,000</div>
           </div>
         </div>
 

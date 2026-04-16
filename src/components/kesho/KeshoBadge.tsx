@@ -26,10 +26,10 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
   };
 
   const tierColors: Record<string, string> = {
-    juryo: "bg-slate-600",
-    makuuchi: "bg-blue-600",
-    sanyaku: "bg-purple-600",
-    yokozuna: "bg-gradient-to-br from-yellow-400 to-yellow-600",
+    juryo: "bg-muted-foreground",
+    makuuchi: "bg-west",
+    sanyaku: "bg-primary",
+    yokozuna: "bg-gradient-to-br from-gold to-gold/80",
   };
 
   return (

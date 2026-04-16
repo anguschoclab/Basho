@@ -36,9 +36,7 @@ const YokozunaRow = React.memo(
             <span className="font-display font-bold">
               <RikishiName id={rikishiId} name={shikona} />
             </span>
-            {isStrong && (
-              <Badge className="bg-amber-500/20 text-amber-500 text-xs">Strong Candidate</Badge>
-            )}
+            {isStrong && <Badge className="bg-gold/20 text-gold text-xs">Strong Candidate</Badge>}
             {isPlayer && <Badge className="bg-primary/20 text-primary text-xs">YOUR</Badge>}
           </div>
           <p className="text-sm text-muted-foreground mt-1">{narrative}</p>
@@ -112,7 +110,7 @@ const KadobanRow = React.memo(
     return (
       <div className="flex items-start gap-3">
         <AlertTriangle
-          className={`h-4 w-4 mt-0.5 shrink-0 ${isDemoted ? "text-destructive" : "text-amber-500"}`}
+          className={`h-4 w-4 mt-0.5 shrink-0 ${isDemoted ? "text-destructive" : "text-gold"}`}
         />
         <div className="flex-1">
           <div className="flex items-center gap-2">
@@ -191,10 +189,10 @@ export function ProgressionTracker({
 
       {/* Ozeki Runs */}
       {ozekiRuns.length > 0 && (
-        <Card className="border-purple-500/30 bg-purple-500/5">
+        <Card className="border-primary/30 bg-primary/5">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-5 w-5 text-purple-500" />
+              <TrendingUp className="h-5 w-5 text-primary" />
               大関取り Ōzeki Run Watch
             </CardTitle>
           </CardHeader>

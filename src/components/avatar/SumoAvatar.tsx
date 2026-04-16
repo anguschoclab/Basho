@@ -28,16 +28,16 @@ const SIZE_MAP: Record<string, number> = {
 };
 
 const RANK_BORDER_COLORS: Record<string, string> = {
-  yokozuna: "border-yellow-500",
-  ozeki: "border-gray-300",
-  sekiwake: "border-amber-600",
-  komusubi: "border-amber-600",
-  maegashira: "border-blue-400",
-  juryo: "border-blue-600",
-  makushita: "border-green-500",
-  sandanme: "border-orange-500",
-  jonidan: "border-purple-500",
-  jonokuchi: "border-gray-400",
+  yokozuna: "border-gold",
+  ozeki: "border-muted-foreground",
+  sekiwake: "border-gold",
+  komusubi: "border-gold",
+  maegashira: "border-west",
+  juryo: "border-west",
+  makushita: "border-success",
+  sandanme: "border-warning",
+  jonidan: "border-primary",
+  jonokuchi: "border-muted-foreground",
 };
 
 // Helper to lighten a hex color

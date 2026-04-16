@@ -11,12 +11,12 @@ import { Building2, Heart, Shield, Users, Handshake, UserPlus, Briefcase, Zap } 
 
 const BAND_COLORS: Record<string, string> = {
   inspired: "text-success",
-  content: "text-green-500",
+  content: "text-success",
   safe: "text-success",
   dominant: "text-primary",
   strong: "text-primary/80",
   secure: "text-primary",
-  comfortable: "text-green-500/80",
+  comfortable: "text-success/80",
   powerful: "text-primary",
   hot: "text-primary",
   neutral: "text-muted-foreground",
@@ -31,15 +31,15 @@ const BAND_COLORS: Record<string, string> = {
   developing: "text-muted-foreground",
   warm: "text-muted-foreground",
   tight: "text-gold",
-  disgruntled: "text-orange-500",
+  disgruntled: "text-warning",
   elevated: "text-gold",
   weak: "text-destructive/70",
   blazing: "text-destructive",
   fierce: "text-destructive",
   critical: "text-destructive",
-  mutinous: "text-red-500",
-  desperate: "text-red-600",
-  severe: "text-red-500",
+  mutinous: "text-destructive",
+  desperate: "text-destructive",
+  severe: "text-destructive",
 };
 
 /** stable widget. */

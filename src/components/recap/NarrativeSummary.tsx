@@ -59,19 +59,19 @@ function EventCard({
           ? "border-l-success"
           : isDemotion
             ? "border-l-gold"
-            : "border-l-red-500 bg-red-500/[0.02]"
+            : "border-l-destructive bg-destructive/[0.02]"
       )}
     >
       <div
         className={cn(
           "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
-          isPromotion ? "bg-success/10" : isDemotion ? "bg-gold/10" : "bg-red-500/10"
+          isPromotion ? "bg-success/10" : isDemotion ? "bg-gold/10" : "bg-destructive/10"
         )}
       >
         <Icon
           className={cn(
             "h-5 w-5",
-            isPromotion ? "text-success" : isDemotion ? "text-gold" : "text-red-500"
+            isPromotion ? "text-success" : isDemotion ? "text-gold" : "text-destructive"
           )}
         />
       </div>
@@ -85,7 +85,7 @@ function EventCard({
         {isRetirement ? (
           <Badge
             variant="secondary"
-            className="text-[8px] font-black uppercase tracking-widest bg-red-500/10 text-red-700"
+            className="text-[8px] font-black uppercase tracking-widest bg-destructive/10 text-destructive"
           >
             INTAI
           </Badge>
@@ -168,7 +168,7 @@ export function NarrativeSummary({
         {/* ═══ PROMOTIONS & DEMOTIONS ═══ */}
         {hasPromotions && (
           <section className="space-y-6">
-            <div className="flex items-center gap-3 pl-4 border-l-4 border-indigo-500">
+            <div className="flex items-center gap-3 pl-4 border-l-4 border-primary">
               <div>
                 <h3 className="text-xl font-display font-black uppercase tracking-tight">
                   Movement Ledger
@@ -201,7 +201,7 @@ export function NarrativeSummary({
         {/* ═══ RETIREMENTS & DEPARTURES ═══ */}
         {hasRetirements && (
           <section className="space-y-6">
-            <div className="flex items-center gap-3 pl-4 border-l-4 border-red-500">
+            <div className="flex items-center gap-3 pl-4 border-l-4 border-destructive">
               <div>
                 <h3 className="text-xl font-display font-black uppercase tracking-tight">
                   Venerated Departures
@@ -235,10 +235,10 @@ export function NarrativeSummary({
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="dossier-paper border-0 shadow-none bg-indigo-500/5">
+            <Card className="dossier-paper border-0 shadow-none bg-primary/5">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-display font-black uppercase tracking-tighter flex items-center gap-2">
-                  <ShieldAlert className="h-5 w-5 text-indigo-500" /> Official Directives
+                  <ShieldAlert className="h-5 w-5 text-primary" /> Official Directives
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -247,13 +247,13 @@ export function NarrativeSummary({
                     (e: { title: string; summary: string }, i: number) => (
                       <div
                         key={i}
-                        className="flex gap-4 p-3 bg-white/50 border-2 border-indigo-500/10 rounded-lg"
+                        className="flex gap-4 p-3 bg-white/50 border-2 border-primary/10 rounded-lg"
                       >
-                        <div className="h-8 w-8 bg-indigo-500/10 rounded-full flex items-center justify-center shrink-0">
-                          <Info className="h-4 w-4 text-indigo-500" />
+                        <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                          <Info className="h-4 w-4 text-primary" />
                         </div>
                         <div className="space-y-1">
-                          <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">
+                          <div className="text-[10px] font-black uppercase tracking-widest text-primary">
                             {e.title}
                           </div>
                           <p className="text-xs text-muted-foreground italic leading-relaxed">

@@ -2,24 +2,13 @@
 // Per uiDigest.ts: Converts engine outputs into readable, grouped digest sections
 
 import React, { useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
-import {
-  DigestItem,
-  DigestSection,
-  UIDigest,
-  buildWeeklyDigest,
-} from "@/presenters/uiDigest";
+import { DigestItem, DigestSection, UIDigest, buildWeeklyDigest } from "@/presenters/uiDigest";
 import {
   Activity,
   AlertTriangle,
@@ -54,10 +43,10 @@ const KIND_COLORS: Record<string, string> = {
   injury: "text-destructive",
   recovery: "text-success",
   salary: "text-warning",
-  koenkai: "text-purple-400",
-  expense: "text-orange-400",
+  koenkai: "text-primary",
+  expense: "text-warning",
   economy: "text-west",
-  scouting: "text-cyan-400",
+  scouting: "text-west",
   generic: "text-muted-foreground",
 };
 
@@ -65,11 +54,7 @@ const KIND_COLORS: Record<string, string> = {
  * digest item display.
  *  * @param { item } - The { item }.
  */
-const DigestItemDisplay = React.memo(function DigestItemDisplay({
-  item,
-}: {
-  item: DigestItem;
-}) {
+const DigestItemDisplay = React.memo(function DigestItemDisplay({ item }: { item: DigestItem }) {
   const Icon = KIND_ICONS[item.kind] || FileText;
   const colorClass = KIND_COLORS[item.kind] || "text-muted-foreground";
 
@@ -85,17 +70,13 @@ const DigestItemDisplay = React.memo(function DigestItemDisplay({
           ) : null}
           {item.rikishiId || item.heyaId ? (
             <span className="text-muted-foreground">
-              {item.title.includes(" ")
-                ? item.title.substring(item.title.indexOf(" "))
-                : ""}
+              {item.title.includes(" ") ? item.title.substring(item.title.indexOf(" ")) : ""}
             </span>
           ) : (
             item.title
           )}
         </div>
-        {item.detail && (
-          <p className="text-xs text-muted-foreground mt-0.5">{item.detail}</p>
-        )}
+        {item.detail && <p className="text-xs text-muted-foreground mt-0.5">{item.detail}</p>}
       </div>
     </div>
   );
@@ -135,14 +116,11 @@ const DigestSectionDisplay = React.memo(function DigestSectionDisplay({
  * weekly digest.
  *  * @param { digest: digestProp, className } - The { digest: digest prop, class name }.
  */
-export function WeeklyDigest({
-  digest: digestProp,
-  className,
-}: WeeklyDigestProps) {
+export function WeeklyDigest({ digest: digestProp, className }: WeeklyDigestProps) {
   const { state } = useGame();
   const digest = useMemo(
     () => digestProp ?? buildWeeklyDigest(state.world),
-    [digestProp, state.world],
+    [digestProp, state.world]
   );
 
   if (!digest) {
@@ -156,8 +134,7 @@ export function WeeklyDigest({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            No recent activity to report. Start your first basho to begin
-            tracking events.
+            No recent activity to report. Start your first basho to begin tracking events.
           </p>
         </CardContent>
       </Card>
@@ -175,30 +152,18 @@ export function WeeklyDigest({
               <FileText className="h-4 w-4" />
               Weekly Report
             </CardTitle>
-            {time.label && (
-              <CardDescription className="mt-1">{time.label}</CardDescription>
-            )}
+            {time.label && <CardDescription className="mt-1">{time.label}</CardDescription>}
           </div>
           <div className="flex gap-2">
             {counts.trainingEvents > 0 && (
-              <Badge variant="secondary">
-                {counts.trainingEvents} training
-              </Badge>
+              <Badge variant="secondary">{counts.trainingEvents} training</Badge>
             )}
-            {counts.injuries > 0 && (
-              <Badge variant="destructive">{counts.injuries} injured</Badge>
-            )}
-            {counts.economy > 0 && (
-              <Badge variant="outline">{counts.economy} economy</Badge>
-            )}
-            {counts.scouting > 0 && (
-              <Badge variant="outline">{counts.scouting} scouting</Badge>
-            )}
+            {counts.injuries > 0 && <Badge variant="destructive">{counts.injuries} injured</Badge>}
+            {counts.economy > 0 && <Badge variant="outline">{counts.economy} economy</Badge>}
+            {counts.scouting > 0 && <Badge variant="outline">{counts.scouting} scouting</Badge>}
           </div>
         </div>
-        {headline && (
-          <p className="text-sm text-muted-foreground mt-2">{headline}</p>
-        )}
+        {headline && <p className="text-sm text-muted-foreground mt-2">{headline}</p>}
       </CardHeader>
 
       <CardContent className="pt-0">
@@ -206,13 +171,9 @@ export function WeeklyDigest({
         <ScrollArea className="h-[280px] pr-3">
           <div className="space-y-6">
             {sections.length ? (
-              sections.map((section) => (
-                <DigestSectionDisplay key={section.id} section={section} />
-              ))
+              sections.map((section) => <DigestSectionDisplay key={section.id} section={section} />)
             ) : (
-              <p className="text-sm text-muted-foreground">
-                No categorized events yet.
-              </p>
+              <p className="text-sm text-muted-foreground">No categorized events yet.</p>
             )}
           </div>
         </ScrollArea>
