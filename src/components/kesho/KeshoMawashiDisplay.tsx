@@ -25,8 +25,6 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
     card: "w-full h-48",
   };
 
-  const goldOpacity = mawashi.goldThreadDensity;
-
   return (
     <div className={cn("relative", sizeClasses[size], className)}>
       <svg
@@ -106,7 +104,7 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
         </g>
 
         {/* Gold thread shimmer effect */}
-        {goldOpacity > 0.3 && (
+        {mawashi.goldThreadDensity > 0.3 && (
           <>
             <rect
               x="20"
@@ -115,7 +113,7 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
               height="200"
               rx="8"
               fill="url(#goldShimmer)"
-              opacity={goldOpacity * 0.4}
+              opacity={mawashi.goldThreadDensity * 0.4}
             />
             <rect
               x="20"
@@ -124,7 +122,7 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
               height="200"
               rx="8"
               fill="url(#goldShimmer2)"
-              opacity={goldOpacity * 0.2}
+              opacity={mawashi.goldThreadDensity * 0.2}
             />
           </>
         )}

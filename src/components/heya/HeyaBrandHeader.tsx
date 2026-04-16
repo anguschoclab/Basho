@@ -63,20 +63,10 @@ export function HeyaBrandHeader({
         </svg>
       </div>
 
-      {/* Decorative pattern overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <svg viewBox="0 0 200 100" className="w-full h-full" preserveAspectRatio="none">
-          <pattern
-            id="brandPattern"
-            x="0"
-            y="0"
-            width="20"
-            height="20"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="10" cy="10" r="2" fill={brand.accentColor} />
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#brandPattern)" />
+      {/* Decorative pattern overlay using crest motif */}
+      <div className="absolute inset-0 opacity-5 flex items-center justify-center">
+        <svg viewBox="0 0 100 100" className="w-1/2 h-1/2" style={{ stroke: brand.accentColor }}>
+          {renderCrestMotif(brand.crestMotif, brand.accentColor)}
         </svg>
       </div>
 
