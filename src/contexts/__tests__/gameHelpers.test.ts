@@ -4,18 +4,13 @@ import { getAutosaveEnabled } from "../../pages/SettingsPage";
 import { autosave, saveGame } from "../../engine/saveload";
 import { WorldState } from "../../engine/types/world";
 
-// Mock dependencies
-const mockGetAutosaveEnabled = vi.fn();
-const mockSaveGame = vi.fn();
-const mockAutosave = vi.fn(() => true);
-
 vi.mock("../../pages/SettingsPage", () => ({
-  getAutosaveEnabled: mockGetAutosaveEnabled,
+  getAutosaveEnabled: vi.fn(),
 }));
 
 vi.mock("../../engine/saveload", () => ({
-  saveGame: mockSaveGame,
-  autosave: mockAutosave,
+  saveGame: vi.fn(),
+  autosave: vi.fn(() => true),
 }));
 
 describe("gameHelpers", () => {
@@ -28,22 +23,22 @@ describe("gameHelpers", () => {
     });
 
     it("returns false and does not save if autosave is disabled", () => {
-      mockGetAutosaveEnabled.mockReturnValue(false);
+      vi.mocked(getAutosaveEnabled).mockReturnValue(false);
 
       const result = autosaveWithSignal(mockWorld);
 
       expect(result).toBe(false);
-      expect(mockSaveGame).not.toHaveBeenCalled();
-      expect(mockAutosave).not.toHaveBeenCalled();
+      expect(vi.mocked(saveGame)).not.toHaveBeenCalled();
+      expect(vi.mocked(autosave)).not.toHaveBeenCalled();
     });
 
     it("generates save data and performs autosave when enabled", () => {
-      mockGetAutosaveEnabled.mockReturnValue(true);
+      vi.mocked(getAutosaveEnabled).mockReturnValue(true);
 
       const result = autosaveWithSignal(mockWorld);
 
       expect(result).toBe(true);
-      expect(mockAutosave).toHaveBeenCalledWith(mockWorld);
+      expect(vi.mocked(autosave)).toHaveBeenCalledWith(mockWorld);
     });
   });
 });

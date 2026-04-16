@@ -11,6 +11,7 @@ import type { StateImpact } from "../core/StateImpact";
 import { rngForWorld } from "../rng";
 import { stableSort } from "../utils/sort";
 import type { ActiveCrisis, CrisisType } from "../types/crises";
+import { mergeImpacts } from "../core/ImpactResolver";
 
 export interface DramaEvent {
   id: string;
@@ -38,7 +39,6 @@ export function processDramaTick(world: WorldState): StateImpact {
   // Specific triggers (e.g., high debt, low compliance)
   const triggeredImpact = checkTriggeredDrama(world);
 
-  const { mergeImpacts } = require("../core/ImpactResolver");
   return mergeImpacts([builder.build(), triggeredImpact]);
 }
 
@@ -116,7 +116,6 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
         if (heya.isPlayerOwned) {
             // This triggers a CrisisModal in the UI by attaching an ActiveCrisis to the heya
             const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
-            const { mergeImpacts } = require("../core/ImpactResolver");
             return mergeImpacts([builder.build(), crisisImpact]);
         }
     }

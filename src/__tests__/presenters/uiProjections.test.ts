@@ -23,8 +23,9 @@ describe("uiProjections", () => {
       const rikishi = createMockRikishi({ id: "rikishi-1", heyaId: "heya-1" }) as any;
       const heya = createMockHeya({ id: "heya-1", name: "Test Stable" });
       world.heyas.set("heya-1", heya);
+      world.rikishi.set("rikishi-1", rikishi);
 
-      const result = projectRikishiWithHeya(rikishi, world);
+      const result = projectRikishiWithHeya(world, "rikishi-1");
       expect(result).toBeDefined();
       expect(result?.rikishi.id).toBe("rikishi-1");
     });

@@ -6,6 +6,7 @@
  */
 
 import { vi } from "vitest";
+import { SeededRNG } from "../../engine/rng";
 
 /**
  * Create a mock WorldState with minimal required fields.
@@ -35,10 +36,7 @@ export function createMockWorldState(overrides: Record<string, unknown> = {}) {
     playerHeyaId: "player-heya-1",
     cyclePhase: "interim",
     currentBasho: null,
-    rng: {
-      next: () => 0.5,
-      seed: "test-seed",
-    },
+    rng: new SeededRNG("test-seed"),
     ...overrides,
   };
 }

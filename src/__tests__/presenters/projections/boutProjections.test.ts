@@ -51,8 +51,8 @@ describe("boutProjections", () => {
 
     it("should return H2H data when heyas exist", () => {
       const world = createMockWorldState() as any;
-      const heyaA = createMockHeya({ id: "heya-a", rikishiIds: ["rikishi-1"] });
-      const heyaB = createMockHeya({ id: "heya-b", rikishiIds: ["rikishi-2"] });
+      const heyaA = createMockHeya({ id: "heya-a", name: "heya-a", rikishiIds: ["rikishi-1"] });
+      const heyaB = createMockHeya({ id: "heya-b", name: "heya-b", rikishiIds: ["rikishi-2"] });
       const rikishi1 = createMockRikishi({
         id: "rikishi-1",
         heyaId: "heya-a",
