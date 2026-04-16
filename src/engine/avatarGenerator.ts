@@ -22,6 +22,11 @@ export function generateAvatarConfig(params: AvatarGenerationParams): AvatarConf
   const natKey = nationality.toLowerCase();
   const skinToneData = NATIONALITY_SKIN_TONES[natKey] ?? NATIONALITY_SKIN_TONES.japan;
 
+  // Use skin tone range for variety
+  const skinTone = skinToneData.range
+    ? rng.pick([skinToneData.range[0], skinToneData.base, skinToneData.range[1]])
+    : skinToneData.base;
+
   // Determine age stage
   let ageStage: AvatarConfig["ageStage"];
   if (age < 20) ageStage = "teen";
@@ -44,14 +49,31 @@ export function generateAvatarConfig(params: AvatarGenerationParams): AvatarConf
   // Determine hair color based on graying
   const hairColor = hairGraying > 50 ? HAIR_COLORS.gray : HAIR_COLORS.black;
 
+  // Generate distinctive marks (low probability)
+  let distinctiveMark: AvatarConfig["distinctiveMark"] = "none";
+  if (rng.next() < 0.08) {
+    distinctiveMark = rng.pick(["scar", "mole", "freckles"]);
+  }
+
+  // Generate facial hair for retired/oyakata only
+  let facialHair: AvatarConfig["facialHair"] = "none";
+  if (isRetired || isOyakata) {
+    if (rng.next() < 0.3) {
+      facialHair = rng.pick(["mustache", "goatee", "full-beard"]);
+    }
+  }
+
   return {
     seed,
     faceShape: rng.pick(["round", "oval", "square", "broad"]),
     eyeType: rng.pick(["standard", "narrow", "wide"]),
+    eyeAngle: rng.pick(["level", "slanted-up", "slanted-down"]),
+    eyeSpacing: rng.pick(["close", "normal", "wide"]),
     browType: rng.pick(["straight", "furrowed", "arched"]),
     noseType: rng.pick(["small", "medium", "broad"]),
     mouthType: rng.pick(["neutral", "smile", "determined"]),
-    skinTone: skinToneData.base,
+    earSize: rng.pick(["small", "medium", "large"]),
+    skinTone,
     skinToneKey: (natKey as AvatarConfig["skinToneKey"]) ?? "japan",
     hairColor,
     hairGraying,
@@ -59,6 +81,8 @@ export function generateAvatarConfig(params: AvatarGenerationParams): AvatarConf
     expression: "neutral",
     ageStage,
     wrinkles,
+    facialHair,
+    distinctiveMark,
   };
 }
 
@@ -85,6 +109,12 @@ export function updateAvatarForAging(config: AvatarConfig, newAge: number): Avat
     wrinkles,
     hairGraying,
     hairColor,
+    // Preserve new fields
+    eyeAngle: config.eyeAngle,
+    eyeSpacing: config.eyeSpacing,
+    earSize: config.earSize,
+    facialHair: config.facialHair,
+    distinctiveMark: config.distinctiveMark,
   };
 }
 

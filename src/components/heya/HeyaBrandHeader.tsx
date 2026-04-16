@@ -45,6 +45,49 @@ export function HeyaBrandHeader({
     lg: "text-lg",
   };
 
+  const getShapeClass = (style: string) => {
+    switch (style) {
+      case "circular":
+        return "rounded-full";
+      case "square":
+        return "rounded-md";
+      case "diamond":
+        return "rounded-md rotate-45";
+      case "oval":
+        return "rounded-[50%]";
+      case "shield":
+        return "rounded-b-[50%] rounded-t-md";
+      case "hexagonal":
+      case "star":
+      case "octagonal":
+      case "triangular":
+      case "crescent":
+        return "rounded-md";
+      default:
+        return "rounded-full";
+    }
+  };
+
+  const getClipPath = (style: string) => {
+    switch (style) {
+      case "hexagonal":
+        return "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
+      case "star":
+        return "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)";
+      case "octagonal":
+        return "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
+      case "triangular":
+        return "polygon(50% 0%, 0% 100%, 100% 100%)";
+      case "crescent":
+        return "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 30% 50%, 30% 0%)";
+      default:
+        return "none";
+    }
+  };
+
+  const clipPath = getClipPath(brand.crestStyle);
+  const needsClipPath = clipPath !== "none";
+
   return (
     <div
       className={cn(
@@ -74,17 +117,20 @@ export function HeyaBrandHeader({
       <div className="relative z-10 flex flex-col justify-center h-full px-6">
         <div className="flex items-center gap-4">
           {/* Small brand badge */}
-          <div className="relative w-12 h-12 rounded-full border-2 shadow-md overflow-hidden flex-shrink-0">
-            <div
-              className="w-full h-full"
-              style={{
-                background: `linear-gradient(135deg, ${brand.primaryColor} 0%, ${brand.secondaryColor} 100%)`,
-              }}
-            >
-              <svg viewBox="0 0 100 100" className="w-full h-full p-1">
-                {renderCrestMotif(brand.crestMotif, brand.accentColor)}
-              </svg>
-            </div>
+          <div
+            className={cn(
+              "relative w-12 h-12 border-2 shadow-md overflow-hidden flex-shrink-0",
+              getShapeClass(brand.crestStyle)
+            )}
+            style={{
+              background: `linear-gradient(135deg, ${brand.primaryColor} 0%, ${brand.secondaryColor} 100%)`,
+              borderColor: brand.accentColor,
+              clipPath: needsClipPath ? clipPath : undefined,
+            }}
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full p-1">
+              {renderCrestMotif(brand.crestMotif, brand.accentColor)}
+            </svg>
           </div>
 
           {/* Text */}

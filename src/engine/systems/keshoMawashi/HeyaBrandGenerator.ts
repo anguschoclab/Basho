@@ -7,48 +7,48 @@
 
 import type { Id } from "../../types/common";
 import type { Heya } from "../../types/heya";
-import type { HeyaBrandIdentity, TraditionalMotif } from "../../types/keshoMawashi";
+import type { HeyaBrandIdentity, CrestMotif } from "../../types/keshoMawashi";
 import type { SeededRNG } from "../../rng";
 import { rngFromSeed } from "../../rng";
 
 /** Heya names and their traditional color associations (when applicable) */
-const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: TraditionalMotif[] }> = {
+const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMotif[] }> = {
   Dewanoumi: { colors: ["#1E3A5F", "#FFFFFF", "#FFD700"], motifs: ["waves", "temple", "dragon"] },
   Nishonoseki: {
     colors: ["#8B0000", "#FFFFFF", "#FFD700"],
     motifs: ["phoenix", "tiger", "rising_sun"],
   },
   Takasago: { colors: ["#0066CC", "#FFFFFF", "#FFD700"], motifs: ["waves", "pine", "crane"] },
-  Tokitsukaze: { colors: ["#228B22", "#FFFFFF", "#FFD700"], motifs: ["wind", "bamboo", "waves"] },
+  Tokitsukaze: { colors: ["#228B22", "#FFFFFF", "#FFD700"], motifs: ["bamboo", "waves", "dragon"] },
   Isegahama: {
     colors: ["#4A0080", "#FFFFFF", "#C0C0C0"],
-    motifs: ["thunder", "mountain", "temple"],
+    motifs: ["lightning", "mountain", "temple"],
   },
   Sakaigawa: { colors: ["#4682B4", "#FFFFFF", "#FFD700"], motifs: ["waterfall", "waves", "crane"] },
   Kasugano: {
     colors: ["#800080", "#FFD700", "#FFFFFF"],
-    motifs: ["phoenix", "sakura", "treasure_ship"],
+    motifs: ["phoenix", "sakura", "dragon"],
   },
   Kokonoe: { colors: ["#CC0000", "#FFFFFF", "#FFD700"], motifs: ["dragon", "tiger", "phoenix"] },
   Kise: { colors: ["#006400", "#FFFFFF", "#FFD700"], motifs: ["pine", "bamboo", "crane"] },
   Musashigawa: {
     colors: ["#2F4F4F", "#FFFFFF", "#C0C0C0"],
-    motifs: ["waves", "mt_fuji", "temple"],
+    motifs: ["waves", "mountain", "temple"],
   },
-  Kataonami: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["waves", "wind", "crane"] },
-  Onoe: { colors: ["#8B4513", "#FFD700", "#FFFFFF"], motifs: ["temple", "pine", "treasure_ship"] },
+  Kataonami: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["waves", "dragon", "crane"] },
+  Onoe: { colors: ["#8B4513", "#FFD700", "#FFFFFF"], motifs: ["temple", "pine", "dragon"] },
   Tatsunami: {
     colors: ["#FF4500", "#FFFFFF", "#FFD700"],
     motifs: ["dragon", "waves", "rising_sun"],
   },
   Minezaki: { colors: ["#556B2F", "#FFFFFF", "#DAA520"], motifs: ["pine", "mountain", "temple"] },
-  Tamanoi: { colors: ["#4682B4", "#FFFFFF", "#B8860B"], motifs: ["waves", "crane", "lotus"] },
+  Tamanoi: { colors: ["#4682B4", "#FFFFFF", "#B8860B"], motifs: ["waves", "crane", "dragon"] },
   Isenoumi: {
     colors: ["#000080", "#FFFFFF", "#FFD700"],
-    motifs: ["waves", "ship", "treasure_ship"],
+    motifs: ["waves", "dragon", "carp"],
   },
   Ajigawa: { colors: ["#008080", "#FFFFFF", "#FFD700"], motifs: ["waterfall", "bamboo", "crane"] },
-  Sadogatake: { colors: ["#191970", "#FFFFFF", "#C0C0C0"], motifs: ["waves", "ship", "pine"] },
+  Sadogatake: { colors: ["#191970", "#FFFFFF", "#C0C0C0"], motifs: ["waves", "carp", "pine"] },
   Hakkaku: { colors: ["#8B0000", "#FFD700", "#FFFFFF"], motifs: ["phoenix", "dragon", "tiger"] },
   Shibatayama: {
     colors: ["#696969", "#FFFFFF", "#FFD700"],
@@ -59,41 +59,53 @@ const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: Tradition
     colors: ["#4169E1", "#FFFFFF", "#FFD700"],
     motifs: ["phoenix", "rising_sun", "sakura"],
   },
-  Oigami: { colors: ["#DC143C", "#FFFFFF", "#FFD700"], motifs: ["thunder", "lightning", "dragon"] },
+  Oigami: {
+    colors: ["#DC143C", "#FFFFFF", "#FFD700"],
+    motifs: ["lightning", "lightning", "dragon"],
+  },
   Tagonoura: { colors: ["#006400", "#FFFFFF", "#DAA520"], motifs: ["pine", "mountain", "crane"] },
-  Naruto: { colors: ["#FF6347", "#FFFFFF", "#000080"], motifs: ["waves", "whirlpool", "ship"] },
-  Arashio: { colors: ["#4682B4", "#FFFFFF", "#B0C4DE"], motifs: ["waves", "storm", "wind"] },
+  Naruto: { colors: ["#FF6347", "#FFFFFF", "#000080"], motifs: ["waves", "dragon", "carp"] },
+  Arashio: { colors: ["#4682B4", "#FFFFFF", "#B0C4DE"], motifs: ["waves", "dragon", "lightning"] },
   Asakayama: {
     colors: ["#8B4513", "#FFD700", "#FFFFFF"],
-    motifs: ["mountain", "sunrise", "temple"],
+    motifs: ["mountain", "rising_sun", "temple"],
   },
-  Nakagawa: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["river", "waves", "crane"] },
+  Nakagawa: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["dragon", "waves", "crane"] },
   Shikihide: {
     colors: ["#9370DB", "#FFFFFF", "#FFD700"],
-    motifs: ["flower", "butterfly", "sakura"],
+    motifs: ["sakura", "dragon", "sakura"],
   },
-  Yamahibiki: { colors: ["#2F4F4F", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "echo", "pine"] },
-  Irumagawa: { colors: ["#4169E1", "#FFFFFF", "#87CEEB"], motifs: ["river", "sky", "crane"] },
-  Hanahago: { colors: ["#FF69B4", "#FFFFFF", "#FFD700"], motifs: ["flower", "sakura", "lotus"] },
-  Shirane: { colors: ["#708090", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "snow", "pine"] },
-  Futagoyama: { colors: ["#228B22", "#FFFFFF", "#FFD700"], motifs: ["mountain", "twin", "cloud"] },
-  Fujishima: { colors: ["#800080", "#FFFFFF", "#FFD700"], motifs: ["wisteria", "temple", "moon"] },
+  Yamahibiki: { colors: ["#2F4F4F", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "dragon", "pine"] },
+  Irumagawa: { colors: ["#4169E1", "#FFFFFF", "#87CEEB"], motifs: ["dragon", "dragon", "crane"] },
+  Hanahago: { colors: ["#FF69B4", "#FFFFFF", "#FFD700"], motifs: ["sakura", "sakura", "dragon"] },
+  Shirane: { colors: ["#708090", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "dragon", "pine"] },
+  Futagoyama: {
+    colors: ["#228B22", "#FFFFFF", "#FFD700"],
+    motifs: ["mountain", "dragon", "dragon"],
+  },
+  Fujishima: { colors: ["#800080", "#FFFFFF", "#FFD700"], motifs: ["dragon", "temple", "dragon"] },
   Takadagawa: {
     colors: ["#B22222", "#FFFFFF", "#FFD700"],
-    motifs: ["waterfall", "temple", "autumn"],
+    motifs: ["waterfall", "temple", "dragon"],
   },
-  Magaki: { colors: ["#006400", "#FFFFFF", "#DAA520"], motifs: ["fence", "temple", "pine"] },
-  Katsushika: { colors: ["#4A0080", "#FFFFFF", "#FFD700"], motifs: ["poetry", "moon", "waves"] },
+  Magaki: { colors: ["#006400", "#FFFFFF", "#DAA520"], motifs: ["dragon", "temple", "pine"] },
+  Katsushika: { colors: ["#4A0080", "#FFFFFF", "#FFD700"], motifs: ["dragon", "dragon", "waves"] },
   Oshogatsu: {
     colors: ["#CC0000", "#FFD700", "#FFFFFF"],
-    motifs: ["new_year", "treasure_ship", "pine"],
+    motifs: ["dragon", "dragon", "pine"],
   },
-  Chiganoura: { colors: ["#008B8B", "#FFFFFF", "#FFD700"], motifs: ["bay", "waves", "ship"] },
-  Minato: { colors: ["#000080", "#FFFFFF", "#FFD700"], motifs: ["harbor", "ship", "waves"] },
-  Shikoroyama: { colors: ["#556B2F", "#FFFFFF", "#DAA520"], motifs: ["moist", "mountain", "mist"] },
-  Kagamiyama: { colors: ["#1E90FF", "#FFFFFF", "#C0C0C0"], motifs: ["mirror", "mountain", "lake"] },
-  Hanakago: { colors: ["#FF1493", "#FFFFFF", "#FFD700"], motifs: ["flower", "basket", "sakura"] },
-  Oguruma: { colors: ["#8B4513", "#FFD700", "#FFFFFF"], motifs: ["wheel", "cart", "temple"] },
+  Chiganoura: { colors: ["#008B8B", "#FFFFFF", "#FFD700"], motifs: ["dragon", "waves", "carp"] },
+  Minato: { colors: ["#000080", "#FFFFFF", "#FFD700"], motifs: ["dragon", "carp", "waves"] },
+  Shikoroyama: {
+    colors: ["#556B2F", "#FFFFFF", "#DAA520"],
+    motifs: ["dragon", "mountain", "dragon"],
+  },
+  Kagamiyama: {
+    colors: ["#1E90FF", "#FFFFFF", "#C0C0C0"],
+    motifs: ["dragon", "mountain", "dragon"],
+  },
+  Hanakago: { colors: ["#FF1493", "#FFFFFF", "#FFD700"], motifs: ["sakura", "dragon", "sakura"] },
+  Oguruma: { colors: ["#8B4513", "#FFD700", "#FFFFFF"], motifs: ["dragon", "dragon", "temple"] },
 };
 
 /** Default colors for heyas without specific traditions */
@@ -107,7 +119,7 @@ const DEFAULT_HEYA_COLORS = [
 ];
 
 /** Default crest motifs */
-const DEFAULT_MOTIFS: TraditionalMotif[] = [
+const DEFAULT_MOTIFS: CrestMotif[] = [
   "dragon",
   "phoenix",
   "tiger",
@@ -116,17 +128,33 @@ const DEFAULT_MOTIFS: TraditionalMotif[] = [
   "bamboo",
   "crane",
   "temple",
-  "mt_fuji",
+  "mountain",
   "sakura",
 ];
 
 /** Crest styles for variety */
-const CREST_STYLES: Array<"circular" | "shield" | "diamond" | "oval" | "square"> = [
+const CREST_STYLES: Array<
+  | "circular"
+  | "shield"
+  | "diamond"
+  | "oval"
+  | "square"
+  | "hexagonal"
+  | "star"
+  | "octagonal"
+  | "triangular"
+  | "crescent"
+> = [
   "circular",
   "shield",
   "diamond",
   "oval",
   "square",
+  "hexagonal",
+  "star",
+  "octagonal",
+  "triangular",
+  "crescent",
 ];
 
 /**

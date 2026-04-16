@@ -113,6 +113,117 @@ export function renderCrestMotif(motif: string, color: string): React.ReactNode 
           <path d="M25 40 H75" />
         </g>
       );
+    case "dragon":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M20 50 Q35 30 50 50 Q65 70 80 50" />
+          <path d="M30 40 L30 25" />
+          <path d="M70 40 L70 25" />
+          <circle cx="35" cy="45" r="3" fill={color} />
+          <circle cx="65" cy="45" r="3" fill={color} />
+        </g>
+      );
+    case "phoenix":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M50 20 Q30 40 50 60 Q70 40 50 20" />
+          <path d="M50 40 L30 25" />
+          <path d="M50 40 L70 25" />
+          <path d="M50 60 L35 80" />
+          <path d="M50 60 L65 80" />
+        </g>
+      );
+    case "tiger":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M25 50 Q50 30 75 50" />
+          <path d="M30 50 L25 35" />
+          <path d="M70 50 L75 35" />
+          <path d="M40 55 L40 70" />
+          <path d="M60 55 L60 70" />
+          <circle cx="40" cy="45" r="3" fill={color} />
+          <circle cx="60" cy="45" r="3" fill={color} />
+        </g>
+      );
+    case "sakura":
+      return (
+        <g>
+          {[...Array(5)].map((_, i) => (
+            <g
+              key={i}
+              transform={`rotate(${i * 72} 50 50) translate(50 20)`}
+              fill="none"
+              stroke={color}
+              strokeWidth="4"
+            >
+              <ellipse cx="0" cy="0" rx="8" ry="12" />
+              <path d="M0 12 L0 20" strokeWidth="2" />
+            </g>
+          ))}
+          <circle cx="50" cy="50" r="5" fill={color} />
+        </g>
+      );
+    case "rising_sun":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6">
+          <circle cx="50" cy="50" r="15" />
+          {[...Array(8)].map((_, i) => (
+            <line
+              key={i}
+              x1="50"
+              y1="25"
+              x2={50 + 20 * Math.cos((i * 45 * Math.PI) / 180)}
+              y2={25 + 20 * Math.sin((i * 45 * Math.PI) / 180)}
+              strokeWidth="4"
+            />
+          ))}
+        </g>
+      );
+    case "lightning":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinejoin="round">
+          <path d="M55 15 L35 45 L50 45 L30 85 L70 45 L55 45 Z" />
+        </g>
+      );
+    case "waterfall":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M30 20 L30 80" />
+          <path d="M50 15 L50 85" />
+          <path d="M70 20 L70 80" />
+          {[...Array(3)].map((_, i) => (
+            <path
+              key={i}
+              d={`M${30 + i * 20} ${60 + i * 5} L${40 + i * 20} ${70 + i * 5}`}
+              strokeWidth="3"
+            />
+          ))}
+        </g>
+      );
+    case "temple":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M20 35 L50 15 L80 35" />
+          <path d="M25 35 V75" />
+          <path d="M75 35 V75" />
+          <path d="M20 75 H80" />
+          <path d="M35 35 V55" />
+          <path d="M65 35 V55" />
+          <path d="M30 55 H70" />
+        </g>
+      );
+    case "carp":
+      return (
+        <g fill="none" stroke={color} strokeWidth="6" strokeLinecap="round">
+          <path d="M20 50 Q35 35 50 50 Q65 65 80 50" />
+          <path d="M25 45 L15 40" />
+          <path d="M75 45 L85 40" />
+          <path d="M45 50 L35 60" />
+          <path d="M55 50 L65 60" />
+          <circle cx="35" cy="45" r="3" fill={color} />
+          <circle cx="65" cy="45" r="3" fill={color} />
+        </g>
+      );
     default:
       return <circle cx="50" cy="50" r="30" fill="none" stroke={color} strokeWidth="8" />;
   }

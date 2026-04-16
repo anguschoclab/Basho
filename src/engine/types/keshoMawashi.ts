@@ -64,6 +64,30 @@ export type TraditionalMotif =
   | "wheel"
   | "cart";
 
+/** Crest motifs that have visual renderings in crestMotifs.tsx */
+export type CrestMotif =
+  | "mountain"
+  | "wave"
+  | "waves"
+  | "circle"
+  | "diamond"
+  | "star"
+  | "chrysanthemum"
+  | "bamboo"
+  | "pine"
+  | "plum"
+  | "crane"
+  | "torii"
+  | "dragon"
+  | "phoenix"
+  | "tiger"
+  | "sakura"
+  | "rising_sun"
+  | "lightning"
+  | "waterfall"
+  | "temple"
+  | "carp";
+
 /** Heya brand identity - generated at world creation, permanent per stable */
 export interface HeyaBrandIdentity {
   id: Id;
@@ -74,9 +98,19 @@ export interface HeyaBrandIdentity {
   secondaryColor: string;
   accentColor: string; // Gold/silver thread color
 
-  // Visual identity
-  crestMotif: TraditionalMotif;
-  crestStyle: "circular" | "shield" | "diamond" | "oval" | "square";
+  // Crest design
+  crestMotif: CrestMotif;
+  crestStyle:
+    | "circular"
+    | "shield"
+    | "diamond"
+    | "oval"
+    | "square"
+    | "hexagonal"
+    | "star"
+    | "octagonal"
+    | "triangular"
+    | "crescent";
 
   // Tradition level affects probability of legacy designs (0-1)
   traditionLevel: number;
@@ -86,10 +120,75 @@ export interface HeyaBrandIdentity {
 }
 
 /** Base pattern style for the apron background */
-export type BasePattern = "solid" | "striped" | "gradient" | "cloud" | "ray" | "checkered";
+export type BasePattern =
+  | "solid"
+  | "striped"
+  | "gradient"
+  | "cloud"
+  | "ray"
+  | "checkered"
+  | "waves"
+  | "scales"
+  | "geometric"
+  | "dragon"
+  | "phoenix"
+  | "floral"
+  | "tribal"
+  | "lattice"
+  | "hexagonal"
+  | "damask"
+  | "ikat"
+  | "plaid"
+  | "chevron"
+  | "paisley";
 
 /** Symbol position on the mawashi */
-export type SymbolPosition = "center" | "left" | "right" | "scattered" | "upper" | "lower";
+export type SymbolPosition =
+  | "center"
+  | "left"
+  | "right"
+  | "scattered"
+  | "upper"
+  | "lower"
+  | "diagonal"
+  | "corners"
+  | "border"
+  | "concentric";
+
+/** Border style for the mawashi edge */
+export type BorderStyle = "simple" | "double" | "ornate" | "rope" | "scalloped";
+
+/** Embroidery style for the mawashi */
+export type EmbroideryStyle = "satin" | "chain" | "couching" | "goldwork";
+
+/** Seasonal information for basho-specific variations */
+export type Season = "spring" | "summer" | "autumn" | "winter";
+
+/** Seasonal color palettes */
+export const SEASONAL_PALETTES: Record<Season, string[]> = {
+  spring: ["#FFB7C5", "#FF69B4", "#90EE90", "#98FB98", "#FFA07A", "#FFD700"],
+  summer: ["#87CEEB", "#00CED1", "#1E90FF", "#40E0D0", "#FF6347", "#FFD700"],
+  autumn: ["#FF8C00", "#FF4500", "#8B4513", "#D2691E", "#CD853F", "#FFD700"],
+  winter: ["#E0FFFF", "#F0F8FF", "#B0C4DE", "#708090", "#4682B4", "#C0C0C0"],
+};
+
+/** Seasonal motif associations */
+export const SEASONAL_MOTIFS: Record<Season, TraditionalMotif[]> = {
+  spring: ["sakura", "flower", "butterfly", "rising_sun", "wisteria"],
+  summer: ["waves", "waterfall", "river", "thunder", "lightning"],
+  autumn: ["moon", "flower", "cloud", "mountain", "temple"],
+  winter: ["snow", "pine", "bamboo", "mountain", "cloud"],
+};
+
+/** Get season from basho name */
+export function getSeasonFromBasho(basho: string): Season {
+  const lowerBasho = basho.toLowerCase();
+  if (lowerBasho.includes("hatsu") || lowerBasho.includes("haru")) return "spring";
+  if (lowerBasho.includes("natsu")) return "summer";
+  if (lowerBasho.includes("aki")) return "autumn";
+  if (lowerBasho.includes("kyushu")) return "winter";
+  return "spring"; // default
+}
 
 /** Symbol element on the mawashi */
 export interface KeshoSymbol {
@@ -121,6 +220,8 @@ export interface KeshoMawashi {
   secondaryColor: string;
   accentColor: string;
   goldThreadDensity: number; // 0-1, embroidery richness
+  borderStyle: BorderStyle; // Border style for the mawashi edge
+  embroideryStyle: EmbroideryStyle; // Embroidery technique
 
   // Symbol elements (1-3 elements typically)
   mainSymbol: KeshoSymbol;

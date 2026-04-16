@@ -95,10 +95,16 @@ function getPatternStyle(pattern: string, color: string): string {
       return `repeating-linear-gradient(90deg, transparent, transparent 4px, ${color} 4px, ${color} 8px)`;
     case "checkered":
       return `conic-gradient(${color} 90deg, transparent 90deg 180deg, ${color} 180deg 270deg, transparent 270deg)`;
-    case "dots":
-      return `radial-gradient(circle, ${color} 2px, transparent 2px)`;
     case "waves":
       return `repeating-linear-gradient(0deg, transparent, transparent 5px, ${color} 5px, ${color} 8px)`;
+    case "plaid":
+      return `repeating-linear-gradient(90deg, transparent, transparent 8px, ${color} 8px, ${color} 12px), repeating-linear-gradient(0deg, transparent, transparent 8px, ${color} 8px, ${color} 12px)`;
+    case "chevron":
+      return `linear-gradient(45deg, ${color} 25%, transparent 25%, transparent 50%, ${color} 50%, ${color} 75%, transparent 75%)`;
+    case "lattice":
+      return `linear-gradient(${color} 1px, transparent 1px), linear-gradient(90deg, ${color} 1px, transparent 1px)`;
+    case "hexagonal":
+      return `linear-gradient(30deg, ${color} 12%, transparent 12.5%, transparent 87%, ${color} 87.5%, ${color}), linear-gradient(150deg, ${color} 12%, transparent 12.5%, transparent 87%, ${color} 87.5%, ${color}), linear-gradient(30deg, ${color} 12%, transparent 12.5%, transparent 87%, ${color} 87.5%, ${color}), linear-gradient(150deg, ${color} 12%, transparent 12.5%, transparent 87%, ${color} 87.5%, ${color})`;
     default:
       return "none";
   }

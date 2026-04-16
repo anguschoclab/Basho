@@ -16,10 +16,14 @@ import type {
   BasePattern,
   KeshoSymbol,
   SymbolPosition,
+  BorderStyle,
+  EmbroideryStyle,
   HeyaBrandIdentity,
   MawashiDesignPalette,
   YokozunaTsuna,
+  Season,
 } from "../../types/keshoMawashi";
+import { getSeasonFromBasho, SEASONAL_PALETTES, SEASONAL_MOTIFS } from "../../types/keshoMawashi";
 import {
   DEFAULT_KESHO_WEIGHTS,
   NATIONAL_FLAG_PALETTES,
@@ -163,19 +167,45 @@ export function generateKeshoMawashi(
   // Generate colors based on origin
   const colors = generateColors(origin, palette, rng);
 
+  // Apply seasonal influence
+  const season = getSeasonFromBasho(world.currentBashoName || "hatsu");
+  const seasonalColors = applySeasonalColorInfluence(colors, season, rng);
+
   // Generate pattern
   const basePattern = selectBasePattern(tier, rng);
 
-  // Generate symbols
+  // Generate border style
+  const borderStyle = selectBorderStyle(tier, rng);
+
+  // Generate embroidery style
+  const embroideryStyle = selectEmbroideryStyle(tier, rng);
+
+  // Generate symbols with seasonal influence
   const mainSymbol = generateMainSymbol(origin, palette, rng);
+  const seasonalMainSymbol = {
+    ...mainSymbol,
+    value: applySeasonalMotifInfluence(mainSymbol.value as TraditionalMotif, season, rng),
+  };
   const secondarySymbol =
     rng.next() < 0.6 ? generateSecondarySymbol(origin, palette, rng) : undefined;
+  const seasonalSecondarySymbol = secondarySymbol
+    ? {
+        ...secondarySymbol,
+        value: applySeasonalMotifInfluence(secondarySymbol.value as TraditionalMotif, season, rng),
+      }
+    : undefined;
   const tertiarySymbol =
     tier === "yokozuna" || tier === "sanyaku"
       ? rng.next() < 0.4
         ? generateSecondarySymbol(origin, palette, rng)
         : undefined
       : undefined;
+  const seasonalTertiarySymbol = tertiarySymbol
+    ? {
+        ...tertiarySymbol,
+        value: applySeasonalMotifInfluence(tertiarySymbol.value as TraditionalMotif, season, rng),
+      }
+    : undefined;
 
   // Calculate gold thread density based on tier
   const goldDensity = calculateGoldDensity(tier, rng);
@@ -193,19 +223,21 @@ export function generateKeshoMawashi(
     tier,
     origin,
     basePattern,
-    primaryColor: colors.primary,
-    secondaryColor: colors.secondary,
-    accentColor: colors.accent,
+    primaryColor: seasonalColors.primary,
+    secondaryColor: seasonalColors.secondary,
+    accentColor: seasonalColors.accent,
     goldThreadDensity: goldDensity,
-    mainSymbol,
-    secondarySymbol,
-    tertiarySymbol,
+    borderStyle,
+    embroideryStyle,
+    mainSymbol: seasonalMainSymbol,
+    secondarySymbol: seasonalSecondarySymbol,
+    tertiarySymbol: seasonalTertiarySymbol,
     sponsorInfo,
     inspiredByOyakataId: oyakata?.id,
     inspiredByFormerShikona: oyakata?.formerShikona,
     heyaBrandId: heya?.brandIdentityId || "",
     createdAt: { year: world.year, basho: world.currentBashoName || "unknown" },
-    description: generateDescription(tier, origin, mainSymbol, palette),
+    description: generateDescription(tier, origin, seasonalMainSymbol, palette),
   };
 }
 
@@ -375,14 +407,47 @@ function generateColors(
 
 /** Select base pattern based on tier */
 function selectBasePattern(tier: KeshoTier, rng: SeededRNG): BasePattern {
-  const patterns: BasePattern[] = ["solid", "striped", "gradient", "cloud", "ray", "checkered"];
+  const patterns: BasePattern[] = [
+    "solid",
+    "striped",
+    "gradient",
+    "cloud",
+    "ray",
+    "checkered",
+    "waves",
+    "scales",
+    "geometric",
+    "dragon",
+    "phoenix",
+    "floral",
+    "tribal",
+    "lattice",
+    "hexagonal",
+    "damask",
+    "ikat",
+    "plaid",
+    "chevron",
+    "paisley",
+  ];
 
   // Higher tiers get more elaborate patterns
   const weights: Record<KeshoTier, number[]> = {
-    juryo: [0.4, 0.3, 0.2, 0.05, 0.05, 0],
-    makuuchi: [0.2, 0.25, 0.25, 0.15, 0.1, 0.05],
-    sanyaku: [0.1, 0.2, 0.25, 0.2, 0.15, 0.1],
-    yokozuna: [0.05, 0.1, 0.2, 0.25, 0.25, 0.15],
+    juryo: [
+      0.3, 0.2, 0.15, 0.05, 0.05, 0, 0.05, 0.04, 0.02, 0.01, 0.01, 0.04, 0.03, 0.02, 0.01, 0.01,
+      0.01, 0, 0, 0,
+    ],
+    makuuchi: [
+      0.1, 0.15, 0.15, 0.1, 0.07, 0.04, 0.07, 0.05, 0.04, 0.03, 0.03, 0.06, 0.05, 0.04, 0.03, 0.02,
+      0.02, 0.02, 0.01, 0.01,
+    ],
+    sanyaku: [
+      0.05, 0.1, 0.12, 0.12, 0.1, 0.07, 0.09, 0.07, 0.05, 0.04, 0.03, 0.07, 0.06, 0.05, 0.04, 0.03,
+      0.02, 0.02, 0.01, 0.01,
+    ],
+    yokozuna: [
+      0.02, 0.05, 0.1, 0.12, 0.12, 0.08, 0.1, 0.08, 0.06, 0.05, 0.04, 0.08, 0.07, 0.06, 0.05, 0.04,
+      0.03, 0.02, 0.01, 0.01,
+    ],
   };
 
   const tierWeights = weights[tier];
@@ -395,6 +460,87 @@ function selectBasePattern(tier: KeshoTier, rng: SeededRNG): BasePattern {
   }
 
   return "solid";
+}
+
+/** Select border style based on tier */
+function selectBorderStyle(tier: KeshoTier, rng: SeededRNG): BorderStyle {
+  const styles: BorderStyle[] = ["simple", "double", "ornate", "rope", "scalloped"];
+
+  // Higher tiers get more elaborate borders
+  const weights: Record<KeshoTier, number[]> = {
+    juryo: [0.7, 0.2, 0.05, 0.03, 0.02],
+    makuuchi: [0.5, 0.25, 0.12, 0.08, 0.05],
+    sanyaku: [0.3, 0.25, 0.2, 0.15, 0.1],
+    yokozuna: [0.2, 0.2, 0.25, 0.2, 0.15],
+  };
+
+  const tierWeights = weights[tier];
+  const roll = rng.next();
+  let cumulative = 0;
+
+  for (let i = 0; i < styles.length; i++) {
+    cumulative += tierWeights[i];
+    if (roll < cumulative) return styles[i];
+  }
+
+  return "simple";
+}
+
+/** Select embroidery style based on tier */
+function selectEmbroideryStyle(tier: KeshoTier, rng: SeededRNG): EmbroideryStyle {
+  const styles: EmbroideryStyle[] = ["satin", "chain", "couching", "goldwork"];
+
+  // Higher tiers get more elaborate embroidery
+  const weights: Record<KeshoTier, number[]> = {
+    juryo: [0.7, 0.2, 0.07, 0.03],
+    makuuchi: [0.5, 0.3, 0.13, 0.07],
+    sanyaku: [0.3, 0.3, 0.25, 0.15],
+    yokozuna: [0.2, 0.25, 0.3, 0.25],
+  };
+
+  const tierWeights = weights[tier];
+  const roll = rng.next();
+  let cumulative = 0;
+
+  for (let i = 0; i < styles.length; i++) {
+    cumulative += tierWeights[i];
+    if (roll < cumulative) return styles[i];
+  }
+
+  return "satin";
+}
+
+/** Apply seasonal influence to color selection */
+function applySeasonalColorInfluence(
+  colors: { primary: string; secondary: string; accent: string },
+  season: Season,
+  rng: SeededRNG
+): { primary: string; secondary: string; accent: string } {
+  // 30% chance to use seasonal color for primary or secondary
+  if (rng.next() < 0.3) {
+    const seasonalColors = SEASONAL_PALETTES[season];
+    const seasonalColor = rng.pick(seasonalColors);
+    if (rng.next() < 0.5) {
+      return { ...colors, primary: seasonalColor };
+    } else {
+      return { ...colors, secondary: seasonalColor };
+    }
+  }
+  return colors;
+}
+
+/** Apply seasonal influence to motif selection */
+function applySeasonalMotifInfluence(
+  motif: TraditionalMotif,
+  season: Season,
+  rng: SeededRNG
+): TraditionalMotif {
+  // 25% chance to use seasonal motif
+  if (rng.next() < 0.25) {
+    const seasonalMotifs = SEASONAL_MOTIFS[season];
+    return rng.pick(seasonalMotifs);
+  }
+  return motif;
 }
 
 /** Generate the main symbol for the mawashi */

@@ -33,41 +33,15 @@ export function KeshoMawashiDisplay({ mawashi, size = "md", className }: KeshoMa
         aria-label={`Kesho-mawashi: ${mawashi.description || "Ceremonial apron"}`}
       >
         {/* Main apron body with embossed border effect */}
-        {/* Outer border (light) */}
-        <rect
-          x="18"
-          y="18"
-          width="164"
-          height="204"
-          rx="10"
-          fill="none"
-          stroke={mawashi.accentColor}
-          strokeWidth="1"
-          opacity="0.5"
-        />
-        {/* Middle border (main) */}
-        <rect
-          x="20"
-          y="20"
-          width="160"
-          height="200"
-          rx="8"
-          fill={mawashi.primaryColor}
-          stroke={mawashi.accentColor}
-          strokeWidth="2"
-        />
-        {/* Inner border (dark for embossed effect) */}
-        <rect
-          x="22"
-          y="22"
-          width="156"
-          height="196"
-          rx="7"
-          fill="none"
-          stroke={mawashi.accentColor}
-          strokeWidth="1"
-          opacity="0.3"
-        />
+        {/* Border */}
+        {renderBorder(mawashi.borderStyle, mawashi.accentColor)}
+
+        {/* Embroidery effect overlay */}
+        {renderEmbroideryEffect(
+          mawashi.embroideryStyle,
+          mawashi.accentColor,
+          mawashi.goldThreadDensity
+        )}
 
         {/* Base pattern overlay */}
         {renderBasePattern(mawashi.basePattern, mawashi.primaryColor, mawashi.secondaryColor)}
@@ -389,6 +363,19 @@ function renderSecondarySymbol(
       y: 60 + hashPosition(symbol.value + "y", 120),
     },
     center: { x: 100, y: 120 },
+    diagonal: {
+      x: 60 + hashPosition(symbol.value, 80),
+      y: 60 + hashPosition(symbol.value + "d", 120),
+    },
+    corners: {
+      x: 30 + hashPosition(symbol.value, 2) * 140,
+      y: 30 + hashPosition(symbol.value + "c", 2) * 160,
+    },
+    border: {
+      x: 30 + hashPosition(symbol.value, 140),
+      y: 30 + hashPosition(symbol.value + "b", 160),
+    },
+    concentric: { x: 100, y: 120 },
   };
 
   const pos = positionMap[symbol.position] || positionMap.left;
@@ -402,6 +389,203 @@ function renderSecondarySymbol(
       </text>
     </g>
   );
+}
+
+/**
+ * Render border style for the mawashi edge
+ */
+function renderBorder(borderStyle: string, color: string): React.ReactNode {
+  switch (borderStyle) {
+    case "double":
+      return (
+        <>
+          <rect
+            x="20"
+            y="20"
+            width="160"
+            height="196"
+            rx="7"
+            fill="none"
+            stroke={color}
+            strokeWidth="2"
+            opacity="0.5"
+          />
+          <rect
+            x="24"
+            y="24"
+            width="152"
+            height="188"
+            rx="5"
+            fill="none"
+            stroke={color}
+            strokeWidth="1"
+            opacity="0.3"
+          />
+        </>
+      );
+    case "ornate":
+      return (
+        <>
+          <rect
+            x="20"
+            y="20"
+            width="160"
+            height="196"
+            rx="7"
+            fill="none"
+            stroke={color}
+            strokeWidth="3"
+            opacity="0.4"
+          />
+          {[...Array(12)].map((_, i) => (
+            <circle
+              key={i}
+              cx={20 + (i % 4) * 40 + 20}
+              cy={20 + Math.floor(i / 4) * 49 + 20}
+              r="3"
+              fill={color}
+              opacity="0.3"
+            />
+          ))}
+        </>
+      );
+    case "rope":
+      return (
+        <rect
+          x="18"
+          y="18"
+          width="164"
+          height="200"
+          rx="8"
+          fill="none"
+          stroke={color}
+          strokeWidth="4"
+          strokeDasharray="8 4"
+          opacity="0.5"
+        />
+      );
+    case "scalloped":
+      return (
+        <path
+          d="M 20 20 L 40 20 Q 45 15 50 20 L 60 20 Q 65 15 70 20 L 80 20 Q 85 15 90 20 L 100 20 Q 105 15 110 20 L 120 20 Q 125 15 130 20 L 140 20 Q 145 15 150 20 L 160 20 Q 165 15 170 20 L 180 20 L 180 216 L 20 216 L 20 20"
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          opacity="0.5"
+        />
+      );
+    default:
+      // simple - current embossed border
+      return (
+        <>
+          <rect
+            x="20"
+            y="20"
+            width="160"
+            height="196"
+            rx="7"
+            fill="none"
+            stroke={color}
+            strokeWidth="1"
+            opacity="0.5"
+          />
+          <rect
+            x="22"
+            y="22"
+            width="156"
+            height="192"
+            rx="6"
+            fill="none"
+            stroke={color}
+            strokeWidth="1"
+            opacity="0.3"
+          />
+          <rect
+            x="24"
+            y="24"
+            width="152"
+            height="188"
+            rx="5"
+            fill="none"
+            stroke={color}
+            strokeWidth="1"
+            opacity="0.15"
+          />
+        </>
+      );
+  }
+}
+
+/**
+ * Render embroidery effect based on style
+ */
+function renderEmbroideryEffect(style: string, color: string, density: number): React.ReactNode {
+  switch (style) {
+    case "satin":
+      return (
+        <defs>
+          <filter id="satin-glow">
+            <feGaussianBlur stdDeviation="1" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+      );
+    case "chain":
+      return (
+        <pattern
+          id="chain-pattern"
+          x="0"
+          y="0"
+          width="10"
+          height="10"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx="5" cy="5" r="2" fill={color} opacity={0.3 * density} />
+        </pattern>
+      );
+    case "couching":
+      return (
+        <pattern
+          id="couching-pattern"
+          x="0"
+          y="0"
+          width="15"
+          height="15"
+          patternUnits="userSpaceOnUse"
+        >
+          <line
+            x1="0"
+            y1="7.5"
+            x2="15"
+            y2="7.5"
+            stroke={color}
+            strokeWidth="2"
+            opacity={0.4 * density}
+          />
+          <line
+            x1="7.5"
+            y1="0"
+            x2="7.5"
+            y2="15"
+            stroke={color}
+            strokeWidth="1"
+            opacity={0.3 * density}
+          />
+        </pattern>
+      );
+    case "goldwork":
+      return (
+        <defs>
+          <linearGradient id="goldwork-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={color} stopOpacity={0.8 * density} />
+            <stop offset="50%" stopColor="#FFD700" stopOpacity={0.9 * density} />
+            <stop offset="100%" stopColor={color} stopOpacity={0.8 * density} />
+          </linearGradient>
+        </defs>
+      );
+    default:
+      return null;
+  }
 }
 
 /**

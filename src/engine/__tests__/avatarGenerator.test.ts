@@ -228,15 +228,37 @@ describe("Avatar Generator", () => {
       expect(old.hairGraying).toBeLessThanOrEqual(100);
     });
 
-    it("should use valid face shapes", () => {
+    it("should generate valid face shape", () => {
       const config = generateAvatarConfig({
-        seed: "face-test",
+        seed: "test-face",
         nationality: "Japan",
         age: 25,
         isSekitori: true,
       });
 
       expect(["round", "oval", "square", "broad"]).toContain(config.faceShape);
+    });
+
+    it("should generate valid eye angle", () => {
+      const config = generateAvatarConfig({
+        seed: "test-eye-angle",
+        nationality: "Japan",
+        age: 25,
+        isSekitori: true,
+      });
+
+      expect(["level", "slanted-up", "slanted-down"]).toContain(config.eyeAngle);
+    });
+
+    it("should generate valid eye spacing", () => {
+      const config = generateAvatarConfig({
+        seed: "test-eye-spacing",
+        nationality: "Japan",
+        age: 25,
+        isSekitori: true,
+      });
+
+      expect(["close", "normal", "wide"]).toContain(config.eyeSpacing);
     });
 
     it("should use valid eye types", () => {
@@ -276,6 +298,40 @@ describe("Avatar Generator", () => {
 
       const updated = updateAvatarForAging(youngConfig, 28);
       expect(updated.ageStage).toBe("prime");
+    });
+
+    it("should update hair color based on graying", () => {
+      const youngConfig = generateAvatarConfig({
+        seed: "test-graying",
+        nationality: "Japan",
+        age: 25,
+        isSekitori: true,
+      });
+
+      const oldConfig = updateAvatarForAging(youngConfig, 60);
+
+      expect(oldConfig.hairGraying).toBeGreaterThan(youngConfig.hairGraying);
+      if (oldConfig.hairGraying > 50) {
+        expect(oldConfig.hairColor).toBe(HAIR_COLORS.gray);
+      }
+    });
+
+    it("should preserve new fields during aging", () => {
+      const config = generateAvatarConfig({
+        seed: "test-preserve",
+        nationality: "Japan",
+        age: 25,
+        isSekitori: true,
+      });
+
+      const agedConfig = updateAvatarForAging(config, 35);
+
+      // New fields should be preserved
+      expect(agedConfig.eyeAngle).toBe(config.eyeAngle);
+      expect(agedConfig.eyeSpacing).toBe(config.eyeSpacing);
+      expect(agedConfig.earSize).toBe(config.earSize);
+      expect(agedConfig.facialHair).toBe(config.facialHair);
+      expect(agedConfig.distinctiveMark).toBe(config.distinctiveMark);
     });
 
     it("should increase wrinkles with age", () => {

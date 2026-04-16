@@ -7,9 +7,12 @@ export interface AvatarConfig {
   seed: string;
   faceShape: "round" | "oval" | "square" | "broad";
   eyeType: "standard" | "narrow" | "wide";
+  eyeAngle: "level" | "slanted-up" | "slanted-down";
+  eyeSpacing: "close" | "normal" | "wide";
   browType: "straight" | "furrowed" | "arched";
   noseType: "small" | "medium" | "broad";
   mouthType: "neutral" | "smile" | "determined";
+  earSize: "small" | "medium" | "large";
   skinTone: string; // hex color
   skinToneKey:
     | "japan"
@@ -27,6 +30,8 @@ export interface AvatarConfig {
   expression: "neutral" | "determined" | "confident" | "intense";
   ageStage: "teen" | "young" | "prime" | "veteran" | "elder";
   wrinkles: number; // 0-100
+  facialHair?: "none" | "mustache" | "goatee" | "full-beard";
+  distinctiveMark?: "none" | "scar" | "mole" | "freckles";
 }
 
 export interface AvatarGenerationParams {
