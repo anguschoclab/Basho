@@ -68,7 +68,18 @@ export function createHeyaWithOyakata(args: {
     id,
     name,
     oyakataId,
-    statureBand: tier < 0.2 ? "legendary" : tier < 0.5 ? "powerful" : "established",
+    statureBand:
+      tier < 0.1
+        ? "legendary"
+        : tier < 0.25
+          ? "powerful"
+          : tier < 0.5
+            ? "established"
+            : tier < 0.7
+              ? "rebuilding"
+              : tier < 0.85
+                ? "fragile"
+                : "new",
     prestigeBand: tier < 0.2 ? "elite" : "respected",
     facilitiesBand: "adequate",
     koenkaiBand: "moderate",
@@ -171,22 +182,35 @@ export function createRosters(
   oyakataMap: Map<string, Oyakata>
 ): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
-  const heyaIds = Array.from(heyaMap.keys());
+  const heyaList = Array.from(heyaMap.values());
+
+  // Sort stables by tier (higher tier = better stables get better wrestlers)
+  const heyaByTier = heyaList.sort((a, b) => {
+    const tierOrder: Record<string, number> = {
+      legendary: 5,
+      powerful: 4,
+      established: 3,
+      rebuilding: 2,
+      fragile: 1,
+      new: 0,
+    };
+    return (tierOrder[b.statureBand] ?? 0) - (tierOrder[a.statureBand] ?? 0);
+  });
 
   // 2. Initial Roster Generation (Rank Distribution)
   // Yokozuna count is variable (0-2) to allow for initial gaps, matching real sumo patterns
   const yokozunaCount = worldRng.int(0, 2);
-  const rankConfigs: { rank: Rank; division: Division; count: number }[] = [
-    { rank: "yokozuna", division: "makuuchi", count: yokozunaCount },
-    { rank: "ozeki", division: "makuuchi", count: 2 },
-    { rank: "sekiwake", division: "makuuchi", count: 2 },
-    { rank: "komusubi", division: "makuuchi", count: 2 },
-    { rank: "maegashira", division: "makuuchi", count: 34 },
-    { rank: "juryo", division: "juryo", count: 28 },
-    { rank: "makushita", division: "makushita", count: 150 }, // Increased from 120 for more junior wrestlers
-    { rank: "sandanme", division: "sandanme", count: 250 }, // Increased from 200 for more junior wrestlers
-    { rank: "jonidan", division: "jonidan", count: 250 }, // Increased from 200 for more junior wrestlers
-    { rank: "jonokuchi", division: "jonokuchi", count: 150 }, // Increased from 110 for more junior wrestlers
+  const rankConfigs: { rank: Rank; division: Division; count: number; tierWeight: number }[] = [
+    { rank: "yokozuna", division: "makuuchi", count: yokozunaCount, tierWeight: 5 },
+    { rank: "ozeki", division: "makuuchi", count: 2, tierWeight: 5 },
+    { rank: "sekiwake", division: "makuuchi", count: 2, tierWeight: 4 },
+    { rank: "komusubi", division: "makuuchi", count: 2, tierWeight: 4 },
+    { rank: "maegashira", division: "makuuchi", count: 34, tierWeight: 3 },
+    { rank: "juryo", division: "juryo", count: 28, tierWeight: 2 },
+    { rank: "makushita", division: "makushita", count: 150, tierWeight: 1 },
+    { rank: "sandanme", division: "sandanme", count: 250, tierWeight: 0 },
+    { rank: "jonidan", division: "jonidan", count: 250, tierWeight: 0 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 150, tierWeight: 0 },
   ];
 
   rankConfigs.forEach((config) => {
@@ -204,9 +228,24 @@ export function createRosters(
 
       const rikishiId = worldRng.uuid("RK");
 
-      // Randomly assign to a stable first
-      const heyaId = worldRng.pick(heyaIds);
-      const heya = heyaMap.get(heyaId);
+      // Weighted assignment: higher tier stables get higher ranked rikishi
+      // Filter stables that can receive this rank based on tierWeight
+      const eligibleStables = heyaByTier.filter((h) => {
+        const stableTier =
+          { legendary: 5, powerful: 4, established: 3, rebuilding: 2, fragile: 1, new: 0 }[
+            h.statureBand
+          ] ?? 0;
+        // Allow some randomness: stables can get rikishi within +/- 1 tier of their stature
+        return (
+          stableTier >= config.tierWeight - 1 ||
+          (stableTier >= config.tierWeight - 2 && worldRng.next() > 0.7)
+        );
+      });
+
+      // Pick from eligible stables, weighted toward higher tiers for higher ranks
+      const heya =
+        eligibleStables.length > 0 ? worldRng.pick(eligibleStables) : worldRng.pick(heyaList);
+
       const oyakata = oyakataMap.get(heya?.oyakataId || "");
 
       const r = generateFullRikishi({
@@ -220,8 +259,8 @@ export function createRosters(
         legacyShikona: oyakata?.formerShikona,
       });
 
-      r.heyaId = heyaId;
-      heya?.rikishiIds?.push(r.id);
+      r.heyaId = heya.id;
+      heya.rikishiIds = [...(heya.rikishiIds || []), r.id];
       rikishiMap.set(r.id, r);
     }
   });
