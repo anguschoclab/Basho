@@ -5,9 +5,8 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { WorldState } from "../../engine/types/world";
+import type { BashoUIDigest, BoutMatchUI, HeatBand } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { getRivalry } from "../../engine/rivalries";
@@ -17,7 +16,7 @@ import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calend
 /**
  * Project tournament live data for BashoPage.
  */
-export function projectBashoUIDigest(world: WorldState) {
+export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   const basho = world.currentBasho;
   if (!basho) return null;
 
@@ -41,13 +40,13 @@ export function projectBashoUIDigest(world: WorldState) {
       const uiEast = projectRikishi(east, world);
       const uiWest = projectRikishi(west, world);
 
-      const record = (uiEast as any).h2h?.[uiWest.id] || { wins: 0, losses: 0 };
+      const record = uiEast.h2h?.[uiWest.id] || { wins: 0, losses: 0 };
       const h2h = { wins: record.wins, losses: record.losses };
 
-      const rivalriesState = (world as any).rivalriesState;
+      const rivalriesState = world.rivalriesState;
       const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
       const heat = rivalry?.heat ?? 0;
-      let heatBand: any = "cold";
+      let heatBand: HeatBand = "cold";
       if (heat >= 75) heatBand = "inferno";
       else if (heat >= 50) heatBand = "hot";
       else if (heat >= 25) heatBand = "warm";
@@ -64,7 +63,7 @@ export function projectBashoUIDigest(world: WorldState) {
         h2hCommentary: generateH2HCommentary(east, west),
       };
     })
-    .filter((m): m is any => !!m);
+    .filter((m): m is BoutMatchUI => !!m);
 
   const completedBouts = matches.filter((m) => m.result).length;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
@@ -72,14 +71,14 @@ export function projectBashoUIDigest(world: WorldState) {
   const standings = Array.from(world.rikishi.values())
     .filter((r) => !r.isRetired && r.division === "makuuchi")
     .map((r) => {
-      const record = (r as any).currentBashoRecord || { wins: 0, losses: 0 };
+      const record = r.currentBashoRecord || { wins: 0, losses: 0 };
       return {
         rikishi: projectRikishi(r, world),
         wins: record.wins,
         losses: record.losses,
       };
     })
-    .sort((a, b) => b.wins - a.wins || compareRanks(a.rikishi.rank as any, b.rikishi.rank as any))
+    .sort((a, b) => b.wins - a.wins || compareRanks(a.rikishi.rank, b.rikishi.rank))
     .slice(0, 10);
 
   return {
@@ -95,7 +94,7 @@ export function projectBashoUIDigest(world: WorldState) {
     isKeyDay: isKeyDay(day),
     seasonalFlavor: getSeasonalFlavor(
       BASHO_CALENDAR[basho.bashoName || "hatsu"].season,
-      (world as any).seed
+      world.seed
     ),
   };
 }
