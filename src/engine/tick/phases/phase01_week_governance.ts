@@ -33,8 +33,7 @@ export function phase01_week_governance(world: WorldState): StateImpact {
   }
 
   for (const [id, heya] of world.heyas) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic heya updates object
-    const updates: any = {};
+    const updates: Partial<typeof heya> = {};
     let changed = false;
 
     // 1. Natural scandal score decay — 1 point per week

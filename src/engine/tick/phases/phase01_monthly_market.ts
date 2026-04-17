@@ -12,8 +12,7 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 export function phase01_monthly_market(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_monthly_market");
   // Only run on month boundaries
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- transientContext is optional on WorldState
-  const boundaries = (world as any).transientContext?.boundaries;
+  const boundaries = world.transientContext?.boundaries;
   if (!boundaries?.monthBoundary) return builder.build();
 
   const market = world.myosekiMarket;
