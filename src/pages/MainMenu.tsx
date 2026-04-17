@@ -71,10 +71,49 @@ export default function MainMenu() {
   }, [state?.world]);
 
   const recommendedStables = useMemo(() => {
-    return stables
-      .filter((h) => h.statureBand === "established" || h.statureBand === "powerful")
-      .sort((a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0))
-      .slice(0, 6);
+    const groups: Record<StatureBand, Heya[]> = {
+      legendary: [],
+      powerful: [],
+      established: [],
+      rebuilding: [],
+      fragile: [],
+      new: [],
+    };
+    stables.forEach((h) => groups[h.statureBand]?.push(h));
+
+    // Sort each group by sekitori count
+    (Object.keys(groups) as StatureBand[]).forEach((band) => {
+      groups[band].sort(
+        (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0)
+      );
+    });
+
+    // Curated selection: variety of challenge levels
+    const picks: Heya[] = [];
+    // Easy: Legendary/Powerful (top tier)
+    if (groups.legendary.length > 0) picks.push(groups.legendary[0]);
+    else if (groups.powerful.length > 0) picks.push(groups.powerful[0]);
+
+    // Medium: Established (solid choices)
+    picks.push(...groups.established.slice(0, 2));
+
+    // Hard: Rebuilding (challenging)
+    if (groups.rebuilding.length > 0) picks.push(groups.rebuilding[0]);
+
+    // Very Hard: Fragile/New (extreme challenge)
+    if (groups.fragile.length > 0) picks.push(groups.fragile[0]);
+    else if (groups.new.length > 0) picks.push(groups.new[0]);
+
+    // Fill remaining slots with best available
+    const allSorted = stables.sort(
+      (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0)
+    );
+    for (const h of allSorted) {
+      if (picks.length >= 6) break;
+      if (!picks.find((p) => p.id === h.id)) picks.push(h);
+    }
+
+    return picks.slice(0, 6);
   }, [stables, sekitoriCounts]);
 
   const stablesByStature = useMemo(() => {
@@ -258,49 +297,6 @@ export default function MainMenu() {
         </section>
 
         <main className="max-w-6xl w-full px-6 -mt-12 relative z-20 pb-20">
-          {/* World Settings Console */}
-          <div className="glass rounded-lg p-4 flex items-center justify-between gap-4 mb-8 shadow-2xl animate-in slide-in-from-bottom-5 duration-700 delay-300 fill-mode-both">
-            <div className="flex items-center gap-6 pl-4 border-l-4 border-primary">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  World Generation
-                </p>
-                <p className="font-display font-black text-sm uppercase tracking-tighter">
-                  Deterministic Seed:{" "}
-                  <span className="text-primary">{safeShortSeed(state.world.seed)}</span>
-                </p>
-              </div>
-              <div className="hidden md:block h-8 w-px bg-border/20" />
-              <div className="hidden md:block">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                  Heya Directory
-                </p>
-                <p className="font-display font-black text-sm uppercase tracking-tighter">
-                  {stables.length} Professional Stables
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 px-3 gap-2 font-bold uppercase tracking-widest text-[10px] border-2"
-                onClick={handleRerollWorld}
-              >
-                <RefreshCw className="h-3 w-3" /> Reroll
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className={`h-9 px-3 gap-2 font-bold uppercase tracking-widest text-[10px] border-2 ${showSeedInput ? "bg-primary text-white border-primary" : ""}`}
-                onClick={() => setShowSeedInput(!showSeedInput)}
-              >
-                <Dices className="h-3 w-3" /> {showSeedInput ? "Apply Seed" : "Manual Seed"}
-              </Button>
-            </div>
-          </div>
-
           {showSeedInput && (
             <div className="flex justify-center mb-10 -mt-6 animate-in slide-in-from-top-4 duration-300">
               <div className="bg-muted p-2 rounded-lg border-2 flex items-center gap-2 w-full max-w-md shadow-lg">
@@ -444,8 +440,39 @@ export default function MainMenu() {
           }
         />
 
-        <footer className="w-full border-t border-border/20 py-8 px-6 flex flex-col items-center gap-3">
-          <div className="flex items-center gap-4 mb-2">
+        <footer className="w-full border-t border-border/20 py-6 px-6 flex flex-col items-center gap-4">
+          {/* World Generation Controls */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-center">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                World Seed
+              </p>
+              <p className="font-mono text-xs text-primary">{safeShortSeed(state.world.seed)}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground"
+                onClick={handleRerollWorld}
+              >
+                <RefreshCw className="h-3 w-3 mr-1" /> Reroll
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-7 px-2 text-[10px] font-bold uppercase tracking-widest ${showSeedInput ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                onClick={() => setShowSeedInput(!showSeedInput)}
+              >
+                <Dices className="h-3 w-3 mr-1" /> {showSeedInput ? "Close" : "Manual"}
+              </Button>
+            </div>
+          </div>
+
+          <div className="w-full max-w-md h-px bg-border/30" />
+
+          {/* Archive & Copyright */}
+          <div className="flex items-center gap-4">
             <Button
               variant="outline"
               size="sm"
@@ -456,12 +483,14 @@ export default function MainMenu() {
               Archive Management
             </Button>
           </div>
-          <p className="text-xs font-black uppercase tracking-[0.4em] opacity-30">
-            Reach the Summit — 頂点を目指せ
-          </p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest opacity-30">
-            © 2026 Sumo Manager Pro | Professional Stable Management Simulator
-          </p>
+          <div className="text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50">
+              Reach the Summit — 頂点を目指せ
+            </p>
+            <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest">
+              © 2026 Sumo Manager Pro
+            </p>
+          </div>
         </footer>
       </div>
     </>
