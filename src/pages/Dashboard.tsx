@@ -109,11 +109,9 @@ export default function Dashboard() {
 
   if (!isLoaded || !world) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center h-full text-muted-foreground animate-pulse">
-          Institutional interface initializing...
-        </div>
-      </AppLayout>
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground animate-pulse">
+        Institutional interface initializing...
+      </div>
     );
   }
 

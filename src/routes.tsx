@@ -5,6 +5,7 @@ import {
   Outlet,
   createHashHistory,
   createBrowserHistory,
+  redirect,
 } from "@tanstack/react-router";
 import MainMenu from "./pages/MainMenu";
 import NewGameWizard from "./pages/NewGameWizard";
@@ -84,7 +85,12 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: Dashboard,
+  // Redirect immediately before any render — avoids the blank-frame useEffect timing race.
+  // MainMenu handles autosave loading internally.
+  beforeLoad: async () => {
+    throw redirect({ to: "/main-menu", replace: true });
+  },
+  component: () => null,
 });
 const mainMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
