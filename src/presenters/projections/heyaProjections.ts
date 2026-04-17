@@ -5,19 +5,15 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { WorldState } from "../../engine/types/world";
+import type { HeyaDataUI } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
 import type { UIRikishi } from "../rikishiUI";
 
 /**
  * Project heya data with oyakata for ceremony components.
  */
-export function projectHeyaData(
-  world: WorldState,
-  heyaId: string
-): { heya: any; oyakata: any; oyakataQuirks: string[]; oyakataTraits: any } | null {
+export function projectHeyaData(world: WorldState, heyaId: string): HeyaDataUI | null {
   const heya = world.heyas.get(heyaId);
   if (!heya) return null;
 
@@ -25,7 +21,7 @@ export function projectHeyaData(
   return {
     heya,
     oyakata,
-    oyakataQuirks: (oyakata as any)?.quirks ?? [],
+    oyakataQuirks: oyakata?.quirks ?? [],
     oyakataTraits: oyakata?.traits,
   };
 }
