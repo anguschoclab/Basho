@@ -83,9 +83,7 @@ export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Traditionalists are conservative with money unless it's a "Traditional" prospect
     let maxBase = heya.funds * 0.1;
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
     if (candidate?.style === "yotsu") maxBase *= 1.35; // Value belt-wrestlers
     // Weight-Cutter quirk prefers lighter rikishi
     if (
@@ -111,9 +109,7 @@ export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
   },
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Scientists value 'Potential' (talentSeed) above all else
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
     const potentialMultiplier = (candidate?.talentSeed ?? 50) / 50;
     let maxBid = heya.funds * 0.2 * potentialMultiplier;
     // Numbers Guy quirk uses detailed stat analysis
@@ -167,9 +163,7 @@ export const NurturerRecruitmentStrategy: RecruitmentStrategy = {
     return Math.max(0, targetSize - currentSize);
   },
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
     let maxBase = heya.funds * 0.12;
     if (candidate && candidate.talentSeed > 70) {
       const age = world.year - candidate.birthYear;
@@ -198,9 +192,7 @@ export const IndulgentRecruitmentStrategy: RecruitmentStrategy = {
   },
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Indulgent bid based on "likeability" - they prefer prospects with compatible traits
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
     let maxBase = heya.funds * 0.14;
 
     // Bonus for prospects with high discipline (they value "good attitude")
@@ -226,9 +218,7 @@ export const StrictRecruitmentStrategy: RecruitmentStrategy = {
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Strict are conservative but will pay for high-quality traditional prospects
     let maxBase = heya.funds * 0.11;
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
 
     // Only bid significantly for high-quality prospects (based on talentSeed and discipline)
     const discipline = candidate?.temperament?.discipline;
@@ -250,9 +240,7 @@ export const StrategistRecruitmentStrategy: RecruitmentStrategy = {
   },
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Strategists use data-driven bidding based on talent analysis
-    const candidate = Object.values(world.talentPool?.candidates || {}).find(
-      (c) => c.candidateId === candidateId
-    );
+    const candidate = world.talentPool?.candidates?.[candidateId];
 
     let maxBase = heya.funds * 0.16;
 
