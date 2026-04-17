@@ -181,7 +181,11 @@ export {
   isKeyDay,
 } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
-export { DEFAULT_DIVISION_DAYS, getTotalBashodays, needsScheduleForDay } from "../engine/schedule";
+export {
+  DEFAULT_DIVISION_DAYS,
+  getTotalBashodays,
+  needsScheduleForDay,
+} from "../engine/scheduleHelpers";
 export {
   toFatigueBand,
   toPotentialBand,

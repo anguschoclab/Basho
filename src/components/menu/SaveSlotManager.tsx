@@ -32,6 +32,7 @@ interface SaveSlotManagerProps {
   onLoadSuccess: () => void;
   loadWorldDirect?: (world: unknown) => void;
   createWorld?: (seed: string, playerHeyaId?: string) => void;
+  hideArchiveButton?: boolean;
 }
 
 export function SaveSlotManager({
@@ -42,6 +43,7 @@ export function SaveSlotManager({
   onLoadSuccess,
   loadWorldDirect,
   createWorld,
+  hideArchiveButton,
 }: SaveSlotManagerProps) {
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [saveSlots, setSaveSlots] = useState<SaveSlotInfo[]>([]);
@@ -138,9 +140,10 @@ export function SaveSlotManager({
       <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
         <DialogTrigger asChild>
           <Button
+            id="archive-trigger"
             variant="outline"
             size="lg"
-            className="gap-2 font-bold uppercase tracking-widest border-2 hover:bg-muted/50"
+            className={`gap-2 font-bold uppercase tracking-widest border-2 hover:bg-muted/50 ${hideArchiveButton ? "hidden" : ""}`}
           >
             <Database className="w-4 h-4" />
             Archive Management

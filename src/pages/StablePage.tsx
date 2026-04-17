@@ -21,7 +21,7 @@ export default function StablePage() {
   const { state } = useGame();
   const { world, playerHeyaId } = state;
 
-  const viewingHeyaId = world && playerHeyaId ? routeId || playerHeyaId : "";
+  const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
   // Get heya brand identity if available

@@ -8,7 +8,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown, Award } from "lucide-react";
-import { YokozunaTsunaDisplay } from "@/components/kesho/KeshoMawashiDisplay";
+import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
 import { RikishiName, OyakataName, StableName } from "@/components/ClickableName";

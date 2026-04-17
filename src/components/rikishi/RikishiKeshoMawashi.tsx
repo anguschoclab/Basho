@@ -6,7 +6,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Medal } from "lucide-react";
-import { KeshoMawashiDisplay, YokozunaTsunaDisplay } from "@/components/kesho/KeshoMawashiDisplay";
+import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
+import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 interface RikishiKeshoMawashiProps {

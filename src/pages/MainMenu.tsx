@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RefreshCw, Dices, ChevronRight } from "lucide-react";
+import { RefreshCw, Dices, ChevronRight, Database } from "lucide-react";
 
 import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
 import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
@@ -246,6 +246,7 @@ export default function MainMenu() {
               hasAutosave={hasAutosave}
               onLoadSuccess={() => navigate({ to: "/dashboard" })}
               createWorld={createWorld}
+              hideArchiveButton
             />
           </div>
 
@@ -443,11 +444,22 @@ export default function MainMenu() {
           }
         />
 
-        <footer className="w-full border-t border-border/20 py-12 px-6 flex flex-col items-center opacity-30 gap-1">
-          <p className="text-xs font-black uppercase tracking-[0.4em]">
+        <footer className="w-full border-t border-border/20 py-8 px-6 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-4 mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-[10px] font-bold uppercase tracking-widest border-muted-foreground/30 hover:bg-muted/50"
+              onClick={() => document.getElementById("archive-trigger")?.click()}
+            >
+              <Database className="w-3 h-3" />
+              Archive Management
+            </Button>
+          </div>
+          <p className="text-xs font-black uppercase tracking-[0.4em] opacity-30">
             Reach the Summit — 頂点を目指せ
           </p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest opacity-30">
             © 2026 Sumo Manager Pro | Professional Stable Management Simulator
           </p>
         </footer>
