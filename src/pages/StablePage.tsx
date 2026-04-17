@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { projectRikishi } from "@/presenters/rikishiUI";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +27,20 @@ export default function StablePage() {
   const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
-  // ... (rest of the component logic)
+  const rikishiList = useMemo(() => {
+    if (!world || !heya) return [];
+    return (heya.rikishiIds ?? [])
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is NonNullable<typeof r> => Boolean(r))
+      .map((r) => projectRikishi(r, world));
+  }, [world, heya]);
+
+  const lineage: Array<{
+    name: string;
+    startYear: number;
+    endYear?: number;
+    achievements: { titlesWon: number; sekitoriCount: number; highestStudentRank?: string };
+  }> = [];
 
   if (!world || !heya) return null;
 
@@ -109,9 +124,9 @@ export default function StablePage() {
                 return (
                   <InstitutionPanel
                     heya={heya}
-                    oyakata={data.oyakata}
+                    oyakata={data.oyakata ?? null}
                     oyakataQuirks={data.oyakataQuirks}
-                    oyakataTraits={data.oyakataTraits}
+                    oyakataTraits={data.oyakataTraits ?? null}
                   />
                 );
               })()}
