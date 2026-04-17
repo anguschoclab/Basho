@@ -313,10 +313,10 @@ describe("evaluateKimariteAttempt — push battle", () => {
   it("returns oshitaoshi when opponent is falling with high momentum", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // West falling (cogOffset > footSpread/2), east pushing
-    const st = makeEngineState({ cogOffset: 0, velocityX: 5 }, { cogOffset: 0.25, footSpread: 0.4 });
+    // West falling: cogOffset=0.6 → balance=max(0,100-120)=0 ≤ 0; east pushing, nearCenter (edgeDistance=3.85)
+    const st = makeEngineState({ cogOffset: 0, velocityX: 5 }, { cogOffset: 0.6, footSpread: 0.4 });
     const push = makePushState({
-      eastMomentum: 20, // > 15
+      eastMomentum: 20,
       westMomentum: 5,
     });
 
@@ -329,16 +329,25 @@ describe("evaluateKimariteAttempt — push battle", () => {
   });
 
   it("returns tsukitaoshi when opponent is falling with low momentum", () => {
-    const east = mockRikishi("r1");
+    // tsukitaoshi (line 118 in strategy array): noBelt && power>=65 && balance<=0 && nearCenter
+    // Conditions to isolate tsukitaoshi as the FIRST applicable technique:
+    //   - style="oshi" (default) prevents kotenage/koshihineri/sotogake and other style!="oshi" competitors
+    //   - velocityX=0 on east prevents oshitaoshi (requires forwardMomentum>0)
+    //   - tsukitaoshi (line 118) appears before sukuinage (line 342) in strategy array
+    //   - firstRng returns 0 → roll=0 → always selects first applicable technique (tsukitaoshi)
+    const east = mockRikishi("r1", { power: 65 }); // power>=65; style="oshi" by default
     const west = mockRikishi("r2");
-    // West falling, east pushing (low momentum)
-    const st = makeEngineState({ cogOffset: 0, velocityX: 3 }, { cogOffset: 0.25, footSpread: 0.4 });
+    // West falling: cogOffset=0.6 → balance=max(0,100-120)=0; nearCenter (edgeDistance=3.85)
+    // East has no velocityX (defaults to 0) → forwardMomentum=0 → oshitaoshi won't compete
+    const st = makeEngineState({ cogOffset: 0 }, { cogOffset: 0.6, footSpread: 0.4 });
     const push = makePushState({
-      eastMomentum: 8, // <= 15
+      eastMomentum: 8,
       westMomentum: 5,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const firstRng: any = { next: () => 0 }; // roll=0 → first applicable strategy wins
 
-    const result = evaluateKimariteAttempt(east, west, push, null, st, mockRng);
+    const result = evaluateKimariteAttempt(east, west, push, null, st, firstRng);
 
     expect(result?.technique).toBe("tsukitaoshi");
     expect(result?.side).toBe("east");
