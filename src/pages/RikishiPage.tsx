@@ -30,6 +30,7 @@ import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
 import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -40,12 +41,15 @@ export default function RikishiPage() {
   const [showIntaiCeremony, setShowIntaiCeremony] = useState(false);
 
   // Prepare data for roster list view (before any early returns)
+  const effectiveHeyaId = playerHeyaId || world?.playerHeyaId;
   const rikishiList = useMemo(() => {
     if (!world || rikishiId) return [];
-    return Array.from(world.rikishi.values())
-      .filter((r) => r.heyaId === playerHeyaId)
+    const allRikishi = Array.from(world.rikishi.values());
+    if (!effectiveHeyaId) return allRikishi.map((r) => projectRikishi(r, world));
+    return allRikishi
+      .filter((r) => r.heyaId === effectiveHeyaId)
       .map((r) => projectRikishi(r, world));
-  }, [world, playerHeyaId, rikishiId]);
+  }, [world, effectiveHeyaId, rikishiId]);
 
   // Get raw rikishi data safely
   const rawRikishi = world?.rikishi.get(rikishiId || "");
@@ -55,7 +59,10 @@ export default function RikishiPage() {
   // Prepare data using custom hooks
   const careerProgressionData = useCareerProgressionData(history);
 
-  if (!world) return null;
+  if (!world) {
+    navigate({ to: "/main-menu", replace: true });
+    return null;
+  }
 
   // ── Roster List View ────────────────────────────────
   if (!rikishiId) {
@@ -94,14 +101,14 @@ export default function RikishiPage() {
   const healthBadge = getHealthBadge(rawRikishi);
 
   // Get mentorship info using lineage functions
-  const mentor = getMentor(world, rawRikishi);
+  const mentor = getMentor(world, rawRikishi) ?? null;
   const mentees = menteesOf(world, rawRikishi);
   const lineageTree = getLineageTree(world, rawRikishi.id);
 
   const finalizeRetirement = () => {
     // Stage 2: Actually apply retirement to the world
     const impact = retireRikishiImpact(rikishi.id, "player_initiated_intai");
-    updateWorld(impact);
+    updateWorld(resolveImpacts(world, [impact]));
     setShowIntaiCeremony(false);
     // Navigate back to roster
     navigate({ to: "/rikishi" });
@@ -119,7 +126,7 @@ export default function RikishiPage() {
           isOwned={isOwned}
           healthBadge={healthBadge}
           isKadoban={rikishi.rank === "ozeki" && !!world.ozekiKadoban?.[rikishi.id]?.isKadoban}
-          onBack={() => navigate({ to: "/stable/roster" })}
+          onBack={() => navigate({ to: "/rikishi" })}
         />
 
         <div className="p-8">

@@ -49,7 +49,7 @@ export default function SchedulePage() {
   }
 
   const matches = useMemo(() => {
-    if (!currentBasho) return [];
+    if (!currentBasho || !world) return [];
     return currentBasho.matches.filter((m) => {
       if (m.day !== selectedDay) return false;
       const eastRikishi = world.rikishi.get(m.eastRikishiId);

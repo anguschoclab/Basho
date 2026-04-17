@@ -22,6 +22,8 @@ import { generateRikishiName } from "../../shikona";
 import { updateAvatarForAging, updateHairstyleForPromotion } from "../../avatarGenerator";
 import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
 import { InfrastructureService } from "../../systems/economy/InfrastructureService";
+import { GlobalCupService } from "../../systems/basho/GlobalCupService";
+import { HistoryService } from "../../systems/meta/HistoryService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -37,12 +39,10 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   builder.merge(infraImpact);
 
   // 0.2 Global Cup & Worlds Exhibition (Phase 3)
-  const { GlobalCupService } = await import("../../systems/basho/GlobalCupService");
   const cupImpact = GlobalCupService.processGlobalCup(world);
   builder.merge(cupImpact);
 
   // 0.3 All-Time Records & Legacy (Phase 3)
-  const { HistoryService } = await import("../../systems/meta/HistoryService");
   // Update records for all active rikishi at year end
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {

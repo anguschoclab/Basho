@@ -7,6 +7,8 @@ export const STABLE_TABS = [
   { id: "medical", label: "Medical", href: "/stable/medical" },
 ];
 
+export const HQ_TABS = STABLE_TABS;
+
 export const OFFICE_TABS = [
   { id: "economy", label: "Finances", href: "/office/finances" },
   { id: "facilities", label: "Facilities", href: "/office/facilities" },

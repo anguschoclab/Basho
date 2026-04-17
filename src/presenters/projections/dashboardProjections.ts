@@ -5,9 +5,8 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { WorldState } from "../../engine/types/world";
+import type { DashboardUIDigest, FinancialStatus } from "../types/uiDigest";
 import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
 import { getHeyaRoster, getSekitoriInHeya } from "../../engine/queries";
@@ -17,7 +16,7 @@ import { projectRosterEntry } from "../rikishiUI";
 /**
  * Project dashboard data for the main overview.
  */
-export function projectDashboardUIDigest(world: WorldState) {
+export function projectDashboardUIDigest(world: WorldState): DashboardUIDigest | null {
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return null;
 
@@ -28,11 +27,13 @@ export function projectDashboardUIDigest(world: WorldState) {
   const topRivals = selectTopRivals(world).slice(0, 3);
 
   const deltas = world.transientContext?.deltas;
+  const status: FinancialStatus["status"] =
+    heya.funds > 10000000 ? "stable" : heya.funds < 0 ? "critical" : "normal";
   const finances = {
     balance: heya.funds,
     weeklyIncome: deltas?.revenue ?? 0,
     weeklyExpense: deltas?.expenses ?? 0,
-    status: (heya.funds > 10000000 ? "stable" : heya.funds < 0 ? "critical" : "normal") as any,
+    status,
   };
 
   return {

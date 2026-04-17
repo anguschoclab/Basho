@@ -133,7 +133,10 @@ const stableIdRoute = createRoute({
 const stableRosterRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/roster",
-  component: RikishiPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/rikishi", replace: true });
+  },
+  component: () => null,
 });
 const stableTrainingRoute = createRoute({
   getParentRoute: () => stableBaseRoute,

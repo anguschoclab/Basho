@@ -5,10 +5,11 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { WorldState } from "../../engine/types/world";
+import type { Rank } from "../../engine/types/banzuke";
+import { RANK_HIERARCHY } from "../../engine/banzuke";
 import type { BoutPreviewUI } from "../boutPreviewUI";
+import type { UIRikishi } from "../rikishiUI";
 import { getH2HReport } from "../../engine/h2h";
 import { RivalryService } from "../../engine/systems/narrative/RivalryService";
 import { projectRikishi } from "../rikishiUI";
@@ -19,7 +20,6 @@ import {
   getScoutingLevel,
 } from "../../engine/scoutingStore";
 import { describeScoutingLevel, getScoutedAttributes } from "../../engine";
-import { RANK_HIERARCHY } from "../../engine/banzuke";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -73,8 +73,17 @@ export function projectOpponentScoutingUIDigest(
   playerHeyaId: string | null,
   filterDivision: string
 ) {
-  const list: any[] = [];
-  const seed = (world as any).seed || "default";
+  const list: Array<
+    UIRikishi & {
+      scoutLevel: number;
+      scoutInfo: string;
+      scoutedProgress: number;
+      scoutingInvestment: string;
+      scoutedAttrs: Record<string, unknown>;
+      heyaName: string;
+    }
+  > = [];
+  const seed = world.seed || "default";
 
   for (const r of world.rikishi.values()) {
     if (r.isRetired) continue;
@@ -90,7 +99,7 @@ export function projectOpponentScoutingUIDigest(
       ...projectRikishi(r, world),
       scoutLevel,
       scoutInfo: describeScoutingLevel(scoutLevel),
-      scoutedProgress: scouted.scoutingLevel,
+      scoutedProgress: scouted.scoutingLevel ?? 0,
       scoutingInvestment: scouted.scoutingInvestment,
       scoutedAttrs: attrs,
       heyaName: heya?.name ?? "Unknown Stable",
@@ -98,8 +107,8 @@ export function projectOpponentScoutingUIDigest(
   }
 
   list.sort((a, b) => {
-    const ta = RANK_HIERARCHY[a.rank as import("../../engine/types/banzuke").Rank]?.tier ?? 99;
-    const tb = RANK_HIERARCHY[b.rank as import("../../engine/types/banzuke").Rank]?.tier ?? 99;
+    const ta = (RANK_HIERARCHY as Record<string, { tier: number }>)[a.rank as Rank]?.tier ?? 99;
+    const tb = (RANK_HIERARCHY as Record<string, { tier: number }>)[b.rank as Rank]?.tier ?? 99;
     if (ta !== tb) return ta - tb;
     return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
   });
