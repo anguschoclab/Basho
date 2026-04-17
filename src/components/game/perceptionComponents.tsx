@@ -4,8 +4,6 @@
  * Helper components for perception overview.
  */
 
-/* eslint-disable react-refresh/only-export-components */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +13,8 @@ import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, Swords } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
+import type { PerceptionSnapshot } from "@/engine/perception";
+import type { H2HMatchupData } from "@/presenters/projections/boutProjections";
 import {
   STATURE_COLOR,
   ROSTER_COLOR,
@@ -78,7 +78,7 @@ export function RikishiSelectorList({
 export const COMPARE_ROWS: Array<{
   label: string;
   icon: React.ElementType;
-  get: (s: any) => string;
+  get: (s: PerceptionSnapshot) => string;
   colorMap?: Record<string, string>;
 }> = [
   { label: "Stature", icon: Building2, get: (s) => s.statureBand, colorMap: STATURE_COLOR },
@@ -99,7 +99,15 @@ export const COMPARE_ROWS: Array<{
 ];
 
 export const CompareRowItem = React.memo(
-  ({ row, snapA, snapB }: { row: (typeof COMPARE_ROWS)[0]; snapA: any; snapB: any }) => {
+  ({
+    row,
+    snapA,
+    snapB,
+  }: {
+    row: (typeof COMPARE_ROWS)[0];
+    snapA: PerceptionSnapshot;
+    snapB: PerceptionSnapshot;
+  }) => {
     const valA = row.get(snapA);
     const valB = row.get(snapB);
     const bandA = valA.split(" ")[0];
@@ -120,7 +128,13 @@ export const CompareRowItem = React.memo(
   }
 );
 
-export function StableMetricGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
+export function StableMetricGrid({
+  snapA,
+  snapB,
+}: {
+  snapA: PerceptionSnapshot;
+  snapB: PerceptionSnapshot;
+}) {
   return (
     <>
       <div className="grid grid-cols-[1fr_24px_80px_24px_1fr] gap-1 text-xs font-medium mb-2 pb-1 border-b border-border">
@@ -137,7 +151,13 @@ export function StableMetricGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
   );
 }
 
-export function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any }) {
+export function RikishiComparisonGrid({
+  snapA,
+  snapB,
+}: {
+  snapA: PerceptionSnapshot;
+  snapB: PerceptionSnapshot;
+}) {
   const [selectedA, setSelectedA] = useState<string | null>(
     snapA.rikishiPerceptions[0]?.rikishiId ?? null
   );
@@ -145,8 +165,8 @@ export function RikishiComparisonGrid({ snapA, snapB }: { snapA: any; snapB: any
     snapB.rikishiPerceptions[0]?.rikishiId ?? null
   );
 
-  const rA = snapA.rikishiPerceptions.find((r: any) => r.rikishiId === selectedA);
-  const rB = snapB.rikishiPerceptions.find((r: any) => r.rikishiId === selectedB);
+  const rA = snapA.rikishiPerceptions.find((r) => r.rikishiId === selectedA);
+  const rB = snapB.rikishiPerceptions.find((r) => r.rikishiId === selectedB);
 
   return (
     <div className="space-y-3">
@@ -288,7 +308,7 @@ export function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: strin
       {/* Individual matchups */}
       <ScrollArea className="max-h-48">
         <div className="space-y-1.5 pr-2">
-          {h2hData.matchups.map((m: any, i: number) => (
+          {h2hData.matchups.map((m: H2HMatchupData, i: number) => (
             <MatchupRow key={i} m={m} />
           ))}
         </div>
@@ -297,7 +317,7 @@ export function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: strin
   );
 }
 
-export const MatchupRow = React.memo(({ m }: { m: any }) => {
+export const MatchupRow = React.memo(({ m }: { m: H2HMatchupData }) => {
   return (
     <div className="flex items-center justify-between text-xs p-2 rounded bg-secondary/30">
       <div className="flex-1 text-right truncate">
@@ -353,7 +373,7 @@ export const StablePerceptionCard = React.memo(
     onToggleCompare,
     onNavigate,
   }: {
-    snap: any;
+    snap: PerceptionSnapshot & { isPlayer?: boolean };
     comparing: boolean;
     isSelected: boolean;
     onToggleCompare: (id: string) => void;
