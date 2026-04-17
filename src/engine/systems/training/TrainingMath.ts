@@ -107,19 +107,14 @@ export function calculateGrowthVector(
   // Ichimon / Degeiko Political Bonus
   let degeikoMult = 1.0;
   if (heya && heya.ichimon && world?.factions) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Faction structure is dynamic
-    const faction = world.factions[heya.ichimon] as any;
-    if (faction) {
-      if (faction.influence >= 80) degeikoMult = 1.1;
-    }
+    const faction = world.factions[heya.ichimon];
+    if (faction && faction.influence >= 80) degeikoMult = 1.1;
   }
 
   // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
   // If we have "Bad Blood" with high-ranking stables, training efficacy drops
   if (world?.stableRelations && heya) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Stable relations are dynamic
-    const relations = world.stableRelations as Record<string, any>;
-    for (const [key, record] of Object.entries(relations)) {
+    for (const [key, record] of Object.entries(world.stableRelations)) {
       if (key.includes(heya.id) && record.tone === "bad_blood") {
         degeikoMult *= 0.5; // -50% joint training penalty for feud instability
         break;
@@ -159,8 +154,7 @@ export function calculateGrowthVector(
   const potential = rikishi.potential;
   const resolveCeiling = (stat: keyof RikishiStats): number => {
     if (potential?.stats && stat in potential.stats) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
-      const pa = (potential.stats as any)[stat] as number;
+      const pa = potential.stats[stat] ?? 0;
       return Math.round(pa * potential.ceilingFraction);
     }
     return getStatCeiling(talentSeed, stat);
@@ -169,8 +163,7 @@ export function calculateGrowthVector(
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
     const ceiling = resolveCeiling(stat);
     const drMult = diminishingReturnsMult(currentVal, ceiling);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic affinity access
-    const affinityMult = (affinity && (affinity as any)[stat]) || 1.0;
+    const affinityMult = (affinity?.[stat] as number | undefined) ?? 1.0;
     return totalMult * rawMult * drMult * affinityMult;
   };
 
@@ -247,8 +240,11 @@ export function calculateAgeDecay(
     const effectivePeak = cfg.peakAge + peakOffset;
     if (age <= effectivePeak) return;
     // Convert annual decline into weekly delta applied to the current stat value.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property access
-    const current = (rikishi as any)[key] ?? (rikishi.stats as any)?.[key] ?? 50;
+    const rikishiVal = rikishi[key as keyof Rikishi];
+    const current =
+      (typeof rikishiVal === "number" ? rikishiVal : undefined) ??
+      rikishi.stats?.[key as keyof RikishiStats] ??
+      50;
     const yearly = current * cfg.declinePerYear;
     out[key] = -yearly / 52;
   });

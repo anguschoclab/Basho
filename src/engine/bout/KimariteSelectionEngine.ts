@@ -20,22 +20,18 @@ function mapToFinalBoutState(
   const leadFoot = isEast ? ctx.eastLeadFoot : ctx.westLeadFoot;
 
   // Normalize stats (0-100 expected)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
-  const strength = (r as any).strength ?? 50;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
-  const balanceStat = (r as any).balance ?? 50;
+  const strength = r.stats?.strength ?? r.power ?? 50;
+  const balanceStat = r.stats?.balance ?? r.balance ?? 50;
 
   return {
     grip: grip === "outside" || grip === "none" ? "none" : grip,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property access
-    style: (r as any).archetype === "oshi" ? "oshi" : "yotsu",
+    style: r.combatProfile?.archetype === "oshi" ? "oshi" : "yotsu",
     power: strength,
     balanceResistance: balanceStat,
     forwardMomentum: Math.max(0, momentumX),
     offensiveOutput: 1, // Assume attacking if this is called, unless hi_waza checks override
     balance: Math.max(0, 100 - Math.abs(cogOffset) * 200), // Approximate balance from CoG offset
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
-    stamina: (r as any).stamina ?? 1.0,
+    stamina: (r.stats?.stamina ?? r.stamina ?? 1.0) / 100, // Normalize to 0-1 range
     edgeDistance: Math.max(0, 4.55 - Math.abs(leadFoot)), // 4.55m is RING_RADIUS
     cogOffset,
     momentumX,
