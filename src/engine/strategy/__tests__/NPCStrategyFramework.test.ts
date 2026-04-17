@@ -244,38 +244,50 @@ describe("evaluateRulesCumulative", () => {
 describe("TraitChecks", () => {
   describe("isAmbitious", () => {
     it("should return true when ambition exceeds threshold", () => {
-      const oya = createMockOyakata({ traits: { ambition: 60 } });
+      const oya = createMockOyakata({
+        traits: { ambition: 60, tradition: 50, risk: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isAmbitious(50)(oya)).toBe(true);
     });
 
     it("should return false when ambition is below threshold", () => {
-      const oya = createMockOyakata({ traits: { ambition: 40 } });
+      const oya = createMockOyakata({
+        traits: { ambition: 40, tradition: 50, risk: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isAmbitious(50)(oya)).toBe(false);
     });
   });
 
   describe("isHoarder", () => {
     it("should return true when risk is below threshold", () => {
-      const oya = createMockOyakata({ traits: { risk: 20 } });
+      const oya = createMockOyakata({
+        traits: { risk: 20, ambition: 50, tradition: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isHoarder(30)(oya)).toBe(true);
     });
 
     it("should return false when risk exceeds threshold", () => {
-      const oya = createMockOyakata({ traits: { risk: 50 } });
+      const oya = createMockOyakata({
+        traits: { risk: 50, ambition: 50, tradition: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isHoarder(30)(oya)).toBe(false);
     });
   });
 
   describe("isTraditionalist", () => {
     it("should return true when tradition exceeds threshold", () => {
-      const oya = createMockOyakata({ traits: { tradition: 80 } });
+      const oya = createMockOyakata({
+        traits: { tradition: 80, ambition: 50, risk: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isTraditionalist(70)(oya)).toBe(true);
     });
   });
 
   describe("isRiskTaker", () => {
     it("should return true when risk exceeds threshold", () => {
-      const oya = createMockOyakata({ traits: { risk: 70 } });
+      const oya = createMockOyakata({
+        traits: { risk: 70, ambition: 50, tradition: 50, patience: 50, compassion: 50 },
+      });
       expect(TraitChecks.isRiskTaker(60)(oya)).toBe(true);
     });
   });
