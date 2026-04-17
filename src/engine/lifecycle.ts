@@ -13,7 +13,7 @@ import { generateShikona } from "./shikona";
 import { CombatArchetype, TacticalArchetype, RikishiArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
-import { buildCombatProfile } from "./archetype";
+import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
 
 // --- RETIREMENT LOGIC ---
 
@@ -245,8 +245,8 @@ function _generateRookie(
       stress: 0,
     },
     personalityTraits: [],
-    favoredKimarite: [],
-    weakAgainstStyles: [],
+    favoredKimarite: (buildCombatProfile(archetype).favoredKimarite ?? []) as import("./types/rikishi").KimariteId[],
+    weakAgainstStyles: deriveWeakAgainstStyles(archetype) as import("./types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,
     careerHistory: [],

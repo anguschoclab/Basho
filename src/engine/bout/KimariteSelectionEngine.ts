@@ -25,7 +25,8 @@ function mapToFinalBoutState(
 
   return {
     grip: grip === "outside" || grip === "none" ? "none" : grip,
-    style: r.combatProfile?.archetype === "oshi" ? "oshi" : "yotsu",
+    // Use r.style (set at generation from archetype) rather than re-deriving from combatProfile
+    style: r.style === "oshi" ? "oshi" : "yotsu",
     power: strength,
     balanceResistance: balanceStat,
     forwardMomentum: Math.max(0, momentumX),
@@ -53,10 +54,11 @@ export const KimariteSelectionEngine = {
     west: Rikishi,
     st: EngineStateV2,
     ctx: SpatialBoutContext,
-    division: Division,
-    meta: { tone: string; drift: Record<string, number> },
+    division: Division | undefined,
+    meta: { tone: string; drift: Record<string, number> } | undefined,
     rng: SeededRNG
   ): KimariteAttempt | null {
+    const effectiveMeta = meta ?? { tone: "classic", drift: {} };
     // 1. Determine attacker and defender candidates
     // In many cases both could be attackers, but classifier logic usually picks a side.
     const sides: ("east" | "west")[] = ["east", "west"];
@@ -102,14 +104,14 @@ export const KimariteSelectionEngine = {
         }
 
         // Meta Drift (E5)
-        const drift = meta.drift[s.id] || 1.0;
+        const drift = effectiveMeta.drift[s.id] || 1.0;
         weight *= drift;
 
         // Era Tone Category Bonuses (P2 Extension)
-        if (meta.tone === "explosive" && s.tacticalFamily === "push") weight *= 1.15;
-        if (meta.tone === "classic" && s.tacticalFamily === "belt") weight *= 1.15;
-        if (meta.tone === "technical" && s.tacticalFamily === "speed") weight *= 1.15;
-        if (meta.tone === "defensive" && s.tacticalFamily === "trick") weight *= 1.15;
+        if (effectiveMeta.tone === "explosive" && s.tacticalFamily === "push") weight *= 1.15;
+        if (effectiveMeta.tone === "classic" && s.tacticalFamily === "belt") weight *= 1.15;
+        if (effectiveMeta.tone === "technical" && s.tacticalFamily === "speed") weight *= 1.15;
+        if (effectiveMeta.tone === "defensive" && s.tacticalFamily === "trick") weight *= 1.15;
 
         // Rikishi Specialization (Favored Moves)
         if (attacker.favoredKimarite?.includes(s.id)) {
@@ -144,11 +146,16 @@ export const KimariteSelectionEngine = {
       if (division === "makuuchi") successProb += 0.1;
       if (division === "jonidan" || division === "jonokuchi") successProb -= 0.15;
 
+      // Favored kimarite execution boost: +0.08 when the attacker specialises in this technique
+      if (attacker.favoredKimarite?.includes(selected.id)) {
+        successProb += 0.08;
+      }
+
       results.push({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- KimariteId type needs alignment with strategy ids
         technique: selected.id as any,
         side: side,
-        successProbability: Math.max(0.05, Math.min(0.98, successProb)),
+        successProbability: Math.max(0.05, Math.min(0.97, successProb)),
         requiredConditions: ["registry_match", `difficulty_${difficulty}`],
       });
     }

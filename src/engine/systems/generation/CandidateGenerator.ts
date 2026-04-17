@@ -5,7 +5,7 @@ import { Rank, Division, Side } from "../../types/banzuke";
 import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
 import { clamp, clampInt } from "../../utils/math";
 import { generateShikona } from "../../shikona";
-import { rollArchetype, buildCombatProfile } from "../../archetype";
+import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 import type { TalentCandidate, TalentPoolType } from "../../types/talent";
 import { generateAvatarConfig } from "../../avatarGenerator";
@@ -650,8 +650,8 @@ function createCombatStats(
       evade: { success: 0, fail: 0 },
     },
 
-    favoredKimarite: [],
-    weakAgainstStyles: [],
+    favoredKimarite: (profile.favoredKimarite ?? []) as import("../../types/rikishi").KimariteId[],
+    weakAgainstStyles: deriveWeakAgainstStyles(archetype) as import("../../types/rikishi").Style[],
   };
 }
 
