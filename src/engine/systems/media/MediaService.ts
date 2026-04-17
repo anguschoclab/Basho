@@ -3,7 +3,8 @@
  * Handles state updates, headline generation, and weekly/monthly boundaries.
  */
 
-import { WorldState } from "../../types/world";
+import type { WorldState } from "../../types/world";
+import type { RivalryPairState } from "../narrative/RivalryConstants";
 import { MediaState, MediaHeadline, MediaTone, MediaBeat, HeadlineTier } from "../../types/media";
 import { BoutResult, BashoName } from "../../types/basho";
 import type { GovernanceRuling } from "../../types/economy";
@@ -21,7 +22,11 @@ import {
   decayHeat,
   decayPressure,
 } from "./MediaImpactService";
-import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
+import {
+  generateBoutHeadline,
+  generateStreakHeadline,
+  generatePreBashoHeadline,
+} from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 
@@ -144,8 +149,7 @@ export function updateMediaFromBout(args: {
   }
 
   // Update the mediaState world field
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MediaState is not a standard WorldState field
-  (builder as any).updateWorldField("mediaState", nextState);
+  builder.updateWorldField("mediaState", nextState);
 
   return builder.build();
 }
@@ -509,6 +513,103 @@ export function evaluateScandals(world: WorldState): StateImpact {
   builder.updateWorldField("mediaState", {
     ...world.mediaState,
     heyaPressure: updatedHeyaPressure,
+  });
+
+  return builder.build();
+}
+
+/**
+ * Trigger pre-basho journalism hype.
+ * (P0-D: Pre-Basho Journalism)
+ */
+export function triggerPreBashoJournalism(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("triggerPreBashoJournalism");
+  const rng = rngForWorld(world, "media", `pre_basho_${world.year}_${world.currentBasho?.name}`);
+  const week = world.week ?? 0;
+  const headlines: MediaHeadline[] = [];
+
+  // A. Rivalry Watch
+  const rivalriesState = world.rivalriesState;
+  if (rivalriesState?.pairs) {
+    const hotPair = Object.values(rivalriesState.pairs).sort(
+      (a: RivalryPairState, b: RivalryPairState) => b.heat - a.heat
+    )[0];
+
+    if (hotPair && hotPair.heat > 30) {
+      const rA = world.rikishi.get(hotPair.aId);
+      const rB = world.rikishi.get(hotPair.bId);
+      const { title, subtitle } = generatePreBashoHeadline({
+        rng,
+        kind: "rivalryWatch",
+        ctx: { SHIKONA1: rA?.shikona || "Champion", SHIKONA2: rB?.shikona || "Rival" },
+      });
+      headlines.push({
+        id: rng.uuid("MH"),
+        week,
+        tier: "high",
+        beat: "rivalry",
+        tone: "dramatic",
+        rikishiIds: [hotPair.aId, hotPair.bId],
+        title,
+        subtitle,
+        tags: ["pre_basho", "rivalry"],
+      });
+    }
+  }
+
+  // B. Promotion Race
+  const ozekiRikishi = Array.from(world.rikishi.values())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic rank property
+    .filter((r) => r.rank === "ozeki" && (r as any).consecutiveStrongOzeki >= 1)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic sort property
+    .sort(
+      (a, b) => ((b as any).consecutiveStrongOzeki || 0) - ((a as any).consecutiveStrongOzeki || 0)
+    );
+
+  if (ozekiRikishi.length > 0) {
+    const r = ozekiRikishi[0];
+    const { title, subtitle } = generatePreBashoHeadline({
+      rng,
+      kind: "promotionRace",
+      ctx: { SHIKONA: r.shikona },
+    });
+    headlines.push({
+      id: rng.uuid("MH"),
+      week,
+      tier: "main_event",
+      beat: "promotion",
+      tone: "praise",
+      rikishiIds: [r.id],
+      title,
+      subtitle,
+      tags: ["pre_basho", "ozeki_watch"],
+    });
+  }
+
+  // C. Update Media State
+  const currentHeadlines = world.mediaState?.headlines || [];
+  builder.updateWorldField("mediaState", {
+    ...world.mediaState,
+    headlines: [...currentHeadlines, ...headlines].slice(-50),
+  });
+
+  // D. Emit Management Decision Event for UI Overlay (D1)
+  builder.addEvent({
+    id: rng.uuid("EV"),
+    type: "MANAGEMENT_DECISION",
+    category: "narrative",
+    title: "Media Day",
+    summary: "The press has arrived at the heya. It's time to address the public.",
+    tags: ["pre_basho", "press_conference", "blocking"],
+    phase: "pre_basho",
+    year: world.year,
+    week,
+  });
+
+  builder.logEvent("PRE_BASHO_JOURNALISM", "media", {
+    headlines,
+    year: world.year,
+    week,
   });
 
   return builder.build();

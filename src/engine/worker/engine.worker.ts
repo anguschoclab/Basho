@@ -6,7 +6,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import { tickOrchestrator, cloneWorldForTick } from "../tick/tickOrchestrator";
+import { tickOrchestrator } from "../tick/tickOrchestrator";
 import { buildWeeklyDigest } from "../../presenters/uiDigest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 /** Adapter matching the { seed, playerConfig? } call shape used in this worker */
@@ -15,8 +15,26 @@ function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } 
   if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId;
   return world;
 }
-import { runAutoSim } from "../autoSim";
-import type { EngineCommand, EngineEvent } from "./types";
+
+/**
+ * Migrates old save format to work with Phase J citizenship rules.
+ * Back-computes joinedHeyaDate for existing rikishi if missing.
+ */
+function migrateWorldState(world: WorldState): WorldState {
+  const currentYear = world.year;
+  world.rikishi.forEach((r) => {
+    if (!r.joinedHeyaDate) {
+      r.joinedHeyaDate = String(currentYear - 5);
+    }
+    if (!r.citizenshipStatus) {
+      r.citizenshipStatus =
+        r.nationality === "Japan" || r.nationality === "Japanese" ? "native" : "foreign";
+    }
+  });
+  return world;
+}
+
+import type { EngineCommand } from "./types";
 
 let currentWorld: WorldState | null = null;
 
@@ -31,12 +49,15 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     switch (command.type) {
       case "START_WORLD":
         // Initialize a new world state
-        currentWorld = generateWorld({ seed: command.seed, playerConfig: { heyaId: command.playerHeyaId } });
+        currentWorld = generateWorld({
+          seed: command.seed,
+          playerConfig: { heyaId: command.playerHeyaId },
+        });
         emitDigest();
         break;
 
       case "LOAD_WORLD":
-        currentWorld = command.world;
+        currentWorld = migrateWorldState(command.world);
         emitDigest();
         break;
 
@@ -72,10 +93,13 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         break;
 
       default:
-        console.warn(`[Worker] Unknown command: ${(command as any).type}`);
+        console.warn(`[Worker] Unknown command: ${command.type}`);
     }
-  } catch (err: any) {
-    self.postMessage({ type: "ERROR", message: err.message || "Unknown engine error" });
+  } catch (err) {
+    self.postMessage({
+      type: "ERROR",
+      message: err instanceof Error ? err.message : "Unknown engine error",
+    });
   }
 };
 

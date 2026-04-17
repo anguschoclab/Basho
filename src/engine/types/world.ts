@@ -5,7 +5,7 @@
 import type { Id, IdMapRuntime } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
-import type { BashoName, BashoState, BashoResult } from "./basho";
+import type { BashoName, BashoResult, AwardLogEntry, BoutResult } from "./basho";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { FTUEState } from "./narrative";
 import type { HeyaTrainingState } from "./training";
@@ -136,8 +136,19 @@ export interface WorldState {
   historicalRikishi: IdMapRuntime<Rikishi>;
   oyakata: IdMapRuntime<Oyakata>;
 
-  currentBasho?: BashoState;
   history: BashoResult[];
+  /** Persistent cross-basho award log (yusho, sansho, bout of the basho). */
+  awardLog?: AwardLogEntry[];
+  /**
+   * Global Meta State (Era Drift) (E4)
+   * Tracks the current style tone of the era and individual technique drift.
+   */
+  meta: {
+    tone: "classic" | "explosive" | "technical" | "defensive";
+    drift: Record<string, number>;
+  };
+  /** Cumulative count of techniques used in the world (for drift calculations). */
+  globalKimariteStats: Record<string, number>;
 
   events: EventsState;
   playerKnowledge?: {
@@ -181,6 +192,16 @@ export interface WorldState {
 
   rivalriesState?: RivalriesState;
 
+  stableRelations?: Record<string, { tone: string }>;
+
+  lastBoutResult?: BoutResult;
+
+  selectedRikishiId?: string;
+
+  boutTactics?: Record<string, string>;
+
+  calendar?: { currentWeek: number };
+
   _preGeneratedSchedules?: {
     day1: unknown[];
     day2: unknown[];
@@ -209,4 +230,7 @@ export interface WorldState {
 
   // Heya brand identities for kesho-mawashi generation
   heyaBrandIdentities?: IdMapRuntime<import("./keshoMawashi").HeyaBrandIdentity>;
+
+  // Player-set custom kesho configs (Phase K)
+  customKeshoConfigs?: Record<string, Partial<import("./keshoMawashi").KeshoMawashi>>;
 }

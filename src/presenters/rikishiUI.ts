@@ -21,13 +21,19 @@ import { SeededRNG } from "../engine/rng";
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
 
+/** History entry for streak/rank calculations - handles MatchResultLog and CareerSnapshot */
+interface HistoryEntry {
+  win?: boolean;
+  rank?: string;
+  rankNumber?: number;
+  side?: string;
+}
+
 export interface UIRivalEntry {
-  opponentId: Id;
-  opponentShikona: string;
-  wins: number;
-  losses: number;
   record: string;
   totalBouts: number;
+  heat: number;
+  tone: string;
 }
 
 export interface UIRikishi {
@@ -83,6 +89,10 @@ export interface UIRikishi {
     adaptability: string;
     balance: string;
   };
+  streak: number; // Positive for winning, negative for losing
+  streakLabel: string; // e.g. "W5" or "L2"
+  winPercentage: number;
+  avgRankLabel: string;
   descriptor: RikishiDescriptor;
   potentialBand: PotentialBand;
   conditionDescriptor: string; // Resolved Label
@@ -115,6 +125,13 @@ export interface UIRikishi {
   yokozunaTsuna?: YokozunaTsuna;
   hasKeshoMawashi: boolean;
   isYokozuna: boolean;
+  consecutiveStrongOzeki: number;
+  citizenshipStatus: string;
+  yearsToNaturalization: number;
+  // Phase M: Lineage
+  mentorId?: Id;
+  mentorName?: string;
+  menteeNames?: string[];
 }
 
 interface MatchHistoryEntry {
@@ -182,9 +199,14 @@ function calculateInjurySummary(rng: SeededRNG, r: Rikishi): string {
 
 function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[] {
   const h2h = r.h2h ?? {};
+  const rivalriesState = world.rivalriesState;
+
   return Object.entries(h2h)
     .map(([oppId, rec]) => {
       const opp = world.rikishi.get(oppId);
+      const hKey = r.id < oppId ? `${r.id}|${oppId}` : `${oppId}|${r.id}`;
+      const rivalry = rivalriesState?.pairs?.[hKey];
+
       return {
         opponentId: oppId,
         opponentShikona: opp?.shikona ?? "Unknown",
@@ -192,9 +214,11 @@ function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[] {
         losses: rec.losses,
         record: `${rec.wins}-${rec.losses}`,
         totalBouts: rec.wins + rec.losses,
+        heat: rivalry?.heat ?? 0,
+        tone: rivalry?.tone ?? "respect",
       };
     })
-    .sort((a, b) => b.totalBouts - a.totalBouts)
+    .sort((a, b) => b.heat - a.heat || b.totalBouts - a.totalBouts)
     .slice(0, 5);
 }
 
@@ -241,6 +265,46 @@ export function calculatePerceivedStats(rng: SeededRNG, r: Rikishi) {
     ),
   };
 }
+
+function calculateStreak(history: HistoryEntry[]): { streak: number; label: string } {
+  if (history.length === 0) return { streak: 0, label: "-" };
+  const last = history[history.length - 1].win;
+  let streak = 0;
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].win === last) streak++;
+    else break;
+  }
+  return {
+    streak: last ? streak : -streak,
+    label: `${last ? "W" : "L"}${streak}`,
+  };
+}
+
+function calculateAvgRank(history: HistoryEntry[]): string {
+  if (history.length === 0) return "-";
+  const scores = history.map((h) => rankScore(h.rank ?? "M", h.rankNumber, h.side));
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+  // Convert avg score back to a readable rank (Maegashira level is common)
+  const tier = Math.floor(avg / 1000);
+  const num = Math.floor((avg % 1000) / 2);
+  const RANK_MAP: Record<number, string> = {
+    1: "Y",
+    2: "O",
+    3: "S",
+    4: "K",
+    5: "M",
+    6: "J",
+    7: "Ms",
+    8: "Sd",
+    9: "Jd",
+    10: "Jk",
+  };
+  const prefix = RANK_MAP[tier] || "?";
+  return num > 0 ? `${prefix}${num}` : prefix;
+}
+
+import { getCitizenshipStatus, yearsUntilNaturalization } from "../engine/utils/citizenshipUtils";
 
 export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const heya = world.heyas.get(r.heyaId);
@@ -308,6 +372,10 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
+    streak: calculateStreak(r.history ?? []).streak,
+    streakLabel: calculateStreak(r.history ?? []).label,
+    winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
+    avgRankLabel: calculateAvgRank(r.careerHistory ?? []),
     perceivedStats: calculatePerceivedStats(rng, r),
     descriptor: toRikishiDescriptor(rng, r, r.descriptor),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
@@ -334,10 +402,21 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     milestones,
     h2h: r.h2h as UIRikishi["h2h"],
     avatarConfig: r.avatarConfig,
-    keshoMawashi: r.keshoMawashi,
+    keshoMawashi: world.customKeshoConfigs?.[r.id]
+      ? ({ ...r.keshoMawashi, ...world.customKeshoConfigs[r.id] } as KeshoMawashi)
+      : r.keshoMawashi,
     yokozunaTsuna: r.yokozunaTsuna,
     hasKeshoMawashi: !!r.keshoMawashi,
     isYokozuna: r.rank === "yokozuna",
+    consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
+    citizenshipStatus: getCitizenshipStatus(r, world.year),
+    yearsToNaturalization: yearsUntilNaturalization(r, world.year),
+    // Phase M: Lineage
+    mentorId: r.mentorId,
+    mentorName: r.mentorId ? world.rikishi.get(r.mentorId)?.shikona : undefined,
+    menteeNames: r.menteeIds
+      ?.map((id) => world.rikishi.get(id)?.shikona)
+      .filter(Boolean) as string[],
   };
 }
 
@@ -376,6 +455,11 @@ export interface UIRosterEntry {
   avatarConfig?: AvatarConfig;
   rankDelta?: UIRankDelta;
   archetypeLabel?: string;
+  consecutiveStrongOzeki: number;
+  streakLabel: string;
+  winPercentage: number;
+  citizenshipStatus: string;
+  yearsToNaturalization: number;
 }
 
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
@@ -459,6 +543,13 @@ export function projectRosterEntry(
       )?.label || "Rikishi",
     rankDelta,
     avatarConfig: r.avatarConfig,
-    keshoMawashi: r.keshoMawashi,
+    keshoMawashi: world?.customKeshoConfigs?.[r.id]
+      ? ({ ...r.keshoMawashi, ...world.customKeshoConfigs[r.id] } as KeshoMawashi)
+      : r.keshoMawashi,
+    consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
+    streakLabel: calculateStreak(r.history ?? []).label,
+    winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
+    citizenshipStatus: getCitizenshipStatus(r, world.year),
+    yearsToNaturalization: yearsUntilNaturalization(r, world.year),
   };
 }

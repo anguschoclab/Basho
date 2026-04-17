@@ -98,6 +98,9 @@ export interface Rikishi {
     severity: InjurySeverity;
     location?: InjuryBodyArea;
     weeksRemaining: number;
+    /** Phase 4: Media & Press Persona */
+    behavior?: RikishiBehavior;
+    pressPersona?: "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";
     weeksToHeal?: number;
   };
   isKyujo: boolean; // Separate from injured - voluntary withdrawal
@@ -222,4 +225,8 @@ export interface Rikishi {
 
   // Yokozuna ceremonial rope belt (only for yokozuna rank)
   yokozunaTsuna?: import("./keshoMawashi").YokozunaTsuna;
+
+  // Citizenship & Tenure (J1)
+  joinedHeyaDate?: string; // ISO year string e.g. "2025"
+  citizenshipStatus?: "native" | "foreign" | "naturalized";
 }

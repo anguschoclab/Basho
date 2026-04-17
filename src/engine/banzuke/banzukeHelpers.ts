@@ -1,4 +1,21 @@
-import { RANK_HIERARCHY, type Rank, type RankPosition } from "../types/banzuke";
+import {
+  RANK_HIERARCHY,
+  type Rank,
+  type RankPosition,
+  type BanzukeEntry,
+  type BashoPerformance,
+} from "../types/banzuke";
+import type { WorldState } from "../types/world";
+
+/**
+ * Interface representing a candidate in the banzuke assignment sort.
+ */
+export interface BanzukeCandidate {
+  entry: BanzukeEntry;
+  oldKey: number;
+  desiredKey: number;
+  eligibleBestTier: number;
+}
 
 /** Compare ranks by tier, number, and side. */
 export function compareRanks(a: RankPosition, b: RankPosition): number {
@@ -14,6 +31,58 @@ export function compareRanks(a: RankPosition, b: RankPosition): number {
   if (a.side !== b.side) return a.side === "east" ? -1 : 1;
 
   return 0;
+}
+
+/**
+ * Professional hierarchical tiebreaker for Banzuke sorting.
+ * Used when desiredKey is identical (performance + move distance balance).
+ *
+ * Rules:
+ * 1. Previous Rank Closeness (oldKey): Lower oldKey (already higher rank) wins.
+ * 2. Head-to-Head: Lifetime rivalry check.
+ * 3. SOS Proxy: Weighted by opponentAvgTier from BashoPerformance.
+ * 4. Fallback: Stable result based on ID.
+ */
+export function resolveBanzukeTie(
+  a: BanzukeCandidate,
+  b: BanzukeCandidate,
+  world: WorldState | null,
+  perfById: Map<string, BashoPerformance>
+): number {
+  // Level 1: Previous Rank Slot Closeness
+  // Favor the rikishi who was already ranked higher.
+  if (a.oldKey !== b.oldKey) {
+    return a.oldKey - b.oldKey;
+  }
+
+  // If no world/data, fallback immediately
+  if (!world) return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
+
+  const rikishia = world.rikishi.get(a.entry.rikishiId);
+  const rikishib = world.rikishi.get(b.entry.rikishiId);
+
+  // Level 2: Head-to-Head
+  if (rikishia && rikishib) {
+    const h2hRecord = rikishia.h2h?.[rikishib.id];
+    if (h2hRecord) {
+      if (h2hRecord.wins > h2hRecord.losses) return -1;
+      if (h2hRecord.wins < h2hRecord.losses) return 1;
+    }
+  }
+
+  // Level 3: Strength of Schedule (SOS) Proxy
+  // Higher opponentAvgTier for Maegashira = harder schedule.
+  // Note: Tier values are 1-10 (lower is harder). So we want LOWER avg tier.
+  const perfa = perfById.get(a.entry.rikishiId);
+  const perfb = perfById.get(b.entry.rikishiId);
+  if (perfa && perfb) {
+    const sosa = perfa.opponentAvgTier ?? 99;
+    const sosb = perfb.opponentAvgTier ?? 99;
+    if (sosa !== sosb) return sosa - sosb;
+  }
+
+  // Level 4: Fallback (Deterministic Stability)
+  return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
 }
 
 /** Format rank into a short string (e.g. M1E). */

@@ -1,15 +1,17 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
-import { Users, HeartPulse, AlertTriangle, Star, UserMinus } from "lucide-react";
+import { Users, HeartPulse, AlertTriangle, Star, UserMinus, Layers } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
-import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
+import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CompareModePanel } from "../scouting/CompareModePanel";
 
 type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
@@ -22,7 +24,9 @@ const RosterEntryRow = React.memo(
     potentialBand,
     fatigue,
     healthBadge,
+    isSelected,
     onWithdraw,
+    onToggleSelect,
   }: {
     id: string;
     shikona: string;
@@ -31,10 +35,24 @@ const RosterEntryRow = React.memo(
     potentialBand: string;
     fatigue: number;
     healthBadge: string;
+    isSelected: boolean;
     onWithdraw?: (id: string) => void;
+    onToggleSelect: (id: string) => void;
   }) => {
     return (
-      <div className="flex items-center gap-2 py-1.5 px-2 rounded-md text-xs hover:bg-muted/50 transition-colors group">
+      <div
+        className={cn(
+          "flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors cursor-pointer group",
+          isSelected ? "bg-primary/10 ring-1 ring-primary/30 shadow-sm" : "hover:bg-muted/50"
+        )}
+        onClick={() => onToggleSelect(id)}
+      >
+        <div
+          className={cn(
+            "w-1 h-3 rounded-full transition-all",
+            isSelected ? "bg-primary" : "bg-muted group-hover:bg-muted-foreground/30"
+          )}
+        />
         <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
         <span className="text-[10px] text-muted-foreground capitalize w-14 text-right">{rank}</span>
         <Badge
@@ -69,7 +87,10 @@ const RosterEntryRow = React.memo(
               variant="ghost"
               size="icon"
               className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-              onClick={() => onWithdraw(id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onWithdraw(id);
+              }}
             >
               <UserMinus className="h-3 w-3" />
             </Button>
@@ -83,6 +104,8 @@ const RosterEntryRow = React.memo(
 export function RosterWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
 
   const headerAction = useMemo(
     () => ({
@@ -118,6 +141,24 @@ export function RosterWidget() {
     },
     [world, updateWorld]
   );
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((i) => i !== id)
+        : prev.length < 2
+          ? [...prev, id]
+          : [prev[1], id]
+    );
+  };
+
+  const comparisonPair = useMemo(() => {
+    if (selectedIds.length < 2 || !world) return null;
+    const coreA = world.rikishi.get(selectedIds[0]);
+    const coreB = world.rikishi.get(selectedIds[1]);
+    if (!coreA || !coreB) return null;
+    return { a: projectRikishi(coreA), b: projectRikishi(coreB) };
+  }, [selectedIds, world]);
 
   const { roster, injuredCount, avgFatigue } = useMemo(() => {
     if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0 };
@@ -156,7 +197,7 @@ export function RosterWidget() {
   return (
     <BaseWidget title="My Roster" icon={Users} headerAction={headerAction}>
       {/* Summary row with visual indicators */}
-      <div className="flex gap-3 text-xs">
+      <div className="flex items-center gap-3 text-xs">
         <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md">
           <Users className="h-3 w-3 text-primary" />
           <span className="font-bold text-primary tabular-nums">{roster.length}</span>
@@ -169,6 +210,19 @@ export function RosterWidget() {
             <span>hurt</span>
           </div>
         )}
+
+        {selectedIds.length === 2 && (
+          <Button
+            variant="default"
+            size="sm"
+            className="h-7 text-[10px] uppercase tracking-widest font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in duration-200 ml-1"
+            onClick={() => setShowCompare(true)}
+          >
+            <Layers className="h-3 w-3" />
+            Compare
+          </Button>
+        )}
+
         <div className="flex items-center gap-1 text-muted-foreground ml-auto">
           <AlertTriangle className="h-3 w-3" />
           <span className="text-[10px]">
@@ -188,7 +242,7 @@ export function RosterWidget() {
       </div>
 
       {/* Roster list */}
-      <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
+      <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible transition-all">
         {(() => {
           const limit = Math.min(8, roster.length);
           const nodes = new Array(limit);
@@ -204,7 +258,9 @@ export function RosterWidget() {
                 potentialBand={entry.potentialBand}
                 fatigue={entry.fatigue}
                 healthBadge={entry.healthBadge}
+                isSelected={selectedIds.includes(entry.id)}
                 onWithdraw={handleWithdraw}
+                onToggleSelect={toggleSelection}
               />
             );
           }
@@ -222,6 +278,22 @@ export function RosterWidget() {
           </TooltipWrap>
         )}
       </div>
+
+      {/* Compare Mode Dialog */}
+      <Dialog open={showCompare} onOpenChange={setShowCompare}>
+        <DialogContent className="max-w-2xl bg-card">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Stablemate Comparison</DialogTitle>
+          </DialogHeader>
+          {comparisonPair && (
+            <CompareModePanel
+              rikishiA={comparisonPair.a}
+              rikishiB={comparisonPair.b}
+              onClose={() => setShowCompare(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </BaseWidget>
   );
 }

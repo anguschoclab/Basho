@@ -185,30 +185,55 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
  * Rotates ichimon political capital and emits election narrative events.
  * Returns StateImpact describing election changes instead of mutating state.
  */
+/**
+ * Bi-annual JSA Board Elections.
+ * Calculates institutional power based on political capital, reputation, and faction influence.
+ * Candidates with highest 'Political Influence' score are elected to the Board of Elders.
+ */
 export function runElections(world: WorldState): StateImpact {
   const builder = createImpactBuilder("elections");
-  const ichimonGroups: Record<string, string[]> = {};
-  for (const heya of world.heyas.values()) {
-    if (!heya.ichimon) continue;
-    if (!ichimonGroups[heya.ichimon]) ichimonGroups[heya.ichimon] = [];
-    ichimonGroups[heya.ichimon].push(heya.id);
-  }
+  const candidates: Array<{ heyaId: string; score: number; name: string }> = [];
 
-  for (const [ichimon, heyaIds] of Object.entries(ichimonGroups)) {
-    // Small political capital redistribution
-    for (const heyaId of heyaIds) {
-      const heya = world.heyas.get(heyaId);
-      if (heya && heya.politicalCapital !== undefined) {
-        const newCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
-        builder.updateHeya(heyaId, { politicalCapital: newCapital });
-      }
-    }
-    builder.logEvent("BASHO_STATUS", "basho", {
-      status: "phase_transition",
-      incident: `The ${ichimon} faction participated in the bi-annual JSA board elections.`,
-      shikona: ichimon,
+  for (const heya of world.heyas.values()) {
+    const influence = (heya.politicalCapital ?? 50) + (heya.reputation ?? 50) / 2;
+    candidates.push({
+      heyaId: heya.id,
+      score: influence,
+      name: heya.name,
     });
   }
+
+  // Sort by score descending to find winners
+  candidates.sort((a, b) => b.score - a.score);
+  const elected = candidates.slice(0, 5); // Top 5 form the Board
+
+  for (const candidate of elected) {
+    builder.updateHeya(candidate.heyaId, {
+      governanceStatus: "good_standing", // Board members are elevated to good standing
+      politicalCapital: Math.min(
+        100,
+        (world.heyas.get(candidate.heyaId)?.politicalCapital ?? 0) + 20
+      ),
+    });
+
+    builder.logEvent(
+      "GOVERNANCE_RULING",
+      "discipline",
+      {
+        incident: "election_victory",
+        status: "board_member",
+        reason: "JSA Elder Election",
+        score: Math.floor(candidate.score),
+      },
+      { heyaId: candidate.heyaId, importance: "headline" }
+    );
+  }
+
+  builder.logEvent("BASHO_STATUS", "basho", {
+    status: "phase_transition",
+    incident: `The JSA bi-annual board elections have concluded. ${elected[0].name} has been appointed as Chairman.`,
+    shikona: elected[0].name,
+  });
 
   return builder.build();
 }

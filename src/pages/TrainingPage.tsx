@@ -6,11 +6,11 @@
  * FM-style layout for beya-wide training controls and individual development plans.
  */
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { HQ_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/navigation";
 import {
   INTENSITY_MULTIPLIERS,
   FOCUS_BIAS_MATRIX,
@@ -29,7 +29,10 @@ import { TrainingHeader } from "@/components/training/TrainingHeader";
 import { BeyaWideRegime } from "@/components/training/BeyaWideRegime";
 import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
+import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
+import type { DrillType, DaySchedule } from "@/engine/types/training";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 export default function TrainingPage() {
   const { state, updateWorld } = useGame();
@@ -48,7 +51,7 @@ export default function TrainingPage() {
     if (!heya || !world) return [];
     const rikishi = (heya.rikishiIds ?? [])
       .map((id) => world.rikishi.get(id))
-      .filter((r) => r != null) as ReturnType<typeof world.rikishi.get>[];
+      .filter((r) => r != null) as Rikishi[];
     return rikishi.sort((a, b) => {
       const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 99;
       const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 99;
@@ -131,10 +134,44 @@ export default function TrainingPage() {
     });
   };
 
+  const handlePlanUpdate = (rikishiId: string, day: number, drillType: DrillType) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      const schedule = { ...(plan[rikishiId] || {}) };
+      schedule[day] = drillType;
+      plan[rikishiId] = schedule as DaySchedule;
+      const next = { ...prev, weeklyPlan: plan };
+      persistTrainingState(next);
+      return next;
+    });
+  };
+
+  const handleBulkUpdate = (rikishiId: string, daySchedule: DaySchedule) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      plan[rikishiId] = daySchedule;
+      const next = { ...prev, weeklyPlan: plan };
+      persistTrainingState(next);
+      return next;
+    });
+  };
+
+  const handleMultiBulkUpdate = (rikishiIds: string[], daySchedule: DaySchedule) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      rikishiIds.forEach((id) => {
+        plan[id] = daySchedule;
+      });
+      const next = { ...prev, weeklyPlan: plan };
+      persistTrainingState(next);
+      return next;
+    });
+  };
+
   const currentIntensity = trainingState.activeProfile.intensity as TrainingIntensity;
 
   return (
-    <AppLayout pageTitle="Training Management" subNavTabs={HQ_TABS} activeSubTab="training">
+    <AppLayout pageTitle="Training Management" subNavTabs={STABLE_TABS} activeSubTab="training">
       <Helmet>
         <title>Training Ground — {heya.name} | Basho</title>
       </Helmet>
@@ -152,6 +189,15 @@ export default function TrainingPage() {
         <TrainingAnalytics
           trainingEffectivenessData={trainingEffectivenessData}
           focusBiasData={focusBiasData}
+        />
+
+        {/* P2 Phase O: Weekly Drill Scheduler */}
+        <WeeklyDrillPlanner
+          rikishiList={rikishiList}
+          weeklyPlan={trainingState.weeklyPlan || {}}
+          onPlanUpdate={handlePlanUpdate}
+          onBulkUpdate={handleBulkUpdate}
+          onMultiBulkUpdate={handleMultiBulkUpdate}
         />
 
         <IndividualFocusSlots

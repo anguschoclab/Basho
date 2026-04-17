@@ -7,6 +7,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
+import { RankInline } from "@/components/rikishi/RankBadge";
 import type { AvatarConfig } from "@/engine/types/avatar";
 
 const RANK_ORDER: Record<string, number> = {
@@ -16,20 +17,6 @@ const RANK_ORDER: Record<string, number> = {
   komusubi: 3,
   maegashira: 4,
   juryo: 5,
-};
-
-const RANK_STYLE: Record<string, string> = {
-  yokozuna: "text-gold font-bold",
-  ozeki: "text-silver font-semibold",
-  sekiwake: "text-bronze font-medium",
-  komusubi: "text-bronze",
-  maegashira: "text-foreground",
-  juryo: "text-muted-foreground",
-};
-
-const RANK_BG: Record<string, string> = {
-  yokozuna: "rank-shimmer",
-  ozeki: "bg-silver/5",
 };
 
 const BanzukeEntryRow = React.memo(
@@ -57,9 +44,7 @@ const BanzukeEntryRow = React.memo(
     return (
       <div
         className={`flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors ${
-          isPlayer
-            ? "bg-primary/10 border border-primary/20"
-            : RANK_BG[rank] || (i % 2 === 0 ? "bg-muted/30" : "")
+          isPlayer ? "bg-primary/10 border border-primary/20" : i % 2 === 0 ? "bg-muted/30" : ""
         } hover:bg-muted/40`}
       >
         <div className="flex items-center justify-between">
@@ -77,19 +62,13 @@ const BanzukeEntryRow = React.memo(
               rankTier={rank}
               fallback={shikona}
             />
-            <span
-              className={`w-12 sm:w-16 shrink-0 capitalize text-[10px] sm:text-[11px] font-display ${RANK_STYLE[rank] || ""}`}
-            >
-              {rank === "maegashira"
-                ? `M${rankNumber || ""}`
-                : rank === "juryo"
-                  ? `J${rankNumber || ""}`
-                  : rank}
-            </span>
+            <RankInline
+              rank={rank}
+              rankNumber={rankNumber}
+              side={side}
+              className="w-12 sm:w-16 shrink-0"
+            />
           </div>
-          <span className={`text-[10px] w-4 ${side === "east" ? "text-east" : "text-west"}`}>
-            {side === "east" ? "E" : "W"}
-          </span>
           <RikishiName id={id} name={shikona} className="flex-1 font-medium truncate" />
           <span className="text-[10px] text-muted-foreground font-mono tabular-nums hidden sm:inline">
             {record}

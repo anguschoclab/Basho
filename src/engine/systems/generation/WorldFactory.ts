@@ -20,6 +20,8 @@ import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
 import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
+import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
+import { RivalryService } from "../narrative/RivalryService";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -64,10 +66,17 @@ export function createHeyaWithOyakata(args: {
     isOyakata: true,
   });
 
+  // Resolve a signature shikona prefix for this heya: prefer real-world mapping,
+  // else derive from the oyakata's former shikona.
+  const shikonaPrefix =
+    HEYA_SIGNATURE_PREFIXES[name] ??
+    (oyakata.formerShikona ? extractPrefixFromShikona(oyakata.formerShikona) : undefined);
+
   const heya: Heya = {
     id,
     name,
     oyakataId,
+    shikonaPrefix,
     statureBand:
       tier < 0.1
         ? "legendary"
@@ -257,6 +266,7 @@ export function createRosters(
         side,
         rankNumber,
         legacyShikona: oyakata?.formerShikona,
+        heyaPrefix: heya.shikonaPrefix,
       });
 
       r.heyaId = heya.id;
@@ -294,6 +304,12 @@ export function generateInitialWorld(seed: string): WorldState {
     oyakata: oyakataMap,
     staff: new Map(),
     history: [],
+    awardLog: [],
+    meta: {
+      tone: "classic",
+      drift: {},
+    },
+    globalKimariteStats: {},
     events: { version: "1.0.0", log: [], dedupe: {} },
     ftue: { isActive: true, bashoCompleted: 0, suppressedEvents: [] },
     playerHeyaId: Array.from(heyaMap.keys())[0],
@@ -334,6 +350,9 @@ export function generateInitialWorld(seed: string): WorldState {
 
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);
+
+  // Seed initial rivalries for narrative depth (P0-C1)
+  RivalryService.seedInitialRivalries(world);
 
   return world;
 }

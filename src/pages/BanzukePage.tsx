@@ -3,7 +3,6 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { Division } from "@/engine/types/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,10 +10,11 @@ import { ArrowUp, ArrowDown, Minus, ArrowUpRight, Search, X } from "lucide-react
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
-import { projectBanzukeUIDigest } from "@/presenters/uiDigest";
+import { projectBanzukeUIDigest, projectPressConferenceData } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import type { UIRikishi } from "@/presenters/uiModels";
+import { PressConference } from "@/components/game/PressConference";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -22,6 +22,19 @@ export default function BanzukePage() {
   const world = state.world;
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPressConference, setShowPressConference] = useState(false);
+
+  // Check if Media Day is active (D1)
+  const isMediaDay = useMemo(() => {
+    if (!world || world.cyclePhase !== "pre_basho") return false;
+    // Look for the press conference event in recent logs
+    return world.events?.log?.some((e) => e.tags?.includes("press_conference")) ?? false;
+  }, [world]);
+
+  const pressData = useMemo(() => {
+    if (!world || !isMediaDay) return null;
+    return projectPressConferenceData(world);
+  }, [world, isMediaDay]);
 
   const banzukeDigest = useMemo(() => {
     if (!world) return null;
@@ -30,11 +43,70 @@ export default function BanzukePage() {
 
   if (!world || !banzukeDigest) return null;
 
+  const handlePressConferenceClose = (effects: {
+    reputation: number;
+    morale: number;
+    mediaHeat: number;
+  }) => {
+    setShowPressConference(false);
+    // Apply effects to world via game context (similar to RecapPage)
+    if (world.playerHeyaId) {
+      const heya = world.heyas.get(world.playerHeyaId);
+      if (heya) {
+        const updatedHeya = {
+          ...heya,
+          reputation: Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation)),
+        };
+        const updatedHeyas = new Map(world.heyas);
+        updatedHeyas.set(world.playerHeyaId, updatedHeya);
+        state.updateWorld({ ...world, heyas: updatedHeyas });
+      }
+    }
+  };
+
   const { divisions: banzukeData, kadobanMap, heyaNameMap, hasPrevBasho } = banzukeDigest;
-  const divisionKeys: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const divisionKeys: Division[] = [
+    "makuuchi",
+    "juryo",
+    "makushita",
+    "sandanme",
+    "jonidan",
+    "jonokuchi",
+  ];
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
+      {/* Media Day Trigger (D1) */}
+      {isMediaDay && !showPressConference && (
+        <div className="mb-6 bg-gradient-to-r from-primary/20 to-west/20 border border-primary/30 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="space-y-1 text-center md:text-left">
+            <h2 className="text-xl font-display font-black uppercase tracking-tight flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              Media Day
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              The press has arrived. Address the journalists' questions before the basho starts.
+            </p>
+          </div>
+          <Button
+            onClick={() => setShowPressConference(true)}
+            size="lg"
+            className="font-black uppercase tracking-widest gap-2 bg-primary hover:bg-primary/90"
+          >
+            Begin Press Conference
+          </Button>
+        </div>
+      )}
+
+      {showPressConference && (
+        <PressConference
+          phase="pre_basho"
+          pressData={pressData}
+          open={showPressConference}
+          onClose={handlePressConferenceClose}
+        />
+      )}
+
       <div className="space-y-4 animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -59,7 +131,7 @@ export default function BanzukePage() {
               <Input
                 placeholder="Search wrestler…"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-8 w-48 pl-8 pr-8 text-xs"
               />
               {searchQuery && (
@@ -76,10 +148,22 @@ export default function BanzukePage() {
             </div>
             {hasPrevBasho && (
               <div className="flex items-center gap-2">
-                <TooltipWrap content="Toggle rank movement indicators relative to the previous tournament" side="top">
+                <TooltipWrap
+                  content="Toggle rank movement indicators relative to the previous tournament"
+                  side="top"
+                >
                   <div className="flex items-center gap-2">
-                    <Switch id="show-changes" checked={showChanges} onCheckedChange={setShowChanges} />
-                    <Label htmlFor="show-changes" className="text-xs text-muted-foreground cursor-pointer">Changes</Label>
+                    <Switch
+                      id="show-changes"
+                      checked={showChanges}
+                      onCheckedChange={setShowChanges}
+                    />
+                    <Label
+                      htmlFor="show-changes"
+                      className="text-xs text-muted-foreground cursor-pointer"
+                    >
+                      Changes
+                    </Label>
                   </div>
                 </TooltipWrap>
               </div>
@@ -90,41 +174,60 @@ export default function BanzukePage() {
         {/* Legend */}
         {hasPrevBasho && showChanges && (
           <div className="flex items-center gap-4 text-[10px] text-muted-foreground border border-border/50 rounded-md px-3 py-1.5 bg-muted/20 w-fit">
-            <span className="flex items-center gap-1 text-success"><ArrowUp className="h-3 w-3" /> Promoted</span>
-            <span className="flex items-center gap-1 text-destructive"><ArrowDown className="h-3 w-3" /> Demoted</span>
-            <span className="flex items-center gap-1 text-muted-foreground"><Minus className="h-3 w-3" /> Unchanged</span>
-            <span className="flex items-center gap-1 text-primary"><ArrowUpRight className="h-2.5 w-2.5" /> New entry</span>
+            <span className="flex items-center gap-1 text-success">
+              <ArrowUp className="h-3 w-3" /> Promoted
+            </span>
+            <span className="flex items-center gap-1 text-destructive">
+              <ArrowDown className="h-3 w-3" /> Demoted
+            </span>
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Minus className="h-3 w-3" /> Unchanged
+            </span>
+            <span className="flex items-center gap-1 text-primary">
+              <ArrowUpRight className="h-2.5 w-2.5" /> New entry
+            </span>
           </div>
         )}
 
         {/* Division tabs */}
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
-            {divisionKeys.map(d => {
+            {divisionKeys.map((d) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex banzuke data type
               const divData = banzukeData.find((b: any) => b.division === d);
-              const divCount = divData?.rows.reduce((acc: number, r: any) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0), 0) || 0;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex row type
+              const divCount =
+                divData?.rows.reduce(
+                  (acc: number, r: any) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0),
+                  0
+                ) || 0;
               return (
                 <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
                   <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
                     {d}
-                    <span className="text-[10px] text-muted-foreground font-mono">({divCount})</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      ({divCount})
+                    </span>
                   </TabsTrigger>
                 </TooltipWrap>
               );
             })}
           </TabsList>
 
-          {divisionKeys.map(div => {
+          {divisionKeys.map((div) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const divData = banzukeData.find((b: any) => b.division === div);
             let rows = divData?.rows || [];
             if (searchQuery) {
               const q = searchQuery.toLowerCase();
-              rows = rows.filter((r: any) => 
-                r.east?.shikona?.toLowerCase().includes(q) || 
-                r.west?.shikona?.toLowerCase().includes(q)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              rows = rows.filter(
+                (r: any) =>
+                  r.east?.shikona?.toLowerCase().includes(q) ||
+                  r.west?.shikona?.toLowerCase().includes(q)
               );
             }
-            
+
             return (
               <TabsContent key={div} value={div}>
                 <Card className="overflow-hidden">
@@ -134,13 +237,17 @@ export default function BanzukePage() {
                         <thead className="bg-muted/50 sticky top-0 z-10">
                           <tr className="border-b">
                             <th className="p-3 font-display font-medium text-right w-[280px]">
-                              <span className="text-east text-[10px] uppercase tracking-widest">East 東</span>
+                              <span className="text-east text-[10px] uppercase tracking-widest">
+                                East 東
+                              </span>
                             </th>
                             <th className="p-3 font-display font-medium text-center w-[120px] text-muted-foreground text-[10px] uppercase tracking-widest">
                               Rank
                             </th>
                             <th className="p-3 font-display font-medium w-[280px]">
-                              <span className="text-west text-[10px] uppercase tracking-widest">West 西</span>
+                              <span className="text-west text-[10px] uppercase tracking-widest">
+                                West 西
+                              </span>
                             </th>
                           </tr>
                         </thead>
@@ -160,7 +267,9 @@ export default function BanzukePage() {
                                 side="east"
                               />
                               <td className="p-3 text-center">
-                                <div className="font-display text-muted-foreground text-xs font-medium">{row.rankLabel}</div>
+                                <div className="font-display text-muted-foreground text-xs font-medium">
+                                  {row.rankLabel}
+                                </div>
                                 <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
                                   {row.rankTitleJa}
                                   {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
@@ -178,8 +287,13 @@ export default function BanzukePage() {
                           ))}
                           {rows.length === 0 && (
                             <tr>
-                              <td colSpan={3} className="p-8 text-center text-muted-foreground font-display">
-                                {searchQuery ? "No wrestlers match your search" : "No wrestlers in this division"}
+                              <td
+                                colSpan={3}
+                                className="p-8 text-center text-muted-foreground font-display"
+                              >
+                                {searchQuery
+                                  ? "No wrestlers match your search"
+                                  : "No wrestlers in this division"}
                               </td>
                             </tr>
                           )}

@@ -20,6 +20,7 @@ import {
   TalentPoolState,
 } from "../../types/talent";
 import { generateCandidate, convertCandidateToRikishi } from "./CandidateGenerator";
+import { getConfidenceLevel, resolveScoutedAttribute } from "../recruitment/FogOfWarService";
 import { clampInt } from "../../utils/math";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
@@ -268,6 +269,57 @@ export function scoutCandidate(
   }
 
   return { ok: true, scoutingLevel: record.scoutingLevel };
+}
+
+/**
+ * Resolves a candidate's attributes into confidence-gated scouted values.
+ * Potential stats are harder to scout than combat stats (potential confidence
+ * is shifted down one tier inside FogOfWarService).
+ */
+export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
+  const tp = ensureTalentPoolState(world);
+  const candidate = tp.candidates[candidateId];
+  if (!candidate) return null;
+
+  const level = tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
+  const observations = Math.floor(level / 20);
+  const seed = `candidate-${candidateId}-${level}`;
+
+  const resolveCombat = (name: string, value: number) => {
+    const conf = getConfidenceLevel(level, false, observations, "combat");
+    return resolveScoutedAttribute(name, value, conf, `${seed}-${name}`);
+  };
+  const resolvePotential = (name: string, value: number) => {
+    const conf = getConfidenceLevel(level, false, observations, "potential");
+    return resolveScoutedAttribute(name, value, conf, `${seed}-pa-${name}`);
+  };
+
+  return {
+    candidateId,
+    scoutingLevel: level,
+    visibility: candidate.visibilityBand,
+    // Physical size potential — revealed with combat-tier confidence (easier to eyeball)
+    heightPotential: resolveCombat("height potential", candidate.heightPotentialCm),
+    weightPotential: resolveCombat("weight potential", candidate.weightPotentialKg),
+    // Hidden skill potential — gated by potential-tier confidence
+    potentialStats: candidate.potentialStats
+      ? {
+          strength: resolvePotential("strength", candidate.potentialStats.strength),
+          speed: resolvePotential("speed", candidate.potentialStats.speed),
+          technique: resolvePotential("technique", candidate.potentialStats.technique),
+          balance: resolvePotential("balance", candidate.potentialStats.balance),
+          stamina: resolvePotential("stamina", candidate.potentialStats.stamina),
+          mental: resolvePotential("mental", candidate.potentialStats.mental),
+          adaptability: resolvePotential("adaptability", candidate.potentialStats.adaptability),
+        }
+      : undefined,
+    // Development profile only at deep scouting (≥90)
+    developmentProfile: level >= 90 ? candidate.developmentProfile : undefined,
+    // Archetype + style always visible once known
+    archetype: candidate.archetype,
+    style: candidate.style,
+    temperament: candidate.temperament,
+  };
 }
 
 /**
@@ -933,4 +985,45 @@ function filterAgedOutCandidates(
   }
 
   return filteredIds;
+}
+
+/**
+ * Injects an existing rikishi into the talent pool as a hidden candidate.
+ * This is used for "Boss" NPCs (like Global Cup challengers) who can become diagnosable
+ * for recruitment if scouting infrastructure is sufficient.
+ */
+export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): StateImpact {
+  const builder = createImpactBuilder("injectRikishiAsCandidate");
+  const tp = ensureTalentPoolState(world);
+  const pool = tp.pools["foreign"];
+
+  // Convert rikishi to candidate
+  const candidateId = `cd_${rikishi.id}`;
+  const candidate: TalentCandidate = {
+    candidateId,
+    personId: rikishi.id,
+    name: rikishi.shikona,
+    nationality: rikishi.nationality ?? "foreign",
+    birthYear: rikishi.birthYear ?? world.year - 24,
+    originRegion: rikishi.origin ?? "International",
+    visibilityBand: "hidden", // Start hidden (requires scouting_office Level 2+)
+    reputationSeed: rikishi.talentSeed ?? 90,
+    tags: ["global_cup_challenger"],
+    combatProfile: rikishi.combatProfile || buildCombatProfile("hybrid"),
+    availabilityState: "available",
+    competingSuitors: [],
+    archetype: rikishi.combatProfile?.archetype ?? "hybrid",
+    style: rikishi.combatProfile?.style ?? "hybrid",
+    heightPotentialCm: rikishi.height ?? 190,
+    weightPotentialKg: rikishi.weight ?? 150,
+    talentSeed: rikishi.talentSeed ?? 95,
+    temperament: { discipline: 80, volatility: 40 },
+  };
+
+  tp.candidates[candidateId] = candidate;
+  if (!pool.candidatesHidden.includes(candidateId)) {
+    pool.candidatesHidden.push(candidateId);
+  }
+
+  return builder.build();
 }

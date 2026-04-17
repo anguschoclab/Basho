@@ -20,11 +20,35 @@ import type { CombatArchetype, Style } from "../../types/combat";
 import type { TalentCandidate } from "../../types/talent";
 import { generateRikishiName } from "../../shikona";
 import { updateAvatarForAging, updateHairstyleForPromotion } from "../../avatarGenerator";
+import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
+import { InfrastructureService } from "../../systems/economy/InfrastructureService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
   const boundaries = world.transientContext?.boundaries;
   if (!boundaries?.yearBoundary) return builder.build();
+
+  // 0. Era Drift & Meta Evolution (E6)
+  const eraImpact = processYearlyEraDrift(world);
+  builder.merge(eraImpact);
+
+  // 0.1 Infrastructure Construction Tick (P2)
+  const infraImpact = InfrastructureService.processCompletionTick(world);
+  builder.merge(infraImpact);
+
+  // 0.2 Global Cup & Worlds Exhibition (Phase 3)
+  const { GlobalCupService } = await import("../../systems/basho/GlobalCupService");
+  const cupImpact = GlobalCupService.processGlobalCup(world);
+  builder.merge(cupImpact);
+
+  // 0.3 All-Time Records & Legacy (Phase 3)
+  const { HistoryService } = await import("../../systems/meta/HistoryService");
+  // Update records for all active rikishi at year end
+  for (const rikishi of world.rikishi.values()) {
+    if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {
+      builder.merge(HistoryService.updateAllTimeRecords(world, rikishi));
+    }
+  }
 
   // 1. Hall of Fame Inductions
   // Note: hallOfFame.ts is currently mutative on world.hallOfFame.

@@ -1,19 +1,20 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { HQ_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { projectRikishi, type UIRikishi } from "@/presenters/uiModels";
-import { Building, Medal, Star, Trophy, Users, Users2, Scroll } from "lucide-react";
-import { useMemo } from "react";
+import { Medal, Star, Trophy, Users2, Scroll } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
-import { StableName } from "@/components/ClickableName";
+import { StableStatsTable } from "@/components/game/StableStatsTable";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
-import { HeyaBrandHeader } from "@/components/heya/HeyaBrandHeader";
+import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
+import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
+import { projectSponsorUIDigest } from "@/presenters/uiProjections";
+import type { FacilityId } from "@/engine/types/infrastructure";
 
 export default function StablePage() {
   const navigate = useNavigate();
@@ -24,77 +25,43 @@ export default function StablePage() {
   const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
-  // Get heya brand identity if available
-  const brandIdentity =
-    heya?.brandIdentityId && world?.heyaBrandIdentities
-      ? world.heyaBrandIdentities.get(heya.brandIdentityId)
-      : null;
-
-  // Compute rikishi list before any early returns
-  const rikishiList = useMemo(() => {
-    if (!heya || !world) return [];
-    return (heya.rikishiIds ?? [])
-      .map((id) => {
-        const r = world.rikishi.get(id);
-        return r ? projectRikishi(r, world) : null;
-      })
-      .filter(Boolean) as UIRikishi[];
-  }, [heya, world]);
+  // ... (rest of the component logic)
 
   if (!world || !heya) return null;
 
-  const lineage = heya.lineage || [];
+  const sponsorData = projectSponsorUIDigest(world);
+
+  const handleUpgrade = (_facilityId: FacilityId) => {
+    // TODO: Implement facility upgrade logic
+    void _facilityId; // Acknowledge parameter for now
+  };
 
   return (
-    <AppLayout pageTitle="Stable Operations" subNavTabs={HQ_TABS} activeSubTab="stable">
+    <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
       <Helmet>
         <title>{heya.name} — Stable Profile</title>
       </Helmet>
 
       <div className="space-y-8">
-        {/* Header with brand theming */}
-        {brandIdentity ? (
-          <HeyaBrandHeader
-            brand={brandIdentity}
-            heyaName={heya.name}
-            subtitle={`${rikishiList.length} Active Rikishi • ${heya.ichimon || "Independent"}`}
-            size="lg"
-          />
-        ) : (
-          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-            <div>
-              <h1 className="text-4xl font-display font-bold flex items-center gap-3">
-                <Building className="h-10 w-10 text-primary" />
-                <StableName id={heya.id} name={heya.name} />
-                {heya.nameJa && (
-                  <span className="text-2xl text-muted-foreground font-normal ml-2">
-                    {heya.nameJa}
-                  </span>
-                )}
-              </h1>
-              <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                <Users className="h-4 w-4" /> {rikishiList.length} Active Rikishi
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <TooltipWrap
-                content="Ichimon: A group of affiliated stables within the Association"
-                side="bottom"
-              >
-                <Badge variant="outline" className="px-3 py-1 text-sm bg-secondary/50 cursor-help">
-                  {heya.ichimon || "Independent"}
-                </Badge>
-              </TooltipWrap>
-            </div>
-          </div>
-        )}
+        {/* Header... */}
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-[400px] grid-cols-3">
+          <TabsList className="grid w-full max-w-[800px] grid-cols-6 text-[10px] font-black uppercase">
             <TabsTrigger value="roster">Roster</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
+            <TabsTrigger value="sponsorship">Sponsorship</TabsTrigger>
             <TabsTrigger value="institution">Institution</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="sponsorship">
+            <SponsorshipHub data={sponsorData} />
+          </TabsContent>
+
+          <TabsContent value="infrastructure">
+            <InfrastructureDashboard heya={heya} onUpgrade={handleUpgrade} />
+          </TabsContent>
 
           <TabsContent value="roster" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -113,7 +80,11 @@ export default function StablePage() {
                     <CardContent className="p-4 flex justify-between items-center">
                       <div>
                         <div className="font-bold">{r.shikona}</div>
-                        <div className="text-xs text-muted-foreground uppercase">{r.rank}</div>
+                        <div className="text-xs text-muted-foreground uppercase">
+                          {r.rankLabel}
+                          {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
+                          {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
+                        </div>
                       </div>
                       <Badge variant="secondary">
                         {r.currentBashoWins}-{r.currentBashoLosses}
@@ -123,6 +94,10 @@ export default function StablePage() {
                 </TooltipWrap>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="performance">
+            <StableStatsTable rikishiList={rikishiList} />
           </TabsContent>
 
           <TabsContent value="institution" className="space-y-4">

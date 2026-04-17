@@ -275,11 +275,11 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       // Narrative: Yokozuna Watch
       if (isYusho && !promoteToYokozuna) {
         builder.logEvent(
-          "LIFECYCLE_EVENT",
-          "injury",
+          "BASHO_STATUS",
+          "promotion",
           {
             status: "yokozuna_watch",
-            description: `${rikishi.shikona} wins the basho! Yokozuna promotion watch begins.`,
+            description: `${rikishi.shikona} is on Yokozuna promotion watch following a strong performance.`,
           },
           { rikishiId: id, heyaId: rikishi.heyaId }
         );
@@ -330,10 +330,10 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
           builder.logEvent(
             "GOVERNANCE_RULING",
-            "economy",
+            "discipline",
             {
               incident: "yokozuna_deliberation",
-              description: `The Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`,
+              description: `The Yokozuna Deliberation Council issues a formal warning to Yokozuna ${rikishi.shikona} following disappointing results.`,
             },
             { rikishiId: id, heyaId: rikishi.heyaId }
           );
@@ -366,7 +366,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   }
 
   const perfMap = new Map(performanceList.map((p) => [p.rikishiId, p]));
-  const result = updateBanzuke(currentBanzukeList, perfMap, world.ozekiKadoban ?? {}, world.heyas);
+  const result = updateBanzuke(
+    currentBanzukeList,
+    perfMap,
+    world,
+    world.ozekiKadoban ?? {},
+    world.heyas
+  );
 
   // Generate kesho-mawashi for promoted rikishi and apply impacts
   const keshoImpacts = generateKeshoForPromotions(world, result.events);

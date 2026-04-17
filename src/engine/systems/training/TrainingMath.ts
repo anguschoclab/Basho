@@ -26,6 +26,7 @@ import {
   STAT_CEILING_KEYS,
   type TrainingAttribute,
 } from "./TrainingConstants";
+import { ATTRIBUTE_PEAK, STAT_GROUP } from "../../constants/DevelopmentCurves";
 
 /**
  * Derives the stat ceiling for a given attribute from talentSeed.
@@ -106,10 +107,23 @@ export function calculateGrowthVector(
   // Ichimon / Degeiko Political Bonus
   let degeikoMult = 1.0;
   if (heya && heya.ichimon && world?.factions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Faction structure is dynamic
     const faction = world.factions[heya.ichimon] as any;
     if (faction) {
-      // Simple dominant faction check (simplified for performance)
       if (faction.influence >= 80) degeikoMult = 1.1;
+    }
+  }
+
+  // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
+  // If we have "Bad Blood" with high-ranking stables, training efficacy drops
+  if (world?.stableRelations && heya) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Stable relations are dynamic
+    const relations = world.stableRelations as Record<string, any>;
+    for (const [key, record] of Object.entries(relations)) {
+      if (key.includes(heya.id) && record.tone === "bad_blood") {
+        degeikoMult *= 0.5; // -50% joint training penalty for feud instability
+        break;
+      }
     }
   }
 
@@ -118,7 +132,13 @@ export function calculateGrowthVector(
   const adaptabilityMult = 0.8 + (rikishi.adaptability ?? 50) * 0.004;
 
   const totalMult =
-    intensityMult * focusModeMult * phaseMult * facilityGrowthMult * degeikoMult * adaptabilityMult * BASE_GROWTH;
+    intensityMult *
+    focusModeMult *
+    phaseMult *
+    facilityGrowthMult *
+    degeikoMult *
+    adaptabilityMult *
+    BASE_GROWTH;
 
   const talentSeed = rikishi.talentSeed ?? 50;
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;
@@ -135,9 +155,21 @@ export function calculateGrowthVector(
     adaptability: 0,
   };
 
+  // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.
+  const potential = rikishi.potential;
+  const resolveCeiling = (stat: keyof RikishiStats): number => {
+    if (potential?.stats && stat in potential.stats) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
+      const pa = (potential.stats as any)[stat] as number;
+      return Math.round(pa * potential.ceilingFraction);
+    }
+    return getStatCeiling(talentSeed, stat);
+  };
+
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
-    const ceiling = getStatCeiling(talentSeed, stat);
+    const ceiling = resolveCeiling(stat);
     const drMult = diminishingReturnsMult(currentVal, ceiling);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic affinity access
     const affinityMult = (affinity && (affinity as any)[stat]) || 1.0;
     return totalMult * rawMult * drMult * affinityMult;
   };
@@ -183,4 +215,43 @@ export function calculateGains(
     result[key] = base[key] * mult;
   }
   return result;
+}
+
+/**
+ * Weekly age-decline deltas (negative numbers) for physical/technical/mental stats.
+ * Applied past each attribute group's peak age, scaled by each group's `declinePerYear`.
+ * Returns empty/zero deltas for pre-peak rikishi.
+ */
+export function calculateAgeDecay(
+  rikishi: Rikishi,
+  currentYear: number
+): Record<keyof typeof STAT_GROUP, number> {
+  const zero = {
+    strength: 0,
+    speed: 0,
+    stamina: 0,
+    technique: 0,
+    balance: 0,
+    adaptability: 0,
+    mental: 0,
+  };
+  if (!rikishi.birthYear) return zero;
+  const age = currentYear - rikishi.birthYear;
+
+  const peakOffset = rikishi.potential?.peakAgeOffset ?? 0;
+  const out = { ...zero } as Record<keyof typeof STAT_GROUP, number>;
+
+  (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
+    const group = STAT_GROUP[key];
+    const cfg = ATTRIBUTE_PEAK[group];
+    const effectivePeak = cfg.peakAge + peakOffset;
+    if (age <= effectivePeak) return;
+    // Convert annual decline into weekly delta applied to the current stat value.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property access
+    const current = (rikishi as any)[key] ?? (rikishi.stats as any)?.[key] ?? 50;
+    const yearly = current * cfg.declinePerYear;
+    out[key] = -yearly / 52;
+  });
+
+  return out;
 }

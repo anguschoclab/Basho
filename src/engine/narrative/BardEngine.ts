@@ -50,7 +50,7 @@ export class BardEngine {
 
     if (options.length === 0) {
       console.warn(`BardEngine: No options found at path "${path}" (Intensity: ${intensity})`);
-      return { text: `[System Log]: No narrative templates found at ${path}`, id: "unknown", path };
+      return { text: "", id: "unknown", path };
     }
 
     // LRU Cache Anti-Repetition Logic

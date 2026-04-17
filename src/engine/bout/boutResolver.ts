@@ -45,7 +45,8 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
     kimariteName: "Fusenshō",
     stance: "no-grip",
     tachiaiWinner: winnerSide,
-    duration: 0,
+    duration: 1,
+    excitementScore: 0,
     upset: false,
     isKinboshi: false,
     log: [{ phase: "finish", data: { event: "fusensho", absent: loser.id } }],
@@ -109,7 +110,14 @@ export function resolveBout(
   const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
 
   // 1. Run B+ spatial physics engine
-  const { result } = resolveBoutPhysics(ctxFinal, eastBout as Rikishi, westBout as Rikishi, basho);
+  const meta = world?.meta;
+  const { result } = resolveBoutPhysics(
+    ctxFinal,
+    eastBout as Rikishi,
+    westBout as Rikishi,
+    basho,
+    meta
+  );
 
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;
@@ -144,6 +152,12 @@ export function resolveBout(
     result.isKinboshi = true;
     winnerAchievements.kinboshiEarned++;
     loserAchievements.kinboshiConceded++;
+    // Track kinboshi earned this basho for per-basho stipend calculation
+    if (basho.kinboshiThisBasho) {
+      basho.kinboshiThisBasho[winner.id] = (basho.kinboshiThisBasho[winner.id] ?? 0) + 1;
+    } else {
+      basho.kinboshiThisBasho = { [winner.id]: 1 };
+    }
   }
   // Rule: Ginboshi (Silver Star) - Maegashira defeats Ozeki (excluding Fusensho)
   else if (
@@ -193,6 +207,13 @@ export function resolveBout(
       result,
       day: bout.day,
     });
+
+    // E4: Track global kimarite stats for Era Drift
+    if (result.kimarite && result.kimarite !== "fusensho") {
+      const stats = { ...(world.globalKimariteStats || {}) };
+      stats[result.kimarite] = (stats[result.kimarite] || 0) + 1;
+      builder.updateWorldField("globalKimariteStats", stats);
+    }
 
     // 5. Kensho (Prize Banners)
     const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);

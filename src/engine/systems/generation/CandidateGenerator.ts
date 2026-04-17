@@ -76,29 +76,35 @@ export function rollPotential(args: {
   rank: Rank;
   profile: CombatProfile;
   developmentProfile: DevelopmentProfile;
+  nationality?: string;
 }): PotentialPackage {
-  const { rng, rank, profile, developmentProfile } = args;
+  const { rng, rank, profile, developmentProfile, nationality } = args;
   const preset = PROFILE_PRESETS[developmentProfile];
   const paCfg = PA_BY_RANK[rank];
 
   // Fat-tail sampling: 15% of rolls use wider σ (creates sleeper talents / busts)
   const effectiveStdDev = rng.next() < 0.15 ? paCfg.stdDev * 2 : paCfg.stdDev;
 
-  const rollStat = (mod: number = 1.0): number => {
-    const mean = paCfg.mean * mod;
+  const rollStat = (mod: number = 1.0, regionalBonus: number = 0): number => {
+    const mean = paCfg.mean * mod + regionalBonus;
     return clampInt(rng.gaussian(mean, effectiveStdDev), 25, 99);
   };
+
+  // Define Regional Biases (Phase 3)
+  const isMongolian = nationality === "Mongolia";
+  const isEastEuropean = ["Georgia", "Russia", "Bulgaria", "Estonia"].includes(nationality ?? "");
+  const isAmericas = ["Brazil", "USA", "Hawaii"].includes(nationality ?? "");
 
   const mods = profile.statModifiers;
   const powerMod = (mods as Record<string, number | undefined>)["power"] ?? mods["strength"] ?? 1.0;
 
   const paStats: RikishiStats = {
-    strength: rollStat(powerMod),
-    technique: rollStat(mods.technique ?? 1.0),
-    speed: rollStat(mods.speed ?? 1.0),
-    stamina: rollStat(mods.stamina ?? 1.0),
+    strength: rollStat(powerMod, isEastEuropean ? 12 : 0),
+    technique: rollStat(mods.technique ?? 1.0, isMongolian ? 10 : isAmericas ? 4 : 0),
+    speed: rollStat(mods.speed ?? 1.0, isMongolian ? 5 : isAmericas ? 8 : 0),
+    stamina: rollStat(mods.stamina ?? 1.0, isEastEuropean ? 8 : 0),
     mental: rollStat(mods.mental ?? 1.0),
-    adaptability: rollStat(mods.adaptability ?? 1.0),
+    adaptability: rollStat(mods.adaptability ?? 1.0, isAmericas ? 4 : 0),
     balance: rollStat(mods.balance ?? 1.0),
     weight: 0, // Size handled separately below
   };
@@ -431,6 +437,7 @@ export function generateFullRikishi(args: {
   side: Side;
   rankNumber: number;
   legacyShikona?: string;
+  heyaPrefix?: string;
 }): Rikishi {
   const { id, rng, currentYear, rank, division, side, rankNumber } = args;
 
@@ -444,16 +451,18 @@ export function generateFullRikishi(args: {
   // Development profile — consistency-checked against age/rank
   const developmentProfile = rollDevelopmentProfile(rng, age, rank);
 
-  // Roll PA (potential ceiling) once, then derive CA from age-based maturity
-  const potentialPkg = rollPotential({ rng, rank, profile, developmentProfile });
-  const statsBase = deriveCurrentAbility({ rng, potential: potentialPkg, age });
-
+  // Nationality first for regional PA biases (Phase 3)
   const nationality =
     rng.next() < 0.15
       ? rng.next() < 0.7
         ? "Mongolia"
         : rng.pick(["Georgia", "Russia", "Bulgaria", "Estonia", "Brazil", "Hawaii"])
       : "Japan";
+
+  // Roll PA (potential ceiling) once, then derive CA from age-based maturity
+  const potentialPkg = rollPotential({ rng, rank, profile, developmentProfile, nationality });
+  const statsBase = deriveCurrentAbility({ rng, potential: potentialPkg, age });
+
   const records = generateSyntheticCareer({
     rng,
     rank,
@@ -464,12 +473,34 @@ export function generateFullRikishi(args: {
     developmentSpeed: potentialPkg.developmentSpeed,
   });
 
+  // Promising wrestlers are branded with the heya prefix more often.
+  // Boost scales with average PA (normalized to 0–0.35) and prodigy profile.
+  const paAvg =
+    (potentialPkg.stats.strength +
+      potentialPkg.stats.technique +
+      potentialPkg.stats.speed +
+      potentialPkg.stats.stamina +
+      potentialPkg.stats.mental) /
+    5;
+  const paBoost = clamp((paAvg - 55) / 120, 0, 0.3); // PA 55→0, PA 85→+0.25, PA 95→+0.33
+  const profileBoost =
+    potentialPkg.profile === "prodigy"
+      ? 0.15
+      : potentialPkg.profile === "late_bloomer"
+        ? 0.05
+        : potentialPkg.profile === "journeyman"
+          ? -0.1
+          : 0;
+  const heyaPrefixBoost = Math.max(0, paBoost + profileBoost);
+
   const name = generateShikona(`${rng.seed}::${id}`, {
     rng,
     heyaId: undefined, // Will be set when assigned to heya
     nationality,
     rank,
     legacyShikona: args.legacyShikona,
+    heyaPrefix: args.heyaPrefix,
+    heyaPrefixBoost,
   });
 
   const rikishiStats: RikishiStats = {
@@ -534,6 +565,8 @@ function createBaseInfo(
 ) {
   const age = currentYear - birthYear;
   const isSekitori = division === "makuuchi" || division === "juryo";
+  const citizenshipStatus =
+    nationality === "Japan" || nationality === "Japanese" ? "native" : "foreign";
 
   return {
     id,
@@ -561,6 +594,8 @@ function createBaseInfo(
       isSekitori,
     }),
     talentSeed: rng.int(0, 1000000),
+    joinedHeyaDate: String(currentYear),
+    citizenshipStatus,
   };
 }
 
@@ -718,6 +753,21 @@ export function convertCandidateToRikishi(args: {
       mediaSavvy: 50,
       stress: 0,
     },
+    potential: candidate.potentialStats
+      ? {
+          stats: {
+            ...candidate.potentialStats,
+            weight: candidate.weightPotentialKg,
+            achievements: rikishiStats.achievements,
+          } as RikishiStats,
+          heightCm: candidate.heightPotentialCm,
+          weightKg: candidate.weightPotentialKg,
+          developmentSpeed: candidate.developmentSpeed ?? 1.0,
+          peakAgeOffset: candidate.peakAgeOffset ?? 0,
+          ceilingFraction: candidate.ceilingFraction ?? 1.0,
+          profile: candidate.developmentProfile ?? "standard",
+        }
+      : undefined,
   } as Rikishi;
 
   return rikishi;
@@ -737,6 +787,20 @@ export function generateCandidate(args: {
 
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
+
+  // Candidates are always future jonokuchi recruits — roll PA + dev profile so
+  // scouting can reveal their trajectory before signing.
+  const developmentProfile = (() => {
+    const roll = rng.next();
+    let acc = 0;
+    for (const [p, w] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
+      acc += w;
+      if (roll < acc) return p as DevelopmentProfile;
+    }
+    return "standard" as DevelopmentProfile;
+  })();
+  const paPkg = rollPotential({ rng, rank: "jonokuchi", profile, developmentProfile });
+  // Override size potential with candidate-specific rolls (keeps existing API)
 
   // Determine origin based on pool
   const origin =
@@ -769,12 +833,26 @@ export function generateCandidate(args: {
     combatProfile: profile,
 
     reputationSeed: rng.int(0, 100),
-    heightPotentialCm: 170 + rng.int(0, 30),
-    weightPotentialKg: 80 + rng.int(0, 40),
+    heightPotentialCm: paPkg.heightCm,
+    weightPotentialKg: paPkg.weightKg,
     talentSeed: rng.int(0, 100),
     temperament: { discipline: rng.int(0, 100), volatility: rng.int(0, 100) },
 
     competingSuitors: [],
     tags: rng.next() > 0.8 ? ["amateur_star"] : [],
+
+    potentialStats: {
+      strength: paPkg.stats.strength,
+      speed: paPkg.stats.speed,
+      technique: paPkg.stats.technique,
+      balance: paPkg.stats.balance,
+      stamina: paPkg.stats.stamina,
+      mental: paPkg.stats.mental,
+      adaptability: paPkg.stats.adaptability,
+    },
+    developmentProfile,
+    developmentSpeed: paPkg.developmentSpeed,
+    peakAgeOffset: paPkg.peakAgeOffset,
+    ceilingFraction: paPkg.ceilingFraction,
   };
 }

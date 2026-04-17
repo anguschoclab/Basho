@@ -109,6 +109,12 @@ export interface KimariteStrategy {
    */
   weight: number;
   /**
+   * Execution difficulty (1–10).
+   * 1 = Basic (Jonokuchi can execute easily)
+   * 10 = Legendary (Requires elite technique and perfect conditions)
+   */
+  difficulty?: number;
+  /**
    * B+ spatial: Which combat phases this technique applies to.
    * If undefined, applies to all phases (legacy behavior).
    */

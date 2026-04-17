@@ -48,7 +48,8 @@
       "Bash(echo \"bout/bout deleted: $?\")",
       "Bash(ls vite*.*)",
       "Bash(bunx tsc *)",
-      "Bash(bunx vitest *)"
+      "Bash(bunx vitest *)",
+      "Bash(bunx tsx -e ' *)"
     ]
   },
   "outputStyle": "default"

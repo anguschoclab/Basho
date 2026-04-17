@@ -2,7 +2,7 @@
  * src/engine/systems/narrative/RivalryConstants.ts
  * ================================================
  * Authoritative constants for the Rivalry System.
- * 
+ *
  * Defines tones, triggers, and heat bands for rikishi relationships.
  * Goal: Domain-driven narrative design.
  */
@@ -27,8 +27,8 @@ export type RivalryTrigger =
   | "personal_history"
   | "heya_feud";
 
-/** 
- * Pair key must be canonical: smallerId|largerId 
+/**
+ * Pair key must be canonical: smallerId|largerId
  */
 export type RivalryKey = string;
 
@@ -40,7 +40,7 @@ export const RIVALRY_TRIGGER_LABELS: Record<RivalryTrigger, string> = {
   title_stakes: "Title Pressure",
   injury_incident: "Near Injury",
   personal_history: "Old History",
-  heya_feud: "Stable Feud"
+  heya_feud: "Stable Feud",
 };
 
 export const RIVALRY_TONE_LABELS: Record<RivalryTone, string> = {
@@ -49,8 +49,20 @@ export const RIVALRY_TONE_LABELS: Record<RivalryTone, string> = {
   bad_blood: "Bad Blood",
   mentor_student: "Mentor & Student",
   unstable: "Volatile",
-  public_hype: "Public Hype"
+  public_hype: "Public Hype",
 };
+
+export const DERBY_LABELS = [
+  "Tokyo Derby",
+  "The 1999 Generation",
+  "Foreign Legion Clash",
+  "Rookie Rivalry",
+  "Traditionalist Feud",
+  "The Battle of Tokyo",
+  "Clash of Styles",
+  "Elite Showdown",
+  "Stable Hegemony",
+];
 
 /** Defines the structure for rivalry pair state. */
 export interface RivalryPairState {
@@ -74,4 +86,16 @@ export interface RivalryPairState {
 export interface RivalriesState {
   version: "1.0.0";
   pairs: Record<RivalryKey, RivalryPairState>;
+  heyaRivalryPairs?: Record<
+    string,
+    {
+      id: string;
+      heyaAId: Id;
+      heyaBId: Id;
+      heat: number;
+      aWins: number;
+      bWins: number;
+      label?: string;
+    }
+  >;
 }

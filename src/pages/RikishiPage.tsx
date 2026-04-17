@@ -27,13 +27,17 @@ import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
 import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
 import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
+import { IntaiCeremony } from "@/components/game/IntaiCeremony";
+import { Trash2 } from "lucide-react";
+import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
   const { world, playerHeyaId } = state;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
+  const [showIntaiCeremony, setShowIntaiCeremony] = useState(false);
 
   // Prepare data for roster list view (before any early returns)
   const rikishiList = useMemo(() => {
@@ -94,6 +98,15 @@ export default function RikishiPage() {
   const mentees = menteesOf(world, rawRikishi);
   const lineageTree = getLineageTree(world, rawRikishi.id);
 
+  const finalizeRetirement = () => {
+    // Stage 2: Actually apply retirement to the world
+    const impact = retireRikishiImpact(rikishi.id, "player_initiated_intai");
+    updateWorld(impact);
+    setShowIntaiCeremony(false);
+    // Navigate back to roster
+    navigate({ to: "/rikishi" });
+  };
+
   return (
     <AppLayout pageTitle="Rikishi Profile" subNavTabs={HQ_TABS} activeSubTab="roster">
       <Helmet>
@@ -105,6 +118,7 @@ export default function RikishiPage() {
           rikishi={rikishi}
           isOwned={isOwned}
           healthBadge={healthBadge}
+          isKadoban={rikishi.rank === "ozeki" && !!world.ozekiKadoban?.[rikishi.id]?.isKadoban}
           onBack={() => navigate({ to: "/stable/roster" })}
         />
 
@@ -146,7 +160,7 @@ export default function RikishiPage() {
               value="combat"
               className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300"
             >
-              <RikishiCombatTab rikishi={rikishi} rawRikishi={rawRikishi} />
+              <RikishiCombatTab rikishi={rikishi} rawRikishi={rawRikishi} isOwned={isOwned} />
             </TabsContent>
 
             <TabsContent
@@ -162,6 +176,33 @@ export default function RikishiPage() {
           </Tabs>
         </div>
       </div>
+      <div className="mt-10 pt-6 border-t border-destructive/20">
+        <div className="flex items-center justify-between p-4 rounded-lg bg-destructive/5 border border-destructive/10">
+          <div>
+            <h4 className="font-display font-bold text-destructive">Administrative Actions</h4>
+            <p className="text-xs text-muted-foreground">
+              Declare retirement (intai) for this rikishi.
+            </p>
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="gap-2"
+            onClick={() => setShowIntaiCeremony(true)}
+          >
+            <Trash2 className="h-4 w-4" /> Declare Retirement
+          </Button>
+        </div>
+      </div>
+
+      <IntaiCeremony
+        rikishi={rikishi}
+        reason="Personal decision of the Stable Master (Player)"
+        heyaName={world.heyas.get(rikishi.heyaId)?.name || "Unknown"}
+        isPlayerRikishi={true}
+        open={showIntaiCeremony}
+        onClose={finalizeRetirement}
+      />
     </AppLayout>
   );
 }

@@ -13,6 +13,7 @@ import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed } from "@/engine/rng";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
+import { RankBadge } from "./RankBadge";
 
 interface RikishiProfileTabProps {
   rikishi: UIRikishi;
@@ -86,8 +87,15 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
       </div>
 
       <div className="space-y-6">
+        <RankBadge
+          rank={rikishi.rank}
+          rankNumber={rikishi.rankNumber}
+          side={rikishi.side}
+          variant="pill"
+          showJapanese
+        />
         <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
-          <AwardIcon className="h-5 w-5 text-primary" /> Narrative Notes
+          <AwardIcon className="h-5 w-5 text-primary" /> Notes
         </h3>
         <div className="bg-muted/20 border-2 border-dashed rounded-lg p-6 space-y-4 opacity-70">
           <div className="flex items-start gap-4">

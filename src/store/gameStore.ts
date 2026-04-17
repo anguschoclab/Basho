@@ -17,6 +17,8 @@ interface GameStoreState {
   isSimulating: boolean;
   progress: { message: string; current: number; total: number } | null;
   error: string | null;
+  showTour: boolean;
+  dismissedTourReason: string | null; // e.g., 'completed', 'skipped'
 
   // Worker reference
   worker: Worker | null;
@@ -36,6 +38,8 @@ interface GameStoreState {
   setProgress: (progress: { message: string; current: number; total: number } | null) => void;
   setError: (error: string | null) => void;
   setOnWorldUpdated: (cb: ((world: WorldState) => void) | null) => void;
+  dismissTour: (reason: string) => void;
+  checkTourTrigger: (world: WorldState) => void;
 }
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
@@ -44,6 +48,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   isSimulating: false,
   progress: null,
   error: null,
+  showTour: false,
+  dismissedTourReason: null,
   worker: null,
   onWorldUpdated: null,
 
@@ -71,6 +77,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         case "WORLD_UPDATED":
           set({ workerWorld: data.world });
           get().onWorldUpdated?.(data.world);
+          get().checkTourTrigger(data.world);
           break;
         case "PROGRESS":
           set({ progress: { message: data.message, current: data.current, total: data.total } });
@@ -89,7 +96,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     if (!worker) {
       initWorker();
     }
-    
+
     // Some commands imply simulation start
     if (command.type === "AUTO_SIM_DAYS" || command.type === "TICK_MULTIPLE_DAYS") {
       set({ isSimulating: true, error: null });
@@ -103,4 +110,19 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   setProgress: (progress) => set({ progress }),
   setError: (error) => set({ error }),
   setOnWorldUpdated: (cb) => set({ onWorldUpdated: cb }),
+  dismissTour: (reason: string) => {
+    localStorage.setItem("sumo_tour_dismissed", "true");
+    set({ showTour: false, dismissedTourReason: reason });
+  },
+  checkTourTrigger: (world: WorldState) => {
+    if (localStorage.getItem("sumo_tour_dismissed")) return;
+    if (get().dismissedTourReason) return;
+
+    const step = world.tutorialState?.currentStep;
+    const isInterim = world.cyclePhase === "interim";
+
+    if (isInterim && step === "FIRST_BASHO_STARTED") {
+      set({ showTour: true });
+    }
+  },
 }));

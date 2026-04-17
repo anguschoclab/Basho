@@ -93,7 +93,9 @@ export function conditionMultiplier(condition: number): number {
  *   dominated record (0-10) → -4
  */
 export function h2hConfidence(r: Rikishi, opponentId: string): number {
-  const record = (r as unknown as Record<string, unknown>).h2h as Record<string, { wins: number; losses: number }> | undefined;
+  const record = (r as unknown as Record<string, unknown>).h2h as
+    | Record<string, { wins: number; losses: number }>
+    | undefined;
   if (!record) return 0;
   const h2h = record[opponentId];
   if (!h2h) return 0;
@@ -109,8 +111,11 @@ export function h2hConfidence(r: Rikishi, opponentId: string): number {
  */
 export function tachiaiPowerWithMatchupPenalty(r: Rikishi, opponent: Rikishi): number {
   const base = computeTachiaiPower(r);
-  const opponentStyle = (opponent as unknown as Record<string, unknown>).style as string | undefined;
-  const weaknesses: string[] = (r as unknown as Record<string, unknown>).weakAgainstStyles as string[] ?? [];
+  const opponentStyle = (opponent as unknown as Record<string, unknown>).style as
+    | string
+    | undefined;
+  const weaknesses: string[] =
+    ((r as unknown as Record<string, unknown>).weakAgainstStyles as string[]) ?? [];
   if (opponentStyle && weaknesses.includes(opponentStyle)) {
     return base * 0.92;
   }
@@ -183,8 +188,10 @@ function resolveTachiaiV2(
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
   // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
-  const eastPower = tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, 8);
-  const westPower = tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
+  const eastPower =
+    tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, 8);
+  const westPower =
+    tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 
@@ -203,7 +210,9 @@ function resolveTachiaiV2(
     const opponent = henkaSide === "east" ? west : east;
     // High-aggression opponents overcommit → more vulnerable to henka
     const henkaScore =
-      stat(trickster, "technique") + computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) + jitter(rng, 8);
+      stat(trickster, "technique") +
+      computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) +
+      jitter(rng, 8);
     const defenseScore = stat(opponent, "balance") + jitter(rng, 8);
 
     if (henkaScore > defenseScore) {
@@ -249,8 +258,10 @@ function tickPushBattle(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2
-): { winner?: Side; kimarite?: KimariteId } | undefined {
+  st: EngineStateV2,
+  division: import("../types/banzuke").Division,
+  meta: { tone: string; drift: Record<string, number> }
+): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
   const push = st.phase.state;
@@ -301,7 +312,7 @@ function tickPushBattle(
   st.west.leadingFootX = push.westLeadFoot;
 
   // CI-03: Mid-fight kimarite attempt — emergent classification
-  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng);
+  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {
@@ -331,8 +342,10 @@ function tickBeltBattle(
   rng: SeededRNG,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2
-): { winner?: Side; kimarite?: KimariteId } | undefined {
+  st: EngineStateV2,
+  division: import("../types/banzuke").Division,
+  meta: { tone: string; drift: Record<string, number> }
+): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "belt_battle") return undefined;
 
   const belt = st.phase.state;
@@ -374,7 +387,7 @@ function tickBeltBattle(
   st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
 
   // CI-03: Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng);
+  const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {
@@ -539,7 +552,9 @@ function runPhaseLoop(
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
-  boutLog: BoutLogEntry[]
+  boutLog: BoutLogEntry[],
+  division: import("../types/banzuke").Division,
+  meta: { tone: string; drift: Record<string, number> }
 ): { winner: Side; kimarite: KimariteId } {
   // CR-02: Henka may have resolved the bout at tachiai
   if (st.phase.tag === "resolved") {
@@ -549,18 +564,18 @@ function runPhaseLoop(
   for (let i = 0; i < MAX_TICKS; i++) {
     st.tick++;
 
-    const pushResult = tickPushBattle(rng, east, west, st);
+    const pushResult = tickPushBattle(rng, east, west, st, division, meta);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st);
+    const beltResult = tickBeltBattle(rng, east, west, st, division, meta);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }
 
     const crisisResult = tickEdgeCrisis(rng, east, west, st, boutLog);
-    // CI-04: escaped: true means phase was restored — keep looping
+    // ...
     if (crisisResult?.winner && crisisResult?.kimarite) {
       return { winner: crisisResult.winner, kimarite: crisisResult.kimarite };
     }
@@ -609,6 +624,15 @@ function buildBoutResultV2(
 ): BoutResult {
   const duration = Math.max(1, st.tick * 2);
 
+  // Compute composite excitement score:
+  //   - Bout length: up to 40 points (120 ticks max → ~40)
+  //   - Each tawara escape: +20 points (dramatic near-defeats)
+  //   - Grip reversals (inside→outside swaps in log): +10 points each
+  const edgeCrisisEscapes = boutLog.filter(
+    (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
+  ).length;
+  const excitementScore = Math.min(100, Math.round(st.tick / 3 + edgeCrisisEscapes * 20));
+
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle") ||
@@ -632,6 +656,7 @@ function buildBoutResultV2(
     stance: resolvedStance,
     tachiaiWinner: st.tachiaiWinner,
     duration,
+    excitementScore,
     upset,
     isKinboshi: false, // set by boutResolver
     log: boutLog,
@@ -730,7 +755,8 @@ export function resolveBoutPhysics(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
-  basho: BashoState
+  basho: BashoState,
+  meta?: { tone: string; drift: Record<string, number> }
 ): { result: BoutResult; engineSnapshot: EngineSnapshot } {
   const seed = `${basho.id ?? "basho"}-${basho.year ?? 0}-${bout.day}-${east.id}-${west.id}`;
   const rng = rngFromSeed(seed, "bout", "root");
@@ -738,8 +764,11 @@ export function resolveBoutPhysics(
   const st = initEngineStateV2(bout, east, west);
   resolveTachiaiV2(rng, bout, east, west, st);
 
+  const effectiveMeta = meta || { tone: "classic", drift: {} };
+  const division = east.division || west.division || "makushita";
+
   const boutLog: BoutLogEntry[] = [];
-  const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog);
+  const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog, division, effectiveMeta);
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);
   const engineSnapshot = buildEngineSnapshotV2(st, winner);

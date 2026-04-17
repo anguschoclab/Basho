@@ -25,6 +25,7 @@ interface PressQuestion {
  *  * @returns The result.
  */
 function generatePressQuestions(pressData: {
+  phase?: "pre_basho" | "post_basho";
   playerHeya: {
     name: string;
     rikishiIds?: string[];
@@ -110,11 +111,44 @@ function generatePressQuestions(pressData: {
     });
   }
 
+  // Pre-Basho specific questions (D2)
+  if (pressData.phase === "pre_basho") {
+    questions.push({
+      id: "pre_basho_prep",
+      reporter: "Tanaka",
+      outlet: "Mainichi",
+      question: `Media Day here at ${playerHeya.name}. How has the pre-basho training camp been?`,
+      answers: [
+        {
+          label: "Optimistic",
+          tone: "confident",
+          effect: { reputation: 1, morale: 5, mediaHeat: 10 },
+          response:
+            "The spirit is high. My rikishi have never been more ready to step onto the clay.",
+        },
+        {
+          label: "Focused",
+          tone: "humble",
+          effect: { reputation: 3, morale: 2, mediaHeat: 5 },
+          response: "We've focused on the basics. No talk, just sweat and preparation.",
+        },
+        {
+          label: "Intense",
+          tone: "aggressive",
+          effect: { reputation: -1, morale: 8, mediaHeat: 20 },
+          response:
+            "We're going to dominate. The other stables aren't prepared for the intensity we're bringing.",
+        },
+      ],
+    });
+  }
+
   return questions;
 }
 
 /** Defines the structure for press conference props. */
 interface PressConferenceProps {
+  phase?: "pre_basho" | "post_basho";
   pressData: {
     playerHeya: {
       name: string;
@@ -133,11 +167,16 @@ interface PressConferenceProps {
  * press conference.
  *  * @param { pressData, open, onClose } - The component props.
  */
-export function PressConference({ pressData, open, onClose }: PressConferenceProps) {
+export function PressConference({
+  phase = "post_basho",
+  pressData,
+  open,
+  onClose,
+}: PressConferenceProps) {
   const questions = useMemo(() => {
     if (!pressData) return [];
-    return generatePressQuestions(pressData);
-  }, [pressData]);
+    return generatePressQuestions({ ...pressData, phase });
+  }, [pressData, phase]);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [totalEffects, setTotalEffects] = useState({ reputation: 0, morale: 0, mediaHeat: 0 });

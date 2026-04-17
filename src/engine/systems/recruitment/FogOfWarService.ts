@@ -2,12 +2,12 @@
  * src/engine/systems/recruitment/FogOfWarService.ts
  * =================================================
  * Pure fog of war calculation logic for Sumo Manager Pro.
- * 
+ *
  * Contains deterministic algorithms for:
- * 1. Scouting Level 
+ * 1. Scouting Level
  * 2. Confidence Mapping
  * 3. Estimated Value (Deterministic Uncertainty)
- * 
+ *
  * Goal: Decouple business rules from state management.
  */
 
@@ -15,11 +15,11 @@ import { clamp, clampInt } from "../../utils/math";
 import { rngFromSeed, SeededRNG } from "../../rng";
 import { NarrativeService } from "../narrative/NarrativeService";
 import { BardEngine } from "../../narrative/BardEngine";
-import { 
-  type ConfidenceLevel, 
-  type ScoutingInvestment, 
-  type ScoutingAttributeType, 
-  INVESTMENT_BONUS 
+import {
+  type ConfidenceLevel,
+  type ScoutingInvestment,
+  type ScoutingAttributeType,
+  INVESTMENT_BONUS,
 } from "./RecruitmentConstants";
 
 /**
@@ -50,8 +50,8 @@ export function getConfidenceFromLevel(level: number): ConfidenceLevel {
  * Determine confidence level for a specific attribute type.
  */
 export function getConfidenceLevel(
-  level: number, 
-  isOwned: boolean, 
+  level: number,
+  isOwned: boolean,
   observations: number,
   attributeType: ScoutingAttributeType
 ): ConfidenceLevel {
@@ -63,6 +63,14 @@ export function getConfidenceLevel(
     if (observations >= 3) return "high";
     if (observations >= 1) return "medium";
     return "low";
+  }
+
+  if (attributeType === "potential") {
+    // Potential is harder to scout than current ability — shift confidence down one tier.
+    if (level >= 95) return "high";
+    if (level >= 75) return "medium";
+    if (level >= 50) return "low";
+    return "unknown";
   }
 
   return getConfidenceFromLevel(level);
@@ -83,7 +91,7 @@ export function getEstimatedValue(
   const maxErrorPct: Record<Exclude<ConfidenceLevel, "certain" | "unknown">, number> = {
     low: 35,
     medium: 20,
-    high: 9
+    high: 9,
   };
 
   const rng = rngFromSeed(seed, "scouting", "estimation");
@@ -108,10 +116,12 @@ export function resolveScoutedAttribute(
   range: { min: number; max: number } = { min: 0, max: 100 }
 ): { value: string; confidence: ConfidenceLevel; narrative: string } {
   const rng = new SeededRNG(seed);
-  
+
   if (confidence === "unknown") {
     const { text: value } = BardEngine.resolve(rng, "scouting.confidence.unknown");
-    const { text: narrative } = BardEngine.resolve(rng, "scouting.qualifiers.unknown_narrative", { attr: attributeName });
+    const { text: narrative } = BardEngine.resolve(rng, "scouting.qualifiers.unknown_narrative", {
+      attr: attributeName,
+    });
     return { value, confidence: "unknown", narrative };
   }
 
@@ -124,10 +134,10 @@ export function resolveScoutedAttribute(
 
   const estimated = getEstimatedValue(trueValue, confidence, seed, range);
   const label = NarrativeService.describeAttribute(attributeName, estimated);
-  
+
   const qKey = confidence === "medium" ? "appears" : "may_be";
   const { text: qLabel } = BardEngine.resolve(rng, `scouting.qualifiers.${qKey}`);
-  
+
   const desc = `${qLabel} ${label.toLowerCase()}`;
 
   return { value: label, confidence, narrative: `${confidenceLabel}: ${desc}` };

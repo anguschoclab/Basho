@@ -44,6 +44,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kihon",
     weight: 90,
     appliesTo: ["push_battle", "belt_battle"],
+    difficulty: 1,
     condition: (w, l) =>
       hasBelt(w) &&
       atEdge(l) &&
@@ -59,6 +60,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kihon",
     weight: 85,
     appliesTo: ["push_battle", "edge_crisis"],
+    difficulty: 1,
     condition: (w, l) =>
       noBelt(w) &&
       isPusher(w) &&
@@ -74,6 +76,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kihon",
     weight: 70,
     appliesTo: ["push_battle"],
+    difficulty: 2,
     condition: (w, l) =>
       noBelt(w) &&
       isPusher(w) &&
@@ -89,6 +92,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kihon",
     weight: 72,
     appliesTo: ["belt_battle"],
+    difficulty: 2,
     condition: (w, l) =>
       hasBelt(w) &&
       w.forwardMomentum > 0 &&
@@ -102,6 +106,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "突き出し",
     category: "kihon",
     weight: 60,
+    difficulty: 3,
     condition: (w, l) =>
       noBelt(w) &&
       w.power >= 65 &&
@@ -115,6 +120,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "突き倒し",
     category: "kihon",
     weight: 55,
+    difficulty: 3,
     condition: (w, l) =>
       noBelt(w) &&
       w.power >= 65 &&
@@ -128,6 +134,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "浴びせ倒し",
     category: "kihon",
     weight: 50,
+    difficulty: 3,
     condition: (w, l) => hasBelt(w) && w.power >= 70 && l.balance <= 0 && w.forwardMomentum > 0,
   },
 
@@ -141,6 +148,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "叩き込み",
     category: "tokushu",
     weight: 80,
+    difficulty: 4,
     condition: (w, l) => overCommitting(l) && w.offensiveOutput === 0 && l.balance <= 0,
   },
   {
@@ -149,6 +157,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "引き落とし",
     category: "tokushu",
     weight: 65,
+    difficulty: 4,
     condition: (w, l) =>
       overCommitting(l) &&
       noBelt(w) &&
@@ -161,6 +170,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り出し",
     category: "tokushu",
     weight: 58,
+    difficulty: 4,
     condition: (w, l) =>
       atEdge(l) && l.balance > 0 && w.forwardMomentum > 0 && l.forwardMomentum <= 0,
   },
@@ -170,6 +180,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "吊り落とし",
     category: "tokushu",
     weight: 40,
+    difficulty: 8,
     condition: (w, l) =>
       hasBelt(w) && w.power >= 75 && l.power < 60 && nearCenter(l) && l.balance <= 0,
   },
@@ -179,6 +190,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "吊り出し",
     category: "tokushu",
     weight: 38,
+    difficulty: 7,
     condition: (w, l) => hasBelt(w) && w.power >= 75 && l.power < 60 && atEdge(l) && l.balance > 0,
   },
   {
@@ -187,6 +199,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "打っ棄り",
     category: "tokushu",
     weight: 30,
+    difficulty: 9,
     condition: (w, l, ctx) => ctx.edgeDistance <= 4 && w.stamina < 0.25 && l.balance <= 0,
   },
   {
@@ -195,6 +208,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り倒し",
     category: "tokushu",
     weight: 35,
+    difficulty: 5,
     condition: (w, l) => atEdge(l) && l.balance <= 0 && l.forwardMomentum <= 0,
   },
   {
@@ -203,6 +217,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "肩すかし",
     category: "tokushu",
     weight: 28,
+    difficulty: 6,
     condition: (w, l) => overCommitting(l) && w.style !== "oshi" && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -252,6 +267,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "つかみ投げ",
     category: "tokushu",
     weight: 10,
+    difficulty: 8,
     condition: (w, l) => hasBelt(w) && nearCenter(l) && l.balance <= 0 && w.power >= 70,
   },
   {
@@ -314,6 +330,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 85,
     appliesTo: ["belt_battle"],
+    difficulty: 6,
     condition: (w, l) =>
       (w.grip === "uwate" || w.grip === "morozashi") &&
       w.power > l.balanceResistance &&
@@ -327,6 +344,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "掬い投げ",
     category: "nage",
     weight: 65,
+    difficulty: 5,
     condition: (w, l) => noBelt(w) && w.power >= 55 && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -336,6 +354,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 70,
     appliesTo: ["belt_battle"],
+    difficulty: 6,
     condition: (w, l) =>
       (w.grip === "shitate" || w.grip === "morozashi") &&
       w.power > l.balanceResistance &&
@@ -348,6 +367,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "小手投げ",
     category: "nage",
     weight: 55,
+    difficulty: 7,
     condition: (w, l) =>
       noBelt(w) &&
       w.power >= 60 &&
@@ -362,6 +382,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "下手出し投げ",
     category: "nage",
     weight: 42,
+    difficulty: 6,
     condition: (w, l) => w.grip === "shitate" && overCommitting(l) && l.balance <= 0,
   },
   {
@@ -370,6 +391,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "上手出し投げ",
     category: "nage",
     weight: 38,
+    difficulty: 6,
     condition: (w, l) => w.grip === "uwate" && overCommitting(l) && l.balance <= 0,
   },
   {
@@ -378,6 +400,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "首投げ",
     category: "nage",
     weight: 20,
+    difficulty: 8,
     condition: (w, l) => noBelt(w) && nearCenter(l) && l.balance <= 0 && w.power >= 70,
   },
   {
@@ -386,6 +409,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "腰捻り",
     category: "nage",
     weight: 10,
+    difficulty: 7,
     condition: (w, l) => w.style === "yotsu" && nearCenter(l) && l.balance <= 0,
   },
   {
@@ -394,6 +418,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "一本背負い",
     category: "nage",
     weight: 6,
+    difficulty: 9,
     condition: (w, l) => overCommitting(l) && w.style !== "oshi" && nearCenter(l) && l.balance <= 0,
   },
   {
@@ -432,6 +457,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 75,
     appliesTo: ["push_battle"],
+    difficulty: 4,
     condition: (w, l) => overCommitting(l) && noBelt(w) && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -441,6 +467,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 22,
     appliesTo: ["belt_battle"],
+    difficulty: 7,
     condition: (w, l) => nearCenter(l) && l.balance <= 0 && w.style !== "oshi",
   },
   {
@@ -449,6 +476,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "下手捻り",
     category: "hineri",
     weight: 25,
+    difficulty: 7,
     condition: (w, l) =>
       w.grip === "shitate" && overCommitting(l) && l.balance <= 0 && nearCenter(l),
   },
@@ -458,6 +486,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "上手捻り",
     category: "hineri",
     weight: 22,
+    difficulty: 7,
     condition: (w, l) => w.grip === "uwate" && overCommitting(l) && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -466,6 +495,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "小手捻り",
     category: "hineri",
     weight: 18,
+    difficulty: 5,
     condition: (w, l) => overCommitting(l) && l.balance <= 0 && nearCenter(l),
   },
   {
@@ -474,6 +504,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "網打ち",
     category: "hineri",
     weight: 12,
+    difficulty: 8,
     condition: (w, l) => nearCenter(l) && l.balance <= 0 && w.style === "yotsu",
   },
   {
@@ -482,6 +513,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "腕捻り",
     category: "hineri",
     weight: 12,
+    difficulty: 6,
     condition: (w, l) => nearCenter(l) && l.balance <= 0 && w.style !== "oshi",
   },
   {
@@ -490,6 +522,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "頭捻り",
     category: "hineri",
     weight: 6,
+    difficulty: 8,
     condition: (w, l) => nearCenter(l) && overCommitting(l) && l.balance <= 0,
   },
   {
@@ -522,6 +555,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "波離間投げ",
     category: "hineri",
     weight: 4,
+    difficulty: 9,
     condition: (w, l) => hasBelt(w) && l.balance <= 0 && w.style === "yotsu" && nearCenter(l),
   },
   {
@@ -591,6 +625,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "足取り",
     category: "kake",
     weight: 30,
+    difficulty: 5,
     condition: (w, l) => l.balance < 40 && l.stamina < 0.5 && nearCenter(l),
   },
   {
@@ -599,6 +634,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "外掛け",
     category: "kake",
     weight: 28,
+    difficulty: 5,
     condition: (w, l) => w.style !== "oshi" && l.balance < 35 && nearCenter(l),
   },
   {
@@ -607,6 +643,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "内掛け",
     category: "kake",
     weight: 24,
+    difficulty: 5,
     condition: (w, l) => w.style !== "oshi" && l.balance < 35 && nearCenter(l),
   },
   {
@@ -615,6 +652,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "蹴手繰り",
     category: "kake",
     weight: 18,
+    difficulty: 6,
     condition: (w, l) => overCommitting(l) && l.balance < 30 && w.style !== "oshi",
   },
   {
@@ -623,6 +661,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "渡し込み",
     category: "kake",
     weight: 14,
+    difficulty: 4,
     condition: (w, l) => l.balance < 30 && hasBelt(w) && nearCenter(l),
   },
   {
@@ -631,6 +670,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "蹴返し",
     category: "kake",
     weight: 12,
+    difficulty: 7,
     condition: (w, l) => overCommitting(l) && l.balance < 30,
   },
   {
@@ -639,6 +679,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "小外掛け",
     category: "kake",
     weight: 10,
+    difficulty: 6,
     condition: (w, l) => l.balance < 30 && nearCenter(l) && w.style !== "oshi",
   },
   {
@@ -687,6 +728,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "二枚蹴り",
     category: "kake",
     weight: 3,
+    difficulty: 7,
     condition: (w, l) => l.balance < 20 && w.style !== "oshi",
   },
   {
@@ -703,6 +745,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "裾取り",
     category: "kake",
     weight: 3,
+    difficulty: 6,
     condition: (w, l) => l.balance < 20 && atEdge(l),
   },
   {
@@ -711,6 +754,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "三所攻め",
     category: "kake",
     weight: 2,
+    difficulty: 10,
     // Triple-point attack — requires large stat differential
     condition: (w, l) => w.power >= 75 && l.power < 40 && l.balance < 20,
   },
@@ -720,6 +764,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "小外刈",
     category: "kake",
     weight: 2,
+    difficulty: 6,
     condition: (w, l) => l.balance < 20 && nearCenter(l) && w.style !== "oshi",
   },
   {
@@ -728,6 +773,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "褄取り",
     category: "kake",
     weight: 2,
+    difficulty: 6,
     condition: (w, l) => atEdge(l) && l.balance < 20,
   },
 
@@ -742,6 +788,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "居反り",
     category: "sori",
     weight: 5,
+    difficulty: 9,
     condition: (w, l) => desperation(w) && overCommitting(l) && l.edgeDistance <= 5,
   },
   {
@@ -750,6 +797,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "掛け反り",
     category: "sori",
     weight: 5,
+    difficulty: 9,
     condition: (w, l) => desperation(w) && overCommitting(l) && l.edgeDistance <= 5,
   },
   {
@@ -758,6 +806,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "撞木反り",
     category: "sori",
     weight: 4,
+    difficulty: 10,
     condition: (w, l) => desperation(w) && overCommitting(l) && l.forwardMomentum > 4,
   },
   {
@@ -766,6 +815,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "外たすき反り",
     category: "sori",
     weight: 4,
+    difficulty: 10,
     condition: (w, l) => desperation(w) && overCommitting(l) && l.forwardMomentum > 4,
   },
   {
@@ -774,6 +824,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "たすき反り",
     category: "sori",
     weight: 4,
+    difficulty: 10,
     condition: (w, l) => desperation(w) && overCommitting(l) && l.forwardMomentum > 4,
   },
   {
@@ -782,6 +833,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "伝え反り",
     category: "sori",
     weight: 4,
+    difficulty: 10,
     condition: (w, l) => desperation(w) && overCommitting(l) && hasBelt(l) && l.edgeDistance <= 5,
   },
 
@@ -797,6 +849,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "勇み足",
     category: "hi_waza",
     weight: 3,
+    difficulty: 1,
     // Both fighters near edge simultaneously — winner also steps out but loser touches first
     condition: (w, l) => w.offensiveOutput === 0 && l.balance <= 0 && l.edgeDistance <= 3,
   },
@@ -806,6 +859,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "腰砕け",
     category: "hi_waza",
     weight: 3,
+    difficulty: 1,
     // Loser's hips collapse without direct attack
     condition: (w, l) =>
       w.offensiveOutput === 0 &&
@@ -819,6 +873,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "つき手",
     category: "hi_waza",
     weight: 2,
+    difficulty: 2,
     // Loser touches down with hand, no direct attack
     condition: (w, l) => w.offensiveOutput === 0 && l.balance <= 0,
   },
@@ -828,6 +883,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "つきひざ",
     category: "hi_waza",
     weight: 2,
+    difficulty: 2,
     // Loser touches down with knee
     condition: (w, l) => w.offensiveOutput === 0 && l.balance <= 0 && l.stamina < 0.2,
   },
@@ -837,6 +893,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "踏み出し",
     category: "hi_waza",
     weight: 2,
+    difficulty: 2,
     // Loser steps out under their own momentum
     condition: (w, l) =>
       w.offensiveOutput === 0 && l.balance > 0 && l.edgeDistance <= 2 && overCommitting(l),

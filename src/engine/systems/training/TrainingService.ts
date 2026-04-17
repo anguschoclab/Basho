@@ -19,7 +19,7 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { calculateFatigueDelta, calculateGrowthVector } from "./TrainingMath";
+import { calculateFatigueDelta, calculateGrowthVector, calculateAgeDecay } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 
 // Re-exports for UI consumption
@@ -79,36 +79,111 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     const updates: Partial<Rikishi> = { fatigue: newFatigue };
 
-    // 2. Growth Logic (Skip if injured)
+    // 2. Weekly Drill Plan (P2 Phase O)
+    // If a manual schedule is provided, we aggregate the 6-day impact.
+    // Otherwise, we default to Asageiko (basic conditioning).
+    const weeklyPlan = beyaState.weeklyPlan?.[rikishi.id] || {
+      1: "asageiko",
+      2: "asageiko",
+      3: "asageiko",
+      4: "asageiko",
+      5: "asageiko",
+      6: "asageiko",
+    };
+
+    const drillVector = {
+      strength: 0,
+      speed: 0,
+      technique: 0,
+      balance: 0,
+      stamina: 0,
+      weight: 0,
+      mental: 0,
+      fatigue: 0,
+    };
+
+    Object.values(weeklyPlan).forEach((drillType) => {
+      const effects = DRILL_EFFECTS[drillType] || DRILL_EFFECTS.none;
+      drillVector.strength += effects.strength || 0;
+      drillVector.speed += effects.speed || 0;
+      drillVector.technique += effects.technique || 0;
+      drillVector.balance += effects.balance || 0;
+      drillVector.stamina += effects.stamina || 0;
+      drillVector.weight += effects.weight || 0;
+      drillVector.mental += effects.mental || 0;
+      drillVector.fatigue += effects.fatigue;
+    });
+
+    // Apply drill fatigue to the running total
+    updates.fatigue = Math.max(0, Math.min(100, (updates.fatigue || 0) + drillVector.fatigue));
+
+    // 3. Growth Logic (Skip if injured)
     if (!rikishi.injured) {
       const heya = EntityCollection.getHeya(world, rikishi.heyaId);
       const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
+      const infra = InfrastructureService.getHeyaBonuses(heya);
       const growth = calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
 
-      // Apply staff bonuses (Stacking multipliers)
-      // Technique bonus applies to technique and mental
-      // Conditioning bonus applies to strength, speed, balance, stamina
+      // Apply staff bonuses + Drill Vector + Infrastructure Buffs
       const finalGrowth = {
-        strength: growth.strength * staffBonuses.conditioning,
-        speed: growth.speed * staffBonuses.conditioning,
-        technique: growth.technique * staffBonuses.technique,
-        balance: growth.balance * staffBonuses.conditioning,
-        stamina: growth.stamina * staffBonuses.conditioning,
-        adaptability: growth.adaptability,
-        mental: growth.mental * staffBonuses.technique,
+        strength:
+          (growth.strength + drillVector.strength) *
+          staffBonuses.conditioning *
+          infra.statBuffs.strength,
+        speed:
+          (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,
+        technique:
+          (growth.technique + drillVector.technique) *
+          staffBonuses.technique *
+          infra.statBuffs.technique,
+        balance:
+          (growth.balance + drillVector.balance) *
+          staffBonuses.conditioning *
+          infra.statBuffs.balance,
+        stamina:
+          (growth.stamina + drillVector.stamina) *
+          staffBonuses.conditioning *
+          infra.statBuffs.stamina,
+        adaptability: growth.adaptability * infra.statBuffs.adaptability,
+        mental:
+          (growth.mental + drillVector.mental) * staffBonuses.technique * infra.statBuffs.mental,
       };
 
       // Pre-snapshot for milestone checks
       const prevPower = rikishi.power || 50;
 
-      // Apply Growth
-      updates.power = Math.min(100, (rikishi.power || 50) + finalGrowth.strength);
-      updates.speed = Math.min(100, (rikishi.speed || 50) + finalGrowth.speed);
-      updates.technique = Math.min(100, (rikishi.technique || 50) + finalGrowth.technique);
-      updates.balance = Math.min(100, (rikishi.balance || 50) + finalGrowth.balance);
-      updates.stamina = Math.min(100, (rikishi.stamina || 50) + finalGrowth.stamina);
-      updates.adaptability = Math.min(100, (rikishi.adaptability || 50) + finalGrowth.adaptability);
-      updates.experience = Math.min(100, (rikishi.experience || 0) + finalGrowth.mental * 0.5);
+      // Age-based decline (past peak, per attribute group)
+      const decay = calculateAgeDecay(rikishi, world.year);
+
+      // Apply Growth (net of age decay)
+      updates.power = Math.min(
+        100,
+        Math.max(10, (rikishi.power || 50) + finalGrowth.strength + decay.strength)
+      );
+      updates.speed = Math.min(
+        100,
+        Math.max(10, (rikishi.speed || 50) + finalGrowth.speed + decay.speed)
+      );
+      updates.technique = Math.min(
+        100,
+        Math.max(10, (rikishi.technique || 50) + finalGrowth.technique + decay.technique)
+      );
+      updates.balance = Math.min(
+        100,
+        Math.max(10, (rikishi.balance || 50) + finalGrowth.balance + decay.balance)
+      );
+      updates.stamina = Math.min(
+        100,
+        Math.max(10, (rikishi.stamina || 50) + finalGrowth.stamina + decay.stamina)
+      );
+      updates.adaptability = Math.min(
+        100,
+        Math.max(10, (rikishi.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
+      );
+      updates.experience = Math.min(
+        100,
+        Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * 0.5 + decay.mental)
+      );
 
       // Sync flattened UI stats
       updates.stats = {

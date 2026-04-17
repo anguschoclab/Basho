@@ -245,17 +245,62 @@
   .west-accent { border-right: 2px solid hsl(var(--west)); }
 
   /* ── Rank Badges ── */
+  /* Sanyaku - The elite ranks with shimmer effect */
   .rank-yokozuna {
     background: linear-gradient(135deg, hsl(var(--gold)), hsl(44 70% 38%));
     color: hsl(222 32% 5%);
+    box-shadow: 0 0 20px hsl(var(--gold) / 0.3), 0 2px 4px hsl(0 0% 0% / 0.3);
   }
   .rank-ozeki {
     background: linear-gradient(135deg, hsl(var(--silver)), hsl(220 12% 50%));
     color: hsl(222 32% 5%);
+    box-shadow: 0 0 16px hsl(var(--silver) / 0.25), 0 2px 4px hsl(0 0% 0% / 0.2);
   }
   .rank-sekiwake, .rank-komusubi {
     background: linear-gradient(135deg, hsl(var(--bronze)), hsl(25 48% 36%));
     color: hsl(38 28% 97%);
+    box-shadow: 0 0 12px hsl(var(--bronze) / 0.2), 0 2px 4px hsl(0 0% 0% / 0.2);
+  }
+
+  /* Makuuchi - Professional division with primary accent */
+  .rank-maegashira {
+    background: hsl(var(--primary) / 0.15);
+    border: 1px solid hsl(var(--primary) / 0.35);
+    color: hsl(var(--primary));
+  }
+
+  /* Juryo - Second division with west blue */
+  .rank-juryo {
+    background: hsl(var(--west) / 0.15);
+    border: 1px solid hsl(var(--west) / 0.35);
+    color: hsl(var(--west));
+  }
+
+  /* Makushita - Third division neutral */
+  .rank-makushita {
+    background: hsl(var(--secondary) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.8);
+    color: hsl(var(--foreground) / 0.85);
+  }
+
+  /* Lower divisions - subtle */
+  .rank-sandanme, .rank-jonidan, .rank-jonokuchi {
+    background: hsl(var(--muted) / 0.6);
+    border: 1px solid hsl(var(--border) / 0.5);
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+  }
+
+  /* Rank badge side indicators */
+  .rank-side-east {
+    background: hsl(var(--east) / 0.15);
+    border: 1px solid hsl(var(--east) / 0.4);
+    color: hsl(var(--east));
+  }
+  .rank-side-west {
+    background: hsl(var(--west) / 0.15);
+    border: 1px solid hsl(var(--west) / 0.4);
+    color: hsl(var(--west));
   }
 
   /* ── Paper / Card Effect ── */

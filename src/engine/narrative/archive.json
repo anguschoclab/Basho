@@ -1338,6 +1338,38 @@
           "Consistency is building into a serious threat.",
           "The momentum is clearly shifting in one direction."
         ]
+      },
+      "preBasho": {
+        "rivalryWatch": [
+          "Tension Mounts: %SHIKONA1% vs %SHIKONA2% Grudge Still Smoldering",
+          "Rivalry Watch: Bad Blood Between %SHIKONA1% and %SHIKONA2% Highlighting Opening Day",
+          "Can %SHIKONA1% Finally Silence %SHIKONA2%? The Grudge Deepens"
+        ],
+        "promotionRace": [
+          "%SHIKONA% on the Brink: Ozeki Promotion Race Heating Up",
+          "The Path to Ozeki: Can %SHIKONA% Secure the Wins Needed?",
+          "Pressure Rising for %SHIKONA% in Quest for Higher Rank"
+        ],
+        "formWatch": [
+          "Dark Horse Alert: %SHIKONA% Enters Tournament in Peak Condition",
+          "Form Watch: %SHIKONA% Dominating Keiko Sessions Ahead of Tourney",
+          "Keep an Eye on %SHIKONA%: Scouts Report Unusual Agility"
+        ],
+        "titleFavorites": [
+          "Favorites List: %SHIKONA% Picked to Lift the Emperor's Cup",
+          "Is This %SHIKONA%'s Year? Odds Favor the Veteran",
+          "Title Hunt: %SHIKONA% Leads the Pack in Pre-Basho Predictions"
+        ],
+        "subtitles": {
+          "rivalryWatch": [
+            "The keiko-ba whispers suggest this match will be more than just sumo.",
+            "Historical statistics favor a defensive battle."
+          ],
+          "promotionRace": [
+            "The Association's eyes are firmly fixed on this performance.",
+            "A single misstep could end the dream for another two months."
+          ]
+        }
       }
     },
     "system": {
@@ -1634,40 +1666,40 @@
     "rikishi": {
       "stats": {
         "power": {
-          "exceptional": "His raw strength is fearsome — opponents buckle on first contact as if struck by a massive wall of concrete. He can dismantle defenses on sheer power alone.",
-          "outstanding": "A powerful frame that most men at this level simply cannot withstand for long. When he commits forward, the earth seems to tremble.",
-          "strong": "Solid, reliable strength. Enough to move most men and severely punish any passive opponents who try to stall the bout.",
-          "capable": "Adequate power for his rank. He won't effortlessly overwhelm anyone, but holds his own comfortably in the clinch.",
-          "developing": "Still building the deep muscle and leverage his rank demands. The raw potential is there, and improvement is visible.",
-          "limited": "Noticeably outpowered by most opponents. He relies heavily on technique, positioning, and speed to compensate for the strength gap.",
-          "struggling": "Physically overmatched in most contests. His raw strength is a distinct liability at this level of sumo."
+          "exceptional": "Forcefulness of legend — his tachiai lands like a falling tree and a single committed shove can end a bout. Opponents arrive at the shikiri already bracing for impact, knowing no amount of preparation makes the first clash safe. At this level, raw power rewrites matchmaking: stables game-plan specifically around surviving him.",
+          "outstanding": "A genuinely powerful frame that few men at this level can withstand. When he gets his hips under an opponent, the lift is almost inevitable, and sustained belt pressure breaks grips that hold against anyone else. Coaches treat his strength as a primary weapon to be set up, not a bonus to fall back on.",
+          "strong": "Solid, dependable strength — more than enough to move most men off their mark and punish any opponent who tries to stall the bout. He can win clinches through sheer force when technique runs even, and his forward surges are respected across the division. Not a one-punch finisher, but a reliable closer once position is secured.",
+          "capable": "Adequate power for his rank. He won't overwhelm anyone through brute force, but he holds the center comfortably in the clinch and rarely gives ground without reason. Coaches expect his strength to meet the moment — no more, no less — and build his game plans around technique and positioning.",
+          "developing": "Still building the deep muscle and leverage his rank demands. The raw potential is visible in training — he moves heavier loads this basho than last — but in-ring application lags behind. Opponents who recognize the gap lean on him early, hoping to close the bout before his frame finishes maturing.",
+          "limited": "Noticeably outpowered by most opponents at this level. He compensates with footwork, timing, and angle changes, but sustained belt battles rarely end in his favor. A stalled clinch against a heavier man is essentially a losing position, and strategy reflects it.",
+          "struggling": "Physically overmatched in nearly every contest. Opponents walk him backward almost at will, and any attempt to trade pressure head-on collapses quickly. Survival depends entirely on avoiding the clinch and manufacturing chaos before his disadvantage gets exposed."
         },
         "speed": {
-          "exceptional": "Lightning quick — his first step and reaction time verge on the preternatural. By the time opponents set their feet, he is already executing his offense.",
-          "outstanding": "Fast enough to regularly catch opponents flat-footed before they can establish their grips or defensive posture.",
-          "strong": "Quick on his feet, able to exploit fleeting openings that slower, more deliberate men would miss entirely.",
-          "capable": "Moves adequately for his preferred style. His speed is neither a pronounced liability nor a primary weapon.",
-          "developing": "Could be quicker. His timing is still maturing, and momentary opportunities are occasionally left unexploited on the clay.",
-          "limited": "Noticeably sluggish compared to his peers. Opponents frequently dictate the pace, and he struggles to adjust laterally.",
-          "struggling": "Painfully slow to react and extremely easy to outmaneuver. Speed is a consistent, glaring weakness at this level."
+          "exceptional": "Preternaturally quick — his first step and reaction time are genuinely hard to photograph, let alone counter. By the time opponents set their feet, he has already chosen his grip, his angle, and his finish. At this level, speed is less an attribute than a weapon that rewrites the tempo of every bout he enters.",
+          "outstanding": "Fast enough to regularly catch opponents flat-footed before they can establish grips or defensive posture. He turns hesitation into defeat, punishing any moment of indecision with a clean redirection or a sharp lateral step. Game plans against him center almost entirely on not getting drawn into a speed contest.",
+          "strong": "Quick on his feet, able to exploit fleeting openings that slower men would miss entirely. He reads momentum shifts half a beat before his peers and uses that window to steer bouts into shapes he prefers. Not elite, but consistently one of the faster men in any given matchup.",
+          "capable": "Moves adequately for his preferred style. His speed is neither a pronounced liability nor a weapon — it simply keeps him in step with the tempo most bouts naturally settle into. Enough to execute his game, not enough to dictate someone else's.",
+          "developing": "Could be quicker. His timing is still maturing, and momentary opportunities slip past him on the clay more often than a coach would like. Film sessions show the opening clearly; matching that read in real time is the work still ahead.",
+          "limited": "Noticeably sluggish compared to his peers. Opponents dictate the pace, choose the grip, and leave him chasing the bout rather than shaping it. Lateral adjustments in particular are a recurring problem against more mobile men.",
+          "struggling": "Painfully slow to react. He is easy to outmaneuver, easy to pull down, and easy to time — and faster opponents routinely land their setup before he has even committed to his tachiai. A glaring, consistent weakness at this level."
         },
         "balance": {
-          "exceptional": "His root is the stuff of legend — opponents describe pushing him as trying to shove a mountain. His center of gravity is an unbreakable anchor.",
-          "outstanding": "Exceptionally stable under immense pressure. He rarely loses footing, even in the most desperate, tangled scrambles.",
-          "strong": "Well-grounded and composed. He recovers remarkably well from disadvantaged positions and awkward angles.",
-          "capable": "Adequate balance for competitive sumo. He holds steady in most standard grappling situations without issue.",
-          "developing": "Sometimes caught leaning or off-angle. His balance is a work in progress and can fail under sustained, heavy pressure.",
-          "limited": "Unsteady under serious pressure. He is noticeably vulnerable to throws, pull-downs, and sudden shifts in momentum.",
-          "struggling": "Falls far too easily. Fundamental stability issues severely limit what he can attempt both offensively and defensively."
+          "exceptional": "His root is the stuff of legend — veteran rikishi describe pushing him as trying to shove a mountain that pushes back. His center of gravity is an anchor that opponents seem to bend around rather than displace. Throws, pull-downs, and sudden momentum changes that would fell anyone else barely register.",
+          "outstanding": "Exceptionally stable under immense pressure. He rarely loses footing even in desperate, tangled scrambles, and he recovers cleanly from positions that leave other men collapsed on the clay. Coaches trust him to survive chaos that would finish most of the division.",
+          "strong": "Well-grounded and composed. He recovers remarkably well from disadvantaged positions and awkward angles, and sudden throws rarely land cleanly against him. A dependable foundation that lets his other tools work.",
+          "capable": "Adequate stability for competitive sumo. He holds steady in standard grappling situations and doesn't give up cheap losses on throws, though prolonged pressure from a stronger man will eventually tell. Nothing to exploit, nothing to lean on.",
+          "developing": "Sometimes caught leaning or off-angle. His stability is a work in progress and can fail under sustained heavy pressure, particularly late in long bouts when legs fade. The fundamentals are there — consistency is the next step.",
+          "limited": "Unsteady under real pressure. He is noticeably vulnerable to throws, pull-downs, and sudden shifts in momentum, and opposing coaches routinely script bouts around tipping him off-balance. Even a half-committed throw attempt can succeed.",
+          "struggling": "Falls far too easily. Fundamental stability issues severely limit what he can attempt both offensively and defensively, and any opponent with a credible throwing kimarite turns bouts against him into a formality."
         },
         "technique": {
-          "exceptional": "A transcendent master technician. Every grip, every angle, and every timing read is deliberate, precise, and flawlessly executed.",
-          "outstanding": "Highly skilled and deeply intuitive. He reads complex situations instantly and executes with the crisp clarity of a seasoned veteran.",
-          "strong": "A remarkably good technical foundation, featuring highly reliable execution of his preferred throwing and twisting techniques.",
-          "capable": "Sound fundamental basics. He can execute his core moves cleanly when the correct opportunity presents itself.",
-          "developing": "His technique is slowly improving but remains frustratingly inconsistent, particularly when he is put under heavy pressure.",
-          "limited": "Relies almost entirely on raw physicality over craft. Technical sophistication is a massive, gaping hole in his sumo game.",
-          "struggling": "Severely lacks the technical repertoire required to compete effectively. Opponents routinely exploit his sheer predictability."
+          "exceptional": "A transcendent master technician. Every grip, every angle, every timing read is deliberate, precise, and executed with a fluency most wrestlers never approach. Bouts with him feel less like contests than demonstrations — the kimarite is decided long before it lands.",
+          "outstanding": "Highly skilled and deeply intuitive. He reads complex situations instantly and executes with the crisp clarity of a seasoned veteran, chaining setups and counters so smoothly that opponents rarely get a second chance at a bad position. Rewards study and punishes mistakes equally.",
+          "strong": "A genuinely good technical foundation, with reliable execution of his preferred throwing and twisting techniques. He finishes what he starts, rarely botches familiar setups, and adapts his grip intelligently when the first plan fails. A craftsman the coaches trust.",
+          "capable": "Sound fundamental basics. He executes his core moves cleanly when the correct opportunity presents itself, though he seldom invents solutions on the fly. Enough craft to match most peers — not enough to impose his game on unfamiliar styles.",
+          "developing": "His technique is improving but remains frustratingly inconsistent, particularly under heavy pressure when reps haven't yet built confidence. Clean executions in the keiko-ba still misfire in the tournament hall, and he knows it.",
+          "limited": "Relies almost entirely on physicality over craft. Technical sophistication is a gaping hole in his sumo game, and opponents with sharper fundamentals dismantle him the moment raw force stops working.",
+          "struggling": "Severely lacks the technical repertoire needed to compete effectively. His options in any given position are obvious and few, and opponents routinely exploit the predictability — even lower-ranked men find answers against him."
         }
       },
       "archetypes": {

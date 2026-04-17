@@ -5,6 +5,9 @@ import { getHouseStyle } from "./shikona/helpers";
 import { getRankRule } from "./shikona/rankRules";
 import { generateLegacyShikona } from "./shikona/legacy";
 import { generateCandidate } from "./shikona/generation";
+import { HEYA_PREFIX_PROBABILITY } from "./shikona/heyaPrefixes";
+import { pickSuffixByCategoryBias } from "./shikona/helpers";
+import type { Rank } from "./types/banzuke";
 
 // ----------------------------
 // Helper: Seeded RNG (LCG)
@@ -45,6 +48,20 @@ export function generateShikona(
 
   const house = getHouseStyle(config.heyaId);
   const rankRule = getRankRule(config.rank);
+
+  // Heya signature prefix — rank-tiered probability. Junior wrestlers almost
+  // always inherit the stable's prefix; top-rank wrestlers are more likely to
+  // have evolved unique names.
+  if (config.heyaPrefix) {
+    const rankKey = (config.rank as Rank | undefined) ?? "jonokuchi";
+    const baseProb = HEYA_PREFIX_PROBABILITY[rankKey] ?? 0.4;
+    const prob = Math.min(0.9, baseProb + (config.heyaPrefixBoost ?? 0));
+    if (rng() < prob) {
+      const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
+      const name = config.heyaPrefix + suffix;
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+  }
 
   // If legacy shikona is provided, use legacy generation with appropriate probability
   if (config.legacyShikona) {

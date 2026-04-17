@@ -44,11 +44,10 @@ export function generateBoutHeadline(args: {
   return { title, subtitle };
 }
 
-export function generateStreakHeadline(args: {
-  rng: SeededRNG;
-  shikona: string;
-  streak: number;
-}): { title: string; subtitle: string } {
+export function generateStreakHeadline(args: { rng: SeededRNG; shikona: string; streak: number }): {
+  title: string;
+  subtitle: string;
+} {
   const { rng, shikona, streak } = args;
   const ctx = { shikona, streak };
 
@@ -68,6 +67,24 @@ export function generateStreakHeadline(args: {
 
   const title = BardEngine.resolve(rng, titlePath, ctx).text;
   const subtitle = BardEngine.resolve(rng, `media.streaks.subtitles.${subKey}`, ctx).text;
+
+  return { title, subtitle };
+}
+
+export function generatePreBashoHeadline(args: {
+  rng: SeededRNG;
+  kind: "rivalryWatch" | "promotionRace" | "formWatch" | "titleFavorites";
+  ctx: Record<string, string | number>;
+}): { title: string; subtitle?: string } {
+  const { rng, kind, ctx } = args;
+
+  const title = BardEngine.resolve(rng, `media.preBasho.${kind}`, ctx).text;
+  let subtitle: string | undefined;
+
+  // Only some types have specific subtitles in the archive
+  if (kind === "rivalryWatch" || kind === "promotionRace") {
+    subtitle = BardEngine.resolve(rng, `media.preBasho.subtitles.${kind}`, ctx).text;
+  }
 
   return { title, subtitle };
 }

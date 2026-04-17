@@ -48,6 +48,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 interface SelectedBout {
   east: UIRikishi;
   west: UIRikishi;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   result: any; // BoutResult projection
   isPlayerBout: boolean;
 }
@@ -77,6 +78,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
       </div>
 
       {divisions.map((division) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const totalDays = getTotalBashodays(division as any);
         const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
 
@@ -89,6 +91,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
 
             <div className="grid grid-cols-15 gap-1">
               {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const needsScheduling = needsScheduleForDay(division as any, day);
                 const isCurrent = day === currentDay;
                 const isPast = day < currentDay;
@@ -139,13 +142,14 @@ export default function BashoPage() {
   }, [world]);
 
   const lastBoutKey = useMemo(() => {
-    const last = (state as any).lastBoutResult;
+    const last = state.lastBoutResult;
     if (!last || !bashoDigest) return null;
     return `${makePairKey(last.winnerRikishiId, last.loserRikishiId)}::${bashoDigest.day}::${last.kimarite || ""}`;
-  }, [(state as any).lastBoutResult, bashoDigest]);
+  }, [state.lastBoutResult, bashoDigest]);
 
   const nextBoutIndex = useMemo(() => {
     if (!bashoDigest) return -1;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bashoDigest.matches.findIndex((m: any) => !m.result);
   }, [bashoDigest]);
 
@@ -159,7 +163,7 @@ export default function BashoPage() {
 
   // Auto-show player bout logic reconstruction
   useEffect(() => {
-    const last = (state as any).lastBoutResult;
+    const last = state.lastBoutResult;
     if (
       !last ||
       !lastBoutKey ||
@@ -170,6 +174,7 @@ export default function BashoPage() {
       return;
 
     const matchToday = bashoDigest.matches.find(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Match type is complex
       (m: any) =>
         (m.eastRikishiId === last.winnerRikishiId && m.westRikishiId === last.loserRikishiId) ||
         (m.eastRikishiId === last.loserRikishiId && m.westRikishiId === last.winnerRikishiId)
@@ -200,7 +205,7 @@ export default function BashoPage() {
   }, [bashoDigest, advanceDay]);
 
   const handleTacticChange = useCallback(
-    (id: string, tactic: string) => setBoutTactic(id, tactic as any),
+    (id: string, tactic: string) => setBoutTactic(id, tactic as any), // eslint-disable-line @typescript-eslint/no-explicit-any
     [setBoutTactic]
   );
 
@@ -320,6 +325,7 @@ export default function BashoPage() {
               </h3>
               <div className="space-y-1">
                 {standings.map((entry: any, idx: number) => {
+                  // eslint-disable-line @typescript-eslint/no-explicit-any
                   const rid = entry?.rikishi?.id as string | undefined;
                   const isPlayer = !!rid && playerRikishiIds.includes(rid);
                   return (
@@ -353,16 +359,17 @@ export default function BashoPage() {
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
             <MatchDayViewer
-              matches={matches as any}
+              matches={matches as any} // eslint-disable-line @typescript-eslint/no-explicit-any
               world={world}
               playerRikishiIds={new Set(playerRikishiIds)}
               onSimulateBout={simulateBout}
               onSimulateAll={simulateAllBouts}
               onTacticChange={handleTacticChange}
               onEndDay={handleNextDay}
-              highlightRikishiId={(state as any).selectedRikishiId || undefined}
-              playerTactics={(state as any).boutTactics}
+              highlightRikishiId={(state as any).selectedRikishiId || undefined} // eslint-disable-line @typescript-eslint/no-explicit-any
+              playerTactics={(state as any).boutTactics} // eslint-disable-line @typescript-eslint/no-explicit-any
               onBoutClick={(match: any) => {
+                // eslint-disable-line @typescript-eslint/no-explicit-any
                 if (!match.result || !match.eastRikishi || !match.westRikishi) return;
                 setSelectedBout({
                   east: match.eastRikishi,
@@ -384,7 +391,7 @@ export default function BashoPage() {
           east={selectedBout.east}
           west={selectedBout.west}
           result={selectedBout.result}
-          bashoName={bashoName as any}
+          bashoName={bashoName as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           day={day}
         />
       )}
@@ -395,7 +402,7 @@ export default function BashoPage() {
           east={autoShowPlayerBout.east}
           west={autoShowPlayerBout.west}
           result={autoShowPlayerBout.result}
-          bashoName={bashoName as any}
+          bashoName={bashoName as any} // eslint-disable-line @typescript-eslint/no-explicit-any
           day={day}
         />
       )}

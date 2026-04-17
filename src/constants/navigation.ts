@@ -1,6 +1,7 @@
-export const HQ_TABS = [
+export const STABLE_TABS = [
   { id: "stable", label: "Overview", href: "/stable" },
   { id: "roster", label: "Roster", href: "/stable/roster" },
+  { id: "infrastructure", label: "Infrastructure", href: "/stable/infrastructure" },
   { id: "training", label: "Training", href: "/stable/training" },
   { id: "staff", label: "Staff", href: "/stable/staff" },
   { id: "medical", label: "Medical", href: "/stable/medical" },

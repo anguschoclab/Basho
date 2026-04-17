@@ -17,6 +17,7 @@ interface RikishiProfileHeaderProps {
   rikishi: UIRikishi;
   isOwned: boolean;
   healthBadge: string;
+  isKadoban?: boolean;
   onBack: () => void;
 }
 
@@ -24,6 +25,7 @@ export function RikishiProfileHeader({
   rikishi,
   isOwned,
   healthBadge,
+  isKadoban,
   onBack,
 }: RikishiProfileHeaderProps) {
   return (
@@ -56,14 +58,6 @@ export function RikishiProfileHeader({
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Badge
-                    className={cn(
-                      "text-[10px] font-black uppercase tracking-widest px-3 h-6 border-0",
-                      `rank-${rikishi.rank}`
-                    )}
-                  >
-                    {rikishi.rankLabel}
-                  </Badge>
-                  <Badge
                     variant="outline"
                     className={cn(
                       "font-bold h-6 uppercase text-[9px] tracking-widest",
@@ -95,11 +89,46 @@ export function RikishiProfileHeader({
                       <Globe className="h-3 w-3" /> Foreign Slot
                     </Badge>
                   )}
+                  {isKadoban && (
+                    <TooltipWrap content="Kadoban: Must secure a winning record to avoid losing Ozeki status">
+                      <Badge
+                        variant="destructive"
+                        className="h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+                      >
+                        Kadoban
+                      </Badge>
+                    </TooltipWrap>
+                  )}
                 </div>
 
-                <h1 className="text-6xl font-display font-black tracking-tighter sumi-e-ink leading-none">
-                  {rikishi.shikona}
-                </h1>
+                <div>
+                  <h1 className="font-display text-5xl font-black tracking-tight uppercase leading-none mb-1">
+                    {rikishi.shikona}
+                  </h1>
+                  <p className="text-white/60 font-display text-sm tracking-widest uppercase">
+                    {rikishi.heyaName} • {rikishi.styleName} - {rikishi.archetypeName}
+                  </p>
+
+                  {/* Phase M: Lineage Indicators */}
+                  <div className="flex flex-wrap items-center gap-3 mt-4">
+                    {rikishi.mentorName && (
+                      <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
+                        <span className="text-[10px] text-white/40 uppercase font-black">
+                          Mentor
+                        </span>
+                        <span className="text-xs font-bold">{rikishi.mentorName}</span>
+                      </div>
+                    )}
+                    {(rikishi.menteeNames?.length ?? 0) > 0 && (
+                      <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10">
+                        <span className="text-[10px] text-white/40 uppercase font-black">
+                          Students
+                        </span>
+                        <span className="text-xs font-bold">{rikishi.menteeNames?.join(", ")}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.2em] opacity-80 pt-2">
                   <span className="flex items-center gap-2">
@@ -115,6 +144,29 @@ export function RikishiProfileHeader({
                     <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg
                   </span>
                 </div>
+                {rikishi.rank === "ozeki" && rikishi.consecutiveStrongOzeki > 0 && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+                      <span className="text-gold flex items-center gap-1">
+                        <span role="img" aria-label="Yokozuna Run">
+                          🏆
+                        </span>{" "}
+                        Yokozuna Promotion Watch
+                      </span>
+                      <span className="opacity-70">
+                        {rikishi.consecutiveStrongOzeki} / 2 Strong Basho
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gold transition-all duration-1000 ease-out"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongOzeki / 2) * 100))}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

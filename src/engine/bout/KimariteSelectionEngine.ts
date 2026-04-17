@@ -1,0 +1,163 @@
+import type { Rikishi } from "../types/rikishi";
+import type { Division } from "../types/banzuke";
+import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
+import type { FinalBoutState } from "../types/kimariteStrategy";
+import { KIMARITE_STRATEGIES_V2 } from "./kimariteStrategy";
+import { SeededRNG } from "../rng";
+
+/**
+ * Maps spatial context and rikishi stats to the FinalBoutState required by the registry.
+ */
+function mapToFinalBoutState(
+  r: Rikishi,
+  side: "east" | "west",
+  ctx: SpatialBoutContext
+): FinalBoutState {
+  const isEast = side === "east";
+  const momentumX = isEast ? ctx.eastMomentumX : ctx.westMomentumX;
+  const cogOffset = isEast ? ctx.eastCoGOffset : ctx.westCoGOffset;
+  const grip = isEast ? ctx.eastGrip : ctx.westGrip;
+  const leadFoot = isEast ? ctx.eastLeadFoot : ctx.westLeadFoot;
+
+  // Normalize stats (0-100 expected)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
+  const strength = (r as any).strength ?? 50;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
+  const balanceStat = (r as any).balance ?? 50;
+
+  return {
+    grip: grip === "outside" || grip === "none" ? "none" : grip,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property access
+    style: (r as any).archetype === "oshi" ? "oshi" : "yotsu",
+    power: strength,
+    balanceResistance: balanceStat,
+    forwardMomentum: Math.max(0, momentumX),
+    offensiveOutput: 1, // Assume attacking if this is called, unless hi_waza checks override
+    balance: Math.max(0, 100 - Math.abs(cogOffset) * 200), // Approximate balance from CoG offset
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
+    stamina: (r as any).stamina ?? 1.0,
+    edgeDistance: Math.max(0, 4.55 - Math.abs(leadFoot)), // 4.55m is RING_RADIUS
+    cogOffset,
+    momentumX,
+    gripClass: grip,
+    leadFootX: leadFoot,
+  };
+}
+
+/**
+ * The KimariteSelectionEngine handles the logic for choosing which technique
+ * is attempted and whether it successfully executes.
+ */
+export const KimariteSelectionEngine = {
+  /**
+   * Selects a technique attempt based on spatial state, division, and meta.
+   */
+  evaluate(
+    east: Rikishi,
+    west: Rikishi,
+    st: EngineStateV2,
+    ctx: SpatialBoutContext,
+    division: Division,
+    meta: { tone: string; drift: Record<string, number> },
+    rng: SeededRNG
+  ): KimariteAttempt | null {
+    // 1. Determine attacker and defender candidates
+    // In many cases both could be attackers, but classifier logic usually picks a side.
+    const sides: ("east" | "west")[] = ["east", "west"];
+    const results: KimariteAttempt[] = [];
+
+    for (const side of sides) {
+      const attacker = side === "east" ? east : west;
+      const defender = side === "east" ? west : east;
+      const attackerState = mapToFinalBoutState(attacker, side, ctx);
+      const defenderState = mapToFinalBoutState(defender, side === "east" ? "west" : "east", ctx);
+
+      // 2. Filter strategies by phase and condition
+      const applicable = KIMARITE_STRATEGIES_V2.filter((s) => {
+        // Filter by phase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase tag is dynamic
+        if (s.appliesTo && !s.appliesTo.includes(st.phase.tag as any)) return false;
+
+        // Filter by condition
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex context object
+          return s.condition(attackerState, defenderState, ctx as any);
+        } catch {
+          return false;
+        }
+      });
+
+      if (applicable.length === 0) continue;
+
+      // 3. Apply weights (Base * Division * Meta * Specialization)
+      const weighted = applicable.map((s) => {
+        let weight = s.weight;
+
+        // Division Biases (E2)
+        if (division === "makuuchi") {
+          if (s.category === "nage" || s.category === "hineri") weight *= 1.3;
+          if (s.category === "kihon") weight *= 0.8;
+        } else if (division === "jonokuchi" || division === "jonidan") {
+          if (s.category === "kihon") weight *= 1.5;
+          if (s.category === "nage" || s.category === "hineri" || s.category === "sori")
+            weight *= 0.4;
+        }
+
+        // Meta Drift (E5)
+        const drift = meta.drift[s.id] || 1.0;
+        weight *= drift;
+
+        // Era Tone Category Bonuses (P2 Extension)
+        if (meta.tone === "explosive" && s.tacticalFamily === "push") weight *= 1.15;
+        if (meta.tone === "classic" && s.tacticalFamily === "belt") weight *= 1.15;
+        if (meta.tone === "technical" && s.tacticalFamily === "speed") weight *= 1.15;
+        if (meta.tone === "defensive" && s.tacticalFamily === "trick") weight *= 1.15;
+
+        // Rikishi Specialization (Favored Moves)
+        if (attacker.favoredKimarite?.includes(s.id)) {
+          weight *= 1.5;
+        }
+
+        return { strategy: s, weight };
+      });
+
+      // 4. Weighted Random Selection
+      const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0);
+      let roll = rng.next() * totalWeight;
+      let selected = weighted[0].strategy;
+
+      for (const w of weighted) {
+        roll -= w.weight;
+        if (roll <= 0) {
+          selected = w.strategy;
+          break;
+        }
+      }
+
+      // 5. Execution Success Probability (E2 Deep Dive)
+      // Execution = f(Technique, Difficulty, Division)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
+      const attackerTech = (attacker as any).technique ?? 50;
+      const difficulty = selected.difficulty || 5;
+
+      // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
+      let successProb = Math.max(0.1, Math.min(0.97, (attackerTech / (difficulty * 10)) * 0.8));
+
+      // Division execution scaling
+      if (division === "makuuchi") successProb += 0.1;
+      if (division === "jonidan" || division === "jonokuchi") successProb -= 0.15;
+
+      results.push({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Technique ID is dynamic
+        technique: selected.id as any,
+        side: side,
+        successProbability: Math.max(0.05, Math.min(0.98, successProb)),
+        requiredConditions: ["registry_match", `difficulty_${difficulty}`],
+      });
+    }
+
+    // Pick the best attempt (highest success probability among valid sides)
+    if (results.length === 0) return null;
+    return results.sort((a, b) => b.successProbability - a.successProbability)[0];
+  },
+};

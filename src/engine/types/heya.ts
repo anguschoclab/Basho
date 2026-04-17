@@ -20,6 +20,7 @@ import type {
 import type { BeyaTrainingState } from "./training";
 import type { HistoricalOyakata } from "./history";
 import type { ActiveCrisis } from "./crises";
+import type { InfrastructureState } from "./infrastructure";
 
 /** Defines the structure for heya. */
 export interface Heya {
@@ -31,6 +32,15 @@ export interface Heya {
   koenkaiId?: Id;
   staffIds?: Id[];
   rikishiIds?: Id[];
+
+  /** P2: Discrete stable infrastructure */
+  infrastructure?: Record<string, InfrastructureState>;
+  constructionQueue?: Array<{
+    facilityId: string;
+    completionYear: number;
+    completionBasho: string;
+    level: number;
+  }>;
 
   statureBand: StatureBand;
   prestigeBand: PrestigeBand;
@@ -75,6 +85,12 @@ export interface Heya {
 
   lineage: HistoricalOyakata[];
   historicalYusho: number;
+
+  /**
+   * Signature shikona prefix for the stable — most wrestlers inherit this
+   * (stronger at junior ranks). E.g. "Chiyo" for Kokonoe, "Koto" for Sadogatake.
+   */
+  shikonaPrefix?: string;
 
   /** Financial ledger for tracking transactions like prize money, loans, etc. */
   ledger?: Array<{

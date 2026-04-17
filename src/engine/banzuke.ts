@@ -3,7 +3,6 @@
  * This file serves as the main entry point for banzuke updates and ranking logic.
  */
 
-import { stableTieBreak } from "./utils/sort";
 import {
   RANK_HIERARCHY,
   type Division,
@@ -33,7 +32,8 @@ export { RANK_HIERARCHY };
 export { generateSanshoLedgerEntry } from "./economics_awards";
 export { generateKeshoForPromotions } from "./systems/keshoMawashi/KeshoMawashiGenerator";
 
-import { formatRank } from "./banzuke/banzukeHelpers";
+import { formatRank, resolveBanzukeTie, type BanzukeCandidate } from "./banzuke/banzukeHelpers";
+import type { WorldState } from "./types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
@@ -198,6 +198,7 @@ function divisionTier(d: Division): number {
 export function updateBanzuke(
   currentBanzuke: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,
+  world: WorldState,
   previousOzekiKadoban: OzekiKadobanMap = {},
   heyaMap?: Map<string, Heya>
 ): BanzukeUpdateResult {
@@ -250,13 +251,18 @@ export function updateBanzuke(
         eligibleBestTier: bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki),
       };
     })
-    .sort((a, b) =>
-      a.desiredKey !== b.desiredKey
-        ? a.desiredKey - b.desiredKey
-        : a.oldKey !== b.oldKey
-          ? a.oldKey - b.oldKey
-          : stableTieBreak(a.entry.rikishiId, b.entry.rikishiId)
-    );
+    .sort((a, b) => {
+      // Primary sort: Desired Key (Movement + Political Weight)
+      if (a.desiredKey !== b.desiredKey) {
+        return a.desiredKey - b.desiredKey;
+      }
+
+      // Secondary sort: Tiebreak Hierarchy
+      // Level 1: Previous Slot Closeness (oldKey)
+      // Level 2: H2H
+      // Level 3: SOS Proxy
+      return resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
+    });
 
   const assigned: BanzukeEntry[] = [];
   const used = new Set<string>();

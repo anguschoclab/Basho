@@ -57,6 +57,22 @@ export interface TalentCandidate {
     volatility: number;
   };
   isAmateurStar?: boolean;
+
+  /** Potential Ability per stat (0–100). Hidden; revealed via scouting. */
+  potentialStats?: {
+    strength: number;
+    speed: number;
+    technique: number;
+    balance: number;
+    stamina: number;
+    mental: number;
+    adaptability: number;
+  };
+  /** Hidden development profile — revealed only at deep scouting. */
+  developmentProfile?: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
+  developmentSpeed?: number;
+  peakAgeOffset?: number;
+  ceilingFraction?: number;
 }
 
 /** Defines the structure for talent pool state. */

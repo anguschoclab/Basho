@@ -39,6 +39,8 @@ import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
+import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
+import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "calendar", order: 0, span: 4, component: CalendarWidget, label: "Calendar" },
@@ -63,6 +65,7 @@ export default function Dashboard() {
   const world = state.world;
   const isLoaded = !!world;
   const [editMode, setEditMode] = useState(false);
+  const [deliberationCandidateId, setDeliberationCandidateId] = useState<string | null>(null);
 
   const { getOrderedPlacements, onDragStart, onDragOver, onDragEnd, resetLayout } =
     useDashboardLayout(WIDGET_REGISTRY);
@@ -81,6 +84,47 @@ export default function Dashboard() {
       navigate({ to: "/main-menu", replace: true });
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
+
+  // Phase L: Yokozuna Deliberation Trigger
+  useEffect(() => {
+    if (!world?.events?.rikishi) return;
+
+    // Find the latest promotion deliberation event
+    const promotionEvent = Array.from(Object.values(world.events.rikishi))
+      .flat()
+      .find((e) => e.type === "PROMOTION_DELIBERATION");
+
+    if (promotionEvent && !deliberationCandidateId) {
+      setDeliberationCandidateId(promotionEvent.context.rikishiId);
+    }
+  }, [world?.events, deliberationCandidateId]);
+
+  const deliberationData = useMemo(() => {
+    if (!deliberationCandidateId || !world) return null;
+    const core = world.rikishi.get(deliberationCandidateId);
+    if (!core) return null;
+
+    const promotionEvent = Array.from(Object.values(world.events.rikishi || {}))
+      .flat()
+      .find(
+        (e) =>
+          e.type === "PROMOTION_DELIBERATION" && e.context.rikishiId === deliberationCandidateId
+      );
+
+    return {
+      rikishi: projectRikishi(core, world),
+      heyaName: world.heyas.get(core.heyaId)?.name || "Unknown",
+      isPlayerRikishi: core.heyaId === world.playerHeyaId,
+      verdict: (promotionEvent?.context.status === "favorable" ? "promoted" : "deferred") as
+        | "promoted"
+        | "deferred",
+      reasoning: [
+        promotionEvent?.context.status === "favorable"
+          ? "The candidate has demonstrated the necessary clinical dominance and media support."
+          : "While the stats are there, the council feels the public support is currently insufficient for promotion.",
+      ],
+    };
+  }, [deliberationCandidateId, world]);
 
   const playerHeya = isLoaded && world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
 
@@ -319,6 +363,18 @@ export default function Dashboard() {
           })}
         </div>
       </div>
+
+      {/* FTUE Tour */}
+      <OnboardingTourDialog />
+
+      {/* Yokozuna Deliberation Modal */}
+      {deliberationData && (
+        <YokozunaDeliberation
+          {...deliberationData}
+          open={!!deliberationCandidateId}
+          onClose={() => setDeliberationCandidateId(null)}
+        />
+      )}
     </AppLayout>
   );
 }

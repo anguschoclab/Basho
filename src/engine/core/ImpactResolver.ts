@@ -211,6 +211,11 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
           ...result,
           governanceLog: [...(result.governanceLog || []), ...append.items],
         };
+      } else if (append.field === "awardLog") {
+        result = {
+          ...result,
+          awardLog: [...(result.awardLog || []), ...append.items],
+        };
       }
     }
   }

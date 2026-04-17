@@ -107,12 +107,15 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     const potentialMentors = heyaRikishi
       .filter(
         (r) =>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- experience is dynamic property
           r && (r.division === "makuuchi" || r.division === "juryo" || (r as any).experience > 50)
       )
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Filtered above
       .map((r) => r!.id);
 
     // Find junior rikishi without mentors
     const juniorsWithoutMentors = heyaRikishi.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- experience is dynamic property
       (r) => r && !r.mentorId && (r as any).experience < 30
     );
 

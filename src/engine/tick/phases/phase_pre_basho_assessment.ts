@@ -9,6 +9,8 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { PreBashoAssessment } from "../../types/world";
+import { triggerPreBashoJournalism } from "../../systems/media/MediaService";
+import { mergeImpacts } from "../../core/ImpactResolver";
 
 /**
  * Run pre-basho health assessment for all rikishi.
@@ -80,12 +82,16 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
 
   builder.updateWorldField("_preBashoAssessment", assessment);
 
-  return builder.build();
+  const baselineImpact = builder.build();
+  const journalismImpact = triggerPreBashoJournalism(world);
+
+  return mergeImpacts([baselineImpact, journalismImpact]);
 }
 
 /**
  * Assess a single rikishi's health status.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi assessment uses dynamic properties
 function assessRikishi(rikishi: any): {
   rikishiId: string;
   healthScore: number;

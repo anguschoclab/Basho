@@ -27,7 +27,8 @@ export type EngineEventType =
   | "NARRATIVE_STRATEGY_SHIFT"
   | "FACILITY_UPGRADED"
   | "FACILITY_DEGRADED"
-  | "ROSTER_OVERFLOW_RELEASE";
+  | "ROSTER_OVERFLOW_RELEASE"
+  | "PROMOTION_DELIBERATION";
 
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
 /** Type representing event category. */
