@@ -38,7 +38,7 @@ function executeSponsorRecruitment(
   world: WorldState,
   heya: Heya,
   oyakata: Oyakata,
-  rng: RNG,
+  rng: SeededRNG,
   selectedSponsor: Sponsor,
   strength: number,
   reasoning: string
