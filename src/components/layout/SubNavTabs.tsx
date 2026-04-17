@@ -42,12 +42,14 @@ export function SubNavTabs({
       )}
 
       {/* Tabs */}
-      <nav className="flex items-center h-full">
+      <nav className="flex items-center h-full" role="tablist" aria-label="Sub navigation">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
           return (
             <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
               <button
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => {
                   if (tab.href) {
                     navigate({ to: tab.href });
@@ -56,7 +58,7 @@ export function SubNavTabs({
                   }
                 }}
                 className={cn(
-                  "relative h-full px-4 flex items-center transition-all duration-150 group",
+                  "relative h-full px-4 flex items-center transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
                   isActive
                     ? "text-[hsl(var(--primary))]"
                     : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
