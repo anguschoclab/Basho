@@ -17,9 +17,9 @@ function getRunwayMonths(heya: Heya): number {
   return monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 }
 
-function getCurrentSponsorCount(pool: any, heya: Heya): number {
+function getCurrentSponsorCount(pool: SponsorPool, heya: Heya): number {
   return Array.from(pool.sponsors.values()).filter(
-    (s: any) => s.active && s.relationships?.some((r: any) => r.targetId === heya.id)
+    (s) => s.active && s.relationships?.some((r) => r.targetId === heya.id)
   ).length;
 }
 
