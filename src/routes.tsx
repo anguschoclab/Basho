@@ -50,11 +50,30 @@ const isElectronProd =
 // Root route
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
+  errorComponent: ({ error }) => {
+    console.error("Root Route Error caught by TanStack Router:", error);
+    return (
+      <div className="p-10 bg-destructive/10 text-destructive border border-destructive rounded-lg m-10">
+        <h1 className="text-2xl font-bold mb-4">Application Error</h1>
+        <p className="font-mono text-sm whitespace-pre-wrap">
+          {error instanceof Error ? error.message : String(error)}
+        </p>
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="mt-6 px-4 py-2 bg-destructive text-white rounded hover:bg-destructive/90 font-bold"
+        >
+          Reset Application
+        </button>
+      </div>
+    );
+  },
   // Redirect to dashboard in Electron production to handle file:// initial load
   beforeLoad: () => {
+    console.log("[Routes] rootRoute: beforeLoad, isElectronProd =", isElectronProd);
     if (isElectronProd) {
       // In Electron production, redirect from root to dashboard with hash
       if (window.location.hash === "" || window.location.hash === "#/") {
+        console.log("[Routes] Redirecting to #/dashboard for Electron production");
         window.location.hash = "#/dashboard";
       }
     }
@@ -329,7 +348,13 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   history: isElectronProd ? createHashHistory() : createBrowserHistory(),
+  notFoundComponent: () => {
+    console.warn("[Routes] 404: Not Found Component Triggered");
+    return <NotFound />;
+  },
 });
+
+console.log("[Router] Initialized with history type:", isElectronProd ? "HASH" : "BROWSER");
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -12,25 +12,29 @@ import { WorkerInitializer } from "./components/worker/WorkerInitializer";
 import { InboxNewsTicker } from "./components/game/InboxNewsTicker";
 import { CrisisModal } from "./components/game/CrisisModal";
 
+import { ErrorBoundary } from "./components/ErrorBoundary";
+
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark">
-      <TooltipProvider>
-        <GameProvider>
-          <WorkerInitializer />
-          <InboxNewsTicker />
-          <CrisisModal />
-          <Toaster />
-          <OpfsQuotaListener />
-          <Sonner />
-          <TitleBar />
-          <RouterProvider router={router} />
-        </GameProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark">
+        <TooltipProvider>
+          <GameProvider>
+            <WorkerInitializer />
+            <InboxNewsTicker />
+            <CrisisModal />
+            <Toaster />
+            <OpfsQuotaListener />
+            <Sonner />
+            <TitleBar />
+            <RouterProvider router={router} />
+          </GameProvider>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
