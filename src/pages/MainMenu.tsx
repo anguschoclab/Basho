@@ -104,7 +104,30 @@ export default function MainMenu() {
     if (groups.fragile.length > 0) picks.push(groups.fragile[0]);
     else if (groups.new.length > 0) picks.push(groups.new[0]);
 
-    // Fill remaining slots with best available
+    // Fill remaining slots maintaining variety (round-robin from each band)
+    const remainingBands: StatureBand[] = [
+      "fragile",
+      "new",
+      "rebuilding",
+      "established",
+      "powerful",
+      "legendary",
+    ];
+    let bandIdx = 0;
+    while (picks.length < 6 && bandIdx < remainingBands.length * 3) {
+      const band = remainingBands[bandIdx % remainingBands.length];
+      const bandStables = groups[band];
+      const pickCount = picks.filter((p) => p.statureBand === band).length;
+      if (bandStables[pickCount]) {
+        const next = bandStables[pickCount];
+        if (!picks.find((p) => p.id === next.id)) {
+          picks.push(next);
+        }
+      }
+      bandIdx++;
+    }
+
+    // Final fallback: any remaining stables by sekitori count
     const allSorted = stables.sort(
       (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0)
     );
