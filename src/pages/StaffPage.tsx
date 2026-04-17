@@ -100,11 +100,11 @@ export default function StaffPage() {
       return;
     }
 
-    const staff = hireStaff(world, heya.id, selectedRole);
-    if (staff) {
+    const impact = hireStaff(world, heya.id, selectedRole);
+    if (impact) {
       updateWorld(world);
       setIsRecruitOpen(false);
-      toast.success(`Hired new ${ROLE_LABELS[selectedRole]}: ${staff.name}`);
+      toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
     } else {
       toast.error("Insufficient funds or recruitment error.");
     }
