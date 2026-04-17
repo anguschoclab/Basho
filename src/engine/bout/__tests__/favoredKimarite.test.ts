@@ -21,6 +21,7 @@ function makeEngineState(eastLeadFoot: number, westLeadFoot: number): EngineStat
   const westBody = initPhysicalBody(west, "west");
   eastBody.leadingFootX = eastLeadFoot;
   eastBody.x = eastLeadFoot;
+  eastBody.velocityX = 5; // east is pushing forward — required for forwardMomentum > 0
   westBody.leadingFootX = westLeadFoot;
   westBody.x = westLeadFoot;
 
@@ -121,7 +122,8 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
     const base = evaluateKimariteAttempt(noFavor, west, push, null, st, new SeededRNG("noboost"), DIVISION, META);
     const withWrongFavor = evaluateKimariteAttempt(east, west, push, null, st, new SeededRNG("noboost"), DIVISION, META);
 
-    expect(withWrongFavor!.technique).toBe("oshidashi");
+    // Technique and successProbability must be identical — yoritaoshi never fires in push_battle
+    expect(withWrongFavor!.technique).toBe(base!.technique);
     expect(withWrongFavor!.successProbability).toBeCloseTo(base!.successProbability, 5);
   });
 
