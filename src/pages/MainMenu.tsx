@@ -106,7 +106,7 @@ export default function MainMenu() {
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
     createWorld(state.world.seed, heyaId);
-    navigate({ to: "/" });
+    navigate({ to: "/dashboard" });
   };
 
   if (!state?.world) {
