@@ -17,14 +17,12 @@ export default function SponsorManagementPage() {
 
   if (!digest) {
     return (
-      <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
-        <div className="flex flex-col items-center justify-center py-32 text-center gap-3">
-          <p className="font-display font-bold text-lg">No Active Game</p>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            Start or load a game to manage sponsor relationships.
-          </p>
-        </div>
-      </AppLayout>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center gap-3 p-8">
+        <p className="font-display font-bold text-lg">No Active Game</p>
+        <p className="text-sm text-muted-foreground max-w-xs">
+          Start or load a game to manage sponsor relationships.
+        </p>
+      </div>
     );
   }
 

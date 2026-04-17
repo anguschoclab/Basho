@@ -2,7 +2,6 @@
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";

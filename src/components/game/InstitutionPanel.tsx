@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
-import type { OyakataArchetype } from "@/engine/types/oyakata";
+import type { Oyakata, OyakataArchetype, OyakataTraits } from "@/engine/types/oyakata";
 import {
   SCANDAL_LABELS,
   TRAIT_LABELS,
@@ -73,17 +73,9 @@ export function InstitutionPanel({
   oyakataTraits,
 }: {
   heya: Heya;
-  oyakata: {
-    archetype?: string;
-  } | null;
+  oyakata: Oyakata | null | undefined;
   oyakataQuirks: string[];
-  oyakataTraits: {
-    ambition: number;
-    patience: number;
-    risk: number;
-    tradition: number;
-    compassion: number;
-  } | null;
+  oyakataTraits: OyakataTraits | null | undefined;
 }) {
   const welfare = (
     heya as Heya & {

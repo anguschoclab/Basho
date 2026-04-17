@@ -44,9 +44,8 @@ export default function RikishiPage() {
   const effectiveHeyaId = playerHeyaId || world?.playerHeyaId;
   const rikishiList = useMemo(() => {
     if (!world || rikishiId) return [];
-    const allRikishi = Array.from(world.rikishi.values());
-    if (!effectiveHeyaId) return allRikishi.map((r) => projectRikishi(r, world));
-    return allRikishi
+    if (!effectiveHeyaId) return [];
+    return Array.from(world.rikishi.values())
       .filter((r) => r.heyaId === effectiveHeyaId)
       .map((r) => projectRikishi(r, world));
   }, [world, effectiveHeyaId, rikishiId]);
