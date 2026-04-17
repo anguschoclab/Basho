@@ -22,8 +22,8 @@ import type { KimariteStrategy, FinalBoutState } from "../types/kimariteStrategy
 
 // ─── Shorthand condition builders ───────────────────────────────────────────
 
-const atEdge = (l: FinalBoutState) => l.edgeDistance <= 8;
-const nearCenter = (l: FinalBoutState) => l.edgeDistance > 8;
+const atEdge = (l: FinalBoutState) => l.edgeDistance <= 2.0; // within 2m of tawara
+const nearCenter = (l: FinalBoutState) => l.edgeDistance > 2.0; // more than 2m from tawara
 const hasBelt = (w: FinalBoutState) => w.grip !== "none";
 const noBelt = (w: FinalBoutState) => w.grip === "none";
 const isPusher = (w: FinalBoutState) => w.style === "oshi";
