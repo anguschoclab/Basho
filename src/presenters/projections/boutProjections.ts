@@ -113,10 +113,32 @@ export function projectOpponentScoutingUIDigest(
   return { opponents: sliced };
 }
 
+/** H2H matchup data between two rikishi */
+export interface H2HMatchupData {
+  rikishiAId: string;
+  rikishiAName: string;
+  rikishiBId: string;
+  rikishiBName: string;
+  aWins: number;
+  bWins: number;
+  lastKimarite?: string;
+  lastWinner?: string;
+}
+
 /**
  * Build matchup data for H2H.
  */
-function buildMatchupData(rAId: string, rA: any, rBId: string, rB: any, record: any): any {
+function buildMatchupData(
+  rAId: string,
+  rA: { shikona: string },
+  rBId: string,
+  rB: { shikona: string },
+  record: {
+    wins: number;
+    losses: number;
+    lastMatch?: { kimarite?: string; winnerId?: string } | null;
+  }
+): H2HMatchupData {
   return {
     rikishiAId: rAId,
     rikishiAName: rA.shikona,
@@ -136,10 +158,10 @@ function calculateHeyaMatchups(
   world: WorldState,
   rikishiAIds: string[],
   rikishiBIds: string[]
-): { winsA: number; winsB: number; matchups: any[] } {
+): { winsA: number; winsB: number; matchups: H2HMatchupData[] } {
   let winsA = 0;
   let winsB = 0;
-  const matchups: any[] = [];
+  const matchups: H2HMatchupData[] = [];
 
   for (const rAId of rikishiAIds) {
     const rA = world.rikishi.get(rAId);
