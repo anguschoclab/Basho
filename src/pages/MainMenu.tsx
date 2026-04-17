@@ -244,7 +244,7 @@ export default function MainMenu() {
               loadFromSlot={loadFromSlot}
               loadFromAutosave={loadFromAutosave}
               hasAutosave={hasAutosave}
-              onLoadSuccess={() => navigate({ to: "/" })}
+              onLoadSuccess={() => navigate({ to: "/dashboard" })}
               createWorld={createWorld}
             />
           </div>
