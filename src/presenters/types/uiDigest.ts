@@ -42,12 +42,15 @@ export interface StandingEntry {
 /** Complete digest for basho page */
 export interface BashoUIDigest {
   bashoName: BashoName;
+  year: number;
   day: number;
   matches: BoutMatchUI[];
   standings: StandingEntry[];
   playerRikishiIds: string[];
   completedBouts: number;
+  totalBouts: number;
   dayProgress: number;
+  isKeyDay: boolean;
   seasonalFlavor?: string;
 }
 

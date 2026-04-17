@@ -6,11 +6,14 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import type { BashoUIDigest, BoutMatchUI, HeatBand } from "../types/uiDigest";
+import type { MatchSchedule } from "../../engine/types/basho";
+import type { Rikishi } from "../../engine/types/rikishi";
+import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { getRivalry } from "../../engine/rivalries";
 import { compareRanks } from "../../engine/banzuke";
+import { toRankPosition } from "../../engine/types/banzuke";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
 
 /**
@@ -31,8 +34,8 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
 
   const day = basho.day;
   const matches = (basho.matches || [])
-    .filter((m) => m.day === day)
-    .map((match) => {
+    .filter((m: MatchSchedule) => m.day === day)
+    .map((match: MatchSchedule) => {
       const east = world.rikishi.get(match.eastRikishiId);
       const west = world.rikishi.get(match.westRikishiId);
       if (!east || !west) return null;
@@ -44,7 +47,8 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
       const h2h = { wins: record.wins, losses: record.losses };
 
       const rivalriesState = world.rivalriesState;
-      const rivalry = rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null;
+      const rivalry =
+        (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
       const heat = rivalry?.heat ?? 0;
       let heatBand: HeatBand = "cold";
       if (heat >= 75) heatBand = "inferno";
@@ -63,14 +67,14 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
         h2hCommentary: generateH2HCommentary(east, west),
       };
     })
-    .filter((m): m is BoutMatchUI => !!m);
+    .filter((m) => m !== null) as BoutMatchUI[];
 
   const completedBouts = matches.filter((m) => m.result).length;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
-  const standings = Array.from(world.rikishi.values())
-    .filter((r) => !r.isRetired && r.division === "makuuchi")
-    .map((r) => {
+  const standings: StandingEntry[] = Array.from(world.rikishi.values())
+    .filter((r: Rikishi) => !r.isRetired && r.division === "makuuchi")
+    .map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };
       return {
         rikishi: projectRikishi(r, world),
@@ -78,11 +82,26 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
         losses: record.losses,
       };
     })
-    .sort((a, b) => b.wins - a.wins || compareRanks(a.rikishi.rank, b.rikishi.rank))
+    .sort(
+      (a, b) =>
+        b.wins - a.wins ||
+        compareRanks(
+          toRankPosition({
+            rank: a.rikishi.rank,
+            side: a.rikishi.side,
+            rankNumber: a.rikishi.rankNumber,
+          }),
+          toRankPosition({
+            rank: b.rikishi.rank,
+            side: b.rikishi.side,
+            rankNumber: b.rikishi.rankNumber,
+          })
+        )
+    )
     .slice(0, 10);
 
   return {
-    bashoName: basho.name,
+    bashoName: basho.bashoName,
     day,
     year: world.year,
     matches,
@@ -92,9 +111,6 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     totalBouts: matches.length,
     dayProgress,
     isKeyDay: isKeyDay(day),
-    seasonalFlavor: getSeasonalFlavor(
-      BASHO_CALENDAR[basho.bashoName || "hatsu"].season,
-      world.seed
-    ),
+    seasonalFlavor: getSeasonalFlavor(BASHO_CALENDAR[basho.bashoName].season, world.seed),
   };
 }

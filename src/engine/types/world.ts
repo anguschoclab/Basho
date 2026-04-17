@@ -107,6 +107,7 @@ import type { SponsorPool } from "./sponsors";
 import type { MediaState } from "./media";
 import type { PerceptionSnapshot } from "../perception";
 import type { RivalriesState } from "../rivalries";
+import type { BashoState } from "./basho";
 
 /** Defines the structure for a closed or merged heya. */
 export interface ClosedHeyaRecord extends Heya {
@@ -128,6 +129,7 @@ export interface WorldState {
   cyclePhase: CyclePhase;
 
   currentBashoName?: BashoName;
+  currentBasho?: BashoState;
   rng?: SeededRNG;
 
   heyas: IdMapRuntime<Heya>;
