@@ -42,7 +42,7 @@ export function SubNavTabs({
       )}
 
       {/* Tabs */}
-      <nav className="flex items-center h-full" role="tablist" aria-label="Sub navigation">
+      <nav className="flex items-center h-full" aria-label="Sub navigation">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id || (tab.href && location.pathname === tab.href);
           return (
