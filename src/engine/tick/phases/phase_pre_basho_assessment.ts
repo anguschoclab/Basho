@@ -6,6 +6,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { PreBashoAssessment } from "../../types/world";
@@ -91,8 +92,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
 /**
  * Assess a single rikishi's health status.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi assessment uses dynamic properties
-function assessRikishi(rikishi: any): {
+function assessRikishi(rikishi: Rikishi): {
   rikishiId: string;
   healthScore: number;
   injuryRisk: "low" | "medium" | "high";

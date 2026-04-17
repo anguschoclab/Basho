@@ -11,6 +11,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { mergeImpacts } from "../../core/ImpactResolver";
@@ -106,17 +107,14 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     // Find senior rikishi (sekitori or experienced) who can be mentors
     const potentialMentors = heyaRikishi
       .filter(
-        (r) =>
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- experience is dynamic property
-          r && (r.division === "makuuchi" || r.division === "juryo" || (r as any).experience > 50)
+        (r): r is Rikishi =>
+          !!r && (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50)
       )
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Filtered above
-      .map((r) => r!.id);
+      .map((r) => r.id);
 
     // Find junior rikishi without mentors
     const juniorsWithoutMentors = heyaRikishi.filter(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- experience is dynamic property
-      (r) => r && !r.mentorId && (r as any).experience < 30
+      (r): r is Rikishi => !!r && !r.mentorId && r.experience < 30
     );
 
     // Assign mentors to juniors

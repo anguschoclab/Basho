@@ -71,13 +71,15 @@ export const KimariteSelectionEngine = {
       // 2. Filter strategies by phase and condition
       const applicable = KIMARITE_STRATEGIES_V2.filter((s) => {
         // Filter by phase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase tag is dynamic
-        if (s.appliesTo && !s.appliesTo.includes(st.phase.tag as any)) return false;
+        if (
+          s.appliesTo &&
+          !s.appliesTo.includes(st.phase.tag as "push_battle" | "belt_battle" | "edge_crisis")
+        )
+          return false;
 
         // Filter by condition
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex context object
-          return s.condition(attackerState, defenderState, ctx as any);
+          return s.condition(attackerState, defenderState, ctx);
         } catch {
           return false;
         }
@@ -132,8 +134,7 @@ export const KimariteSelectionEngine = {
 
       // 5. Execution Success Probability (E2 Deep Dive)
       // Execution = f(Technique, Difficulty, Division)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic stat access
-      const attackerTech = (attacker as any).technique ?? 50;
+      const attackerTech = attacker.stats?.technique ?? attacker.technique ?? 50;
       const difficulty = selected.difficulty || 5;
 
       // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
@@ -144,7 +145,7 @@ export const KimariteSelectionEngine = {
       if (division === "jonidan" || division === "jonokuchi") successProb -= 0.15;
 
       results.push({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Technique ID is dynamic
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- KimariteId type needs alignment with strategy ids
         technique: selected.id as any,
         side: side,
         successProbability: Math.max(0.05, Math.min(0.98, successProb)),

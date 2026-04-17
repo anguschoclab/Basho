@@ -1,15 +1,12 @@
-/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { Star, Swords, Eye, CircleDot } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { MatchRowData, HEAT_CONFIG } from "./boutCardTypes.tsx";
+import type { MatchRowData } from "./boutCardTypes.tsx";
+import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
-
-export { getHeatBand, HEAT_CONFIG, getH2HRecord } from "./boutCardTypes.tsx";
-export type { RivalryHeatBand, MatchLike, MatchRowData } from "./boutCardTypes.tsx";
 
 export const BoutCard = React.memo(
   ({

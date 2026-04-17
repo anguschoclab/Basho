@@ -559,12 +559,8 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
 
   // B. Promotion Race
   const ozekiRikishi = Array.from(world.rikishi.values())
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic rank property
-    .filter((r) => r.rank === "ozeki" && (r as any).consecutiveStrongOzeki >= 1)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic sort property
-    .sort(
-      (a, b) => ((b as any).consecutiveStrongOzeki || 0) - ((a as any).consecutiveStrongOzeki || 0)
-    );
+    .filter((r) => r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1)
+    .sort((a, b) => (b.consecutiveStrongOzeki ?? 0) - (a.consecutiveStrongOzeki ?? 0));
 
   if (ozekiRikishi.length > 0) {
     const r = ozekiRikishi[0];

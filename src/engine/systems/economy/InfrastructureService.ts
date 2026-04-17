@@ -76,8 +76,7 @@ export const InfrastructureService = {
     for (const heya of world.heyas.values()) {
       if (!heya.constructionQueue || heya.constructionQueue.length === 0) continue;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Construction queue items are dynamic
-      const remainingQueue: any[] = [];
+      const remainingQueue: NonNullable<Heya["constructionQueue"]> = [];
       const updatedInfra = { ...(heya.infrastructure || {}) };
 
       for (const project of heya.constructionQueue) {

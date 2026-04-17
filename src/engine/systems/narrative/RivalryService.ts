@@ -48,7 +48,7 @@ export const RivalryService = {
    * Authoritative Bout Hook.
    * Returns StateImpact describing rivalry updates instead of mutating state directly.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Bout result type is complex
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Result has extended bout properties beyond BoutResult type
   onBoutResolved(world: WorldState, args: { result: any; day?: number }): StateImpact {
     const { result } = args;
     if (!result.winnerRikishiId || !result.loserRikishiId) {
