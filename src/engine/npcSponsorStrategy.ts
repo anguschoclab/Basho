@@ -23,15 +23,15 @@ function getCurrentSponsorCount(pool: any, heya: Heya): number {
   ).length;
 }
 
-function getEligibleSponsors(pool: any, heya: Heya, filterFn?: (s: Sponsor) => boolean): Sponsor[] {
+function getEligibleSponsors(pool: SponsorPool, heya: Heya, filterFn?: (s: Sponsor) => boolean): Sponsor[] {
   return Array.from(pool.sponsors.values())
     .filter(
-      (s: any) =>
+      (s) =>
         s.active &&
-        !s.relationships?.some((r: any) => r.targetId === heya.id) &&
+        !s.relationships?.some((r) => r.targetId === heya.id) &&
         (filterFn ? filterFn(s) : s.tier !== "T0")
     )
-    .sort((a: any, b: any) => b.prestigeAffinity - a.prestigeAffinity);
+    .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
 }
 
 function executeSponsorRecruitment(
