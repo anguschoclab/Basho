@@ -48,8 +48,7 @@ export function SubNavTabs({
           return (
             <TooltipWrap key={tab.id} content={`View ${tab.label}`} side="bottom">
               <button
-                role="tab"
-                aria-selected={isActive}
+                aria-current={isActive ? "page" : undefined}
                 onClick={() => {
                   if (tab.href) {
                     navigate({ to: tab.href });
