@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -18,6 +17,20 @@ import { KoenkaiSekitoriCards } from "@/components/economy/KoenkaiSekitoriCards"
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
+
+/** Loan type matching DebtSection component requirements. */
+interface DebtLoan {
+  id: string;
+  type: string;
+  providerName: string;
+  amount: number;
+  interestRate: number;
+  dueWeek: number;
+  remainingBalance: number;
+  principal: number;
+  monthlyPayment: number;
+  stringsAttached?: string[];
+}
 
 /** economy page. */
 export default function EconomyPage() {
@@ -78,13 +91,13 @@ export default function EconomyPage() {
     return count;
   }, [playerRikishi]);
 
-  // Top earnes
+  // Top earners
   const topEarners = useMemo(() => {
-    return playerRikishi
-      .filter((r) => r && typeof r === "object")
+    return (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>)
+      .filter((r): r is NonNullable<typeof r> => r && typeof r === "object")
       .sort((a, b) => {
-        const av = Number(a?.economics?.careerKenshoWon ?? 0) || 0;
-        const bv = Number(b?.economics?.careerKenshoWon ?? 0) || 0;
+        const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
+        const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
         return bv - av;
       })
       .slice(0, 5);
@@ -138,7 +151,7 @@ export default function EconomyPage() {
         {/* Debt & Obligations (FM v2.0) */}
         <DebtSection
           activeLoans={
-            (playerHeya as typeof playerHeya & { activeLoans?: unknown[] }).activeLoans as any[]
+            (playerHeya as typeof playerHeya & { activeLoans?: DebtLoan[] }).activeLoans ?? []
           }
         />
 
@@ -167,7 +180,7 @@ export default function EconomyPage() {
         <IncomeExpensesCards weeklyFinances={weeklyFinances} />
 
         {/* Sponsor Draw */}
-        <SponsorDrawCard topEarners={topEarners as any[]} />
+        <SponsorDrawCard topEarners={topEarners} />
 
         {/* Info Note */}
         <EconomyInfoNote />
