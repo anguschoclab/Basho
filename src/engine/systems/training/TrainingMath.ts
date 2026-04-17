@@ -113,8 +113,12 @@ export function calculateGrowthVector(
     }
   }
 
+  // Adaptability multiplier: faster learners absorb training more efficiently
+  // range: adaptability=0 → 0.8x, adaptability=50 → 1.0x, adaptability=100 → 1.2x
+  const adaptabilityMult = 0.8 + (rikishi.adaptability ?? 50) * 0.004;
+
   const totalMult =
-    intensityMult * focusModeMult * phaseMult * facilityGrowthMult * degeikoMult * BASE_GROWTH;
+    intensityMult * focusModeMult * phaseMult * facilityGrowthMult * degeikoMult * adaptabilityMult * BASE_GROWTH;
 
   const talentSeed = rikishi.talentSeed ?? 50;
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;

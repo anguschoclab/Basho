@@ -78,6 +78,31 @@ export function computeTachiaiPower(
 }
 
 /**
+ * Maps a rikishi's condition (0–100) to a combat effectiveness multiplier (0.8–1.0).
+ * condition=100 → 1.0 (full strength), condition=0 → 0.8 (severely impaired).
+ */
+export function conditionMultiplier(condition: number): number {
+  return 0.8 + Math.max(0, Math.min(100, condition)) * 0.002;
+}
+
+/**
+ * Returns a tachiai power bonus/penalty based on head-to-head record.
+ * Formula: (wins/total - 0.5) * 8, requires total >= 3 bouts.
+ *   50/50 record → 0 (neutral)
+ *   dominant record (10-0) → +4
+ *   dominated record (0-10) → -4
+ */
+export function h2hConfidence(r: Rikishi, opponentId: string): number {
+  const record = (r as unknown as Record<string, unknown>).h2h as Record<string, { wins: number; losses: number }> | undefined;
+  if (!record) return 0;
+  const h2h = record[opponentId];
+  if (!h2h) return 0;
+  const total = h2h.wins + h2h.losses;
+  if (total < 3) return 0;
+  return (h2h.wins / total - 0.5) * 8;
+}
+
+/**
  * Computes tachiai power with optional style-matchup penalty.
  * Applies a 8% reduction when the opponent's style appears in the rikishi's
  * weakAgainstStyles list.
@@ -157,8 +182,9 @@ function resolveTachiaiV2(
 
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
-  const eastPower = tachiaiPowerWithMatchupPenalty(east, west) + jitter(rng, 8);
-  const westPower = tachiaiPowerWithMatchupPenalty(west, east) + jitter(rng, 8);
+  // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
+  const eastPower = tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, 8);
+  const westPower = tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 

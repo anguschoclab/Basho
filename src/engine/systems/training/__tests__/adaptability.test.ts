@@ -11,9 +11,10 @@ import { mockRikishi } from "../../../__tests__/utils";
 import type { TrainingProfile } from "../../../types/training";
 
 const baseProfile: TrainingProfile = {
-  intensity: "normal",
-  recovery: "standard",
-  focus: "balanced",
+  intensity: "balanced",
+  recovery: "normal",
+  focus: "neutral",
+  styleBias: "neutral",
 };
 
 describe("calculateGrowthVector — adaptability multiplier", () => {

@@ -4,7 +4,7 @@ import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
 import type { Side } from "../types/banzuke";
 // We import the B+ spatial physics runner
-import { resolveBoutPhysics } from "./boutPhysics";
+import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
 import { KIMARITE_REGISTRY } from "../kimarite";
@@ -70,8 +70,8 @@ export function resolveBout(
   const ctxWithTactic = { ...bout, playerTactic };
 
   // --- PHASE 3: RIVALRY CONNECTIVITY ---
-  let eastMod = 1.0;
-  let westMod = 1.0;
+  let eastRivalry = { heat: 0, spite: 0 };
+  let westRivalry = { heat: 0, spite: 0 };
 
   if (world) {
     const rivalryState = RivalryService.ensureRivalriesState(world);
@@ -79,16 +79,14 @@ export function resolveBout(
     const pair = rivalryState.pairs[rivalryKey];
 
     if (pair) {
-      // High heat increases aggression and mental intensity
-      const heat01 = pair.heat / 100;
-      eastMod = 1.0 + heat01 * 0.15; // Up to 15% boost
-      westMod = 1.0 + heat01 * 0.15;
+      eastRivalry = { heat: pair.heat, spite: pair.spite };
+      westRivalry = { heat: pair.heat, spite: pair.spite };
     }
   }
 
-  // Clone rikishi to apply temporary bout-only modifiers
-  const eastBout = { ...east, aggression: clamp((east.aggression || 50) * eastMod, 0, 100) };
-  const westBout = { ...west, aggression: clamp((west.aggression || 50) * westMod, 0, 100) };
+  // Clone rikishi to apply temporary bout-only modifiers (aggression + mental)
+  const eastBout = applyRivalryToRikishi(east, eastRivalry);
+  const westBout = applyRivalryToRikishi(west, westRivalry);
 
   // NPC tactic override: desperation/rivalry pressure on key days
   let cpuTacticOverride = bout.cpuTacticOverride;
@@ -244,6 +242,31 @@ export function resolveBout(
   }
 
   return { result, impact: builder.build() };
+}
+
+/**
+ * Applies temporary bout-only modifiers to a cloned rikishi:
+ * - rivalry heat   → boosts aggression (up to +15%)
+ * - rivalry spite  → boosts mental (up to +20%)
+ * - condition      → scales power/speed/technique/balance/stamina (0.8–1.0×)
+ */
+export function applyRivalryToRikishi(
+  r: Rikishi,
+  rivalry: { heat: number; spite: number }
+): Rikishi {
+  const heat01 = rivalry.heat / 100;
+  const spite01 = rivalry.spite / 100;
+  const condMult = conditionMultiplier(r.condition ?? 100);
+  return {
+    ...r,
+    aggression: clamp((r.aggression || 50) * (1 + heat01 * 0.15), 0, 100),
+    mental: clamp((r.mental || 50) * (1 + spite01 * 0.2), 0, 100),
+    power: clamp((r.power || 50) * condMult, 0, 100),
+    speed: clamp((r.speed || 50) * condMult, 0, 100),
+    technique: clamp((r.technique || 50) * condMult, 0, 100),
+    balance: clamp((r.balance || 50) * condMult, 0, 100),
+    stamina: clamp((r.stamina || 50) * condMult, 0, 100),
+  };
 }
 
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {

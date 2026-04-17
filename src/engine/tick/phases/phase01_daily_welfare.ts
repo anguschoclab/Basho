@@ -11,6 +11,7 @@ import { WelfareService } from "../../systems/welfare/WelfareService";
 import { toRikishiDescriptor } from "../../descriptorBands";
 import { clamp } from "../../utils";
 import { rngFromSeed } from "../../rng";
+import { tickCondition } from "../conditionTick";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");
@@ -59,6 +60,13 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     if (!next.injured && (next.fatigue ?? 0) > 0) {
       next.fatigue = Math.max(0, (next.fatigue ?? 0) - 0.3);
     }
+
+    // 4. Condition decay (during basho) / recovery (during off-season)
+    const withCondition = tickCondition(
+      next as unknown as import("../../types/rikishi").Rikishi,
+      world.cyclePhase as Parameters<typeof tickCondition>[1]
+    );
+    next.condition = withCondition.condition;
 
     builder.updateRikishi(id, next);
   }
