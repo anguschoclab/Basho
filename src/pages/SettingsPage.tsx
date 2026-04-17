@@ -1,5 +1,5 @@
 // SettingsPage.tsx — Game settings with autosave toggle, theme, keybinds reference
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 /* eslint-disable react-refresh/only-export-components */
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Settings, Keyboard, Palette, Save, Info } from "lucide-react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const AUTOSAVE_ENABLED_KEY = "basho_autosave_enabled";
 
@@ -42,7 +42,7 @@ function setAutosaveEnabled(enabled: boolean) {
 
 /** settings page. */
 export default function SettingsPage() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [autosaveOn, setAutosaveOn] = useState(getAutosaveEnabled);
 
   const handleAutosaveToggle = (checked: boolean) => {

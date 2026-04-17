@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { HQ_TABS } from "@/constants/navigation";
@@ -26,17 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import {
-  Users,
-  UserPlus,
-  ShieldCheck,
-  Zap,
-  Heart,
-  Award,
-  AlertCircle,
-  Briefcase,
-  Trash2,
-} from "lucide-react";
+import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { hireStaff, fireStaff } from "@/engine/staff";
 import { toast } from "sonner";

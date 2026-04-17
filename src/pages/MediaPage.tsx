@@ -2,7 +2,7 @@
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { MediaHeadline, MediaBeat } from "@/engine/types/media";
-import { projectMediaUIDigest, createDefaultMediaState } from "@/presenters/uiDigest";
+import { projectMediaUIDigest } from "@/presenters/uiDigest";
 import { getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
 
 /* ── Style maps ── */
