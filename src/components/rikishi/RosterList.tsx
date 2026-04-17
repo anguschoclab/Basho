@@ -106,13 +106,9 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                           <KeshoBadge kesho={r.keshoMawashi} size="sm" />
                         </TooltipWrap>
                       )}
-                      <Badge
-                        className={cn(
-                          "text-[9px] font-black uppercase tracking-widest px-2 h-5 border-0",
-                          `rank-${r.rank}`
-                        )}
-                      >
+                      <Badge variant="outline" className="text-xs uppercase">
                         {r.rankLabel}
+                        {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
                       </Badge>
                     </div>
                     <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">

@@ -9,9 +9,170 @@ import { rollArchetype, buildCombatProfile } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
 import type { TalentCandidate, TalentPoolType } from "../../types/talent";
 import { generateAvatarConfig } from "../../avatarGenerator";
+import {
+  AGE_BY_RANK,
+  PA_BY_RANK,
+  PROFILE_PRESETS,
+  SIZE_POTENTIAL,
+  STAT_GROUP,
+  DEVELOPMENT_PROFILE_WEIGHTS,
+  maturityFactor,
+  type DevelopmentProfile,
+} from "../../constants/DevelopmentCurves";
 
 interface GeneratedStats extends RikishiStats {
   height: number;
+}
+
+interface PotentialPackage {
+  stats: RikishiStats;
+  heightCm: number;
+  weightKg: number;
+  developmentSpeed: number;
+  peakAgeOffset: number;
+  ceilingFraction: number;
+  profile: DevelopmentProfile;
+}
+
+/**
+ * Rolls age from a Gaussian biased by rank, clamped to rank-specific plausibility bounds.
+ * Prodigies and late-career holdouts remain possible via the tails.
+ */
+export function rollAgeForRank(rng: SeededRNG, rank: Rank): number {
+  const cfg = AGE_BY_RANK[rank];
+  const raw = rng.gaussian(cfg.mean, cfg.stdDev);
+  return Math.round(clamp(raw, cfg.min, cfg.max));
+}
+
+/** Picks a development profile via weighted roll. */
+function rollDevelopmentProfile(rng: SeededRNG, age: number, rank: Rank): DevelopmentProfile {
+  // Consistency check: a young high-rank rikishi must be a fast developer.
+  const ageCfg = AGE_BY_RANK[rank];
+  const ageIsPrecocious = age < ageCfg.mean - ageCfg.stdDev;
+  const ageIsLate = age > ageCfg.mean + ageCfg.stdDev;
+
+  if (ageIsPrecocious && (rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake")) {
+    return rng.next() < 0.5 ? "prodigy" : "early_peaker";
+  }
+  if (ageIsLate && (rank === "makushita" || rank === "sandanme" || rank === "jonidan")) {
+    // An old rikishi stuck low is usually a journeyman or late bloomer still waiting
+    return rng.next() < 0.7 ? "journeyman" : "late_bloomer";
+  }
+
+  const roll = rng.next();
+  let acc = 0;
+  for (const [profile, weight] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
+    acc += weight;
+    if (roll < acc) return profile as DevelopmentProfile;
+  }
+  return "standard";
+}
+
+/**
+ * Rolls PA (potential ceiling) for all stats + size, biased by rank with fat tails.
+ */
+export function rollPotential(args: {
+  rng: SeededRNG;
+  rank: Rank;
+  profile: CombatProfile;
+  developmentProfile: DevelopmentProfile;
+}): PotentialPackage {
+  const { rng, rank, profile, developmentProfile } = args;
+  const preset = PROFILE_PRESETS[developmentProfile];
+  const paCfg = PA_BY_RANK[rank];
+
+  // Fat-tail sampling: 15% of rolls use wider σ (creates sleeper talents / busts)
+  const effectiveStdDev = rng.next() < 0.15 ? paCfg.stdDev * 2 : paCfg.stdDev;
+
+  const rollStat = (mod: number = 1.0): number => {
+    const mean = paCfg.mean * mod;
+    return clampInt(rng.gaussian(mean, effectiveStdDev), 25, 99);
+  };
+
+  const mods = profile.statModifiers;
+  const powerMod = (mods as Record<string, number | undefined>)["power"] ?? mods["strength"] ?? 1.0;
+
+  const paStats: RikishiStats = {
+    strength: rollStat(powerMod),
+    technique: rollStat(mods.technique ?? 1.0),
+    speed: rollStat(mods.speed ?? 1.0),
+    stamina: rollStat(mods.stamina ?? 1.0),
+    mental: rollStat(mods.mental ?? 1.0),
+    adaptability: rollStat(mods.adaptability ?? 1.0),
+    balance: rollStat(mods.balance ?? 1.0),
+    weight: 0, // Size handled separately below
+  };
+
+  // Size potential: Gaussian biased by archetype modifiers, clamped
+  const heightMean = SIZE_POTENTIAL.heightCm.mean * (mods.height ?? 1.0);
+  const weightMean = SIZE_POTENTIAL.weightKg.mean * (mods.weight ?? 1.0);
+  const heightCm = clampInt(
+    rng.gaussian(heightMean, SIZE_POTENTIAL.heightCm.stdDev),
+    SIZE_POTENTIAL.heightCm.min,
+    SIZE_POTENTIAL.heightCm.max
+  );
+  const weightKg = clampInt(
+    rng.gaussian(weightMean, SIZE_POTENTIAL.weightKg.stdDev),
+    SIZE_POTENTIAL.weightKg.min,
+    SIZE_POTENTIAL.weightKg.max
+  );
+
+  return {
+    stats: paStats,
+    heightCm,
+    weightKg,
+    developmentSpeed: preset.developmentSpeed,
+    peakAgeOffset: preset.peakAgeOffset,
+    ceilingFraction: preset.ceilingFraction,
+    profile: developmentProfile,
+  };
+}
+
+/**
+ * Derives Current Ability from PA via age-dependent maturity curves.
+ * CA = PA × ceilingFraction × maturity(age, attributeGroup) + small noise.
+ */
+export function deriveCurrentAbility(args: {
+  rng: SeededRNG;
+  potential: PotentialPackage;
+  age: number;
+}): GeneratedStats {
+  const { rng, potential, age } = args;
+  const { stats: pa, ceilingFraction, developmentSpeed, peakAgeOffset } = potential;
+
+  const deriveStat = (paValue: number, key: keyof typeof STAT_GROUP): number => {
+    const group = STAT_GROUP[key];
+    const m = maturityFactor({ age, group, developmentSpeed, peakAgeOffset });
+    const target = paValue * ceilingFraction * m;
+    // Small noise so CA doesn't read as deterministic from PA
+    const noisy = target + rng.gaussian(0, 2);
+    return clampInt(noisy, 10, 100);
+  };
+
+  const heightM = maturityFactor({
+    age,
+    group: "size_height",
+    developmentSpeed,
+    peakAgeOffset,
+  });
+  const weightM = maturityFactor({
+    age,
+    group: "size_weight",
+    developmentSpeed,
+    peakAgeOffset,
+  });
+
+  return {
+    strength: deriveStat(pa.strength, "strength"),
+    technique: deriveStat(pa.technique, "technique"),
+    speed: deriveStat(pa.speed, "speed"),
+    stamina: deriveStat(pa.stamina, "stamina"),
+    mental: deriveStat(pa.mental, "mental"),
+    adaptability: deriveStat(pa.adaptability, "adaptability"),
+    balance: deriveStat(pa.balance, "balance"),
+    weight: clampInt(potential.weightKg * weightM, 70, 250),
+    height: clampInt(potential.heightCm * heightM, 150, 210),
+  };
 }
 
 interface DivisionRecords {
@@ -83,6 +244,7 @@ function simulateCareerProgression(args: {
   birthYear: number;
   currentYear: number;
   nationality?: string;
+  developmentSpeed?: number;
 }): {
   careerWins: number;
   careerLosses: number;
@@ -96,7 +258,15 @@ function simulateCareerProgression(args: {
     jonokuchi: { wins: number; losses: number };
   };
 } {
-  const { rng, targetRank, targetDivision, birthYear, currentYear, nationality } = args;
+  const {
+    rng,
+    targetRank,
+    targetDivision,
+    birthYear,
+    currentYear,
+    nationality,
+    developmentSpeed = 1.0,
+  } = args;
 
   const age = currentYear - birthYear;
   const debutAge = 15 + rng.int(0, 5);
@@ -163,8 +333,10 @@ function simulateCareerProgression(args: {
   // Simulate basho progression
   let currentDivIndex = 0;
   for (let basho = 0; basho < bashoCount; basho++) {
-    // Gradually progress through divisions
-    if (currentDivIndex < targetIndex && basho > 0 && basho % 6 === 0) {
+    // Gradually progress through divisions — faster for prodigies, slower for late bloomers.
+    // Base cadence: one division per 6 basho (1 yr); scaled by developmentSpeed.
+    const bashoPerPromotion = Math.max(2, Math.round(6 / developmentSpeed));
+    if (currentDivIndex < targetIndex && basho > 0 && basho % bashoPerPromotion === 0) {
       currentDivIndex = Math.min(currentDivIndex + 1, targetIndex);
     }
 
@@ -221,6 +393,7 @@ export function generateSyntheticCareer(args: {
   birthYear: number;
   currentYear: number;
   nationality?: string;
+  developmentSpeed?: number;
 }): {
   careerWins: number;
   careerLosses: number;
@@ -235,6 +408,7 @@ export function generateSyntheticCareer(args: {
     birthYear: args.birthYear,
     currentYear: args.currentYear,
     nationality: args.nationality,
+    developmentSpeed: args.developmentSpeed,
   });
 
   return {
@@ -262,10 +436,18 @@ export function generateFullRikishi(args: {
 
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
-  const statsBase = generateRikishiStats({ rng, rank, profile });
 
-  // Evaluate birthYear once to preserve RNG sequence
-  const birthYear = currentYear - (18 + rng.int(0, 15));
+  // Age first (biased by rank, Gaussian, not hard-gated)
+  const age = rollAgeForRank(rng, rank);
+  const birthYear = currentYear - age;
+
+  // Development profile — consistency-checked against age/rank
+  const developmentProfile = rollDevelopmentProfile(rng, age, rank);
+
+  // Roll PA (potential ceiling) once, then derive CA from age-based maturity
+  const potentialPkg = rollPotential({ rng, rank, profile, developmentProfile });
+  const statsBase = deriveCurrentAbility({ rng, potential: potentialPkg, age });
+
   const nationality =
     rng.next() < 0.15
       ? rng.next() < 0.7
@@ -279,6 +461,7 @@ export function generateFullRikishi(args: {
     birthYear,
     currentYear,
     nationality,
+    developmentSpeed: potentialPkg.developmentSpeed,
   });
 
   const name = generateShikona(`${rng.seed}::${id}`, {
@@ -318,6 +501,18 @@ export function generateFullRikishi(args: {
     ),
     ...createCombatStats(rikishiStats, division, archetype, profile),
     ...createCareerHistory(records),
+    potential: {
+      stats: {
+        ...potentialPkg.stats,
+        achievements: rikishiStats.achievements,
+      },
+      heightCm: potentialPkg.heightCm,
+      weightKg: potentialPkg.weightKg,
+      developmentSpeed: potentialPkg.developmentSpeed,
+      peakAgeOffset: potentialPkg.peakAgeOffset,
+      ceilingFraction: potentialPkg.ceilingFraction,
+      profile: potentialPkg.profile,
+    },
   } as Rikishi;
 }
 

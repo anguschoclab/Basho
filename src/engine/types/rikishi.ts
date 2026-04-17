@@ -175,6 +175,24 @@ export interface Rikishi {
 
   talentSeed?: number;
 
+  /**
+   * Hidden Potential Ability ceiling + development profile.
+   * Set once at generation/recruitment; drives how CA approaches PA with age.
+   */
+  potential?: {
+    stats: RikishiStats;
+    heightCm: number;
+    weightKg: number;
+    /** 0.6–1.5, higher = faster development toward PA */
+    developmentSpeed: number;
+    /** -4 to +4, shifts attribute peak ages (prodigies peak early, late bloomers late) */
+    peakAgeOffset: number;
+    /** Max fraction of PA actually reachable (journeymen < 1.0) */
+    ceilingFraction: number;
+    /** Hidden label for narrative/debug — do not expose in UI directly */
+    profile: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
+  };
+
   // Dynamic properties set by subsystems
 
   age?: number;
