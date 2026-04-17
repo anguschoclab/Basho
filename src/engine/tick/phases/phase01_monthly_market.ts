@@ -21,7 +21,7 @@ export function phase01_monthly_market(world: WorldState): StateImpact {
   const rng = RNGRegistry.getSystemRNG(
     world,
     "economics",
-    `month-${world.year}-${world.calendar.month}`
+    `month-${world.year}-${Math.floor(world.calendar?.currentWeek ?? 1 / 4)}`
   );
 
   const updatedStocks = { ...market.stocks };
