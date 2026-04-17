@@ -1,8 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useGame } from "../contexts/GameContext";
 import { listBashoSummaries } from "../engine/historyIndex";
 import { selectRetiredRikishi } from "../presenters/selectors";
+import type {
+  WorldState,
+  Rikishi,
+  Heya,
+  BashoHistorySummary,
+  RecordEntry,
+  HoFInductee,
+} from "@/presenters/uiDigest";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -69,7 +76,7 @@ export const HistoryDashboard: React.FC = () => {
   );
 };
 
-const RecordsTab: React.FC<{ world: any }> = ({ world }) => {
+const RecordsTab: React.FC<{ world: WorldState }> = ({ world }) => {
   const categories = [
     { label: "All-Time Wins", data: world.records?.allTime?.careerWins || [] },
     { label: "Top Division Yusho", data: world.records?.allTime?.yusho || [] },
@@ -85,10 +92,10 @@ const RecordsTab: React.FC<{ world: any }> = ({ world }) => {
             {cat.label}
           </h2>
           <ul className="space-y-4">
-            {cat.data.slice(0, 5).map((entry: any, idx: number) => (
+            {cat.data.slice(0, 5).map((entry: RecordEntry, idx: number) => (
               <li key={idx} className="flex justify-between items-center text-lg">
                 <span className="text-white">
-                  {idx + 1}. {entry.shikona} ({entry.heya})
+                  {idx + 1}. {entry.shikona}
                 </span>
                 <span className="gold-text font-bold">{entry.value}</span>
               </li>
@@ -103,7 +110,7 @@ const RecordsTab: React.FC<{ world: any }> = ({ world }) => {
   );
 };
 
-const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
+const HallOfFameTab: React.FC<{ world: WorldState }> = ({ world }) => {
   const inductees = world.hallOfFame?.inductees || [];
   const retired = selectRetiredRikishi(world);
 
@@ -114,7 +121,7 @@ const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
           Hall of Fame Inductees
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          {inductees.map((ind: any, i: number) => (
+          {inductees.map((ind: HoFInductee, i: number) => (
             <div
               key={i}
               className="hof-card relative p-8 border-2 border-[#d4af37] bg-[#111] overflow-hidden group"
@@ -123,22 +130,20 @@ const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
                 {ind.category}
               </div>
               <div className="text-center mb-6">
-                <div className="text-4xl font-extrabold mb-1">{ind.shikona}</div>
-                <div className="text-[#8b7355] tracking-widest uppercase italic">{ind.heya}</div>
+                <div className="text-4xl font-bold mb-1">{ind.shikona}</div>
+                <div className="text-[#8b7355] tracking-widest uppercase italic">
+                  {world.heyas.get(ind.rikishiId)?.name ?? "—"}
+                </div>
               </div>
-              <div className="space-y-2 border-t border-[#3d2b1f] pt-4 text-sm">
-                <div className="flex justify-between">
-                  <span>Inducted Year:</span> <span className="text-white">{ind.inductedYear}</span>
+              <div className="space-y-2 text-sm text-[#5c4033]">
+                <div>
+                  Highest Rank: <span className="text-white">{ind.stats.highestRank}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Highest Rank:</span>{" "}
-                  <span className="text-white uppercase">{ind.highestRank}</span>
+                <div>
+                  Career Wins: <span className="text-white">{ind.stats.careerWins}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Total Wins:</span> <span className="text-white">{ind.totalCareerWins}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Yusho:</span> <span className="text-white">{ind.yushoCount}</span>
+                <div>
+                  Yusho: <span className="text-white">{ind.stats.yushoCount}</span>
                 </div>
               </div>
             </div>
@@ -156,14 +161,11 @@ const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
           Retired Legends
         </h2>
         {retired.length === 0 ? (
-          <p className="text-center py-12 text-[#5c4033] italic">
-            No retirements on record yet.
-          </p>
+          <p className="text-center py-12 text-[#5c4033] italic">No retirements on record yet.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {retired.slice(0, 40).map((r: any) => {
-              const heyaName =
-                world.heyas?.get(r.heyaId)?.name || r.heyaId;
+            {retired.slice(0, 40).map((r: Rikishi) => {
+              const heyaName = world.heyas?.get(r.heyaId)?.name || r.heyaId;
               return (
                 <div
                   key={r.id}
@@ -184,16 +186,27 @@ const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
   );
 };
 
-const StablesTab: React.FC<{ world: any }> = ({ world }) => {
+interface LineageTenure {
+  generation: number;
+  name: string;
+  startYear: number;
+  endYear?: number;
+  achievements?: {
+    sekitoriCount?: number;
+    titlesWon?: number;
+  };
+}
+
+const StablesTab: React.FC<{ world: WorldState }> = ({ world }) => {
   const activeStables = Array.from(world.heyas.values());
 
   return (
     <div className="space-y-12">
-      {activeStables.map((heya: any) => (
+      {activeStables.map((heya: Heya) => (
         <div key={heya.id} className="heya-ancestry-row border-l-4 border-[#d4af37] pl-8 py-4">
           <h2 className="text-3xl font-bold mb-4">{heya.nameJa || heya.name}</h2>
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            {(heya.lineage || []).map((tenure: any, idx: number) => (
+            {(heya.lineage || []).map((tenure: LineageTenure, idx: number) => (
               <div
                 key={idx}
                 className="flex-shrink-0 w-64 bg-[#222] p-4 border border-[#3d2b1f] relative"
@@ -219,12 +232,12 @@ const StablesTab: React.FC<{ world: any }> = ({ world }) => {
   );
 };
 
-const AlmanacTab: React.FC<{ world: any }> = ({ world }) => {
+const AlmanacTab: React.FC<{ world: WorldState }> = ({ world }) => {
   const summaries = world.historyIndex ? listBashoSummaries(world.historyIndex).reverse() : [];
 
   return (
     <div className="space-y-8">
-      {summaries.slice(0, 20).map((summary) => (
+      {summaries.slice(0, 20).map((summary: BashoHistorySummary) => (
         <div
           key={summary.bashoKey}
           className="almanac-entry bg-[#111] p-6 border-b border-[#3d2b1f] group hover:bg-[#1a1a1a] transition-all"
@@ -242,7 +255,7 @@ const AlmanacTab: React.FC<{ world: any }> = ({ world }) => {
             <div className="stat">
               <label className="block text-xs uppercase text-[#5c4033]">Yusho Winner</label>
               <span className="text-lg text-white font-bold">
-                {world.rikishi.get(summary.yusho)?.shikona || "N/A"}
+                {summary.yusho ? (world.rikishi.get(summary.yusho)?.shikona ?? "N/A") : "N/A"}
               </span>
             </div>
             <div className="stat">
