@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useGame } from "../contexts/GameContext";
 import { listBashoSummaries } from "../engine/historyIndex";
+import { selectRetiredRikishi } from "../presenters/selectors";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -104,43 +105,81 @@ const RecordsTab: React.FC<{ world: any }> = ({ world }) => {
 
 const HallOfFameTab: React.FC<{ world: any }> = ({ world }) => {
   const inductees = world.hallOfFame?.inductees || [];
+  const retired = selectRetiredRikishi(world);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-      {inductees.map((ind: any, i: number) => (
-        <div
-          key={i}
-          className="hof-card relative p-8 border-2 border-[#d4af37] bg-[#111] overflow-hidden group"
-        >
-          <div className="absolute top-0 right-0 p-2 bg-[#d4af37] text-black font-bold uppercase text-xs">
-            {ind.category}
-          </div>
-          <div className="text-center mb-6">
-            <div className="text-4xl font-extrabold mb-1">{ind.shikona}</div>
-            <div className="text-[#8b7355] tracking-widest uppercase italic">{ind.heya}</div>
-          </div>
-          <div className="space-y-2 border-t border-[#3d2b1f] pt-4 text-sm">
-            <div className="flex justify-between">
-              <span>Inducted Year:</span> <span className="text-white">{ind.inductedYear}</span>
+    <div className="space-y-16">
+      <section>
+        <h2 className="text-2xl uppercase tracking-widest border-b border-[#d4af37] pb-3 mb-8">
+          Hall of Fame Inductees
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          {inductees.map((ind: any, i: number) => (
+            <div
+              key={i}
+              className="hof-card relative p-8 border-2 border-[#d4af37] bg-[#111] overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 p-2 bg-[#d4af37] text-black font-bold uppercase text-xs">
+                {ind.category}
+              </div>
+              <div className="text-center mb-6">
+                <div className="text-4xl font-extrabold mb-1">{ind.shikona}</div>
+                <div className="text-[#8b7355] tracking-widest uppercase italic">{ind.heya}</div>
+              </div>
+              <div className="space-y-2 border-t border-[#3d2b1f] pt-4 text-sm">
+                <div className="flex justify-between">
+                  <span>Inducted Year:</span> <span className="text-white">{ind.inductedYear}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Highest Rank:</span>{" "}
+                  <span className="text-white uppercase">{ind.highestRank}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total Wins:</span> <span className="text-white">{ind.totalCareerWins}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Yusho:</span> <span className="text-white">{ind.yushoCount}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span>Highest Rank:</span>{" "}
-              <span className="text-white uppercase">{ind.highestRank}</span>
+          ))}
+          {inductees.length === 0 && (
+            <div className="col-span-full text-center py-16 text-[#5c4033] italic text-2xl">
+              The Hall of Fame is empty. Future legends await...
             </div>
-            <div className="flex justify-between">
-              <span>Total Wins:</span> <span className="text-white">{ind.totalCareerWins}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Yusho:</span> <span className="text-white">{ind.yushoCount}</span>
-            </div>
-          </div>
+          )}
         </div>
-      ))}
-      {inductees.length === 0 && (
-        <div className="col-span-full text-center py-24 text-[#5c4033] italic text-2xl">
-          The Hall of Fame is empty. Future legends await...
-        </div>
-      )}
+      </section>
+
+      <section>
+        <h2 className="text-2xl uppercase tracking-widest border-b border-[#5c4033] pb-3 mb-8">
+          Retired Legends
+        </h2>
+        {retired.length === 0 ? (
+          <p className="text-center py-12 text-[#5c4033] italic">
+            No retirements on record yet.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {retired.slice(0, 40).map((r: any) => {
+              const heyaName =
+                world.heyas?.get(r.heyaId)?.name || r.heyaId;
+              return (
+                <div
+                  key={r.id}
+                  className="record-card p-4 border border-[#3d2b1f] rounded text-center"
+                >
+                  <div className="text-lg font-bold mb-1">{r.shikona}</div>
+                  <div className="text-xs text-[#8b7355] uppercase tracking-wider mb-2">
+                    {r.rank || "—"}
+                  </div>
+                  <div className="text-xs text-[#5c4033] italic truncate">{heyaName}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

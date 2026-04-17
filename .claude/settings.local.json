@@ -45,7 +45,8 @@
       "Bash(rm -f src/engine/bout/boutCalculations.ts)",
       "Bash(echo \"boutCalculations deleted: $?\")",
       "Bash(rm -rf \"src/engine/bout/bout\")",
-      "Bash(echo \"bout/bout deleted: $?\")"
+      "Bash(echo \"bout/bout deleted: $?\")",
+      "Bash(ls vite*.*)"
     ]
   },
   "outputStyle": "default"

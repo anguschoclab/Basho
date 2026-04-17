@@ -27,8 +27,11 @@ import {
   getStatusLabel,
   spendPoliticalCapital,
   toScandalBand,
-  projectMergerWarnings,
 } from "@/presenters/uiDigest";
+import {
+  selectHeyasWithCriticalWelfare,
+  selectMergerCandidates,
+} from "@/presenters/selectors";
 
 /**
  * Format fine penalty.
@@ -258,10 +261,56 @@ export default function GovernancePage() {
               </CardContent>
             </Card>
 
+            {/* Critical Welfare Alerts Panel */}
+            {(() => {
+              const criticalHeyas = selectHeyasWithCriticalWelfare(world);
+              if (criticalHeyas.length === 0) return null;
+              return (
+                <Card className="border-orange-500/40">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-orange-500">
+                      <ShieldAlert className="h-4 w-4" />
+                      Welfare Alerts — Stables Under Scrutiny
+                    </CardTitle>
+                    <CardDescription>
+                      These stables have critical welfare risk levels or active compliance actions.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {criticalHeyas.map((h) => {
+                        const risk = Math.round(h.welfareState?.welfareRisk ?? 0);
+                        const comp = h.welfareState?.complianceState ?? "compliant";
+                        return (
+                          <div
+                            key={h.id}
+                            className="flex items-center justify-between p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <AlertTriangle className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                              <div>
+                                <p className="font-medium text-sm">{h.name}</p>
+                                <p className="text-xs text-muted-foreground capitalize">
+                                  {comp.replace("_", " ")} — {h.rikishiIds?.length ?? 0} rikishi
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-bold text-orange-500">Risk {risk}%</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
             {/* Merger Candidates Panel */}
             {(() => {
-              const mergerWarnings = projectMergerWarnings(world);
-              if (mergerWarnings.length === 0) return null;
+              const mergerCandidates = selectMergerCandidates(world);
+              if (mergerCandidates.length === 0) return null;
               return (
                 <Card className="border-destructive/40">
                   <CardHeader className="pb-3">
@@ -276,23 +325,24 @@ export default function GovernancePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {mergerWarnings.map((w) => (
+                      {mergerCandidates.map((h) => (
                         <div
-                          key={w.heyaId}
+                          key={h.id}
                           className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg"
                         >
                           <div className="flex items-center gap-3">
                             <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
                             <div>
-                              <p className="font-medium text-sm">{w.heyaName}</p>
+                              <p className="font-medium text-sm">{h.name}</p>
                               <p className="text-xs text-muted-foreground">
-                                {w.rosterSize} rikishi — {w.governanceStatus.replace("_", " ")}
+                                {h.rikishiIds?.length ?? 0} rikishi —{" "}
+                                {(h.governanceStatus ?? "good_standing").replace("_", " ")}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-bold text-destructive">
-                              ¥{Math.abs(w.funds / 1_000_000).toFixed(1)}M in debt
+                              ¥{Math.abs(h.funds / 1_000_000).toFixed(1)}M in debt
                             </p>
                           </div>
                         </div>
