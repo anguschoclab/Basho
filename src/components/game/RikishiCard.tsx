@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { UIRikishi } from "../../presenters/uiModels";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -11,8 +11,8 @@ interface RikishiCardProps {
   rikishi: UIRikishi;
 }
 
-export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
-  const getStanceLabel = () => {
+export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) => {
+  const stanceLabel = useMemo(() => {
     if (rikishi.preferredGrip === "none") return "Oshi-Specialist";
 
     const grip = rikishi.preferredGrip === "migi" ? "Migi-Yotsu" : "Hidari-Yotsu";
@@ -24,7 +24,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
           : "";
 
     return `${grip} ${depth}`.trim();
-  };
+  }, [rikishi.preferredGrip, rikishi.preferredGripDepth]);
 
   return (
     <Card
@@ -68,7 +68,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
             <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
               Tactical Stance
             </h4>
-            <p className="text-lg font-display text-primary-foreground">{getStanceLabel()}</p>
+            <p className="text-lg font-display text-primary-foreground">{stanceLabel}</p>
           </div>
 
           <div>
@@ -205,4 +205,4 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
       </CardContent>
     </Card>
   );
-};
+});

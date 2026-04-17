@@ -21,6 +21,8 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { calculateFatigueDelta, calculateGrowthVector, calculateAgeDecay } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
+import { DRILL_EFFECTS } from "./TrainingConstants";
+import { InfrastructureService } from "../economy/InfrastructureService";
 
 // Re-exports for UI consumption
 export * from "./TrainingConstants";
