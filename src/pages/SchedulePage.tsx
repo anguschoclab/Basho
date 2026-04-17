@@ -1,22 +1,36 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CalendarDays, Swords } from "lucide-react";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 
-const DIVISIONS: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+const DIVISIONS: Division[] = [
+  "makuuchi",
+  "juryo",
+  "makushita",
+  "sandanme",
+  "jonidan",
+  "jonokuchi",
+];
 const DIVISION_NAMES: Record<Division, string> = {
   makuuchi: "Makuuchi",
   juryo: "Juryo",
   makushita: "Makushita",
   sandanme: "Sandanme",
   jonidan: "Jonidan",
-  jonokuchi: "Jonokuchi"
+  jonokuchi: "Jonokuchi",
 };
 
 /** schedule page. */
@@ -29,7 +43,7 @@ export default function SchedulePage() {
   const [selectedDay, setSelectedDay] = useState<number>(currentBasho?.day || 1);
 
   const maxDays = useMemo(() => getTotalBashodays(selectedDivision), [selectedDivision]);
-  
+
   // Ensure selected day is valid for division when switching
   if (selectedDay > maxDays) {
     setSelectedDay(maxDays);
@@ -37,7 +51,7 @@ export default function SchedulePage() {
 
   const matches = useMemo(() => {
     if (!currentBasho) return [];
-    return currentBasho.matches.filter(m => {
+    return currentBasho.matches.filter((m) => {
       if (m.day !== selectedDay) return false;
       const eastRikishi = world.rikishi.get(m.eastRikishiId);
       return eastRikishi?.division === selectedDivision;
@@ -69,7 +83,8 @@ export default function SchedulePage() {
             </p>
           </div>
           <Badge variant="outline" className="px-3 py-1">
-            {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)} Basho {currentBasho.year}
+            {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)} Basho{" "}
+            {currentBasho.year}
           </Badge>
         </div>
 
@@ -84,13 +99,18 @@ export default function SchedulePage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Division</label>
-                <Select value={selectedDivision} onValueChange={(v) => setSelectedDivision(v as Division)}>
+                <Select
+                  value={selectedDivision}
+                  onValueChange={(v) => setSelectedDivision(v as Division)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
                   <SelectContent>
-                    {DIVISIONS.map(div => (
-                      <SelectItem key={div} value={div}>{DIVISION_NAMES[div]}</SelectItem>
+                    {DIVISIONS.map((div) => (
+                      <SelectItem key={div} value={div}>
+                        {DIVISION_NAMES[div]}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -98,12 +118,15 @@ export default function SchedulePage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Day</label>
-                <Select value={selectedDay.toString()} onValueChange={(v) => setSelectedDay(parseInt(v, 10))}>
+                <Select
+                  value={selectedDay.toString()}
+                  onValueChange={(v) => setSelectedDay(parseInt(v, 10))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select day" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Array.from({ length: maxDays }, (_, i) => i + 1).map(day => (
+                    {Array.from({ length: maxDays }, (_, i) => i + 1).map((day) => (
                       <SelectItem key={day} value={day.toString()}>
                         Day {day} {needsScheduleForDay(selectedDivision, day) ? "" : "(Rest)"}
                       </SelectItem>
@@ -123,7 +146,8 @@ export default function SchedulePage() {
                   </div>
                   <h3 className="text-lg font-medium">Rest Day</h3>
                   <p className="text-muted-foreground mt-1">
-                    The {DIVISION_NAMES[selectedDivision]} division does not hold bouts on Day {selectedDay}.
+                    The {DIVISION_NAMES[selectedDivision]} division does not hold bouts on Day{" "}
+                    {selectedDay}.
                   </p>
                 </CardContent>
               </Card>
@@ -141,10 +165,15 @@ export default function SchedulePage() {
                   const result = match.result;
 
                   return (
-                    <Card key={`${match.day}-${match.eastRikishiId}-${match.westRikishiId}-${idx}`} className="overflow-hidden">
+                    <Card
+                      key={`${match.day}-${match.eastRikishiId}-${match.westRikishiId}-${idx}`}
+                      className="overflow-hidden"
+                    >
                       <div className="grid grid-cols-[1fr_auto_1fr] items-center p-4 gap-4">
                         <div className="text-right">
-                          <div className={`font-bold text-lg ${result?.winner === 'east' ? 'text-primary' : ''}`}>
+                          <div
+                            className={`font-bold text-lg ${result?.winner === "east" ? "text-primary" : ""}`}
+                          >
                             {east?.name || match.eastRikishiId}
                           </div>
                           <div className="text-sm text-muted-foreground">East</div>
@@ -152,7 +181,9 @@ export default function SchedulePage() {
 
                         <div className="flex flex-col items-center justify-center px-4">
                           {result ? (
-                            <Badge variant="secondary" className="mb-1">{result.kimariteName}</Badge>
+                            <Badge variant="secondary" className="mb-1">
+                              {result.kimariteName}
+                            </Badge>
                           ) : (
                             <Swords className="h-5 w-5 text-muted-foreground mb-1" />
                           )}
@@ -160,7 +191,9 @@ export default function SchedulePage() {
                         </div>
 
                         <div className="text-left">
-                          <div className={`font-bold text-lg ${result?.winner === 'west' ? 'text-primary' : ''}`}>
+                          <div
+                            className={`font-bold text-lg ${result?.winner === "west" ? "text-primary" : ""}`}
+                          >
                             {west?.name || match.westRikishiId}
                           </div>
                           <div className="text-sm text-muted-foreground">West</div>

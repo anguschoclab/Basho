@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useGame } from "../contexts/GameContext";
 import { listBashoSummaries } from "../engine/historyIndex";

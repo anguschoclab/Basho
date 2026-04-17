@@ -1,15 +1,9 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { useToast } from "@/hooks/use-toast";
 import type { SaveSlotInfo } from "@/engine/saveload";
-
-// Global open signal for keyboard shortcut integration
-const openListeners = new Set<() => void>();
-/** Open save load dialog. */
-export function openSaveLoadDialog() {
-  openListeners.forEach((fn) => fn());
-}
 import {
   Dialog,
   DialogContent,
@@ -29,124 +23,24 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { deleteSave, exportSave, importSave } from "@/engine/saveload";
-import { formatSaveDate } from "@/engine/utils/formatters";
-import {
-  Save,
-  FolderOpen,
-  Trash2,
-  Download,
-  Upload,
-  Clock,
-  HardDrive,
-  Loader2,
-} from "lucide-react";
+import { Save, FolderOpen, Download, Upload, HardDrive, Loader2 } from "lucide-react";
+import { SaveSlotItem, EmptySlotItem } from "./SaveLoadDialogComponents";
+
+// Global open signal for keyboard shortcut integration
+const openListeners = new Set<() => void>();
+/** Open save load dialog. */
+export function openSaveLoadDialog() {
+  openListeners.forEach((fn) => fn());
+}
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {
   trigger?: React.ReactNode;
 }
-
-const SaveSlotItem = React.memo(({
-  slot,
-  mode,
-  onLoad,
-  onSave,
-  onDelete
-}: {
-  slot: SaveSlotInfo;
-  mode: "save" | "load";
-  onLoad: (slotName: string) => void;
-  onSave: (slotName: string) => void;
-  onDelete: (slotName: string) => void;
-}) => {
-  return (
-    <div className="flex items-center gap-2 p-2.5 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group">
-      <TooltipWrap
-        content={
-          mode === "load"
-            ? "Restore this game state"
-            : "Overwrite this save slot"
-        }
-        side="left"
-      >
-        <div
-          className="flex-1 min-w-0 cursor-pointer"
-          onClick={() =>
-            mode === "load"
-              ? onLoad(slot.slotName)
-              : onSave(slot.slotName)
-          }
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-sm truncate">
-              {slot.playerHeyaName || "Unknown"}
-            </span>
-            <Badge
-              variant={slot.isAutosave ? "default" : "secondary"}
-              className="text-[10px] px-1.5 py-0 shrink-0"
-            >
-              {slot.isAutosave
-                ? "Auto"
-                : slot.slotName.replace("slot_", "Slot ")}
-            </Badge>
-          </div>
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-            <span>Y{slot.year}</span>
-            {slot.bashoName && <span>• {slot.bashoName}</span>}
-            <span className="flex items-center gap-0.5">
-              <Clock className="h-2.5 w-2.5" />
-              {formatSaveDate(slot.savedAt)}
-            </span>
-          </div>
-        </div>
-      </TooltipWrap>
-
-      {!slot.isAutosave && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive shrink-0"
-          onClick={() => onDelete(slot.slotName)}
-          aria-label={`Delete ${slot.slotName.replace("slot_", "Slot ")}`}
-          tooltip={`Delete ${slot.slotName.replace("slot_", "Slot ")} permanently`}
-          tooltipSide="left"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      )}
-    </div>
-  );
-});
-
-const EmptySlotItem = React.memo(({
-  slotName,
-  onSave
-}: {
-  slotName: string;
-  onSave: (slotName: string) => void;
-}) => {
-  return (
-    <TooltipWrap
-      content="Save current progress to this empty slot"
-      side="top"
-    >
-      <div
-        className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-        onClick={() => onSave(slotName)}
-      >
-        <Save className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">
-          {slotName.replace("slot_", "Slot ")} — Empty
-        </span>
-      </div>
-    </TooltipWrap>
-  );
-});
 
 /**
  * save load dialog.
@@ -193,64 +87,76 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
     return empty;
   }, [slots]);
 
-  const doSave = useCallback((slotName: string) => {
-    const ok = saveToSlot(slotName);
-    if (ok) {
-      toast({
-        title: "Game Saved",
-        description: `Saved to ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
-      });
-      refreshSlots();
-    } else {
-      toast({
-        title: "Save Failed",
-        description: "Could not save game.",
-        variant: "destructive",
-      });
-    }
-    setConfirmOverwrite(null);
-  }, [saveToSlot, refreshSlots, toast]);
+  const doSave = useCallback(
+    (slotName: string) => {
+      const ok = saveToSlot(slotName);
+      if (ok) {
+        toast({
+          title: "Game Saved",
+          description: `Saved to ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
+        });
+        refreshSlots();
+      } else {
+        toast({
+          title: "Save Failed",
+          description: "Could not save game.",
+          variant: "destructive",
+        });
+      }
+      setConfirmOverwrite(null);
+    },
+    [saveToSlot, refreshSlots, toast]
+  );
 
-  const handleSave = useCallback((slotName: string) => {
-    // Check if slot exists for overwrite confirmation
-    const existing = slots.find((s) => s.slotName === slotName);
-    if (existing && !existing.isAutosave) {
-      setConfirmOverwrite(slotName);
-      return;
-    }
-    doSave(slotName);
-  }, [slots, doSave]);
+  const handleSave = useCallback(
+    (slotName: string) => {
+      // Check if slot exists for overwrite confirmation
+      const existing = slots.find((s) => s.slotName === slotName);
+      if (existing && !existing.isAutosave) {
+        setConfirmOverwrite(slotName);
+        return;
+      }
+      doSave(slotName);
+    },
+    [slots, doSave]
+  );
 
-  const handleLoad = useCallback((slotName: string) => {
-    const ok = loadFromSlot(slotName);
-    if (ok) {
-      toast({
-        title: "Game Loaded",
-        description: `Loaded from ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
-      });
-      setOpen(false);
-    } else {
-      toast({
-        title: "Load Failed",
-        description: "Could not load save.",
-        variant: "destructive",
-      });
-    }
-  }, [loadFromSlot, toast]);
+  const handleLoad = useCallback(
+    (slotName: string) => {
+      const ok = loadFromSlot(slotName);
+      if (ok) {
+        toast({
+          title: "Game Loaded",
+          description: `Loaded from ${slotName === "autosave" ? "Autosave" : slotName.replace("_", " ").toUpperCase()}.`,
+        });
+        setOpen(false);
+      } else {
+        toast({
+          title: "Load Failed",
+          description: "Could not load save.",
+          variant: "destructive",
+        });
+      }
+    },
+    [loadFromSlot, toast]
+  );
 
   const handleDelete = useCallback((slotName: string) => {
     setConfirmDelete(slotName);
   }, []);
 
-  const doDelete = useCallback((slotName: string) => {
-    deleteSave(slotName);
-    toast({
-      title: "Save Deleted",
-      description: `${slotName.replace("_", " ")} removed.`,
-    });
-    refreshSlots();
-    setConfirmDelete(null);
-  }, [refreshSlots, toast]);
+  const doDelete = useCallback(
+    (slotName: string) => {
+      deleteSave(slotName);
+      toast({
+        title: "Save Deleted",
+        description: `${slotName.replace("_", " ")} removed.`,
+      });
+      refreshSlots();
+      setConfirmDelete(null);
+    },
+    [refreshSlots, toast]
+  );
 
   const handleExport = () => {
     if (state.world) {

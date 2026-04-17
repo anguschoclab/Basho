@@ -29,12 +29,14 @@ import { getManagerPersona } from "./systems/NPCPersonaService";
 export { getManagerPersona };
 
 import {
-  decideTrainingIntensity,
-  decideTrainingFocus,
-  decideRecovery,
-  decideScoutingPriority,
-  identifyProtects,
-} from "./strategy/NPCStrategyService";
+  spawnTrainingWorker,
+  spawnScoutingWorker,
+  spawnPersonnelWorker,
+  rpPerception,
+  type TrainingWorkerContext,
+  type ScoutingWorkerContext,
+  type PersonnelWorkerContext,
+} from "./npcAIWorkers";
 
 /** Decision output for a single NPC heya per week */
 export interface NPCWeeklyDecision {
@@ -73,7 +75,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   // --- Phase 2: Hierarchical Delegation (Worker Agents) ---
 
   // 1. Training Worker (Isolated Context)
-  const trainingProposal = spawnTrainingWorker({
+  const trainingCtx: TrainingWorkerContext = {
     perception: rpPerception(perception), // Isolated rikishi perception
     riskAppetite: persona.riskAppetite,
     welfareDiscipline: persona.welfareDiscipline,
@@ -82,26 +84,29 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     philosophy,
     styleBias: persona.styleBias,
     tradition: persona.traits.tradition,
-  });
+  };
+  const trainingProposal = spawnTrainingWorker(trainingCtx);
   reasoning.push(...trainingProposal.reasoning);
 
   // 2. Scouting Worker (Isolated Context)
-  const scoutingProposal = spawnScoutingWorker({
+  const scoutingCtx: ScoutingWorkerContext = {
     runwayBand: perception.runwayBand,
     rosterSize: perception.rosterSize,
     rosterStrengthBand: perception.rosterStrengthBand,
     ambition: persona.traits.ambition,
     hasSleeperScout: persona.quirks.includes("Sleeper Scout"),
-  });
+  };
+  const scoutingProposal = spawnScoutingWorker(scoutingCtx);
   reasoning.push(scoutingProposal.reason);
 
   // 3. Personnel Worker (Isolated Context)
-  const personnelProposal = spawnPersonnelWorker({
+  const personnelCtx: PersonnelWorkerContext = {
     rikishiPerceptions: perception.rikishiPerceptions,
     welfareDiscipline: persona.welfareDiscipline,
     styleProfile,
     world, // Needed for getRikishi (limited read)
-  });
+  };
+  const personnelProposal = spawnPersonnelWorker(personnelCtx);
   reasoning.push(...personnelProposal.reasoning);
 
   // --- Phase 3: Lead Review (Alignment Check) ---
@@ -145,143 +150,6 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     reasoning,
     mood: persona.mood,
     impact: builder.build(),
-  };
-}
-
-/** Worker: Training Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
-function spawnTrainingWorker(ctx: any) {
-  const intensity = decideTrainingIntensity(
-    ctx.perception,
-    ctx.riskAppetite,
-    ctx.welfareDiscipline,
-    ctx.mood,
-    ctx.complianceCap,
-    ctx.philosophy
-  );
-  const focus = decideTrainingFocus(ctx.perception, ctx.styleBias, ctx.tradition, ctx.philosophy);
-  const recovery = decideRecovery(ctx.perception, ctx.welfareDiscipline);
-
-  return {
-    trainingIntensity: intensity.intensity,
-    trainingFocus: focus.focus,
-    recovery: recovery.recovery,
-    reasoning: [
-      `[Training Worker] ${intensity.reason}`,
-      `[Focus Worker] ${focus.reason}`,
-      `[Recovery Worker] ${recovery.reason}`,
-    ],
-  };
-}
-
-/** Worker: Scouting Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
-function spawnScoutingWorker(ctx: any) {
-  const decision = decideScoutingPriority(
-    {
-      runwayBand: ctx.runwayBand,
-      rosterSize: ctx.rosterSize,
-      rosterStrengthBand: ctx.rosterStrengthBand,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type mismatch with NPCStrategyService input
-    } as any,
-    ctx.ambition,
-    ctx.hasSleeperScout
-  );
-  return {
-    priority: decision.priority,
-    reason: `[Scouting Worker] ${decision.reason}`,
-  };
-}
-
-/** Worker: Personnel Sub-Agent */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex perception object with dynamic properties
-function spawnPersonnelWorker(ctx: any) {
-  const reasoning: string[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Perception object passed to strategy function
-  const protectDecision = identifyProtects(ctx as any, ctx.welfareDiscipline);
-  if (protectDecision.protectIds.length > 0) {
-    reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
-  }
-
-  // Withdrawal decisions for injured rikishi
-  const withdrawalIds: Id[] = [];
-  for (const rp of ctx.rikishiPerceptions) {
-    const rikishi = getRikishi(ctx.world, rp.rikishiId);
-    if (!rikishi) continue;
-
-    // Check if rikishi should be withdrawn (kyujo)
-    if (rikishi.injured && !rikishi.isKyujo) {
-      const severity = rikishi.injuryStatus?.severity;
-      const weeksRemaining = rikishi.injuryWeeksRemaining;
-
-      // Withdraw if injury is serious and recovery time is long
-      if (severity === "serious" && weeksRemaining > 2) {
-        withdrawalIds.push(rikishi.id);
-        reasoning.push(
-          `[Withdrawal Worker] Withdrawing ${rikishi.shikona} due to ${severity} injury (${weeksRemaining} weeks remaining)`
-        );
-      }
-    }
-  }
-
-  const individualDevelops: Id[] = [];
-  const individualPushes: Id[] = [];
-  const protectedSet = new Set(protectDecision.protectIds);
-
-  if (ctx.styleProfile && ctx.rikishiPerceptions.length > 0) {
-    for (const rp of ctx.rikishiPerceptions) {
-      if (protectedSet.has(rp.rikishiId)) continue;
-      const rikishi = getRikishi(ctx.world, rp.rikishiId);
-      if (!rikishi) continue;
-
-      const matchesStyle =
-        ctx.styleProfile.preferredStyle === "any" ||
-        rikishi.style === ctx.styleProfile.preferredStyle;
-      const matchesArchetype =
-        rikishi.archetype &&
-        (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
-
-      if (matchesArchetype && matchesStyle) {
-        if (
-          (rp.healthBand === "peak" || rp.healthBand === "good") &&
-          (ctx.styleProfile.philosophy === "style_purist" ||
-            ctx.styleProfile.philosophy === "size_matters")
-        ) {
-          individualPushes.push(rp.rikishiId);
-        } else if (rp.healthBand === "peak" || rp.healthBand === "good") {
-          individualDevelops.push(rp.rikishiId);
-        }
-      } else if (matchesArchetype || matchesStyle) {
-        individualDevelops.push(rp.rikishiId);
-      }
-    }
-    individualPushes.splice(3);
-    individualDevelops.splice(5);
-
-    if (individualPushes.length > 0) {
-      reasoning.push(`[Personnel Worker] Philosophy push: ${individualPushes.length} wrestlers`);
-    }
-  }
-
-  return {
-    protectIds: protectDecision.protectIds,
-    individualProtects: protectDecision.protectIds,
-    individualDevelops,
-    individualPushes,
-    withdrawalIds,
-    reasoning,
-  };
-}
-
-/** Helper: Isolated perception view */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Perception object with dynamic properties
-function rpPerception(p: any) {
-  return {
-    rikishiPerceptions: p.rikishiPerceptions,
-    welfareRiskBand: p.welfareRiskBand,
-    rosterSize: p.rosterSize,
-    moraleBand: p.moraleBand,
-    rosterStrengthBand: p.rosterStrengthBand,
   };
 }
 

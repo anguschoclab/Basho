@@ -51,8 +51,8 @@ describe("boutProjections", () => {
 
     it("should return H2H data when heyas exist", () => {
       const world = createMockWorldState() as any;
-      const heyaA = createMockHeya({ id: "heya-a", rikishiIds: ["rikishi-1"] });
-      const heyaB = createMockHeya({ id: "heya-b", rikishiIds: ["rikishi-2"] });
+      const heyaA = createMockHeya({ id: "heya-a", name: "Stable A", rikishiIds: ["rikishi-1"] });
+      const heyaB = createMockHeya({ id: "heya-b", name: "Stable B", rikishiIds: ["rikishi-2"] });
       const rikishi1 = createMockRikishi({
         id: "rikishi-1",
         heyaId: "heya-a",
@@ -67,8 +67,8 @@ describe("boutProjections", () => {
 
       const result = projectH2HBetweenHeyas(world, "heya-a", "heya-b");
       expect(result).not.toBeNull();
-      expect(result?.heyaAName).toBe("heya-a");
-      expect(result?.heyaBName).toBe("heya-b");
+      expect(result?.heyaAName).toBe("Stable A");
+      expect(result?.heyaBName).toBe("Stable B");
     });
   });
 });

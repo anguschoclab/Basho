@@ -1,6 +1,8 @@
 // MediaPage.tsx — Media & Press coverage dashboard
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";

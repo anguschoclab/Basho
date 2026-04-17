@@ -38,6 +38,7 @@ export function createMockWorldState(overrides: Record<string, unknown> = {}) {
     rng: {
       next: () => 0.5,
       seed: "test-seed",
+      int: () => 0,
     },
     ...overrides,
   };

@@ -10,33 +10,10 @@ import {
   SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Users,
-  Trophy,
-  ScrollText,
-  Swords,
-  Coins,
-  BookOpen,
-  Search,
-  Newspaper,
-  Dumbbell,
-  Award,
-  Heart,
-  HandshakeIcon,
-  Building2,
-  Briefcase,
-  Archive,
-  ShieldAlert,
-  Landmark,
-  TrendingUp,
-  Home,
-  Calendar,
-  AlertTriangle,
-  Lock,
-} from "lucide-react";
+import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { getMenuGroups } from "./sidebarConfig";
 
 export function AppSidebar() {
   const { state } = useGame();
@@ -62,74 +39,7 @@ export function AppSidebar() {
     return location.pathname === prefix || location.pathname.startsWith(prefix + "/");
   }
 
-  const menuGroups = [
-    {
-      label: null,
-      items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
-        { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
-      ],
-    },
-    {
-      label: "My Stable",
-      items: [
-        { title: "Overview", url: "/stable", icon: Home, exactOnly: true },
-        { title: "Roster", url: "/stable/roster", icon: Users },
-        { title: "Training", url: "/stable/training", icon: Dumbbell },
-        { title: "Medical", url: "/stable/medical", icon: Heart },
-        { title: "Staff", url: "/stable/staff", icon: Briefcase },
-        { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
-      ],
-    },
-    {
-      label: "Tournament",
-      items: [
-        {
-          title: "Current Basho",
-          url: "/basho",
-          icon: Trophy,
-          exactOnly: true,
-          badge: inBasho ? `Day ${bashoDay ?? 1}` : undefined,
-          badgeKind: "basho" as const,
-        },
-        { title: "Banzuke", url: "/banzuke", icon: ScrollText },
-        { title: "Schedule", url: "/schedule", icon: Calendar },
-        { title: "Rivalries", url: "/rivalries", icon: Swords },
-      ],
-    },
-    {
-      label: "Management",
-      items: [
-        {
-          title: "Finances",
-          url: "/office/finances",
-          icon: Coins,
-          locked: !tutorialCompleted,
-          badge: fundsCritical ? "!" : fundsLow ? "Low" : undefined,
-          badgeKind: (fundsCritical ? "critical" : "warn") as "critical" | "warn",
-        },
-        { title: "Facilities", url: "/office/facilities", icon: Building2 },
-        { title: "Sponsors", url: "/office/sponsors", icon: HandshakeIcon },
-      ],
-    },
-    {
-      label: "Association",
-      items: [
-        { title: "Governance", url: "/jsa/governance", icon: ShieldAlert },
-        { title: "Elder Market", url: "/jsa/myoseki", icon: Landmark },
-        { title: "Press & Rep", url: "/media", icon: Newspaper },
-        { title: "Trends", url: "/jsa/trends", icon: TrendingUp },
-      ],
-    },
-    {
-      label: "Records",
-      items: [
-        { title: "Stable History", url: "/history", icon: Archive },
-        { title: "Almanac", url: "/almanac", icon: BookOpen },
-        { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
-      ],
-    },
-  ];
+  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, fundsLow, fundsCritical);
 
   return (
     <Sidebar

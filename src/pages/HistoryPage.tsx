@@ -14,19 +14,16 @@
 // - Guards missing rank in RANK_HIERARCHY
 // - Safer prize display (shows yusho prize only when available)
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award, Star, ArrowLeft, Calendar } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
@@ -86,11 +83,7 @@ export default function HistoryPage() {
   const history = [...((world.history ?? []) as HistoryRecord[])].reverse();
 
   return (
-    <AppLayout
-      pageTitle="Stable History"
-      subNavTabs={RECORDS_TABS}
-      activeSubTab="history"
-    >
+    <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
       <Helmet>
         <title>History - Basho</title>
       </Helmet>
@@ -102,9 +95,7 @@ export default function HistoryPage() {
           </Button>
           <div>
             <h1 className="font-display text-3xl font-bold">Basho History</h1>
-            <p className="text-muted-foreground">
-              {history.length} tournaments completed
-            </p>
+            <p className="text-muted-foreground">{history.length} tournaments completed</p>
           </div>
         </div>
 
@@ -112,15 +103,11 @@ export default function HistoryPage() {
           <Card className="paper">
             <CardContent className="p-12 text-center">
               <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="font-display text-xl font-semibold mb-2">
-                No History Yet
-              </h3>
+              <h3 className="font-display text-xl font-semibold mb-2">No History Yet</h3>
               <p className="text-muted-foreground mb-4">
                 Complete your first basho to see results here.
               </p>
-              <Button onClick={() => navigate({ to: "/" })}>
-                Return to Dashboard
-              </Button>
+              <Button onClick={() => navigate({ to: "/" })}>Return to Dashboard</Button>
             </CardContent>
           </Card>
         ) : (
@@ -132,37 +119,24 @@ export default function HistoryPage() {
               const bashoNameJa = bashoInfo?.nameJa ?? basho.bashoName;
               const bashoNameEn = bashoInfo?.nameEn ?? "Tournament";
               const bashoLocation = bashoInfo?.location ?? "—";
-              const bashoIdx = basho.bashoName
-                ? getBashoIndex(basho.bashoName as any)
-                : -1;
+              const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as any) : -1;
 
-              const yushoRikishi = basho.yusho
-                ? (getRikishi?.(basho.yusho) ?? null)
-                : null;
-              const yushoHeya = yushoRikishi
-                ? world.heyas.get(yushoRikishi.heyaId)
-                : null;
+              const yushoRikishi = basho.yusho ? (getRikishi?.(basho.yusho) ?? null) : null;
+              const yushoHeya = yushoRikishi ? world.heyas.get(yushoRikishi.heyaId) : null;
 
               const junYushoIds = Array.isArray((basho as any).junYusho)
                 ? ((basho as any).junYusho as string[])
                 : [];
-              const prizes =
-                ((basho as any).prizes as HistoryRecord["prizes"]) ?? null;
+              const prizes = ((basho as any).prizes as HistoryRecord["prizes"]) ?? null;
 
               // Prefer yusho prize as "headline" prize; otherwise show none.
               const yushoMillions = safeMillions(prizes?.yushoAmount);
 
               const key = `${basho.year}-${basho.bashoNumber}-${basho.bashoName}`;
 
-              const shukun = basho.shukunsho
-                ? (getRikishi?.(basho.shukunsho) ?? null)
-                : null;
-              const kanto = basho.kantosho
-                ? (getRikishi?.(basho.kantosho) ?? null)
-                : null;
-              const gino = basho.ginoSho
-                ? (getRikishi?.(basho.ginoSho) ?? null)
-                : null;
+              const shukun = basho.shukunsho ? (getRikishi?.(basho.shukunsho) ?? null) : null;
+              const kanto = basho.kantosho ? (getRikishi?.(basho.kantosho) ?? null) : null;
+              const gino = basho.ginoSho ? (getRikishi?.(basho.ginoSho) ?? null) : null;
 
               return (
                 <Card key={key} className="paper">
@@ -177,17 +151,13 @@ export default function HistoryPage() {
                           <span>{basho.year}年</span>
                           <span>{bashoLocation}</span>
                           <Badge variant="secondary" className="text-xs">
-                            {bashoIdx >= 0
-                              ? `${bashoIdx + 1}/6`
-                              : `#${basho.bashoNumber}`}
+                            {bashoIdx >= 0 ? `${bashoIdx + 1}/6` : `#${basho.bashoNumber}`}
                           </Badge>
                         </div>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="text-sm text-muted-foreground">
-                          Yūshō Prize
-                        </div>
+                        <div className="text-sm text-muted-foreground">Yūshō Prize</div>
                         <div className="font-mono">
                           {yushoMillions === null
                             ? "—"
@@ -208,23 +178,15 @@ export default function HistoryPage() {
                         <div className="p-4 rounded-lg bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20">
                           <div className="flex items-center gap-2 mb-2">
                             <Trophy className="h-5 w-5 text-gold" />
-                            <span className="text-sm font-medium text-gold">
-                              優勝 Yūshō
-                            </span>
+                            <span className="text-sm font-medium text-gold">優勝 Yūshō</span>
                           </div>
                           <div className="font-display text-xl font-bold">
-                            <RikishiName
-                              id={yushoRikishi.id}
-                              name={yushoRikishi.shikona}
-                            />
+                            <RikishiName id={yushoRikishi.id} name={yushoRikishi.shikona} />
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {safeRankJa(yushoRikishi.rank)} •{" "}
                             {yushoHeya ? (
-                              <StableName
-                                id={yushoHeya.id}
-                                name={yushoHeya.name}
-                              />
+                              <StableName id={yushoHeya.id} name={yushoHeya.name} />
                             ) : (
                               "—"
                             )}
@@ -234,13 +196,9 @@ export default function HistoryPage() {
                         <div className="p-4 rounded-lg bg-secondary/30">
                           <div className="flex items-center gap-2 mb-2">
                             <Trophy className="h-5 w-5 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                              優勝 Yūshō
-                            </span>
+                            <span className="text-sm font-medium">優勝 Yūshō</span>
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Winner not available
-                          </div>
+                          <div className="text-sm text-muted-foreground">Winner not available</div>
                         </div>
                       )}
 
@@ -249,9 +207,7 @@ export default function HistoryPage() {
                         <div className="p-4 rounded-lg bg-secondary/50">
                           <div className="flex items-center gap-2 mb-2">
                             <Medal className="h-5 w-5 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                              準優勝 Jun-Yūshō
-                            </span>
+                            <span className="text-sm font-medium">準優勝 Jun-Yūshō</span>
                           </div>
                           <div className="space-y-1">
                             {junYushoIds.slice(0, 3).map((rid) => {
@@ -269,9 +225,7 @@ export default function HistoryPage() {
                         <div className="p-4 rounded-lg bg-secondary/30">
                           <div className="flex items-center gap-2 mb-2">
                             <Medal className="h-5 w-5 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                              準優勝 Jun-Yūshō
-                            </span>
+                            <span className="text-sm font-medium">準優勝 Jun-Yūshō</span>
                           </div>
                           <div className="text-sm text-muted-foreground">—</div>
                         </div>
@@ -282,15 +236,10 @@ export default function HistoryPage() {
                         {/* Shukunsho */}
                         <div className="p-3 rounded-lg bg-secondary/30 text-center">
                           <Award className="h-4 w-4 mx-auto mb-1 text-gold" />
-                          <div className="text-xs text-muted-foreground">
-                            殊勲賞
-                          </div>
+                          <div className="text-xs text-muted-foreground">殊勲賞</div>
                           {shukun ? (
                             <div className="text-sm font-display">
-                              <RikishiName
-                                id={shukun.id}
-                                name={shukun.shikona}
-                              />
+                              <RikishiName id={shukun.id} name={shukun.shikona} />
                             </div>
                           ) : (
                             <div className="text-sm font-display">—</div>
@@ -300,9 +249,7 @@ export default function HistoryPage() {
                         {/* Kantosho */}
                         <div className="p-3 rounded-lg bg-secondary/30 text-center">
                           <Star className="h-4 w-4 mx-auto mb-1 text-rose-500" />
-                          <div className="text-xs text-muted-foreground">
-                            敢闘賞
-                          </div>
+                          <div className="text-xs text-muted-foreground">敢闘賞</div>
                           {kanto ? (
                             <div className="text-sm font-display">
                               <RikishiName id={kanto.id} name={kanto.shikona} />
@@ -315,9 +262,7 @@ export default function HistoryPage() {
                         {/* GinoSho */}
                         <div className="p-3 rounded-lg bg-secondary/30 text-center">
                           <Medal className="h-4 w-4 mx-auto mb-1 text-sky-500" />
-                          <div className="text-xs text-muted-foreground">
-                            技能賞
-                          </div>
+                          <div className="text-xs text-muted-foreground">技能賞</div>
                           {gino ? (
                             <div className="text-sm font-display">
                               <RikishiName id={gino.id} name={gino.shikona} />

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
-import { scheduleDivisionDay, needsScheduleForDay, getTotalBashodays } from "../schedule";
+import { scheduleDivisionDay } from "../schedule";
+import { getTotalBashodays, needsScheduleForDay } from "../scheduleHelpers";
 import { mockRikishi, makeMockBasho, makeMockWorld } from "./utils";
 import type { BashoState } from "../types/basho";
 

@@ -1,0 +1,177 @@
+/**
+ * RikishiProfileHeader.tsx
+ *
+ * Header section for rikishi profile page.
+ */
+
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { ArrowLeft, Globe, MapPin, Calendar, Ruler, Scale } from "lucide-react";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import type { UIRikishi } from "@/presenters/uiModels";
+
+interface RikishiProfileHeaderProps {
+  rikishi: UIRikishi;
+  isOwned: boolean;
+  healthBadge: string;
+  onBack: () => void;
+}
+
+export function RikishiProfileHeader({
+  rikishi,
+  isOwned,
+  healthBadge,
+  onBack,
+}: RikishiProfileHeaderProps) {
+  return (
+    <div className="space-y-8">
+      <Button
+        variant="ghost"
+        onClick={onBack}
+        className="gap-2 h-10 px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" /> Back to stable roster
+      </Button>
+
+      {/* ═══ DOSSIER HEADER ═══ */}
+      <div className="dossier-paper rounded-lg overflow-hidden shadow-2xl border-2 border-primary/10">
+        <div className="bg-primary pt-12 pb-10 px-8 relative overflow-hidden text-primary-foreground hero-gradient border-b-4 border-primary">
+          <div className="absolute top-0 right-0 p-8 opacity-10 font-display text-9xl font-black pointer-events-none uppercase italic -rotate-12 translate-x-12 -translate-y-8">
+            {rikishi.rankLabel}
+          </div>
+
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 relative z-10">
+            <div className="flex items-center gap-6">
+              <SumoAvatar
+                config={rikishi.avatarConfig}
+                size="lg"
+                showHairstyle={true}
+                expression={rikishi.isInjured ? "intense" : "determined"}
+                fallback={rikishi.shikona}
+                className="border-4 border-white/20 shadow-2xl"
+              />
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Badge
+                    className={cn(
+                      "text-[10px] font-black uppercase tracking-widest px-3 h-6 border-0",
+                      `rank-${rikishi.rank}`
+                    )}
+                  >
+                    {rikishi.rankLabel}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "font-bold h-6 uppercase text-[9px] tracking-widest",
+                      healthBadge === "Fresh" && "border-success text-success bg-success/10",
+                      healthBadge === "Worn" &&
+                        "border-yellow-500 text-yellow-500 bg-yellow-500/10",
+                      healthBadge === "Struggling" &&
+                        "border-orange-500 text-orange-500 bg-orange-500/10",
+                      healthBadge === "Critical" &&
+                        "border-destructive text-destructive bg-destructive/10",
+                      healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
+                    )}
+                  >
+                    {healthBadge}
+                  </Badge>
+                  {isOwned && (
+                    <Badge
+                      variant="outline"
+                      className="bg-white/10 text-white border-white/20 font-bold h-6 uppercase text-[9px] tracking-widest"
+                    >
+                      Active Roster
+                    </Badge>
+                  )}
+                  {rikishi.nationality !== "Japan" && (
+                    <Badge
+                      variant="outline"
+                      className="border-gold text-gold bg-gold/10 flex items-center gap-1.5 h-6 font-bold text-[9px] tracking-widest"
+                    >
+                      <Globe className="h-3 w-3" /> Foreign Slot
+                    </Badge>
+                  )}
+                </div>
+
+                <h1 className="text-6xl font-display font-black tracking-tighter sumi-e-ink leading-none">
+                  {rikishi.shikona}
+                </h1>
+
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase font-black tracking-[0.2em] opacity-80 pt-2">
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 md:gap-8 shrink-0 bg-black/20 p-6 rounded-lg border border-white/10 shadow-inner">
+              {[
+                {
+                  label: "Current Record",
+                  value: `${rikishi.currentBashoWins}-${rikishi.currentBashoLosses}`,
+                  sub: "This Tournament",
+                  color:
+                    rikishi.currentBashoWins >= rikishi.currentBashoLosses
+                      ? "text-success"
+                      : "text-gold",
+                  tooltip: "Current tournament win-loss record",
+                },
+                {
+                  label: "Career History",
+                  value: `${rikishi.careerWins}-${rikishi.careerLosses}`,
+                  sub: "Professional Record",
+                  color: "text-white",
+                  tooltip: "Lifetime professional record across all tournaments",
+                },
+                {
+                  label: "Elite Titles",
+                  value: rikishi.careerYusho,
+                  sub: "Yūshō Count",
+                  color: "text-gold",
+                  condition: rikishi.careerYusho > 0,
+                  tooltip: "Total top-division championship victories",
+                },
+              ].map((stat, i) => (
+                <React.Fragment key={i}>
+                  {(!stat.condition || stat.condition === true) && (
+                    <TooltipWrap content={stat.tooltip} side="bottom">
+                      <div className="text-center group cursor-help">
+                        <div
+                          className={cn(
+                            "text-4xl font-display font-black leading-none mb-1 transition-transform group-hover:scale-110",
+                            stat.color
+                          )}
+                        >
+                          {stat.value}
+                        </div>
+                        <div className="text-[10px] uppercase font-black opacity-60 tracking-widest mb-0.5">
+                          {stat.label}
+                        </div>
+                        <div className="text-[8px] uppercase font-bold opacity-40">{stat.sub}</div>
+                      </div>
+                    </TooltipWrap>
+                  )}
+                  {i < 2 && <div className="w-px h-12 bg-white/10 hidden md:block" />}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,4 +1,6 @@
 // SettingsPage.tsx — Game settings with autosave toggle, theme, keybinds reference
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-refresh/only-export-components */
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useTheme } from "@/components/ThemeProvider";
@@ -33,7 +35,9 @@ export function getAutosaveEnabled(): boolean {
 function setAutosaveEnabled(enabled: boolean) {
   try {
     localStorage.setItem(AUTOSAVE_ENABLED_KEY, String(enabled));
-  } catch { /* silent */ }
+  } catch {
+    /* silent */
+  }
 }
 
 /** settings page. */
@@ -46,16 +50,10 @@ export default function SettingsPage() {
     setAutosaveEnabled(checked);
   };
 
-  const managementTabs = [
-    { id: "settings", label: "Settings" },
-  ];
+  const managementTabs = [{ id: "settings", label: "Settings" }];
 
   return (
-    <AppLayout
-      pageTitle="Settings"
-      subNavTabs={managementTabs}
-      activeSubTab="settings"
-    >
+    <AppLayout pageTitle="Settings" subNavTabs={managementTabs} activeSubTab="settings">
       <Helmet>
         <title>Settings - Basho</title>
         <meta name="description" content="Game settings and preferences" />
@@ -77,8 +75,12 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="theme-toggle" className="text-sm font-medium">Dark Mode</Label>
-                <p className="text-xs text-muted-foreground">Toggle between light and dark themes</p>
+                <Label htmlFor="theme-toggle" className="text-sm font-medium">
+                  Dark Mode
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Toggle between light and dark themes
+                </p>
               </div>
               <Switch
                 id="theme-toggle"
@@ -99,7 +101,9 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="autosave-toggle" className="text-sm font-medium">Autosave</Label>
+                <Label htmlFor="autosave-toggle" className="text-sm font-medium">
+                  Autosave
+                </Label>
                 <p className="text-xs text-muted-foreground">
                   Automatically save after each basho day and phase transitions
                 </p>
@@ -114,8 +118,20 @@ export default function SettingsPage() {
             <div className="text-xs text-muted-foreground space-y-1">
               <p>• 10 manual save slots available</p>
               <p>• Autosave uses a separate dedicated slot</p>
-              <p>• Use <Badge variant="outline" className="font-mono text-[10px] px-1 py-0">Ctrl+S</Badge> for quick save</p>
-              <p>• Use <Badge variant="outline" className="font-mono text-[10px] px-1 py-0">Ctrl+⇧+S</Badge> to open Save/Load dialog</p>
+              <p>
+                • Use{" "}
+                <Badge variant="outline" className="font-mono text-[10px] px-1 py-0">
+                  Ctrl+S
+                </Badge>{" "}
+                for quick save
+              </p>
+              <p>
+                • Use{" "}
+                <Badge variant="outline" className="font-mono text-[10px] px-1 py-0">
+                  Ctrl+⇧+S
+                </Badge>{" "}
+                to open Save/Load dialog
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -131,7 +147,10 @@ export default function SettingsPage() {
           <CardContent>
             <div className="grid gap-2">
               {SHORTCUT_REFERENCE.map((s) => (
-                <div key={s.key} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                <div
+                  key={s.key}
+                  className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0"
+                >
                   <span className="text-sm text-muted-foreground">{s.action}</span>
                   <Badge variant="outline" className="font-mono text-xs px-2 py-0.5">
                     {s.key}
@@ -150,7 +169,9 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-1">
-            <p><strong className="text-foreground">Basho</strong> — 相撲経営シミュレーション</p>
+            <p>
+              <strong className="text-foreground">Basho</strong> — 相撲経営シミュレーション
+            </p>
             <p>A sumo stable management simulation.</p>
             <p className="text-xs">Save version: 1.0.0</p>
           </CardContent>

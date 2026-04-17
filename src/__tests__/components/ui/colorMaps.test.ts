@@ -24,9 +24,13 @@ describe("colorMaps", () => {
   describe("BAND_COLORS", () => {
     it("should have band color mappings", () => {
       expect(BAND_COLORS).toBeDefined();
-      expect(BAND_COLORS.high).toBeDefined();
-      expect(BAND_COLORS.medium).toBeDefined();
-      expect(BAND_COLORS.low).toBeDefined();
+      expect(BAND_COLORS.peak).toBeDefined();
+      expect(BAND_COLORS.good).toBeDefined();
+      expect(BAND_COLORS.cold).toBeDefined();
+      expect(BAND_COLORS.hot).toBeDefined();
+      // Check the structure includes label and color
+      expect(BAND_COLORS.peak.label).toBeDefined();
+      expect(BAND_COLORS.peak.color).toBeDefined();
     });
   });
 

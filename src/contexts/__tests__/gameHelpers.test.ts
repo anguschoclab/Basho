@@ -1,22 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { autosaveWithSignal } from "../gameHelpers";
 import { getAutosaveEnabled } from "../../pages/SettingsPage";
 import { autosave, saveGame } from "../../engine/saveload";
-import { WorldState } from "../../engine/types/world";
 
 // Mock dependencies
-const mockGetAutosaveEnabled = vi.fn();
-const mockSaveGame = vi.fn();
-const mockAutosave = vi.fn(() => true);
-
 vi.mock("../../pages/SettingsPage", () => ({
-  getAutosaveEnabled: mockGetAutosaveEnabled,
+  getAutosaveEnabled: vi.fn(),
 }));
 
 vi.mock("../../engine/saveload", () => ({
-  saveGame: mockSaveGame,
-  autosave: mockAutosave,
+  saveGame: vi.fn(),
+  autosave: vi.fn(() => true),
 }));
+
+const mockGetAutosaveEnabled = vi.mocked(getAutosaveEnabled);
+const mockSaveGame = vi.mocked(saveGame);
+const mockAutosave = vi.mocked(autosave);
 
 describe("gameHelpers", () => {
   describe("autosaveWithSignal", () => {
