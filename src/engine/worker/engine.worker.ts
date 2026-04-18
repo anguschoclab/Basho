@@ -22,7 +22,7 @@ function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } 
  */
 function migrateWorldState(world: WorldState): WorldState {
   const currentYear = world.year;
-  world.rikishi.forEach((r) => {
+  world.rikishi?.forEach((r) => {
     if (!r.joinedHeyaDate) {
       r.joinedHeyaDate = String(currentYear - 5);
     }

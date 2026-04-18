@@ -409,8 +409,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     hasKeshoMawashi: !!r.keshoMawashi,
     isYokozuna: r.rank === "yokozuna",
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
-    citizenshipStatus: getCitizenshipStatus(r, world.year),
-    yearsToNaturalization: yearsUntilNaturalization(r, world.year),
+    citizenshipStatus: getCitizenshipStatus(r, world?.year ?? 2020),
+    yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? 2020),
     // Phase M: Lineage
     mentorId: r.mentorId,
     mentorName: r.mentorId ? world.rikishi.get(r.mentorId)?.shikona : undefined,
@@ -549,7 +549,7 @@ export function projectRosterEntry(
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
     streakLabel: calculateStreak(r.history ?? []).label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
-    citizenshipStatus: getCitizenshipStatus(r, world.year),
-    yearsToNaturalization: yearsUntilNaturalization(r, world.year),
+    citizenshipStatus: getCitizenshipStatus(r, world?.year ?? 2020),
+    yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? 2020),
   };
 }

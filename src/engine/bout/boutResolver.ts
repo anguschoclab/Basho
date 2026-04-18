@@ -45,7 +45,7 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
     kimariteName: "Fusenshō",
     stance: "no-grip",
     tachiaiWinner: winnerSide,
-    duration: 1,
+    duration: 0,
     excitementScore: 0,
     upset: false,
     isKinboshi: false,

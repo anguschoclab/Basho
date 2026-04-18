@@ -116,8 +116,11 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       drillVector.fatigue += effects.fatigue;
     });
 
-    // Apply drill fatigue to the running total
-    updates.fatigue = Math.max(0, Math.min(100, (updates.fatigue || 0) + drillVector.fatigue));
+    // Apply drill fatigue to the running total.
+    // Skip for injured rikishi on recovery focus — they rest, not drill.
+    if (!(rikishi.injured && isOnRecoveryFocus)) {
+      updates.fatigue = Math.max(0, Math.min(100, (updates.fatigue || 0) + drillVector.fatigue));
+    }
 
     // 3. Growth Logic (Skip if injured)
     if (!rikishi.injured) {
