@@ -8,3 +8,7 @@
 ## 2026-04-16 - Avoid early conditional returns before useMemo hooks in React component refactors
 **Learning:** Moving conditional early returns below hooks during refactors is vital. If a React component conditionally returns early (e.g. `if (!world) return null;`) before executing `useMemo` hooks, React will throw a severe runtime violation.
 **Action:** When extracting data transformations into `useMemo` or `useCallback`, always check and gracefully handle undefined/null states within the hook's execution logic, allowing the hook execution order to remain consistent across all renders, and shift the conditional return strictly beneath them.
+
+## 2024-03-24 - [O(n) instead of O(n^2) for ID lookup]
+**Learning:** `npcRecruitmentStrategy.ts` was doing `Object.values(world.talentPool?.candidates || {}).find((c) => c.candidateId === candidateId)` to look up a candidate by ID inside a method (`calculateMaxBid`) that can be called repeatedly during recruitment simulation loops. Since `candidates` is an object keyed by `candidateId` (of type `Record<Id, TalentCandidate>`), `Object.values().find(...)` unnecessarily iterates over all candidates, causing an O(N) lookup that could easily be O(1) by accessing the record directly.
+**Action:** Replace `Object.values(record).find(obj => obj.id === id)` with direct record access `record?.[id]` to avoid O(N) lookups in loops.
