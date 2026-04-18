@@ -205,7 +205,11 @@ export function WeeklyDrillPlanner({
         {/* Header Row */}
         <div className="min-w-[900px] grid grid-cols-[40px_220px_repeat(6,1fr)_80px] gap-2 px-2 py-3 bg-muted/50 rounded-t-xl border border-dashed text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <div className="flex justify-center">
-            <button onClick={toggleSelectAll} className="hover:text-primary transition-colors">
+            <button
+              onClick={toggleSelectAll}
+              className="hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+              aria-label={isAllSelected ? "Deselect all rikishi" : "Select all rikishi"}
+            >
               {isAllSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
             </button>
           </div>
@@ -242,9 +246,12 @@ export function WeeklyDrillPlanner({
                 <button
                   onClick={() => toggleSelect(rikishi.id)}
                   className={cn(
-                    "transition-colors",
+                    "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm",
                     isSelected ? "text-primary" : "text-muted-foreground/30 hover:text-primary"
                   )}
+                  aria-label={
+                    isSelected ? `Deselect ${rikishi.shikona}` : `Select ${rikishi.shikona}`
+                  }
                 >
                   {isSelected ? (
                     <CheckSquare className="h-4 w-4" />
