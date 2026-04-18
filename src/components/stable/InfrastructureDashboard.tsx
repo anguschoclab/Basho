@@ -6,6 +6,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { formatYen } from "@/utils/engineUtils";
 import {
   Building2,
   HardHat,
@@ -187,8 +188,8 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                     )}
                   </Button>
                   <p className="text-[7px] text-center mt-2 text-muted-foreground uppercase font-black tracking-widest">
-                    Build Cost: ¥{(facility.baseCost * (1 + level * 0.8)).toLocaleString()} |
-                    Maintenance: ¥{facility.maintenanceCost.toLocaleString()}/mo
+                    Build Cost: {formatYen(Math.round(facility.baseCost * (1 + level * 0.8)))} |
+                    Maintenance: {formatYen(facility.maintenanceCost)}/mo
                   </p>
                 </div>
               </CardContent>

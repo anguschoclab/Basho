@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
-import type { UIRosterEntry } from "@/presenters/rikishiUI";
+import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishiUI";
 
 interface YushoContenderProps {
   entry: UIRosterEntry;
@@ -82,20 +82,23 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
 };
 
 export const YushoRaceWidget: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { state } = useGame();
   const navigate = useNavigate();
 
-  const topContenders = useMemo(() => {
-    // Get top rikishi sorted by wins from tournament
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const entries: any[] = [];
-
-    // TODO: Connect to actual tournament state
-    // This is a placeholder implementation
-
-    return entries.slice(0, 5);
-  }, []);
+  const topContenders = useMemo((): UIRosterEntry[] => {
+    const world = state.world;
+    if (!world?.currentBasho) return [];
+    const standings = world.currentBasho.standings;
+    return Array.from(world.rikishi.values())
+      .filter((r) => !r.isRetired && r.division === "makuuchi")
+      .map((r) => {
+        const record = standings.get(r.id);
+        return { r, wins: record?.wins ?? r.currentBashoWins ?? 0 };
+      })
+      .sort((a, b) => b.wins - a.wins)
+      .slice(0, 5)
+      .map(({ r }) => projectRosterEntry(r, world));
+  }, [state.world]);
 
   if (topContenders.length === 0) {
     return null;

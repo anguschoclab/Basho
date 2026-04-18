@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import { RikishiName } from "@/components/ClickableName";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
@@ -117,14 +118,14 @@ export function KenshoManagementWidget() {
                 <Coins className="h-4 w-4 text-gold" />
                 <span className="text-sm font-medium">Total Earnings</span>
               </div>
-              <div className="text-2xl font-bold">¥{totalKenshoEarnings.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{formatYen(totalKenshoEarnings)}</div>
             </div>
             <div className="p-4 rounded-lg border bg-card">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="h-4 w-4 text-success" />
                 <span className="text-sm font-medium">Projected (Basho)</span>
               </div>
-              <div className="text-2xl font-bold">¥{projectedKensho.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{formatYen(projectedKensho)}</div>
             </div>
           </div>
 
@@ -157,7 +158,7 @@ export function KenshoManagementWidget() {
                           {bout.kenshoEnvelopes} envelopes
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          ¥{(bout.kenshoEnvelopes * 70000).toLocaleString()}
+                          {formatYen(bout.kenshoEnvelopes * 70000)}
                         </div>
                       </div>
                       {bout.awardFact && (
@@ -197,7 +198,7 @@ export function KenshoManagementWidget() {
                       </div>
                       <div className="text-right">
                         <div className="font-semibold text-gold">
-                          ¥{kenshoEarnings.toLocaleString()}
+                          {formatYen(kenshoEarnings)}
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {kenshoEarnings > 0

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata, OyakataArchetype, OyakataTraits } from "@/engine/types/oyakata";
 import {
@@ -145,7 +146,7 @@ export function InstitutionPanel({
               Training cap:{" "}
               <span className="font-medium">{String(sanc.trainingIntensityCap).toUpperCase()}</span>
               {sanc.recruitmentFreezeWeeks ? ` · Freeze: ${sanc.recruitmentFreezeWeeks}w` : ""}
-              {sanc.fineYen ? ` · Fine: ¥${Number(sanc.fineYen).toLocaleString()}` : ""}
+              {sanc.fineYen ? ` · Fine: ${formatYen(Number(sanc.fineYen))}` : ""}
             </div>
           )}
         </div>

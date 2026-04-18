@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Building2 } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import type { Sponsor } from "@/engine/types/sponsors";
 import { recruitSponsor } from "@/presenters/uiDigest";
 
@@ -63,7 +64,7 @@ const SponsorRow = React.memo(
           </div>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Coins className="h-3 w-3" />¥{cost.toLocaleString()}
+              <Coins className="h-3 w-3" />{formatYen(cost)}
             </span>
             <span className="flex items-center gap-1">
               <TrendingUp className="h-3 w-3" />
@@ -127,7 +128,7 @@ export function SponsorRecruitmentWidget() {
       if (heya.funds < cost) {
         toast({
           title: "Insufficient funds",
-          description: `You need ¥${cost.toLocaleString()} to recruit ${sponsor.displayName}.`,
+          description: `You need ${formatYen(cost)} to recruit ${sponsor.displayName}.`,
           variant: "destructive",
         });
         return;

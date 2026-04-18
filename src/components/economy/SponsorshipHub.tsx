@@ -6,6 +6,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { formatYen } from "@/utils/engineUtils";
 import {
   Heart,
   Users,
@@ -60,7 +61,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-display font-black text-primary">
-              ¥{data.totalMonthlyIncome.toLocaleString()}
+              {formatYen(data.totalMonthlyIncome)}
             </div>
             <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
               Combined Koenkai + Sponsor Dues
@@ -79,7 +80,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
               {data.strength} <span className="text-[10px] font-normal">{data.koenkaiName}</span>
             </div>
             <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
-              Provides constant ¥{data.koenkaiIncome.toLocaleString()} monthly
+              Provides constant {formatYen(data.koenkaiIncome)} monthly
             </p>
           </CardContent>
         </Card>
@@ -139,8 +140,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
                         <Calendar className="h-3 w-3" /> Since Week {sponsor.since}
                       </span>
                       <span className="flex items-center gap-1.5 text-primary">
-                        <Landmark className="h-3 w-3" /> ¥{sponsor.monthlyIncome.toLocaleString()} /
-                        mo
+                        <Landmark className="h-3 w-3" /> {formatYen(sponsor.monthlyIncome)} / mo
                       </span>
                     </div>
                   </div>

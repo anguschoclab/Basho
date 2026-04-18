@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { usePlayerHeya } from "@/hooks/usePlayerHeya";
 import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import { BaseWidget } from "./BaseWidget";
 import { AreaChart, Area, ResponsiveContainer } from "recharts";
 import type { LucideIcon } from "lucide-react";
@@ -97,7 +98,7 @@ export function FinancesWidget() {
               Balance
             </div>
             <div className="text-lg font-bold leading-none tabular-nums">
-              ¥{heya.funds.toLocaleString()}
+              {formatYen(heya.funds)}
             </div>
           </div>
         </div>

@@ -665,8 +665,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     const isKachiKoshi = bashoWins > bashoLosses;
     const isYusho = id === yusho;
     const isJunYusho = topCandidates.length > 1 && id === topCandidates[1];
-    // TODO: Track per-basho kinboshi separately instead of using 0
-    const kinboshiThisBasho = 0;
+    const kinboshiThisBasho = basho.kinboshiThisBasho?.[id] ?? 0;
 
     const impact = accumulateMochikyukinPoints(world, id, {
       isKachiKoshi,

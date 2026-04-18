@@ -31,6 +31,7 @@ import {
   deductTsukebitoCosts,
   distributeKoenkaiToSekitori,
 } from "../../systems/economics/TravelAllowanceService";
+import { tickMonthlyNPC } from "../../npcAI";
 
 // Type for partial heya updates used in monthly boundary processing
 type HeyaUpdates = Partial<{
@@ -98,9 +99,8 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   });
 
   // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
-  // retirement evaluation, vacancy assessment. This was previously orphaned
-  // TODO: Re-enable NPC monthly decisions when tickMonthlyNPC is available
-  // const npcMonthlyImpact = tickMonthlyNPC(world);
+  // retirement evaluation, vacancy assessment.
+  const npcMonthlyImpact = tickMonthlyNPC(world);
 
   // Pay travel/jungyo allowance to sekitori
   const travelImpact = payTravelAllowance(world);
@@ -111,7 +111,13 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // Distribute kōenkai income portion to sekitori
   const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
 
-  return mergeImpacts([builder.build(), travelImpact, tsukebitoImpact, koenkaiDistributionImpact]);
+  return mergeImpacts([
+    builder.build(),
+    npcMonthlyImpact,
+    travelImpact,
+    tsukebitoImpact,
+    koenkaiDistributionImpact,
+  ]);
 }
 
 // --- Helper Functions ---

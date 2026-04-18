@@ -6,6 +6,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const RUNWAY_COLORS: Record<string, string> = {
@@ -111,7 +112,7 @@ export function TopNavBar() {
             <TooltipWrap
               content={
                 <div className="text-xs space-y-0.5">
-                  <p className="font-semibold">¥{playerHeya.funds.toLocaleString()}</p>
+                  <p className="font-semibold">{formatYen(playerHeya.funds)}</p>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
                     Runway · {playerHeya.runwayBand}
                   </p>
@@ -136,10 +137,9 @@ export function TopNavBar() {
                         : (RUNWAY_COLORS[playerHeya.runwayBand ?? ""] ?? "hsl(var(--foreground))"),
                   }}
                 >
-                  ¥
                   {playerHeya.funds >= 0
-                    ? playerHeya.funds.toLocaleString()
-                    : `-${Math.abs(playerHeya.funds).toLocaleString()}`}
+                    ? formatYen(playerHeya.funds)
+                    : `-${formatYen(Math.abs(playerHeya.funds))}`}
                 </span>
               </div>
             </TooltipWrap>

@@ -5,6 +5,8 @@ import { STABLE_TABS } from "@/constants/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { projectRikishi } from "@/presenters/rikishiUI";
+import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +23,7 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = routeId || playerHeyaId || "";
@@ -46,9 +48,11 @@ export default function StablePage() {
 
   const sponsorData = projectSponsorUIDigest(world);
 
-  const handleUpgrade = (_facilityId: FacilityId) => {
-    // TODO: Implement facility upgrade logic
-    void _facilityId; // Acknowledge parameter for now
+  const handleUpgrade = (facilityId: FacilityId) => {
+    if (!world) return;
+    const impact = InfrastructureService.startConstruction(world, viewingHeyaId, facilityId);
+    const nextWorld = resolveImpacts(world, [impact]);
+    updateWorld(nextWorld);
   };
 
   return (
