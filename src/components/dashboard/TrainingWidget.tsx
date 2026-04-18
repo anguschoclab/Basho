@@ -225,6 +225,21 @@ export function TrainingWidget() {
     [world, maxIntensityIdx, updateWorld, INTENSITY_RANK]
   );
 
+  const handleIntensityChange = React.useCallback(
+    (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
+    [updateProfile]
+  );
+
+  const handleFocusChange = React.useCallback(
+    (v: string) => updateProfile({ focus: v as TrainingFocus }),
+    [updateProfile]
+  );
+
+  const handleRecoveryChange = React.useCallback(
+    (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
+    [updateProfile]
+  );
+
   const toggleExpanded = React.useCallback(() => setExpanded((prev) => !prev), []);
 
   // Early return after all hooks
@@ -331,21 +346,21 @@ export function TrainingWidget() {
             icon={<Zap className="h-3 w-3 text-muted-foreground" />}
             value={profile.intensity}
             options={intensityOptions}
-            onChange={(v) => updateProfile({ intensity: v as TrainingIntensity })}
+            onChange={handleIntensityChange}
           />
           <ProfileRow
             label="Focus"
             icon={<Target className="h-3 w-3 text-muted-foreground" />}
             value={profile.focus}
             options={focusOptions}
-            onChange={(v) => updateProfile({ focus: v as TrainingFocus })}
+            onChange={handleFocusChange}
           />
           <ProfileRow
             label="Recovery"
             icon={<Shield className="h-3 w-3 text-muted-foreground" />}
             value={profile.recovery}
             options={recoveryOptions}
-            onChange={(v) => updateProfile({ recovery: v as RecoveryEmphasis })}
+            onChange={handleRecoveryChange}
           />
         </div>
       )}

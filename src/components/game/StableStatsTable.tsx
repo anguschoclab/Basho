@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -57,14 +57,17 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
     return result;
   }, [rikishiList, sortKey, sortOrder, divisionFilter]);
 
-  const toggleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(key);
-      setSortOrder("desc"); // Default to desc for stats
-    }
-  };
+  const toggleSort = useCallback(
+    (key: SortKey) => {
+      if (sortKey === key) {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        setSortKey(key);
+        setSortOrder("desc"); // Default to desc for stats
+      }
+    },
+    [sortKey, sortOrder]
+  );
 
   return (
     <Card className="border-none shadow-none bg-transparent">
@@ -77,14 +80,12 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
 
           <div className="flex flex-wrap gap-1.5">
             {divisions.map((div) => (
-              <Badge
+              <DivisionFilterBadge
                 key={div}
-                variant={divisionFilter === div ? "default" : "outline"}
-                className="cursor-pointer capitalize px-3 py-0.5"
-                onClick={() => setDivisionFilter(div)}
-              >
-                {div}
-              </Badge>
+                division={div}
+                isActive={divisionFilter === div}
+                onClick={setDivisionFilter}
+              />
             ))}
           </div>
         </div>
@@ -142,23 +143,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
             </thead>
             <tbody>
               {filteredAndSortedRikishi.map((r) => (
-                <tr
-                  key={r.id}
-                  className="border-b border-border/30 hover:bg-muted/30 transition-colors"
-                >
-                  <td className="py-3 px-4 font-medium">{r.shikona}</td>
-                  <td className="py-3 px-4 capitalize text-muted-foreground">{r.division}</td>
-                  <td className="py-3 px-4">{r.careerWins}</td>
-                  <td className="py-3 px-4 text-muted-foreground">{r.careerLosses}</td>
-                  <td className="py-3 px-4 font-mono">{(r.winPercentage * 100).toFixed(1)}%</td>
-                  <td className="py-3 px-4">
-                    <StreakBadge streak={r.streak} label={r.streakLabel} />
-                  </td>
-                  <td className="py-3 px-4 font-medium text-primary">{r.currentBashoRecord}</td>
-                  <td className="py-3 px-4 font-display font-semibold text-primary">
-                    {r.avgRankLabel}
-                  </td>
-                </tr>
+                <StableStatsRow key={r.id} r={r} />
               ))}
               {filteredAndSortedRikishi.length === 0 && (
                 <tr>
@@ -175,7 +160,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
   );
 }
 
-function TableHeader({
+const TableHeader = React.memo(function TableHeader({
   label,
   id,
   currentSort,
@@ -201,9 +186,52 @@ function TableHeader({
       </div>
     </th>
   );
-}
+});
 
-function StreakBadge({ streak, label }: { streak: number; label: string }) {
+const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
+  division,
+  isActive,
+  onClick,
+}: {
+  division: string;
+  isActive: boolean;
+  onClick: (div: string) => void;
+}) {
+  return (
+    <Badge
+      variant={isActive ? "default" : "outline"}
+      className="cursor-pointer capitalize px-3 py-0.5"
+      onClick={() => onClick(division)}
+    >
+      {division}
+    </Badge>
+  );
+});
+
+const StableStatsRow = React.memo(function StableStatsRow({ r }: { r: UIRikishi }) {
+  return (
+    <tr className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+      <td className="py-3 px-4 font-medium">{r.shikona}</td>
+      <td className="py-3 px-4 capitalize text-muted-foreground">{r.division}</td>
+      <td className="py-3 px-4">{r.careerWins}</td>
+      <td className="py-3 px-4 text-muted-foreground">{r.careerLosses}</td>
+      <td className="py-3 px-4 font-mono">{(r.winPercentage * 100).toFixed(1)}%</td>
+      <td className="py-3 px-4">
+        <StreakBadge streak={r.streak} label={r.streakLabel} />
+      </td>
+      <td className="py-3 px-4 font-medium text-primary">{r.currentBashoRecord}</td>
+      <td className="py-3 px-4 font-display font-semibold text-primary">{r.avgRankLabel}</td>
+    </tr>
+  );
+});
+
+const StreakBadge = React.memo(function StreakBadge({
+  streak,
+  label,
+}: {
+  streak: number;
+  label: string;
+}) {
   if (streak === 0) return <span className="text-muted-foreground">-</span>;
 
   const isWinning = streak > 0;
@@ -219,4 +247,4 @@ function StreakBadge({ streak, label }: { streak: number; label: string }) {
       {label}
     </div>
   );
-}
+});

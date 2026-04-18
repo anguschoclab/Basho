@@ -142,7 +142,7 @@ export function RosterWidget() {
     [world, updateWorld]
   );
 
-  const toggleSelection = (id: string) => {
+  const toggleSelection = React.useCallback((id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id)
         ? prev.filter((i) => i !== id)
@@ -150,7 +150,7 @@ export function RosterWidget() {
           ? [...prev, id]
           : [prev[1], id]
     );
-  };
+  }, []);
 
   const comparisonPair = useMemo(() => {
     if (selectedIds.length < 2 || !world) return null;
