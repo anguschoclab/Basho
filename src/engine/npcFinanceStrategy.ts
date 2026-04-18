@@ -10,6 +10,11 @@ interface FinanceStrategy {
   evaluateFinances: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
 }
 
+function getSortedMyosekiStocks(world: WorldState) {
+  if (!world.myosekiMarket) return [];
+  return stableSort(Object.values(world.myosekiMarket.stocks), (x: any) => x.id || String(x));
+}
+
 export const DefaultFinanceStrategy: FinanceStrategy = {
   evaluateFinances(world: WorldState, heya: Heya, oyakata: Oyakata) {
     if (!world.myosekiMarket) return;
@@ -28,11 +33,7 @@ export const DefaultFinanceStrategy: FinanceStrategy = {
     }
 
     if (heya.funds > threshold && isAmbitious) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -70,11 +71,7 @@ export const TraditionalistFinanceStrategy: FinanceStrategy = {
       threshold = 700_000_000; // More patient traditionalists save more
     }
     if (heya.funds > threshold && oyakata.traits.tradition > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -108,11 +105,7 @@ export const ScientistFinanceStrategy: FinanceStrategy = {
     // They value myoseki that provide technical advantages
     const threshold = 350_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -153,11 +146,7 @@ export const GamblerFinanceStrategy: FinanceStrategy = {
       threshold = 100_000_000;
     }
     if (heya.funds > threshold && oyakata.traits.risk > 50) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -198,11 +187,7 @@ export const NurturerFinanceStrategy: FinanceStrategy = {
       threshold = 800_000_000;
     }
     if (heya.funds > threshold && oyakata.traits.compassion > 60) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -243,11 +228,7 @@ export const TyrantFinanceStrategy: FinanceStrategy = {
     // They rarely spend on myoseki unless it's for power
     const threshold = 1_000_000_000; // Extremely high threshold
     if (heya.funds > threshold) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -281,11 +262,7 @@ export const StrategistFinanceStrategy: FinanceStrategy = {
     // They calculate optimal purchase timing
     const threshold = 400_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 50) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -319,11 +296,7 @@ export const StrictFinanceStrategy: FinanceStrategy = {
     // They're conservative but follow traditional approaches
     const threshold = 550_000_000;
     if (heya.funds > threshold && oyakata.traits.tradition > 50) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&
@@ -357,11 +330,7 @@ export const IndulgentFinanceStrategy: FinanceStrategy = {
     // They spend moderately on myoseki
     const threshold = 450_000_000;
     if (heya.funds > threshold && oyakata.traits.ambition > 40) {
-      const stocks = stableSort(
-        Object.values(world.myosekiMarket.stocks),
-        (x: any) => x.id || String(x)
-      );
-      for (const stock of stocks) {
+      for (const stock of getSortedMyosekiStocks(world)) {
         if (
           stock.status === "available" &&
           stock.askingPrice &&

@@ -4,307 +4,132 @@ import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { EventBus } from "./events";
 import { checkRetirement } from "./lifecycle";
+import type { Rikishi } from "./types/rikishi";
 
 interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
 }
 
+function evaluateRetirementsBase(
+  world: WorldState,
+  heya: Heya,
+  checkFn: (r: Rikishi, retireReason: string | undefined) => string | false
+) {
+  const currentRikishiIds = [...(heya.rikishiIds || [])];
+  for (const rId of currentRikishiIds) {
+    const r = world.rikishi.get(rId);
+    if (!r) continue;
+    const baseReason = getBaseRetireReason(world, r);
+    const finalReason = checkFn(r, baseReason);
+    if (finalReason) {
+      executeRetirement(world, heya, r, finalReason);
+    }
+  }
+}
+
+function executeRetirement(world: WorldState, heya: Heya, r: Rikishi, reason: string) {
+  EventBus.lifecycleEvent(world, {
+    rikishiId: r.id,
+    heyaId: heya.id,
+    shikona: r.shikona || r.name || r.id,
+    status: "retirement",
+    reason,
+  });
+  heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
+  world.rikishi.delete(r.id);
+}
+
+function getBaseRetireReason(world: WorldState, r: Rikishi): string | undefined {
+  return checkRetirement(r, world.calendar?.year ?? world.year ?? 2026, world.seed);
+}
+
 export const DefaultRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world: WorldState, heya: Heya, _oyakata: Oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      // checkRetirement will check injury/age thresholds.
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      if (retireReason) {
-        // Emit retirement event
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason,
-        });
-
-        // Remove from heya
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-
-        // Remove from global active map
-        world.rikishi.delete(r.id);
-      }
-    }
+    evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
   },
 };
 
 export const TraditionalistRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      // Traditionalists respect age and tradition, allow rikishi to retire naturally
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Traditionalists are more lenient with retirement thresholds
+    evaluateRetirementsBase(world, heya, (r, retireReason) => {
       const age = (world.calendar?.year ?? world.year ?? 2026) - r.birthYear;
-      const isOldEnough = age >= 35; // Higher age threshold for traditionalists
-
+      const isOldEnough = age >= 35;
       if (retireReason || (isOldEnough && r.rank && r.rank.startsWith("maegashira"))) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason || "Honorable retirement due to age",
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
+        return retireReason || "Honorable retirement due to age";
       }
-    }
+      return false;
+    });
   },
 };
 
 export const ScientistRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Scientists cut rikishi when stats decline significantly
-      if (retireReason) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason,
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
-      }
-    }
+    evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
   },
 };
 
 export const GamblerRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Gamblers cut quickly when performance drops
+    evaluateRetirementsBase(world, heya, (r, retireReason) => {
       if (retireReason || (oyakata.traits.risk > 60 && r.stats && (r.stats as any).strength < 30)) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason || "Cut due to poor performance",
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
+        return retireReason || "Cut due to poor performance";
       }
-    }
+      return false;
+    });
   },
 };
 
 export const NurturerRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Nurturers are protective, only retire when absolutely necessary
+    evaluateRetirementsBase(world, heya, (r, retireReason) => {
       const age = (world.calendar?.year ?? world.year ?? 2026) - r.birthYear;
-      const isVeryOld = age >= 40; // Very high age threshold
-
+      const isVeryOld = age >= 40;
       if (retireReason || isVeryOld) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason || "Retired after long career with care",
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
+        return retireReason || "Retired after long career with care";
       }
-    }
+      return false;
+    });
   },
 };
 
 export const TyrantRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Tyrants force retirement aggressively for underperformers
+    evaluateRetirementsBase(world, heya, (r, retireReason) => {
       const isUnderperforming = r.stats && (r.stats as any).strength < 25;
       const isLowRank = r.rank && (r.rank.startsWith("maegashira") || r.rank.startsWith("juryo"));
-
       if (retireReason || (isUnderperforming && isLowRank)) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason || "Forced out by tyrant master",
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
+        return retireReason || "Forced out by tyrant master";
       }
-    }
+      return false;
+    });
   },
 };
 
 export const StrategistRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Strategists cut based on cost-benefit analysis
-      if (retireReason) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason,
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
-      }
-    }
+    evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
   },
 };
 
 export const StrictRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Strict maintain high standards, cut when performance drops
+    evaluateRetirementsBase(world, heya, (r, retireReason) => {
       if (
         retireReason ||
         (r.stats && (r.stats as any).strength < 30 && r.rank && r.rank.startsWith("juryo"))
       ) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason || "Cut due to poor performance",
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
+        return retireReason || "Cut due to poor performance";
       }
-    }
+      return false;
+    });
   },
 };
 
 export const IndulgentRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
-    const currentRikishiIds = [...(heya.rikishiIds || [])];
-
-    for (const rId of currentRikishiIds) {
-      const r = world.rikishi.get(rId);
-      if (!r) continue;
-
-      const retireReason = checkRetirement(
-        r,
-        world.calendar?.year ?? world.year ?? 2026,
-        world.seed
-      );
-
-      // Indulgent are lenient, only retire when rikishi want to
-      if (retireReason) {
-        EventBus.lifecycleEvent(world, {
-          rikishiId: r.id,
-          heyaId: heya.id,
-          shikona: r.shikona || r.name || r.id,
-          status: "retirement",
-          reason: retireReason,
-        });
-
-        heya.rikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== r.id);
-        world.rikishi.delete(r.id);
-      }
-    }
+    evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
   },
 };
-
 export function getRetirementStrategy(archetype: OyakataArchetype): RetirementStrategy {
   switch (archetype) {
     case "traditionalist":
