@@ -82,6 +82,35 @@ const BanzukeEntryRow = React.memo(
   }
 );
 
+const BanzukeList = React.memo(({ topRanked }: { topRanked: any[] }) => {
+  return (
+    <>
+      {(() => {
+        const limit = topRanked.length;
+        const nodes = new Array(limit);
+        for (let i = 0; i < limit; i++) {
+          const { entry, isPlayer, avatarConfig } = topRanked[i];
+          nodes[i] = (
+            <BanzukeEntryRow
+              key={entry.id}
+              id={entry.id}
+              shikona={entry.shikona}
+              rank={entry.rank}
+              rankNumber={entry.rankNumber}
+              side={entry.side as "east" | "west"}
+              record={entry.record}
+              isPlayer={isPlayer}
+              i={i}
+              avatarConfig={avatarConfig}
+            />
+          );
+        }
+        return nodes;
+      })()}
+    </>
+  );
+});
+
 export function BanzukeWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -128,28 +157,7 @@ export function BanzukeWidget() {
   return (
     <BaseWidget title="Banzuke" icon={ScrollText} headerAction={headerAction}>
       <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible">
-        {(() => {
-          const limit = topRanked.length;
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const { entry, isPlayer, avatarConfig } = topRanked[i];
-            nodes[i] = (
-              <BanzukeEntryRow
-                key={entry.id}
-                id={entry.id}
-                shikona={entry.shikona}
-                rank={entry.rank}
-                rankNumber={entry.rankNumber}
-                side={entry.side as "east" | "west"}
-                record={entry.record}
-                isPlayer={isPlayer}
-                i={i}
-                avatarConfig={avatarConfig}
-              />
-            );
-          }
-          return nodes;
-        })()}
+        <BanzukeList topRanked={topRanked} />
       </div>
     </BaseWidget>
   );

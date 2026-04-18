@@ -134,7 +134,7 @@ export function StableWidget() {
   );
 }
 
-function StatMini({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+const StatMini = React.memo(function StatMini({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
   return (
     <div className="flex flex-col gap-1 p-2 rounded-md border border-border/40 bg-card/50">
@@ -147,4 +147,4 @@ function StatMini({ icon, label, value }: { icon: React.ReactNode; label: string
       </div>
     </div>
   );
-}
+});

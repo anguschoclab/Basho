@@ -39,6 +39,31 @@ const RivalRow = React.memo(
 );
 
 /** rivals widget. */
+const RivalList = React.memo(({ rivals }: { rivals: any[] }) => {
+  return (
+    <>
+      {(() => {
+        const limit = rivals.length;
+        const nodes = new Array(limit);
+        for (let i = 0; i < limit; i++) {
+          const r = rivals[i];
+          nodes[i] = (
+            <RivalRow
+              key={r.id}
+              id={r.id}
+              name={r.name}
+              prestige={r.prestige}
+              roster={r.roster}
+              heat={r.heat}
+            />
+          );
+        }
+        return nodes;
+      })()}
+    </>
+  );
+});
+
 export function RivalsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -62,24 +87,7 @@ export function RivalsWidget() {
   return (
     <BaseWidget title="Rival Stables" icon={Swords} headerAction={headerAction}>
       <div className="space-y-0.5">
-        {(() => {
-          const limit = rivals.length;
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const r = rivals[i];
-            nodes[i] = (
-              <RivalRow
-                key={r.id}
-                id={r.id}
-                name={r.name}
-                prestige={r.prestige}
-                roster={r.roster}
-                heat={r.heat}
-              />
-            );
-          }
-          return nodes;
-        })()}
+        <RivalList rivals={rivals} />
       </div>
     </BaseWidget>
   );
