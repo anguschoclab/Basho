@@ -27,6 +27,7 @@ import {
   TrendingUp,
   Home,
   Calendar,
+  Globe,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -84,6 +85,7 @@ export function getMenuGroups(
         { title: "Banzuke", url: "/banzuke", icon: ScrollText },
         { title: "Schedule", url: "/schedule", icon: Calendar },
         { title: "Rivalries", url: "/rivalries", icon: Swords },
+        { title: "Global Cup", url: "/global-cup", icon: Globe },
       ],
     },
     {

@@ -36,6 +36,7 @@ import GovernancePage from "./pages/GovernancePage";
 import MyosekiMarketPage from "./pages/MyosekiMarketPage";
 import NotFound from "./pages/NotFound";
 import { HistoryDashboard } from "./pages/HistoryDashboard";
+import GlobalCupPage from "./pages/GlobalCupPage";
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).
@@ -252,6 +253,11 @@ const rivalriesRoute = createRoute({
   path: "/rivalries",
   component: RivalriesPage,
 });
+const globalCupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/global-cup",
+  component: GlobalCupPage,
+});
 
 // --- ARCHIVES SECTION ---
 const historyRoute = createRoute({
@@ -339,6 +345,7 @@ const routeTree = rootRoute.addChildren([
   banzukeRoute,
   scheduleRoute,
   rivalriesRoute,
+  globalCupRoute,
 
   // Archives
   historyRoute,

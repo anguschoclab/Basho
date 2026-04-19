@@ -16,6 +16,8 @@ import type { TalentPoolWorldState } from "./talent";
 import type { MyosekiMarket } from "./myoseki";
 import type { WorldRecords } from "./records";
 import type { TutorialState } from "./tutorial";
+import type { ActiveCrisis } from "./crises";
+import type { GlobalCupState } from "./globalCup";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -197,6 +199,42 @@ export interface WorldState {
   stableRelations?: Record<string, { tone: string }>;
 
   lastBoutResult?: BoutResult;
+
+  /** Crisis waiting to be presented to player (checked on Dashboard load) */
+  pendingCrisis?: ActiveCrisis;
+
+  /** Chronicle/Historical record browser state */
+  chronicle?: {
+    eraLabels: Array<{
+      year: number;
+      basho: string;
+      label: string;
+      description: string;
+    }>;
+    topChampions: Array<{
+      rikishiId: string;
+      shikona: string;
+      totalYusho: number;
+      peakRank: string;
+    }>;
+    greatestRivalries: Array<{
+      rikishiAId: string;
+      rikishiBId: string;
+      shikonaA: string;
+      shikonaB: string;
+      totalBouts: number;
+    }>;
+    recordsBroken: Array<{
+      recordType: string;
+      rikishiId: string;
+      shikona: string;
+      value: number;
+      year: number;
+    }>;
+  };
+
+  /** Global Cup tournament state */
+  globalCup?: GlobalCupState;
 
   selectedRikishiId?: string;
 

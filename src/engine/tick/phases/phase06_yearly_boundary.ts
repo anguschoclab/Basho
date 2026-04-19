@@ -24,6 +24,7 @@ import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
 import { InfrastructureService } from "../../systems/economy/InfrastructureService";
 import { GlobalCupService } from "../../systems/basho/GlobalCupService";
 import { HistoryService } from "../../systems/meta/HistoryService";
+import { runElections } from "../../governance/GovernanceService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -48,6 +49,12 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {
       builder.merge(HistoryService.updateAllTimeRecords(world, rikishi));
     }
+  }
+
+  // 0.4 JSA Board Elections (Phase 4: Bi-Annual)
+  if (world.year % 2 === 0) {
+    const electionImpact = runElections(world);
+    builder.merge(electionImpact);
   }
 
   // 1. Hall of Fame Inductions

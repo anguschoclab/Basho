@@ -57,6 +57,7 @@ export interface TalentCandidate {
     volatility: number;
   };
   isAmateurStar?: boolean;
+  isEmergentProdigy?: boolean; // Ultra-rare (1.5%) high-potential recruit
 
   /** Potential Ability per stat (0–100). Hidden; revealed via scouting. */
   potentialStats?: {

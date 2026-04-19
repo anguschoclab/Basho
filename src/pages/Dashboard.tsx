@@ -41,6 +41,7 @@ import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
+import { CrisisModal } from "@/components/game/CrisisModal";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "calendar", order: 0, span: 4, component: CalendarWidget, label: "Calendar" },
@@ -375,6 +376,9 @@ export default function Dashboard() {
           onClose={() => setDeliberationCandidateId(null)}
         />
       )}
+
+      {/* Crisis Modal - auto-shows when crisis detected */}
+      <CrisisModal />
     </AppLayout>
   );
 }

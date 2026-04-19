@@ -102,6 +102,9 @@ export interface Rikishi {
     behavior?: RikishiBehavior;
     pressPersona?: "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";
     weeksToHeal?: number;
+    /** Phase 5: Overtraining & Burnout tracking */
+    isEmergentProdigy?: boolean;
+    consecutiveExtremeWeeks?: number; // 0-3: leads to burnout crash
   };
   isKyujo: boolean; // Separate from injured - voluntary withdrawal
   kyujoReason?: "voluntary" | "injury" | "personal";
@@ -152,6 +155,13 @@ export interface Rikishi {
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
+  /** Phase 5: Alumni & Legacy tracking */
+  heyaHistory: Array<{ heyaId: string; joinWeek: number; leaveWeek?: number }>;
+  lineage: {
+    ancestralHeyaId?: string;
+    generationalTier?: number;
+    bloodlineTraitId?: string;
+  };
 
   h2h: Record<string, H2HRecord>;
   history: MatchResultLog[];
