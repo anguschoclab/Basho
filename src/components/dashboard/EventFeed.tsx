@@ -24,10 +24,10 @@ const importanceStyles: Record<EventImportance, string> = {
 };
 
 const typeIcons: Record<string, React.ReactNode> = {
-  GLOBAL_CUP: <Trophy className="w-4 h-4 text-amber-400" />,
-  BASHO_STATUS: <TrendingUp className="w-4 h-4 text-blue-400" />,
-  FINANCIAL_ALERT: <AlertTriangle className="w-4 h-4 text-rose-400" />,
-  default: <Info className="w-4 h-4 text-slate-400" />,
+  GLOBAL_CUP: <Trophy className="w-4 h-4 text-gold" />,
+  BASHO_STATUS: <TrendingUp className="w-4 h-4 text-primary" />,
+  FINANCIAL_ALERT: <AlertTriangle className="w-4 h-4 text-destructive" />,
+  default: <Info className="w-4 h-4 text-muted-foreground" />,
 };
 
 function formatEventTime(event: EngineEvent): string {

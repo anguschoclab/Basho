@@ -453,7 +453,7 @@ export const StablePerceptionCard = React.memo(
                     snap.stableMediaHeatBand === "blazing"
                       ? "text-destructive"
                       : snap.stableMediaHeatBand === "hot"
-                        ? "text-orange-400"
+                        ? "text-warning"
                         : "text-muted-foreground"
                   }
                 />
@@ -476,7 +476,7 @@ export const StablePerceptionCard = React.memo(
                   Style: <strong className="text-foreground capitalize">{snap.styleBias}</strong>
                 </span>
                 {snap.complianceState !== "compliant" && (
-                  <span className="text-orange-400">⚠ {snap.complianceState}</span>
+                  <span className="text-warning">⚠ {snap.complianceState}</span>
                 )}
               </div>
             </div>

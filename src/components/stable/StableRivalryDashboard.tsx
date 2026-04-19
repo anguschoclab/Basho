@@ -43,7 +43,7 @@ export function StableRivalryDashboard({ rivalries }: StableRivalryDashboardProp
         </div>
         <div className="flex gap-2">
           <Badge variant="outline" className="h-6 gap-1 font-black px-3">
-            <Activity className="h-3 w-3 text-orange-500" /> Active Rivalries:{" "}
+            <Activity className="h-3 w-3 text-warning" /> Active Rivalries:{" "}
             {rivalries.filter((r) => r.relation.heat > 50).length}
           </Badge>
         </div>
@@ -105,7 +105,7 @@ export function StableRivalryDashboard({ rivalries }: StableRivalryDashboardProp
                       <div className="space-y-3">
                         <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
                           <span className="flex items-center gap-1.5">
-                            <Flame className="h-3 w-3 text-orange-500" /> Current Heat
+                            <Flame className="h-3 w-3 text-warning" /> Current Heat
                           </span>
                           <span className="text-primary">{rivalry.relation.heat}%</span>
                         </div>
@@ -115,11 +115,14 @@ export function StableRivalryDashboard({ rivalries }: StableRivalryDashboardProp
                       <div className="space-y-3">
                         <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
                           <span className="flex items-center gap-1.5">
-                            <Swords className="h-3 w-3 text-red-500" /> Spite
+                            <Swords className="h-3 w-3 text-destructive" /> Spite
                           </span>
-                          <span className="text-red-500">{rivalry.relation.spite}%</span>
+                          <span className="text-destructive">{rivalry.relation.spite}%</span>
                         </div>
-                        <Progress value={rivalry.relation.spite} className="h-1.5 bg-red-500/10" />
+                        <Progress
+                          value={rivalry.relation.spite}
+                          className="h-1.5 bg-destructive/10"
+                        />
                       </div>
                     </div>
 
@@ -173,9 +176,9 @@ export function StableRivalryDashboard({ rivalries }: StableRivalryDashboardProp
 function getToneBadgeClass(tone: StableRelationTone): string {
   switch (tone) {
     case "bad_blood":
-      return "bg-red-500 text-white shadow-lg shadow-red-500/20";
+      return "bg-destructive text-destructive-foreground shadow-lg shadow-destructive/20";
     case "rivalry":
-      return "bg-orange-500 text-white shadow-lg shadow-orange-500/20";
+      return "bg-warning text-warning-foreground shadow-lg shadow-warning/20";
     case "tense":
       return "bg-amber-500 text-white shadow-lg shadow-amber-500/20";
     case "respect":

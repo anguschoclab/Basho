@@ -171,11 +171,11 @@ export function PressConference({
 function getImpactColor(type: string): string {
   switch (type) {
     case "positive":
-      return "text-emerald-500";
+      return "text-success";
     case "negative":
-      return "text-red-500";
+      return "text-destructive";
     case "risky":
-      return "text-orange-500";
+      return "text-warning";
     default:
       return "text-muted-foreground";
   }

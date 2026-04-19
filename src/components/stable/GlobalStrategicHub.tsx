@@ -61,7 +61,7 @@ export function GlobalStrategicHub({ world, heyaId }: GlobalStrategicHubProps) {
         <Card className="paper border-slate-800">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-blue-500" />
+              <Globe className="h-5 w-5 text-primary" />
               <CardTitle className="text-xl font-display uppercase tracking-tight">
                 Global Influence
               </CardTitle>

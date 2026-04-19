@@ -97,7 +97,7 @@ export function SuccessionModal({
                         {c.heyaId !== heyaId && (
                           <Badge
                             variant="outline"
-                            className="text-[9px] uppercase border-blue-500/30 text-blue-400"
+                            className="text-[9px] uppercase border-primary/30 text-primary"
                           >
                             Alumni
                           </Badge>

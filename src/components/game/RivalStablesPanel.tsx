@@ -102,7 +102,7 @@ const RivalRow = React.memo(
             <TooltipWrap content={`Rivalry heat: ${Math.round(rivalryHeat)}`}>
               <div className="flex items-center gap-1">
                 <Thermometer
-                  className={`h-3.5 w-3.5 ${rivalryHeat > 50 ? "text-destructive" : rivalryHeat > 25 ? "text-orange-500" : "text-blue-500"}`}
+                  className={`h-3.5 w-3.5 ${rivalryHeat > 50 ? "text-destructive" : rivalryHeat > 25 ? "text-warning" : "text-primary"}`}
                 />
                 <span className="text-[10px] font-medium">{Math.round(rivalryHeat)}</span>
               </div>
@@ -155,7 +155,7 @@ const MORALE_COLOR: Record<string, string> = {
   inspired: "text-primary",
   content: "text-primary/70",
   neutral: "text-muted-foreground",
-  disgruntled: "text-orange-500",
+  disgruntled: "text-warning",
   mutinous: "text-destructive",
 };
 

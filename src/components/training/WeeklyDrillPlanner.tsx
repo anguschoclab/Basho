@@ -268,7 +268,7 @@ export function WeeklyDrillPlanner({
                   className={cn(
                     "h-8 w-8 rounded-full flex items-center justify-center font-display font-black text-xs shrink-0 shadow-inner",
                     rikishi.injured
-                      ? "bg-red-500/10 text-red-500"
+                      ? "bg-destructive/10 text-destructive"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -279,7 +279,9 @@ export function WeeklyDrillPlanner({
                     <RikishiName id={rikishi.id} name={rikishi.shikona} />
                   </div>
                   <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-muted-foreground">
-                    <span className={cn(isExhausted ? "text-red-500 font-bold" : "text-success")}>
+                    <span
+                      className={cn(isExhausted ? "text-destructive font-bold" : "text-success")}
+                    >
                       {FATIGUE_LABELS[fb].split(" ")[0]}
                     </span>
                     <span className="opacity-20">|</span>
@@ -302,11 +304,9 @@ export function WeeklyDrillPlanner({
                         className={cn(
                           "h-14 w-full border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-all",
                           drill === "none" ? "bg-muted/10 opacity-40" : "bg-background",
-                          drill === "butsukari" &&
-                            "border-orange-500/40 text-orange-600 bg-orange-500/5",
-                          drill === "teppo" && "border-blue-500/40 text-blue-600 bg-blue-500/5",
-                          drill === "moushi-ai" &&
-                            "border-purple-500/40 text-purple-600 bg-purple-500/5",
+                          drill === "butsukari" && "border-warning/40 text-warning bg-warning/5",
+                          drill === "teppo" && "border-primary/40 text-primary bg-primary/5",
+                          drill === "moushi-ai" && "border-west/40 text-west bg-west/5",
                           drill === "shindo" &&
                             "border-emerald-500/40 text-emerald-600 bg-emerald-500/5",
                           "hover:border-primary hover:bg-primary/5 hover:scale-[1.02] shadow-sm"
@@ -341,7 +341,7 @@ export function WeeklyDrillPlanner({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground/40 hover:text-red-500"
+                  className="h-8 w-8 text-muted-foreground/40 hover:text-destructive"
                   aria-label={`Reset weekly schedule for ${rikishi.shikona}`}
                   onClick={() => handleFillWeek(rikishi.id, "asageiko")}
                 >
@@ -366,7 +366,7 @@ export function WeeklyDrillPlanner({
           </h3>
           <p className="text-[11px] text-muted-foreground italic leading-relaxed max-w-2xl font-medium">
             Confirm your weekly training allocation. High-intensity drills like{" "}
-            <span className="font-bold text-orange-600">Butsukari</span> provide massive Power gains
+            <span className="font-bold text-warning">Butsukari</span> provide massive Power gains
             but will exhaust your rikishi. Use{" "}
             <span className="font-bold text-emerald-600 text-[10px] bg-emerald-500/10 px-1 rounded">
               SHINDO

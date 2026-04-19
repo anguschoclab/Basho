@@ -85,14 +85,14 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardContent>
         </Card>
 
-        <Card className="dossier-paper border-2 border-orange-500/10 bg-orange-500/5">
+        <Card className="dossier-paper border-2 border-warning/10 bg-warning/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-              <Award className="h-3 w-3 text-orange-500" /> Contract Risk
+              <Award className="h-3 w-3 text-warning" /> Contract Risk
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-black text-orange-600">
+            <div className="text-3xl font-display font-black text-warning">
               {data.expiringCount}{" "}
               <span className="text-sm font-normal text-muted-foreground">Expiring Soon</span>
             </div>
@@ -149,7 +149,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
                     <div
                       className={cn(
                         "text-xl font-display font-black",
-                        sponsor.isExpiringSoon ? "text-orange-500" : "text-muted-foreground"
+                        sponsor.isExpiringSoon ? "text-warning" : "text-muted-foreground"
                       )}
                     >
                       {sponsor.weeksRemaining} <span className="text-[9px] uppercase">Weeks</span>

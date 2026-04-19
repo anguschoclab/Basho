@@ -127,7 +127,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
                         {era.achievementsInReign.yushoCount} Yusho
                       </div>
                       <div className="flex items-center gap-1">
-                        <Globe className="h-3 w-3 text-blue-500/70" />{" "}
+                        <Globe className="h-3 w-3 text-primary/70" />{" "}
                         {era.achievementsInReign.globalCupWins} Global Wins
                       </div>
                       <div className="flex items-center gap-1">

@@ -47,9 +47,9 @@ const TIER_STYLE: Record<string, { label: string; class: string }> = {
 const TONE_STYLE: Record<string, { label: string; class: string }> = {
   hype: { label: "Hype", class: "bg-gold/20 text-gold" },
   praise: { label: "Praise", class: "bg-success/20 text-success" },
-  concern: { label: "Concern", class: "bg-orange-500/20 text-orange-400" },
-  controversy: { label: "Controversy", class: "bg-red-500/20 text-red-400" },
-  disrespect: { label: "Disrespect", class: "bg-red-500/20 text-red-300" },
+  concern: { label: "Concern", class: "bg-warning/20 text-warning" },
+  controversy: { label: "Controversy", class: "bg-destructive/20 text-destructive" },
+  disrespect: { label: "Disrespect", class: "bg-destructive/20 text-destructive/70" },
   neutral: { label: "Neutral", class: "bg-muted text-muted-foreground" },
 };
 

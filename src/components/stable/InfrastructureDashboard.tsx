@@ -54,14 +54,14 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
           </CardContent>
         </Card>
 
-        <Card className="bg-orange-500/5 border-orange-500/20">
+        <Card className="bg-warning/5 border-warning/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <HardHat className="h-3 w-3 text-orange-500" /> Under Construction
+              <HardHat className="h-3 w-3 text-warning" /> Under Construction
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-black text-orange-600">
+            <div className="text-3xl font-display font-black text-warning">
               {queue.length}{" "}
               <span className="text-sm font-normal text-muted-foreground">Active Projects</span>
             </div>
@@ -126,12 +126,12 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
               <CardContent className="space-y-4">
                 {/* Construction Progress */}
                 {isBuilding && (
-                  <div className="space-y-2 p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
-                    <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-orange-700">
+                  <div className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20">
+                    <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-warning">
                       <span>Construction Underway</span>
                       <span>ETA: {project.completionYear}</span>
                     </div>
-                    <Progress value={45} className="h-1.5 bg-orange-200" />
+                    <Progress value={45} className="h-1.5 bg-warning/20" />
                   </div>
                 )}
 
@@ -159,7 +159,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                   {facility.bonuses.mediaMod && (
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-muted-foreground">Media Visibility</span>
-                      <span className="font-black text-blue-600">
+                      <span className="font-black text-primary">
                         +{Math.round((facility.bonuses.mediaMod - 1) * 100)}%
                       </span>
                     </div>

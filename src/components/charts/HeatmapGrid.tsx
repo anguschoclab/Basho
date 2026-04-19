@@ -36,7 +36,7 @@ function getColorClass(value: number, min: number, max: number, scale: string): 
     case "east-west":
       return normalized > 0.5 ? "bg-[hsl(var(--east))]/60" : "bg-[hsl(var(--west))]/60";
     case "blue-red":
-      return normalized > 0.5 ? "bg-blue-500/60" : "bg-red-500/60";
+      return normalized > 0.5 ? "bg-[hsl(var(--east))]/60" : "bg-[hsl(var(--west))]/60";
     default:
       return `bg-primary/${Math.round(normalized * 100)}`;
   }

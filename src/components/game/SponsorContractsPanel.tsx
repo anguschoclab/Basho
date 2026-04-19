@@ -7,16 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, Clock, Star } from "lucide-react";
-import {
-  renewSponsorContract,
-  type projectSponsorUIDigest,
-} from "@/presenters/uiDigest";
+import { renewSponsorContract, type projectSponsorUIDigest } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
   T1: { label: "Regional", color: "text-foreground" },
   T2: { label: "Established", color: "text-west" },
-  T3: { label: "Major", color: "text-purple-500" },
+  T3: { label: "Major", color: "text-primary" },
   T4: { label: "National", color: "text-gold" },
   T5: { label: "Prestige", color: "text-gold" },
 };
@@ -33,11 +30,7 @@ export function SponsorContractsPanel({
   const { state, updateWorld } = useGame();
   const { toast } = useToast();
 
-  const handleRenegotiate = (
-    relId: string,
-    name: string,
-    sponsorId: string,
-  ) => {
+  const handleRenegotiate = (relId: string, name: string, sponsorId: string) => {
     if (!state.world) return;
     const success = renewSponsorContract(state.world, relId, sponsorId);
     if (success) {
@@ -76,9 +69,7 @@ export function SponsorContractsPanel({
         <Card className={digest.expiringCount > 0 ? "border-gold/30" : ""}>
           <CardContent className="p-3 text-center">
             <p className="text-xs text-muted-foreground">Expiring Soon</p>
-            <p
-              className={`text-2xl font-bold ${digest.expiringCount > 0 ? "text-gold" : ""}`}
-            >
+            <p className={`text-2xl font-bold ${digest.expiringCount > 0 ? "text-gold" : ""}`}>
               {digest.expiringCount}
             </p>
           </CardContent>
@@ -105,21 +96,13 @@ export function SponsorContractsPanel({
                 color: "",
               };
               return (
-                <Card
-                  key={s.relId}
-                  className={`paper ${s.isExpiringSoon ? "border-gold/30" : ""}`}
-                >
+                <Card key={s.relId} className={`paper ${s.isExpiringSoon ? "border-gold/30" : ""}`}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-display font-semibold">
-                            {s.name}
-                          </h4>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${tierInfo.color}`}
-                          >
+                          <h4 className="font-display font-semibold">{s.name}</h4>
+                          <Badge variant="outline" className={`text-xs ${tierInfo.color}`}>
                             {tierInfo.label}
                           </Badge>
                           {s.isExpiringSoon && (
@@ -132,18 +115,14 @@ export function SponsorContractsPanel({
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                           <span>{s.category}</span>
                           <span>•</span>
-                          <span>
-                            ¥{(s.monthlyIncome / 1000).toFixed(0)}K/mo
-                          </span>
+                          <span>¥{(s.monthlyIncome / 1000).toFixed(0)}K/mo</span>
                           <span>•</span>
                           <span className="capitalize">{s.role}</span>
                         </div>
 
                         <div className="mt-3">
                           <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-muted-foreground">
-                              Satisfaction
-                            </span>
+                            <span className="text-muted-foreground">Satisfaction</span>
                             <span>{Math.round(s.satisfaction)}%</span>
                           </div>
                           <Progress value={s.satisfaction} className="h-1.5" />
@@ -153,11 +132,7 @@ export function SponsorContractsPanel({
                       <div className="flex flex-col items-end gap-2 shrink-0">
                         <div className="flex items-center gap-1">
                           {Array.from({ length: s.strength }, (_, i) => (
-                            <Star
-                              key={i}
-                              className="h-3 w-3 text-gold"
-                              fill="currentColor"
-                            />
+                            <Star key={i} className="h-3 w-3 text-gold" fill="currentColor" />
                           ))}
                         </div>
                         {s.isExpiringSoon && (
@@ -165,9 +140,7 @@ export function SponsorContractsPanel({
                             size="sm"
                             variant="outline"
                             className="text-xs h-7"
-                            onClick={() =>
-                              handleRenegotiate(s.relId, s.name, s.sponsorId)
-                            }
+                            onClick={() => handleRenegotiate(s.relId, s.name, s.sponsorId)}
                           >
                             <HandshakeIcon className="h-3 w-3 mr-1" /> Renew
                           </Button>

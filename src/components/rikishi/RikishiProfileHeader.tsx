@@ -62,13 +62,12 @@ export function RikishiProfileHeader({
                     className={cn(
                       "font-bold h-6 uppercase text-[9px] tracking-widest",
                       healthBadge === "Fresh" && "border-success text-success bg-success/10",
-                      healthBadge === "Worn" &&
-                        "border-yellow-500 text-yellow-500 bg-yellow-500/10",
+                      healthBadge === "Worn" && "border-warning text-warning bg-warning/10",
                       healthBadge === "Struggling" &&
-                        "border-orange-500 text-orange-500 bg-orange-500/10",
+                        "border-warning/70 text-warning/70 bg-warning/5",
                       healthBadge === "Critical" &&
                         "border-destructive text-destructive bg-destructive/10",
-                      healthBadge === "Recovering" && "border-blue-500 text-blue-500 bg-blue-500/10"
+                      healthBadge === "Recovering" && "border-primary text-primary bg-primary/10"
                     )}
                   >
                     {healthBadge}
