@@ -52,9 +52,7 @@ export function RikishiGlobalCup({ rikishiId, world }: RikishiGlobalCupProps) {
       {/* Stats Overview */}
       <div className="grid grid-cols-3 gap-4">
         <div className="p-4 rounded-lg bg-card border border-border text-center">
-          <div className="text-2xl font-display font-bold text-amber-400">
-            {championships.length}
-          </div>
+          <div className="text-2xl font-display font-bold text-gold">{championships.length}</div>
           <div className="text-[10px] font-mono uppercase text-muted-foreground">Championships</div>
         </div>
         <div className="p-4 rounded-lg bg-card border border-border text-center">
@@ -71,7 +69,7 @@ export function RikishiGlobalCup({ rikishiId, world }: RikishiGlobalCupProps) {
 
       {/* Current Tournament */}
       {isInCurrentTournament && currentCup && (
-        <WidgetCard className="border-amber-500/30 bg-amber-950/10">
+        <WidgetCard className="border-gold/30 bg-gold/5">
           <WidgetHeader title={`Global Cup ${currentCup.year}`} icon={Trophy} />
           <div className="mt-4 space-y-2">
             <p className="text-sm">
@@ -80,12 +78,12 @@ export function RikishiGlobalCup({ rikishiId, world }: RikishiGlobalCupProps) {
             </p>
             <p className="text-sm">
               <span className="text-muted-foreground">Status:</span>{" "}
-              <span className="font-medium text-amber-400">
+              <span className="font-medium text-gold">
                 {currentCup.isActive ? "Active Participant" : "Registered"}
               </span>
             </p>
             {currentCup.championId === rikishiId && (
-              <p className="text-sm text-amber-400 font-bold flex items-center gap-2 mt-2">
+              <p className="text-sm text-gold font-bold flex items-center gap-2 mt-2">
                 <Trophy className="h-4 w-4" />
                 Current Champion
               </p>
@@ -102,10 +100,10 @@ export function RikishiGlobalCup({ rikishiId, world }: RikishiGlobalCupProps) {
             {championships.map((entry: GlobalCupHistoryEntry) => (
               <div
                 key={entry.year}
-                className="flex items-center justify-between p-2 rounded bg-amber-950/20 border border-amber-500/30"
+                className="flex items-center justify-between p-2 rounded bg-gold/5 border border-gold/30"
               >
                 <div className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-amber-400" />
+                  <Trophy className="h-4 w-4 text-gold" />
                   <span className="font-medium">{entry.year} Global Cup</span>
                 </div>
                 <span className="text-sm text-muted-foreground">

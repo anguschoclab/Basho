@@ -51,7 +51,7 @@ export function SuccessionModal({
       <DialogContent className="sm:max-w-[600px] paper border-amber-600/30">
         <DialogHeader className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-amber-500/10 text-amber-500">
+            <div className="p-3 rounded-full bg-gold/10 text-gold">
               <History className="h-6 w-6" />
             </div>
             <div>
@@ -79,12 +79,12 @@ export function SuccessionModal({
                   className={cn(
                     "flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer group",
                     selectedId === c.id
-                      ? "bg-amber-500/10 border-amber-500 shadow-lg"
-                      : "bg-slate-900/40 border-slate-800 hover:border-slate-700"
+                      ? "bg-gold/10 border-gold shadow-lg"
+                      : "bg-muted/40 border-border hover:border-border/60"
                   )}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-amber-500 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-gold transition-colors">
                       <User className="h-5 w-5" />
                     </div>
                     <div>
@@ -106,7 +106,7 @@ export function SuccessionModal({
                     </div>
                   </div>
                   {selectedId === c.id && (
-                    <div className="p-1 rounded-full bg-amber-500 text-slate-900">
+                    <div className="p-1 rounded-full bg-gold text-background">
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   )}
@@ -134,7 +134,7 @@ export function SuccessionModal({
             </p>
             <Button
               disabled={!selectedId}
-              className="w-full sm:w-auto font-black uppercase tracking-widest bg-amber-600 hover:bg-amber-500 transition-all shadow-lg"
+              className="w-full sm:w-auto font-black uppercase tracking-widest bg-gold hover:bg-gold/90 text-background transition-all shadow-lg"
               onClick={() => selectedId && onSelect(selectedId)}
             >
               Finalize Succession

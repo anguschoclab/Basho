@@ -69,14 +69,14 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardContent>
         </Card>
 
-        <Card className="dossier-paper border-2 border-emerald-500/10 bg-emerald-500/5">
+        <Card className="dossier-paper border-2 border-success/10 bg-success/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-              <Users className="h-3 w-3 text-emerald-500" /> Supporter Association
+              <Users className="h-3 w-3 text-success" /> Supporter Association
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-display font-black text-emerald-700 uppercase">
+            <div className="text-2xl font-display font-black text-success uppercase">
               {data.strength} <span className="text-[10px] font-normal">{data.koenkaiName}</span>
             </div>
             <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
@@ -208,12 +208,12 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
       </div>
 
       {/* ═══ SPONSOR APPEAL CTA ═══ */}
-      <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-emerald-500/20 shadow-2xl bg-emerald-500/[0.03] relative overflow-hidden">
+      <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-success/20 shadow-2xl bg-success/[0.03] relative overflow-hidden">
         <div className="absolute -bottom-10 -right-10 opacity-[0.03] rotate-12 pointer-events-none">
-          <TrendingUp className="h-64 w-64 text-emerald-900" />
+          <TrendingUp className="h-64 w-64 text-success" />
         </div>
 
-        <div className="h-20 w-20 bg-emerald-500 text-white rounded-3xl flex items-center justify-center shrink-0 shadow-lg transform rotate-3">
+        <div className="h-20 w-20 bg-success text-success-foreground rounded-3xl flex items-center justify-center shrink-0 shadow-lg transform rotate-3">
           <Heart className="h-10 w-10 fill-current" />
         </div>
 
@@ -227,17 +227,17 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
             demand absolute loyalty and consistent yūshō contention.
           </p>
           <div className="pt-4 flex flex-wrap gap-4">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl shadow-emerald-500/20 transition-all">
+            <Button className="bg-success hover:bg-success/90 text-success-foreground font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl shadow-success/20 transition-all">
               ATTRACT NEW PATRONS
             </Button>
-            <div className="flex items-center gap-4 border-l border-emerald-500/20 pl-4">
+            <div className="flex items-center gap-4 border-l border-success/20 pl-4">
               <div className="flex flex-col">
                 <span className="text-[8px] font-black text-muted-foreground uppercase opacity-50">
                   Market Status
                 </span>
                 <Badge
                   variant="outline"
-                  className="border-emerald-500/30 text-emerald-600 text-[10px] font-black"
+                  className="border-success/30 text-success text-[10px] font-black"
                 >
                   PRIME VISIBILITY
                 </Badge>

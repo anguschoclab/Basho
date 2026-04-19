@@ -27,8 +27,8 @@ export function YearlyMetaReport({ eraTone, year, familyStats }: YearlyMetaRepor
   const toneColors: Record<string, string> = {
     classic: "border-primary bg-primary/5 text-primary",
     explosive: "border-warning bg-warning/5 text-warning",
-    technical: "border-indigo-500 bg-indigo-500/5 text-indigo-600",
-    defensive: "border-emerald-500 bg-emerald-500/5 text-emerald-600",
+    technical: "border-east bg-east/5 text-east",
+    defensive: "border-success bg-success/5 text-success",
   };
 
   const descriptions: Record<string, string> = {
@@ -155,9 +155,9 @@ function getToneIcon(tone: string) {
     case "explosive":
       return <Zap className="h-10 w-10 text-warning" />;
     case "technical":
-      return <Target className="h-10 w-10 text-indigo-500" />;
+      return <Target className="h-10 w-10 text-east" />;
     case "defensive":
-      return <Shield className="h-10 w-10 text-emerald-500" />;
+      return <Shield className="h-10 w-10 text-success" />;
     default:
       return <Globe className="h-10 w-10 text-primary" />;
   }

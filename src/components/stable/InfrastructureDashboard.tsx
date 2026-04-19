@@ -68,14 +68,14 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
           </CardContent>
         </Card>
 
-        <Card className="bg-emerald-500/5 border-emerald-500/20">
+        <Card className="bg-success/5 border-success/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <DollarSign className="h-3 w-3 text-emerald-500" /> Maintenance Wall
+              <DollarSign className="h-3 w-3 text-success" /> Maintenance Wall
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-black text-emerald-600 uppercase">
+            <div className="text-3xl font-display font-black text-success uppercase">
               Stable <span className="text-sm font-normal text-muted-foreground">Tier 1</span>
             </div>
           </CardContent>
@@ -151,7 +151,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                   {facility.bonuses.injuryHealMod && (
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-muted-foreground">Recovery Speed</span>
-                      <span className="font-black text-emerald-600">
+                      <span className="font-black text-success">
                         {facility.bonuses.injuryHealMod} Days
                       </span>
                     </div>

@@ -149,7 +149,7 @@ export function StableRivalryDashboard({ rivalries }: StableRivalryDashboardProp
                       </div>
                       <div className="space-y-1">
                         <div className="text-[8px] font-black uppercase opacity-40">Win rate</div>
-                        <div className="text-sm font-black font-mono text-emerald-500">55%</div>
+                        <div className="text-sm font-black font-mono text-success">55%</div>
                       </div>
                     </div>
                   </div>
@@ -180,9 +180,9 @@ function getToneBadgeClass(tone: StableRelationTone): string {
     case "rivalry":
       return "bg-warning text-warning-foreground shadow-lg shadow-warning/20";
     case "tense":
-      return "bg-amber-500 text-white shadow-lg shadow-amber-500/20";
+      return "bg-warning/70 text-warning-foreground shadow-lg shadow-warning/20";
     case "respect":
-      return "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20";
+      return "bg-success text-success-foreground shadow-lg shadow-success/20";
     default:
       return "bg-muted text-muted-foreground";
   }
@@ -191,13 +191,13 @@ function getToneBadgeClass(tone: StableRelationTone): string {
 function getToneBorder(tone: StableRelationTone): string {
   switch (tone) {
     case "bad_blood":
-      return "border-red-500/40 hover:border-red-500/60";
+      return "border-destructive/40 hover:border-destructive/60";
     case "rivalry":
-      return "border-orange-500/40 hover:border-orange-500/60";
+      return "border-warning/40 hover:border-warning/60";
     case "tense":
-      return "border-amber-500/40 hover:border-amber-500/60";
+      return "border-warning/40 hover:border-warning/60";
     case "respect":
-      return "border-emerald-500/40 hover:border-emerald-500/60";
+      return "border-success/40 hover:border-success/60";
     default:
       return "border-border/40 hover:border-border/80";
   }

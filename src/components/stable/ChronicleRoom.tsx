@@ -56,7 +56,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
           <TierIcon
             className={cn(
               "h-16 w-16",
-              report.legacyTier === "legend" ? "text-amber-400" : "text-slate-300"
+              report.legacyTier === "legend" ? "text-gold" : "text-muted-foreground"
             )}
           />
         </div>
@@ -88,7 +88,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
               <span className="text-[10px] uppercase font-black text-slate-500 block">
                 Training Bonus
               </span>
-              <span className="text-xl font-bold font-display tabular-nums text-emerald-400">
+              <span className="text-xl font-bold font-display tabular-nums text-success">
                 +{Math.round((report.trainingBonus - 1) * 100)}%
               </span>
             </div>
@@ -123,7 +123,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
 
                     <div className="flex gap-4 text-[10px] text-slate-400 uppercase font-black mb-3">
                       <div className="flex items-center gap-1">
-                        <Trophy className="h-3 w-3 text-amber-500/70" />{" "}
+                        <Trophy className="h-3 w-3 text-gold/70" />{" "}
                         {era.achievementsInReign.yushoCount} Yusho
                       </div>
                       <div className="flex items-center gap-1">
@@ -131,7 +131,7 @@ export function ChronicleRoom({ world, heyaId }: ChronicleRoomProps) {
                         {era.achievementsInReign.globalCupWins} Global Wins
                       </div>
                       <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3 text-emerald-500/70" />{" "}
+                        <Users className="h-3 w-3 text-success/70" />{" "}
                         {era.achievementsInReign.boardSeatsWon} Board Seats
                       </div>
                     </div>

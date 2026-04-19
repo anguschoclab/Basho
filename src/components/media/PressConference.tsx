@@ -67,7 +67,7 @@ export function PressConference({
           </div>
           <Badge
             variant="outline"
-            className="h-10 px-6 font-black uppercase tracking-widest bg-emerald-500/5 text-emerald-500 border-emerald-500/20"
+            className="h-10 px-6 font-black uppercase tracking-widest bg-success/5 text-success border-success/20"
           >
             Live Broadcast <Camera className="ml-2 h-3 w-3 animate-pulse" />
           </Badge>

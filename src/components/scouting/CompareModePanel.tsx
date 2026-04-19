@@ -58,16 +58,16 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
           </span>
           <div className="flex items-center gap-1">
             {diff > 0 ? (
-              <TrendingUp className="h-3 w-3 text-emerald-500" />
+              <TrendingUp className="h-3 w-3 text-success" />
             ) : diff < 0 ? (
-              <TrendingDown className="h-3 w-3 text-rose-500" />
+              <TrendingDown className="h-3 w-3 text-destructive" />
             ) : (
               <Minus className="h-3 w-3 text-muted-foreground" />
             )}
             <span
               className={cn(
                 "text-[10px] font-mono font-bold",
-                diff > 0 ? "text-emerald-500" : diff < 0 ? "text-rose-500" : "text-muted-foreground"
+                diff > 0 ? "text-success" : diff < 0 ? "text-destructive" : "text-muted-foreground"
               )}
             >
               {diff > 0 ? `+${diff}` : diff === 0 ? "EQUAL" : diff}
@@ -166,7 +166,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
                 className={cn(
                   "p-4 rounded-2xl border-2 flex flex-col items-center gap-1",
                   results.winner === "A"
-                    ? "border-emerald-500/50 bg-emerald-500/10"
+                    ? "border-success/50 bg-success/10"
                     : "border-muted opacity-50"
                 )}
               >
@@ -177,7 +177,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
               </div>
 
               <div className="flex flex-col items-center text-center max-w-[200px]">
-                <Badge className="bg-emerald-500 text-white hover:bg-emerald-600 mb-2">
+                <Badge className="bg-success text-success-foreground hover:bg-success/90 mb-2">
                   TRIAL VERDICT
                 </Badge>
                 <h4 className="font-display font-bold text-xl uppercase tracking-tight">

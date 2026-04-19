@@ -271,7 +271,7 @@ export function RosterWidget() {
           <Button
             variant="default"
             size="sm"
-            className="h-7 text-[10px] uppercase tracking-widest font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 animate-in fade-in zoom-in duration-200 ml-1"
+            className="h-7 text-[10px] uppercase tracking-widest font-bold gap-2 bg-success hover:bg-success/90 animate-in fade-in zoom-in duration-200 ml-1"
             onClick={() => setShowCompare(true)}
           >
             <Layers className="h-3 w-3" />

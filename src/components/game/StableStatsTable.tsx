@@ -240,7 +240,7 @@ const StreakBadge = React.memo(function StreakBadge({
     <div
       className={cn(
         "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-bold w-fit",
-        isWinning ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
+        isWinning ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
       )}
     >
       {isWinning ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}

@@ -307,8 +307,7 @@ export function WeeklyDrillPlanner({
                           drill === "butsukari" && "border-warning/40 text-warning bg-warning/5",
                           drill === "teppo" && "border-primary/40 text-primary bg-primary/5",
                           drill === "moushi-ai" && "border-west/40 text-west bg-west/5",
-                          drill === "shindo" &&
-                            "border-emerald-500/40 text-emerald-600 bg-emerald-500/5",
+                          drill === "shindo" && "border-success/40 text-success bg-success/5",
                           "hover:border-primary hover:bg-primary/5 hover:scale-[1.02] shadow-sm"
                         )}
                       >
@@ -368,7 +367,7 @@ export function WeeklyDrillPlanner({
             Confirm your weekly training allocation. High-intensity drills like{" "}
             <span className="font-bold text-warning">Butsukari</span> provide massive Power gains
             but will exhaust your rikishi. Use{" "}
-            <span className="font-bold text-emerald-600 text-[10px] bg-emerald-500/10 px-1 rounded">
+            <span className="font-bold text-success text-[10px] bg-success/10 px-1 rounded">
               SHINDO
             </span>{" "}
             to recover mental stability and reduce burnout risk.
