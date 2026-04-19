@@ -8,7 +8,7 @@
  📖 Basho Constitution Alignment:
  ✅ Aligned: The structural groundwork for the B+ spatial system within `kimariteStrategy.ts` explicitly aligns with the single authoritative combat specification defined in Section 7 (Combat & Kimarite) of the Basho Constitution, correctly abstracting engine truths like `edgeDistance` and `momentumX` into quantitative interfaces without leaking these raw engine physics values directly to the UI.
 
- ⚠️ Missing/Deviations: Critical integration gaps exist within the B+ implementation preventing full compliance with the Constitution. Specifically, the B+ spatial classifier `evaluateKimariteAttempt` from `kimariteClassifier.ts` is not wired into the main bout resolution pipeline. Furthermore, the legacy `determineKimarite` function is still overriding the B+ emergent kimarite outputs, negating the new deterministic physics engine and violating the intended combat resolution design.
+ ⚠️ Missing/Deviations: While the B+ spatial classifier is now wired into the resolution pipeline, the KIMARITE_STRATEGIES_V2 conditions have not yet been migrated to the new spatial logic. Additionally, the edge crisis phase continues to use legacy classification functions (e.g., classifyEdgeExitKimarite) rather than the emergent spatial classifier.
 
  📄 Proposed Documentation Updates:
  docs/daily_update.md: Add a new entry summarizing the transition to the B+ spatial combat engine, noting the completion of spatial types alongside the critical pending wiring tasks for the classifier.
