@@ -5,12 +5,12 @@
  * Extracted from phase01_week_welfare.ts for modularity.
  */
 
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
-import type { WelfareState, ComplianceState } from "../../types/economy";
-import type { ImpactBuilder } from "../../core/ImpactBuilder";
-import { generateGovernanceHeadline } from "../../systems/media/MediaService";
-import { clamp } from "../../utils/math";
+import type { WorldState } from "../../../types/world";
+import type { Heya } from "../../../types/heya";
+import type { WelfareState, ComplianceState } from "../../../types/economy";
+import type { ImpactBuilder } from "../../../core/ImpactBuilder";
+import { generateGovernanceHeadline } from "../../../systems/media/MediaService";
+import { clamp } from "../../../utils/math";
 
 export function handleCompliantTransition(
   world: WorldState,
