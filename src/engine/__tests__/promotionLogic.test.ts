@@ -80,10 +80,10 @@ describe("promotionLogic", () => {
     });
 
     it("handles junYusho and specialPrizes", () => {
-        const entry = createEntry("r1", "maegashira", 15);
-        const perf: BashoPerformance = { wins: 8, losses: 7, absences: 0, boutIds: [], junYusho: true, specialPrizes: 2 };
-        expect(computeMovementUnits(entry, perf, new Set())).toBe(4);
-    })
+      const entry = createEntry("r1", "maegashira", 15);
+      const perf: BashoPerformance = { rikishiId: "r1", wins: 8, losses: 7, absences: 0, junYusho: true, specialPrizes: 2 };
+      expect(computeMovementUnits(entry, perf, new Set())).toBe(4);
+    });
   });
 
   describe("bestTierAllowed", () => {
