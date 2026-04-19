@@ -6,7 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Eye, UserPlus, Binoculars, Globe, GraduationCap, School } from "lucide-react";
+import {
+  Search,
+  Eye,
+  UserPlus,
+  Binoculars,
+  Globe,
+  GraduationCap,
+  School,
+  AlertCircle,
+  UserCheck,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import {
@@ -38,7 +48,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
   type CandidateDigestEntry = TalentCandidate & {
     scoutLevel: number;
-    scoutInfo: { label: string; color: string };
+    scoutInfo: string;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
   const [signingCandidate, setSigningCandidate] = useState<any>(null);
