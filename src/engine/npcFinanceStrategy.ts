@@ -12,7 +12,7 @@ interface FinanceStrategy {
 
 function getSortedMyosekiStocks(world: WorldState) {
   if (!world.myosekiMarket) return [];
-  return stableSort(Object.values(world.myosekiMarket.stocks), (x: any) => x.id || String(x));
+  return stableSort(Object.values(world.myosekiMarket.stocks), (x) => x.id);
 }
 
 export const DefaultFinanceStrategy: FinanceStrategy = {
