@@ -85,7 +85,7 @@ export default function AlmanacPage() {
           (r.stats?.achievements?.kinboshiEarned ?? 0) +
           (r.stats?.achievements?.ginboshiEarned ?? 0),
         details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-        achievedDate: { year: world.year, month: world.calendar?.month ?? 1 },
+        achievedDate: { year: world.year, month: Math.ceil((world.week ?? 1) / 2) },
       }))
       .filter((entry) => entry.value > 0)
       .sort((a, b) => b.value - a.value)
@@ -173,7 +173,7 @@ export default function AlmanacPage() {
                           Yūshō Winner
                         </p>
                         <p className="font-display font-bold text-lg">
-                          {basho.yushoShikona || "Reserved"}
+                          {world.rikishi.get(basho.yusho)?.shikona ?? basho.yusho ?? "Reserved"}
                         </p>
                       </div>
                       <div className="space-y-1">
@@ -184,8 +184,8 @@ export default function AlmanacPage() {
                       </div>
                       <div className="text-right">
                         <Link
-                          to="/basho"
-                          params={{ bashoId: basho.id }}
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          to={"/basho" as any}
                           className="text-primary hover:underline text-sm font-semibold"
                         >
                           View Full Results →
