@@ -11,6 +11,8 @@ import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economics/Sponsorsh
 interface SponsorData {
   sponsorId: string;
   sponsorName: string;
+  name: string;
+  relId: string;
   tier: string;
   strength: number;
   monthlyIncome: number;
@@ -18,6 +20,9 @@ interface SponsorData {
   isExpiringSoon: boolean;
   loyalty: number;
   since: number;
+  category: string;
+  role: string;
+  satisfaction: number;
 }
 
 function buildAndSortActiveSponsors(
@@ -64,6 +69,8 @@ function buildSponsorData(sponsor: any, rel: any, world: WorldState): SponsorDat
   return {
     sponsorId: sponsor.id,
     sponsorName: sponsor.name,
+    name: sponsor.displayName ?? sponsor.name ?? sponsor.shortName ?? sponsor.id,
+    relId: rel.relId ?? rel.id ?? "",
     tier: rel.tier,
     strength: rel.strength,
     monthlyIncome,
@@ -71,6 +78,9 @@ function buildSponsorData(sponsor: any, rel: any, world: WorldState): SponsorDat
     isExpiringSoon,
     loyalty: sponsor.loyalty,
     since: rel.since,
+    category: sponsor.category ?? "",
+    role: rel.role ?? "",
+    satisfaction: sponsor.satisfaction ?? 0,
   };
 }
 

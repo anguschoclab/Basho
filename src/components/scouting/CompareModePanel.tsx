@@ -21,6 +21,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
   const [results, setResults] = useState<{ winner: "A" | "B"; score: string } | null>(null);
 
   const runTrialClash = () => {
+    if (!state.world) return;
     setIsSimulating(true);
     // Short delay for "simulation feel"
     setTimeout(() => {
@@ -29,8 +30,8 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
 
       // Best of 3
       for (let i = 0; i < 3; i++) {
-        const fullA = state.world.rikishi.find((r) => r.id === rikishiA.id);
-        const fullB = state.world.rikishi.find((r) => r.id === rikishiB.id);
+        const fullA = state.world?.rikishi.get(rikishiA.id);
+        const fullB = state.world?.rikishi.get(rikishiB.id);
         if (fullA && fullB) {
           const res = simulateBout(fullA, fullB, `compare-${Date.now()}-${i}`);
           if (res.winner === "east") winsA++;
@@ -116,8 +117,8 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
       <Card className="bg-background/40 backdrop-blur shadow-xl overflow-hidden border-primary/10">
         <CardContent className="p-6">
           {(() => {
-            const rawA = state.world.rikishi.find((r) => r.id === rikishiA.id);
-            const rawB = state.world.rikishi.find((r) => r.id === rikishiB.id);
+            const rawA = state.world?.rikishi.get(rikishiA.id);
+            const rawB = state.world?.rikishi.get(rikishiB.id);
 
             if (!rawA || !rawB)
               return <p className="text-center text-muted-foreground">Stats unavailable</p>;
