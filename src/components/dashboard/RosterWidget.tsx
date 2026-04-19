@@ -87,6 +87,7 @@ const RosterEntryRow = React.memo(
               variant="ghost"
               size="icon"
               className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+              aria-label={`Withdraw ${shikona} from tournament`}
               onClick={(e) => {
                 e.stopPropagation();
                 onWithdraw(id);

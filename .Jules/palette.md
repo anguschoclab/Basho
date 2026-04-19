@@ -4,3 +4,6 @@
 ## 2026-04-13 - Added Focus Ring to MentorOverlay Button
 **Learning:** When adding keyboard focus states to generic button elements, using Tailwind's `focus-visible:` variants with `ring` and `ring-offset` provides standard, accessible visual feedback that matches the Shadcn UI defaults without affecting mouse clicks.
 **Action:** Remember to explicitly add `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background` to plain HTML `<button>` tags that lack standard component wrapper focus styles.
+## 2024-05-18 - Missing ARIA Labels on Icon Buttons
+**Learning:** Shadcn UI Button components with `size="icon"` often lack intrinsic accessibility when only an SVG/Icon component is passed as children. This makes them invisible or unhelpful to screen readers.
+**Action:** Always audit `size="icon"` Button components and ensure an `aria-label` or `title` property is added.
