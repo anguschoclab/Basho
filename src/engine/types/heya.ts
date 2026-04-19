@@ -17,10 +17,11 @@ import type {
   Loan,
   IchimonName,
 } from "./economy";
-import type { BeyaTrainingState } from "./training";
+import type { HeyaTrainingState } from "./training";
 import type { HistoricalOyakata } from "./history";
 import type { ActiveCrisis } from "./crises";
 import type { InfrastructureState } from "./infrastructure";
+import type { DynastyRecord, TrainingPhilosophy } from "./dynasty";
 
 /** Defines the structure for heya. */
 export interface Heya {
@@ -73,7 +74,7 @@ export interface Heya {
     welfare?: boolean;
   };
 
-  trainingState?: BeyaTrainingState;
+  trainingState?: HeyaTrainingState;
 
   activeCrisis?: ActiveCrisis;
 
@@ -99,4 +100,16 @@ export interface Heya {
     category: string;
     date?: { year: number; month: number; week?: number };
   }>;
+
+  /** Total travel allowance paid to sekitori (makuuchi/juryo) this month */
+  travelAllowanceTotal?: number;
+
+  /** Total mochikyukin (career prize money) for all heya rikishi */
+  mochikyukinTotal?: number;
+
+  /** Phase 5: Legacy & Dynasty */
+  dynasty?: DynastyRecord[];
+  trainingPhilosophy?: TrainingPhilosophy;
+  legacyTier?: "emerging" | "established" | "dynasty" | "legend";
+  regionalPresence?: Record<string, number>;
 }

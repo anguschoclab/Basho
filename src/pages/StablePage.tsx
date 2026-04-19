@@ -18,6 +18,8 @@ import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
 import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
 import { projectSponsorUIDigest } from "@/presenters/uiProjections";
+import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
+import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
 
 export default function StablePage() {
@@ -71,11 +73,20 @@ export default function StablePage() {
             <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
             <TabsTrigger value="sponsorship">Sponsorship</TabsTrigger>
             <TabsTrigger value="institution">Institution</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="global">Global Influence</TabsTrigger>
+            <TabsTrigger value="chronicle">Chronicle</TabsTrigger>
           </TabsList>
 
           <TabsContent value="sponsorship">
             <SponsorshipHub data={sponsorData} />
+          </TabsContent>
+
+          <TabsContent value="chronicle">
+            <ChronicleRoom world={world} heyaId={viewingHeyaId} />
+          </TabsContent>
+
+          <TabsContent value="global">
+            <GlobalStrategicHub world={world} heyaId={viewingHeyaId} />
           </TabsContent>
 
           <TabsContent value="infrastructure">

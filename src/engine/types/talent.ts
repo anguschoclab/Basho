@@ -74,6 +74,7 @@ export interface TalentCandidate {
   developmentSpeed?: number;
   peakAgeOffset?: number;
   ceilingFraction?: number;
+  bloodlineTrait?: import("./dynasty").BloodlineTrait;
 }
 
 /** Defines the structure for talent pool state. */

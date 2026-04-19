@@ -31,15 +31,39 @@ export const TrainingPhilosophyService = {
 
   /**
    * Evolves the philosophy when a new Oyakata takes charge.
-   * The successor inherits all dimensions but may shift one per their archetype.
-   * Full convergence to the new style takes ~3 years (handled by the tick).
+   * Phase 5 Depth: Instead of snapping, we set target biases.
    */
   evolveForSuccessor(current: TrainingPhilosophy, incomingOyakata: Oyakata): TrainingPhilosophy {
     const shifts = ARCHETYPE_SHIFTS[incomingOyakata.archetype] ?? {};
     return {
       ...current,
-      ...shifts, // Merge shifts — only overrides defined dimensions
+      targetFocusBias: shifts.focusBias || current.focusBias,
+      targetIntensityBias: shifts.intensityBias || current.intensityBias,
+      transitionProgress: 0,
     };
+  },
+
+  /**
+   * Phase 5 Depth: Ticks the drift at the yearly boundary.
+   * Moves 25% of the way toward the targets each year (Full transition in 4 years).
+   */
+  tickPhilosophyDrift(philosophy: TrainingPhilosophy): TrainingPhilosophy {
+    if (philosophy.transitionProgress === undefined || philosophy.transitionProgress >= 1) {
+      return philosophy;
+    }
+
+    const nextProgress = Math.min(1.0, philosophy.transitionProgress + 0.25);
+    const nextPhil = { ...philosophy, transitionProgress: nextProgress };
+
+    if (nextProgress >= 1.0) {
+      // Transition complete
+      nextPhil.focusBias = philosophy.targetFocusBias || philosophy.focusBias;
+      nextPhil.intensityBias = philosophy.targetIntensityBias || philosophy.intensityBias;
+      delete nextPhil.targetFocusBias;
+      delete nextPhil.targetIntensityBias;
+    }
+
+    return nextPhil;
   },
 
   /**

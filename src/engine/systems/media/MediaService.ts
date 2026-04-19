@@ -590,6 +590,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   });
 
   // D. Emit Management Decision Event for UI Overlay (D1)
+  const interviewPrompt = generateInterviewPrompt(world, rng);
   builder.addEvent({
     id: rng.uuid("EV"),
     type: "MANAGEMENT_DECISION",
@@ -600,12 +601,95 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
     phase: "pre_basho",
     year: world.year,
     week,
+    data: {
+      interviewPrompt,
+    },
   });
 
   builder.logEvent("PRE_BASHO_JOURNALISM", "media", {
     headlines,
     year: world.year,
     week,
+  });
+
+  return builder.build();
+}
+
+/**
+ * Generates a random interview prompt for the player stable.
+ */
+function generateInterviewPrompt(world: WorldState, rng: SeededRNG) {
+  const prompts = [
+    {
+      question:
+        "Your top rikishi is entering this tournament as a heavy favorite. How is the stable handling the pressure?",
+      choices: [
+        { id: "modest", text: "We focus on one bout at a time.", impact: { rep: 5, heat: -10 } },
+        {
+          id: "confident",
+          text: "He's better than ever. The title is ours.",
+          impact: { rep: -10, heat: 25 },
+        },
+        {
+          id: "deflect",
+          text: "The dojo results will speak for themselves.",
+          impact: { rep: 0, heat: 0 },
+        },
+      ],
+    },
+    {
+      question:
+        "There are rumors of tension between your stable and the Isegahama faction. Any comment?",
+      choices: [
+        {
+          id: "deny",
+          text: "We have nothing but respect for our brothers.",
+          impact: { rep: 5, politicalCapital: 5 },
+        },
+        {
+          id: "challenge",
+          text: "Success naturally breeds envy.",
+          impact: { rep: -15, heat: 30, politicalCapital: -10 },
+        },
+      ],
+    },
+  ];
+  return rng.pick(prompts);
+}
+
+/**
+ * Processes the player's choice from an interview.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function processMediaDecision(
+  world: WorldState,
+  choiceId: string,
+  impact: any
+): StateImpact {
+  const builder = createImpactBuilder("processMediaDecision");
+  const heyaId = world.playerHeyaId;
+  if (!heyaId) return builder.build();
+
+  if (impact.rep) {
+    const heya = world.heyas.get(heyaId);
+    builder.updateHeya(heyaId, {
+      reputation: Math.max(0, Math.min(100, (heya?.reputation ?? 50) + impact.rep)),
+    });
+  }
+
+  if (impact.politicalCapital) {
+    const heya = world.heyas.get(heyaId);
+    builder.updateHeya(heyaId, {
+      politicalCapital: Math.max(
+        0,
+        Math.min(100, (heya?.politicalCapital ?? 50) + impact.politicalCapital)
+      ),
+    });
+  }
+
+  builder.logEvent("MEDIA_INTERVIEW_COMPLETED", "media", {
+    choiceId,
+    incident: `Press conference concluded. Impact: ${JSON.stringify(impact)}`,
   });
 
   return builder.build();

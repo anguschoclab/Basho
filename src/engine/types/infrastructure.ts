@@ -10,7 +10,11 @@ export type FacilityId =
   | "medical_suite" // Reduces injury duration & severity
   | "media_studio" // Buffs Media Heat & Reputation gains
   | "traditional_kitchen" // Buffs Stamina & reduces Fatigue floor
-  | "video_lab"; // Buffs Technique & Adaptability
+  | "video_lab" // Buffs Technique & Adaptability
+  | "academy_mongolia" // Regional Academy (Requires Presence > 80)
+  | "academy_georgia"
+  | "academy_europe"
+  | "academy_americas";
 
 export type ConstructionStatus = "active" | "under_construction" | "remodelling";
 
@@ -33,6 +37,9 @@ export interface FacilityDefinition {
     fatigueFloor?: number;
     injuryHealMod?: number; // Additive (e.g. -2 days)
     mediaMod?: number; // Multiplier
+  };
+  requirements?: {
+    regionalPresence?: Record<string, number>; // Region -> Min Presence
   };
 }
 
@@ -107,5 +114,46 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     bonuses: {
       mediaMod: 1.1, // Minor cross-over bonus for networking
     },
+  },
+  academy_mongolia: {
+    id: "academy_mongolia",
+    label: "Ulaanbaatar High-Performance Academy",
+    description:
+      "A premier facility specializing in grip-fighting and explosive oshi-sumo techniques.",
+    baseCost: 50_000_000,
+    buildTimeBasho: 3,
+    maintenanceCost: 2_000_000,
+    requirements: { regionalPresence: { Mongolia: 80 } },
+    bonuses: { statBuffs: { strength: 1.1, technique: 1.1 } },
+  },
+  academy_georgia: {
+    id: "academy_georgia",
+    label: "Caucasus Strength Center",
+    description: "Focuses on raw lifting power and back-breaking endurance training.",
+    baseCost: 45_000_000,
+    buildTimeBasho: 3,
+    maintenanceCost: 1_800_000,
+    requirements: { regionalPresence: { Georgia: 80 } },
+    bonuses: { statBuffs: { strength: 1.2 } },
+  },
+  academy_europe: {
+    id: "academy_europe",
+    label: "Euro-Continental Dojo",
+    description: "Emphasizes technical grappling and anatomical efficiency.",
+    baseCost: 40_000_000,
+    buildTimeBasho: 2,
+    maintenanceCost: 1_500_000,
+    requirements: { regionalPresence: { Europe: 80 } },
+    bonuses: { statBuffs: { technique: 1.2 } },
+  },
+  academy_americas: {
+    id: "academy_americas",
+    label: "Pan-American Athletic Hub",
+    description: "Advanced nutrition and conditioning for extreme size and stamina.",
+    baseCost: 40_000_000,
+    buildTimeBasho: 2,
+    maintenanceCost: 1_500_000,
+    requirements: { regionalPresence: { Americas: 80 } },
+    bonuses: { statBuffs: { weight: 1.1, stamina: 1.1 } },
   },
 };

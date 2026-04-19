@@ -17,7 +17,7 @@ import type { MyosekiMarket } from "./myoseki";
 import type { WorldRecords } from "./records";
 import type { TutorialState } from "./tutorial";
 import type { ActiveCrisis } from "./crises";
-import type { GlobalCupState } from "./globalCup";
+import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -231,6 +231,7 @@ export interface WorldState {
       value: number;
       year: number;
     }>;
+    globalCups?: GlobalCupHistoryEntry[];
   };
 
   /** Global Cup tournament state */

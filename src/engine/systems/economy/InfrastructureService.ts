@@ -35,6 +35,26 @@ export const InfrastructureService = {
     const cost = def.baseCost * (1 + (nextLevel - 1) * 0.8);
     if (heya.funds < cost) return builder.build();
 
+    // Phase 5 Depth: Regional Presence check
+    if (def.requirements?.regionalPresence) {
+      const presence = heya.regionalPresence || {};
+      for (const [region, minPresence] of Object.entries(def.requirements.regionalPresence)) {
+        if ((presence[region] || 0) < (minPresence as number)) {
+          builder.logEvent(
+            "CONSTRUCTION_STARTED",
+            "facility",
+            {
+              facilityId,
+              status: "failed_requirements",
+              reason: `Insufficient presence in ${region}. Need ${minPresence}, have ${presence[region] || 0}.`,
+            },
+            { heyaId }
+          );
+          return builder.build();
+        }
+      }
+    }
+
     // Determine completion date (relative to current world state)
     // We'll use a simple "next basho" or "N basho from now" logic
     // For now, let's assume world.currentBashoName exists

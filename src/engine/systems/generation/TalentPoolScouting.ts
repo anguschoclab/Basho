@@ -29,7 +29,21 @@ export function listVisibleCandidates(
   const pool = tp.pools[poolType];
   if (!pool) return [];
 
-  return pool.candidatesVisible.map((id) => tp.candidates[id]).filter(Boolean);
+  const candidates = pool.candidatesVisible.map((id) => tp.candidates[id]).filter(Boolean);
+
+  // Phase 5 Depth: Regional Gating for foreign candidates
+  if (poolType === "foreign" && world.playerHeyaId) {
+    const heya = world.heyas.get(world.playerHeyaId);
+    if (heya) {
+      const presence = heya.regionalPresence || {};
+      return candidates.filter((c) => {
+        const minPresence = 40; // Visibility threshold
+        return (presence[c.originRegion] || 0) >= minPresence;
+      });
+    }
+  }
+
+  return candidates;
 }
 
 /**
@@ -151,7 +165,18 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
   const candidate = tp.candidates[candidateId];
   if (!candidate) return null;
 
-  const level = tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
+  let level = tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
+
+  // Phase 5 Depth: Academy Advanced Discovery
+  if (world.playerHeyaId && candidate.nationality !== "Japan") {
+    const heya = world.heyas.get(world.playerHeyaId);
+    const presence = heya?.regionalPresence?.[candidate.originRegion] || 0;
+    if (presence >= 80) {
+      // Academy bonus: reveal more intel automatically (+30 effective scouting)
+      level = Math.min(100, level + 30);
+    }
+  }
+
   const observations = Math.floor(level / 20);
   const seed = `candidate-${candidateId}-${level}`;
 

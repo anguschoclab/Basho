@@ -16,7 +16,10 @@ import {
   Users,
   AlertTriangle,
   ArrowRightLeft,
+  Trophy,
+  Globe,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { StableName } from "@/components/ClickableName";
 import type { Heya } from "@/engine/types/heya";
@@ -28,10 +31,7 @@ import {
   spendPoliticalCapital,
   toScandalBand,
 } from "@/presenters/uiDigest";
-import {
-  selectHeyasWithCriticalWelfare,
-  selectMergerCandidates,
-} from "@/presenters/selectors";
+import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 
 /**
  * Format fine penalty.
@@ -352,6 +352,65 @@ export default function GovernancePage() {
                 </Card>
               );
             })()}
+
+            {/* Global Cup Governance */}
+            {world.globalCup && (
+              <Card className="border-amber-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2 text-amber-400">
+                    <Trophy className="h-4 w-4" />
+                    Global Cup Tournament
+                  </CardTitle>
+                  <CardDescription>
+                    International sumo tournament management and oversight.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-3xl font-display font-bold text-amber-400">
+                        {world.globalCup.year}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          Status: <span className="capitalize">{world.globalCup.phase}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {world.globalCup.participants.length} participants from{" "}
+                          {
+                            new Set(
+                              world.globalCup.participants.map(
+                                (p: { nationality: string }) => p.nationality
+                              )
+                            ).size
+                          }{" "}
+                          countries
+                        </p>
+                      </div>
+                    </div>
+                    <Link to="/global-cup">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-amber-500/30 text-amber-400"
+                      >
+                        <Globe className="h-4 w-4 mr-2" />
+                        View Tournament
+                      </Button>
+                    </Link>
+                  </div>
+                  {world.globalCup.championId && (
+                    <div className="mt-4 p-3 bg-amber-950/10 border border-amber-500/20 rounded-lg">
+                      <p className="text-sm text-amber-400 font-medium flex items-center gap-2">
+                        <Trophy className="h-4 w-4" />
+                        Current Champion:{" "}
+                        {world.rikishi.get(world.globalCup.championId)?.shikona || "Unknown"}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Politics Tab */}

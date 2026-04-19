@@ -17,6 +17,11 @@ export interface TrainingPhilosophy {
   recruitmentBias: "domestic" | "international" | "prodigy_seeker";
   /** The stable's trademark fighting style — used to bias candidate archetype matching. */
   signatureStyle?: CombatArchetype;
+
+  /** Phase 5 Depth: Drift / Transition state */
+  targetFocusBias?: "power" | "technique" | "speed" | "balanced";
+  targetIntensityBias?: "grueling" | "moderate" | "scientific";
+  transitionProgress?: number; // 0.0 to 1.0
 }
 
 /** Per-Oyakata era achievements. */

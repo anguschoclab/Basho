@@ -36,12 +36,16 @@ import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
 import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
+import { GlobalCupWidget } from "@/components/dashboard/GlobalCupWidget";
 import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
 import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
 import { CrisisModal } from "@/components/game/CrisisModal";
+import { SuccessionModal } from "@/components/stable/SuccessionModal";
+import { DynastyService } from "@/engine/systems/legacy/DynastyService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "calendar", order: 0, span: 4, component: CalendarWidget, label: "Calendar" },
@@ -57,11 +61,12 @@ const WIDGET_REGISTRY: WidgetDef[] = [
   { id: "rivals", order: 10, span: 4, component: RivalsWidget, label: "Rivals" },
   { id: "scouting", order: 11, span: 4, component: ScoutingWidget, label: "Scouting" },
   { id: "institution", order: 12, span: 6, component: InstitutionWidget, label: "Institution" },
+  { id: "globalCup", order: 13, span: 4, component: GlobalCupWidget, label: "Global Cup" },
 ];
 
 /** dashboard. */
 export default function Dashboard() {
-  const { state, hasAutosave, loadFromAutosave } = useGame();
+  const { state, updateWorld, hasAutosave, loadFromAutosave } = useGame();
   const navigate = useNavigate();
   const world = state.world;
   const isLoaded = !!world;
@@ -371,11 +376,37 @@ export default function Dashboard() {
       {/* Yokozuna Deliberation Modal */}
       {deliberationData && (
         <YokozunaDeliberation
-          {...deliberationData}
-          open={!!deliberationCandidateId}
+          rikishiId={deliberationCandidateId}
           onClose={() => setDeliberationCandidateId(null)}
         />
       )}
+
+      {/* Phase 5: Succession Modal */}
+      {(() => {
+        const playerHeya = world.heyas.get(state.playerHeyaId || "");
+        const playerOyakata = world.oyakata.get(playerHeya?.oyakataId || "");
+        const showSuccession = playerOyakata?.successionReadiness === "mandatory";
+
+        if (!showSuccession) return null;
+
+        return (
+          <SuccessionModal
+            isOpen={true}
+            onClose={() => {}} // Mandatory
+            world={world}
+            heyaId={state.playerHeyaId || ""}
+            onSelect={(successorId) => {
+              const impact = DynastyService.triggerSuccession(
+                world,
+                state.playerHeyaId || "",
+                successorId
+              );
+              const nextWorld = resolveImpacts(world, [impact]);
+              updateWorld(nextWorld);
+            }}
+          />
+        );
+      })()}
 
       {/* Crisis Modal - auto-shows when crisis detected */}
       <CrisisModal />

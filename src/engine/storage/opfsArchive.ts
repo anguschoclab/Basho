@@ -64,6 +64,30 @@ function validateBoutLog(data: unknown): BoutResult | null {
  * This keeps IndexedDB and our Zustand active state highly performant.
  */
 
+// Write queue to prevent concurrent writes to the same file
+const writeQueue = new Map<string, Promise<unknown>>();
+
+async function enqueueWrite<T>(key: string, operation: () => Promise<T>): Promise<T> {
+  // Get any pending write for this key
+  const pending = writeQueue.get(key);
+
+  // Chain after pending write, or start new
+  const current = pending?.then(operation, operation) ?? operation();
+
+  // Store in queue
+  writeQueue.set(key, current);
+
+  try {
+    const result = await current;
+    return result;
+  } finally {
+    // Clean up queue only if our operation is still the pending one
+    if (writeQueue.get(key) === current) {
+      writeQueue.delete(key);
+    }
+  }
+}
+
 export class ArchiveConflictError extends Error {
   constructor(message: string) {
     super(message);
@@ -78,42 +102,47 @@ export interface ArchiveService {
   archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
-  archiveAwards: (season: number, awards: any[]) => Promise<void>;
-  retrieveAwards: (season: number) => Promise<any[]>;
-  archiveBanzuke: (season: number, bashoNumber: number, snapshot: any) => Promise<void>;
-  retrieveBanzuke: (season: number, bashoNumber: number) => Promise<any | null>;
+  archiveAwards: (season: number, awards: unknown[]) => Promise<void>;
+  retrieveAwards: (season: number) => Promise<unknown[]>;
+  archiveBanzuke: (season: number, bashoNumber: number, snapshot: unknown) => Promise<void>;
+  retrieveBanzuke: (season: number, bashoNumber: number) => Promise<unknown | null>;
 }
 
 class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
   // --- BOUTS ---
 
   public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`, "bouts"]);
-    if (!dir) return;
+    // Use write queue to prevent concurrent writes to the same file
+    const writeKey = `bout:${season}:${boutId}`;
+    await enqueueWrite(writeKey, async () => {
+      const dir = await this.getDirectoryPath([`season_${season}`, "bouts"]);
+      if (!dir) return;
 
-    const fileName = `${boutId}.json`;
+      const fileName = `${boutId}.json`;
 
-    // Overwrite Protection (Append-Only Enforcement)
-    try {
-      await dir.getFileHandle(fileName, { create: false });
-      // If the above line DOES NOT throw, the file exists.
-      throw new ArchiveConflictError(
-        `Bout log ${boutId} already exists in season ${season}. History is immutable.`
-      );
-    } catch (e: unknown) {
-      if (e instanceof ArchiveConflictError) throw e;
-      if ((e instanceof Error || e instanceof DOMException) && e.name !== "NotFoundError") throw e; // Bubble up unexpected errors
-    }
+      // Overwrite Protection (Append-Only Enforcement)
+      try {
+        await dir.getFileHandle(fileName, { create: false });
+        // If the above line DOES NOT throw, the file exists.
+        throw new ArchiveConflictError(
+          `Bout log ${boutId} already exists in season ${season}. History is immutable.`
+        );
+      } catch (e: unknown) {
+        if (e instanceof ArchiveConflictError) throw e;
+        if ((e instanceof Error || e instanceof DOMException) && e.name !== "NotFoundError")
+          throw e; // Bubble up unexpected errors
+      }
 
-    // File does not exist, safe to write.
-    try {
-      const fileHandle = await dir.getFileHandle(fileName, { create: true });
-      const writable = await fileHandle.createWritable();
-      await writable.write(JSON.stringify(logData));
-      await writable.close();
-    } catch (e) {
-      this.handleQuotaError(e);
-    }
+      // File does not exist, safe to write.
+      try {
+        const fileHandle = await dir.getFileHandle(fileName, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify(logData));
+        await writable.close();
+      } catch (e) {
+        this.handleQuotaError(e);
+      }
+    });
   }
 
   public async retrieveBoutLog(season: number, boutId: string): Promise<BoutResult | null> {
@@ -220,7 +249,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
 
   // --- AWARDS ---
 
-  public async archiveAwards(season: number, awards: any[]): Promise<void> {
+  public async archiveAwards(season: number, awards: unknown[]): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`]);
     if (!dir) return;
 
@@ -236,7 +265,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveAwards(season: number): Promise<any[]> {
+  public async retrieveAwards(season: number): Promise<unknown[]> {
     const dir = await this.getDirectoryPath([`season_${season}`]);
     if (!dir) return [];
 
@@ -254,7 +283,11 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
 
   // --- BANZUKE ---
 
-  public async archiveBanzuke(season: number, bashoNumber: number, snapshot: any): Promise<void> {
+  public async archiveBanzuke(
+    season: number,
+    bashoNumber: number,
+    snapshot: unknown
+  ): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return;
 
@@ -270,7 +303,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<any | null> {
+  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<unknown | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return null;
 

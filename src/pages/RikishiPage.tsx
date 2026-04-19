@@ -27,6 +27,7 @@ import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
 import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
 import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
+import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
 import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
@@ -178,6 +179,7 @@ export default function RikishiPage() {
                 milestones={milestones as Milestone[]}
                 careerProgressionData={careerProgressionData}
               />
+              <RikishiGlobalCup rikishiId={rikishi.id} world={world} />
             </TabsContent>
           </Tabs>
         </div>

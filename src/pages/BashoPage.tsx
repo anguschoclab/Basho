@@ -33,7 +33,9 @@ import {
   Crown,
   Calendar,
   ChevronDown,
+  Globe,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import {
   BASHO_CALENDAR,
   getDayName,
@@ -292,6 +294,36 @@ export default function BashoPage() {
         {/* Day progress */}
         <Progress value={dayProgress} className="h-1" />
 
+        {/* Global Cup Banner - During Interim Weeks */}
+        {world.globalCup?.isActive && day >= 15 && (
+          <Card className="border-amber-500/30 bg-amber-950/10">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Globe className="h-5 w-5 text-amber-400" />
+                  <div>
+                    <h3 className="font-display font-bold text-amber-400">
+                      Global Cup {world.globalCup.year} - {world.globalCup.phase}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {world.globalCup.participants.length} international competitors
+                    </p>
+                  </div>
+                </div>
+                <Link to="/global-cup">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-amber-500/30 text-amber-400"
+                  >
+                    View Tournament
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* ═══════════ MAIN LAYOUT ═══════════ */}
         <div className="grid gap-4 lg:grid-cols-4">
           {/* Schedule Overview - Collapsible */}
@@ -359,17 +391,20 @@ export default function BashoPage() {
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
             <MatchDayViewer
-              matches={matches as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              matches={matches as any}
               world={world}
               playerRikishiIds={new Set(playerRikishiIds)}
               onSimulateBout={simulateBout}
               onSimulateAll={simulateAllBouts}
               onTacticChange={handleTacticChange}
               onEndDay={handleNextDay}
-              highlightRikishiId={(state as any).selectedRikishiId || undefined} // eslint-disable-line @typescript-eslint/no-explicit-any
-              playerTactics={(state as any).boutTactics} // eslint-disable-line @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              highlightRikishiId={(state as any).selectedRikishiId || undefined}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              playerTactics={(state as any).boutTactics}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onBoutClick={(match: any) => {
-                // eslint-disable-line @typescript-eslint/no-explicit-any
                 if (!match.result || !match.eastRikishi || !match.westRikishi) return;
                 setSelectedBout({
                   east: match.eastRikishi,

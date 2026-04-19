@@ -7,10 +7,13 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
-import { Trophy, Users, Calendar, MapPin } from "lucide-react";
+import { Trophy, Users, Calendar, MapPin, BarChart3 } from "lucide-react";
 import { GlobalCupBracket } from "@/components/game/GlobalCupBracket";
 import { GlobalCupParticipantCard } from "@/components/game/GlobalCupParticipant";
 import { ProgressArc } from "@/components/charts/ProgressArc";
+import { GlobalCupDashboardStats } from "@/components/charts/GlobalCupStats";
+import { EventFeed } from "@/components/dashboard/EventFeed";
+import { projectGlobalCup } from "@/presenters/projections/globalCupProjections";
 import type { GlobalCupParticipant } from "@/engine/types/globalCup";
 
 export default function GlobalCupPage() {
@@ -78,6 +81,9 @@ export default function GlobalCupPage() {
     rikishiNames.set(p.rikishiId, p.shikona);
   });
 
+  // Get projection for data visualization
+  const projection = projectGlobalCup(world);
+
   return (
     <AppLayout pageTitle="Global Cup">
       <Helmet>
@@ -131,6 +137,15 @@ export default function GlobalCupPage() {
           </div>
         </div>
 
+        {/* Data Visualization */}
+        <div>
+          <h2 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Tournament Statistics
+          </h2>
+          <GlobalCupDashboardStats projection={projection} />
+        </div>
+
         {/* Participants Grid */}
         <div>
           <h2 className="text-lg font-display font-bold mb-4">Participants</h2>
@@ -143,6 +158,12 @@ export default function GlobalCupPage() {
               />
             ))}
           </div>
+        </div>
+
+        {/* Event Feed */}
+        <div>
+          <h2 className="text-lg font-display font-bold mb-4">Tournament Events</h2>
+          <EventFeed filterTypes={["GLOBAL_CUP"]} maxEvents={5} />
         </div>
 
         {/* Bracket */}

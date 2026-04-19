@@ -12,3 +12,5 @@ export * from "./bashoProjections";
 export * from "./economyProjections";
 export * from "./heyaProjections";
 export * from "./eventProjections";
+export * from "./globalCupProjections";
+export * from "./crisisProjections";

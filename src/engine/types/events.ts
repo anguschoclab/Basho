@@ -28,7 +28,8 @@ export type EngineEventType =
   | "FACILITY_UPGRADED"
   | "FACILITY_DEGRADED"
   | "ROSTER_OVERFLOW_RELEASE"
-  | "PROMOTION_DELIBERATION";
+  | "PROMOTION_DELIBERATION"
+  | "GLOBAL_CUP";
 
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
 /** Type representing event category. */
