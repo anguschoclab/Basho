@@ -67,9 +67,6 @@ vi.mock("../../systems/generation/TalentPoolService", () => ({
   finalizeSignedCandidates: vi.fn(),
 }));
 
-vi.mock("../../core/SimulationConfig", () => ({
-  SIMULATION_CONFIG: {},
-}));
 
 // ── Import module under test AFTER mocks ──────────────────────────────────
 
