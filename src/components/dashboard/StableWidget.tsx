@@ -147,4 +147,4 @@ const StatMini = React.memo(function StatMini({ icon, label, value }: { icon: Re
       </div>
     </div>
   );
-});
+}, (prev, next) => prev.label === next.label && prev.value === next.value);
