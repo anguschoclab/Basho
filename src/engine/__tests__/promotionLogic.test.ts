@@ -16,7 +16,7 @@ describe("promotionLogic", () => {
 
     it("calculates movement for maegashira (normal kachi-koshi)", () => {
       const entry = createEntry("r1", "maegashira", 5);
-      const perf: BashoPerformance = { wins: 9, losses: 6, absences: 0, boutIds: [] };
+      const perf: BashoPerformance = { rikishiId: "r1", wins: 9, losses: 6, absences: 0 };
       // req = 8. wins = 9. move = 1
       expect(computeMovementUnits(entry, perf, new Set())).toBe(1);
     });
