@@ -49,6 +49,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
   type CandidateDigestEntry = TalentCandidate & {
     scoutLevel: number;
     scoutInfo: string;
+    scoutedProgress?: number;
+    scoutingInvestment?: string;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
   const [signingCandidate, setSigningCandidate] = useState<any>(null);
@@ -166,7 +168,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
     if (selectedCandidates.length < 2) return null;
     const candidates = selectedCandidates
       .map((id) => digest.candidates.find((c: CandidateDigestEntry) => c.candidateId === id))
-      .filter(Boolean);
+      .filter((c): c is CandidateDigestEntry => c !== undefined);
     if (candidates.length < 2) return null;
     return { a: candidates[0], b: candidates[1] };
   }, [selectedCandidates, digest.candidates]);
@@ -320,8 +322,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
                     <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1">
-                        <Search className={`h-3 w-3 ${c.scoutInfo.color}`} />
-                        <span className={`text-xs ${c.scoutInfo.color}`}>{c.scoutInfo.label}</span>
+                        <Search className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">{c.scoutInfo}</span>
                       </div>
 
                       <div className="flex gap-1">
