@@ -88,17 +88,42 @@ export default function Dashboard() {
     return out;
   }, [finance, training]);
 
-  const rosterRows = useMemo(() => {
-    if (!world || !playerHeya) return [];
-    return (playerHeya.rikishiIds ?? [])
-      .slice(0, 8)
-      .map((id) => {
-        const r = world.rikishi.get(id);
-        if (!r) return null;
+  const rosterData = useMemo(() => {
+    let sekitoriCount = 0;
+    const rows: {
+      id: string;
+      label: string;
+      value: string;
+      sub?: string;
+      tone?: "default" | "warning" | "destructive";
+      onClick?: () => void;
+    }[] = [];
+
+    if (!world || !playerHeya) return { rows: [], sekitoriCount: 0 };
+
+    const ids = playerHeya.rikishiIds ?? [];
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const r = world.rikishi.get(id);
+      if (!r) continue;
+
+      const rank = r.rank ?? "";
+      if (
+        rank === "juryo" ||
+        rank === "yokozuna" ||
+        rank === "ozeki" ||
+        rank === "sekiwake" ||
+        rank === "komusubi" ||
+        rank === "maegashira"
+      ) {
+        sekitoriCount++;
+      }
+
+      if (rows.length < 8) {
         const rankLabel = r.rank
           ? `${r.rank.charAt(0).toUpperCase() + r.rank.slice(1)}${r.rankNumber ? ` ${r.rankNumber}` : ""}${r.side === "east" ? "E" : "W"}`
           : "—";
-        return {
+        rows.push({
           id,
           label: r.shikona ?? r.name ?? id,
           value: rankLabel,
@@ -109,16 +134,11 @@ export default function Dashboard() {
               ? ("warning" as const)
               : ("default" as const),
           onClick: () => navigate({ to: "/stable/roster" }),
-        };
-      })
-      .filter(Boolean) as {
-      id: string;
-      label: string;
-      value: string;
-      sub?: string;
-      tone: "default" | "destructive" | "warning";
-      onClick: () => void;
-    }[];
+        });
+      }
+    }
+
+    return { rows, sekitoriCount };
   }, [world, playerHeya, navigate]);
 
   const phase = world?.cyclePhase ?? "interim";
@@ -199,20 +219,7 @@ export default function Dashboard() {
                 },
                 {
                   label: "Sekitori",
-                  value: String(
-                    (playerHeya?.rikishiIds ?? []).filter((id) => {
-                      const r = world.rikishi.get(id);
-                      const rank = r?.rank ?? "";
-                      return (
-                        rank === "juryo" ||
-                        rank === "yokozuna" ||
-                        rank === "ozeki" ||
-                        rank === "sekiwake" ||
-                        rank === "komusubi" ||
-                        rank === "maegashira"
-                      );
-                    }).length
-                  ),
+                  value: String(rosterData.sekitoriCount),
                   tone: "gold",
                 },
                 {
@@ -243,7 +250,7 @@ export default function Dashboard() {
             <ListCard
               eyebrow="── TOP WRESTLERS ──"
               title="Active Roster"
-              rows={rosterRows}
+              rows={rosterData.rows}
               actions={
                 <Button
                   size="sm"
