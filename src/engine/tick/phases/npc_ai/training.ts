@@ -8,7 +8,7 @@
 import type { WorldState } from "../../../types/world";
 import type { Id } from "../../../types/common";
 import type { NPCWeeklyDecision } from "../../../npcAI";
-import { TrainingService } from "../../../training";
+import { TrainingService } from "../../../systems/training/TrainingService";
 import type { HeyaTrainingState } from "../../../types/training";
 
 export function applyNPCDecisionPure(
