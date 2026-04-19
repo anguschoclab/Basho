@@ -18,6 +18,8 @@ import type { WorldRecords } from "./records";
 import type { TutorialState } from "./tutorial";
 import type { ActiveCrisis } from "./crises";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
+import type { BloodlineRegistry } from "./dynasty";
+import type { ExhibitionInvitation } from "../systems/global/WorldCircuitService";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -274,4 +276,10 @@ export interface WorldState {
 
   // Player-set custom kesho configs (Phase K)
   customKeshoConfigs?: Record<string, Partial<import("./keshoMawashi").KeshoMawashi>>;
+
+  /** Pending exhibition tour invitations (WorldCircuitService) */
+  pendingExhibitions?: ExhibitionInvitation[];
+
+  /** Bloodline trait registry (BloodlineService) */
+  bloodlineRegistry?: BloodlineRegistry;
 }

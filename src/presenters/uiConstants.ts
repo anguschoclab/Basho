@@ -22,11 +22,11 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
 };
 
 export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; color: string }> = {
-  generational: { label: "Generational Talent", color: "text-yellow-400" },
-  star: { label: "Star Potential", color: "text-blue-400" },
-  solid: { label: "Solid Prospect", color: "text-green-400" },
+  generational: { label: "Generational Talent", color: "text-gold" },
+  star: { label: "Star Potential", color: "text-west" },
+  solid: { label: "Solid Prospect", color: "text-success" },
   average: { label: "Average Prospect", color: "text-muted-foreground" },
-  limited: { label: "Limited Upside", color: "text-orange-400" },
+  limited: { label: "Limited Upside", color: "text-warning" },
   unknown: { label: "Unknown", color: "text-muted-foreground" },
 };
 

@@ -26,7 +26,14 @@ interface GlobalCupStatsProps {
   projection: GlobalCupProjection | null;
 }
 
-const COLORS = ["#f59e0b", "#3b82f6", "#10b981", "#ef4444", "#8b5cf6", "#ec4899"];
+const COLORS = [
+  "hsl(var(--gold))",
+  "hsl(var(--west))",
+  "hsl(var(--success))",
+  "hsl(var(--destructive))",
+  "hsl(var(--accent))",
+  "hsl(var(--east))",
+];
 
 export function ParticipantNationalityChart({ projection }: GlobalCupStatsProps) {
   const data = useMemo(() => {
@@ -119,8 +126,8 @@ export function BracketProgressChart({ projection }: GlobalCupStatsProps) {
               }}
               labelStyle={{ color: "hsl(var(--muted-foreground))" }}
             />
-            <Bar dataKey="complete" stackId="a" fill="#10b981" />
-            <Bar dataKey="pending" stackId="a" fill="#475569" />
+            <Bar dataKey="complete" stackId="a" fill="hsl(var(--success))" />
+            <Bar dataKey="pending" stackId="a" fill="hsl(var(--muted-foreground))" />
           </BarChart>
         </ResponsiveContainer>
       </div>
