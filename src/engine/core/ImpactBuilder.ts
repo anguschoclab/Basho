@@ -348,6 +348,85 @@ export class ImpactBuilder {
   }
 
   /**
+   * Merge another StateImpact into this builder's accumulator.
+   * Useful for composing sub-system impacts without a separate mergeImpacts call.
+   */
+  merge(other: StateImpact): ImpactBuilder {
+    if (other.entities?.heyaUpdates) {
+      for (const [id, update] of other.entities.heyaUpdates) {
+        this.updateHeya(id, update as Partial<Heya>);
+      }
+    }
+    if (other.entities?.rikishiUpdates) {
+      for (const [id, update] of other.entities.rikishiUpdates) {
+        this.updateRikishi(id, update as Partial<Rikishi>);
+      }
+    }
+    if (other.entities?.oyakataUpdates) {
+      for (const [id, update] of other.entities.oyakataUpdates) {
+        this.updateOyakata(id, update as Partial<Oyakata>);
+      }
+    }
+    if (other.entities?.sponsorUpdates) {
+      for (const [id, update] of other.entities.sponsorUpdates) {
+        this.updateSponsor(id, update as Record<string, unknown>);
+      }
+    }
+    if (other.entities?.koenkaiUpdates) {
+      for (const [id, update] of other.entities.koenkaiUpdates) {
+        this.updateKoenkai(id, update as Record<string, unknown>);
+      }
+    }
+    if (other.collections?.rikishiToAdd) {
+      for (const r of other.collections.rikishiToAdd) {
+        this.addRikishi(r);
+      }
+    }
+    if (other.collections?.rikishiToRemove) {
+      for (const id of other.collections.rikishiToRemove) {
+        this.removeRikishi(id);
+      }
+    }
+    if (other.collections?.rikishiToHistorical) {
+      for (const id of other.collections.rikishiToHistorical) {
+        this.retireRikishi(id);
+      }
+    }
+    if (other.collections?.rikishiFromHistorical) {
+      for (const id of other.collections.rikishiFromHistorical) {
+        this.unretireRikishi(id);
+      }
+    }
+    if (other.deletedEntities?.heyaIds) {
+      for (const id of other.deletedEntities.heyaIds) {
+        this.deleteHeya(id);
+      }
+    }
+    if (other.worldFields) {
+      if (!this.impact.worldFields) this.impact.worldFields = {};
+      Object.assign(this.impact.worldFields, other.worldFields);
+    }
+    if (other.arrayAppends) {
+      for (const append of other.arrayAppends) {
+        this.appendToWorldArray(
+          append.field as Parameters<ImpactBuilder["appendToWorldArray"]>[0],
+          append.items
+        );
+      }
+    }
+    if (other.events) {
+      for (const ev of other.events) {
+        this.logEvent(ev.type, ev.category, ev.data, {
+          heyaId: ev.heyaId,
+          rikishiId: ev.rikishiId,
+          importance: ev.importance,
+        });
+      }
+    }
+    return this;
+  }
+
+  /**
    * Build and return the StateImpact.
    */
   build(): StateImpact {
