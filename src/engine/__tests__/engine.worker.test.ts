@@ -169,14 +169,16 @@ describe("engine.worker", () => {
     });
 
     // It should return the updated world
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "WORLD_UPDATED",
-      world: expect.objectContaining({
-        mockWorld: true,
-        seed: "auto-sim-seed",
-        ticked: true,
-      }),
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "WORLD_UPDATED",
+        world: expect.objectContaining({
+          mockWorld: true,
+          seed: "auto-sim-seed",
+          ticked: true,
+        }),
+      })
+    );
   });
 
   it("should handle GET_DIGEST command", async () => {
