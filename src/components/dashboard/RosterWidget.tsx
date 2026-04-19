@@ -101,6 +101,61 @@ const RosterEntryRow = React.memo(
   }
 );
 
+const RosterList = React.memo(
+  ({
+    roster,
+    selectedIds,
+    onWithdraw,
+    onToggleSelect,
+    onViewAll,
+  }: {
+    roster: RosterEntryWithHealth[];
+    selectedIds: string[];
+    onWithdraw: (id: string) => void;
+    onToggleSelect: (id: string) => void;
+    onViewAll: () => void;
+  }) => {
+    return (
+      <>
+        {(() => {
+          const limit = Math.min(8, roster.length);
+          const nodes = new Array(limit);
+          for (let i = 0; i < limit; i++) {
+            const entry = roster[i];
+            nodes[i] = (
+              <RosterEntryRow
+                key={entry.id}
+                id={entry.id}
+                shikona={entry.shikona}
+                rank={entry.rank}
+                isInjured={entry.isInjured}
+                potentialBand={entry.potentialBand}
+                fatigue={entry.fatigue}
+                healthBadge={entry.healthBadge}
+                isSelected={selectedIds.includes(entry.id)}
+                onWithdraw={onWithdraw}
+                onToggleSelect={onToggleSelect}
+              />
+            );
+          }
+          return nodes;
+        })()}
+        {roster.length > 8 && (
+          <TooltipWrap content="Navigate to the full rikishi directory" side="top">
+            <Button
+              variant="ghost"
+              onClick={onViewAll}
+              className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
+            >
+              +<span className="tabular-nums">{roster.length - 8}</span> more wrestlers →
+            </Button>
+          </TooltipWrap>
+        )}
+      </>
+    );
+  }
+);
+
 export function RosterWidget() {
   const { state, updateWorld } = useGame();
   const navigate = useNavigate();
@@ -243,40 +298,13 @@ export function RosterWidget() {
 
       {/* Roster list */}
       <div className="space-y-0.5 w-full overflow-x-auto sm:overflow-visible transition-all">
-        {(() => {
-          const limit = Math.min(8, roster.length);
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const entry = roster[i];
-            nodes[i] = (
-              <RosterEntryRow
-                key={entry.id}
-                id={entry.id}
-                shikona={entry.shikona}
-                rank={entry.rank}
-                isInjured={entry.isInjured}
-                potentialBand={entry.potentialBand}
-                fatigue={entry.fatigue}
-                healthBadge={entry.healthBadge}
-                isSelected={selectedIds.includes(entry.id)}
-                onWithdraw={handleWithdraw}
-                onToggleSelect={toggleSelection}
-              />
-            );
-          }
-          return nodes;
-        })()}
-        {roster.length > 8 && (
-          <TooltipWrap content="Navigate to the full rikishi directory" side="top">
-            <Button
-              variant="ghost"
-              onClick={handleViewAllRikishi}
-              className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
-            >
-              +<span className="tabular-nums">{roster.length - 8}</span> more wrestlers →
-            </Button>
-          </TooltipWrap>
-        )}
+        <RosterList
+          roster={roster}
+          selectedIds={selectedIds}
+          onWithdraw={handleWithdraw}
+          onToggleSelect={toggleSelection}
+          onViewAll={handleViewAllRikishi}
+        />
       </div>
 
       {/* Compare Mode Dialog */}
