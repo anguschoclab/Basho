@@ -14,6 +14,10 @@ interface GameStoreState {
   digest: UIDigest | null;
   /** Last world state received from the worker after AUTO_SIM_DAYS. */
   workerWorld: WorldState | null;
+  /** Monotonic version counter for state synchronization */
+  worldVersion: number;
+  /** Lock flag to prevent concurrent tick commands */
+  pendingTick: boolean;
   isSimulating: boolean;
   progress: { message: string; current: number; total: number } | null;
   error: string | null;
@@ -45,6 +49,8 @@ interface GameStoreState {
 export const useGameStore = create<GameStoreState>((set, get) => ({
   digest: null,
   workerWorld: null,
+  worldVersion: 0,
+  pendingTick: false,
   isSimulating: false,
   progress: null,
   error: null,
@@ -75,7 +81,11 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           set({ digest: data.digest });
           break;
         case "WORLD_UPDATED":
-          set({ workerWorld: data.world });
+          set({
+            workerWorld: data.world,
+            worldVersion: data.version ?? get().worldVersion + 1,
+            pendingTick: false,
+          });
           get().onWorldUpdated?.(data.world);
           get().checkTourTrigger(data.world);
           break;
@@ -92,14 +102,28 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   sendCommand: (command: EngineCommand) => {
-    const { worker, initWorker } = get();
+    const { worker, initWorker, pendingTick } = get();
+
+    // Prevent concurrent tick commands
+    if (
+      pendingTick &&
+      (command.type === "TICK_DAY" ||
+        command.type === "AUTO_SIM_DAYS" ||
+        command.type === "TICK_MULTIPLE_DAYS")
+    ) {
+      console.warn("[Store] Tick command dropped - another tick is in progress");
+      return;
+    }
+
     if (!worker) {
       initWorker();
     }
 
     // Some commands imply simulation start
     if (command.type === "AUTO_SIM_DAYS" || command.type === "TICK_MULTIPLE_DAYS") {
-      set({ isSimulating: true, error: null });
+      set({ isSimulating: true, error: null, pendingTick: true });
+    } else if (command.type === "TICK_DAY") {
+      set({ pendingTick: true });
     }
 
     get().worker?.postMessage(command);

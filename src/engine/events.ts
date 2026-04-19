@@ -74,15 +74,20 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   const month = world.calendar?.month ?? 1;
   const day = world.calendar?.currentDay ?? 1;
 
-  const dedupeKey =
+  const baseDedupeKey =
     params.dedupeKey ??
     `${year}|${week}|${params.type}|${params.scope ?? "world"}|${params.heyaId ?? ""}|${params.rikishiId ?? ""}|${params.title}`;
 
-  if (events.dedupe[dedupeKey]) {
+  // Include day index to scope deduplication to current tick only
+  // This prevents race conditions from concurrent ticks while still deduping within a tick
+  const dayIndex = world.dayIndexGlobal ?? 0;
+  const versionedDedupeKey = `${baseDedupeKey}@${dayIndex}`;
+
+  if (events.dedupe[versionedDedupeKey]) {
     return events.log[events.log.length - 1] as EngineEvent;
   }
 
-  const idRngLabel = `${dedupeKey}::${events.log.length}`;
+  const idRngLabel = `${baseDedupeKey}::${events.log.length}`;
   const rng = rngForWorld(world, "events", idRngLabel);
   const id = rng.uuid("EV");
 
@@ -108,7 +113,7 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
   };
 
   events.log.push(ev);
-  events.dedupe[dedupeKey] = true;
+  events.dedupe[versionedDedupeKey] = true;
   return ev;
 }
 

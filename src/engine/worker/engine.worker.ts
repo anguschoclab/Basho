@@ -37,6 +37,7 @@ function migrateWorldState(world: WorldState): WorldState {
 import type { EngineCommand } from "./types";
 
 let currentWorld: WorldState | null = null;
+let worldVersion = 0;
 
 /**
  * Handle incoming commands from the UI.
@@ -84,7 +85,8 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           }
           emitDigest();
           // Return updated world so main thread can sync its own state
-          self.postMessage({ type: "WORLD_UPDATED", world: currentWorld });
+          worldVersion++;
+          self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
         }
         break;
 

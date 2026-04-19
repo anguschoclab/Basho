@@ -2,10 +2,12 @@
  * CrisisModal.tsx
  * ================
  * A full-screen interrupt for major events requiring player intervention.
+ * Wired to digest events and welfare state for comprehensive crisis detection.
  */
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useGameStore } from "../../store/gameStore";
+import { useGame } from "../../contexts/GameContext";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +23,53 @@ import { AlertCircle, ShieldAlert } from "lucide-react";
 export function CrisisModal() {
   const digest = useGameStore((state) => state.digest);
   const sendCommand = useGameStore((state) => state.sendCommand);
+  const { state } = useGame();
+  const world = state.world;
   const [isOpen, setIsOpen] = useState(false);
 
+  // Get player heya welfare state
+  const playerHeyaId = world?.playerHeyaId;
+  const playerHeya = playerHeyaId ? world?.heyas.get(playerHeyaId) : null;
+  const welfareState = playerHeya?.welfareState;
+
+  // Check for welfare crisis (investigation, sanctioned, high risk)
+  const welfareCrisis = useMemo(() => {
+    if (!welfareState) return null;
+
+    if (welfareState.complianceState === "sanctioned") {
+      return {
+        title: "Welfare Sanction",
+        detail: `Your stable is under official sanctions. Risk level: ${welfareState.welfareRisk}%`,
+        type: "welfare_sanction",
+      };
+    }
+    if (welfareState.complianceState === "investigation" && welfareState.welfareRisk > 75) {
+      return {
+        title: "Welfare Investigation",
+        detail: `Active investigation with critical risk level: ${welfareState.welfareRisk}%`,
+        type: "welfare_investigation",
+      };
+    }
+    return null;
+  }, [welfareState]);
+
   // Check for crisis in digest
-  const crisis = digest?.sections
+  const digestCrisis = digest?.sections
     ?.find((s) => s.id === "governance" || s.id === "media")
     ?.items?.find((i) => i.kind === "generic" && i.title.toLowerCase().includes("crisis"));
+
+  // Combine both crisis sources
+  const crisis = useMemo(() => {
+    if (welfareCrisis) return welfareCrisis;
+    if (digestCrisis) {
+      return {
+        title: digestCrisis.title,
+        detail: digestCrisis.detail || "",
+        type: "digest_crisis",
+      };
+    }
+    return null;
+  }, [welfareCrisis, digestCrisis]);
 
   // Logic to auto-open if a crisis is detected
   React.useEffect(() => {

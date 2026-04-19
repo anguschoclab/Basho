@@ -66,18 +66,25 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
  *  * @returns The result.
  */
 export function advanceBashoDay(world: WorldState): WorldState {
-  const basho = getCurrentBasho(world);
-  if (!basho) return world;
+  let currentWorld = world;
+  const basho = getCurrentBasho(currentWorld);
+  if (!basho) return currentWorld;
 
   const nextDay = basho.day + 1;
-  basho.day = nextDay;
-  // Legacy sync
-  basho.currentDay = nextDay;
+
+  // Update basho day immutably via impacts
+  const dayUpdateImpact = createImpactBuilder("advanceBashoDay")
+    .updateWorldField("currentBasho", {
+      ...basho,
+      day: nextDay,
+      currentDay: nextDay,
+    })
+    .build();
+  currentWorld = resolveImpacts(currentWorld, [dayUpdateImpact]);
 
   if (nextDay <= 15) {
-    const scheduleImpact = ensureDaySchedule(world, nextDay);
-    const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
-    Object.assign(world, resolvedWorld);
+    const scheduleImpact = ensureDaySchedule(currentWorld, nextDay);
+    currentWorld = resolveImpacts(currentWorld, [scheduleImpact]);
   }
 
   const eventImpact = createImpactBuilder("advanceDay")
@@ -91,10 +98,9 @@ export function advanceBashoDay(world: WorldState): WorldState {
       { importance: nextDay === 15 ? "headline" : "notable" }
     )
     .build();
-  const eventResolved = resolveImpacts(world, [eventImpact]);
-  Object.assign(world, eventResolved);
+  currentWorld = resolveImpacts(currentWorld, [eventImpact]);
 
-  return world;
+  return currentWorld;
 }
 
 /**
@@ -108,20 +114,21 @@ export function simulateBoutForToday(
   unplayedIndex: number,
   playerTactic?: import("./types/combat").BoutTactic
 ): { world: WorldState; result?: BoutResult } {
-  const basho = getCurrentBasho(world);
-  if (!basho) return { world };
+  let currentWorld = world;
+  const basho = getCurrentBasho(currentWorld);
+  if (!basho) return { world: currentWorld };
 
   const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
   const match = todays[unplayedIndex];
-  if (!match) return { world };
+  if (!match) return { world: currentWorld };
 
-  const east = world.rikishi.get(match.eastRikishiId);
-  const west = world.rikishi.get(match.westRikishiId);
-  if (!east || !west) return { world };
+  const east = currentWorld.rikishi.get(match.eastRikishiId);
+  const west = currentWorld.rikishi.get(match.westRikishiId);
+  if (!east || !west) return { world: currentWorld };
 
   const eastHeyaId = east.heyaId;
   const westHeyaId = west.heyaId;
-  const playerHeyaId = world.playerHeyaId;
+  const playerHeyaId = currentWorld.playerHeyaId;
 
   const playerSide = playerHeyaId
     ? eastHeyaId === playerHeyaId
@@ -146,19 +153,29 @@ export function simulateBoutForToday(
     west,
     basho,
     playerTactic,
-    world
+    currentWorld
   );
 
-  const boutImpact = applyBoutResult(world, match, result);
-  const resolvedWorld = resolveImpacts(world, [resolveImpact, boutImpact]);
-  Object.assign(world, resolvedWorld);
+  const boutImpact = applyBoutResult(currentWorld, match, result);
+  currentWorld = resolveImpacts(currentWorld, [resolveImpact, boutImpact]);
 
-  // Handle standings update from metadata
-  if (boutImpact.metadata?.updatedStandings && world.currentBasho) {
-    world.currentBasho.standings = boutImpact.metadata.updatedStandings;
+  // Handle standings update from metadata immutably
+  if (boutImpact.metadata?.updatedStandings && currentWorld.currentBasho) {
+    const standingsMap = boutImpact.metadata.updatedStandings as Map<
+      string,
+      { wins: number; losses: number }
+    >;
+    currentWorld = resolveImpacts(currentWorld, [
+      createImpactBuilder("simulateBoutForToday")
+        .updateWorldField("currentBasho", {
+          ...currentWorld.currentBasho,
+          standings: standingsMap,
+        })
+        .build(),
+    ]);
   }
 
-  return { world, result };
+  return { world: currentWorld, result };
 }
 
 // applyBoutResult - removed and moved to src/engine/bout/boutResultApplier.ts
@@ -170,9 +187,7 @@ export function simulateBoutForToday(
  */
 export function endBasho(world: WorldState): WorldState {
   const impact = competition.concludeBashoCompetition(world);
-  const resolvedWorld = resolveImpacts(world, [impact]);
-  Object.assign(world, resolvedWorld);
-  return world;
+  return resolveImpacts(world, [impact]);
 }
 
 // runRetirements moved to governanceReview.ts
