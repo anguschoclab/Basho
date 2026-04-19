@@ -12,7 +12,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronRight, History } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 
 import { TournamentCeremony } from "@/components/recap/TournamentCeremony";
 import { NarrativeSummary } from "@/components/recap/NarrativeSummary";
@@ -242,18 +243,11 @@ export default function RecapPage() {
       <div className="max-w-6xl mx-auto space-y-12 pb-24">
         {/* ═══ HERO SECTION ═══ */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b-2 border-border/20">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="h-10 w-2 bg-primary rounded-full" />
-              <h1 className="text-5xl font-display font-black tracking-tight uppercase sumi-e-ink">
-                Basho Recap
-              </h1>
-            </div>
-            <p className="text-sm font-medium text-muted-foreground opacity-70 flex items-center gap-2">
-              <History className="h-4 w-4" /> {bashoTitle} {world.year} — The official ceremonial
-              summary and world drift ledger.
-            </p>
-          </div>
+          <PageHeader
+            eyebrow="── POST-BASHO ──"
+            title="Basho Recap"
+            lede={`${bashoTitle} ${world.year} — The official ceremonial summary and world drift ledger.`}
+          />
 
           <div className="flex gap-3">
             <Button

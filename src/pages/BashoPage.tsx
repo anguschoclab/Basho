@@ -7,6 +7,7 @@ import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -245,10 +246,12 @@ export default function BashoPage() {
 
       <div className="space-y-4">
         {/* ═══════════ DAY HEADER ═══════════ */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-display text-2xl font-bold">{bashoInfo?.nameJa ?? "Basho"}</h1>
+        <PageHeader
+          eyebrow="── TOURNAMENT ──"
+          title={bashoInfo?.nameJa ?? "Basho"}
+          lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
+          actions={
+            <div className="flex items-center gap-2">
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
                 Day {day}/{getTotalBashodays("makuuchi")}
               </Badge>
@@ -256,14 +259,9 @@ export default function BashoPage() {
                 <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {dayInfo?.dayJa ?? `Day ${day}`} · {bashoInfo?.location ?? "—"} · {completedBouts}/
-              {matches.length} bouts complete
-            </p>
-            {seasonalFlavor && (
-              <p className="text-xs text-muted-foreground/70 italic mt-0.5">{seasonalFlavor}</p>
-            )}
-          </div>
+          }
+        />
+        <div className="flex items-center justify-end gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Button
               size="sm"
@@ -356,8 +354,8 @@ export default function BashoPage() {
                 <Trophy className="h-3.5 w-3.5" /> Standings
               </h3>
               <div className="space-y-1">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {standings.map((entry: any, idx: number) => {
-                  // eslint-disable-line @typescript-eslint/no-explicit-any
                   const rid = entry?.rikishi?.id as string | undefined;
                   const isPlayer = !!rid && playerRikishiIds.includes(rid);
                   return (

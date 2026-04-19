@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useMemo, useState } from "react";
@@ -112,6 +113,11 @@ export default function RivalriesPage() {
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
+        <PageHeader
+          eyebrow="── TOURNAMENT ──"
+          title="Rivalries & Feuds"
+          lede="Tension, history, and blood feuds across the dohyo."
+        />
         <RivalriesHeader
           stats={stats}
           searchQuery={searchQuery}

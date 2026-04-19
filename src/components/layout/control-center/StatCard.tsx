@@ -19,7 +19,7 @@ export interface StatItem {
 export interface ProgressItem {
   label: string;
   value: number;
-  tone?: "default" | "gold" | "east" | "west" | "success" | "destructive";
+  tone?: "default" | "gold" | "east" | "west" | "success" | "warning" | "destructive";
 }
 
 interface StatCardProps {
@@ -49,6 +49,7 @@ const PROGRESS_TONE: Record<string, string> = {
   east: "bg-[hsl(var(--east))]",
   west: "bg-[hsl(var(--west))]",
   success: "bg-success",
+  warning: "bg-warning",
   destructive: "bg-destructive",
 };
 

@@ -4,79 +4,37 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import {
-  GripVertical,
-  RotateCcw,
-  AlertTriangle,
-  Wrench,
-  ChevronRight,
-  Activity,
-  TrendingUp,
-} from "lucide-react";
+import { AlertTriangle, ChevronRight, Coins, Dumbbell, Users } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
-import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { StableName } from "@/components/ClickableName";
 import {
   getOzekiRunCandidates,
   getYokozunaCandidates,
   getKadobanDrama,
 } from "@/presenters/projections/promotionProjections";
-
-import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
-import { BanzukeWidget } from "@/components/dashboard/BanzukeWidget";
-import { StableWidget } from "@/components/dashboard/StableWidget";
-import { RosterWidget } from "@/components/dashboard/RosterWidget";
-import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
-import { BashoWidget } from "@/components/dashboard/BashoWidget";
-import { NewsWidget } from "@/components/dashboard/NewsWidget";
-import { RivalsWidget } from "@/components/dashboard/RivalsWidget";
-import { ScoutingWidget } from "@/components/dashboard/ScoutingWidget";
-import { TrainingWidget } from "@/components/dashboard/TrainingWidget";
-import { DigestWidget } from "@/components/dashboard/DigestWidget";
-import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
-import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
-import { GlobalCupWidget } from "@/components/dashboard/GlobalCupWidget";
-import { DraggableWidget } from "@/components/dashboard/DraggableWidget";
-import { useDashboardLayout, type WidgetDef } from "@/hooks/useDashboardLayout";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
+import { projectFinanceSummary } from "@/presenters/projections/financeProjections";
+import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
+
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
-import { YokozunaDeliberation } from "@/components/game/YokozunaDeliberation";
 import { CrisisModal } from "@/components/game/CrisisModal";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
 import { DynastyService } from "@/engine/systems/legacy/DynastyService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
-const WIDGET_REGISTRY: WidgetDef[] = [
-  { id: "calendar", order: 0, span: 4, component: CalendarWidget, label: "Calendar" },
-  { id: "stable", order: 1, span: 4, component: StableWidget, label: "Stable" },
-  { id: "basho", order: 2, span: 4, component: BashoWidget, label: "Basho" },
-  { id: "training", order: 3, span: 6, component: TrainingWidget, label: "Training" },
-  { id: "finances", order: 4, span: 6, component: FinancesWidget, label: "Finances" },
-  { id: "digest", order: 5, span: 8, component: DigestWidget, label: "Weekly Digest" },
-  { id: "trends", order: 6, span: 4, component: TrendsWidget, label: "JSA Trends" },
-  { id: "banzuke", order: 7, span: 4, component: BanzukeWidget, label: "Banzuke" },
-  { id: "roster", order: 8, span: 8, component: RosterWidget, label: "Roster" },
-  { id: "news", order: 9, span: 4, component: NewsWidget, label: "News" },
-  { id: "rivals", order: 10, span: 4, component: RivalsWidget, label: "Rivals" },
-  { id: "scouting", order: 11, span: 4, component: ScoutingWidget, label: "Scouting" },
-  { id: "institution", order: 12, span: 6, component: InstitutionWidget, label: "Institution" },
-  { id: "globalCup", order: 13, span: 4, component: GlobalCupWidget, label: "Global Cup" },
-];
+import { PageHeader, StatCard, ListCard, ProgressRow } from "@/components/layout/control-center";
+import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
+import { BashoWidget } from "@/components/dashboard/BashoWidget";
+import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
+import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
+import { formatYen } from "@/utils/engineUtils";
 
-/** dashboard. */
+/** Control Center — main dashboard. */
 export default function Dashboard() {
   const { state, updateWorld, hasAutosave, loadFromAutosave } = useGame();
   const navigate = useNavigate();
   const world = state.world;
   const isLoaded = !!world;
-  const [editMode, setEditMode] = useState(false);
   const [deliberationCandidateId, setDeliberationCandidateId] = useState<string | null>(null);
-
-  const { getOrderedPlacements, onDragStart, onDragOver, onDragEnd, resetLayout } =
-    useDashboardLayout(WIDGET_REGISTRY);
-
-  const widgetMap = useMemo(() => new Map(WIDGET_REGISTRY.map((w) => [w.id, w])), []);
 
   useEffect(() => {
     if (state.phase === "basho_recap" || state.phase === "basho_results")
@@ -91,81 +49,79 @@ export default function Dashboard() {
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
-  // Phase L: Yokozuna Deliberation Trigger
   useEffect(() => {
-    if (!world?.events?.rikishi) return;
-
-    // Find the latest promotion deliberation event
-    const promotionEvent = Array.from(Object.values(world.events.rikishi))
-      .flat()
-      .find((e) => e.type === "PROMOTION_DELIBERATION");
-
-    if (promotionEvent && !deliberationCandidateId) {
-      setDeliberationCandidateId(promotionEvent.context.rikishiId);
-    }
-  }, [world?.events, deliberationCandidateId]);
-
-  const deliberationData = useMemo(() => {
-    if (!deliberationCandidateId || !world) return null;
-    const core = world.rikishi.get(deliberationCandidateId);
-    if (!core) return null;
-
-    const promotionEvent = Array.from(Object.values(world.events.rikishi || {}))
-      .flat()
-      .find(
-        (e) =>
-          e.type === "PROMOTION_DELIBERATION" && e.context.rikishiId === deliberationCandidateId
+    if (!world?.events?.log) return;
+    const evt = world.events.log
+      .slice()
+      .reverse()
+      .find((e) => (e as { type?: string }).type === "PROMOTION_DELIBERATION");
+    if (evt && !deliberationCandidateId) {
+      setDeliberationCandidateId(
+        (evt as { context?: { rikishiId?: string } }).context?.rikishiId ?? null
       );
+    }
+  }, [world?.events?.log, deliberationCandidateId]);
 
-    return {
-      rikishi: projectRikishi(core, world),
-      heyaName: world.heyas.get(core.heyaId)?.name || "Unknown",
-      isPlayerRikishi: core.heyaId === world.playerHeyaId,
-      verdict: (promotionEvent?.context.status === "favorable" ? "promoted" : "deferred") as
-        | "promoted"
-        | "deferred",
-      reasoning: [
-        promotionEvent?.context.status === "favorable"
-          ? "The candidate has demonstrated the necessary clinical dominance and media support."
-          : "While the stats are there, the council feels the public support is currently insufficient for promotion.",
-      ],
-    };
-  }, [deliberationCandidateId, world]);
+  const playerHeya = useMemo(
+    () => (world?.playerHeyaId ? (world.heyas.get(world.playerHeyaId) ?? null) : null),
+    [world]
+  );
 
-  const playerHeya = isLoaded && world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const digest = useMemo(() => (world ? projectDashboardUIDigest(world) : null), [world]);
 
-  const digest = useMemo(() => {
-    if (!world) return null;
-    return projectDashboardUIDigest(world);
-  }, [world]);
+  const finance = useMemo(() => (world ? projectFinanceSummary(world) : null), [world]);
+
+  const training = useMemo(
+    () => (world && playerHeya ? projectTrainingSummary(world, playerHeya.id) : null),
+    [world, playerHeya]
+  );
 
   const alerts = useMemo(() => {
-    if (!digest) return [];
-    const a: { icon: React.ElementType; text: string; color: string; link: string }[] = [];
-
-    // Alert logic now uses pre-formatted digest data
-    if (digest.finances.status === "critical") {
-      a.push({
-        icon: Wrench,
-        text: "Facilities at risk — funds won't cover maintenance",
-        color: "text-destructive",
-        link: "/office/facilities",
+    const out: { text: string; link: string }[] = [];
+    if (finance?.runwayBand === "critical" || finance?.runwayBand === "desperate")
+      out.push({ text: "Funds critical — insolvency risk", link: "/office/finances" });
+    if (training && training.injuryRiskHighCount > 2)
+      out.push({
+        text: `${training.injuryRiskHighCount} wrestlers at high injury risk`,
+        link: "/stable/medical",
       });
-    }
+    return out;
+  }, [finance, training]);
 
-    // Add logic for other alerts from digest...
-    return a;
-  }, [digest]);
+  const rosterRows = useMemo(() => {
+    if (!world || !playerHeya) return [];
+    return (playerHeya.rikishiIds ?? [])
+      .slice(0, 8)
+      .map((id) => {
+        const r = world.rikishi.get(id);
+        if (!r) return null;
+        const rankLabel = r.rank
+          ? `${r.rank.charAt(0).toUpperCase() + r.rank.slice(1)}${r.rankNumber ? ` ${r.rankNumber}` : ""}${r.side === "east" ? "E" : "W"}`
+          : "—";
+        return {
+          id,
+          label: r.shikona ?? r.name ?? id,
+          value: rankLabel,
+          sub: r.injured ? "injured" : r.isKyujo ? "kyujo" : undefined,
+          tone: r.injured
+            ? ("destructive" as const)
+            : r.isKyujo
+              ? ("warning" as const)
+              : ("default" as const),
+          onClick: () => navigate({ to: "/stable/roster" }),
+        };
+      })
+      .filter(Boolean) as {
+      id: string;
+      label: string;
+      value: string;
+      sub?: string;
+      tone: "default" | "destructive" | "warning";
+      onClick: () => void;
+    }[];
+  }, [world, playerHeya, navigate]);
 
-  if (!isLoaded || !world) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-muted-foreground animate-pulse">
-        Institutional interface initializing...
-      </div>
-    );
-  }
-
-  const phase = world.cyclePhase;
+  const phase = world?.cyclePhase ?? "interim";
   const phaseLabel =
     phase === "active_basho"
       ? "Tournament Active"
@@ -175,240 +131,295 @@ export default function Dashboard() {
           ? "Post-Basho"
           : "Off-Season";
 
+  if (!isLoaded || !world) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground animate-pulse">
+        Institutional interface initializing…
+      </div>
+    );
+  }
+
   return (
     <AppLayout>
-      <div className="space-y-6">
-        {/* ═══════════ HEADER ═══════════ */}
-        <div className="glass paper p-6 rounded-lg animate-fade-in relative overflow-hidden">
-          {/* Subtle background glow based on phase */}
-          <div
-            className={cn(
-              "absolute inset-0 opacity-5 pointer-events-none transition-all duration-700",
-              phase === "active_basho" ? "bg-accent" : "bg-primary"
-            )}
-          />
+      <div className="space-y-6 pb-10 animate-fade-in">
+        {/* ── PAGE HEADER ── */}
+        <PageHeader
+          eyebrow="── CONTROL CENTER ──"
+          title={playerHeya ? playerHeya.name : "Your Stable"}
+          lede={`Year ${world.year} · Week ${world.week} · ${phaseLabel}`}
+          actions={
+            <Badge
+              variant="outline"
+              className="text-[10px] font-bold uppercase text-gold border-gold/30"
+            >
+              司令塔
+            </Badge>
+          }
+        />
 
-          <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
-            <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden group">
-              <span className="text-primary-foreground font-display text-3xl font-bold relative z-10">
-                力
-              </span>
-              <div className="absolute inset-0 rank-shimmer" />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-3xl font-display font-bold leading-none tracking-tight">
-                  {playerHeya ? <StableName id={playerHeya.id} name={playerHeya.name} /> : "Stable"}
-                </h1>
-                <Badge
-                  variant="outline"
-                  className="px-1.5 h-5 text-[10px] uppercase font-bold text-primary border-primary/20"
-                >
-                  Control Center
-                </Badge>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-y-2 gap-x-4">
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-1">
-                    <div
-                      className={cn(
-                        "phase-dot",
-                        digest?.phase === "interim" ? "phase-dot--active" : "phase-dot--interim"
-                      )}
-                    />
-                    <div
-                      className={cn(
-                        "phase-dot",
-                        digest?.phase === "pre_basho" ? "phase-dot--active" : "phase-dot--pre"
-                      )}
-                    />
-                    <div
-                      className={cn(
-                        "phase-dot",
-                        digest?.phase === "active_basho"
-                          ? "phase-dot--active"
-                          : "phase-dot--interim"
-                      )}
-                    />
-                    <div
-                      className={cn(
-                        "phase-dot",
-                        digest?.phase === "post_basho" ? "phase-dot--active" : "phase-dot--post"
-                      )}
-                    />
-                  </div>
-                  <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">
-                    {phaseLabel}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 border-l border-border/50 pl-4 h-4">
-                  <span className="flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3" /> Year {digest?.currentYear}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Activity className="h-3 w-3" />{" "}
-                    <StableName id={playerHeya?.id || ""} name={digest?.heya.name || ""} /> Center
-                  </span>
-                  <span className="italic">Week {digest?.currentWeek}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              {editMode && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetLayout}
-                  className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest gap-2"
-                  tooltip="Restore widgets to their default positions and sizes"
-                  tooltipSide="bottom"
-                >
-                  <RotateCcw className="h-3 w-3" /> Reset Layout
-                </Button>
-              )}
-              <Button
-                variant={editMode ? "default" : "outline"}
-                size="sm"
-                onClick={() => setEditMode(!editMode)}
-                className="h-8 px-4 text-[10px] font-bold uppercase tracking-widest gap-2"
-                tooltip={
-                  editMode
-                    ? "Save current widget arrangement"
-                    : "Toggle edit mode to rearrange dashboard widgets"
-                }
-                tooltipSide="bottom"
-              >
-                <GripVertical className="h-3 w-3" />
-                {editMode ? "Confirm Changes" : "Customize Dashboard"}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════ ALERTS ═══════════ */}
+        {/* ── CRITICAL ALERTS ── */}
         {alerts.length > 0 && (
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 animate-slide-up">
-            {alerts.map((alert, i) => (
-              <TooltipWrap key={i} content={`Analyze ${alert.text}`} side="top">
-                <button
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Alert link type mismatch
-                  onClick={() => navigate({ to: alert.link as any })}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-all duration-200 text-left group hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-1"
-                >
-                  <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                    <AlertTriangle className={cn("h-4 w-4", alert.color)} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className={cn("text-xs font-bold leading-tight", alert.color)}>
-                      {alert.text}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-                      Action required immediately
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </TooltipWrap>
+          <div className="flex flex-col gap-2">
+            {alerts.map((a, i) => (
+              <button
+                key={i}
+                onClick={() => navigate({ to: a.link as Parameters<typeof navigate>[0]["to"] })}
+                className="flex items-center gap-3 px-4 py-2.5 rounded border border-destructive/30 bg-destructive/8 hover:bg-destructive/15 transition-colors text-left group"
+              >
+                <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                <span className="text-xs font-bold text-destructive flex-1">{a.text}</span>
+                <ChevronRight className="h-3.5 w-3.5 text-destructive/50 group-hover:text-destructive transition-colors" />
+              </button>
             ))}
           </div>
         )}
 
-        {/* ═══════════ PROGRESSION ARCS ═══════════ */}
-        {world && (
-          <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
-            <ProgressionTracker
-              ozekiRuns={getOzekiRunCandidates(world)}
-              yokozunaCandidates={getYokozunaCandidates(world)}
-              kadobanDrama={getKadobanDrama(world)}
-              playerHeyaId={world.playerHeyaId || ""}
+        {/* ── PROMOTION ARCS ── */}
+        <ProgressionTracker
+          ozekiRuns={getOzekiRunCandidates(world)}
+          yokozunaCandidates={getYokozunaCandidates(world)}
+          kadobanDrama={getKadobanDrama(world)}
+          playerHeyaId={world.playerHeyaId ?? ""}
+        />
+
+        {/* ── THREE-COLUMN GRID ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── COL 1: STABLE OVERVIEW ── */}
+          <div className="space-y-4">
+            <StatCard
+              eyebrow="── MY STABLE ──"
+              title="Roster Status"
+              icon={Users}
+              stats={[
+                { label: "Active", value: String(playerHeya?.rikishiIds?.length ?? 0) },
+                {
+                  label: "Injured",
+                  value: String(training?.injuredCount ?? 0),
+                  tone: (training?.injuredCount ?? 0) > 0 ? "destructive" : "default",
+                },
+                {
+                  label: "Sekitori",
+                  value: String(
+                    (playerHeya?.rikishiIds ?? []).filter((id) => {
+                      const r = world.rikishi.get(id);
+                      const rank = r?.rank ?? "";
+                      return (
+                        rank === "juryo" ||
+                        rank === "yokozuna" ||
+                        rank === "ozeki" ||
+                        rank === "sekiwake" ||
+                        rank === "komusubi" ||
+                        rank === "maegashira"
+                      );
+                    }).length
+                  ),
+                  tone: "gold",
+                },
+                {
+                  label: "Fatigue",
+                  value: `${training?.avgFatigue ?? 0}%`,
+                  tone: (training?.avgFatigue ?? 0) > 70 ? "warning" : "success",
+                },
+              ]}
+              progress={[
+                {
+                  label: "Avg Fatigue",
+                  value: training?.avgFatigue ?? 0,
+                  tone: (training?.avgFatigue ?? 0) > 70 ? "destructive" : "success",
+                },
+              ]}
+              actions={
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-[10px] font-bold uppercase"
+                  onClick={() => navigate({ to: "/stable/roster" })}
+                >
+                  Roster →
+                </Button>
+              }
+            />
+
+            <ListCard
+              eyebrow="── TOP WRESTLERS ──"
+              title="Active Roster"
+              rows={rosterRows}
+              actions={
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-[10px] font-bold uppercase"
+                  onClick={() => navigate({ to: "/stable/roster" })}
+                >
+                  Full Roster →
+                </Button>
+              }
+            />
+
+            <StatCard
+              eyebrow="── FINANCES ──"
+              title="Treasury"
+              icon={Coins}
+              stats={[
+                {
+                  label: "Funds",
+                  value: formatYen(playerHeya?.funds ?? 0),
+                  tone:
+                    finance?.runwayBand === "desperate" || finance?.runwayBand === "critical"
+                      ? "destructive"
+                      : "gold",
+                },
+                {
+                  label: "Weekly Rev",
+                  value: formatYen(finance?.weeklyRevenue ?? 0),
+                  tone: "success",
+                },
+                {
+                  label: "Weekly Burn",
+                  value: formatYen(finance?.weeklyExpenses ?? 0),
+                  tone: "warning",
+                },
+                {
+                  label: "Runway",
+                  value: finance ? `${Math.round(finance.runwayMonths)}mo` : "—",
+                  tone:
+                    finance?.runwayBand === "secure"
+                      ? "success"
+                      : finance?.runwayBand === "comfortable"
+                        ? "default"
+                        : "destructive",
+                },
+              ]}
+              actions={
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-[10px] font-bold uppercase"
+                  onClick={() => navigate({ to: "/office/finances" })}
+                >
+                  Finances →
+                </Button>
+              }
             />
           </div>
-        )}
 
-        {/* ═══════════ WIDGET GRID (12-COLUMN) ═══════════ */}
-        <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-12 gap-6 pb-8">
-          {getOrderedPlacements().map((placement, index) => {
-            const def = widgetMap.get(placement.id);
-            if (!def) return null;
-            const Comp = def.component;
-            const span = def.span || 4;
+          {/* ── COL 2: TOURNAMENT + CALENDAR ── */}
+          <div className="space-y-4">
+            <CalendarWidget />
+            <BashoWidget />
+          </div>
 
-            return (
-              <div
-                key={placement.id}
-                className={cn(
-                  "flex flex-col widget-enter",
-                  span === 12
-                    ? "col-span-full"
-                    : span === 8
-                      ? "xl:col-span-8 md:col-span-2 col-span-1"
-                      : span === 6
-                        ? "xl:col-span-6 md:col-span-2 col-span-1"
-                        : "xl:col-span-4 md:col-span-2 col-span-1"
-                )}
-                style={{ animationDelay: `${150 + index * 50}ms` }}
-              >
-                <DraggableWidget
-                  widgetId={placement.id}
-                  column={placement.column}
-                  isEditMode={editMode}
-                  onDragStart={onDragStart}
-                  onDragOver={onDragOver}
-                  onDragEnd={onDragEnd}
+          {/* ── COL 3: TRAINING + TRENDS ── */}
+          <div className="space-y-4">
+            <StatCard
+              eyebrow="── TRAINING ──"
+              title="Weekly Regime"
+              icon={Dumbbell}
+              stats={[
+                {
+                  label: "Intensity",
+                  value: training
+                    ? String(training.intensity).charAt(0).toUpperCase() +
+                      String(training.intensity).slice(1)
+                    : "—",
+                },
+                {
+                  label: "Focus",
+                  value: training
+                    ? String(training.focus).charAt(0).toUpperCase() +
+                      String(training.focus).slice(1)
+                    : "—",
+                },
+                {
+                  label: "High Risk",
+                  value: String(training?.injuryRiskHighCount ?? 0),
+                  tone: (training?.injuryRiskHighCount ?? 0) > 0 ? "destructive" : "success",
+                },
+                {
+                  label: "Recovery",
+                  value: training
+                    ? String(training.recovery).charAt(0).toUpperCase() +
+                      String(training.recovery).slice(1)
+                    : "—",
+                },
+              ]}
+              actions={
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-[10px] font-bold uppercase"
+                  onClick={() => navigate({ to: "/stable/training" })}
                 >
-                  <div className="paper h-full overflow-hidden transition-all duration-300">
-                    <Comp />
-                  </div>
-                </DraggableWidget>
+                  Training →
+                </Button>
+              }
+            />
+
+            {training && training.rosterStatuses.length > 0 && (
+              <div className="paper rounded-lg p-4 space-y-2">
+                <p className="stat-label text-gold tracking-[0.2em] text-[10px]">
+                  ── FATIGUE LEVELS ──
+                </p>
+                {training.rosterStatuses.slice(0, 6).map((rs) => (
+                  <ProgressRow
+                    key={rs.id}
+                    name={rs.shikona}
+                    subtitle={rs.fatigueLabel}
+                    value={rs.fatigue}
+                    tone={rs.fatigue > 70 ? "destructive" : rs.fatigue > 40 ? "warning" : "success"}
+                    showValue
+                  />
+                ))}
               </div>
-            );
-          })}
+            )}
+
+            <TrendsWidget />
+          </div>
+        </div>
+
+        {/* ── FULL-WIDTH: FINANCES CHART ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FinancesWidget />
+          <div className="paper rounded-lg overflow-hidden p-4 space-y-3">
+            <p className="stat-label text-gold tracking-[0.2em] text-[10px]">── WEEKLY DIGEST ──</p>
+            {digest?.recentEvents?.slice(0, 6).map((evt, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs">
+                <span className="font-mono text-[10px] text-muted-foreground shrink-0 mt-0.5">
+                  {String(evt.week ?? "").padStart(2, "0")}
+                </span>
+                <span className="text-foreground/80 leading-snug">
+                  {evt.summary ?? evt.title ?? String(evt.type)}
+                </span>
+              </div>
+            )) ?? <p className="text-xs text-muted-foreground italic">No events this week.</p>}
+          </div>
         </div>
       </div>
 
-      {/* FTUE Tour */}
       <OnboardingTourDialog />
 
-      {/* Yokozuna Deliberation Modal */}
-      {deliberationData && (
-        <YokozunaDeliberation
-          rikishiId={deliberationCandidateId}
-          onClose={() => setDeliberationCandidateId(null)}
-        />
-      )}
-
-      {/* Phase 5: Succession Modal */}
       {(() => {
-        const playerHeya = world.heyas.get(state.playerHeyaId || "");
-        const playerOyakata = world.oyakata.get(playerHeya?.oyakataId || "");
-        const showSuccession = playerOyakata?.successionReadiness === "mandatory";
-
-        if (!showSuccession) return null;
-
+        const ph = world.heyas.get(state.playerHeyaId ?? "");
+        const ok = world.oyakata.get(ph?.oyakataId ?? "");
+        if (ok?.successionReadiness !== "mandatory") return null;
         return (
           <SuccessionModal
             isOpen={true}
-            onClose={() => {}} // Mandatory
+            onClose={() => {}}
             world={world}
-            heyaId={state.playerHeyaId || ""}
+            heyaId={state.playerHeyaId ?? ""}
             onSelect={(successorId) => {
               const impact = DynastyService.triggerSuccession(
                 world,
-                state.playerHeyaId || "",
+                state.playerHeyaId ?? "",
                 successorId
               );
-              const nextWorld = resolveImpacts(world, [impact]);
-              updateWorld(nextWorld);
+              updateWorld(resolveImpacts(world, [impact]));
             }}
           />
         );
       })()}
 
-      {/* Crisis Modal - auto-shows when crisis detected */}
       <CrisisModal />
     </AppLayout>
   );

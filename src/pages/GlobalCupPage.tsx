@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Trophy, Users, Calendar, MapPin, BarChart3 } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import { GlobalCupBracket } from "@/components/game/GlobalCupBracket";
 import { GlobalCupParticipantCard } from "@/components/game/GlobalCupParticipant";
 import { ProgressArc } from "@/components/charts/ProgressArc";
@@ -94,13 +95,11 @@ export default function GlobalCupPage() {
         {/* Hero Section */}
         <div className="relative p-8 rounded-lg bg-gradient-to-r from-gold/20 to-primary/10 border border-gold/30">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Trophy className="h-8 w-8 text-gold" />
-                <span className="text-3xl font-display font-bold">世界大相撲</span>
-              </div>
-              <p className="text-lg text-muted-foreground">Worlds Exhibition Year {cup.year}</p>
-            </div>
+            <PageHeader
+              eyebrow="── GLOBAL CUP ──"
+              title="世界大相橲"
+              lede={`Worlds Exhibition · Year ${cup.year}`}
+            />
             <div className="flex items-center gap-6">
               <div className="text-center">
                 <div className="text-[10px] font-mono uppercase text-muted-foreground">Phase</div>

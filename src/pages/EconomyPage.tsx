@@ -2,6 +2,7 @@ import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
@@ -135,6 +136,11 @@ export default function EconomyPage() {
       </Helmet>
 
       <div className="space-y-6">
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Financial Management"
+          lede="Treasury overview, sponsorships, and debt obligations."
+        />
         {/* Financial Health Overview */}
         <div className="grid gap-6 md:grid-cols-3">
           <FinancialHealthOverview

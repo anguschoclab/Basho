@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";
 import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
@@ -32,13 +33,11 @@ export default function SponsorManagementPage() {
         <title>Sponsor Relations | Basho</title>
       </Helmet>
       <div className="space-y-8">
-        <div>
-          <h1 className="font-display text-2xl font-bold">Sponsor Contracts</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage relationships with sponsors and kōenkai members. Renew expiring contracts to
-            maintain income.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Sponsor Contracts"
+          lede="Manage relationships with sponsors and kōenkai members. Renew expiring contracts to maintain income."
+        />
         <SponsorContractsPanel digest={digest} />
       </div>
     </AppLayout>

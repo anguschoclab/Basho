@@ -33,7 +33,7 @@ export function KenshoParade({ banners }: KenshoParadeProps) {
                 "w-16 h-48 border-4 relative shadow-2xl transition-all hover:scale-110",
                 banner.ceremonyStyleTag === "premium"
                   ? "bg-gold border-gold/40 ring-2 ring-gold/20"
-                  : "bg-[#f5f5f5] border-primary/20",
+                  : "bg-muted border-primary/20",
                 "before:absolute before:-top-4 before:left-1/2 before:-translate-x-1/2 before:w-12 before:h-1 before:bg-primary/40 before:rounded-full"
               )}
             >
@@ -45,7 +45,7 @@ export function KenshoParade({ banners }: KenshoParadeProps) {
                 <div
                   className={cn(
                     "font-display font-black text-center text-sm leading-tight rotate-180 [writing-mode:vertical-rl]",
-                    banner.ceremonyStyleTag === "premium" ? "text-[#1a1a1a]" : "text-primary/80"
+                    banner.ceremonyStyleTag === "premium" ? "text-background" : "text-primary/80"
                   )}
                 >
                   {banner.displayName}

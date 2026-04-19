@@ -10,6 +10,7 @@ import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Eye, UserPlus, Shield } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import { PerceptionOverview } from "@/components/game/PerceptionOverview";
 
 export default function ScoutingPage() {
@@ -36,6 +37,11 @@ export default function ScoutingPage() {
       </Helmet>
 
       <div className="space-y-6">
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Scouting Network"
+          lede="Scout opponents, evaluate prospects, and build your roster."
+        />
         <Tabs defaultValue="opponents" className="space-y-4">
           <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="opponents" className="gap-2">

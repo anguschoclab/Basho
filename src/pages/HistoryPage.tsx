@@ -21,6 +21,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -92,10 +93,11 @@ export default function HistoryPage() {
           <Button variant="ghost" onClick={() => navigate({ to: "/" })}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
-          <div>
-            <h1 className="font-display text-3xl font-bold">Basho History</h1>
-            <p className="text-muted-foreground">{history.length} tournaments completed</p>
-          </div>
+          <PageHeader
+            eyebrow="── RECORDS ──"
+            title="Basho History"
+            lede={`${history.length} tournaments completed`}
+          />
         </div>
 
         {history.length === 0 ? (

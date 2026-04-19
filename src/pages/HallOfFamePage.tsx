@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
@@ -378,17 +379,15 @@ export default function HallOfFamePage() {
         {/* Hero Header */}
         <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-gold/10 via-background to-primary/5 p-6">
           <div className="absolute top-2 right-4 text-6xl opacity-10">🏛️</div>
-          <div className="flex items-center gap-3">
-            <Award className="h-8 w-8 text-gold" />
-            <div>
-              <h1 className="text-2xl font-display font-bold">Hall of Fame</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {totalInductees > 0
-                  ? `${totalInductees} legend${totalInductees !== 1 ? "s" : ""} enshrined in sumo immortality.`
-                  : "The sacred shrine awaits its first legends — compete through the years."}
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            eyebrow="── RECORDS ──"
+            title="Hall of Fame"
+            lede={
+              totalInductees > 0
+                ? `${totalInductees} legend${totalInductees !== 1 ? "s" : ""} enshrined in sumo immortality.`
+                : "The sacred shrine awaits its first legends — compete through the years."
+            }
+          />
 
           {totalInductees > 0 && (
             <div className="flex gap-6 mt-4">

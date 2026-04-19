@@ -11,7 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Newspaper, Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import { Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -237,14 +238,11 @@ export default function MediaPage() {
         <title>Media & Press — Sumo Manager</title>
       </Helmet>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-            <Newspaper className="h-6 w-6" /> Media & Press
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Headlines, coverage, and public perception across the sumo world.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="── ASSOCIATION ──"
+          title="Media & Press"
+          lede="Headlines, coverage, and public perception across the sumo world."
+        />
 
         {/* Top Headlines */}
         <Card className="paper">

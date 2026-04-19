@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CalendarDays, Swords } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 
@@ -74,18 +75,17 @@ export default function SchedulePage() {
   return (
     <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
       <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h2 className="text-2xl font-display font-bold tracking-tight">Schedule</h2>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              View upcoming and past bouts for all divisions.
-            </p>
-          </div>
-          <Badge variant="outline" className="px-3 py-1">
-            {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)} Basho{" "}
-            {currentBasho.year}
-          </Badge>
-        </div>
+        <PageHeader
+          eyebrow="── TOURNAMENT ──"
+          title="Schedule"
+          lede="View upcoming and past bouts for all divisions."
+          actions={
+            <Badge variant="outline" className="px-3 py-1">
+              {currentBasho.bashoName.charAt(0).toUpperCase() + currentBasho.bashoName.slice(1)}{" "}
+              Basho {currentBasho.year}
+            </Badge>
+          }
+        />
 
         <div className="grid gap-6 md:grid-cols-[250px_1fr]">
           <Card className="h-fit">

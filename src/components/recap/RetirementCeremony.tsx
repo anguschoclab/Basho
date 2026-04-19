@@ -148,7 +148,7 @@ export function RetirementCeremony({ rikishi, onFinish }: RetirementCeremonyProp
                 <CardContent className="p-12 text-center space-y-8">
                   <div className="flex justify-center">
                     <div className="p-4 bg-gold rounded-full shadow-lg shadow-gold/20">
-                      <History className="h-8 w-8 text-[#1a1a1a]" />
+                      <History className="h-8 w-8 text-background" />
                     </div>
                   </div>
 

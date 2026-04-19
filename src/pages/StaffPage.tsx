@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { HQ_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,19 +54,19 @@ const ROLE_DESCRIPTIONS: Record<StaffRole, string> = {
 };
 
 const BAND_COLORS: Record<string, string> = {
-  monstrous: "text-purple-500",
+  monstrous: "text-primary",
   dominant: "text-primary",
   great: "text-success",
   strong: "text-success",
   serviceable: "text-west",
-  limited: "text-orange-500",
-  feeble: "text-red-500",
+  limited: "text-warning",
+  feeble: "text-destructive",
   respectable: "text-success",
   respected: "text-success",
   renowned: "text-primary",
-  legendary: "text-purple-500",
+  legendary: "text-primary",
   devoted: "text-success",
-  unshakable: "text-purple-500",
+  unshakable: "text-primary",
 };
 
 export default function StaffPage() {
@@ -123,14 +124,13 @@ export default function StaffPage() {
   return (
     <AppLayout subNavTabs={HQ_TABS} activeSubTab="staff" pageTitle="Support Staff">
       <div className="space-y-8">
+        <PageHeader
+          eyebrow="── HQ ──"
+          title="Staff Management"
+          lede="Manage the specialists who shape your heya's future."
+        />
         {/* Header Summary */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-display font-bold">Staff Management</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage the specialists who shape your heya's future.
-            </p>
-          </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
               <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">

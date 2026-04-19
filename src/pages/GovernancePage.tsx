@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,6 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { StableName } from "@/components/ClickableName";
 import type { Heya } from "@/engine/types/heya";
 import {
   SCANDAL_LABELS,
@@ -70,19 +70,20 @@ export default function GovernancePage() {
       activeSubTab="governance"
     >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground">
-            Official records of the Sumo Association regarding{" "}
-            <StableName id={heya.id} name={heya.name} />.
-          </p>
-          <Badge
-            variant={status === "good_standing" ? "outline" : "destructive"}
-            className="text-lg px-4 py-1"
-          >
-            <Scale className="mr-2 h-4 w-4" />
-            {getStatusLabel(world, status)}
-          </Badge>
-        </div>
+        <PageHeader
+          eyebrow="── ASSOCIATION ──"
+          title="Governance & Compliance"
+          lede={`Official records of the Sumo Association regarding ${heya.name}.`}
+          actions={
+            <Badge
+              variant={status === "good_standing" ? "outline" : "destructive"}
+              className="text-sm px-3 py-1"
+            >
+              <Scale className="mr-2 h-4 w-4" />
+              {getStatusLabel(world, status)}
+            </Badge>
+          }
+        />
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:w-[400px] mb-6">
@@ -266,9 +267,9 @@ export default function GovernancePage() {
               const criticalHeyas = selectHeyasWithCriticalWelfare(world);
               if (criticalHeyas.length === 0) return null;
               return (
-                <Card className="border-orange-500/40">
+                <Card className="border-warning/40">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-orange-500">
+                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-warning">
                       <ShieldAlert className="h-4 w-4" />
                       Welfare Alerts — Stables Under Scrutiny
                     </CardTitle>
@@ -284,10 +285,10 @@ export default function GovernancePage() {
                         return (
                           <div
                             key={h.id}
-                            className="flex items-center justify-between p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg"
+                            className="flex items-center justify-between p-3 bg-warning/5 border border-warning/20 rounded-lg"
                           >
                             <div className="flex items-center gap-3">
-                              <AlertTriangle className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                              <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
                               <div>
                                 <p className="font-medium text-sm">{h.name}</p>
                                 <p className="text-xs text-muted-foreground capitalize">
@@ -296,7 +297,7 @@ export default function GovernancePage() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-bold text-orange-500">Risk {risk}%</p>
+                              <p className="text-sm font-bold text-warning">Risk {risk}%</p>
                             </div>
                           </div>
                         );
