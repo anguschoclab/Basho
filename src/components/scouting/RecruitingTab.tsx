@@ -18,6 +18,7 @@ import {
   resolveRegistryLabel,
 } from "@/presenters/uiDigest";
 import { getHeyaForeignUsage } from "@/engine/utils/citizenshipUtils";
+import type { TalentCandidate } from "@/engine/types/talent";
 import { getStableRikishi } from "@/engine/queries";
 import { CompareModePanel } from "./CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,6 +36,10 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 
+  type CandidateDigestEntry = TalentCandidate & {
+    scoutLevel: number;
+    scoutInfo: { label: string; color: string };
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
   const [signingCandidate, setSigningCandidate] = useState<any>(null);
 
@@ -42,9 +47,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
     if (!world) return { candidates: [] };
     const d = projectRecruitmentUIDigest(world, activePool);
     if (citizensOnly) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
       d.candidates = d.candidates.filter(
-        (c: any) => c.nationality === "Japan" || c.nationality === "Japanese"
+        (c: CandidateDigestEntry) => c.nationality === "Japan" || c.nationality === "Japanese"
       );
     }
     return d;
@@ -150,9 +154,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
   const comparisonPair = useMemo(() => {
     if (selectedCandidates.length < 2) return null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type
     const candidates = selectedCandidates
-      .map((id) => digest.candidates.find((c: any) => c.candidateId === id))
+      .map((id) => digest.candidates.find((c: CandidateDigestEntry) => c.candidateId === id))
       .filter(Boolean);
     if (candidates.length < 2) return null;
     return { a: candidates[0], b: candidates[1] };
@@ -228,7 +231,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
           <Button
             variant="default"
             size="sm"
-            className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2 bg-emerald-600 hover:bg-emerald-700"
+            className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2 bg-success hover:bg-success/90"
             onClick={() => setShowCompare(true)}
           >
             <Layers className="h-3.5 w-3.5" />
