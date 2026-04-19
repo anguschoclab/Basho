@@ -70,10 +70,16 @@ export function WeeklyDrillPlanner({
   onMultiBulkUpdate,
 }: WeeklyDrillPlannerProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [activeRikishi, setActiveRikishi] = useState<string | null>(null);
 
   const isAllSelected = rikishiList.length > 0 && selectedIds.size === rikishiList.length;
+
+  const handleFillWeek = (rikishiId: string, drill: DrillType) => {
+    const schedule: Record<number, DrillType> = {};
+    DAYS.forEach((d) => {
+      schedule[d.id] = drill;
+    });
+    onBulkUpdate(rikishiId, schedule);
+  };
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
@@ -239,8 +245,6 @@ export function WeeklyDrillPlanner({
                   : "bg-background border-border/40 hover:border-primary/20",
                 "border"
               )}
-              onMouseEnter={() => setActiveRikishi(rikishi.id)}
-              onMouseLeave={() => setActiveRikishi(null)}
             >
               {/* Checkbox Cell */}
               <div className="flex justify-center">

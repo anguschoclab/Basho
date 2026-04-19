@@ -188,7 +188,7 @@ export function RosterWidget() {
               injury: rikishi.injuryStatus?.type || "unknown",
               severity: rikishi.injuryStatus?.severity || "moderate",
               treatmentWeeks: rikishi.injuryWeeksRemaining,
-              submittedDate: world.calendar.currentWeek,
+              submittedDate: world.calendar?.currentWeek ?? world.week ?? 0,
             },
           }),
         };
@@ -213,7 +213,7 @@ export function RosterWidget() {
     const coreA = world.rikishi.get(selectedIds[0]);
     const coreB = world.rikishi.get(selectedIds[1]);
     if (!coreA || !coreB) return null;
-    return { a: projectRikishi(coreA), b: projectRikishi(coreB) };
+    return { a: projectRikishi(coreA, world), b: projectRikishi(coreB, world) };
   }, [selectedIds, world]);
 
   const { roster, injuredCount, avgFatigue } = useMemo(() => {
