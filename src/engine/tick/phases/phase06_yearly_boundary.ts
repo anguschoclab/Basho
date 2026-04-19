@@ -25,6 +25,8 @@ import { InfrastructureService } from "../../systems/economy/InfrastructureServi
 import { GlobalCupService } from "../../systems/basho/GlobalCupService";
 import { HistoryService } from "../../systems/meta/HistoryService";
 import { runElections } from "../../governance/GovernanceService";
+import { DynastyService } from "../../systems/legacy/DynastyService";
+import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -43,7 +45,16 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const cupImpact = GlobalCupService.processGlobalCup(world);
   builder.merge(cupImpact);
 
-  // 0.3 All-Time Records & Legacy (Phase 3)
+  // 0.3 Phase 5: Legacy & World Circuit
+  // Succession checks for all stables
+  builder.merge(DynastyService.tickSuccessionCheck(world));
+
+  // World Circuit invitations
+  for (const heyaId of world.heyas.keys()) {
+    builder.merge(WorldCircuitService.generateYearlyInvitations(world, heyaId));
+  }
+
+  // 0.4 All-Time Records & Legacy (Phase 3)
   // Update records for all active rikishi at year end
   for (const rikishi of world.rikishi.values()) {
     if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {
@@ -258,6 +269,22 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     world.oyakata = nextOyakata;
   }
 
+  // Phase 5 Depth: Training Philosophy Drift
+  if (world.heyas) {
+    (async () => {
+      const { TrainingPhilosophyService } =
+        await import("../../systems/legacy/TrainingPhilosophyService");
+      for (const heya of world.heyas.values()) {
+        if (heya.trainingPhilosophy) {
+          const drifted = TrainingPhilosophyService.tickPhilosophyDrift(heya.trainingPhilosophy);
+          if (drifted !== heya.trainingPhilosophy) {
+            builder.updateHeya(heya.id, { trainingPhilosophy: drifted });
+          }
+        }
+      }
+    })();
+  }
+
   // 7. Logging & Era Check
   const newYear = world.year;
   const isDecadeBoundary = newYear % 10 === 0;
@@ -269,6 +296,15 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     score: hofInductees.length,
     reason: hofInductees.length > 0 ? hofInductees.join("|") : "None",
   });
+
+  // 8. Global Cup Event - Log if tournament is active
+  if (world.globalCup?.isActive) {
+    builder.logEvent("GLOBAL_CUP", "narrative", {
+      status: world.globalCup.phase,
+      year: world.globalCup.year,
+      participantCount: world.globalCup.participants.length,
+    });
+  }
 
   return builder.build();
 }
