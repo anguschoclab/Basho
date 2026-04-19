@@ -18,3 +18,22 @@ exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
   "winnerRikishiId": "r2",
 }
 `;
+
+exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
+{
+  "boutId": "test-001",
+  "duration": 18,
+  "excitementScore": 3,
+  "isKinboshi": false,
+  "kenshoEnvelopes": 0,
+  "kimarite": "oshidashi",
+  "kimariteName": "oshidashi",
+  "log": [],
+  "loserRikishiId": "r1",
+  "stance": "push-dominant",
+  "tachiaiWinner": "west",
+  "upset": false,
+  "winner": "west",
+  "winnerRikishiId": "r2",
+}
+`;
