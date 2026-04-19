@@ -3,6 +3,7 @@ import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { EventBus } from "./events";
+import { trySpendResource } from "./strategy/NPCStrategyFramework";
 
 interface GovernanceStrategy {
   evaluateGovernanceDecisions: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
@@ -25,16 +26,11 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
     // Decision scenarios where political capital might be spent
 
     // Helper: spend capital and return true if successful
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
 
     // 1. Reduce scandal score if it's high and oyakata is ambitious or compassionate
     if (scandalScore >= 20 && (isAmbitious || isCompassionate)) {
       const spendAmount = Math.min(20, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 5);
 
         const reason = isAmbitious
@@ -59,7 +55,7 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
     // 2. Traditionalists spend political capital to maintain standing
     if (isTraditionalist && scandalScore >= 10) {
       const spendAmount = Math.min(15, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 3);
 
         EventBus.managementDecision(
@@ -84,7 +80,7 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
 
     // 4. Default: small maintenance spend if scandal is present
     if (scandalScore >= 15 && politicalCapital >= 25) {
-      if (trySpend(10)) {
+      if (trySpendResource(heya, "politicalCapital", 10)) {
         heya.scandalScore = Math.max(0, scandalScore - 2);
 
         EventBus.managementDecision(
@@ -110,16 +106,10 @@ export const TraditionalistGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 25) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Traditionalists aggressively maintain standing to preserve tradition
     if (scandalScore >= 5) {
       const spendAmount = Math.min(20, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 4);
 
         EventBus.managementDecision(
@@ -145,16 +135,10 @@ export const ScientistGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 20) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Scientists spend efficiently, only when scandal is significant
     if (scandalScore >= 25) {
       const spendAmount = Math.min(15, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 6);
 
         EventBus.managementDecision(
@@ -180,16 +164,10 @@ export const GamblerGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 15) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Gamblers take risks - they might spend large amounts to fix scandals quickly
     if (scandalScore >= 15 && oyakata.traits.risk > 60) {
       const spendAmount = Math.min(30, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 8);
 
         EventBus.managementDecision(
@@ -215,16 +193,10 @@ export const NurturerGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 20) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Nurturers spend to protect heya members from scandal fallout
     if (scandalScore >= 10 && oyakata.traits.compassion > 60) {
       const spendAmount = Math.min(18, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 5);
 
         EventBus.managementDecision(
@@ -250,12 +222,6 @@ export const TyrantGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 30) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Tyrants spend aggressively to maintain power
     if (scandalScore >= 5) {
       let spendAmount = Math.min(25, politicalCapital);
@@ -263,7 +229,7 @@ export const TyrantGovernanceStrategy: GovernanceStrategy = {
       if (oyakata.quirks?.includes("Old-School Stickler")) {
         spendAmount = Math.min(40, politicalCapital);
       }
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 7);
 
         EventBus.managementDecision(
@@ -282,7 +248,7 @@ export const TyrantGovernanceStrategy: GovernanceStrategy = {
 
     // Discipline Hawk quirk causes tyrants to spend capital to enforce discipline
     if (oyakata.quirks?.includes("Discipline Hawk") && politicalCapital > 40) {
-      if (trySpend(15)) {
+      if (trySpendResource(heya, "politicalCapital", 15)) {
         EventBus.managementDecision(
           world,
           heya.id,
@@ -306,16 +272,10 @@ export const StrategistGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 20) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Strategists time their spending for maximum efficiency
     if (scandalScore >= 20) {
       const spendAmount = Math.min(22, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 7);
 
         EventBus.managementDecision(
@@ -341,12 +301,6 @@ export const StrictGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 25) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Strict spend to maintain discipline and avoid any scandal
     // High patience leads to more calculated spending (only when necessary)
     let scandalThreshold = 8;
@@ -363,7 +317,7 @@ export const StrictGovernanceStrategy: GovernanceStrategy = {
 
     if (scandalScore >= scandalThreshold) {
       const spendAmount = Math.min(20, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 5);
 
         EventBus.managementDecision(
@@ -389,16 +343,10 @@ export const IndulgentGovernanceStrategy: GovernanceStrategy = {
 
     if (politicalCapital < 15) return;
 
-    const trySpend = (amount: number): boolean => {
-      if (heya.politicalCapital === undefined || heya.politicalCapital < amount) return false;
-      heya.politicalCapital -= amount;
-      return true;
-    };
-
     // Indulgent are more lenient, only spend when scandal is severe
     if (scandalScore >= 30) {
       const spendAmount = Math.min(25, politicalCapital);
-      if (trySpend(spendAmount)) {
+      if (trySpendResource(heya, "politicalCapital", spendAmount)) {
         heya.scandalScore = Math.max(0, scandalScore - 10);
 
         EventBus.managementDecision(
