@@ -95,10 +95,13 @@ export interface StateImpact {
       | "mediaState"
       | "ftue"
       | "rivalriesState"
+      | "_preBashoAssessment"
       | "sponsorPool"
       | "myosekiMarket"
       | "_daysSinceLastWeeklyTick"
       | "governanceLog"
+      | "pendingExhibitions"
+      | "bloodlineRegistry"
     >
   >;
 
@@ -107,7 +110,7 @@ export interface StateImpact {
    * Used to append items to world arrays like history, almanacSnapshots, basho.matches, governanceLog.
    */
   arrayAppends?: Array<{
-    field: "history" | "almanacSnapshots" | "basho.matches" | "governanceLog";
+    field: "history" | "almanacSnapshots" | "basho.matches" | "governanceLog" | "awardLog";
     items: unknown[];
   }>;
 

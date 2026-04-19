@@ -15,6 +15,8 @@ import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { projectBanzukeUIDigest, projectPressConferenceData } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { PressConference } from "@/components/game/PressConference";
+import { PageHeader } from "@/components/layout/control-center";
+import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -39,6 +41,36 @@ export default function BanzukePage() {
   const banzukeDigest = useMemo(() => {
     if (!world) return null;
     return projectBanzukeUIDigest(world);
+  }, [world]);
+
+  const pyramidData = useMemo(() => {
+    if (!world) return [];
+    const counts: Record<string, number> = {
+      Yokozuna: 0,
+      Ozeki: 0,
+      Sekiwake: 0,
+      Komusubi: 0,
+      "Maegashira 1-8": 0,
+      "Maegashira 9-15": 0,
+      Juryo: 0,
+      Makushita: 0,
+    };
+    for (const r of world.rikishi.values()) {
+      if (r.isRetired) continue;
+      const rank = r.rank?.toLowerCase() ?? "";
+      const num = r.rankNumber ?? 0;
+      if (rank === "yokozuna") counts.Yokozuna++;
+      else if (rank === "ozeki") counts.Ozeki++;
+      else if (rank === "sekiwake") counts.Sekiwake++;
+      else if (rank === "komusubi") counts.Komusubi++;
+      else if (rank === "maegashira" && num <= 8) counts["Maegashira 1-8"]++;
+      else if (rank === "maegashira" && num > 8) counts["Maegashira 9-15"]++;
+      else if (rank === "juryo") counts.Juryo++;
+      else if (rank === "makushita") counts.Makushita++;
+    }
+    return Object.entries(counts)
+      .filter(([, v]) => v > 0)
+      .map(([rank, count]) => ({ rank, count }));
   }, [world]);
 
   if (!world || !banzukeDigest) return null;
@@ -109,65 +141,67 @@ export default function BanzukePage() {
 
       <div className="space-y-4 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-md rank-yokozuna flex items-center justify-center">
-              <span className="font-display text-primary-foreground text-sm font-bold">番</span>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm">
-                {world.year} {world.currentBashoName?.toUpperCase() || "UPCOMING"} Rankings
-              </p>
-            </div>
+        <PageHeader
+          eyebrow="── TOURNAMENT · BANZUKE ──"
+          title="Official Rankings"
+          lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeData.reduce((s: number, d: { rows?: unknown[] }) => s + (d.rows?.length ?? 0), 0)} wrestlers listed`}
+        />
+
+        {/* Pyramid + controls row */}
+        <div className="flex items-start gap-4 flex-wrap">
+          <div className="min-w-[200px]">
+            <BanzukePyramid data={pyramidData} />
           </div>
-          <div className="flex items-center gap-3">
-            {/* Player stable legend */}
-            <div className="flex items-center gap-1.5 text-[10px] text-primary border border-primary/20 rounded-md px-2 py-1 bg-primary/5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              Your Stable
-            </div>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder="Search wrestler…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 w-48 pl-8 pr-8 text-xs"
-              />
-              {searchQuery && (
-                <TooltipWrap content="Clear search filter" side="top">
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label="Clear search"
+          <div className="flex flex-col gap-3 flex-1">
+            <div className="flex items-center gap-3">
+              {/* Player stable legend */}
+              <div className="flex items-center gap-1.5 text-[10px] text-primary border border-primary/20 rounded-md px-2 py-1 bg-primary/5">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Your Stable
+              </div>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search wrestler…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-8 w-48 pl-8 pr-8 text-xs"
+                />
+                {searchQuery && (
+                  <TooltipWrap content="Clear search filter" side="top">
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </TooltipWrap>
+                )}
+              </div>
+              {hasPrevBasho && (
+                <div className="flex items-center gap-2">
+                  <TooltipWrap
+                    content="Toggle rank movement indicators relative to the previous tournament"
+                    side="top"
                   >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </TooltipWrap>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="show-changes"
+                        checked={showChanges}
+                        onCheckedChange={setShowChanges}
+                      />
+                      <Label
+                        htmlFor="show-changes"
+                        className="text-xs text-muted-foreground cursor-pointer"
+                      >
+                        Changes
+                      </Label>
+                    </div>
+                  </TooltipWrap>
+                </div>
               )}
             </div>
-            {hasPrevBasho && (
-              <div className="flex items-center gap-2">
-                <TooltipWrap
-                  content="Toggle rank movement indicators relative to the previous tournament"
-                  side="top"
-                >
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="show-changes"
-                      checked={showChanges}
-                      onCheckedChange={setShowChanges}
-                    />
-                    <Label
-                      htmlFor="show-changes"
-                      className="text-xs text-muted-foreground cursor-pointer"
-                    >
-                      Changes
-                    </Label>
-                  </div>
-                </TooltipWrap>
-              </div>
-            )}
           </div>
         </div>
 
@@ -195,9 +229,9 @@ export default function BanzukePage() {
             {divisionKeys.map((d) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex banzuke data type
               const divData = banzukeData.find((b: any) => b.division === d);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex row type
               const divCount =
                 divData?.rows.reduce(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex row type
                   (acc: number, r: any) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0),
                   0
                 ) || 0;
@@ -220,8 +254,8 @@ export default function BanzukePage() {
             let rows = divData?.rows || [];
             if (searchQuery) {
               const q = searchQuery.toLowerCase();
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               rows = rows.filter(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (r: any) =>
                   r.east?.shikona?.toLowerCase().includes(q) ||
                   r.west?.shikona?.toLowerCase().includes(q)

@@ -280,6 +280,8 @@ export class ImpactBuilder {
       | "myosekiMarket"
       | "_daysSinceLastWeeklyTick"
       | "governanceLog"
+      | "pendingExhibitions"
+      | "bloodlineRegistry"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
