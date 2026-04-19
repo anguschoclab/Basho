@@ -1,18 +1,18 @@
 📝 Daily Progress & Docs Update
  🏗️ Codebase Status:
- Recently, massive additions have been integrated into the core engine systems, specifically expanding the `welfare`, `training`, `recruitment`, and `narrative` modules, alongside fleshing out the daily and weekly pipeline orchestrators in `src/engine/tick/`. A strong separation of concerns is actively maintained, ensuring simulation outputs strictly translate to observable UI descriptors rather than raw numerical values.
+ Recently, the combat logic in the core engine systems has been significantly overhauled, focusing on the integration of the B+ spatial classifier within `src/engine/types/kimariteStrategy.ts` and related files. The system is transitioning from legacy qualitative evaluation functions to quantitative spatial models where finishing techniques (kimarite) emerge dynamically from physics (e.g., center of gravity offset, ring distance, and grip depth).
 
  [WIP focus]
- The current focus is stabilizing the daily and weekly pipeline orchestrators (e.g., `tickDaily.ts`, `phase*.ts` files) to ensure game loop integrity, appropriately handle institutional operations like NPC AI decision-making and roster overflow (via `overflow.ts`), and manage state transitions for training and welfare mechanics correctly.
+ The current focus is stabilizing the B+ spatial combat resolution system, wiring in the new kimarite classifiers, and ensuring that legacy balance-based evaluators are fully deprecated in favor of emergent spatial physics during a bout.
 
  📖 Basho Constitution Alignment:
- ✅ Aligned: The codebase implements `HYSTERESIS_DELTA = 5` correctly within `src/engine/systems/narrative/NarrativeService.ts`, fully satisfying the hysteresis buffer required by section C5.3 of the Constitution. Additionally, the NPC AI roster overflow logic (`enforceHardCapRosterOverflow` used in `phase01_week_npc_ai.ts`) aligns perfectly with section C4.3.
+ ✅ Aligned: The structural groundwork for the B+ spatial system within `kimariteStrategy.ts` explicitly aligns with the single authoritative combat specification defined in Section 7 (Combat & Kimarite) of the Basho Constitution, correctly abstracting engine truths like `edgeDistance` and `momentumX` into quantitative interfaces without leaking these raw engine physics values directly to the UI.
 
- ⚠️ Missing/Deviations: The narrative presentation utilities do not yet fully implement all specified modifier tags for injury perception required by section C5.4. While `sidelined`, `hampered` and `taped_up` are present in `src/engine/descriptorBands.ts`, `favoring_it` and `moving_gingerly` are completely missing. Furthermore, the `toDescriptorBand` function, which is formally defined as an implementation contract in C5.5, is currently missing from the codebase.
+ ⚠️ Missing/Deviations: While the B+ spatial classifier is now wired into the resolution pipeline, the KIMARITE_STRATEGIES_V2 conditions have not yet been migrated to the new spatial logic. Additionally, the edge crisis phase continues to use legacy classification functions (e.g., classifyEdgeExitKimarite) rather than the emergent spatial classifier.
 
  📄 Proposed Documentation Updates:
- docs/daily_update.md: Add a new entry summarizing the implementation of the tick pipeline architecture, NPC AI overflow logic constraints, and hysteresis integration.
+ docs/daily_update.md: Add a new entry summarizing the transition to the B+ spatial combat engine, noting the completion of spatial types alongside the critical pending wiring tasks for the classifier.
 
- Code Paths Covered: `src/engine/tick/`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/descriptorBands.ts`
+ Code Paths Covered: `src/engine/types/kimariteStrategy.ts`, `src/engine/types/combat-spatial.ts`, `src/engine/bout/kimariteClassifier.ts`, `src/engine/bout/boutResolver.ts`
 
- Key Knowledge Gaps Addressed: Documents that fundamental pipeline execution ordering and hysteresis protections are established, while explicitly flagging the need to complete the C5.4 injury modifier hooks and the C5.5 implementation contract within the narrative presentation layer.
+ Key Knowledge Gaps Addressed: Clarifies that the B+ spatial data structures and core wiring are complete, while highlighting that legacy classification fallbacks in the edge crisis phase and V2 strategy migration remain as the primary integration gaps.
