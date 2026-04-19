@@ -76,7 +76,7 @@ describe("determineSpecialPrizes", () => {
 
     // Shukun
     matches.push(createMatch("mae_shukun", "yokozuna"));
-    for(let i = 0; i < 7; i++) matches.push(createMatch("mae_shukun", `loserS${i}`));
+    for (let i = 0; i < 7; i++) matches.push(createMatch("mae_shukun", `loserS${i}`));
 
     // Kanto
     for(let i = 0; i < 10; i++) matches.push(createMatch("mae_kanto", `loserK${i}`));
