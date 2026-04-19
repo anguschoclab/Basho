@@ -108,7 +108,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
       if (result.ok) {
         toast({
           title: "Intel gathered",
-          description: `Scouting level: ${describeScoutingLevel(result.scoutingLevel).label}`,
+          description: `Scouting level: ${describeScoutingLevel(result.scoutingLevel)}`,
         });
       }
     } catch {
@@ -390,10 +390,12 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">Prospect Comparison</DialogTitle>
           </DialogHeader>
-          {comparisonPair && (
+          {comparisonPair && comparisonPair.a && comparisonPair.b && (
             <CompareModePanel
-              rikishiA={comparisonPair.a}
-              rikishiB={comparisonPair.b}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              rikishiA={comparisonPair.a as any}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              rikishiB={comparisonPair.b as any}
               onClose={() => setShowCompare(false)}
             />
           )}
