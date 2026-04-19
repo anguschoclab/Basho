@@ -108,7 +108,7 @@ describe("promotionLogic", () => {
       expect(bestTierAllowed(createEntry("s2", "sekiwake"), perf2, undefined, new Set())).toBe(3); // stays tier 3
     });
 
-    it("komusubi with 10+ wins allowed tier 3 (sekiwake) - but already tier 4... wait tier 4? komusubi is tier 4", () => {
+    it("allows promotion to tier 3 (sekiwake) for a komusubi with 10+ wins", () => {
       const perf: BashoPerformance = { wins: 10, losses: 5, boutIds: [] };
       expect(bestTierAllowed(createEntry("k1", "komusubi"), perf, undefined, new Set())).toBe(3);
     });
