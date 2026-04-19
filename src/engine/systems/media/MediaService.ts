@@ -660,10 +660,10 @@ function generateInterviewPrompt(world: WorldState, rng: SeededRNG) {
 /**
  * Processes the player's choice from an interview.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function processMediaDecision(
   world: WorldState,
   choiceId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   impact: any
 ): StateImpact {
   const builder = createImpactBuilder("processMediaDecision");

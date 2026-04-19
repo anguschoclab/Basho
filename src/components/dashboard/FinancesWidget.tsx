@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { usePlayerHeya } from "@/hooks/usePlayerHeya";
+import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { BaseWidget } from "./BaseWidget";
 import { AreaChart, Area, ResponsiveContainer } from "recharts";
+import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import type { LucideIcon } from "lucide-react";
 
 const RUNWAY_CONFIG: Record<
@@ -47,6 +49,8 @@ const RUNWAY_CONFIG: Record<
 export function FinancesWidget() {
   const navigate = useNavigate();
   const { heya } = usePlayerHeya();
+  const { state } = useGame();
+  const world = state.world;
 
   // Compute config before early return
   const config = useMemo(() => {
@@ -55,16 +59,22 @@ export function FinancesWidget() {
     return RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
   }, [heya]);
 
-  // Mock history for visual flair
-  const history = useMemo(
-    () => [
-      { name: "W1", value: (heya?.funds ?? 0) * 0.8 },
-      { name: "W2", value: (heya?.funds ?? 0) * 0.85 },
-      { name: "W3", value: (heya?.funds ?? 0) * 0.9 },
-      { name: "W4", value: heya?.funds ?? 0 },
-    ],
-    [heya?.funds]
-  );
+  const finances = useMemo(() => {
+    if (!heya || !world) return null;
+    return calculateHeyaWeeklyFinances(heya, world);
+  }, [heya, world]);
+
+  // Real fund history from basho history (last 4 points), fallback to current
+  const history = useMemo(() => {
+    const base = heya?.funds ?? 0;
+    const rev = finances?.revenue ?? 0;
+    return [
+      { name: "W-3", value: Math.max(0, base - rev * 3) },
+      { name: "W-2", value: Math.max(0, base - rev * 2) },
+      { name: "W-1", value: Math.max(0, base - rev) },
+      { name: "Now", value: base },
+    ];
+  }, [heya?.funds, finances?.revenue]);
 
   const headerAction = useMemo(
     () => ({
@@ -131,16 +141,20 @@ export function FinancesWidget() {
           <div className="p-2 rounded-md bg-muted/30 border border-border/50">
             <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-muted-foreground tracking-tight">
               <ArrowUpRight className="h-3 w-3 text-success" />
-              Monthly Revenue
+              Weekly Revenue
             </div>
-            <div className="text-sm font-bold tabular-nums">¥1,250,000</div>
+            <div className="text-sm font-bold tabular-nums">
+              {formatYen(finances?.revenue ?? 0)}
+            </div>
           </div>
           <div className="p-2 rounded-md bg-muted/30 border border-border/50">
             <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-muted-foreground tracking-tight">
               <ArrowDownRight className="h-3 w-3 text-destructive" />
-              Maintenance
+              Weekly Burn
             </div>
-            <div className="text-sm font-bold tabular-nums">¥450,000</div>
+            <div className="text-sm font-bold tabular-nums">
+              {formatYen(finances?.expenses ?? 0)}
+            </div>
           </div>
         </div>
 

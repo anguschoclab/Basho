@@ -149,6 +149,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
 
   const filterOptions = [
     { value: "all", label: "All" },
+    { value: "basho", label: "Basho" },
     { value: "match", label: "Match" },
     { value: "training", label: "Training" },
     { value: "injury", label: "Injury" },

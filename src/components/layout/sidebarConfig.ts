@@ -28,6 +28,7 @@ import {
   Home,
   Calendar,
   Globe,
+  Crown,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -56,7 +57,7 @@ export function getMenuGroups(
     {
       label: null,
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
+        { title: "Control Center", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
         { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
       ],
     },
@@ -68,6 +69,7 @@ export function getMenuGroups(
         { title: "Training", url: "/stable/training", icon: Dumbbell },
         { title: "Medical", url: "/stable/medical", icon: Heart },
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
+        { title: "Oyakata", url: "/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
       ],
     },

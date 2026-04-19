@@ -777,13 +777,17 @@ export function convertCandidateToRikishi(args: {
  * Generates a single TalentCandidate for the recruitment pools.
  */
 
+import { LineageService } from "./LineageService";
+import type { WorldState } from "../../types/world";
+
 export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;
   currentYear: number;
   poolType: TalentPoolType;
+  world?: WorldState;
 }): TalentCandidate {
-  const { id, rng, currentYear, poolType } = args;
+  const { id, rng, currentYear, poolType, world } = args;
 
   const archetype = rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
@@ -799,8 +803,42 @@ export function generateCandidate(args: {
     }
     return "standard" as DevelopmentProfile;
   })();
-  const paPkg = rollPotential({ rng, rank: "jonokuchi", profile, developmentProfile });
-  // Override size potential with candidate-specific rolls (keeps existing API)
+
+  // Phase 5: Emergent Prodigy (1.5% chance)
+  const isEmergentProdigy = rng.next() < 0.015;
+  const devProfileForRoll = isEmergentProdigy ? "prodigy" : developmentProfile;
+
+  const paPkg = rollPotential({
+    rng,
+    rank: "jonokuchi",
+    profile,
+    developmentProfile: devProfileForRoll,
+  });
+
+  // Apply Prodigy bonus to stat ceilings
+  if (isEmergentProdigy) {
+    Object.keys(paPkg.stats).forEach((stat) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (paPkg.stats as any)[stat] = clampInt((paPkg.stats as any)[stat] + 12, 40, 99);
+    });
+    paPkg.ceilingFraction = 1.0; // Prodigies always reach their full PA
+    paPkg.developmentSpeed *= 1.25; // Faster growth
+  }
+
+  // Phase 5 Depth: Genetic Lineage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let bloodlineTrait: any = null;
+  if (world) {
+    bloodlineTrait = LineageService.rollGeneticLineage(
+      world,
+      {
+        ...args, // Partial mock since we haven't built the candidate yet
+        tags: isEmergentProdigy ? ["prodigy"] : [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      rng
+    );
+  }
 
   // Determine origin based on pool
   const origin =
@@ -839,7 +877,8 @@ export function generateCandidate(args: {
     temperament: { discipline: rng.int(0, 100), volatility: rng.int(0, 100) },
 
     competingSuitors: [],
-    tags: rng.next() > 0.8 ? ["amateur_star"] : [],
+    tags: isEmergentProdigy ? ["prodigy"] : rng.next() > 0.8 ? ["amateur_star"] : [],
+    isEmergentProdigy,
 
     potentialStats: {
       strength: paPkg.stats.strength,
@@ -850,9 +889,17 @@ export function generateCandidate(args: {
       mental: paPkg.stats.mental,
       adaptability: paPkg.stats.adaptability,
     },
-    developmentProfile,
+    developmentProfile: devProfileForRoll,
     developmentSpeed: paPkg.developmentSpeed,
     peakAgeOffset: paPkg.peakAgeOffset,
     ceilingFraction: paPkg.ceilingFraction,
+    bloodlineTrait,
   };
+
+  // Apply lineage bonuses to the final object
+  if (bloodlineTrait) {
+    LineageService.applyLineageBonuses(candidate, bloodlineTrait);
+  }
+
+  return candidate;
 }
