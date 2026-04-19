@@ -15,4 +15,4 @@
 
  Code Paths Covered: `src/engine/types/kimariteStrategy.ts`, `src/engine/types/combat-spatial.ts`, `src/engine/bout/kimariteClassifier.ts`, `src/engine/bout/boutResolver.ts`
 
- Key Knowledge Gaps Addressed: Clarifies that while the B+ spatial data structures are in place, the core bout resolution loop must still be updated to invoke the emergent spatial classifier, and legacy evaluators must be disabled to ensure true deterministic combat.
+ Key Knowledge Gaps Addressed: Clarifies that the B+ spatial data structures and core wiring are complete, while highlighting that legacy classification fallbacks in the edge crisis phase and V2 strategy migration remain as the primary integration gaps.
