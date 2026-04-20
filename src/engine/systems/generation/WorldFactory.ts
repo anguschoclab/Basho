@@ -10,7 +10,7 @@ import { Oyakata, OyakataArchetype } from "../../types/oyakata";
 import { Rikishi } from "../../types/rikishi";
 import { generateOyakataName } from "../../shikona";
 import { seededPick } from "../../utils/random";
-import { generateFullRikishi } from "./CandidateGenerator";
+import { generateFullRikishi } from "./CandidateBuilder";
 import { Division, Rank, Side } from "../../types/banzuke";
 import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
