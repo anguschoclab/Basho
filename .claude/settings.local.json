@@ -56,7 +56,8 @@
       "Bash(ls \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\engine\\\\bout\\\\Kimarite\"*)",
       "Bash(ls \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\\\\engine\\\\bout\\\\kimarite\"*)",
       "Bash(xargs wc *)",
-      "Bash(awk '$1 >= 500')"
+      "Bash(awk '$1 >= 500')",
+      "Bash(awk 'NR>=166 && NR<=580' src/engine/events.ts)"
     ]
   },
   "outputStyle": "default"
