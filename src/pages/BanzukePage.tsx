@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { projectBanzukeUIDigest, projectPressConferenceData } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { PressConference } from "@/components/game/PressConference";
@@ -144,7 +143,7 @@ export default function BanzukePage() {
         <PageHeader
           eyebrow="── TOURNAMENT · BANZUKE ──"
           title="Official Rankings"
-          lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeData.reduce((s: number, d: { rows?: unknown[] }) => s + (d.rows?.length ?? 0), 0)} wrestlers listed`}
+          lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeData.reduce((s, d) => s + (d.rows?.length ?? 0), 0)} wrestlers listed`}
         />
 
         {/* Pyramid + controls row */}
@@ -227,12 +226,10 @@ export default function BanzukePage() {
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
             {divisionKeys.map((d) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex banzuke data type
-              const divData = banzukeData.find((b: any) => b.division === d);
+              const divData = banzukeData.find((b) => b.division === d);
               const divCount =
                 divData?.rows.reduce(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex row type
-                  (acc: number, r: any) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0),
+                  (acc: number, r) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0),
                   0
                 ) || 0;
               return (
@@ -249,14 +246,12 @@ export default function BanzukePage() {
           </TabsList>
 
           {divisionKeys.map((div) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const divData = banzukeData.find((b: any) => b.division === div);
+            const divData = banzukeData.find((b) => b.division === div);
             let rows = divData?.rows || [];
             if (searchQuery) {
               const q = searchQuery.toLowerCase();
               rows = rows.filter(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (r: any) =>
+                (r) =>
                   r.east?.shikona?.toLowerCase().includes(q) ||
                   r.west?.shikona?.toLowerCase().includes(q)
               );

@@ -22,6 +22,7 @@ import { type RivalriesState, type RivalryPairState, type RivalryKey } from "./R
 import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import type { BoutResult } from "../../types/basho";
 
 /**
  * Unified Rivalry Service.
@@ -48,8 +49,7 @@ export const RivalryService = {
    * Authoritative Bout Hook.
    * Returns StateImpact describing rivalry updates instead of mutating state directly.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Result has extended bout properties beyond BoutResult type
-  onBoutResolved(world: WorldState, args: { result: any; day?: number }): StateImpact {
+  onBoutResolved(world: WorldState, args: { result: BoutResult; day?: number }): StateImpact {
     const { result } = args;
     if (!result.winnerRikishiId || !result.loserRikishiId) {
       return createImpactBuilder("onBoutResolvedRivalries").build();
@@ -109,47 +109,24 @@ export const RivalryService = {
     const updatedPairs = { ...state.pairs };
 
     // Cull very cold rivalries
-    if (next.heat < 10 && next.meetings < 2 && week - next.lastMetWeek > 20) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentional destructuring to remove key
-      const { [key]: _removed, ...rest } = updatedPairs;
-      Object.assign(updatedPairs, rest);
+    if (next.heat < 5 && next.meetings < 2 && result.duration && result.duration > 30) {
+      const { [key as string]: _, ...remainingPairs } = updatedPairs;
+      void _;
+      // update the reference for further updates if any
+      // but here we just pass it to updateWorldField
+      builder.updateWorldField("rivalriesState", {
+        version: state.version,
+        pairs: remainingPairs,
+        heyaRivalryPairs,
+      });
     } else {
       updatedPairs[key] = next;
+      builder.updateWorldField("rivalriesState", {
+        version: state.version,
+        pairs: updatedPairs,
+        heyaRivalryPairs,
+      });
     }
-
-    // Update heya-heya rivalry (C2)
-    const heyaRivalryPairs = { ...(state.heyaRivalryPairs || {}) };
-    const rA = EntityCollection.getRikishiById(world, result.winnerRikishiId);
-    const rB = EntityCollection.getRikishiById(world, result.loserRikishiId);
-
-    if (rA && rB && rA.heyaId !== rB.heyaId) {
-      const hA = rA.heyaId;
-      const hB = rB.heyaId;
-      const hKey = hA < hB ? `${hA}|${hB}` : `${hB}|${hA}`;
-
-      const hPair = heyaRivalryPairs[hKey] || {
-        id: hKey,
-        heyaAId: hA < hB ? hA : hB,
-        heyaBId: hA < hB ? hB : hA,
-        heat: 0,
-        aWins: 0,
-        bWins: 0,
-      };
-
-      if (rA.heyaId === hPair.heyaAId) hPair.aWins++;
-      else hPair.bWins++;
-
-      const heatGain = result.isTitleStakes ? 2.5 : 0.8;
-      hPair.heat = Math.min(100, hPair.heat + heatGain);
-      heyaRivalryPairs[hKey] = hPair;
-    }
-
-    // Update the rivalriesState world field
-    builder.updateWorldField("rivalriesState", {
-      version: state.version,
-      pairs: updatedPairs,
-      heyaRivalryPairs,
-    });
 
     return builder.build();
   },
@@ -163,7 +140,7 @@ export const RivalryService = {
     const state = this.ensureRivalriesState(world);
     const week = world.calendar?.currentWeek || 0;
 
-    const updatedPairs = { ...state.pairs };
+    const finalPairs: Record<string, RivalryPairState> = {};
 
     for (const key in state.pairs) {
       const pair = state.pairs[key];
@@ -179,18 +156,14 @@ export const RivalryService = {
       };
 
       // Auto-cull
-      if (updatedPair.heat < 5 && updatedPair.meetings < 2 && weeksSince > 30) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Intentional destructuring to remove key
-        const { [key]: _removed, ...rest } = updatedPairs;
-        Object.assign(updatedPairs, rest);
-      } else {
-        updatedPairs[key] = updatedPair;
+      if (!(updatedPair.heat < 5 && updatedPair.meetings < 2 && weeksSince > 30)) {
+        finalPairs[key] = updatedPair;
       }
     }
 
     builder.updateWorldField("rivalriesState", {
       version: state.version,
-      pairs: updatedPairs,
+      pairs: finalPairs,
     });
 
     return builder.build();

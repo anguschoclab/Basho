@@ -76,7 +76,7 @@ export interface RecruitmentWindow {
 /** Defines the structure for post basho meta. */
 export interface PostBashoMeta {
   bashoNumber: number;
-  metaBias: "oshi" | "yotsu" | "neutral";
+  metaBias: "oshi" | "yotsu" | "hybrid" | "neutral";
   yushoStyle: string;
   recognitionEligibleWeek: number;
 }
@@ -286,4 +286,12 @@ export interface WorldState {
 
   /** Bloodline trait registry (BloodlineService) */
   bloodlineRegistry?: BloodlineRegistry;
+
+  planetRating?: number;
+  isInitialSeed?: boolean;
+
+  // Simulation tracking (AutoSimService)
+  scandals?: Array<{ severity: string; year: number }>;
+  retirements?: Array<{ rikishiId: string }>;
+  eventLog?: Array<{ type: string; [key: string]: unknown }>;
 }

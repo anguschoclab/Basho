@@ -325,8 +325,7 @@ export function generateInitialWorld(seed: string): WorldState {
     isInitialSeed: true,
     sponsorPool: generateInitialSponsorPool(seed),
     trainingState: new Map(),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Object has extra properties (planetRating, isInitialSeed) not in WorldState interface
-  } as any;
+  };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)
   world.heyaBrandIdentities = generateHeyaBrandIdentities(worldRng, world.heyas);

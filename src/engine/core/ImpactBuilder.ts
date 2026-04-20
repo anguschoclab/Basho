@@ -16,7 +16,7 @@ import type {
   EventImportance,
   NarrativeContext,
 } from "../types/events";
-import type { StateImpact } from "./StateImpact";
+import type { HeyaTrainingState } from "../types/training";
 import { createEmptyImpact } from "./StateImpact";
 
 /**
@@ -182,6 +182,40 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a partial training state update to the impact.
+   */
+  updateTrainingState(id: string, update: Partial<HeyaTrainingState>): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.trainingStateUpdates) {
+      this.impact.entities.trainingStateUpdates = new Map();
+    }
+    const existing = this.impact.entities.trainingStateUpdates.get(id);
+    this.impact.entities.trainingStateUpdates.set(
+      id,
+      existing ? deepMerge(existing, update) : update
+    );
+    return this;
+  }
+
+  /**
+   * Update a nested field in a training state.
+   */
+  updateTrainingStateNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.trainingStateUpdates) {
+      this.impact.entities.trainingStateUpdates = new Map();
+    }
+    const existing = this.impact.entities.trainingStateUpdates.get(id) || {};
+    const updated = setNestedField(existing, fieldPath, value);
+    this.impact.entities.trainingStateUpdates.set(id, updated);
+    return this;
+  }
+
+  /**
    * Add a rikishi to the active roster.
    */
   addRikishi(rikishi: Rikishi): ImpactBuilder {
@@ -282,6 +316,9 @@ export class ImpactBuilder {
       | "governanceLog"
       | "pendingExhibitions"
       | "bloodlineRegistry"
+      | "npcScoutingPriorities"
+      | "talentPool"
+      | "candidatePool"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -375,6 +412,11 @@ export class ImpactBuilder {
     if (other.entities?.koenkaiUpdates) {
       for (const [id, update] of other.entities.koenkaiUpdates) {
         this.updateKoenkai(id, update as Record<string, unknown>);
+      }
+    }
+    if (other.entities?.trainingStateUpdates) {
+      for (const [id, update] of other.entities.trainingStateUpdates) {
+        this.updateTrainingState(id, update as Partial<HeyaTrainingState>);
       }
     }
     if (other.collections?.rikishiToAdd) {
@@ -511,6 +553,11 @@ export function updateWorldFieldImpact<
     | "myosekiMarket"
     | "_daysSinceLastWeeklyTick"
     | "governanceLog"
+    | "pendingExhibitions"
+    | "bloodlineRegistry"
+    | "npcScoutingPriorities"
+    | "talentPool"
+    | "candidatePool"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

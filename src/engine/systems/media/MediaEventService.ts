@@ -154,14 +154,10 @@ export function evaluateScandals(world: WorldState): StateImpact {
   return builder.build();
 }
 
-/**
- * Processes the player's choice from an interview.
- */
 export function processMediaDecision(
   world: WorldState,
   choiceId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  impact: any
+  impact: { rep?: number; politicalCapital?: number }
 ): StateImpact {
   const builder = createImpactBuilder("processMediaDecision");
   const heyaId = world.playerHeyaId;

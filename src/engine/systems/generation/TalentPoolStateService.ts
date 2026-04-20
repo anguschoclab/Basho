@@ -4,21 +4,14 @@
  * reinsertion of released/injected rikishi back into the pool.
  */
 
-import { SeededRNG } from "../../rng";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { WorldState } from "../../types/world";
-import { Id } from "../../types/common";
-import { Rikishi } from "../../types/rikishi";
-import {
-  TalentPoolType,
-  TalentCandidate,
-  TalentPoolWorldState,
-  TalentPoolState,
-} from "../../types/talent";
+import type { WorldState } from "../../types/world";
+import type { Id } from "../../types/common";
+import type { Rikishi } from "../../types/rikishi";
+import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "../../types/talent";
 import { generateCandidate } from "./CandidateGenerator";
-import { isForeign } from "../../utils/identity";
 import { buildCombatProfile } from "../../archetype";
 
 /**
@@ -70,16 +63,15 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
       },
     };
   }
-  if (!world.talentPool) {
-    throw new Error("Talent pool not initialized");
-  }
   return world.talentPool;
 }
 
 /**
  * Reinjects a released rikishi back into the talent pool as a free agent.
+ * Returns StateImpact describing the update.
  */
-export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void {
+export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): StateImpact {
+  const builder = createImpactBuilder("reinjectToTalentPool");
   const tp = ensureTalentPoolState(world);
 
   // Create a candidate from the rikishi
@@ -95,39 +87,51 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
   const archetype: "oshi" | "yotsu" | "hybrid" = "hybrid";
   const combatProfile = buildCombatProfile(archetype);
 
-  tp.candidates[candidateId] = {
-    candidateId,
-    personId: rikishi.id,
-    name: rikishi.shikona,
-    nationality: rikishi.nationality ?? "Japan",
-    birthYear: rikishi.birthYear ?? world.year - 20,
-    originRegion: rikishi.origin ?? "Unknown",
-    visibilityBand: "obscure",
-    reputationSeed: rikishi.talentSeed ?? 50,
-    tags: [],
-    combatProfile,
-    availabilityState: "available",
-    competingSuitors: [],
-    archetype,
-    style: archetype,
-    heightPotentialCm: rikishi.height ?? 180,
-    weightPotentialKg: rikishi.weight ?? 100,
-    talentSeed: rikishi.talentSeed ?? 50,
-    temperament: {
-      discipline: 50,
-      volatility: 50,
-    },
+  const nextCandidates = {
+    ...tp.candidates,
+    [candidateId]: {
+      candidateId,
+      personId: rikishi.id,
+      name: rikishi.shikona,
+      nationality: rikishi.nationality ?? "Japan",
+      birthYear: rikishi.birthYear ?? world.year - 20,
+      originRegion: rikishi.origin ?? "Unknown",
+      visibilityBand: "obscure",
+      reputationSeed: rikishi.talentSeed ?? 50,
+      tags: [],
+      combatProfile,
+      availabilityState: "available",
+      competingSuitors: [],
+      archetype,
+      style: archetype,
+      heightPotentialCm: rikishi.height ?? 180,
+      weightPotentialKg: rikishi.weight ?? 100,
+      talentSeed: rikishi.talentSeed ?? 50,
+      temperament: {
+        discipline: 50,
+        volatility: 50,
+      },
+    } as TalentCandidate,
   };
 
-  // Add to the appropriate pool's visible candidates
-  const pool = tp.pools[poolType];
+  const nextPools = { ...tp.pools };
+  const pool = { ...nextPools[poolType] };
   if (
     pool &&
     !pool.candidatesVisible.includes(candidateId) &&
     !pool.candidatesHidden.includes(candidateId)
   ) {
-    pool.candidatesVisible.push(candidateId);
+    pool.candidatesVisible = [...pool.candidatesVisible, candidateId];
   }
+  nextPools[poolType] = pool;
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+  });
+
+  return builder.build();
 }
 
 /**
@@ -138,7 +142,6 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): void 
 export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): StateImpact {
   const builder = createImpactBuilder("injectRikishiAsCandidate");
   const tp = ensureTalentPoolState(world);
-  const pool = tp.pools["foreign"];
 
   // Convert rikishi to candidate
   const candidateId = `cd_${rikishi.id}`;
@@ -163,10 +166,19 @@ export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): S
     temperament: { discipline: 80, volatility: 40 },
   };
 
-  tp.candidates[candidateId] = candidate;
+  const nextCandidates = { ...tp.candidates, [candidateId]: candidate };
+  const nextPools = { ...tp.pools };
+  const pool = { ...nextPools["foreign"] };
   if (!pool.candidatesHidden.includes(candidateId)) {
-    pool.candidatesHidden.push(candidateId);
+    pool.candidatesHidden = [...pool.candidatesHidden, candidateId];
   }
+  nextPools["foreign"] = pool;
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+  });
 
   return builder.build();
 }
@@ -175,35 +187,19 @@ export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): S
 // INTERNAL POOL REFRESH HELPERS
 // ============================================
 
-function fillHiddenCandidates(
-  pool: TalentPoolState,
-  tp: TalentPoolWorldState,
-  toGenerate: number,
-  rng: SeededRNG,
-  currentYear: number,
-  poolType: TalentPoolType,
-  idGenerator: () => string
-): void {
-  for (let i = 0; i < toGenerate; i++) {
-    const id = idGenerator();
-    const candidate = generateCandidate({
-      id,
-      rng,
-      currentYear,
-      poolType,
-    });
-    tp.candidates[id] = candidate;
-    pool.candidatesHidden.push(id);
-  }
-}
+// 196: Unused fillHiddenCandidates removed
 
-export function refreshAllPools(world: WorldState): void {
+export function refreshAllPools(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("refreshAllPools");
   const tp = ensureTalentPoolState(world);
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `refresh_${world.year}`);
 
+  const nextCandidates = { ...tp.candidates };
+  const nextPools = { ...tp.pools };
+
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
   poolTypes.forEach((pt) => {
-    const pool = tp.pools[pt];
+    const pool = { ...nextPools[pt] };
     // Fill until the hidden reserve cap
     const currentCount = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = pool.hiddenReserveCap - currentCount;
@@ -216,12 +212,20 @@ export function refreshAllPools(world: WorldState): void {
         currentYear: world.year,
         poolType: pt,
       });
-      tp.candidates[id] = candidate;
-      pool.candidatesHidden.push(id);
+      nextCandidates[id] = candidate;
+      pool.candidatesHidden = [...pool.candidatesHidden, id];
     }
+    nextPools[pt] = pool;
   });
 
-  tp.lastYearlyRefreshYear = world.year;
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+    lastYearlyRefreshYear: world.year,
+  });
+
+  return builder.build();
 }
 
 function filterAgedOutCandidates(
@@ -229,7 +233,7 @@ function filterAgedOutCandidates(
   tp: TalentPoolWorldState,
   currentYear: number,
   maxAge: number
-): Id[] {
+): { filteredIds: Id[]; idsToRemove: Id[] } {
   const idsToRemove: Id[] = [];
   const filteredIds = candidateIds.filter((id) => {
     const candidate = tp.candidates[id];
@@ -244,15 +248,7 @@ function filterAgedOutCandidates(
     return true;
   });
 
-  // Remove aged-out candidates from talent pool
-  for (const id of idsToRemove) {
-    const nextCandidates = Object.fromEntries(
-      Object.entries(tp.candidates).filter(([key]) => key !== id)
-    );
-    tp.candidates = nextCandidates;
-  }
-
-  return filteredIds;
+  return { filteredIds, idsToRemove };
 }
 
 /**
@@ -269,36 +265,55 @@ export function tickYear(world: WorldState): StateImpact {
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 
-  const updatedPools = { ...tp.pools };
+  const nextPools = { ...tp.pools };
+  let nextCandidates = { ...tp.candidates };
 
   for (const poolType of poolTypes) {
     const pool = { ...tp.pools[poolType] };
 
     // 1. Age out stale candidates (estimate age from birthYear)
     const maxAge = poolType === "high_school" ? 20 : poolType === "university" ? 24 : 28;
-    pool.candidatesVisible = filterAgedOutCandidates(
-      pool.candidatesVisible,
-      tp,
-      currentYear,
-      maxAge
-    );
-    pool.candidatesHidden = filterAgedOutCandidates(pool.candidatesHidden, tp, currentYear, maxAge);
+    const visible = filterAgedOutCandidates(pool.candidatesVisible, tp, currentYear, maxAge);
+    const hidden = filterAgedOutCandidates(pool.candidatesHidden, tp, currentYear, maxAge);
+
+    pool.candidatesVisible = visible.filteredIds;
+    pool.candidatesHidden = hidden.filteredIds;
+
+    // Remove from nextCandidates
+    const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
+    if (removedIds.length > 0) {
+      const removedSet = new Set(removedIds as string[]);
+      nextCandidates = Object.fromEntries(
+        Object.entries(nextCandidates).filter(([id]) => !removedSet.has(id))
+      ) as Record<Id, TalentCandidate>;
+    }
 
     // 2. Inject fresh prospects for the new year
     const targetFill = Math.floor(pool.hiddenReserveCap * 0.6);
     const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 
-    fillHiddenCandidates(pool, tp, toGenerate, rng, currentYear, poolType, () => rng.uuid("CD"));
+    for (let i = 0; i < toGenerate; i++) {
+      const id = rng.uuid("CD");
+      const candidate = generateCandidate({
+        id,
+        rng,
+        currentYear,
+        poolType,
+      });
+      nextCandidates[id] = candidate;
+      pool.candidatesHidden = [...pool.candidatesHidden, id];
+    }
 
-    updatedPools[poolType] = pool;
+    nextPools[poolType] = pool;
   }
 
-  const updatedTalentPool = { ...tp, pools: updatedPools, lastYearlyRefreshYear: currentYear };
-
-  // Note: talentPool updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as talentPool is a nested state
-  world.talentPool = updatedTalentPool;
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    pools: nextPools,
+    candidates: nextCandidates,
+    lastYearlyRefreshYear: currentYear,
+  });
 
   return builder.build();
 }

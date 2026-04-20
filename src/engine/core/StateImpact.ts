@@ -6,12 +6,12 @@
  * and a resolver applies these patches atomically to produce the final state.
  */
 
-import type { Id } from "../types/common";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import type { Oyakata } from "../types/oyakata";
 import type { WorldState } from "../types/world";
+import type { HeyaTrainingState } from "../types/training";
 import type { Sponsor, Koenkai } from "../types/sponsors";
+import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
+import type { GovernanceRuling } from "../types/economy";
+import type { AlmanacSnapshot } from "../almanac";
 import type {
   EngineEventType,
   EventCategory,
@@ -39,6 +39,8 @@ export interface StateImpact {
     sponsorUpdates?: Map<string, Partial<Sponsor>>;
     /** Map of koenkai ID → partial koenkai update */
     koenkaiUpdates?: Map<string, Partial<Koenkai>>;
+    /** Map of heya ID → partial training state update */
+    trainingStateUpdates?: Map<string, Partial<HeyaTrainingState>>;
     // Add other entity types as needed
   };
 
@@ -102,6 +104,9 @@ export interface StateImpact {
       | "governanceLog"
       | "pendingExhibitions"
       | "bloodlineRegistry"
+      | "npcScoutingPriorities"
+      | "talentPool"
+      | "candidatePool"
     >
   >;
 
@@ -109,10 +114,13 @@ export interface StateImpact {
    * Array append operations for world arrays.
    * Used to append items to world arrays like history, almanacSnapshots, basho.matches, governanceLog.
    */
-  arrayAppends?: Array<{
-    field: "history" | "almanacSnapshots" | "basho.matches" | "governanceLog" | "awardLog";
-    items: unknown[];
-  }>;
+  arrayAppends?: Array<
+    | { field: "history"; items: BashoResult[] }
+    | { field: "almanacSnapshots"; items: AlmanacSnapshot[] }
+    | { field: "basho.matches"; items: MatchSchedule[] }
+    | { field: "governanceLog"; items: GovernanceRuling[] }
+    | { field: "awardLog"; items: AwardLogEntry[] }
+  >;
 
   /**
    * Events to log (deferred from EventBus calls).

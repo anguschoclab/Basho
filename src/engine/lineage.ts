@@ -1,10 +1,9 @@
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
-import { getRivalry, upsertRivalry, makeRivalryKey } from "./rivalries";
-import type { Heya } from "./types/heya";
-import type { HistoricalOyakata, OyakataAchievements } from "./types/history";
-
+import { getRivalry, makeRivalryKey } from "./rivalries";
 
 export interface LineageEdge {
   mentorId: Id;
@@ -14,50 +13,75 @@ export interface LineageEdge {
 }
 
 export function ensureLineage(world: WorldState): LineageEdge[] {
-  if (!world.lineage) world.lineage = [];
+  if (!world.lineage) return [];
   return world.lineage;
 }
 
-export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): string {
-  if (menteeId === mentorId) return 'Cannot mentor self.';
-  
+/**
+ * Assigns a mentor to a mentee.
+ * Returns a StateImpact describing the link and rivalry seeding instead of mutating directly.
+ */
+export function assignMentor(
+  world: WorldState,
+  menteeId: Id,
+  mentorId: Id
+): { ok: boolean; reason?: string; impact?: StateImpact } {
+  if (menteeId === mentorId) return { ok: false, reason: "Cannot mentor self." };
+
   const mentee = world.rikishi.get(menteeId);
   const mentor = world.rikishi.get(mentorId);
-  if (!mentee || !mentor) return 'Invalid mentor or mentee.';
+  if (!mentee || !mentor) return { ok: false, reason: "Invalid mentor or mentee." };
 
-  ensureLineage(world);
+  const builder = createImpactBuilder("assignMentor");
+  let currentLineage = [...ensureLineage(world)];
 
+  // 1. Link logic
   // remove previous mentor link if any
   if (mentee.mentorId) {
-    world.lineage = world.lineage!.filter(e => e.menteeId !== menteeId);
+    currentLineage = currentLineage.filter((e) => e.menteeId !== menteeId);
+
     // Remove mentee from previous mentor's list
     const prevMentor = world.rikishi.get(mentee.mentorId);
     if (prevMentor && prevMentor.menteeIds) {
-      prevMentor.menteeIds = prevMentor.menteeIds.filter(id => id !== menteeId);
+      builder.updateRikishi(mentee.mentorId, {
+        menteeIds: prevMentor.menteeIds.filter((id) => id !== menteeId),
+      });
     }
   }
 
-  mentee.mentorId = mentorId;
-  mentor.menteeIds = mentor.menteeIds || [];
-  if (!mentor.menteeIds.includes(menteeId)) {
-    mentor.menteeIds.push(menteeId);
+  // Update mentee
+  builder.updateRikishi(menteeId, { mentorId });
+
+  // Update new mentor
+  const nextMenteeIds = mentor.menteeIds || [];
+  if (!nextMenteeIds.includes(menteeId)) {
+    builder.updateRikishi(mentorId, {
+      menteeIds: [...nextMenteeIds, menteeId],
+    });
   }
 
-  world.lineage!.push({ 
-    mentorId: mentorId, 
-    menteeId: menteeId, 
-    sinceYear: world.year, 
-    sinceWeek: world.week 
+  // Update world lineage list
+  currentLineage.push({
+    mentorId: mentorId,
+    menteeId: menteeId,
+    sinceYear: world.year,
+    sinceWeek: world.week,
   });
+  builder.updateWorldField("lineage", currentLineage);
 
-  // Automatically seed a mentor_student rivalry
+  // 2. Rivalry seeding
   if (world.rivalriesState) {
     let pair = getRivalry(world.rivalriesState, menteeId, mentorId);
+    const rivalriesState = {
+      ...world.rivalriesState,
+      pairs: { ...(world.rivalriesState.pairs || {}) },
+    };
+
     if (!pair) {
       pair = {
         key: makeRivalryKey(menteeId, mentorId),
         aId: menteeId < mentorId ? menteeId : mentorId,
-        bId: menteeId < mentorId ? mentorId : menteeId,
+        bId: menteeId < mentorId ? mentorId : mentorId,
         sameHeya: mentee.heyaId === mentor.heyaId,
         meetings: 0,
         lastMetWeek: world.week,
@@ -65,22 +89,24 @@ export function assignMentor(world: WorldState, menteeId: Id, mentorId: Id): str
         bWins: 0,
         closeness: 0,
         spite: 0,
-        heat: 0,
-        tone: "respect",
-        triggers: {}
+        heat: 20,
+        tone: "mentor_student",
+        triggers: {},
+      };
+    } else {
+      pair = {
+        ...pair,
+        tone: "mentor_student",
+        heat: Math.max(pair.heat, 20),
       };
     }
-    
-    if (pair) {
-      pair.tone = "mentor_student";
-      pair.heat = Math.max(pair.heat, 20);
-      upsertRivalry(world.rivalriesState, pair);
-    }
+
+    rivalriesState.pairs[pair.key] = pair;
+    builder.updateWorldField("rivalriesState", rivalriesState);
   }
 
-  return `${mentor.shikona || mentor.name} is now mentoring ${mentee.shikona || mentee.name}.`;
+  return { ok: true, impact: builder.build() };
 }
-
 
 export function getMentor(world: WorldState, r: Rikishi): Rikishi | undefined {
   if (!r.mentorId) return undefined;
@@ -99,7 +125,12 @@ export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
 /**
  * Records the transition of stable leadership from one Oyakata to another.
  */
-export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataId: Id, newOyakataName: string) {
+export function recordOyakataHandover(
+  world: WorldState,
+  heyaId: Id,
+  newOyakataId: Id,
+  newOyakataName: string
+) {
   const heya = world.heyas.get(heyaId);
   if (!heya) return;
 
@@ -124,11 +155,11 @@ export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataI
     generation: currentGen,
     startYear: world.year,
     achievements: {
-        titlesWon: 0,
-        rekishiProducedCount: 0,
-        sekitoriCount: 0,
-        specialAwards: []
-    }
+      titlesWon: 0,
+      rekishiProducedCount: 0,
+      sekitoriCount: 0,
+      specialAwards: [],
+    },
   };
 
   heya.lineage.push(newTenure);
@@ -139,28 +170,28 @@ export function recordOyakataHandover(world: WorldState, heyaId: Id, newOyakataI
  * Calculates tenure achievements for the currently retiring Oyakata.
  */
 function calculateTenureAchievements(world: WorldState, heya: Heya): OyakataAchievements {
-    const rikishiIds = heya.rikishiIds || [];
-    let sekitoriCount = 0;
-    let winners = 0;
+  const rikishiIds = heya.rikishiIds || [];
+  let sekitoriCount = 0;
+  let winners = 0;
 
-    for (const rid of rikishiIds) {
-        const r = world.rikishi.get(rid);
-        if (!r) continue;
-        
-        const rank = r.rank.toLowerCase();
-        if (["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"].includes(rank)) {
-            sekitoriCount++;
-        }
-        
-        if ((r.careerRecord?.yusho || 0) > 0) winners++;
+  for (const rid of rikishiIds) {
+    const r = world.rikishi.get(rid);
+    if (!r) continue;
+
+    const rank = r.rank.toLowerCase();
+    if (["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"].includes(rank)) {
+      sekitoriCount++;
     }
 
-    return {
-        titlesWon: winners,
-        rekishiProducedCount: rikishiIds.length,
-        sekitoriCount: sekitoriCount,
-        specialAwards: []
-    };
+    if ((r.careerRecord?.yusho || 0) > 0) winners++;
+  }
+
+  return {
+    titlesWon: winners,
+    rekishiProducedCount: rikishiIds.length,
+    sekitoriCount: sekitoriCount,
+    specialAwards: [],
+  };
 }
 
 export interface LineageTreeNode {
@@ -173,24 +204,27 @@ export interface LineageTreeNode {
 /**
  * Recursively traces the mentorship lineage of a rikishi.
  */
-export function getLineageTree(world: WorldState, rikishiId: Id, depth: number = 0): LineageTreeNode[] {
-    const r = world.rikishi.get(rikishiId);
-    if (!r || depth > 5) return [];
+export function getLineageTree(
+  world: WorldState,
+  rikishiId: Id,
+  depth: number = 0
+): LineageTreeNode[] {
+  const r = world.rikishi.get(rikishiId);
+  if (!r || depth > 5) return [];
 
-    const mentorId = r.mentorId;
-    if (!mentorId) return [];
+  const mentorId = r.mentorId;
+  if (!mentorId) return [];
 
-    const mentor = world.rikishi.get(mentorId);
-    if (!mentor) return [];
+  const mentor = world.rikishi.get(mentorId);
+  if (!mentor) return [];
 
-    return [
-        { 
-            id: mentorId, 
-            shikona: mentor.shikona || mentor.name || "Unknown", 
-            rank: mentor.rank,
-            depth: depth 
-        },
-        ...getLineageTree(world, mentorId, depth + 1)
-    ];
+  return [
+    {
+      id: mentorId,
+      shikona: mentor.shikona || mentor.name || "Unknown",
+      rank: mentor.rank,
+      depth: depth,
+    },
+    ...getLineageTree(world, mentorId, depth + 1),
+  ];
 }
-

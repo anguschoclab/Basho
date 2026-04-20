@@ -11,7 +11,11 @@ import type { MovementEvent } from "../../types/banzuke";
 import type { KeshoTier } from "../../types/keshoMawashi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { generateKeshoMawashi, upgradeKeshoMawashi, generateYokozunaTsuna } from "./KeshoMawashiFactory";
+import {
+  generateKeshoMawashi,
+  upgradeKeshoMawashi,
+  generateYokozunaTsuna,
+} from "./KeshoMawashiFactory";
 
 /** Generate kesho-mawashi for all promotions detected in banzuke update */
 export function generateKeshoForPromotions(
@@ -52,8 +56,7 @@ export function generateKeshoForPromotions(
       const kesho = generateKeshoMawashi(world, rikishi, "juryo");
       builder.updateRikishi(rikishi.id, { keshoMawashi: kesho });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (builder as any).logEvent?.(
+      builder.logEvent(
         "KESHO_CREATED",
         "narrative",
         {
@@ -75,8 +78,7 @@ export function generateKeshoForPromotions(
       const upgraded = upgradeKeshoMawashi(rikishi.keshoMawashi, newTier, world);
       builder.updateRikishi(rikishi.id, { keshoMawashi: upgraded });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (builder as any).logEvent?.(
+      builder.logEvent(
         "KESHO_UPGRADED",
         "narrative",
         {
@@ -95,8 +97,7 @@ export function generateKeshoForPromotions(
       const tsuna = generateYokozunaTsuna(world, rikishi);
       builder.updateRikishi(rikishi.id, { yokozunaTsuna: tsuna });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (builder as any).logEvent?.(
+      builder.logEvent(
         "YOKOZUNA_TSUNA_CREATED",
         "narrative",
         {
@@ -113,8 +114,7 @@ export function generateKeshoForPromotions(
       const kesho = generateKeshoMawashi(world, rikishi, "yokozuna");
       builder.updateRikishi(rikishi.id, { keshoMawashi: kesho });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (builder as any).logEvent?.(
+      builder.logEvent(
         "KESHO_MAWASHI_CREATED",
         "narrative",
         {

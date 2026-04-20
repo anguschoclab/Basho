@@ -224,9 +224,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     return builder.build();
   }
 
-  const standingEntries =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Runtime type check for Map vs Object
-    standings instanceof Map ? Array.from(standings.entries()) : Object.entries(standings as any);
+  const standingEntries = Array.from(standings.entries());
 
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const r of world.rikishi.values()) {
@@ -307,8 +305,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     let consecutiveKyujo = rikishi?.consecutiveKyujo || 0;
     let pressureScore = rikishi?.pressureScore || 0;
     let councilWarnings = rikishi?.councilWarnings || 0;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic object construction for conditional stat updates
-    let statsUpdate: any = {};
+    let statsUpdate: Partial<import("./types/rikishi").RikishiStats> = {};
 
     if (rikishi?.rank === "yokozuna") {
       const isMakeKoshi = stats.wins < 8; // Official make-koshi
@@ -510,9 +507,7 @@ export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
     return { wins: 0, losses: 0, absences: 0 };
   }
 
-  const statsArr =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Runtime type check for Map vs Object
-    standings instanceof Map ? standings.get(rikishiId) : (standings as any)[rikishiId];
+  const statsArr = standings.get(rikishiId);
 
   if (!statsArr) {
     return { wins: 0, losses: 0, absences: 0 };

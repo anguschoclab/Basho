@@ -1,26 +1,3 @@
-// CandidateGenerator.ts
-// Barrel re-exporting all public generation APIs. Also owns generateCandidate,
-// the entry-point that assembles TalentCandidate objects for recruitment pools.
-
-export {
-  rollAgeForRank,
-  rollPotential,
-  deriveCurrentAbility,
-  generateRikishiStats,
-  type GeneratedStats,
-  type PotentialPackage,
-} from "./CandidateStats";
-
-export {
-  generateSyntheticCareer,
-  type DivisionRecords,
-} from "./CandidateCareer";
-
-export {
-  generateFullRikishi,
-  convertCandidateToRikishi,
-} from "./CandidateBuilder";
-
 import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
 import { clampInt } from "../../utils/math";
@@ -32,6 +9,7 @@ import type { TalentCandidate, TalentPoolType } from "../../types/talent";
 import { rollPotential } from "./CandidateStats";
 import { LineageService } from "./LineageService";
 import type { WorldState } from "../../types/world";
+import type { RikishiStats } from "../../types/rikishi";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
@@ -53,7 +31,8 @@ export function generateCandidate(args: {
   const developmentProfile = (() => {
     const roll = rng.next();
     let acc = 0;
-    for (const [p, w] of Object.entries(DEVELOPMENT_PROFILE_WEIGHTS)) {
+    const entries = Object.entries(DEVELOPMENT_PROFILE_WEIGHTS);
+    for (const [p, w] of entries) {
       acc += w;
       if (roll < acc) return p as DevelopmentProfile;
     }
@@ -73,28 +52,35 @@ export function generateCandidate(args: {
 
   // Apply Prodigy bonus to stat ceilings
   if (isEmergentProdigy) {
-    Object.keys(paPkg.stats).forEach((stat) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (paPkg.stats as any)[stat] = clampInt((paPkg.stats as any)[stat] + 12, 40, 99);
-    });
+    const stats = paPkg.stats;
+    const keys: Array<keyof RikishiStats> = [
+      "strength",
+      "speed",
+      "technique",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+    ];
+    for (const key of keys) {
+      stats[key] = clampInt((stats[key] || 0) + 12, 40, 99);
+    }
     paPkg.ceilingFraction = 1.0; // Prodigies always reach their full PA
     paPkg.developmentSpeed *= 1.25; // Faster growth
   }
 
   // Phase 5 Depth: Genetic Lineage
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let bloodlineTrait: any = null;
-  if (world) {
-    bloodlineTrait = LineageService.rollGeneticLineage(
-      world,
-      {
-        ...args, // Partial mock since we haven't built the candidate yet
-        tags: isEmergentProdigy ? ["prodigy"] : [],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      rng
-    );
-  }
+  const bloodlineTrait = world
+    ? LineageService.rollGeneticLineage(
+        world,
+        {
+          visibilityBand: "hidden",
+          isAmateurStar: false,
+          tags: isEmergentProdigy ? ["prodigy"] : [],
+        },
+        rng
+      )
+    : null;
 
   // Determine origin based on pool
   const origin =

@@ -1,14 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { MockFactory } from "../../test/utils/MockFactory";
+import type { EngineCommand, EngineEvent } from "../worker/types";
+import type { UIDigest } from "../../presenters/uiDigest";
 
 // Mock the self object for Web Worker environment before importing the worker
 const mockPostMessage = vi.fn();
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-// @ts-expect-error
-globalThis.self = {
-  postMessage: mockPostMessage,
-  onmessage: null,
-};
+
+// Use a separate interface for the mock to avoid global pollution if possible,
+// but we need to satisfy the expectations of the worker script.
+interface MockWorkerGlobal {
+  postMessage: (message: EngineEvent) => void;
+  onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
+}
+
+const mockGlobal = globalThis as unknown as MockWorkerGlobal;
+mockGlobal.postMessage = mockPostMessage;
+mockGlobal.onmessage = null;
 
 // Mock other dependencies
 vi.mock("../../presenters/uiDigest", () => ({
@@ -19,7 +26,7 @@ vi.mock("../../presenters/uiDigest", () => ({
 }));
 
 vi.mock("../systems/generation/WorldFactory", () => ({
-  generateInitialWorld: vi.fn((seed) => ({ mockWorld: true, seed })),
+  generateInitialWorld: vi.fn((seed) => MockFactory.createWorld({ seed })),
 }));
 
 vi.mock("../tick/tickOrchestrator", () => ({
@@ -28,121 +35,87 @@ vi.mock("../tick/tickOrchestrator", () => ({
 }));
 
 // Import the worker script which will attach to globalThis.self.onmessage
-await import("../worker/engine.worker.ts");
+await import("../worker/engine.worker.js"); // Using .js for ESM compatibility in tests if needed, or .ts
 
 describe("engine.worker", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should handle START_WORLD command", async () => {
-    const startCmd = {
-      data: {
-        type: "START_WORLD",
-        seed: "test-seed",
-        playerHeyaId: "heya-123",
-      },
-    };
+  const triggerMessage = async (data: EngineCommand) => {
+    if (mockGlobal.onmessage) {
+      await mockGlobal.onmessage({ data } as MessageEvent<EngineCommand>);
+    }
+  };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(startCmd);
+  it("should handle START_WORLD command", async () => {
+    await triggerMessage({
+      type: "START_WORLD",
+      seed: "test-seed",
+      playerHeyaId: "heya-123",
+    });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "TICK_COMPLETED",
       digest: {
         mockDigest: true,
         worldSeed: "test-seed",
-      },
+      } as unknown as UIDigest,
     });
   });
 
   it("should handle LOAD_WORLD command", async () => {
-    const loadCmd = {
-      data: {
-        type: "LOAD_WORLD",
-        world: {
-          mockWorld: true,
-          seed: "loaded-seed",
-        },
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(loadCmd);
+    const world = MockFactory.createWorld({ seed: "loaded-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "TICK_COMPLETED",
       digest: {
         mockDigest: true,
         worldSeed: "loaded-seed",
-      },
+      } as unknown as UIDigest,
     });
   });
 
   it("should handle TICK_DAY command", async () => {
     // First load a world
-    const loadCmd = {
-      data: {
-        type: "LOAD_WORLD",
-        world: {
-          mockWorld: true,
-          seed: "tick-seed",
-        },
-      },
-    };
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(loadCmd);
+    const world = MockFactory.createWorld({ seed: "tick-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
     vi.clearAllMocks();
 
-    const tickCmd = {
-      data: {
-        type: "TICK_DAY",
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(tickCmd);
+    await triggerMessage({
+      type: "TICK_DAY",
+    });
 
     // Since tickOrchestrator is mocked to return { ...world, ticked: true }
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "TICK_COMPLETED",
       digest: {
         mockDigest: true,
-        worldSeed: "tick-seed", // the seed is preserved by the tick mock
-      },
+        worldSeed: "tick-seed",
+      } as unknown as UIDigest,
     });
   });
 
   it("should handle AUTO_SIM_DAYS command", async () => {
     // First load a world
-    const loadCmd = {
-      data: {
-        type: "LOAD_WORLD",
-        world: {
-          mockWorld: true,
-          seed: "auto-sim-seed",
-        },
-      },
-    };
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(loadCmd);
+    const world = MockFactory.createWorld({ seed: "auto-sim-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
     vi.clearAllMocks();
 
-    const autoSimCmd = {
-      data: {
-        type: "AUTO_SIM_DAYS",
-        days: 10,
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(autoSimCmd);
+    await triggerMessage({
+      type: "AUTO_SIM_DAYS",
+      days: 10,
+    });
 
     // It should emit progress at day 1 (index 0) and day 6 (index 5)
     expect(mockPostMessage).toHaveBeenCalledWith({
@@ -165,7 +138,7 @@ describe("engine.worker", () => {
       digest: {
         mockDigest: true,
         worldSeed: "auto-sim-seed",
-      },
+      } as unknown as UIDigest,
     });
 
     // It should return the updated world
@@ -173,7 +146,6 @@ describe("engine.worker", () => {
       expect.objectContaining({
         type: "WORLD_UPDATED",
         world: expect.objectContaining({
-          mockWorld: true,
           seed: "auto-sim-seed",
           ticked: true,
         }),
@@ -183,51 +155,33 @@ describe("engine.worker", () => {
 
   it("should handle GET_DIGEST command", async () => {
     // First load a world
-    const loadCmd = {
-      data: {
-        type: "LOAD_WORLD",
-        world: {
-          mockWorld: true,
-          seed: "digest-seed",
-        },
-      },
-    };
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(loadCmd);
+    const world = MockFactory.createWorld({ seed: "digest-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
     vi.clearAllMocks();
 
-    const digestCmd = {
-      data: {
-        type: "GET_DIGEST",
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(digestCmd);
+    await triggerMessage({
+      type: "GET_DIGEST",
+    });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "TICK_COMPLETED",
       digest: {
         mockDigest: true,
         worldSeed: "digest-seed",
-      },
+      } as unknown as UIDigest,
     });
   });
 
   it("should handle invalid commands by logging a warning", async () => {
     const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    const invalidCmd = {
-      data: {
-        type: "INVALID_COMMAND",
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(invalidCmd);
+    // @ts-expect-error - testing invalid command
+    await triggerMessage({
+      type: "INVALID_COMMAND",
+    });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith("[Worker] Unknown command: INVALID_COMMAND");
     consoleWarnSpy.mockRestore();
@@ -236,20 +190,14 @@ describe("engine.worker", () => {
   it("should handle generic errors", async () => {
     // We mock the generateInitialWorld to throw an error for this specific test
     const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
-    (generateInitialWorld as any).mockImplementationOnce(() => {
+    (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
       throw new Error("Test error message");
     });
 
-    const errorCmd = {
-      data: {
-        type: "START_WORLD",
-        seed: "error-seed",
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(errorCmd);
+    await triggerMessage({
+      type: "START_WORLD",
+      seed: "error-seed",
+    });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "ERROR",
@@ -259,20 +207,14 @@ describe("engine.worker", () => {
 
   it("should handle error without message property gracefully", async () => {
     const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
-    (generateInitialWorld as any).mockImplementationOnce(() => {
+    (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
       throw "String error instead of Error object";
     });
 
-    const errorCmd = {
-      data: {
-        type: "START_WORLD",
-        seed: "error-seed",
-      },
-    };
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file worker mock
-    // @ts-expect-error
-    await globalThis.self.onmessage(errorCmd);
+    await triggerMessage({
+      type: "START_WORLD",
+      seed: "error-seed",
+    });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "ERROR",

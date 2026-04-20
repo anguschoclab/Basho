@@ -1,5 +1,5 @@
 import type { WorldState } from "../types/world";
-import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
+import type { BashoSimResult, BanzukeUpdateHook, BashoResult } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
@@ -95,7 +95,7 @@ export function runAutoSim(
     }
 
     for (const condition of config.stopConditions) {
-      if (checkStopCondition(condition, bashoResult, world, config, chronicle)) {
+      if (checkStopCondition(condition, bashoResult, world, config)) {
         stoppedBy = condition;
         break;
       }
@@ -125,11 +125,11 @@ export function runAutoSim(
         junYushoAmount: 2_000_000,
         specialPrizes: 2_000_000,
       },
-    } as any);
+    } as BashoResult);
 
     if (
       config.duration.type === "untilEvent" &&
-      checkStopCondition(config.duration.eventType, bashoResult, world, config, chronicle)
+      checkStopCondition(config.duration.eventType, bashoResult, world, config)
     ) {
       stoppedBy = config.duration.eventType;
       break;
@@ -151,11 +151,9 @@ export function checkStopCondition(
   condition: StopCondition,
   bashoResult: BashoSimResult,
   world: WorldState,
-  config: AutoSimConfig,
-  _chronicle: ChronicleReport
+  config: AutoSimConfig
 ): boolean {
   const hasPlayer = !config.observerMode && !!config.playerHeyaId;
-  const anyWorld = world as any;
 
   switch (condition) {
     case "yokozunaPromotion":
@@ -167,18 +165,22 @@ export function checkStopCondition(
         hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId
       );
     case "stableInsolvency":
-      return hasPlayer && world.heyas.get(config.playerHeyaId!)?.runwayBand === "desperate";
-    case "scandal": {
-      const scandals: any[] = Array.isArray(anyWorld.scandals) ? anyWorld.scandals : [];
-      const eventLog: any[] = Array.isArray(anyWorld.eventLog) ? anyWorld.eventLog : [];
       return (
-        scandals.some((s: any) => s?.severity === "major" && s?.year === world.year) ||
-        eventLog.some((e: any) => e?.type === "scandal")
+        hasPlayer &&
+        config.playerHeyaId !== undefined &&
+        world.heyas.get(config.playerHeyaId)?.runwayBand === "desperate"
+      );
+    case "scandal": {
+      const scandals = world.scandals ?? [];
+      const eventLogList = world.eventLog ?? [];
+      return (
+        scandals.some((s) => s.severity === "major" && s.year === world.year) ||
+        eventLogList.some((e) => e.type === "scandal")
       );
     }
     case "retirementOfStar": {
-      const retirements: any[] = Array.isArray(anyWorld.retirements) ? anyWorld.retirements : [];
-      return retirements.some((r: any) => {
+      const retirements = world.retirements ?? [];
+      return retirements.some((r) => {
         const rikishi = world.rikishi.get(r.rikishiId);
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
       });

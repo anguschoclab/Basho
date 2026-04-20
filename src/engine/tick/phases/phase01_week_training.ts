@@ -16,9 +16,11 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { EntityCollection } from "../../core/EntityCollection";
 import { calculateFatigueDelta, calculateGrowthVector } from "../../systems/training/TrainingMath";
-import { getHeyaStaffBonuses } from "../../staff";
 import { ensureHeyaTrainingState } from "../../systems/training/TrainingService";
 import type { Id } from "../../types/common";
+import type { TrainingProfile, IndividualFocus } from "../../types/training";
+import type { StaffBonuses } from "../../staff";
+import type { Heya } from "../../types/heya";
 
 export function phase01_week_training(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_training");
@@ -57,16 +59,18 @@ export function phase01_week_training(world: WorldState): StateImpact {
         );
         // Severe injury & permanent stat penalty
         r.injured = true;
-        if (!r.injuryStatus)
+        if (!r.injuryStatus) {
           r.injuryStatus = {
             type: "internal",
             severity: "serious",
             weeksRemaining: 12,
-          } as typeof r.injuryStatus;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        r.injuryStatus!.severity = "serious";
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        r.injuryStatus!.weeksToHeal = 12;
+          };
+        }
+        const status = r.injuryStatus;
+        if (status) {
+          status.severity = "serious";
+          status.weeksToHeal = 12;
+        }
         r.power = Math.max(30, (r.power ?? 50) - 15);
         r.stamina = Math.max(30, (r.stamina ?? 50) - 15);
         syncStats(r);
@@ -114,10 +118,8 @@ export function phase01_week_training(world: WorldState): StateImpact {
 
 function applyFatigue(
   r: Rikishi,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  profile: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  individualFocus: any
+  profile: TrainingProfile,
+  individualFocus?: IndividualFocus
 ): void {
   const fatigueDelta = calculateFatigueDelta(profile, individualFocus);
   const focusType = individualFocus?.focusType;
@@ -132,15 +134,11 @@ function applyFatigue(
 
 function applyGrowth(
   r: Rikishi,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  profile: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  individualFocus: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  heya: any,
+  profile: TrainingProfile,
+  individualFocus: IndividualFocus | undefined,
+  heya: Heya | undefined,
   world: WorldState,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  staffBonuses: any
+  staffBonuses: StaffBonuses
 ): void {
   const growth = calculateGrowthVector(profile, individualFocus, r, heya, world);
 

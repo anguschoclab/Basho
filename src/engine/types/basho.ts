@@ -52,6 +52,7 @@ export interface BoutResult {
   upset: boolean;
   isKinboshi?: boolean;
   isTitleStakes?: boolean;
+  isYushoRace?: boolean;
   awardFact?: "kinboshi" | "ginboshi" | null;
   kenshoEnvelopes: number;
   kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
@@ -71,9 +72,9 @@ export interface MatchSchedule {
 }
 
 /** Type representing standings table. */
-export type StandingsTable = Record<Id, { wins: number; losses: number }>;
+export type StandingsTable = Record<Id, { wins: number; losses: number; absences?: number }>;
 /** Type representing standings table runtime. */
-export type StandingsTableRuntime = Map<Id, { wins: number; losses: number }>;
+export type StandingsTableRuntime = Map<Id, { wins: number; losses: number; absences?: number }>;
 
 /** Defines the structure for basho state. */
 export interface BashoState {

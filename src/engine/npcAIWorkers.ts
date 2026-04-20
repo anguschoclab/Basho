@@ -1,10 +1,9 @@
 /**
  * npcAIWorkers.ts
- *
- * Worker agents for NPC AI decision-making.
+ * =================
+ * Worker logic for NPC AI decision making.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
@@ -15,16 +14,25 @@ import {
   decideRecovery,
   decideScoutingPriority,
   identifyProtects,
+  type TrainingIntensityResult,
+  type TrainingFocusResult,
+  type RecoveryResult,
+  type ScoutingPriorityResult,
+  type ProtectResult,
 } from "./strategy/NPCStrategyService";
+import { PerceptionSnapshot, RikishiPerception } from "./perception";
+import { OyakataStyleProfile, RecruitmentPhilosophy } from "./oyakataStylePreferences";
+import { OyakataMood } from "./types/oyakata";
+import { Style } from "./types/combat";
 
 export interface TrainingWorkerContext {
-  perception: any;
+  perception: PerceptionSnapshot;
   riskAppetite: number;
   welfareDiscipline: number;
-  mood: string;
+  mood: OyakataMood;
   complianceCap?: TrainingIntensity;
-  philosophy?: string;
-  styleBias?: any;
+  philosophy?: RecruitmentPhilosophy;
+  styleBias?: Style | "neutral";
   tradition: number;
 }
 
@@ -49,9 +57,9 @@ export interface ScoutingWorkerResult {
 }
 
 export interface PersonnelWorkerContext {
-  rikishiPerceptions: any[];
+  rikishiPerceptions: RikishiPerception[];
   welfareDiscipline: number;
-  styleProfile?: any;
+  styleProfile?: OyakataStyleProfile;
   world: WorldState;
 }
 
@@ -68,21 +76,21 @@ export interface PersonnelWorkerResult {
  * Worker: Training Sub-Agent
  */
 export function spawnTrainingWorker(ctx: TrainingWorkerContext): TrainingWorkerResult {
-  const intensity = decideTrainingIntensity(
+  const intensity: TrainingIntensityResult = decideTrainingIntensity(
     ctx.perception,
     ctx.riskAppetite,
     ctx.welfareDiscipline,
-    ctx.mood as any,
+    ctx.mood,
     ctx.complianceCap,
-    ctx.philosophy as any
+    ctx.philosophy
   );
-  const focus = decideTrainingFocus(
+  const focus: TrainingFocusResult = decideTrainingFocus(
     ctx.perception,
     ctx.styleBias,
     ctx.tradition,
-    ctx.philosophy as any
+    ctx.philosophy
   );
-  const recovery = decideRecovery(ctx.perception, ctx.welfareDiscipline);
+  const recovery: RecoveryResult = decideRecovery(ctx.perception, ctx.welfareDiscipline);
 
   return {
     trainingIntensity: intensity.intensity,
@@ -100,12 +108,12 @@ export function spawnTrainingWorker(ctx: TrainingWorkerContext): TrainingWorkerR
  * Worker: Scouting Sub-Agent
  */
 export function spawnScoutingWorker(ctx: ScoutingWorkerContext): ScoutingWorkerResult {
-  const decision = decideScoutingPriority(
+  const decision: ScoutingPriorityResult = decideScoutingPriority(
     {
       runwayBand: ctx.runwayBand,
       rosterSize: ctx.rosterSize,
       rosterStrengthBand: ctx.rosterStrengthBand,
-    } as any,
+    },
     ctx.ambition,
     ctx.hasSleeperScout
   );
@@ -120,7 +128,7 @@ export function spawnScoutingWorker(ctx: ScoutingWorkerContext): ScoutingWorkerR
  */
 export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWorkerResult {
   const reasoning: string[] = [];
-  const protectDecision = identifyProtects(ctx as any, ctx.welfareDiscipline);
+  const protectDecision: ProtectResult = identifyProtects(ctx, ctx.welfareDiscipline);
   if (protectDecision.protectIds.length > 0) {
     reasoning.push(`[Personnel Worker] ${protectDecision.reason}`);
   }
@@ -198,7 +206,7 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
 /**
  * Helper: Isolated perception view
  */
-export function rpPerception(p: any) {
+export function rpPerception(p: PerceptionSnapshot) {
   return {
     rikishiPerceptions: p.rikishiPerceptions,
     welfareRiskBand: p.welfareRiskBand,

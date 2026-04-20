@@ -58,8 +58,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
           money: heya.funds,
           heyaname: heya.name ?? heya.id,
         },
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        { heyaId: playerHeyaId! }
+        { heyaId: playerHeyaId }
       );
     }
   }
@@ -70,21 +69,21 @@ export function phase06_narrative(world: WorldState): StateImpact {
     if (bigGains.length === 0) continue;
     const r = world.rikishi.get(rId);
     if (!r) continue;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const gainStr = bigGains.map((c) => `+${c.amount.toFixed(1)} ${c.stat}`).join(", ");
-    builder.logEvent(
-      "TRAINING_UPDATE",
-      "training",
-      {
-        rikishiId: rId,
-        heyaId: r.heyaId,
-        shikona: r.shikona,
-        incident: "milestone",
-        status: bigGains[0].stat, // main stat gained
-        score: bigGains[0].amount, // main gain amount
-      },
-      { rikishiId: rId, heyaId: r.heyaId }
-    );
+    for (const change of bigGains) {
+      builder.logEvent(
+        "TRAINING_UPDATE",
+        "training",
+        {
+          rikishiId: rId,
+          heyaId: r.heyaId,
+          shikona: r.shikona,
+          incident: "milestone",
+          status: change.stat,
+          score: change.amount,
+        },
+        { rikishiId: rId, heyaId: r.heyaId }
+      );
+    }
   }
 
   // ── Phase 4: Narrative Crises ─────────────────────────────────────────────

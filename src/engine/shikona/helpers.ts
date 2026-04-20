@@ -4,16 +4,16 @@
  * Helper functions for shikona generation system.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { clamp, pick, weightedPick, simpleHashToIndex } from "../utils";
 import type { HouseStyle, PatternId, Connector, ShikonaGenerationConfig } from "./types";
 import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, NATIONALITY_PREFIXES } from "./constants";
 import { HOUSE_STYLES } from "./houseStyles";
 
 export function getHouseStyle(heyaId?: string): HouseStyle {
-  if (!heyaId) return HOUSE_STYLES.find((s) => s.id === "balanced_classic")!;
+  const defaultStyle = HOUSE_STYLES[HOUSE_STYLES.length - 1]; // Fallback to last (balanced_classic)
+  if (!heyaId) return defaultStyle;
   const idx = simpleHashToIndex(heyaId, HOUSE_STYLES.length);
-  return HOUSE_STYLES[idx];
+  return HOUSE_STYLES[idx] || defaultStyle;
 }
 
 export function mergePatternWeights(

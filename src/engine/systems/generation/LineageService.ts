@@ -18,7 +18,7 @@ export const LineageService = {
    */
   rollGeneticLineage(
     world: WorldState,
-    candidate: TalentCandidate,
+    candidate: Partial<TalentCandidate>,
     rng: SeededRNG
   ): BloodlineTrait | null {
     const isElite = candidate.isAmateurStar || candidate.visibilityBand === "rumored";
@@ -37,8 +37,7 @@ export const LineageService = {
 
     if (!legend) return null;
 
-    // Determine the stat to buff based on the legend's archetype if we could find it,
-    // but we'll stick to their record type for now.
+    // Determine the stat to buff based on the legend's archetype if we could find it
     const isYushoWinner = records.yusho.some((y) => y.rikishiId === legend.rikishiId);
 
     const traitId = `lineage_${legend.rikishiId}_${world.year}`;
@@ -53,7 +52,7 @@ export const LineageService = {
     const trait: BloodlineTrait = {
       traitId,
       label,
-      description: `${candidate.name} is the direct descendant of the legendary ${legend.shikona}, who achieved ${legend.value} ${isYushoWinner ? "Yusho titles" : "career wins"}.`,
+      description: `${candidate.name || "Unknown"} is the direct descendant of the legendary ${legend.shikona}, who achieved ${legend.value} ${isYushoWinner ? "Yusho titles" : "career wins"}.`,
       ancestorShikona: legend.shikona,
       registeredYear: world.year,
       statFloorBonus: {
@@ -76,21 +75,20 @@ export const LineageService = {
     // Add floor bonuses to current potential
     const p = candidate.potentialStats;
     if (trait.statFloorBonus.strength)
-      p.strength = clampInt(p.strength + trait.statFloorBonus.strength, 0, 99);
+      p.strength = clampInt((p.strength || 0) + trait.statFloorBonus.strength, 0, 99);
     if (trait.statFloorBonus.technique)
-      p.technique = clampInt(p.technique + trait.statFloorBonus.technique, 0, 99);
+      p.technique = clampInt((p.technique || 0) + trait.statFloorBonus.technique, 0, 99);
     if (trait.statFloorBonus.mental)
-      p.mental = clampInt(p.mental + trait.statFloorBonus.mental, 0, 99);
+      p.mental = clampInt((p.mental || 0) + trait.statFloorBonus.mental, 0, 99);
 
     // Apply ceiling bonus to primary stat based on archetype
-    const primaryStat =
+    const primaryStat: keyof import("../../types/rikishi").RikishiStats =
       candidate.archetype === "oshi"
         ? "strength"
         : candidate.archetype === "yotsu"
           ? "technique"
           : "stamina";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (p as any)[primaryStat] = clampInt((p as any)[primaryStat] + trait.ceilingBonus, 0, 99);
+    p[primaryStat] = clampInt((p[primaryStat] || 0) + trait.ceilingBonus, 0, 99);
 
     // Add the "legacy" tag
     if (!candidate.tags.includes("legacy")) {

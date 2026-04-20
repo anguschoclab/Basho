@@ -3,11 +3,9 @@
  */
 
 import { WorldState } from "../types/world";
-
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
-import { rngForWorld, rngFromSeed } from "../rng";
-import { BardEngine } from "../narrative/BardEngine";
+import { rngForWorld } from "../rng";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
@@ -68,18 +66,8 @@ export function reportScandal(
     severity: severity === "critical" ? "national" : severity === "major" ? "national" : "local",
   });
 
-  // Merge headline impact
-  if (headlineImpact.entities?.heyaUpdates) {
-    for (const [id, update] of headlineImpact.entities.heyaUpdates) {
-      builder.updateHeya(id, update);
-    }
-  }
-  if (headlineImpact.worldFields) {
-    for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic field update from MediaService
-      (builder as any).updateWorldField(field, value);
-    }
-  }
+  // Merge headline impact safely via standard API
+  builder.merge(headlineImpact);
 
   return builder.build();
 }
@@ -96,10 +84,10 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
     const newScandalScore =
       heya.scandalScore && heya.scandalScore > 0
         ? Math.max(0, heya.scandalScore - 1)
-        : heya.scandalScore;
+        : (heya.scandalScore ?? 0);
 
     // Sync governanceStatus from scandalScore thresholds
-    const score = newScandalScore ?? 0;
+    const score = newScandalScore;
     const newStatus: GovernanceStatus =
       score >= 60
         ? "sanctioned"
@@ -125,7 +113,7 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
     }
 
     // Alert if crossing critical threshold (player only)
-    if (newScandalScore && newScandalScore >= 30 && heya.id === world.playerHeyaId) {
+    if (newScandalScore >= 30 && heya.id === world.playerHeyaId) {
       builder.logEvent(
         "GOVERNANCE_RULING",
         "discipline",
@@ -161,18 +149,8 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
           severity: "national",
         });
 
-        // Merge headline impact
-        if (headlineImpact.entities?.heyaUpdates) {
-          for (const [id, update] of headlineImpact.entities.heyaUpdates) {
-            builder.updateHeya(id, update);
-          }
-        }
-        if (headlineImpact.worldFields) {
-          for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic field update from MediaService
-            (builder as any).updateWorldField(field, value);
-          }
-        }
+        // Merge headline impact safely via standard API
+        builder.merge(headlineImpact);
       }
     }
   }
@@ -182,13 +160,7 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
 
 /**
  * Bi-annual JSA Board Elections.
- * Rotates ichimon political capital and emits election narrative events.
- * Returns StateImpact describing election changes instead of mutating state.
- */
-/**
- * Bi-annual JSA Board Elections.
  * Calculates institutional power based on political capital, reputation, and faction influence.
- * Candidates with highest 'Political Influence' score are elected to the Board of Elders.
  */
 export function runElections(world: WorldState): StateImpact {
   const builder = createImpactBuilder("elections");
@@ -229,11 +201,13 @@ export function runElections(world: WorldState): StateImpact {
     );
   }
 
-  builder.logEvent("BASHO_STATUS", "basho", {
-    status: "phase_transition",
-    incident: `The JSA bi-annual board elections have concluded. ${elected[0].name} has been appointed as Chairman.`,
-    shikona: elected[0].name,
-  });
+  if (elected.length > 0) {
+    builder.logEvent("BASHO_STATUS", "basho", {
+      status: "phase_transition",
+      incident: `The JSA bi-annual board elections have concluded. ${elected[0].name} has been appointed as Chairman.`,
+      shikona: elected[0].name,
+    });
+  }
 
   return builder.build();
 }
@@ -244,11 +218,13 @@ export function runElections(world: WorldState): StateImpact {
 export function getStatusColor(status: string): string {
   switch (status) {
     case "clean":
+    case "good_standing":
       return "text-green-400";
     case "warning":
       return "text-yellow-400";
     case "probation":
       return "text-orange-400";
+    case "sanctioned":
     case "critical":
       return "text-red-400";
     default:
@@ -272,7 +248,6 @@ export function getStatusLabel(_world: WorldState, status: string): string {
 
 /**
  * Spends political capital from a heya's governance account.
- * Returns StateImpact describing capital spend, or empty impact if insufficient capital.
  */
 export function spendPoliticalCapital(
   world: WorldState,
@@ -292,7 +267,6 @@ export function spendPoliticalCapital(
 
 /**
  * Issues a governance ruling based on player choice.
- * Returns StateImpact describing ruling issuance instead of mutating state directly.
  */
 export function issueGovernanceRuling(
   world: WorldState,
@@ -303,7 +277,9 @@ export function issueGovernanceRuling(
   const rulingIndex = world.governanceLog?.findIndex((r) => r.id === rulingId);
 
   if (rulingIndex !== undefined && rulingIndex >= 0 && world.governanceLog) {
-    const ruling = world.governanceLog[rulingIndex] as GovernanceRuling;
+    const ruling = world.governanceLog[rulingIndex];
+    if (!ruling) return builder.build();
+
     const heya = world.heyas.get(ruling.heyaId);
 
     if (heya) {
@@ -320,7 +296,7 @@ export function issueGovernanceRuling(
         politicalCapital: number;
       }> = { scandalScore: newScandalScore };
 
-      // Update ruling with player choice via ImpactBuilder
+      // Update ruling with player choice
       const updatedRuling: GovernanceRuling = {
         ...ruling,
         playerSeverity: severity,
@@ -331,7 +307,7 @@ export function issueGovernanceRuling(
         },
       };
 
-      // Replace the ruling in governanceLog by updating the entire array
+      // Replace the ruling in governanceLog
       const updatedGovernanceLog = [...world.governanceLog];
       updatedGovernanceLog[rulingIndex] = updatedRuling;
       builder.updateWorldField("governanceLog", updatedGovernanceLog);

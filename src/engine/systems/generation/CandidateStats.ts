@@ -43,7 +43,11 @@ export function rollAgeForRank(rng: SeededRNG, rank: Rank): number {
 }
 
 /** Picks a development profile via weighted roll. */
-export function rollDevelopmentProfile(rng: SeededRNG, age: number, rank: Rank): DevelopmentProfile {
+export function rollDevelopmentProfile(
+  rng: SeededRNG,
+  age: number,
+  rank: Rank
+): DevelopmentProfile {
   // Consistency check: a young high-rank rikishi must be a fast developer.
   const ageCfg = AGE_BY_RANK[rank];
   const ageIsPrecocious = age < ageCfg.mean - ageCfg.stdDev;
@@ -200,7 +204,7 @@ export function generateRikishiStats(args: {
             ? 55
             : 40;
 
-  const mods = profile.statModifiers;
+  const mods = profile.statModifiers || {};
   const stdDev = 8;
 
   const genStat = (key: keyof RikishiStats | "weight" | "height", defaultVal?: number) => {
@@ -212,7 +216,10 @@ export function generateRikishiStats(args: {
   const height = clampInt(rng.gaussian(180 * (mods.height ?? 1.0), 8), 160, 210);
 
   // 'power' key in statModifiers maps to strength in RikishiStats → Rikishi.power
-  const powerMod = (mods as Record<string, number | undefined>)["power"] ?? mods["strength"] ?? 1.0;
+  const powerMod =
+    (mods as Record<string, number | undefined>)["power"] ??
+    (mods as Record<string, number | undefined>)["strength"] ??
+    1.0;
   const strengthMean = baseMean * powerMod;
 
   return {

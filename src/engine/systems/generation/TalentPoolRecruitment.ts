@@ -5,14 +5,13 @@
 
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { resolveImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
-import { WorldState } from "../../types/world";
-import { Id } from "../../types/common";
-import { Heya } from "../../types/heya";
-import { Oyakata } from "../../types/oyakata";
+import type { WorldState } from "../../types/world";
+import type { Id } from "../../types/common";
+import type { Heya } from "../../types/heya";
+import type { Oyakata } from "../../types/oyakata";
 import { TalentPoolType, TalentCandidate } from "../../types/talent";
-import { convertCandidateToRikishi } from "./CandidateGenerator";
+import { convertCandidateToRikishi } from "./CandidateBuilder";
 import { rngFromSeed } from "../../rng";
 import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
@@ -27,6 +26,7 @@ export const REVEAL_COST = 100000;
 
 /**
  * Submits an offer to a candidate from the player's stable.
+ * Returns an impact describing the offer registration.
  */
 export function offerCandidate(
   world: WorldState,
@@ -34,7 +34,8 @@ export function offerCandidate(
   heyaId: Id,
   offerType: "standard" | "aggressive",
   interest: "low" | "medium" | "high" | "all_in"
-): { ok: boolean; reason?: string } {
+): { ok: boolean; reason?: string; impact?: StateImpact } {
+  const builder = createImpactBuilder("offerCandidate");
   const tp = ensureTalentPoolState(world);
   const candidate = tp.candidates[candidateId];
   if (!candidate) return { ok: false, reason: "Candidate not found" };
@@ -61,21 +62,34 @@ export function offerCandidate(
   }
 
   // 3. Register suitor
-  const existing = candidate.competingSuitors.find((s) => s.heyaId === heyaId);
-  if (existing) {
-    existing.offerType = offerType;
-    existing.interestBand = interest;
+  const nextCandidates = { ...tp.candidates };
+  const nextCandidate = { ...candidate, competingSuitors: [...candidate.competingSuitors] };
+
+  const existingIdx = nextCandidate.competingSuitors.findIndex((s) => s.heyaId === heyaId);
+  if (existingIdx !== -1) {
+    nextCandidate.competingSuitors[existingIdx] = {
+      ...nextCandidate.competingSuitors[existingIdx],
+      offerType,
+      interestBand: interest,
+    };
   } else {
-    candidate.competingSuitors.push({
+    nextCandidate.competingSuitors.push({
       heyaId,
       offerType,
       interestBand: interest,
       deadlineWeek: world.week + 2,
     });
-    candidate.availabilityState = "in_talks";
+    nextCandidate.availabilityState = "in_talks";
   }
 
-  return { ok: true };
+  nextCandidates[candidateId] = nextCandidate;
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+  });
+
+  return { ok: true, impact: builder.build() };
 }
 
 /**
@@ -84,7 +98,12 @@ export function offerCandidate(
 export function resolveCandidateSuitor(
   world: WorldState,
   candidate: TalentCandidate
-): { signed: boolean; candidate: TalentCandidate; winnerHeya?: Heya } {
+): {
+  signed: boolean;
+  candidate: TalentCandidate;
+  winnerHeyaUpdate?: Partial<Heya>;
+  event?: Parameters<typeof EventBus.recruitDiscovered>[1];
+} {
   if (candidate.availabilityState !== "in_talks" || !candidate.competingSuitors.length) {
     return { signed: false, candidate };
   }
@@ -107,41 +126,41 @@ export function resolveCandidateSuitor(
     competingSuitors: [winner],
   };
 
-  let winnerHeya = undefined;
+  let winnerHeyaUpdate = undefined;
+  let event = undefined;
 
   // High-talent signing: fire fame event and give reputation boost
   if (candidate.talentSeed >= 80) {
     const heya = world.heyas.get(winner.heyaId);
     if (heya) {
-      winnerHeya = {
-        ...heya,
+      winnerHeyaUpdate = {
         reputation: Math.min(100, (heya.reputation ?? 50) + 5),
       };
 
-      EventBus.recruitDiscovered(world, {
+      event = {
         rikishiId: candidate.personId, // Use personId for proper event tracking
         heyaId: winner.heyaId,
         shikona: candidate.name,
         heya: heya.name,
         score: candidate.talentSeed,
-        status: "high_talent_signed",
-      });
+        status: "high_talent_signed" as const,
+      };
     }
   }
 
-  return { signed: true, candidate: nextCandidate, winnerHeya };
+  return { signed: true, candidate: nextCandidate, winnerHeyaUpdate, event };
 }
 
 /**
  * Weekly maintenance for the talent pool.
+ * Returns StateImpact describing maintenance results instead of mutating directly.
  */
-export function tickWeekTalentPool(world: WorldState): WorldState {
+export function tickWeekTalentPool(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("tickWeekTalentPool");
   const tp = ensureTalentPoolState(world);
 
-  const nextWorld = { ...world };
   const nextCandidates = { ...tp.candidates };
-  const nextScouting = { ...tp.playerScouting };
-  const nextHeyas = new Map(world.heyas);
+  const nextScouting = { ...(tp.playerScouting || {}) };
 
   // 1. Weekly decay of scouting intel
   for (const [id, record] of Object.entries(nextScouting)) {
@@ -161,36 +180,40 @@ export function tickWeekTalentPool(world: WorldState): WorldState {
     const deadlineExpired = candidate.competingSuitors.some((s) => world.week >= s.deadlineWeek);
     if (!deadlineExpired) continue;
 
-    const resolution = resolveCandidateSuitor(nextWorld, candidate);
+    const resolution = resolveCandidateSuitor(world, candidate);
     if (resolution.signed) {
       nextCandidates[id] = resolution.candidate;
-      if (resolution.winnerHeya) {
-        nextHeyas.set(resolution.winnerHeya.id, resolution.winnerHeya);
+      if (resolution.winnerHeyaUpdate) {
+        builder.updateHeya(
+          resolution.candidate.competingSuitors[0].heyaId,
+          resolution.winnerHeyaUpdate
+        );
+      }
+      if (resolution.event) {
+        builder.logEvent("RECRUIT_DISCOVERED", "narrative", resolution.event, {
+          heyaId: resolution.candidate.competingSuitors[0].heyaId,
+        });
       }
     }
   }
 
-  // 3. Update world state
-  nextWorld.heyas = nextHeyas;
-  nextWorld.talentPool = {
+  // 3. Update world state via impact
+  builder.updateWorldField("talentPool", {
     ...tp,
     candidates: nextCandidates,
     playerScouting: nextScouting,
-  };
+  });
 
   // 4. Periodic pool refresh logic (basho cadence)
   if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
-    refreshAllPools(nextWorld);
+    builder.merge(refreshAllPools(world));
   }
 
-  return nextWorld;
+  return builder.build();
 }
 
 /**
  * Automates recruitment for NPC stables.
- * Materializes candidates immediately into world.rikishi and updates heya rosters.
- * Also returns the StateImpact for callers that need it, but self-applies to ensure
- * rikishi always land in the world regardless of whether callers resolve the impact.
  */
 export function fillVacanciesForNPC(
   world: WorldState,
@@ -202,13 +225,14 @@ export function fillVacanciesForNPC(
 
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
 
-  // First, map target heyas by prestige band index for weighting
-  // Elite stables get first pick in the logic, or we weight the scores by reputation
   const sortedHeyas = Object.keys(targetHeyas).sort((a, b) => {
     const heyaA = world.heyas.get(a);
     const heyaB = world.heyas.get(b);
     return (heyaB?.reputation || 0) - (heyaA?.reputation || 0);
   });
+
+  let currentCandidates = { ...tp.candidates };
+  let currentPools = { ...tp.pools };
 
   for (const heyaId of sortedHeyas) {
     const vacancyCount = targetHeyas[heyaId];
@@ -221,13 +245,12 @@ export function fillVacanciesForNPC(
       ).length > 0;
 
     for (let i = 0; i < vacancyCount; i++) {
-      // Collect all available visible candidates
       const availableCandidates: string[] = [];
       for (const pt of ["high_school", "university", "foreign"] as const) {
         if (pt === "foreign" && hasForeigner) continue;
-        const pool = tp.pools[pt];
+        const pool = currentPools[pt];
         for (const cId of pool.candidatesVisible) {
-          const c = tp.candidates[cId];
+          const c = currentCandidates[cId];
           if (c && c.availabilityState === "available") {
             availableCandidates.push(cId);
           }
@@ -235,31 +258,25 @@ export function fillVacanciesForNPC(
       }
 
       if (availableCandidates.length > 0) {
-        // Score candidates based on talent and heya reputation/prestige
         const candidatesWithScores = availableCandidates.map((cId) => {
-          const c = tp.candidates[cId];
+          const c = currentCandidates[cId];
           const talent = c.talentSeed;
-          // Reputation match: higher reputation heyas attract higher talent
-          // The penalty is high for a low-rep heya trying to grab an 85+ talent
           const repScore = heya.reputation || 50;
           let affinity = 1.0;
-          if (talent >= 80 && repScore < 70) affinity = 0.1; // Elite candidates largely reject small stables
-          if (talent >= 90 && repScore < 85) affinity = 0.05; // Generational candidates strictly reject
+          if (talent >= 80 && repScore < 70) affinity = 0.1;
+          if (talent >= 90 && repScore < 85) affinity = 0.05;
 
-          const score = talent * affinity + rng.int(0, 20); // Add variance
+          const score = talent * affinity + rng.int(0, 20);
           return { cId, score, c };
         });
 
-        // Sort by highest score
         candidatesWithScores.sort((a, b) => b.score - a.score);
 
-        // Pick from top 3
         const pickIdx = rng.int(0, Math.min(2, candidatesWithScores.length - 1));
         const bestCandidate = candidatesWithScores[pickIdx];
         const cId = bestCandidate.cId;
         const c = bestCandidate.c;
 
-        // NPC fast-path signing: bypass multi-week negotiation to stabilize world
         const updatedCandidate = {
           ...c,
           availabilityState: "signed" as const,
@@ -273,44 +290,34 @@ export function fillVacanciesForNPC(
           ],
         };
 
-        // Note: talentPool updates are not directly supported by ImpactBuilder yet
-        // For now, we'll update them directly as talentPool is a nested state
-        tp.candidates[cId] = updatedCandidate;
+        currentCandidates[cId] = updatedCandidate;
 
-        // Materialize immediately for NPCs to keep the banzuke populated
-        const materializeImpact = materializeCandidateToRikishi(world, cId, heyaId);
-        if (materializeImpact.entities?.rikishiUpdates) {
-          for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
-            builder.updateRikishi(id, update);
-          }
-        }
-        if (materializeImpact.entities?.heyaUpdates) {
-          for (const [id, update] of materializeImpact.entities.heyaUpdates) {
-            builder.updateHeya(id, update);
-          }
-        }
+        // Materialize immediately for NPC to keep banzuke populated
+        const materializeImpact = materializeCandidateToRikishiInternal(
+          world,
+          cId,
+          heyaId,
+          currentCandidates,
+          currentPools
+        );
+        builder.merge(materializeImpact.impact);
+        currentCandidates = materializeImpact.nextCandidates;
+        currentPools = materializeImpact.nextPools;
       }
     }
   }
 
-  // Self-apply: all call sites discard the return value, so we must apply the
-  // rikishi/heya updates directly to the world to ensure NPC rikishi materialize.
-  const impact = builder.build();
-  if (
-    (impact.entities?.rikishiUpdates?.size ?? 0) > 0 ||
-    (impact.entities?.heyaUpdates?.size ?? 0) > 0
-  ) {
-    const resolved = resolveImpacts(world, [impact]);
-    Object.assign(world, resolved);
-  }
-  return impact;
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: currentCandidates,
+    pools: currentPools,
+  });
+
+  return builder.build();
 }
 
 /**
  * Automates recruitment for NPC stables with competitive bidding.
- * NPCs bid against each other for visible candidates using their archetype's calculateMaxBid().
- * Materializes candidates immediately into world.rikishi and updates heya rosters.
- * Returns StateImpact describing recruitment decisions.
  */
 export function fillVacanciesForNPCWithBidding(
   world: WorldState,
@@ -320,7 +327,6 @@ export function fillVacanciesForNPCWithBidding(
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
-  // Collect all visible candidates across all pools
   const allVisibleCandidates: TalentCandidate[] = [];
   for (const poolType of ["high_school", "university", "foreign"] as TalentPoolType[]) {
     const pool = tp.pools[poolType];
@@ -332,24 +338,18 @@ export function fillVacanciesForNPCWithBidding(
     }
   }
 
-  // For each heya with vacancies, calculate bids for available candidates
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
     const heya = world.heyas.get(heyaId);
     if (!heya) continue;
-
     const oyakata = world.oyakata.get(heya.oyakataId);
     if (!oyakata) continue;
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
-
-    // Calculate bids for visible candidates (up to vacancy count)
     const candidatesToBid = allVisibleCandidates.slice(0, vacancyCount);
     for (const candidate of candidatesToBid) {
-      // Identify rival heyas (other stables that might want this candidate)
       const rivalHeyaId = Object.keys(targetHeyas).find((hid) => hid !== heyaId);
-
       const bidAmount = recruitmentStrat.calculateMaxBid(
         world,
         heya,
@@ -357,43 +357,30 @@ export function fillVacanciesForNPCWithBidding(
         candidate.candidateId,
         rivalHeyaId
       );
-
-      bids.push({
-        heyaId,
-        candidateId: candidate.candidateId,
-        bidAmount,
-        oyakata,
-      });
+      bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }
 
-  // Sort bids by amount (highest first) to resolve competitive assignments
   bids.sort((a, b) => b.bidAmount - a.bidAmount);
 
-  // Track which candidates and heyas have been assigned
   const assignedCandidates = new Set<Id>();
   const assignedHeyaSlots = new Map<Id, number>();
-
-  // Initialize slot tracking
   for (const heyaId of Object.keys(targetHeyas)) {
     assignedHeyaSlots.set(heyaId, 0);
   }
 
-  // Assign candidates to highest bidders
-  for (const bid of bids) {
-    // Skip if candidate already assigned
-    if (assignedCandidates.has(bid.candidateId)) continue;
+  let currentCandidates = { ...tp.candidates };
+  let currentPools = { ...tp.pools };
 
-    // Skip if heya has filled all vacancies
+  for (const bid of bids) {
+    if (assignedCandidates.has(bid.candidateId)) continue;
     const heyaSlotsUsed = assignedHeyaSlots.get(bid.heyaId) ?? 0;
     const heyaVacancies = targetHeyas[bid.heyaId] ?? 0;
     if (heyaSlotsUsed >= heyaVacancies) continue;
 
-    // Assign candidate to this heya
-    const candidate = tp.candidates[bid.candidateId];
+    const candidate = currentCandidates[bid.candidateId];
     if (!candidate) continue;
 
-    // Mark as signed with competing suitor
     const updatedCandidate = {
       ...candidate,
       availabilityState: "signed" as const,
@@ -406,23 +393,19 @@ export function fillVacanciesForNPCWithBidding(
         },
       ],
     };
+    currentCandidates[bid.candidateId] = updatedCandidate;
 
-    tp.candidates[bid.candidateId] = updatedCandidate;
+    const materializeImpact = materializeCandidateToRikishiInternal(
+      world,
+      bid.candidateId,
+      bid.heyaId,
+      currentCandidates,
+      currentPools
+    );
+    builder.merge(materializeImpact.impact);
+    currentCandidates = materializeImpact.nextCandidates;
+    currentPools = materializeImpact.nextPools;
 
-    // Materialize immediately for NPCs
-    const materializeImpact = materializeCandidateToRikishi(world, bid.candidateId, bid.heyaId);
-    if (materializeImpact.entities?.rikishiUpdates) {
-      for (const [id, update] of materializeImpact.entities.rikishiUpdates) {
-        builder.updateRikishi(id, update);
-      }
-    }
-    if (materializeImpact.entities?.heyaUpdates) {
-      for (const [id, update] of materializeImpact.entities.heyaUpdates) {
-        builder.updateHeya(id, update);
-      }
-    }
-
-    // Log bidding decision using existing event type
     builder.logEvent(
       "NPC_MANAGER_DECISION",
       "narrative",
@@ -436,21 +419,65 @@ export function fillVacanciesForNPCWithBidding(
       { heyaId: bid.heyaId, importance: "minor" }
     );
 
-    // Mark as assigned
     assignedCandidates.add(bid.candidateId);
     assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
   }
 
-  // Self-apply to ensure NPC rikishi materialize
-  const impact = builder.build();
-  if (
-    (impact.entities?.rikishiUpdates?.size ?? 0) > 0 ||
-    (impact.entities?.heyaUpdates?.size ?? 0) > 0
-  ) {
-    const resolved = resolveImpacts(world, [impact]);
-    Object.assign(world, resolved);
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: currentCandidates,
+    pools: currentPools,
+  });
+
+  return builder.build();
+}
+
+import type { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/talent";
+import { convertCandidateToRikishi } from "./CandidateBuilder";
+
+/**
+ * Internal helper for materialization that tracks state updates during a loop.
+ */
+function materializeCandidateToRikishiInternal(
+  world: WorldState,
+  candidateId: Id,
+  heyaId: Id,
+  candidates: Record<Id, TalentCandidate>,
+  pools: Record<TalentPoolType, TalentPoolState>
+): {
+  impact: StateImpact;
+  nextCandidates: Record<Id, TalentCandidate>;
+  nextPools: Record<TalentPoolType, TalentPoolState>;
+} {
+  const builder = createImpactBuilder("materializeCandidateToRikishiInternal");
+  const candidate = candidates[candidateId];
+  if (!candidate) return { impact: builder.build(), nextCandidates: candidates, nextPools: pools };
+
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
+  const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
+
+  builder.updateRikishi(rikishi.id, rikishi);
+  const heya = world.heyas.get(heyaId);
+  if (heya) {
+    builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
   }
-  return impact;
+
+  // Purely remove candidate from pools/candidates tracking
+  const { [candidateId]: _, ...nextCandidates } = candidates;
+  void _;
+
+  const nextPools = { ...pools };
+  for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
+    nextPools[pt] = {
+      ...nextPools[pt],
+      candidatesVisible: nextPools[pt].candidatesVisible.filter(
+        (cid: string) => cid !== candidateId
+      ),
+      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid: string) => cid !== candidateId),
+    };
+  }
+
+  return { impact: builder.build(), nextCandidates, nextPools };
 }
 
 /**
@@ -463,37 +490,23 @@ export function materializeCandidateToRikishi(
   candidateId: Id,
   heyaId: Id
 ): StateImpact {
-  const builder = createImpactBuilder("materializeCandidateToRikishi");
   const tp = world.talentPool;
-  const candidate = tp?.candidates[candidateId];
-  if (!candidate || !tp) return builder.build();
+  if (!tp) return createImpactBuilder("materializeCandidateToRikishi").build();
 
-  const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
-
-  const rikishi = convertCandidateToRikishi({
-    candidate,
-    rng,
-    currentYear: world.year,
+  const result = materializeCandidateToRikishiInternal(
+    world,
+    candidateId,
     heyaId,
-  });
-
-  // 1. Inject into world
-  builder.updateRikishi(rikishi.id, rikishi);
-
-  // 2. Link to heya
-  const heya = world.heyas.get(heyaId);
-  if (heya) {
-    const newRikishiIds = [...(heya.rikishiIds || []), rikishi.id];
-    builder.updateHeya(heyaId, { rikishiIds: newRikishiIds });
-  }
-
-  // 3. Remove from talent pool (mark as signed)
-  // Note: talentPool updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as talentPool is a nested state
-  const nextCandidates = Object.fromEntries(
-    Object.entries(tp.candidates).filter(([id]) => id !== candidateId)
+    tp.candidates,
+    tp.pools
   );
-  world.talentPool = { ...tp, candidates: nextCandidates };
+  const builder = createImpactBuilder("materializeCandidateToRikishi");
+  builder.merge(result.impact);
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: result.nextCandidates,
+    pools: result.nextPools,
+  });
 
   return builder.build();
 }
@@ -507,57 +520,33 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   const tp = world.talentPool;
   if (!tp) return builder.build();
 
-  const nextCandidates = { ...tp.candidates };
-  const signedIds = new Set<string>();
+  let currentCandidates = { ...tp.candidates };
+  let currentPools = { ...tp.pools };
 
   for (const [id, candidate] of Object.entries(tp.candidates)) {
     if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
       const winner = candidate.competingSuitors[0];
       const heyaId = winner.heyaId;
-      const heya = world.heyas.get(heyaId);
-
-      if (heya) {
-        const rng = RNGRegistry.getSystemRNG(world, "scouting", `finalize_${id}`);
-        const rikishi = convertCandidateToRikishi({
-          candidate,
-          rng,
-          currentYear: world.year,
+      if (world.heyas.has(heyaId)) {
+        const resolution = materializeCandidateToRikishiInternal(
+          world,
+          id,
           heyaId,
-        });
-
-        // Add to world
-        builder.updateRikishi(rikishi.id, rikishi);
-
-        // Add to heya roster
-        const newRikishiIds = [...(heya.rikishiIds || []), rikishi.id];
-        builder.updateHeya(heyaId, { rikishiIds: newRikishiIds });
-
-        // Mark for removal from talent pool
-        signedIds.add(id);
+          currentCandidates,
+          currentPools
+        );
+        builder.merge(resolution.impact);
+        currentCandidates = resolution.nextCandidates;
+        currentPools = resolution.nextPools;
       }
     }
   }
 
-  // Remove signed candidates from talent pool
-  const nextCandidatesFiltered = Object.fromEntries(
-    Object.entries(nextCandidates).filter(([id]) => !signedIds.has(id))
-  );
-
-  // Re-filter visibility lists to remove converted candidates
-  const nextPools = { ...tp.pools };
-  for (const pt of Object.keys(nextPools) as TalentPoolType[]) {
-    nextPools[pt] = {
-      ...nextPools[pt],
-      candidatesVisible: nextPools[pt].candidatesVisible.filter(
-        (cid) => nextCandidatesFiltered[cid]
-      ),
-      candidatesHidden: nextPools[pt].candidatesHidden.filter((cid) => nextCandidatesFiltered[cid]),
-    };
-  }
-
-  // Note: talentPool updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as talentPool is a nested state
-  world.talentPool = { ...tp, candidates: nextCandidatesFiltered, pools: nextPools };
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: currentCandidates,
+    pools: currentPools,
+  });
 
   return builder.build();
 }

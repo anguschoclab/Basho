@@ -4,58 +4,114 @@ import * as TalentPoolScouting from "../../engine/systems/generation/TalentPoolS
 import { TrainingPhilosophyService } from "../../engine/systems/legacy/TrainingPhilosophyService";
 import { LineageService } from "../../engine/systems/generation/LineageService";
 import { SeededRNG } from "../../engine/rng";
+import { MockFactory } from "../utils/MockFactory";
+import type { WorldState } from "../../engine/types/world";
+import type { Heya } from "../../engine/types/heya";
 
 describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let mockWorld: any;
+  let mockWorld: WorldState;
 
   beforeEach(() => {
-    mockWorld = {
-      id: "test",
+    mockWorld = MockFactory.createWorld({
       year: 2026,
       week: 1,
       playerHeyaId: "heya_1",
-      heyas: new Map([
+      heyas: new Map<string, Heya>([
         [
           "heya_1",
-          {
-            id: "heya_1",
+          MockFactory.createHeya("heya_1", {
             funds: 1000_000_000,
             regionalPresence: { Mongolia: 10, Georgia: 85 },
-            infrastructure: {},
             trainingPhilosophy: {
               focusBias: "power",
               intensityBias: "grueling",
               recruitmentBias: "domestic",
+              transitionProgress: 0,
             },
-          },
+          }),
         ],
       ]),
       talentPool: {
         candidates: {
           c_1: {
             candidateId: "c_1",
+            id: "c_1" as Id,
+            name: "Candidate 1",
             nationality: "Mongolia",
             originRegion: "Mongolia",
             visibilityBand: "hidden",
+            birthYear: 2006,
+            talentSeed: 50,
+            weightPotentialKg: 140,
+            poolType: "foreign",
+            style: "yotsu",
+            archetype: "yotsu",
           },
           c_2: {
             candidateId: "c_2",
+            id: "c_2" as Id,
+            name: "Candidate 2",
             nationality: "Georgia",
             originRegion: "Georgia",
             visibilityBand: "hidden",
+            birthYear: 2006,
+            talentSeed: 50,
+            weightPotentialKg: 140,
+            poolType: "foreign",
+            style: "oshi",
+            archetype: "oshi",
           },
         },
         pools: {
-          foreign: { candidatesVisible: ["c_1", "c_2"], candidatesHidden: [] } as unknown,
+          foreign: {
+            candidatesVisible: ["c_1", "c_2"],
+            candidatesHidden: [],
+            poolType: "foreign",
+            visibilityCap: 10,
+            hiddenReserveCap: 20,
+          },
+          high_school: {
+            candidatesVisible: [],
+            candidatesHidden: [],
+            poolType: "high_school",
+            visibilityCap: 10,
+            hiddenReserveCap: 20,
+          },
+          university: {
+            candidatesVisible: [],
+            candidatesHidden: [],
+            poolType: "university",
+            visibilityCap: 10,
+            hiddenReserveCap: 20,
+          },
         },
-      } as unknown,
-      records: {
-        allTime: {
-          yusho: [{ rikishiId: "legend_1", shikona: "Legendary Hakuho", value: 45 }],
+        lastYearlyRefreshYear: 2025,
+      },
+    });
+
+    // Mock records separately if needed, but WorldState now has proper structures
+    mockWorld.history = [
+      {
+        year: 2025,
+        bashoNumber: 6,
+        bashoName: "kyushu",
+        yusho: "legend_1" as Id,
+        junYusho: "rival_1" as Id,
+        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+        nextBanzuke: {
+          divisions: {
+            makuuchi: {
+              assignments: [
+                {
+                  rikishiId: "legend_1" as Id,
+                  position: { rank: "yokozuna", rankNumber: 1, side: "east" },
+                },
+              ],
+            },
+          },
         },
-      } as unknown,
-    } as unknown;
+      },
+    ];
   });
 
   describe("Pillar 1: Foreign Academy Gating", () => {
@@ -67,10 +123,11 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
         "academy_mongolia"
       );
       // Finding log for failed requirements
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      const failEvent = (impact.events as any[])!.find(
-        (e: { type: string; data: { status: string } }) =>
-          e.type === "CONSTRUCTION_STARTED" && e.data.status === "failed_requirements"
+      const events = impact.events || [];
+      const failEvent = events.find(
+        (e) =>
+          e.type === "CONSTRUCTION_STARTED" &&
+          (e.data as { status?: string }).status === "failed_requirements"
       );
       expect(failEvent).toBeDefined();
     });
@@ -82,10 +139,10 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
         "heya_1",
         "academy_georgia"
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-      const successEvent = (impact.events as any[])!.find(
-        (e: { type: string; data: { status?: string } }) =>
-          e.type === "CONSTRUCTION_STARTED" && !e.data.status
+      // Success case
+      const events = impact.events || [];
+      const successEvent = events.find(
+        (e) => e.type === "CONSTRUCTION_STARTED" && !(e.data as { status?: string }).status
       );
       expect(successEvent).toBeDefined();
     });
@@ -103,14 +160,15 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
 
   describe("Pillar 3: Institutional Style Drift", () => {
     it("should gradually transition training philosophy over multiple ticks", () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const heya = mockWorld.heyas.get("heya_1")!;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      let phil = heya.trainingPhilosophy!;
+      const heya = mockWorld.heyas.get("heya_1");
+      if (!heya) throw new Error("Heya not found");
+      let phil = heya.trainingPhilosophy;
+      if (!phil) throw new Error("Philosophy not found");
 
       // Start succession to Scientist (Technique/Scientific)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const incomingOyakata = { archetype: "scientist" } as any;
+      const incomingOyakata = MockFactory.createOyakata("new_oyakata" as Id, {
+        archetype: "scientist",
+      });
       phil = TrainingPhilosophyService.evolveForSuccessor(phil, incomingOyakata);
 
       expect(phil.transitionProgress).toBe(0);
@@ -136,21 +194,20 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
     it("should successfully generate legacy bonuses for rare candidates", () => {
       const rng = new SeededRNG("dynasty-seed");
       // Force a high-potential candidate to test lineage roll
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const candidateTemplate: any = {
+      const candidateTemplate = MockFactory.createCandidate("c_legacy" as Id, {
         name: "Test Son",
         isAmateurStar: true,
-        potentialStats: {
-          strength: 50,
-          speed: 50,
-          technique: 50,
-          balance: 50,
-          stamina: 50,
-          mental: 50,
-          adaptability: 50,
-        },
-        tags: [],
+      });
+      candidateTemplate.potentialStats = {
+        strength: 50,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
       };
+      candidateTemplate.tags = [];
 
       // Mock rollToSuccess (LineageService is probabilistic, but we'll try to find one or mock the record pool)
       const trait = LineageService.rollGeneticLineage(mockWorld, candidateTemplate, rng);

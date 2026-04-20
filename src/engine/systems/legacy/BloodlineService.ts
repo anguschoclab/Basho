@@ -28,9 +28,8 @@ export const BloodlineService = {
     if (!rankThreshold) return builder.build();
 
     // Use the rikishi's peak stat to determine which stat the bloodline grants
-    const stats = rikishi.stats ?? rikishi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const peakStat = this.findPeakStat(stats as any);
+    const stats: import("../../types/rikishi").RikishiStats = rikishi.stats;
+    const peakStat = this.findPeakStat(stats);
 
     const trait: BloodlineTrait = {
       traitId: `bl_${rikishi.id}`,
@@ -42,8 +41,7 @@ export const BloodlineService = {
       registeredYear: world.year,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existing = (world as any).bloodlineRegistry as BloodlineRegistry | undefined;
+    const existing = world.bloodlineRegistry;
     const registry: BloodlineRegistry = {
       traits: {
         ...(existing?.traits ?? {}),
@@ -72,26 +70,43 @@ export const BloodlineService = {
    * Checks if the candidate's lineage maps to a known trait and applies bonuses.
    */
   applyBloodline(
-    candidateStats: Record<string, number>,
+    candidateStats: Partial<import("../../types/rikishi").RikishiStats>,
     lineageId: string | undefined,
     worldRegistry: BloodlineRegistry | undefined
-  ): Record<string, number> {
+  ): Partial<import("../../types/rikishi").RikishiStats> {
     if (!lineageId || !worldRegistry?.traits[lineageId]) return candidateStats;
     const trait = worldRegistry.traits[lineageId];
     const boosted = { ...candidateStats };
-    for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
-      boosted[stat] = Math.min(99, (boosted[stat] ?? 50) + (bonus as number));
+
+    const traitEntries = Object.entries(trait.statFloorBonus) as Array<
+      [keyof import("../../types/rikishi").RikishiStats, number]
+    >;
+
+    for (const [stat, bonus] of traitEntries) {
+      const current = boosted[stat] ?? 50;
+      boosted[stat] = Math.min(99, current + bonus);
     }
     return boosted;
   },
 
-  findPeakStat(stats: Record<string, number>): string {
-    const keys = ["strength", "technique", "speed", "stamina", "mental", "adaptability", "balance"];
-    let peak = "technique";
-    let peakVal = 0;
+  findPeakStat(
+    stats: import("../../types/rikishi").RikishiStats
+  ): keyof import("../../types/rikishi").RikishiStats {
+    const keys: Array<keyof import("../../types/rikishi").RikishiStats> = [
+      "strength",
+      "technique",
+      "speed",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+    ];
+    let peak: keyof import("../../types/rikishi").RikishiStats = "technique";
+    let peakVal = -1;
     for (const key of keys) {
-      if ((stats[key] ?? 0) > peakVal) {
-        peakVal = stats[key];
+      const val = stats[key] ?? 0;
+      if (val > peakVal) {
+        peakVal = val;
         peak = key;
       }
     }

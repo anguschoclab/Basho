@@ -6,7 +6,12 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import type { DashboardUIDigest, FinancialStatus } from "../types/uiDigest";
+import type {
+  DashboardUIDigest,
+  FinancialStatus,
+  BanzukeUIDigest,
+  BanzukeDivisionData,
+} from "../types/uiDigest";
 import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
 import { getHeyaRoster, getSekitoriInHeya } from "../../engine/queries";
@@ -60,7 +65,7 @@ export function projectDashboardUIDigest(world: WorldState): DashboardUIDigest |
 /**
  * Project banzuke and rank movement data.
  */
-export function projectBanzukeUIDigest(world: WorldState) {
+export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
   const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"] as const;
   const history = world.history || [];
 
@@ -71,7 +76,7 @@ export function projectBanzukeUIDigest(world: WorldState) {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
 
-  const dividerData = divisions.map((div) => {
+  const dividerData: BanzukeDivisionData[] = divisions.map((div) => {
     return {
       division: div,
       rows: buildBanzukeRows(rosterEntries, div, ""),

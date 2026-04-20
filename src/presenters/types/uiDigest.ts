@@ -13,6 +13,7 @@ import type { Oyakata, OyakataTraits } from "../../engine/types/oyakata";
 import type { HoFInductee } from "../../engine/hallOfFame";
 import type { Division } from "../../engine/types/banzuke";
 import type { EngineEvent } from "../../engine/types/events";
+import type { UIRankRow } from "../banzukeUI";
 
 // ── Heat Band Types ───────────────────────────────────────────────────────────
 
@@ -110,6 +111,22 @@ export interface GovernanceSummary {
   heyasCount: number;
 }
 
+/** Division data for banzuke display */
+export interface BanzukeDivisionData {
+  division: Division;
+  rows: UIRankRow[];
+}
+
+/** Complete banzuke digest */
+export interface BanzukeUIDigest {
+  year: number;
+  basho: string | undefined;
+  divisions: BanzukeDivisionData[];
+  kadobanMap: Record<Id, number>;
+  heyaNameMap: Map<Id, string>;
+  hasPrevBasho: boolean;
+}
+
 // ── Dashboard UI Types ───────────────────────────────────────────────────────
 
 /** Financial status for dashboard */
@@ -137,7 +154,12 @@ export interface DashboardUIDigest {
   };
   stats: DashboardHeyaStats;
   recentEvents: EngineEvent[];
-  topRivals: unknown[]; // Using unknown instead of any
+  topRivals: Array<{
+    id: Id;
+    name: string;
+    prestige: string;
+    rosterSize: number;
+  }>;
   finances: FinancialStatus;
   currentWeek: number;
   currentYear: number;

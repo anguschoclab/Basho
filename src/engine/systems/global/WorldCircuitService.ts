@@ -76,8 +76,7 @@ export const WorldCircuitService = {
     );
 
     // Store pending invitations in world state
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existing = (world as any).pendingExhibitions ?? [];
+    const existing = world.pendingExhibitions || [];
     builder.updateWorldField("pendingExhibitions", [...existing, ...invitations]);
 
     return builder.build();
@@ -106,7 +105,7 @@ export const WorldCircuitService = {
 
     // Simulate result: rikishi's combined stats vs. generated regional champion
     const rikishiPower =
-      ((rikishi.technique ?? 50) + (rikishi.speed ?? 50) + (rikishi.mental ?? 50)) / 3;
+      ((rikishi.technique || 50) + (rikishi.speed || 50) + (rikishi.mental || 50)) / 3;
     const regionalChampion = 50 + invitation.prestige / 2; // prestige 50 → opponent CA ~75
     const win = rng.next() < rikishiPower / (rikishiPower + regionalChampion);
 
@@ -117,7 +116,7 @@ export const WorldCircuitService = {
     // Update regional presence
     builder.updateHeya(heyaId, {
       regionalPresence: {
-        ...(heya.regionalPresence ?? {}),
+        ...(heya.regionalPresence || {}),
         [invitation.region]: newPresence,
       },
     });

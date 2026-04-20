@@ -2,6 +2,7 @@ import type { Rikishi } from "../types/rikishi";
 import type { Division } from "../types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
 import type { FinalBoutState } from "../types/kimariteStrategy";
+import type { KimariteId } from "../types/combat";
 import { KIMARITE_STRATEGIES_V2 } from "./kimariteStrategy";
 import { SeededRNG } from "../rng";
 
@@ -152,8 +153,7 @@ export const KimariteSelectionEngine = {
       }
 
       results.push({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- KimariteId type needs alignment with strategy ids
-        technique: selected.id as any,
+        technique: selected.id as KimariteId,
         side: side,
         successProbability: Math.max(0.05, Math.min(0.97, successProb)),
         requiredConditions: ["registry_match", `difficulty_${difficulty}`],
