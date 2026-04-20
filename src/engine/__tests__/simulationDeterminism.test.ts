@@ -110,5 +110,5 @@ describe("Simulation determinism", () => {
     const hashA = worldChecksum(worldA);
     const hashB = worldChecksum(worldB);
     expect(hashA).not.toBe(hashB);
-  }, 150000);
+  }, 150_000);
 });
