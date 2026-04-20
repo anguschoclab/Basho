@@ -250,7 +250,7 @@ export default function Dashboard() {
             <ListCard
               eyebrow="── TOP WRESTLERS ──"
               title="Active Roster"
-              rows={rosterData.rows}
+              rows={rosterRows}
               actions={
                 <Button
                   size="sm"
