@@ -7,10 +7,10 @@ import { useGame } from "@/contexts/GameContext";
 import { projectRikishi } from "@/presenters/rikishiUI";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Medal, Star, Trophy, Users2, Scroll } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
@@ -39,13 +39,6 @@ export default function StablePage() {
       .map((r) => projectRikishi(r, world));
   }, [world, heya]);
 
-  const lineage: Array<{
-    name: string;
-    startYear: number;
-    endYear?: number;
-    achievements: { titlesWon: number; sekitoriCount: number; highestStudentRank?: string };
-  }> = [];
-
   if (!world || !heya) return null;
 
   const sponsorData = projectSponsorUIDigest(world);
@@ -64,10 +57,14 @@ export default function StablePage() {
       </Helmet>
 
       <div className="space-y-8">
-        {/* Header... */}
+        <PageHeader
+          eyebrow="── STABLE ──"
+          title={heya.name}
+          lede={`${rikishiList.length} rikishi · ${heya.ichimon ?? "Independent"} Ichimon`}
+        />
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-full max-w-[800px] grid-cols-6 text-[10px] font-black uppercase">
+          <TabsList className="grid w-full max-w-[900px] grid-cols-7 text-[10px] font-black uppercase">
             <TabsTrigger value="roster">Roster</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
@@ -147,117 +144,6 @@ export default function StablePage() {
               })()}
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-8">
-            {/* Leadership Timeline */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Scroll className="h-5 w-5 text-primary" />
-                Oyakata Lineage
-              </h3>
-              <div className="space-y-4">
-                {lineage.length === 0 ? (
-                  <p className="text-muted-foreground text-sm italic">No lineage recorded yet.</p>
-                ) : (
-                  lineage
-                    .slice()
-                    .reverse()
-                    .map((tenure, i) => (
-                      <Card key={i} className="paper">
-                        <CardContent className="p-4 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                              {tenure.name.charAt(0)}
-                            </div>
-                            <div>
-                              <div className="font-bold">{tenure.name}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {tenure.startYear} — {tenure.endYear || "Present"}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end gap-1.5 ml-auto">
-                            <div className="flex gap-1 flex-wrap justify-end">
-                              {tenure.achievements.titlesWon > 0 && (
-                                <TooltipWrap
-                                  content="Tournament victories under this master"
-                                  side="top"
-                                >
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[10px] border-gold/50 text-gold cursor-help"
-                                  >
-                                    <Trophy className="h-2.5 w-2.5 mr-1" />{" "}
-                                    {tenure.achievements.titlesWon} Yusho
-                                  </Badge>
-                                </TooltipWrap>
-                              )}
-                              {tenure.achievements.sekitoriCount > 0 && (
-                                <TooltipWrap
-                                  content="Salaried wrestlers produced during this tenure"
-                                  side="top"
-                                >
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[10px] border-primary/30 text-primary cursor-help"
-                                  >
-                                    <Users2 className="h-2.5 w-2.5 mr-1" />{" "}
-                                    {tenure.achievements.sekitoriCount} Sekitori
-                                  </Badge>
-                                </TooltipWrap>
-                              )}
-                              {tenure.achievements.highestStudentRank && (
-                                <TooltipWrap
-                                  content="Highest rank achieved by a student"
-                                  side="top"
-                                >
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[10px] border-purple-500/30 text-purple-600 cursor-help"
-                                  >
-                                    <Star className="h-2.5 w-2.5 mr-1" />{" "}
-                                    {tenure.achievements.highestStudentRank}
-                                  </Badge>
-                                </TooltipWrap>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                )}
-              </div>
-            </div>
-
-            {/* Historical Summary */}
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="paper h-full">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-gold" />
-                    Championship Legacy
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-display font-bold">{heya.historicalYusho || 0}</div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    All-time tournament victories by members of this stable.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="paper h-full opacity-50 border-dashed">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Medal className="h-5 w-5 text-slate-400" />
-                    Hall of Fame Inductees
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Coming in future expansion.</p>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </AppLayout>

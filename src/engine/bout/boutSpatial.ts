@@ -13,11 +13,7 @@ import type {
   EdgeCrisisState,
   EngineStateV2,
 } from "../types/combat-spatial";
-
-function stat(r: Rikishi, key: string, fallback = 50): number {
-  const v = (r as unknown as Record<string, unknown>)[key];
-  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
-}
+import { stat } from "./boutUtils";
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
   const x = side === "east" ? SHIKIRISEN_OFFSET : -SHIKIRISEN_OFFSET;

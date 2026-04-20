@@ -43,12 +43,15 @@ const MAX_TICKS = 120;
 // ---------------------------------------------------------------------------
 
 function initEngineStateV2(bout: BoutContext, east: Rikishi, west: Rikishi): EngineStateV2 {
-  void bout; // id/day used in seed; kept for signature clarity
+  // Seed initial boutFatigue from tournament day — fighters arrive progressively
+  // more worn down as the basho advances. Day 1 = fresh (0); Day 15 = ~11% extra
+  // force penalty for an average-stamina fighter before the bout even starts.
+  const tournamentFatigue = (bout.day - 1) * 5;
   return {
     tick: 0,
     phase: { tag: "approach" },
-    east: initPhysicalBody(east, "east"),
-    west: initPhysicalBody(west, "west"),
+    east: { ...initPhysicalBody(east, "east"), boutFatigue: tournamentFatigue },
+    west: { ...initPhysicalBody(west, "west"), boutFatigue: tournamentFatigue },
     tachiaiWinner: "east", // placeholder; set in resolveTachiaiV2
     grappleState: {
       east: { rightHand: "outside", leftHand: "outside", depth: "standard" },
@@ -482,17 +485,25 @@ function runPhaseLoop(
   const kimarite: KimariteId = hadBelt ? "yorikiri" : "oshidashi";
 
   // CI-05: Rare hi_waza reversals (isamiashi, tsukite)
-  // Very rare (1.5% each) post-resolution reversals where "winner" loses due to own mistake
+  // "Winner" loses due to their own mistake. Probability scales inversely with the
+  // loser's composure stats — a high-mental, high-balance fighter rarely steps out
+  // accidentally; a green recruit at the tawara is much more prone to it.
   const loser: Side = winner === "east" ? "west" : "east";
   const loserInstability = winner === "east" ? westInstability : eastInstability;
+  const loserRikishi = loser === "east" ? east : west;
 
-  // isamiashi: false start - only if loser was very unstable (near falling)
-  if (loserInstability > 0.9 && rng.next() < 0.015) {
+  // isamiashi: steps out while overcommitting — mental + balance reduce chance
+  // Range: ~0.75% (elite stats) to ~1.35% (low stats)
+  const isamiashiChance =
+    0.015 * (1 - (stat(loserRikishi, "mental") + stat(loserRikishi, "balance")) / 400);
+  if (loserInstability > 0.9 && rng.next() < isamiashiChance) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
-  // tsukite: missed thrust - only if bout was push-dominant (no belt)
-  if (!hadBelt && rng.next() < 0.015) {
+  // tsukite: thrust hand touches down — technique + mental reduce chance
+  const tsukiteChance =
+    0.015 * (1 - (stat(loserRikishi, "technique") + stat(loserRikishi, "mental")) / 400);
+  if (!hadBelt && rng.next() < tsukiteChance) {
     return { winner: loser, kimarite: "tsukite" };
   }
 
@@ -521,7 +532,12 @@ function buildBoutResultV2(
   const edgeCrisisEscapes = boutLog.filter(
     (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
   ).length;
-  const excitementScore = Math.min(100, Math.round(st.tick / 3 + edgeCrisisEscapes * 20));
+  // Duration contributes up to 70 points (full 120-tick marathon = 70).
+  // Each tawara escape adds 20 (dramatic near-defeats). Cap at 100.
+  const excitementScore = Math.min(
+    100,
+    Math.round((st.tick / MAX_TICKS) * 70 + edgeCrisisEscapes * 20)
+  );
 
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
