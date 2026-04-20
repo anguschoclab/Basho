@@ -76,7 +76,7 @@ describe("Simulation determinism", () => {
     const hash1 = simDays(50);
     const hash2 = simDays(50);
     expect(hash1).toBe(hash2);
-  }, 150000);
+  }, 150_000);
 
   it("produces identical checksum at day 100 on two independent runs", () => {
     const hash1 = simDays(100);
