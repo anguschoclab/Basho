@@ -1,18 +1,20 @@
 📝 Daily Progress & Docs Update
- 🏗️ Codebase Status:
- Recently, a massive UI presentation layer refactor was completed across the codebase (over 800 files touched). The monolithic `src/presenters/uiDigest.ts` has been dismantled and converted into a ~100-line compatibility layer that delegates logic to isolated, focused modules located in `src/presenters/projections/` (e.g., `dashboardProjections.ts`, `bashoProjections.ts`) and `src/presenters/utilities/`. This enforces cleaner module boundaries by strictly separating the engine models from the UI projections.
+ 🏗️ Codebase Status: The simulation engine is currently undergoing a structural refactoring towards a Strict Pipeline Architecture. The monolithic daily tick has been broken down into isolated pure-function phases (`src/engine/tick/phases/`) utilizing an `ImpactBuilder` to eliminate in-place mutations. The narrative layer delegates descriptor bands correctly through `NarrativeService`, and core systems like economy and overflow management are intact.
 
- [WIP focus]
- The current WIP focus appears to be consolidating the presentation layer logic out of single unified files into modular, domain-specific projections that prevent UI components from accidentally importing from or modifying core engine state directly.
+ Current WIP focus: Migrating remaining state modifications to the new immutable `ImpactBuilder` pattern. Several phases (e.g., `phase01_week_npc_ai.ts`, `phase01_daily_economy.ts`) still contain comments noting that `transientContext` and specific nested maps are manually updated because they are "not directly supported by ImpactBuilder yet."
 
  📖 Basho Constitution Alignment:
- ✅ Aligned: The codebase strongly aligns with the Constitution rule A0.1.4 "Separation of concerns is sacred" and A0.1.3 "No UI leaks engine truth." Functions like `enrichRikishiForUI` in `src/presenters/utilities/uiUtilities.ts` explicitly note their responsibility is to transform raw engine Rikishi into UI-ready projections, guaranteed to strip hidden numerical stats. Additionally, `uiDigest.ts` contains explicit comments reminding developers that "The UI layer MUST NOT import from @/engine directly", which enforces the separation.
+ ✅ Aligned:
+- C2.4 & C2.5 (Insolvency Trap): `KOENKAI_SURVIVAL_FLOOR` is successfully implemented at ¥28,000 in `src/engine/constants/EconomicConstants.ts` and enforced in `FinanceCalculator.ts`.
+- C4.3 (Roster Caps): `enforceHardCapRosterOverflow` in `src/engine/overflow.ts` correctly handles deterministic releases back to the talent pool when `HARD_CAP_ROSTER_SIZE` (30) is exceeded.
+- C5.3 (Attribute Visibility): `NarrativeService.ts` implements `toBandWithHysteresis` using `HYSTERESIS_DELTA = 5` to correctly manage band oscillation and prevent raw attribute UI leakage.
 
- ⚠️ Missing/Deviations: No obvious deviations regarding presentation layer architecture. The transition to separated projections appears compliant with the canonical design document.
+ ⚠️ Missing/Deviations:
+- C1.2 (PBP Corpus Problem): The required file `src/engine/bout/grammarDefinitions.ts` is missing. The PBP generation currently relies on `src/engine/narrative/BardEngine.ts` consuming an untyped JSON `archive.json` rather than the structurally typed arrays mandated by the Constitution.
 
  📄 Proposed Documentation Updates:
- docs/daily_update.md: Summarize the dismantling of the monolithic `uiDigest.ts` into isolated projection modules under `src/presenters/projections/` to enforce UI/engine boundaries.
+ docs/Basho_Constitution_v1.2_HARMONIZED_NONLOSSY.md: Revise Section C1.2 to recognize the `BardEngine`'s JSON-driven archive approach, or formally propose the implementation of `grammarDefinitions.ts` to bridge the typed contract gap.
 
- Code Paths Covered: `src/presenters/uiDigest.ts`, `src/presenters/projections/*`, `src/presenters/utilities/uiUtilities.ts`, `src/engine/types/world.ts`
+ Code Paths Covered: `src/engine/tick/pipelineRunner.ts`, `src/engine/systems/economy/FinanceCalculator.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/overflow.ts`, `src/engine/narrative/BardEngine.ts`
 
- Key Knowledge Gaps Addressed: Clarifies that UI projections are now domain-segregated within the `projections` directory rather than housed in a massive central digest, improving readability and enforcing strict engine decoupling.
+ Key Knowledge Gaps Addressed: Confirms that the economic and roster management core logic successfully maps to the Product Manager's canonical constraints, while highlighting a critical architectural drift in the text generation pipeline that needs structural alignment.
