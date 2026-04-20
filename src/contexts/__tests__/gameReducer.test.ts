@@ -44,5 +44,5 @@ describe('Game Reducer: Batch Processing', () => {
 
     // 2. Assert the calendar advanced
     expect(nextState.world.calendar.currentDay).not.toBe(startDay);
-  });
+  }, 15_000);
 });

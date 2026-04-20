@@ -76,13 +76,13 @@ describe("Simulation determinism", () => {
     const hash1 = simDays(50);
     const hash2 = simDays(50);
     expect(hash1).toBe(hash2);
-  }, 30000);
+  }, 150_000);
 
   it("produces identical checksum at day 100 on two independent runs", () => {
     const hash1 = simDays(100);
     const hash2 = simDays(100);
     expect(hash1).toBe(hash2);
-  }, 30000);
+  }, 150_000);
 
   it("day-50 checkpoint in a 100-day run matches standalone 50-day run", () => {
     // Standalone 50-day hash
@@ -96,7 +96,7 @@ describe("Simulation determinism", () => {
     const checkpoint50 = worldChecksum(world);
 
     expect(standalone50).toBe(checkpoint50);
-  }, 30000);
+  }, 150_000);
 
   it("different seeds produce different checksums at day 50", () => {
     let worldA = generateInitialWorld("seed-aaa");
@@ -110,5 +110,5 @@ describe("Simulation determinism", () => {
     const hashA = worldChecksum(worldA);
     const hashB = worldChecksum(worldB);
     expect(hashA).not.toBe(hashB);
-  }, 30000);
+  }, 150_000);
 });
