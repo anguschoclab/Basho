@@ -9,4 +9,4 @@
 **Action:** Always audit `size="icon"` Button components and ensure an `aria-label` or `title` property is added.
 ## 2026-04-20 - Keyboard Focus on Link-Styled Buttons
 **Learning:** Custom link-styled interactive elements (like the 'Skip Tour' button) often miss critical focus indicators because they don't inherit default button outlines. Screen reader users can 'read' them via text, but keyboard users lose visual focus tracking without proper styling.
-**Action:** Always apply explicit focus-visible utility classes (e.g., `focus-visible:outline-none focus-visible:ring-2`) to any raw `<button>` or link-styled interactive element.
+**Action:** Prefer using the shared `Button` component or `buttonVariants` helper to ensure consistent focus-visible states. For raw `<button>` elements where the component cannot be used, apply the standard focus ring utility classes.
