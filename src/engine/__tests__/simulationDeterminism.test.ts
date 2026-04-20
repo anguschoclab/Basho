@@ -96,7 +96,7 @@ describe("Simulation determinism", () => {
     const checkpoint50 = worldChecksum(world);
 
     expect(standalone50).toBe(checkpoint50);
-  }, 150000);
+  }, 150_000);
 
   it("different seeds produce different checksums at day 50", () => {
     let worldA = generateInitialWorld("seed-aaa");
