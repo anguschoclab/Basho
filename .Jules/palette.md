@@ -7,3 +7,6 @@
 ## 2024-05-18 - Missing ARIA Labels on Icon Buttons
 **Learning:** Shadcn UI Button components with `size="icon"` often lack intrinsic accessibility when only an SVG/Icon component is passed as children. This makes them invisible or unhelpful to screen readers.
 **Action:** Always audit `size="icon"` Button components and ensure an `aria-label` or `title` property is added.
+## 2026-04-20 - Keyboard Focus on Link-Styled Buttons
+**Learning:** Custom link-styled interactive elements (like the 'Skip Tour' button) often miss critical focus indicators because they don't inherit default button outlines. Screen reader users can 'read' them via text, but keyboard users lose visual focus tracking without proper styling.
+**Action:** Prefer using the shared `Button` component or `buttonVariants` helper to ensure consistent focus-visible states. For raw `<button>` elements where the component cannot be used, apply the standard focus ring utility classes.

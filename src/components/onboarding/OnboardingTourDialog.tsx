@@ -121,7 +121,7 @@ export function OnboardingTourDialog() {
 
             <button
               onClick={handleSkip}
-              className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+              className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background rounded-sm"
             >
               Skip Tour
             </button>
