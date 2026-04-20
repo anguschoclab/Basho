@@ -1,57 +1,201 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
-import { PageHeader } from "@/components/layout/control-center";
-import { useGame } from "@/contexts/GameContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ShieldAlert,
-  Scale,
-  Gavel,
-  FileWarning,
-  Landmark,
-  Users,
-  AlertTriangle,
-  ArrowRightLeft,
-  Trophy,
-  Globe,
-} from "lucide-react";
-import { Link } from "@tanstack/react-router";
+  PageHeader,
+  StatCard,
+  ListCard,
+  SectionHeader,
+} from "@/components/layout/control-center";
+import { useGame } from "@/contexts/GameContext";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Heya } from "@/engine/types/heya";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Scale, Landmark, Globe, Trophy } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import type { StatItem, ProgressItem } from "@/components/layout/control-center";
 import {
   SCANDAL_LABELS,
   formatFinePenalty,
-  getStatusColor,
   getStatusLabel,
   spendPoliticalCapital,
   toScandalBand,
 } from "@/presenters/uiDigest";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 
-/**
- * Format fine penalty.
- *  * @param amount - The Amount.
- *  * @returns The result.
- */
-
-/** governance page. */
 export default function GovernancePage() {
   const { state } = useGame();
   const world = state.world;
-  const [heya, setHeya] = useState<Heya | null>(null);
 
-  useEffect(() => {
-    if (world && world.playerHeyaId) {
-      setHeya(world.heyas.get(world.playerHeyaId) || null);
-    }
+  const heya = useMemo(() => {
+    if (!world || !world.playerHeyaId) return null;
+    return world.heyas.get(world.playerHeyaId) ?? null;
   }, [world]);
 
-  if (!world || !heya) {
+  const derived = useMemo(() => {
+    if (!world || !heya) return null;
+
+    const status = heya.governanceStatus ?? "good_standing";
+    const scandal = heya.scandalScore ?? 0;
+    const history = heya.governanceHistory ?? [];
+
+    const scandalBand = toScandalBand(scandal);
+    const scandalTone: StatItem["tone"] =
+      scandalBand === "clean"
+        ? "success"
+        : scandalBand === "whispers"
+          ? "default"
+          : scandalBand === "scrutiny"
+            ? "warning"
+            : "destructive";
+
+    const welfare = heya.welfareState;
+    const welfareRisk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
+    const compState = String(welfare?.complianceState ?? "compliant");
+    const welfareLabel =
+      welfareRisk <= 20
+        ? "Safe"
+        : welfareRisk <= 44
+          ? "Cautious"
+          : welfareRisk <= 69
+            ? "Elevated"
+            : "Critical";
+    const welfareTone: StatItem["tone"] =
+      welfareRisk <= 20
+        ? "success"
+        : welfareRisk <= 44
+          ? "default"
+          : welfareRisk <= 69
+            ? "warning"
+            : "destructive";
+    const compTone: StatItem["tone"] =
+      compState === "compliant" ? "success" : compState === "watch" ? "warning" : "destructive";
+
+    const statusTone: StatItem["tone"] =
+      status === "good_standing" ? "success" : status === "warning" ? "warning" : "destructive";
+    const statusSub =
+      status === "good_standing"
+        ? "No active concerns"
+        : status === "warning"
+          ? "Council has noted concerns"
+          : status === "probation"
+            ? "Formal probation in effect"
+            : "Serious sanctions applied";
+
+    const historyRows = [...history]
+      .reverse()
+      .slice(0, 10)
+      .map((ruling, i) => ({
+        id: ruling.id || String(i),
+        label: (
+          <div>
+            <div className="font-medium">{ruling.type.toUpperCase()}</div>
+            {ruling.reason && (
+              <div className="text-[10px] text-muted-foreground">{ruling.reason}</div>
+            )}
+          </div>
+        ),
+        sub: ruling.date as string | undefined,
+        value: ruling.effects?.fineAmount
+          ? formatFinePenalty(ruling.effects.fineAmount)
+          : undefined,
+        tone: "destructive" as const,
+        trailing: (
+          <Badge variant="outline" className="text-[10px]">
+            {ruling.severity}
+          </Badge>
+        ),
+      }));
+
+    const criticalHeyas = selectHeyasWithCriticalWelfare(world);
+    const welfareRows = criticalHeyas.map((h) => ({
+      id: h.id,
+      label: h.name,
+      sub: `${h.welfareState?.complianceState ?? "compliant"} · ${h.rikishiIds?.length ?? 0} rikishi`,
+      value: `Risk ${Math.round(h.welfareState?.welfareRisk ?? 0)}%`,
+      tone: "warning" as const,
+    }));
+
+    const mergerCandidates = selectMergerCandidates(world);
+    const mergerRows = mergerCandidates.map((h) => ({
+      id: h.id,
+      label: h.name,
+      sub: `${h.rikishiIds?.length ?? 0} rikishi · ${(h.governanceStatus ?? "good_standing").replace("_", " ")}`,
+      value: `¥${Math.abs(h.funds / 1_000_000).toFixed(1)}M debt`,
+      tone: "destructive" as const,
+    }));
+
+    const factionList = Object.values(world.factions ?? {}).sort(
+      (a, b) => b.influence - a.influence
+    );
+    const maxInfluence = factionList.length > 0 ? factionList[0].influence : 0;
+    const factionRows = factionList.map((fac) => ({
+      id: fac.id,
+      label: (
+        <span className="flex items-center gap-1.5 flex-wrap">
+          {fac.name}
+          {fac.influence === maxInfluence && (
+            <Badge variant="default" className="text-[9px] px-1.5 py-0 h-3.5">
+              Chairman
+            </Badge>
+          )}
+          {heya.ichimon === fac.id && (
+            <Badge
+              variant="outline"
+              className="text-[9px] px-1.5 py-0 h-3.5 border-primary text-primary"
+            >
+              Yours
+            </Badge>
+          )}
+        </span>
+      ),
+      sub: `Leader: ${world.oyakata.get(fac.oyakataLeaderId ?? "")?.name ?? "Unknown"}`,
+      value: fac.influence,
+      tone: (heya.ichimon === fac.id ? "gold" : "default") as StatItem["tone"],
+    }));
+
+    const reputationStats: StatItem[] = [
+      { label: "Scandal Index", value: SCANDAL_LABELS[scandalBand], tone: scandalTone },
+    ];
+    const reputationProgress: ProgressItem[] = [
+      { label: "Scandal Score", value: Math.min(scandal, 100), tone: scandalTone },
+    ];
+
+    const welfareStats: StatItem[] = [
+      { label: "Risk Level", value: welfareLabel, tone: welfareTone },
+      { label: "Status", value: compState.toUpperCase(), tone: compTone },
+    ];
+    const welfareProgress: ProgressItem[] = [
+      { label: "Welfare Risk", value: welfareRisk, tone: welfareTone },
+    ];
+
+    const councilStats: StatItem[] = [
+      { label: "Standing", value: getStatusLabel(world, status), tone: statusTone, sub: statusSub },
+    ];
+
+    const recordStats: StatItem[] = [
+      { label: "Decisions on File", value: history.length },
+    ];
+
+    return {
+      status,
+      scandal,
+      scandalBand,
+      historyRows,
+      welfareRows,
+      mergerRows,
+      factionRows,
+      factionList,
+      reputationStats,
+      reputationProgress,
+      welfareStats,
+      welfareProgress,
+      councilStats,
+      recordStats,
+    };
+  }, [world, heya]);
+
+  if (!world || !heya || !derived) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full">Loading Council Records...</div>
@@ -59,9 +203,7 @@ export default function GovernancePage() {
     );
   }
 
-  const status = heya.governanceStatus || "good_standing";
-  const scandal = heya.scandalScore || 0;
-  const history = heya.governanceHistory || [];
+  const { status } = derived;
 
   return (
     <AppLayout
@@ -93,435 +235,144 @@ export default function GovernancePage() {
             </TabsTrigger>
           </TabsList>
 
+          {/* ── Overview ──────────────────────────────────────────────── */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-4">
-              {/* Scandal Perception */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4" />
-                    Public Perception
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {(() => {
-                    const band = toScandalBand(scandal);
-                    return (
-                      <div>
-                        <div className="text-2xl font-bold">{SCANDAL_LABELS[band]}</div>
-                        <Progress value={Math.min(scandal, 100)} className="mt-2" />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {band === "clean"
-                            ? "Clean record — no concerns."
-                            : band === "whispers"
-                              ? "Minor concerns circulating."
-                              : band === "scrutiny"
-                                ? "Under increasing public scrutiny."
-                                : band === "scandal"
-                                  ? "Significant reputational damage."
-                                  : "Crisis-level public perception."}
-                        </p>
-                      </div>
-                    );
-                  })()}
-                </CardContent>
-              </Card>
-
-              {/* Welfare / Compliance */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4" />
-                    Welfare & Compliance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {(() => {
-                    const welfare = heya.welfareState;
-                    const risk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
-                    const compState = String(welfare?.complianceState ?? "compliant");
-                    const { bandWelfareLabel } = (() => {
-                      if (risk <= 20) return { bandWelfareLabel: "Safe" };
-                      if (risk <= 44) return { bandWelfareLabel: "Cautious" };
-                      if (risk <= 69) return { bandWelfareLabel: "Elevated" };
-                      return { bandWelfareLabel: "Critical" };
-                    })();
-                    return (
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <div className="text-2xl font-bold">{bandWelfareLabel}</div>
-                          <Badge
-                            variant={
-                              compState === "compliant"
-                                ? "outline"
-                                : compState === "watch"
-                                  ? "secondary"
-                                  : "destructive"
-                            }
-                            className="text-xs"
-                          >
-                            {compState.toUpperCase()}
-                          </Badge>
-                        </div>
-                        <Progress value={risk} className="mt-2" />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {compState === "compliant"
-                            ? "No active concerns."
-                            : compState === "watch"
-                              ? "Under monitoring for welfare risk."
-                              : compState === "investigation"
-                                ? "Investigation open — remediation required."
-                                : "Sanctions active — recruitment/training may be restricted."}
-                        </p>
-                      </div>
-                    );
-                  })()}
-                </CardContent>
-              </Card>
-
-              {/* Status Card */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <Gavel className="h-4 w-4" />
-                    Council Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className={`text-2xl font-bold ${getStatusColor(status)}`}>
-                    {getStatusLabel(world, status)}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {status === "good_standing"
-                      ? "Your stable is in good standing with the Association."
-                      : status === "warning"
-                        ? "The Council has noted concerns."
-                        : status === "probation"
-                          ? "Formal probation is in effect."
-                          : "Serious sanctions have been applied."}
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Rulings Count */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    <FileWarning className="h-4 w-4" />
-                    Past Rulings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{history.length}</div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Total disciplinary actions on record.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="grid gap-4 md:grid-cols-4">
+              <StatCard
+                eyebrow="── REPUTATION ──"
+                title="Public Perception"
+                stats={derived.reputationStats}
+                progress={derived.reputationProgress}
+              />
+              <StatCard
+                eyebrow="── COMPLIANCE ──"
+                title="Welfare & Safety"
+                stats={derived.welfareStats}
+                progress={derived.welfareProgress}
+              />
+              <StatCard
+                eyebrow="── JSA COUNCIL ──"
+                title="Council Status"
+                stats={derived.councilStats}
+              />
+              <StatCard
+                eyebrow="── RECORD ──"
+                title="Disciplinary Record"
+                stats={derived.recordStats}
+              />
             </div>
 
-            {/* History Tab */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Ruling History</CardTitle>
-                <CardDescription>Official council decisions affecting your stable.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {history.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">
-                    No rulings on record. Keep it that way.
-                  </p>
-                ) : (
-                  <ScrollArea className="h-[300px]">
-                    <div className="space-y-4">
-                      {history.map((ruling, i) => (
-                        <div
-                          key={ruling.id || i}
-                          className="border-l-4 border-destructive pl-4 py-2"
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium">{ruling.type.toUpperCase()}</p>
-                              <p className="text-sm text-muted-foreground">{ruling.reason}</p>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {ruling.severity}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">{ruling.date}</p>
-                          {ruling.effects?.fineAmount && (
-                            <p className="text-sm text-destructive mt-1">
-                              Fine: {formatFinePenalty(ruling.effects.fineAmount)}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </CardContent>
-            </Card>
+            <ListCard
+              eyebrow="── RULINGS ──"
+              title="Ruling History"
+              rows={derived.historyRows}
+              emptyText="No rulings on record. Keep it that way."
+            />
 
-            {/* Critical Welfare Alerts Panel */}
-            {(() => {
-              const criticalHeyas = selectHeyasWithCriticalWelfare(world);
-              if (criticalHeyas.length === 0) return null;
-              return (
-                <Card className="border-warning/40">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-warning">
-                      <ShieldAlert className="h-4 w-4" />
-                      Welfare Alerts — Stables Under Scrutiny
-                    </CardTitle>
-                    <CardDescription>
-                      These stables have critical welfare risk levels or active compliance actions.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {criticalHeyas.map((h) => {
-                        const risk = Math.round(h.welfareState?.welfareRisk ?? 0);
-                        const comp = h.welfareState?.complianceState ?? "compliant";
-                        return (
-                          <div
-                            key={h.id}
-                            className="flex items-center justify-between p-3 bg-warning/5 border border-warning/20 rounded-lg"
-                          >
-                            <div className="flex items-center gap-3">
-                              <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
-                              <div>
-                                <p className="font-medium text-sm">{h.name}</p>
-                                <p className="text-xs text-muted-foreground capitalize">
-                                  {comp.replace("_", " ")} — {h.rikishiIds?.length ?? 0} rikishi
-                                </p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-bold text-warning">Risk {risk}%</p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })()}
+            {derived.welfareRows.length > 0 && (
+              <ListCard
+                eyebrow="── WELFARE ALERTS ──"
+                title="Stables Under Scrutiny"
+                rows={derived.welfareRows}
+              />
+            )}
 
-            {/* Merger Candidates Panel */}
-            {(() => {
-              const mergerCandidates = selectMergerCandidates(world);
-              if (mergerCandidates.length === 0) return null;
-              return (
-                <Card className="border-destructive/40">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium flex items-center gap-2 text-destructive">
-                      <ArrowRightLeft className="h-4 w-4" />
-                      Merger Risk — Stables in Crisis
-                    </CardTitle>
-                    <CardDescription>
-                      These stables are in debt with critically small rosters and may face
-                      Association-mandated merger.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {mergerCandidates.map((h) => (
-                        <div
-                          key={h.id}
-                          className="flex items-center justify-between p-3 bg-destructive/5 border border-destructive/20 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3">
-                            <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />
-                            <div>
-                              <p className="font-medium text-sm">{h.name}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {h.rikishiIds?.length ?? 0} rikishi —{" "}
-                                {(h.governanceStatus ?? "good_standing").replace("_", " ")}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-bold text-destructive">
-                              ¥{Math.abs(h.funds / 1_000_000).toFixed(1)}M in debt
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })()}
+            {derived.mergerRows.length > 0 && (
+              <ListCard
+                eyebrow="── MERGER RISK ──"
+                title="Stables in Crisis"
+                rows={derived.mergerRows}
+              />
+            )}
 
-            {/* Global Cup Governance */}
             {world.globalCup && (
-              <Card className="border-amber-500/30">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2 text-amber-400">
-                    <Trophy className="h-4 w-4" />
-                    Global Cup Tournament
-                  </CardTitle>
-                  <CardDescription>
-                    International sumo tournament management and oversight.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl font-display font-bold text-amber-400">
-                        {world.globalCup.year}
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">
-                          Status: <span className="capitalize">{world.globalCup.phase}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {world.globalCup.participants.length} participants from{" "}
-                          {
-                            new Set(
-                              world.globalCup.participants.map(
-                                (p: { nationality: string }) => p.nationality
-                              )
-                            ).size
-                          }{" "}
-                          countries
-                        </p>
-                      </div>
-                    </div>
-                    <Link to="/global-cup">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-amber-500/30 text-amber-400"
-                      >
-                        <Globe className="h-4 w-4 mr-2" />
-                        View Tournament
-                      </Button>
-                    </Link>
-                  </div>
-                  {world.globalCup.championId && (
-                    <div className="mt-4 p-3 bg-amber-950/10 border border-amber-500/20 rounded-lg">
-                      <p className="text-sm text-amber-400 font-medium flex items-center gap-2">
-                        <Trophy className="h-4 w-4" />
-                        Current Champion:{" "}
-                        {world.rikishi.get(world.globalCup.championId)?.shikona || "Unknown"}
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <StatCard
+                eyebrow="── GLOBAL CUP ──"
+                title={`${world.globalCup.year} International Tournament`}
+                stats={[
+                  { label: "Phase", value: world.globalCup.phase, tone: "gold" },
+                  { label: "Participants", value: world.globalCup.participants.length },
+                  {
+                    label: "Nations",
+                    value: new Set(
+                      world.globalCup.participants.map(
+                        (p: { nationality: string }) => p.nationality
+                      )
+                    ).size,
+                  },
+                  ...(world.globalCup.championId
+                    ? [
+                        {
+                          label: "Champion",
+                          value:
+                            world.rikishi.get(world.globalCup.championId)?.shikona ?? "Unknown",
+                          tone: "gold" as const,
+                        },
+                      ]
+                    : []),
+                ]}
+                cols={4}
+                actions={
+                  <Link to="/global-cup">
+                    <Button size="sm" variant="outline">
+                      <Globe className="h-4 w-4 mr-1.5" />
+                      View
+                    </Button>
+                  </Link>
+                }
+              />
             )}
           </TabsContent>
 
-          {/* Politics Tab */}
+          {/* ── Politics ──────────────────────────────────────────────── */}
           <TabsContent value="politics" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Ichimon Politics (The Game of Thrones)
-                </CardTitle>
-                <CardDescription>
-                  Your stable belongs to the <strong>{heya.ichimon} Ichimon</strong>. Use Political
-                  Capital to sway JSA Board elections, forge alliances, and dominate the sumo world.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">
-                      Your Political Standing
-                    </h3>
-                    <div className="bg-muted p-4 rounded-md mb-4 flex justify-between items-center">
-                      <div>
-                        <p className="font-semibold text-lg">{heya.politicalCapital || 0}</p>
-                        <p className="text-xs text-muted-foreground">Political Capital</p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          if (heya && heya.politicalCapital && heya.politicalCapital >= 100) {
-                            spendPoliticalCapital(world, heya.id, 100);
-                            // handle local state update if needed, but Context usually handles this
-                          } else {
-                            alert("Not enough Political Capital (need 100).");
-                          }
-                        }}
-                        disabled={(heya.politicalCapital || 0) < 100}
-                        tooltip="Expend influence to boost your Ichimon's standing in the Association"
-                      >
-                        Spend 100 Capital
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Spending capital boosts your Ichimon's influence by 20 points, helping secure
-                      the JSA Chairman seat in the next bi-annual election.
-                    </p>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <SectionHeader eyebrow="── CAPITAL ──" title="Your Political Standing" />
+                <StatCard
+                  eyebrow=""
+                  title={`${heya.ichimon ?? "Independent"} Ichimon`}
+                  stats={[
+                    {
+                      label: "Political Capital",
+                      value: heya.politicalCapital ?? 0,
+                      tone: (heya.politicalCapital ?? 0) >= 100 ? "gold" : "default",
+                      sub: "Spending 100 boosts Ichimon influence by 20",
+                    },
+                  ]}
+                  actions={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (heya && (heya.politicalCapital ?? 0) >= 100) {
+                          spendPoliticalCapital(world, heya.id, 100);
+                        } else {
+                          alert("Not enough Political Capital (need 100).");
+                        }
+                      }}
+                      disabled={(heya.politicalCapital ?? 0) < 100}
+                    >
+                      Spend 100
+                    </Button>
+                  }
+                />
+              </div>
 
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4">
-                      Ichimon Influence Rankings
-                    </h3>
-                    <div className="space-y-3">
-                      {world.factions ? (
-                        Object.values(world.factions)
-                          .sort((a, b) => b.influence - a.influence)
-                          .map((fac) => {
-                            const isChairman = world.factions
-                              ? Math.max(
-                                  ...Object.values(world.factions).map((f) => f.influence)
-                                ) === fac.influence
-                              : false;
-                            return (
-                              <div
-                                key={fac.id}
-                                className="flex justify-between items-center border-b pb-2"
-                              >
-                                <div>
-                                  <p className="font-medium flex items-center gap-2">
-                                    {fac.name}
-                                    {isChairman && (
-                                      <Badge
-                                        variant="default"
-                                        className="text-[10px] px-1.5 py-0 h-4"
-                                      >
-                                        Chairman
-                                      </Badge>
-                                    )}
-                                    {heya.ichimon === fac.id && (
-                                      <Badge
-                                        variant="outline"
-                                        className="text-[10px] px-1.5 py-0 h-4 border-primary text-primary"
-                                      >
-                                        Your Faction
-                                      </Badge>
-                                    )}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    Leader:{" "}
-                                    {world.oyakata.get(fac.oyakataLeaderId || "")?.name ||
-                                      "Unknown"}
-                                  </p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="font-bold">{fac.influence}</p>
-                                  <p className="text-[10px] text-muted-foreground uppercase">
-                                    Influence
-                                  </p>
-                                </div>
-                              </div>
-                            );
-                          })
-                      ) : (
-                        <p className="text-sm text-muted-foreground">No faction data available.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              <div className="space-y-4">
+                <SectionHeader eyebrow="── RANKINGS ──" title="Ichimon Influence Rankings" />
+                {derived.factionList.length > 0 ? (
+                  <ListCard
+                    eyebrow=""
+                    title="Current Standing"
+                    rows={derived.factionRows}
+                    icon={Trophy}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">No faction data available.</p>
+                )}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
