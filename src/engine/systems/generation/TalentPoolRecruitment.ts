@@ -10,7 +10,7 @@ import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
 import type { Heya } from "../../types/heya";
 import type { Oyakata } from "../../types/oyakata";
-import { TalentPoolType, TalentCandidate } from "../../types/talent";
+import { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/talent";
 import { convertCandidateToRikishi } from "./CandidateBuilder";
 import { rngFromSeed } from "../../rng";
 import { EventBus } from "../../events";
@@ -431,9 +431,6 @@ export function fillVacanciesForNPCWithBidding(
 
   return builder.build();
 }
-
-import type { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/talent";
-import { convertCandidateToRikishi } from "./CandidateBuilder";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
