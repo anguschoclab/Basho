@@ -219,7 +219,7 @@ export default function Dashboard() {
                 },
                 {
                   label: "Sekitori",
-                  value: String(rosterData.sekitoriCount),
+                  value: String(digest?.stats.sekitoriCount ?? 0),
                   tone: "gold",
                 },
                 {
