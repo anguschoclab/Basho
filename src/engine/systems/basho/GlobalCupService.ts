@@ -9,7 +9,7 @@ import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
-import { generateFullRikishi } from "../generation/CandidateGenerator";
+import { generateFullRikishi } from "../generation/CandidateBuilder";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { injectRikishiAsCandidate } from "../generation/TalentPoolService";
 

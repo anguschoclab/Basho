@@ -1,11 +1,10 @@
-import { rngFromSeed } from "../rng";
 import type { WorldState } from "../types/world";
 import type { BashoName, BoutResult, BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
-import { generateFullBashoSchedule, generateDaySchedule } from "../schedule";
+import { generateFullBashoSchedule, scheduleAllDivisionsDay } from "../schedule";
 import { stableTieBreak } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
 
@@ -21,7 +20,6 @@ export function simulateEntireBasho(
     banzukeUpdateHook?: BanzukeUpdateHook;
   }
 ): BashoSimResult {
-  const rng = rngFromSeed(seed, "autoSim", "root");
   const basho = initializeBasho(world, bashoName);
 
   const standings = new Map<string, { wins: number; losses: number }>();
@@ -45,7 +43,7 @@ export function simulateEntireBasho(
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      const { impact } = generateDaySchedule(world, basho, day, daySeed);
+      const { impact } = scheduleAllDivisionsDay({ world, basho, day, seed: daySeed });
       const resolvedWorld = resolveImpacts(world, [impact]);
       Object.assign(world, resolvedWorld);
     }
@@ -61,12 +59,12 @@ export function simulateEntireBasho(
       const west = world.rikishi.get(match.westRikishiId);
 
       if (!east || !west) continue;
-      
+
       if (east.injured || west.injured) {
         // Fusen-sho / Fusen-paku (standardization point)
         const winner = east.injured ? west : east;
         const loser = east.injured ? east : west;
-        
+
         winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
         loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
 
@@ -74,15 +72,22 @@ export function simulateEntireBasho(
         const loserStanding = standings.get(loser.id);
         if (winnerStanding) winnerStanding.wins++;
         if (loserStanding) loserStanding.losses++;
-        
+
         // Add fake bout result for stats consistency
         match.result = {
+          boutId: match.boutId,
           winner: east.injured ? "west" : "east",
-          kimarite: "fusen", // Special kimarite for default win
-          points: 1,
-          intensity: 0,
-          outcome: "victory"
-        } as any;
+          winnerRikishiId: winner.id,
+          loserRikishiId: loser.id,
+          kimarite: "oshidashi",
+          kimariteName: "Oshidashi",
+          stance: "push-dominant",
+          tachiaiWinner: east.injured ? "west" : "east",
+          duration: 0,
+          upset: false,
+          kenshoEnvelopes: 0,
+          log: [],
+        };
         continue;
       }
 
@@ -125,14 +130,14 @@ export function simulateEntireBasho(
     id: yushoEntry?.id || "",
     shikona: yushoEntry?.rikishi?.shikona || "Unknown",
     wins: yushoEntry?.wins ?? 0,
-    losses: yushoEntry?.losses ?? 0
+    losses: yushoEntry?.losses ?? 0,
   };
 
   const second = sortedStandings[1];
   const junYushoTargetWins = second ? second.wins : -1;
   const junYusho = sortedStandings
     .filter((s) => s.id !== yushoEntry?.id && s.wins === junYushoTargetWins)
-    .map((s) => s.rikishi!.shikona);
+    .map((s) => s.rikishi?.shikona ?? "Unknown");
 
   let promotions: PromotionEvent[] = [];
   let demotions: DemotionEvent[] = [];
@@ -143,7 +148,7 @@ export function simulateEntireBasho(
       bashoName,
       year: world.year,
       standings,
-      seed: `${seed}-banzuke`
+      seed: `${seed}-banzuke`,
     });
     promotions = hookResult.promotions;
     demotions = hookResult.demotions;
@@ -158,6 +163,6 @@ export function simulateEntireBasho(
     keyBouts,
     injuries: Array.from(new Set(injuries)),
     promotions,
-    demotions
+    demotions,
   };
 }

@@ -43,7 +43,7 @@ vi.mock("../../archival", () => ({
 
 vi.mock("../../lifecycle/RegistryService", () => ({
   runCareerJournalUpdates: vi.fn(() => ({ metadata: { source: "careerJournal", timestamp: 0 } })),
-  runRecruitmentWindow: vi.fn(() => ({ metadata: { source: "recruitment", timestamp: 0 } })),
+  openRecruitmentWindow: vi.fn(() => ({ metadata: { source: "recruitment", timestamp: 0 } })),
 }));
 
 vi.mock("../../history", () => ({
@@ -67,7 +67,6 @@ vi.mock("../../systems/generation/TalentPoolService", () => ({
   finalizeSignedCandidates: vi.fn(),
 }));
 
-
 // ── Import module under test AFTER mocks ──────────────────────────────────
 
 import { runPostBashoResolution } from "../../core/SimulationRunner";
@@ -79,7 +78,7 @@ import {
 } from "../../governance/governanceReview";
 import { onBashoEnded } from "../../records";
 import * as ImpactResolver from "../../core/ImpactResolver";
-import { runRecruitmentWindow } from "../../lifecycle/RegistryService";
+import { openRecruitmentWindow } from "../../lifecycle/RegistryService";
 import { runArchivalPruning } from "../../archival";
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
@@ -102,7 +101,9 @@ afterEach(() => {
 
 function makeWorld(month = 1) {
   return makeMockWorld({
-    calendar: { year: 2025, month, currentWeek: 1, currentDay: 1 },
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    calendar: { currentWeek: 1, month } as any,
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   });
 }
 
@@ -143,10 +144,10 @@ describe("runPostBashoResolution", () => {
     expect((ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(2);
   });
 
-  it("calls runRecruitmentWindow after main resolveImpacts", () => {
+  it("calls openRecruitmentWindow after main resolveImpacts", () => {
     runPostBashoResolution(makeWorld());
     const resolveCalls = (ImpactResolver.resolveImpacts as ReturnType<typeof vi.fn>).mock.calls;
-    const recruitCalls = (runRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls;
+    const recruitCalls = (openRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls;
     expect(recruitCalls.length).toBeGreaterThan(0);
     expect(resolveCalls.length).toBeGreaterThan(0);
   });

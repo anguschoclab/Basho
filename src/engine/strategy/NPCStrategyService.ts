@@ -19,6 +19,31 @@ export interface OyakataPersonnelObservation {
   rikishiPerceptions: RikishiPerception[];
 }
 
+export interface TrainingIntensityResult {
+  intensity: TrainingIntensity;
+  reason: string;
+}
+
+export interface TrainingFocusResult {
+  focus: TrainingFocus;
+  reason: string;
+}
+
+export interface RecoveryResult {
+  recovery: RecoveryEmphasis;
+  reason: string;
+}
+
+export interface ScoutingPriorityResult {
+  priority: "none" | "passive" | "active" | "aggressive";
+  reason: string;
+}
+
+export interface ProtectResult {
+  protectIds: Id[];
+  reason: string;
+}
+
 function seededRng(provided?: SeededRNG): SeededRNG {
   return provided || new SeededRNG("npc_strategy");
 }
@@ -34,7 +59,7 @@ export function decideTrainingIntensity(
   complianceCap: TrainingIntensity | undefined,
   philosophy?: RecruitmentPhilosophy,
   providedRng?: SeededRNG
-): { intensity: TrainingIntensity; reason: string } {
+): TrainingIntensityResult {
   const rng = seededRng(providedRng);
   const INTENSITY_RANK: TrainingIntensity[] = [
     "conservative",
@@ -121,7 +146,7 @@ export function decideTrainingFocus(
   tradition: number,
   philosophy?: RecruitmentPhilosophy,
   providedRng?: SeededRNG
-): { focus: TrainingFocus; reason: string } {
+): TrainingFocusResult {
   const rng = seededRng(providedRng);
   if (philosophy === "size_matters") {
     return {
@@ -182,7 +207,7 @@ export function decideRecovery(
   perception: PerceptionSnapshot,
   welfareDiscipline: number,
   providedRng?: SeededRNG
-): { recovery: RecoveryEmphasis; reason: string } {
+): RecoveryResult {
   const rng = seededRng(providedRng);
   const fragileCount = perception.rikishiPerceptions.reduce(
     (acc, r) => acc + (r.healthBand === "fragile" || r.healthBand === "worn" ? 1 : 0),
@@ -243,7 +268,7 @@ export function decideScoutingPriority(
   ambition: number,
   hasSleeperScoutQuirk: boolean,
   providedRng?: SeededRNG
-): { priority: "none" | "passive" | "active" | "aggressive"; reason: string } {
+): ScoutingPriorityResult {
   const rng = seededRng(providedRng);
   if (observation.runwayBand === "desperate" || observation.runwayBand === "critical") {
     return {
@@ -293,7 +318,7 @@ export function identifyProtects(
   observation: OyakataPersonnelObservation,
   welfareDiscipline: number,
   providedRng?: SeededRNG
-): { protectIds: Id[]; reason: string } {
+): ProtectResult {
   const rng = seededRng(providedRng);
   const HIGH_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
   const protectIds: Id[] = [];
