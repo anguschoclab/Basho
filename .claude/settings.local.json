@@ -58,7 +58,8 @@
       "Bash(xargs wc *)",
       "Bash(awk '$1 >= 500')",
       "Bash(awk 'NR>=166 && NR<=580' src/engine/events.ts)",
-      "Bash(awk 'NR<=20 || NR>=510' src/engine/almanac.ts)"
+      "Bash(awk 'NR<=20 || NR>=510' src/engine/almanac.ts)",
+      "Bash(npx vite *)"
     ]
   },
   "outputStyle": "default"
