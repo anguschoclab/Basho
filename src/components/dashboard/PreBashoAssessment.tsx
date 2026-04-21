@@ -73,6 +73,31 @@ const AssessmentRow = React.memo(
   }
 );
 
+const AssessmentList = React.memo(({ assessment, world }: { assessment: any; world: any }) => {
+  return (
+    <>
+      {Array.from(assessment.rikishiAssessments.entries()).map(
+        ([rikishiId, rikishiAssessment]: [string, any]) => {
+          const rikishi = world.rikishi.get(rikishiId);
+          if (!rikishi) return null;
+
+          return (
+            <AssessmentRow
+              key={rikishiId}
+              rikishiId={rikishiId}
+              shikona={rikishi.shikona}
+              injuryRisk={rikishiAssessment.injuryRisk}
+              withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
+              recommendedFocus={rikishiAssessment.recommendedFocus}
+              healthScore={rikishiAssessment.healthScore}
+            />
+          );
+        }
+      )}
+    </>
+  );
+});
+
 export function PreBashoAssessment() {
   const { state } = useGame();
   const world = state.world;
@@ -126,24 +151,7 @@ export function PreBashoAssessment() {
 
         {/* Rikishi Assessments */}
         <div className="space-y-2 max-h-60 overflow-y-auto">
-          {Array.from(assessment.rikishiAssessments.entries()).map(
-            ([rikishiId, rikishiAssessment]) => {
-              const rikishi = world.rikishi.get(rikishiId);
-              if (!rikishi) return null;
-
-              return (
-                <AssessmentRow
-                  key={rikishiId}
-                  rikishiId={rikishiId}
-                  shikona={rikishi.shikona}
-                  injuryRisk={rikishiAssessment.injuryRisk}
-                  withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
-                  recommendedFocus={rikishiAssessment.recommendedFocus}
-                  healthScore={rikishiAssessment.healthScore}
-                />
-              );
-            }
-          )}
+<AssessmentList assessment={assessment} rikishiMap={world.rikishi} />
         </div>
 
         {/* Action Button */}

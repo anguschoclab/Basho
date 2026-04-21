@@ -18,7 +18,7 @@ interface YushoContenderProps {
   rank: number;
 }
 
-const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
+const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
   const navigate = useNavigate();
 
   const medals = [
@@ -79,7 +79,7 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
       <p className="text-sm font-bold text-center truncate w-20">{entry.shikona}</p>
     </div>
   );
-};
+});
 
 export const YushoRaceWidget: React.FC = () => {
   const { state } = useGame();
