@@ -151,7 +151,7 @@ export function PreBashoAssessment() {
 
         {/* Rikishi Assessments */}
         <div className="space-y-2 max-h-60 overflow-y-auto">
-          <AssessmentList assessment={assessment} world={world} />
+<AssessmentList assessment={assessment} rikishiMap={world.rikishi} />
         </div>
 
         {/* Action Button */}
