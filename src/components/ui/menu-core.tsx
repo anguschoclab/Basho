@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { Check, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,7 +9,7 @@ export const withMenuItem = <P extends React.ElementType>(ItemPrimitive: P) =>
       inset?: boolean;
     }
   >(({ className, inset, ...props }, ref) => {
-    const Component = ItemPrimitive as any;
+    const Component = ItemPrimitive as React.ElementType;
     return (
       <Component
         ref={ref}
@@ -32,8 +31,8 @@ export const withMenuCheckboxItem = <P extends React.ElementType, I extends Reac
     React.ElementRef<P>,
     React.ComponentPropsWithoutRef<P> & { checked?: boolean | "indeterminate" }
   >(({ className, children, checked, ...props }, ref) => {
-    const Component = CheckboxItemPrimitive as any;
-    const Indicator = ItemIndicatorPrimitive as any;
+    const Component = CheckboxItemPrimitive as React.ElementType;
+    const Indicator = ItemIndicatorPrimitive as React.ElementType;
     return (
       <Component
         ref={ref}
@@ -60,8 +59,8 @@ export const withMenuRadioItem = <P extends React.ElementType, I extends React.E
 ) =>
   React.forwardRef<React.ElementRef<P>, React.ComponentPropsWithoutRef<P>>(
     ({ className, children, ...props }, ref) => {
-      const Component = RadioItemPrimitive as any;
-      const Indicator = ItemIndicatorPrimitive as any;
+      const Component = RadioItemPrimitive as React.ElementType;
+      const Indicator = ItemIndicatorPrimitive as React.ElementType;
       return (
         <Component
           ref={ref}

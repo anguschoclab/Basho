@@ -65,7 +65,7 @@ describe('toRankPosition', () => {
     });
 
     it('should throw an error if rankNumber is not provided for numbered ranks', () => {
-      expect(() => toRankPosition({ rank: 'maegashira', side: 'east' } as any)).toThrow(
+      expect(() => toRankPosition({ rank: 'maegashira', side: 'east' } as unknown as { rank: Rank; side: Side; rankNumber?: number })).toThrow(
         'Rank maegashira requires rankNumber >= 1'
       );
     });
