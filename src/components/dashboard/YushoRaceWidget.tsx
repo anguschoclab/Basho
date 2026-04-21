@@ -89,12 +89,16 @@ export const YushoRaceWidget: React.FC = () => {
     const world = state.world;
     if (!world?.currentBasho) return [];
     const standings = world.currentBasho.standings;
-    return Array.from(world.rikishi.values())
-      .filter((r) => !r.isRetired && r.division === "makuuchi")
-      .map((r) => {
+
+    const contenders: { r: any; wins: number }[] = [];
+    for (const r of world.rikishi.values()) {
+      if (!r.isRetired && r.division === "makuuchi") {
         const record = standings.get(r.id);
-        return { r, wins: record?.wins ?? r.currentBashoWins ?? 0 };
-      })
+        contenders.push({ r, wins: record?.wins ?? r.currentBashoWins ?? 0 });
+      }
+    }
+
+    return contenders
       .sort((a, b) => b.wins - a.wins)
       .slice(0, 5)
       .map(({ r }) => projectRosterEntry(r, world));

@@ -100,44 +100,44 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                   label="Shikona"
                   id="shikona"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("shikona")}
+                  onClick={toggleSort}
                 />
                 <TableHeader
                   label="Division"
                   id="division"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("division")}
+                  onClick={toggleSort}
                 />
                 <TableHeader
                   label="Wins"
                   id="careerWins"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("careerWins")}
+                  onClick={toggleSort}
                 />
                 <TableHeader
                   label="Losses"
                   id="careerLosses"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("careerLosses")}
+                  onClick={toggleSort}
                 />
                 <TableHeader
                   label="Win %"
                   id="winPercentage"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("winPercentage")}
+                  onClick={toggleSort}
                 />
                 <TableHeader
                   label="Streak"
                   id="streak"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("streak")}
+                  onClick={toggleSort}
                 />
                 <TableHeader label="Basho" id="shikona" currentSort={sortKey} onClick={() => {}} />
                 <TableHeader
                   label="Avg Rank"
                   id="avgRankLabel"
                   currentSort={sortKey}
-                  onClick={() => toggleSort("avgRankLabel")}
+                  onClick={toggleSort}
                 />
               </tr>
             </thead>
@@ -169,7 +169,7 @@ const TableHeader = React.memo(function TableHeader({
   label: string;
   id: SortKey;
   currentSort: SortKey;
-  onClick: () => void;
+  onClick: (id: SortKey) => void;
 }) {
   const isActive = currentSort === id;
   return (
@@ -178,7 +178,7 @@ const TableHeader = React.memo(function TableHeader({
         "p-4 font-semibold cursor-pointer select-none whitespace-nowrap",
         isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
       )}
-      onClick={onClick}
+      onClick={() => onClick(id)}
     >
       <div className="flex items-center gap-2">
         {label}

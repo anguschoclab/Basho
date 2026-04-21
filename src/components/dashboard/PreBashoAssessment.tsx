@@ -55,18 +55,13 @@ const AssessmentRow = React.memo(
             </TooltipWrap>
           )}
           {recommendedFocus !== "normal" && (
-            <TooltipWrap
-              content={`Recommended focus: ${recommendedFocus}`}
-              side="left"
-            >
+            <TooltipWrap content={`Recommended focus: ${recommendedFocus}`} side="left">
               <Shield
                 className={`h-3 w-3 ${recommendedFocus === "protect" ? "text-destructive" : "text-warning"}`}
               />
             </TooltipWrap>
           )}
-          <span className="text-muted-foreground w-8 text-right">
-            {Math.round(healthScore)}%
-          </span>
+          <span className="text-muted-foreground w-8 text-right">{Math.round(healthScore)}%</span>
         </div>
       </div>
     );
@@ -74,28 +69,25 @@ const AssessmentRow = React.memo(
 );
 
 const AssessmentList = React.memo(({ assessment, world }: { assessment: any; world: any }) => {
-  return (
-    <>
-      {Array.from(assessment.rikishiAssessments.entries()).map(
-        ([rikishiId, rikishiAssessment]: [string, any]) => {
-          const rikishi = world.rikishi.get(rikishiId);
-          if (!rikishi) return null;
+  const nodes = [];
+  for (const [rikishiId, rikishiAssessment] of assessment.rikishiAssessments.entries()) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
 
-          return (
-            <AssessmentRow
-              key={rikishiId}
-              rikishiId={rikishiId}
-              shikona={rikishi.shikona}
-              injuryRisk={rikishiAssessment.injuryRisk}
-              withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
-              recommendedFocus={rikishiAssessment.recommendedFocus}
-              healthScore={rikishiAssessment.healthScore}
-            />
-          );
-        }
-      )}
-    </>
-  );
+    nodes.push(
+      <AssessmentRow
+        key={rikishiId}
+        rikishiId={rikishiId}
+        shikona={rikishi.shikona}
+        injuryRisk={rikishiAssessment.injuryRisk}
+        withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
+        recommendedFocus={rikishiAssessment.recommendedFocus}
+        healthScore={rikishiAssessment.healthScore}
+      />
+    );
+  }
+
+  return <>{nodes}</>;
 });
 
 export function PreBashoAssessment() {
@@ -151,7 +143,7 @@ export function PreBashoAssessment() {
 
         {/* Rikishi Assessments */}
         <div className="space-y-2 max-h-60 overflow-y-auto">
-<AssessmentList assessment={assessment} rikishiMap={world.rikishi} />
+          <AssessmentList assessment={assessment} world={world} />
         </div>
 
         {/* Action Button */}
