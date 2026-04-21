@@ -14,6 +14,6 @@
  📄 Proposed Documentation Updates:
  docs/Basho_Constitution_v1.2_HARMONIZED_NONLOSSY.md: Update Section C1.2 to outline a transition path from the current JSON-driven archive approach of `BardEngine.ts` to the required typed structural templates in `grammarDefinitions.ts`.
 
- Code Paths Covered: `src/engine/tick/phases/*.ts`, `src/engine/world.ts`, `src/presenters/projections/*.ts`, `src/engine/narrative/BardEngine.ts`
+ Code Paths Covered: `src/engine/tick/phases/*.ts`, `src/engine/world.ts`, `src/presenters/projections/*.ts`, `src/engine/overflow.ts`, `src/engine/narrative/BardEngine.ts`
 
  Key Knowledge Gaps Addressed: Confirms that structural isolation between the UI projection layers and the simulation engine is progressing, while formally surfacing the ongoing architectural gap in our dynamic text generation pipeline that requires bridging the JSON text assets into the required typings.
