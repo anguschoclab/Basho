@@ -15,6 +15,6 @@
  📄 Proposed Documentation Updates:
  docs/Basho_Constitution_v1.2_HARMONIZED_NONLOSSY.md: Revise Section C1.2 to recognize the `BardEngine`'s JSON-driven archive approach, or formally propose the implementation of `grammarDefinitions.ts` to bridge the typed contract gap.
 
- Code Paths Covered: `src/engine/tick/pipelineRunner.ts`, `src/engine/systems/economy/FinanceCalculator.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/overflow.ts`, `src/engine/narrative/BardEngine.ts`
+ Code Paths Covered: src/engine/tick/pipelineRunner.ts, src/engine/tick/phases/*.ts, src/engine/systems/economy/FinanceCalculator.ts, src/engine/systems/narrative/NarrativeService.ts, src/engine/overflow.ts, src/engine/narrative/BardEngine.ts
 
  Key Knowledge Gaps Addressed: Confirms that the economic and roster management core logic successfully maps to the Product Manager's canonical constraints, while highlighting a critical architectural drift in the text generation pipeline that needs structural alignment.
