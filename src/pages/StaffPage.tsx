@@ -283,8 +283,11 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2"
                 onClick={() => onFire(staff.id)}
+                aria-label={`Fire ${staff.name}`}
+                tooltip={`Fire ${staff.name}`}
+                tooltipSide="top"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
