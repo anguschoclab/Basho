@@ -1,5 +1,5 @@
 📝 Daily Progress & Docs Update
- 🏗️ Codebase Status: The simulation engine is currently undergoing a structural refactoring towards a Strict Pipeline Architecture. The monolithic daily tick has been broken down into isolated pure-function phases (`src/engine/tick/phases/`) utilizing an `ImpactBuilder` to eliminate in-place mutations. The narrative layer delegates descriptor bands correctly through `NarrativeService`, and core systems like economy and overflow management are intact.
+ 🏗️ Codebase Status: The simulation engine is currently undergoing a structural refactoring towards a Strict Pipeline Architecture. The monolithic daily tick has been broken down into isolated phases (src/engine/tick/phases/) utilizing an ImpactBuilder to eliminate in-place mutations. The narrative layer delegates descriptor bands correctly through NarrativeService, and core systems like economy and overflow management are intact.
 
  Current WIP focus: Migrating remaining state modifications to the new immutable `ImpactBuilder` pattern. Several phases (e.g., `phase01_week_npc_ai.ts`, `phase01_daily_economy.ts`) still contain comments noting that `transientContext` and specific nested maps are manually updated because they are "not directly supported by ImpactBuilder yet."
 
