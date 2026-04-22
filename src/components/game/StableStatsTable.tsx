@@ -132,7 +132,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
                   currentSort={sortKey}
                   onClick={toggleSort}
                 />
-                <TableHeader label="Basho" id="shikona" currentSort={sortKey} onClick={() => {}} />
+                <th className="p-4 font-semibold text-muted-foreground whitespace-nowrap">Basho</th>
                 <TableHeader
                   label="Avg Rank"
                   id="avgRankLabel"
