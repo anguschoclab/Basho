@@ -118,14 +118,14 @@ export const RivalryService = {
       builder.updateWorldField("rivalriesState", {
         version: state.version,
         pairs: remainingPairs,
-        heyaRivalryPairs,
+        heyaRivalryPairs: state.heyaRivalryPairs,
       });
     } else {
       updatedPairs[key] = next;
       builder.updateWorldField("rivalriesState", {
         version: state.version,
         pairs: updatedPairs,
-        heyaRivalryPairs,
+        heyaRivalryPairs: state.heyaRivalryPairs,
       });
     }
 

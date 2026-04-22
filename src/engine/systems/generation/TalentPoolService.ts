@@ -30,11 +30,23 @@ export {
   FOREIGN_RIKISHI_LIMIT_PER_HEYA,
   BASE_SCOUT_COST,
   REVEAL_COST,
+} from "./TalentPoolConstants";
+
+export {
   offerCandidate,
   resolveCandidateSuitor,
+} from "./TalentPoolOffers";
+
+export {
   tickWeekTalentPool,
+} from "./TalentPoolMaintenance";
+
+export {
   fillVacanciesForNPC,
   fillVacanciesForNPCWithBidding,
+} from "./TalentPoolNPCRecruitment";
+
+export {
   materializeCandidateToRikishi,
   finalizeSignedCandidates,
-} from "./TalentPoolRecruitment";
+} from "./TalentPoolMaterialization";

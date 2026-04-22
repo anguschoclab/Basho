@@ -1,0 +1,1201 @@
+
+> studio-boss@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/amauricia/Documents/GitHub/sumo-manager-pro
+
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts (14 tests | 8 failed) 11ms
+   × KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for juryo tier 5ms
+     → brandMap?.get is not a function
+   × KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for makuuchi tier 1ms
+     → brandMap?.get is not a function
+   × KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for sanyaku tier 0ms
+     → brandMap?.get is not a function
+   × KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for yokozuna tier 0ms
+     → brandMap?.get is not a function
+   × KeshoMawashiGenerator > generateKeshoMawashi > uses heya brand identity for colors 0ms
+     → world.heyaBrandIdentities.get is not a function
+   × KeshoMawashiGenerator > generateKeshoMawashi > assigns heyaBrandId from rikishi's heya 0ms
+     → brandMap?.get is not a function
+   × KeshoMawashiGenerator > generateKeshoForPromotions > creates kesho on makushita to juryo promotion 1ms
+     → brandMap?.get is not a function
+   ✓ KeshoMawashiGenerator > generateKeshoForPromotions > upgrades kesho on juryo to makuuchi promotion 1ms
+   × KeshoMawashiGenerator > generateKeshoForPromotions > creates yokozuna tsuna on yokozuna promotion 1ms
+     → brandMap?.get is not a function
+   ✓ KeshoMawashiGenerator > generateKeshoForPromotions > generates no impacts for demotions 0ms
+   ✓ KeshoMawashiGenerator > generateYokozunaTsuna > generates valid yokozuna tsuna 1ms
+   ✓ KeshoMawashiGenerator > generateYokozunaTsuna > sets correct conferral year and basho 0ms
+   ✓ KeshoMawashiGenerator > upgradeKeshoMawashi > upgrades tier and increases gold thread density 0ms
+   ✓ KeshoMawashiGenerator > upgradeKeshoMawashi > updates description to reflect new tier 0ms
+ ❯ src/engine/__tests__/h2h.test.ts (14 tests | 11 failed) 13ms
+   × h2h.test.ts - win counting > returns zeroed report when neither has faced the other 6ms
+     → expected { id: 'a', history: [] } to be 'a' // Object.is equality
+   × h2h.test.ts - win counting > counts wins for A correctly 1ms
+     → expected +0 to be 2 // Object.is equality
+   × h2h.test.ts - win counting > counts wins for B when B dominates 0ms
+     → expected +0 to be 2 // Object.is equality
+   × h2h.test.ts - win counting > ignores history entries against unrelated opponents 0ms
+     → expected +0 to be 1 // Object.is equality
+   × h2h.test.ts - recent meetings ordering > returns recent meetings sorted newest-first by year then day 0ms
+     → Cannot read properties of undefined (reading 'year')
+   × h2h.test.ts - recent meetings ordering > caps recent meetings at 5 entries 1ms
+     → expected [] to have a length of 5 but got +0
+   × h2h.test.ts - recent meetings ordering > sets winnerId correctly for each meeting 0ms
+     → Cannot read properties of undefined (reading 'winnerId')
+   × h2h.test.ts - recent meetings ordering > records kimarite from MatchResultLog 0ms
+     → Cannot read properties of undefined (reading 'kimarite')
+   × updateH2H > increments winner.h2h[loser.id].wins and sets lastMatch 1ms
+     → expected undefined to be defined
+   × updateH2H > increments loser.h2h[winner.id].losses 0ms
+     → expected undefined to be defined
+   × updateH2H > accumulates on repeated calls 0ms
+     → Cannot read properties of undefined (reading 'wins')
+   ✓ generateH2HCommentary > returns a non-empty string for first meeting 1ms
+   ✓ generateH2HCommentary > returns a non-empty string for established rivalry 0ms
+   ✓ generateH2HCommentary > is deterministic for identical inputs 0ms
+ ❯ src/engine/__tests__/keshoMawashi/integration.test.ts (6 tests | 4 failed) 11ms
+   × Kesho-Mawashi Integration > End-to-end promotion flow > full flow: makushita to juryo promotion generates kesho 7ms
+     → brandMap?.get is not a function
+   ✓ Kesho-Mawashi Integration > End-to-end promotion flow > full flow: juryo to makuuchi upgrades existing kesho 1ms
+   × Kesho-Mawashi Integration > End-to-end promotion flow > full flow: yokozuna promotion generates both kesho and tsuna 1ms
+     → brandMap?.get is not a function
+   × Kesho-Mawashi Integration > Multiple promotions in single basho > handles multiple juryo promotions simultaneously 1ms
+     → brandMap?.get is not a function
+   ✓ Kesho-Mawashi Integration > Kesho persistence across state changes > kesho persists when other rikishi fields are updated 0ms
+   × Kesho-Mawashi Integration > Kesho chain upgrades > properly chains upgrades from juryo -> makuuchi -> sanyaku -> yokozuna 0ms
+     → brandMap?.get is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts (18 tests | 18 failed) 8ms
+   × matchmaking.test.ts — Phase 1 (Days 1–7) > pairs elite (yokozuna/ozeki) with upper-joi (M1-M4) on day 1 4ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 1 (Days 1–7) > enforces heya block even in fallback pairing on day 7 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 1 (Days 1–7) > sorts output chronologically on day 1 (lowest rank first) 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 2 (Days 8–14) > groups rikishi into win buckets on day 8 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 2 (Days 8–14) > pulls up highest-ranked from lower bucket on day 10 when bucket is odd 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > pairs Maegashira yusho leader with yokozuna gatekeeper (yusho exception) 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > does NOT trigger yusho exception if there are multiple leaders 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > does NOT trigger yusho exception if leader is Sekiwake 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > forces yokozuna/ozeki (kore yori san'yaku) to pair against each other 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > tags the most elite pairing as 'finale' on day 15 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — Phase 3 (Day 15) > unpaired elites fall into swiss pool and can be matched with non-elites 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — chronological order > places lower-ranked bouts at the start and elite bouts at the end 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — full 15-day schedule > dispatches to phase1 on day 1 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — full 15-day schedule > dispatches to phase2 on day 8 0ms
+     → MockFactory.createBasho is not a function
+   × matchmaking.test.ts — full 15-day schedule > dispatches to phase3 on day 15 0ms
+     → MockFactory.createBasho is not a function
+   × scorePairing — kadoban pressure > boosts score for an ozeki with < 8 wins on day 11 0ms
+     → MockFactory.createBasho is not a function
+   × scorePairing — kadoban pressure > does not apply kadoban bonus before day 10 0ms
+     → MockFactory.createBasho is not a function
+   × scorePairing — kadoban pressure > applies kadoban bonus when opponent is the ozeki (not just a) 0ms
+     → MockFactory.createBasho is not a function
+ ❯ src/engine/bout/__tests__/boutResult.snapshot.test.ts (1 test | 1 failed) 9ms
+   × BoutResult snapshot > BoutResult shape snapshot 8ms
+     → Snapshot `BoutResult snapshot > BoutResult shape snapshot 1` mismatched
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts (6 tests | 6 failed) 8ms
+   × boutResultApplier > Per-Bout Career Record Updates > should increment careerWins for winner 5ms
+     → heyaRivalryPairs is not defined
+   × boutResultApplier > Per-Bout Career Record Updates > should increment careerLosses for loser 1ms
+     → heyaRivalryPairs is not defined
+   × boutResultApplier > Per-Bout Career Record Updates > should increment makuuchiWins when winner is in makuuchi division 0ms
+     → heyaRivalryPairs is not defined
+   × boutResultApplier > Per-Bout Career Record Updates > should NOT increment makuuchiWins when winner is NOT in makuuchi division 0ms
+     → heyaRivalryPairs is not defined
+   × boutResultApplier > Per-Bout Career Record Updates > should increment division-specific records for winner's current division 0ms
+     → heyaRivalryPairs is not defined
+   × boutResultApplier > Per-Bout Career Record Updates > should increment division-specific records for loser's current division 0ms
+     → heyaRivalryPairs is not defined
+5:23:42 PM [vite] warning: Duplicate key "week" in object literal
+275|          week: 2,
+276|          cyclePhase: "active_basho",
+277|          week: 2, // Must be > 1 to include matchups
+   |          ^
+278|          currentBasho: {
+279|            day: 1,
+
+  Plugin: vite:esbuild
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/presenters/__tests__/uiDigest.test.ts
+ ✓ src/test/engine/utils/math.test.ts (18 tests) 20ms
+ ✓ src/engine/__tests__/engine_restoration.test.ts (5 tests) 87ms
+ ✓ src/engine/__tests__/schedule.test.ts (22 tests) 8ms
+ ✓ src/presenters/__tests__/uiModels.test.ts (7 tests) 193ms
+ ✓ src/test/engine/utils/formatters.test.ts (13 tests) 22ms
+ ✓ src/engine/systems/generation/__tests__/archetypeStatModifiers.test.ts (6 tests) 12ms
+ ✓ src/test/engine/utils/string.test.ts (9 tests) 15ms
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — fusensho (walkover) > does NOT return fusensho when both are healthy
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > winner's momentum decreases after successful henka
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > momentum penalty does not drop below 0
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > no momentum change when STANDARD tactic is used
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > simulateBout > returns a valid result for two healthy rikishi
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+ ✓ src/engine/bout/__tests__/boutResolver.test.ts (9 tests) 13ms
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should restore from snapshot when phase throws
+[PIPELINE FATAL ERROR] in phase: "badPhase" Error: Phase failure
+    at badPhase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:28:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:31:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should not corrupt state when phase partially mutates then throws
+[PIPELINE FATAL ERROR] in phase: "partialMutator" Error: Partial mutation error
+    at partialMutator (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:44:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:47:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should continue with remaining phases after error
+[PIPELINE FATAL ERROR] in phase: "failingPhase" Error: Expected failure
+    at failingPhase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:67:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:70:5
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should preserve heyas and rikishi maps through errors
+[PIPELINE FATAL ERROR] in phase: "corruptorPhase" Error: [pipelineRunner] Phase "corruptorPhase" returned invalid WorldState (heyas or rikishi map missing).
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:61:15)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:90:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runSuite (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts (4 tests) 6ms
+ ✓ src/engine/systems/economics/__tests__/KenshoService.test.ts (13 tests) 27ms
+ ✓ src/engine/__tests__/keshoMawashi/HeyaBrandGenerator.test.ts (11 tests) 6ms
+ ✓ src/engine/__tests__/banzukeHelpers.test.ts (13 tests) 11ms
+ ✓ src/engine/banzuke/__tests__/banzukeTiebreak.test.ts (4 tests) 10ms
+ ✓ src/__tests__/engine/utils/collectionOperations.test.ts (6 tests) 3ms
+ ✓ src/engine/__tests__/core/SimulationRunner.test.ts (9 tests) 5ms
+ ✓ src/engine/__tests__/keshoMawashi/determinism.test.ts (5 tests) 6ms
+ ✓ src/engine/__tests__/hallOfFame.test.ts (3 tests) 3ms
+ ✓ src/engine/storage/__tests__/OPFSFileSystem.test.ts (9 tests) 16ms
+ ✓ src/engine/systems/health/__tests__/InjuryService.test.ts (17 tests) 6ms
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus > wraps logEngineEvent correctly for standard domains
+BardEngine: No options found at path "events.medical.title" (Intensity: 2)
+BardEngine: No options found at path "events.medical.summary" (Intensity: 2)
+BardEngine Warning: Missing token {SHIKONA} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+BardEngine Warning: Missing token {WINS} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+BardEngine Warning: Missing token {LOSSES} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits OYAKATA_MOOD_SHIFT via oyakataMoodShift factory
+BardEngine: No options found at path "events.narrative.mood_shift_title" (Intensity: 2)
+BardEngine: No options found at path "events.narrative.mood_shift_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits NPC_MANAGER_DECISION via managementDecision factory
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits FACILITY_UPGRADED via facilityUpdate factory
+BardEngine: No options found at path "events.facility.upgraded_title" (Intensity: 2)
+BardEngine: No options found at path "events.facility.upgraded_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits LIFECYCLE_EVENT via lifecycleAction factory
+BardEngine Warning: Missing token {SHIKONA} in context for template: "%SHIKONA% Obtains Citizenship"
+BardEngine Warning: Missing token {SHIKONA} in context for template: "Legal milestone: %SHIKONA% is now a Japanese citizen."
+
+ ✓ src/engine/bout/__tests__/boutPhysics.test.ts (6 tests) 7ms
+ ✓ src/engine/__tests__/events.test.ts (14 tests) 19ms
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRule > should return true when condition and action succeed
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesExclusive > should stop after first executed rule
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesExclusive > should try subsequent rules if earlier ones fail
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesCumulative > should execute all matching rules
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesCumulative > should count only successful executions
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+ ✓ src/engine/strategy/__tests__/NPCStrategyFramework.test.ts (28 tests) 7ms
+ ✓ src/__tests__/presenters/projections/bashoProjections.test.ts (2 tests) 2ms
+ ✓ src/engine/__tests__/governance/GovernanceService.test.ts (17 tests) 8ms
+ ✓ src/engine/__tests__/avatarGenerator.test.ts (25 tests) 7ms
+ ✓ src/engine/systems/economics/__tests__/SponsorshipService.test.ts (12 tests) 7ms
+stderr | src/test/engine/storage/opfsArchive.test.ts > Stable Lords: OPFS Archival System > Suite 5: Fallback & Quota Management > Test 5.1: Graceful degradation on QuotaExceededError
+[OPFS] Storage quota exceeded. Archiving skipped.
+
+ ✓ src/test/engine/storage/opfsArchive.test.ts (10 tests) 16ms
+ ✓ src/engine/bout/__tests__/kimariteClassifier.test.ts (18 tests) 7ms
+ ✓ src/engine/bout/__tests__/determinism.test.ts (1 test) 5ms
+ ✓ src/engine/bout/__tests__/kimariteStrategiesV2.test.ts (5 tests) 9ms
+ ✓ src/contexts/__tests__/bashoSlice.test.ts (4 tests) 3ms
+ ✓ src/engine/__tests__/engine.worker.test.ts (8 tests) 5ms
+ ✓ src/__tests__/presenters/banzukeUI.test.ts (4 tests) 4ms
+ ✓ src/engine/__tests__/TalentPoolService.test.ts (10 tests) 8ms
+ ✓ src/presenters/rikishi/__tests__/transformers.test.ts (27 tests) 14ms
+ ✓ src/engine/__tests__/npcAI_agentic.test.ts (4 tests) 4ms
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > strips markdown json blocks
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > parses JSON with unquoted keys
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > parses JSON with trailing commas
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > throws a descriptive error on completely invalid JSON
+[jsonParser] Initial parse failed, attempting sanitization...
+[jsonParser] Critical Parse Failure on output: not json at all
+
+ ✓ src/engine/utils/__tests__/jsonParser.test.ts (5 tests) 4ms
+ ✓ src/engine/__tests__/oyakataStylePreferences.test.ts (3 tests) 6ms
+ ✓ src/engine/__tests__/shikona.test.ts (12 tests) 6ms
+ ✓ src/engine/bout/__tests__/h2hConfidence.test.ts (6 tests) 2ms
+ ✓ src/engine/__tests__/promotionLogic.test.ts (17 tests) 3ms
+ ✓ src/engine/__tests__/banzuke/promotionLogic.test.ts (32 tests) 4ms
+ ✓ src/presenters/__tests__/rikishiUI.test.ts (15 tests) 5ms
+ ✓ src/engine/prestige/__tests__/prestigeSystem.test.ts (14 tests) 16ms
+ ✓ src/engine/__tests__/lifecycle.test.ts (5 tests) 5ms
+ ✓ src/engine/systems/generation/__tests__/CandidateGenerator.test.ts (6 tests) 4ms
+ ✓ src/engine/tick/phases/__tests__/phase06_narrative.test.ts (5 tests) 4ms
+ ✓ src/engine/bout/__tests__/rivalryEdgeCrisis.test.ts (5 tests) 3ms
+ ✓ src/test/engine/utils/safe.test.ts (2 tests) 7ms
+ ✓ src/engine/__tests__/governance/issueRuling.test.ts (7 tests) 3ms
+ ✓ src/__tests__/engine/utils/entityAccess.test.ts (11 tests) 4ms
+ ✓ src/engine/core/__tests__/ImpactResolver.test.ts (13 tests) 5ms
+ ✓ src/__tests__/presenters/uiProjections.test.ts (5 tests) 4ms
+ ✓ src/engine/bout/__tests__/boutPhysicsStats.test.ts (12 tests) 3ms
+ ✓ src/engine/core/__tests__/EntityCollection.test.ts (10 tests) 4ms
+ ✓ src/presenters/__tests__/banzukeUI.test.ts (12 tests) 5ms
+ ✓ src/__tests__/presenters/projections/heyaProjections.test.ts (4 tests) 4ms
+ ✓ src/engine/bout/__tests__/boutGrip.test.ts (8 tests) 4ms
+ ✓ src/engine/bout/__tests__/favoredKimarite.test.ts (3 tests) 4ms
+ ✓ src/engine/__tests__/banzukeTemplate.test.ts (2 tests) 3ms
+ ✓ src/engine/core/__tests__/StateImpact.test.ts (17 tests) 4ms
+ ✓ src/test/engine/Phase5Depth.test.ts (5 tests) 4ms
+ ✓ src/test/engine/utils/sort.test.ts (6 tests) 13ms
+ ✓ src/engine/systems/training/__tests__/TrainingMath.test.ts (16 tests) 5ms
+ ✓ src/engine/utils/__tests__/seed.test.ts (3 tests) 3ms
+ ✓ src/engine/__tests__/oyakataPersonalities.test.ts (7 tests) 3ms
+ ✓ src/engine/systems/welfare/__tests__/WelfareCalculations.test.ts (11 tests) 6ms
+ ✓ src/engine/tick/__tests__/advanceWeek.test.ts (5 tests) 3ms
+ ✓ src/engine/core/__tests__/RNGRegistry.test.ts (5 tests) 4ms
+ ✓ src/engine/__tests__/TalentPoolConversion.test.ts (1 test) 4ms
+ ✓ src/presenters/__tests__/PerceptionPresenter.test.ts (13 tests) 3ms
+ ✓ src/engine/bout/__tests__/boutSpatial.test.ts (10 tests) 3ms
+ ✓ src/__tests__/presenters/rikishiUI.test.ts (2 tests) 3ms
+ ✓ src/engine/systems/training/__tests__/adaptability.test.ts (4 tests) 2ms
+ ✓ src/engine/types/__tests__/banzuke.test.ts (5 tests) 4ms
+ ✓ src/engine/__tests__/bardIntegration.test.ts (3 tests) 3ms
+ ✓ src/presenters/__tests__/bashoUI.test.ts (6 tests) 6ms
+ ✓ src/__tests__/presenters/utilities/uiUtilities.test.ts (3 tests) 3ms
+ ✓ src/test/engine/utils/random.test.ts (7 tests) 3ms
+ ✓ src/__tests__/presenters/projections/baseProjections.test.ts (4 tests) 2ms
+ ✓ src/engine/tick/__tests__/pipelineRunner.test.ts (3 tests) 3ms
+ ✓ src/engine/bout/__tests__/boutGripDepth.test.ts (6 tests) 3ms
+ ✓ src/contexts/__tests__/gameHelpers.test.ts (2 tests) 3ms
+ ✓ src/__tests__/presenters/facilityProjections.test.ts (8 tests) 3ms
+ ✓ src/engine/__tests__/specialPrizes.test.ts (5 tests) 3ms
+ ✓ src/engine/tick/phases/__tests__/phase02_context.test.ts (5 tests) 3ms
+ ✓ src/engine/core/__tests__/EntityService.test.ts (5 tests) 7ms
+ ✓ src/engine/bout/__tests__/conditionMultiplier.test.ts (9 tests) 3ms
+ ✓ src/__tests__/presenters/projections/eventProjections.test.ts (6 tests) 3ms
+ ✓ src/contexts/__tests__/financeSlice.test.ts (2 tests) 3ms
+ ✓ src/__tests__/components/ui/colorMaps.test.ts (6 tests) 2ms
+ ✓ src/engine/core/__tests__/SimulationConfig.test.ts (5 tests) 6ms
+ ✓ src/engine/__tests__/media/mediaEvent.test.ts (6 tests) 6ms
+ ✓ src/test/engine/utils/identity.test.ts (6 tests) 2ms
+ ✓ src/engine/lifecycle/__tests__/RegistryService.test.ts (6 tests) 6ms
+ ✓ src/engine/systems/health/__tests__/RecoveryService.test.ts (6 tests) 7ms
+ ✓ src/__tests__/presenters/projections/economyProjections.test.ts (4 tests) 2ms
+ ✓ src/engine/__tests__/ozekiLogic.test.ts (4 tests) 6ms
+ ✓ src/__tests__/presenters/uiFormatters.test.ts (2 tests) 3ms
+ ✓ src/engine/bout/__tests__/weakAgainstStyles.test.ts (3 tests) 2ms
+ ✓ src/store/__tests__/gameStore.workerSync.test.ts (4 tests) 2ms
+ ✓ src/engine/__tests__/staff_impact.test.ts (2 tests) 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 19 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__tests__/routes.test.tsx [ src/__tests__/routes.test.tsx ]
+Error: Failed to resolve import "react-helmet" from "src/pages/MainMenu.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/pages/MainMenu.tsx:10:23
+  1  |  import { useState, useMemo, useEffect } from "react";
+  2  |  import { Helmet } from "react-helmet";
+     |                          ^
+  3  |  import { useNavigate } from "@tanstack/react-router";
+  4  |  import { useGame } from "@/contexts/GameContext";
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/67]⎯
+
+ FAIL  src/__tests__/presenters/digestProjections.test.ts [ src/__tests__/presenters/digestProjections.test.ts ]
+ FAIL  src/__tests__/presenters/selectors.test.ts [ src/__tests__/presenters/selectors.test.ts ]
+ FAIL  src/__tests__/presenters/uiDigest.test.ts [ src/__tests__/presenters/uiDigest.test.ts ]
+ FAIL  src/presenters/__tests__/selectors.test.ts [ src/presenters/__tests__/selectors.test.ts ]
+ FAIL  src/presenters/__tests__/uiDigest.test.ts [ src/presenters/__tests__/uiDigest.test.ts ]
+ FAIL  src/engine/__tests__/autoSimService.test.ts [ src/engine/__tests__/autoSimService.test.ts ]
+ FAIL  src/engine/__tests__/simulationDeterminism.test.ts [ src/engine/__tests__/simulationDeterminism.test.ts ]
+ FAIL  src/engine/__tests__/yokozunaPresence.test.ts [ src/engine/__tests__/yokozunaPresence.test.ts ]
+ FAIL  src/utils/__tests__/engineUtils.test.ts [ src/utils/__tests__/engineUtils.test.ts ]
+ FAIL  src/__tests__/presenters/projections/boutProjections.test.ts [ src/__tests__/presenters/projections/boutProjections.test.ts ]
+ FAIL  src/__tests__/presenters/projections/dashboardProjections.test.ts [ src/__tests__/presenters/projections/dashboardProjections.test.ts ]
+ FAIL  src/__tests__/presenters/projections/promotionProjections.test.ts [ src/__tests__/presenters/projections/promotionProjections.test.ts ]
+ FAIL  src/engine/simulation/__tests__/AutoSimService.test.ts [ src/engine/simulation/__tests__/AutoSimService.test.ts ]
+Error: Transform failed with 1 error:
+/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/phases/phase01_week_training.ts:22:0: ERROR: Unexpected "<<"
+  Plugin: vite:esbuild
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/phases/phase01_week_training.ts:22:0
+  
+  Unexpected "<<"
+  20 |  import type { Id } from "../../types/common";
+  21 |  import type { TrainingProfile, IndividualFocus } from "../../types/training";
+  22 |  <<<<<<< Updated upstream
+     |  ^
+  23 |  import { type StaffBonuses, getHeyaStaffBonuses } from "../../staff";
+  24 |  =======
+  
+ ❯ failureErrorWithLog node_modules/vite/node_modules/esbuild/lib/main.js:1472:15
+ ❯ node_modules/vite/node_modules/esbuild/lib/main.js:755:50
+ ❯ responseCallbacks.<computed> node_modules/vite/node_modules/esbuild/lib/main.js:622:9
+ ❯ handleIncomingPacket node_modules/vite/node_modules/esbuild/lib/main.js:677:12
+ ❯ Socket.readFromStdout node_modules/vite/node_modules/esbuild/lib/main.js:600:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/67]⎯
+
+ FAIL  src/lib/__tests__/localStorageProvider.test.ts [ src/lib/__tests__/localStorageProvider.test.ts ]
+Error: Failed to resolve import "destr" from "src/lib/localStorageProvider.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/lib/localStorageProvider.ts:1:22
+  1  |  import { destr } from "destr";
+     |                         ^
+  2  |  export const STORAGE_KEYS = {
+  3  |    DASHBOARD_LAYOUT: "basho_dashboard_layout",
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/67]⎯
+
+ FAIL  src/contexts/__tests__/gameReducer.test.ts [ src/contexts/__tests__/gameReducer.test.ts ]
+Error: Failed to resolve import "destr" from "src/engine/saveload.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/saveload.ts:5:22
+  2  |  import { SaveSlotService } from "./persistence/SaveSlotService";
+  3  |  import { runArchivalPruning } from "./archival";
+  4  |  import { destr } from "destr";
+     |                         ^
+  5  |  import { error } from "./utils/Logger";
+  6  |  import { CURRENT_SAVE_VERSION } from "./types/index";
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/67]⎯
+
+ FAIL  src/hooks/__tests__/useDashboardLayout.test.ts [ src/hooks/__tests__/useDashboardLayout.test.ts ]
+Error: Failed to resolve import "destr" from "src/hooks/useDashboardLayout.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/hooks/useDashboardLayout.ts:2:22
+  1  |  import { useState, useCallback, useRef } from "react";
+  2  |  import { destr } from "destr";
+     |                         ^
+  3  |  const STORAGE_KEY = "dashboard-widget-order";
+  4  |  export function loadSavedOrder() {
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/67]⎯
+
+ FAIL  src/pages/__tests__/HistoryPage.test.tsx [ src/pages/__tests__/HistoryPage.test.tsx ]
+Error: Failed to resolve import "react-helmet" from "src/pages/HistoryPage.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/pages/HistoryPage.tsx:19:23
+  1  |  import { Helmet } from "react-helmet";
+     |                          ^
+  2  |  import { useEffect } from "react";
+  3  |  import { useNavigate } from "@tanstack/react-router";
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/67]⎯
+
+ FAIL  src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts [ src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts ]
+Error: Failed to resolve import "destr" from "src/engine/saveload.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/saveload.ts:5:22
+  2  |  import { SaveSlotService } from "./persistence/SaveSlotService";
+  3  |  import { runArchivalPruning } from "./archival";
+  4  |  import { destr } from "destr";
+     |                         ^
+  5  |  import { error } from "./utils/Logger";
+  6  |  import { CURRENT_SAVE_VERSION } from "./types/index";
+ ❯ TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48945:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48940:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63715:23
+ ❯ node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63847:39
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:63774:7
+ ❯ PluginContainer.transform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:48786:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-mCdpKltl.js:51608:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/67]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 48 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - win counting > returns zeroed report when neither has faced the other
+AssertionError: expected { id: 'a', history: [] } to be 'a' // Object.is equality
+
+- Expected: 
+"a"
+
++ Received: 
+{
+  "history": [],
+  "id": "a",
+}
+
+ ❯ src/engine/__tests__/h2h.test.ts:38:24
+     36|     const report = getH2HReport(a, b);
+     37| 
+     38|     expect(report.aId).toBe("a");
+       |                        ^
+     39|     expect(report.bId).toBe("b");
+     40|     expect(report.aWins).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - win counting > counts wins for A correctly
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ src/engine/__tests__/h2h.test.ts:66:26
+     64|     const report = getH2HReport(a, b);
+     65| 
+     66|     expect(report.aWins).toBe(2);
+       |                          ^
+     67|     expect(report.bWins).toBe(1);
+     68|     expect(report.totalMeetings).toBe(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - win counting > counts wins for B when B dominates
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ src/engine/__tests__/h2h.test.ts:84:26
+     82| 
+     83|     expect(report.aWins).toBe(0);
+     84|     expect(report.bWins).toBe(2);
+       |                          ^
+     85|   });
+     86| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - win counting > ignores history entries against unrelated opponents
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/engine/__tests__/h2h.test.ts:103:26
+    101|     const report = getH2HReport(a, b);
+    102| 
+    103|     expect(report.aWins).toBe(1);
+       |                          ^
+    104|     expect(report.bWins).toBe(0);
+    105|     expect(report.totalMeetings).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - recent meetings ordering > returns recent meetings sorted newest-first by year then day
+TypeError: Cannot read properties of undefined (reading 'year')
+ ❯ src/engine/__tests__/h2h.test.ts:127:30
+    125|     const { recentMeetings } = getH2HReport(a, b);
+    126| 
+    127|     expect(recentMeetings[0].year).toBe(2025);
+       |                              ^
+    128|     expect(recentMeetings[0].day).toBe(15);
+    129|     expect(recentMeetings[1].year).toBe(2024);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - recent meetings ordering > caps recent meetings at 5 entries
+AssertionError: expected [] to have a length of 5 but got +0
+
+- Expected
++ Received
+
+- 5
++ 0
+
+ ❯ src/engine/__tests__/h2h.test.ts:144:28
+    142|     const { recentMeetings } = getH2HReport(a, b);
+    143| 
+    144|     expect(recentMeetings).toHaveLength(5);
+       |                            ^
+    145|   });
+    146| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - recent meetings ordering > sets winnerId correctly for each meeting
+TypeError: Cannot read properties of undefined (reading 'winnerId')
+ ❯ src/engine/__tests__/h2h.test.ts:159:30
+    157|     const { recentMeetings } = getH2HReport(a, b);
+    158| 
+    159|     expect(recentMeetings[0].winnerId).toBe("a"); // a won on day 3 (n…
+       |                              ^
+    160|     expect(recentMeetings[1].winnerId).toBe("b"); // b won on day 1
+    161|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > h2h.test.ts - recent meetings ordering > records kimarite from MatchResultLog
+TypeError: Cannot read properties of undefined (reading 'kimarite')
+ ❯ src/engine/__tests__/h2h.test.ts:172:30
+    170|     const { recentMeetings } = getH2HReport(a, b);
+    171| 
+    172|     expect(recentMeetings[0].kimarite).toBe("uwatenage");
+       |                              ^
+    173|   });
+    174| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > updateH2H > increments winner.h2h[loser.id].wins and sets lastMatch
+AssertionError: expected undefined to be defined
+ ❯ src/engine/__tests__/h2h.test.ts:195:17
+    193| 
+    194|     const rec = winner.h2h["l"];
+    195|     expect(rec).toBeDefined();
+       |                 ^
+    196|     expect(rec.wins).toBe(1);
+    197|     expect(rec.losses).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > updateH2H > increments loser.h2h[winner.id].losses
+AssertionError: expected undefined to be defined
+ ❯ src/engine/__tests__/h2h.test.ts:216:17
+    214| 
+    215|     const rec = loser.h2h["w"];
+    216|     expect(rec).toBeDefined();
+       |                 ^
+    217|     expect(rec.losses).toBe(1);
+    218|     expect(rec.wins).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/67]⎯
+
+ FAIL  src/engine/__tests__/h2h.test.ts > updateH2H > accumulates on repeated calls
+TypeError: Cannot read properties of undefined (reading 'wins')
+ ❯ src/engine/__tests__/h2h.test.ts:250:23
+    248|     }
+    249| 
+    250|     expect(a.h2h["b"].wins).toBe(2);
+       |                       ^
+    251|     expect(a.h2h["b"].losses).toBe(1);
+    252|     expect(b.h2h["a"].wins).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 1 (Days 1–7) > pairs elite (yokozuna/ozeki) with upper-joi (M1-M4) on day 1
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:31:31
+     29|     const m5 = MockFactory.createRikishi({ id: "m5-1", rank: "maegashi…
+     30| 
+     31|     const basho = MockFactory.createBasho({ day: 1 });
+       |                               ^
+     32|     const pairings = buildSwissTorikumi(basho, [yokozuna, ozeki, m1, m…
+     33|       seed: "test-phase1-gauntlet",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 1 (Days 1–7) > enforces heya block even in fallback pairing on day 7
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:75:31
+     73|     });
+     74| 
+     75|     const basho = MockFactory.createBasho({ day: 7 });
+       |                               ^
+     76|     const pairings = buildSwissTorikumi(basho, [m1, m2, m3, m4], {
+     77|       seed: "test-heya-block",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 1 (Days 1–7) > sorts output chronologically on day 1 (lowest rank first)
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:95:31
+     93|     const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira…
+     94| 
+     95|     const basho = MockFactory.createBasho({ day: 1 });
+       |                               ^
+     96|     const pairings = buildSwissTorikumi(basho, [yoko, m10, m11, m1], {
+     97|       seed: "test-chrono-day1",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 2 (Days 8–14) > groups rikishi into win buckets on day 8
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:118:31
+    116|     const r4 = MockFactory.createRikishi({ id: "r4" });
+    117| 
+    118|     const basho = MockFactory.createBasho({ day: 8 });
+       |                               ^
+    119|     setStandings(basho, {
+    120|       r1: { wins: 7, losses: 0 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 2 (Days 8–14) > pulls up highest-ranked from lower bucket on day 10 when bucket is odd
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:147:31
+    145|     const r3 = MockFactory.createRikishi({ id: "r3", rank: "maegashira…
+    146| 
+    147|     const basho = MockFactory.createBasho({ day: 10 });
+       |                               ^
+    148|     setStandings(basho, {
+    149|       r1: { wins: 8, losses: 1 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > pairs Maegashira yusho leader with yokozuna gatekeeper (yusho exception)
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:175:31
+    173|     const ozeki = MockFactory.createRikishi({ id: "ozeki", rank: "ozek…
+    174| 
+    175|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    176|     setStandings(basho, {
+    177|       m10: { wins: 14, losses: 0 }, // Exactly one leader, Maegashira
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > does NOT trigger yusho exception if there are multiple leaders
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:212:31
+    210|     const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozu…
+    211| 
+    212|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    213|     setStandings(basho, {
+    214|       m10a: { wins: 14, losses: 0 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > does NOT trigger yusho exception if leader is Sekiwake
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:233:31
+    231|     const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozu…
+    232| 
+    233|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    234|     setStandings(basho, {
+    235|       sekiwake: { wins: 14, losses: 0 }, // Leader but not Maegashira
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > forces yokozuna/ozeki (kore yori san'yaku) to pair against each other
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:259:31
+    257|     });
+    258| 
+    259|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    260|     setStandings(basho, {
+    261|       yoko1: { wins: 10, losses: 4 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > tags the most elite pairing as 'finale' on day 15
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:287:31
+    285|     const ozeki = MockFactory.createRikishi({ id: "ozeki", rank: "ozek…
+    286| 
+    287|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    288|     setStandings(basho, {
+    289|       yoko1: { wins: 10, losses: 4 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — Phase 3 (Day 15) > unpaired elites fall into swiss pool and can be matched with non-elites
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:310:31
+    308|     const m5 = MockFactory.createRikishi({ id: "m5", rank: "maegashira…
+    309| 
+    310|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    311|     setStandings(basho, {
+    312|       yoko1: { wins: 10, losses: 4 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — chronological order > places lower-ranked bouts at the start and elite bouts at the end
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:339:31
+    337|     const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira…
+    338| 
+    339|     const basho = MockFactory.createBasho({ day: 8 });
+       |                               ^
+    340|     setStandings(basho, {
+    341|       yoko: { wins: 7, losses: 0 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — full 15-day schedule > dispatches to phase1 on day 1
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:374:31
+    372|     const m2 = MockFactory.createRikishi({ id: "m2", rank: "maegashira…
+    373| 
+    374|     const basho = MockFactory.createBasho({ day: 1 });
+       |                               ^
+    375|     const pairings = buildSwissTorikumi(basho, [yoko, m1, m2], {
+    376|       seed: "test-day1",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — full 15-day schedule > dispatches to phase2 on day 8
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:388:31
+    386|     const r3 = MockFactory.createRikishi({ id: "r3" });
+    387| 
+    388|     const basho = MockFactory.createBasho({ day: 8 });
+       |                               ^
+    389|     setStandings(basho, {
+    390|       r1: { wins: 7, losses: 0 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > matchmaking.test.ts — full 15-day schedule > dispatches to phase3 on day 15
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:408:31
+    406|     const m2 = MockFactory.createRikishi({ id: "m2", rank: "maegashira…
+    407| 
+    408|     const basho = MockFactory.createBasho({ day: 15 });
+       |                               ^
+    409|     setStandings(basho, {
+    410|       yoko: { wins: 12, losses: 2 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > scorePairing — kadoban pressure > boosts score for an ozeki with < 8 wins on day 11
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:442:38
+    440|     });
+    441| 
+    442|     const bashoKadoban = MockFactory.createBasho({ day: 11 });
+       |                                      ^
+    443|     setStandings(bashoKadoban, {
+    444|       "ozeki-kadoban": { wins: 5, losses: 5 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > scorePairing — kadoban pressure > does not apply kadoban bonus before day 10
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:475:36
+    473|     });
+    474| 
+    475|     const bashoEarly = MockFactory.createBasho({ day: 7 });
+       |                                    ^
+    476|     setStandings(bashoEarly, {
+    477|       "ozeki-early": { wins: 2, losses: 5 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/67]⎯
+
+ FAIL  src/engine/__tests__/matchmaking.test.ts > scorePairing — kadoban pressure > applies kadoban bonus when opponent is the ozeki (not just a)
+TypeError: MockFactory.createBasho is not a function
+ ❯ src/engine/__tests__/matchmaking.test.ts:498:31
+    496|     const ozeki = MockFactory.createRikishi({ id: "ozeki-b", rank: "oz…
+    497| 
+    498|     const basho = MockFactory.createBasho({ day: 12 });
+       |                               ^
+    499|     setStandings(basho, {
+    500|       "m5-opp": { wins: 6, losses: 5 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for juryo tier
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:27:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for makuuchi tier
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:46:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for sanyaku tier
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:62:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > generates valid kesho for yokozuna tier
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:77:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > uses heya brand identity for colors
+TypeError: world.heyaBrandIdentities.get is not a function
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:87:47
+     85|       const world = makeMockWorldWithBrands(1);
+     86|       const heya = Array.from(world.heyas.values())[0];
+     87|       const brand = world.heyaBrandIdentities.get(heya.brandIdentityId…
+       |                                               ^
+     88|       const rikishi = mockRikishi("test-rikishi", {
+     89|         heyaId: heya.id,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoMawashi > assigns heyaBrandId from rikishi's heya
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:110:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoForPromotions > creates kesho on makushita to juryo promotion
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:57:21
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:129:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts > KeshoMawashiGenerator > generateKeshoForPromotions > creates yokozuna tsuna on yokozuna promotion
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:115:21
+ ❯ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts:188:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/integration.test.ts > Kesho-Mawashi Integration > End-to-end promotion flow > full flow: makushita to juryo promotion generates kesho
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:57:21
+ ❯ src/engine/__tests__/keshoMawashi/integration.test.ts:39:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/integration.test.ts > Kesho-Mawashi Integration > End-to-end promotion flow > full flow: yokozuna promotion generates both kesho and tsuna
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:115:21
+ ❯ src/engine/__tests__/keshoMawashi/integration.test.ts:135:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/integration.test.ts > Kesho-Mawashi Integration > Multiple promotions in single basho > handles multiple juryo promotions simultaneously
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:57:21
+ ❯ src/engine/__tests__/keshoMawashi/integration.test.ts:177:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/67]⎯
+
+ FAIL  src/engine/__tests__/keshoMawashi/integration.test.ts > Kesho-Mawashi Integration > Kesho chain upgrades > properly chains upgrades from juryo -> makuuchi -> sanyaku -> yokozuna
+TypeError: brandMap?.get is not a function
+ ❯ buildDesignPalette src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:191:38
+    189|   const brandId = heya?.brandIdentityId;
+    190|   const brandMap = world.heyaBrandIdentities;
+    191|   const brand = brandId && brandMap?.get(brandId);
+       |                                      ^
+    192| 
+    193|   // Create default brand if not found
+ ❯ Module.generateKeshoMawashi src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts:45:19
+ ❯ Module.generateKeshoForPromotions src/engine/systems/keshoMawashi/KeshoMawashiPipeline.ts:57:21
+ ❯ src/engine/__tests__/keshoMawashi/integration.test.ts:262:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResult.snapshot.test.ts > BoutResult snapshot > BoutResult shape snapshot
+Error: Snapshot `BoutResult snapshot > BoutResult shape snapshot 1` mismatched
+
+- Expected
++ Received
+
+@@ -1,9 +1,9 @@
+  {
+    "boutId": "test-001",
+    "duration": 18,
+-   "excitementScore": 3,
++   "excitementScore": 5,
+    "isKinboshi": false,
+    "kenshoEnvelopes": 0,
+    "kimarite": "oshidashi",
+    "kimariteName": "oshidashi",
+    "log": [],
+
+ ❯ src/engine/bout/__tests__/boutResult.snapshot.test.ts:12:20
+     10|     const basho = makeMockBasho();
+     11|     const { result } = resolveBoutPhysics(bout, east, west, basho);
+     12|     expect(result).toMatchSnapshot();
+       |                    ^
+     13|   });
+     14| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should increment careerWins for winner
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:105:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should increment careerLosses for loser
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:209:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should increment makuuchiWins when winner is in makuuchi division
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:312:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should NOT increment makuuchiWins when winner is NOT in makuuchi division
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:415:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should increment division-specific records for winner's current division
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:518:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/67]⎯
+
+ FAIL  src/engine/bout/__tests__/boutResultApplier.test.ts > boutResultApplier > Per-Bout Career Record Updates > should increment division-specific records for loser's current division
+ReferenceError: heyaRivalryPairs is not defined
+ ❯ Object.onBoutResolved src/engine/systems/narrative/RivalryService.ts:128:9
+    126|         version: state.version,
+    127|         pairs: updatedPairs,
+    128|         heyaRivalryPairs,
+       |         ^
+    129|       });
+    130|     }
+ ❯ Module.onBoutResolvedRivalries src/engine/rivalries.ts:57:25
+ ❯ Module.applyBoutResult src/engine/bout/boutResultApplier.ts:176:35
+ ❯ src/engine/bout/__tests__/boutResultApplier.test.ts:622:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/67]⎯
+
+
+  Snapshots  1 failed
+             1 obsolete
+             ↳ src/engine/bout/__tests__/boutResult.snapshot.test.ts
+               · BoutResult snapshot BoutResult shape snapshot 1
+
+ Test Files  25 failed | 102 passed (127)
+      Tests  48 failed | 841 passed (889)
+   Start at  17:23:40
+   Duration  13.29s (transform 3.22s, setup 1.17s, collect 8.50s, tests 932ms, environment 73.08s, prepare 6.89s)
+

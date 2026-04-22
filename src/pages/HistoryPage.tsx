@@ -16,6 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import React from "react";
 import { Helmet } from "react-helmet";
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";

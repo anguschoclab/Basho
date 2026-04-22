@@ -3,6 +3,7 @@ import type { Rikishi } from "../../engine/types/rikishi";
 import type { Heya } from "../../engine/types/heya";
 import type { Oyakata } from "../../engine/types/oyakata";
 import type { Id } from "../../engine/types/common";
+import type { BashoState } from "../../engine/types/basho";
 
 /**
  * MockFactory
@@ -34,11 +35,22 @@ export const MockFactory = {
     } as WorldState;
   },
 
-  createRikishi(id: Id, overrides: Partial<Rikishi> = {}): Rikishi {
+  createRikishi(idOrOverrides: Id | Partial<Rikishi>, overridesOpt: Partial<Rikishi> = {}): Rikishi {
+    let id: Id;
+    let overrides: Partial<Rikishi>;
+
+    if (typeof idOrOverrides === "string") {
+      id = idOrOverrides;
+      overrides = overridesOpt;
+    } else {
+      overrides = idOrOverrides || {};
+      id = overrides.id || "default_id";
+    }
+
     return {
       id,
       shikona: `Rikishi ${id}`,
-      heyaId: "heya_default",
+      heyaId: `heya_${id}`,
       nationality: "Japan",
       birthYear: 2000,
       height: 180,
@@ -111,6 +123,20 @@ export const MockFactory = {
       behavior: { stoicism: 50, aggression: 50, discipline: 50 },
       ...overrides,
     } as Rikishi;
+  },
+
+  createBasho(overrides: Partial<BashoState> = {}): BashoState {
+    return {
+      id: "basho_default",
+      year: 2026,
+      bashoNumber: 1,
+      bashoName: "hatsu",
+      day: 1,
+      matches: [],
+      standings: new Map(),
+      isActive: true,
+      ...overrides,
+    } as BashoState;
   },
 
   createHeya(id: Id, overrides: Partial<Heya> = {}): Heya {

@@ -27,6 +27,7 @@ import { HistoryService } from "../../systems/meta/HistoryService";
 import { runElections } from "../../governance/GovernanceService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
+import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -219,8 +220,8 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   }
 
   // 3. NPC Yearly Logic
-  // Note: tickYear mutates world, we'll call it directly
-  npcAI.tickYear(world);
+  // Merge tickYear impacts properly into the builder
+  builder.merge(npcAI.tickYear(world));
 
   // 4. Staff Aging
   if (world.staff) {
@@ -271,18 +272,14 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // Phase 5 Depth: Training Philosophy Drift
   if (world.heyas) {
-    (async () => {
-      const { TrainingPhilosophyService } =
-        await import("../../systems/legacy/TrainingPhilosophyService");
-      for (const heya of world.heyas.values()) {
-        if (heya.trainingPhilosophy) {
-          const drifted = TrainingPhilosophyService.tickPhilosophyDrift(heya.trainingPhilosophy);
-          if (drifted !== heya.trainingPhilosophy) {
-            builder.updateHeya(heya.id, { trainingPhilosophy: drifted });
-          }
+    for (const heya of world.heyas.values()) {
+      if (heya.trainingPhilosophy) {
+        const drifted = TrainingPhilosophyService.tickPhilosophyDrift(heya.trainingPhilosophy);
+        if (drifted !== heya.trainingPhilosophy) {
+          builder.updateHeya(heya.id, { trainingPhilosophy: drifted });
         }
       }
-    })();
+    }
   }
 
   // 7. Logging & Era Check

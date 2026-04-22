@@ -267,18 +267,18 @@ export function mockRikishiWithKesho(
 export function makeMockWorldWithBrands(
   heyaCount: number = 5,
   overrides: Partial<WorldState> = {}
-): WorldState & { heyaBrandIdentities: Record<Id, HeyaBrandIdentity> } {
+): WorldState & { heyaBrandIdentities: Map<Id, HeyaBrandIdentity> } {
   const world = makeMockWorld(overrides);
-  const heyaBrandIdentities: Record<Id, HeyaBrandIdentity> = {};
+  const heyaBrandIdentities = new Map<Id, HeyaBrandIdentity>();
 
   for (let i = 0; i < heyaCount; i++) {
     const { heya, brand } = mockHeyaWithBrand(`heya-${i + 1}`);
     world.heyas.set(heya.id, heya);
-    heyaBrandIdentities[brand.id] = brand;
+    heyaBrandIdentities.set(brand.id, brand);
   }
 
   return {
     ...world,
     heyaBrandIdentities,
-  } as WorldState & { heyaBrandIdentities: Record<Id, HeyaBrandIdentity> };
+  } as WorldState & { heyaBrandIdentities: Map<Id, HeyaBrandIdentity> };
 }

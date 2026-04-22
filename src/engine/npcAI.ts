@@ -368,10 +368,10 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
       const oyakata = world.oyakata.get(heya.oyakataId);
       if (!oyakata) continue;
       const financeStrat = getFinanceStrategy(oyakata.archetype);
-      financeStrat.evaluateFinances(world, heya, oyakata);
+      builder.merge(financeStrat.evaluateFinances(world, heya, oyakata));
 
       const sponsorStrat = getSponsorStrategy(oyakata.archetype);
-      sponsorStrat.evaluateSponsorRecruitment(world, heya, oyakata);
+      builder.merge(sponsorStrat.evaluateSponsorRecruitment(world, heya, oyakata));
     }
   }
 
@@ -386,13 +386,13 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     if (!oyakata) continue;
 
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
-    retirementStrat.evaluateRetirements(world, heya, oyakata);
+    builder.merge(retirementStrat.evaluateRetirements(world, heya, oyakata));
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const vacancies = recruitmentStrat.evaluateVacancies(world, heya, oyakata);
 
     const governanceStrat = getGovernanceStrategy(oyakata.archetype);
-    governanceStrat.evaluateGovernanceDecisions(world, heya, oyakata);
+    builder.merge(governanceStrat.evaluateGovernanceDecisions(world, heya, oyakata));
 
     if (vacancies > 0) {
       vacanciesByHeyaId[heya.id] = vacancies;
@@ -405,7 +405,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
       world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === "number" ? HARD_CAP_ROSTER_SIZE : 30);
     if (world.rikishi.size < globalCap) {
       // Use competitive bidding system for NPC recruitment
-      talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId);
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId));
     }
   }
 
