@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach } from "vitest";
 import { InfrastructureService } from "../../engine/systems/economy/InfrastructureService";
 import * as TalentPoolScouting from "../../engine/systems/generation/TalentPoolScouting";

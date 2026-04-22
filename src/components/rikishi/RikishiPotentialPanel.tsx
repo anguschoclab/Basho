@@ -51,9 +51,11 @@ export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
 
       <div className="bg-muted/30 border-2 border-border/50 rounded-lg p-6 space-y-3">
         {STAT_LABELS.map(([paKey, label]) => {
-          const paValue = Math.round((pa.stats as Record<string, number>)[paKey] * ceiling);
+          const paValue = Math.round(
+            (pa.stats as unknown as Record<string, number>)[paKey] * ceiling
+          );
           const currentValue = Math.round(
-            (rikishi as Record<string, number>)[CURRENT_KEY[paKey]] ?? 0
+            (rikishi as unknown as Record<string, number>)[CURRENT_KEY[paKey]] ?? 0
           );
           const paPct = Math.min(100, paValue);
           const caPct = Math.min(100, currentValue);

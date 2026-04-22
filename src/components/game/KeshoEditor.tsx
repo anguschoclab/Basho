@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { UIRikishi } from "@/presenters/uiModels";
 import {
   Dialog,
@@ -56,9 +56,10 @@ interface KeshoEditorProps {
 
 export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
   const { state, updateWorld } = useGame();
+  const world = state.world;
 
   // Initialize with current config or default
-  const existingConfig = state.world.customKeshoConfigs?.[rikishi.id] || {};
+  const existingConfig = world?.customKeshoConfigs?.[rikishi.id] || {};
   const [config, setConfig] = useState<Partial<KeshoMawashi>>({
     primaryColor: rikishi.keshoMawashi?.primaryColor || "#BC002D",
     secondaryColor: rikishi.keshoMawashi?.secondaryColor || "#FFFFFF",
@@ -74,14 +75,16 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
     ...existingConfig,
   });
 
+  if (!world) return null;
+
   const handleSave = () => {
     const updatedCustomConfigs = {
-      ...(state.world.customKeshoConfigs || {}),
+      ...(world.customKeshoConfigs || {}),
       [rikishi.id]: config,
     };
 
     updateWorld({
-      ...state.world,
+      ...world,
       customKeshoConfigs: updatedCustomConfigs,
     });
     onClose();
@@ -112,6 +115,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
   // Preview config merged into avatar config
   const previewAvatarConfig = {
     ...rikishi.avatarConfig,
+    seed: rikishi.avatarConfig?.seed ?? rikishi.id,
     mawashiColor: config.primaryColor || "#BC002D",
   };
 
@@ -126,7 +130,8 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
             <div className="relative z-10 text-center space-y-4">
               {/* Large Preview */}
               <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-sm">
-                <SumoAvatar config={previewAvatarConfig} size="xl" expression="serious" />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <SumoAvatar config={previewAvatarConfig as any} size="xl" expression="determined" />
               </div>
 
               <div>

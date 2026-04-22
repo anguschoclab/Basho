@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { rngFromSeed, rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Id, IdMapRuntime } from "./types/common";

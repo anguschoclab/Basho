@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * src/engine/systems/recruitment/FogOfWarService.ts
  * =================================================

@@ -37,6 +37,72 @@ export function projectMedicalUIDigest(world: WorldState) {
   const recoveryFacility = heya.facilities?.recovery ?? 50;
   const facilityLabel = getFacilityLevelLabel(rng, recoveryFacility);
 
+  // Build a perception summary used by WelfarePanel. Bands derived from raw
+  // welfare/morale numbers using simple thresholds.
+  const welfareRisk = heya.welfareState?.welfareRisk ?? 0;
+  const welfareRiskBand: "safe" | "cautious" | "elevated" | "critical" =
+    welfareRisk >= 75
+      ? "critical"
+      : welfareRisk >= 50
+        ? "elevated"
+        : welfareRisk >= 25
+          ? "cautious"
+          : "safe";
+
+  const morale = (heya.welfareState as unknown as { morale?: number })?.morale ?? 50;
+  const moraleBand: "inspired" | "content" | "neutral" | "disgruntled" | "mutinous" =
+    morale >= 80
+      ? "inspired"
+      : morale >= 60
+        ? "content"
+        : morale >= 40
+          ? "neutral"
+          : morale >= 20
+            ? "disgruntled"
+            : "mutinous";
+
+  const rosterSize = roster.length;
+  const sekitoriCount = roster.filter(
+    (r) => r.division === "makuuchi" || r.division === "juryo"
+  ).length;
+  const rosterStrengthBand: "dominant" | "strong" | "competitive" | "developing" | "weak" =
+    sekitoriCount >= 6
+      ? "dominant"
+      : sekitoriCount >= 4
+        ? "strong"
+        : sekitoriCount >= 2
+          ? "competitive"
+          : rosterSize >= 5
+            ? "developing"
+            : "weak";
+
+  const rikishiHealthPerceptions: Array<{
+    rikishiId: string;
+    shikona: string;
+    rank: string;
+    healthBand: string;
+    momentum: "rising" | "stable" | "declining";
+  }> = roster.map((r) => {
+    const condition = (r as unknown as { condition?: number }).condition ?? 100;
+    const band =
+      condition >= 90
+        ? "peak"
+        : condition >= 70
+          ? "good"
+          : condition >= 50
+            ? "fair"
+            : condition >= 30
+              ? "worn"
+              : "fragile";
+    return {
+      rikishiId: r.id,
+      shikona: r.shikona,
+      rank: r.rank ?? "—",
+      healthBand: band,
+      momentum: "stable" as const,
+    };
+  });
+
   return {
     heyaName: heya.name,
     facilityLevel: recoveryFacility,
@@ -76,6 +142,14 @@ export function projectMedicalUIDigest(world: WorldState) {
       complianceState: heya.welfareState?.complianceState ?? "compliant",
 
       weeksInState: heya.welfareState?.weeksInState ?? 0,
+    },
+    perception: {
+      welfareRiskBand,
+      moraleBand,
+      rosterStrengthBand,
+      stableMediaHeatBand: "neutral" as string,
+      rivalryPressureBand: "neutral" as string,
+      rikishiHealthPerceptions,
     },
   };
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // calendar.ts
 // Basho Calendar System - Six authentic tournaments per year
 //

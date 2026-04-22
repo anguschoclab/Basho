@@ -64,7 +64,7 @@ export function BoutReplayViewer({
       {/* Canvas */}
       <div className="relative bg-black">
         <canvas
-          ref={canvasRef}
+          ref={canvasRef as React.RefObject<HTMLCanvasElement>}
           width={800}
           height={500}
           className="w-full block"

@@ -49,10 +49,7 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
         {/* Middle and Right Panes: Inset contains TopNav, Content, and EventLog */}
         <SidebarInset className="flex flex-col flex-1 overflow-hidden relative">
           {/* Persistent Header */}
-          <TopNavBar
-            eventLogOpen={eventLogOpen}
-            onToggleEventLog={() => setEventLogOpen((v) => !v)}
-          />
+          <TopNavBar />
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main Content Pane */}

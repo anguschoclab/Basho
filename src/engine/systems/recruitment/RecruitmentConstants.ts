@@ -11,18 +11,21 @@ import type { Rank } from "../../types/banzuke";
 import type { Style, TacticalArchetype, CombatArchetype } from "../../types/combat";
 
 /** Human-readable rank labels (JA + EN). */
-/** Human-readable rank labels (JA + EN) - NOW IN archive.json */
-export const RANK_NAMES: Record<Rank, object> = {
-  yokozuna: {},
-  ozeki: {},
-  sekiwake: {},
-  komusubi: {},
-  maegashira: {},
-  juryo: {},
-  makushita: {},
-  sandanme: {},
-  jonidan: {},
-  jonokuchi: {},
+export interface RankLabel {
+  ja: string;
+  en: string;
+}
+export const RANK_NAMES: Record<Rank, RankLabel> = {
+  yokozuna: { ja: "横綱", en: "Yokozuna" },
+  ozeki: { ja: "大関", en: "Ozeki" },
+  sekiwake: { ja: "関脇", en: "Sekiwake" },
+  komusubi: { ja: "小結", en: "Komusubi" },
+  maegashira: { ja: "前頭", en: "Maegashira" },
+  juryo: { ja: "十両", en: "Juryo" },
+  makushita: { ja: "幕下", en: "Makushita" },
+  sandanme: { ja: "三段目", en: "Sandanme" },
+  jonidan: { ja: "序二段", en: "Jonidan" },
+  jonokuchi: { ja: "序ノ口", en: "Jonokuchi" },
 };
 
 /** High-level style labels - NOW IN archive.json */

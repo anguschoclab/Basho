@@ -67,7 +67,7 @@ export function SponsorsPanel() {
       let hasEnded = false;
 
       for (const r of sponsor.relationships) {
-        if (r.targetId === playerHeyaId && r.targetType === "beya") {
+        if (r.targetId === playerHeyaId && r.targetType === "heya") {
           if (!r.endsAtTick) {
             if (!activeBest || r.strength > activeBest.strength) {
               activeBest = r;

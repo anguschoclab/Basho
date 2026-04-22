@@ -185,7 +185,7 @@ export function BoutNarrativeModal({
                 ) : (
                   <div className="space-y-1.5">
                     {pbpLines.map((line, i) => {
-                      const style = PHASE_STYLE[line.phase] ?? PHASE_STYLE.finish;
+                      const style = (line.phase && PHASE_STYLE[line.phase]) || PHASE_STYLE.finish;
                       const tags = line.tags ?? [];
                       return (
                         <div

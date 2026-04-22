@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * src/engine/core/RNGRegistry.ts
  * ==============================

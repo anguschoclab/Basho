@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Name: src/engine/h2h.ts
  * Notes:

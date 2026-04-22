@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
-import type { Sponsor } from "@/engine/types/sponsors";
 import { recruitSponsor } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {

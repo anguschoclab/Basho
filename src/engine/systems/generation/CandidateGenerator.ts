@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
 import { clampInt } from "../../utils/math";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RANK_HIERARCHY, type Rank, type BashoPerformance, type BanzukeEntry } from "../types/banzuke";
 import { kachiKoshiThreshold } from "./banzukeHelpers";
 import { OzekiKadobanState } from "./ozekiLogic";

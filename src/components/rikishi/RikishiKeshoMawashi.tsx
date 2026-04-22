@@ -5,13 +5,13 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import { Medal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Medal, Palette } from "lucide-react";
 import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { useState } from "react";
 import { KeshoEditor } from "../game/KeshoEditor";
-import { Palette } from "lucide-react";
 
 interface RikishiKeshoMawashiProps {
   rikishi: UIRikishi;

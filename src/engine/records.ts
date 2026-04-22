@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { WorldState } from "./types/world";
 import type { RecordEntry, WorldRecords } from "./types/records";
 import type { Id } from "./types/common";

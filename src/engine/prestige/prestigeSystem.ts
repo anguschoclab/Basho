@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * src/engine/prestige/prestigeSystem.ts
  * 

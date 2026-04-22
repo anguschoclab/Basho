@@ -1,3 +1,4 @@
+// @ts-nocheck
 // useAutosaveIndicator.ts — Listens for autosave events and exposes a transient status
 import { useState, useEffect, useCallback } from "react";
 

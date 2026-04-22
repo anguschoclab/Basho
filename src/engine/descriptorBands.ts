@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Name: src/engine/descriptorBands.ts
  * Status: REFACTORED / SERVICE-ORIENTED

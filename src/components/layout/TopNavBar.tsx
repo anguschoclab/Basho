@@ -38,7 +38,7 @@ export function TopNavBar() {
   const cyclePhase = world?.cyclePhase ?? "interim";
   const phaseMeta = PHASE_LABELS[cyclePhase] ?? PHASE_LABELS.interim;
 
-  const yearLabel = world ? `Year ${world.calendar?.year ?? world.year}` : "—";
+  const yearLabel = world ? `Year ${world.year}` : "—";
   const weekLabel = world ? `Wk ${world.calendar?.currentWeek ?? world.week}` : "—";
 
   return (

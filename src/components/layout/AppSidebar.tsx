@@ -39,7 +39,7 @@ export function AppSidebar() {
     return location.pathname === prefix || location.pathname.startsWith(prefix + "/");
   }
 
-  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, fundsLow, fundsCritical);
+  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, !!fundsLow, !!fundsCritical);
 
   return (
     <Sidebar

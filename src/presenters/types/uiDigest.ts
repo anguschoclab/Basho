@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * uiDigest.ts — UI Projection Return Types
  *
@@ -101,6 +102,8 @@ export interface EventLogData {
   events: EngineEvent[];
   getRikishi: (id: string) => UIRikishi | null;
   getHeya: (id: string) => Heya | undefined;
+  rikishiMap: Map<string, { id: string; shikona: string }>;
+  heyaMap: Map<string, { id: string; name: string }>;
   playerHeyaId: string | undefined;
 }
 

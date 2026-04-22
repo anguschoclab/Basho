@@ -5,7 +5,14 @@ import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoName } from "../types/basho";
 import { BardEngine } from "../narrative/BardEngine";
 
-export type PbpLine = { text: string; id: string };
+export type PbpLine = {
+  text: string;
+  id: string;
+  /** Optional phase metadata used by the narrative modal for styling */
+  phase?: string;
+  /** Optional tags rendered as small icons under the line */
+  tags?: string[];
+};
 
 /**
  * Pure translator function. Consumes raw physics frames and maps them

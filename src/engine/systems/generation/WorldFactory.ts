@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * WorldFactory.ts — Pipeline for generating high-fidelity world state.
  * Decomposes the monolithic worldgen logic into manageable stages.

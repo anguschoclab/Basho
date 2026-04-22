@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";

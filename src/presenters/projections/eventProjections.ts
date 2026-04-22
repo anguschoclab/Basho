@@ -14,6 +14,14 @@ import { projectRikishi } from "../rikishiUI";
  * Project event log data with rikishi/heya lookup functions.
  */
 export function projectEventLogData(world: WorldState): EventLogData {
+  const rikishiMap = new Map<string, { id: string; shikona: string }>();
+  for (const r of world.rikishi.values()) {
+    rikishiMap.set(r.id, { id: r.id, shikona: r.shikona });
+  }
+  const heyaMap = new Map<string, { id: string; name: string }>();
+  for (const h of world.heyas.values()) {
+    heyaMap.set(h.id, { id: h.id, name: h.name });
+  }
   return {
     events: world.events?.log ?? [],
     getRikishi: (id: string) => {
@@ -21,6 +29,8 @@ export function projectEventLogData(world: WorldState): EventLogData {
       return r ? projectRikishi(r, world) : null;
     },
     getHeya: (id: string) => world.heyas.get(id),
+    rikishiMap,
+    heyaMap,
     playerHeyaId: world.playerHeyaId,
   };
 }

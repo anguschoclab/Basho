@@ -3,7 +3,7 @@
  * Displays 4-step walkthrough of key bout mechanics during the exhibition bout.
  */
 
-import React from "react";
+
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";

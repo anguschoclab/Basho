@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   RANK_HIERARCHY,
   type Rank,

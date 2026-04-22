@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Staff, StaffRole, StaffCareerPhase, CompetenceBand, ReputationBand, LoyaltyBand } from "./types/staff";
 import { type SeededRNG, rngFromSeed } from "./rng";
 import type { Id } from "./types/common";

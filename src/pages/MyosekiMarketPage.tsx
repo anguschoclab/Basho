@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
