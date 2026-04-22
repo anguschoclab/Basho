@@ -19,7 +19,7 @@ import { calculateFatigueDelta, calculateGrowthVector } from "../../systems/trai
 import { ensureHeyaTrainingState } from "../../systems/training/TrainingService";
 import type { Id } from "../../types/common";
 import type { TrainingProfile, IndividualFocus } from "../../types/training";
-import type { StaffBonuses } from "../../staff";
+import { type StaffBonuses, getHeyaStaffBonuses } from "../../staff";
 import type { Heya } from "../../types/heya";
 
 export function phase01_week_training(world: WorldState): StateImpact {

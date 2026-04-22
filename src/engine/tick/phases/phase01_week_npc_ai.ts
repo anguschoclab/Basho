@@ -43,8 +43,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       consolidateOyakataMemoryPure(world, nextOya, perception);
 
       const decision = makeNPCWeeklyDecision(world, heya.id);
-      // Note: applyNPCDecisionPure mutates world.trainingState
-      applyNPCDecisionPure(world, world.trainingState || new Map(), decision);
+      applyNPCDecisionPure(world, builder, decision);
 
       processOyakataMood(nextOya, decision, heya.id, builder);
       scoutingMap[heya.id] = decision.scoutingPriority;
@@ -62,16 +61,13 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
         }
       }
 
-      // Note: oyakata updates are not directly supported by ImpactBuilder yet
-      world.oyakata = world.oyakata || new Map();
-      world.oyakata.set(nextOya.id, nextOya);
+      builder.updateOyakata(nextOya.id, nextOya);
     }
   }
 
-  // Note: trainingState updates are not directly supported by ImpactBuilder yet
-  world.npcScoutingPriorities = scoutingMap;
+  builder.updateWorldField("npcScoutingPriorities", scoutingMap);
 
-  enforceHardCapRosterOverflow(world);
+  builder.merge(enforceHardCapRosterOverflow(world));
 
   return builder.build();
 }
