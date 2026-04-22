@@ -8,6 +8,13 @@ import type { MatchRowData } from "./boutCardTypes.tsx";
 import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
 
+const TACTICS_CONFIG = [
+  { id: "STANDARD", label: "Standard", desc: "Balanced" },
+  { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
+  { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
+  { id: "HENKA", label: "Henka", desc: "Counters Belt" },
+];
+
 export const BoutCard = React.memo(
   ({
     match,
@@ -116,12 +123,7 @@ export const BoutCard = React.memo(
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: "STANDARD", label: "Standard", desc: "Balanced" },
-                { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
-                { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
-                { id: "HENKA", label: "Henka", desc: "Counters Belt" },
-              ].map((t) => {
+              {TACTICS_CONFIG.map((t) => {
                 const isSelected = (playerTactics?.[match.boutId || ""] || "STANDARD") === t.id;
                 return (
                   <Button

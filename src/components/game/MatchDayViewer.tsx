@@ -95,7 +95,9 @@ export function MatchDayViewer({
     );
   }
 
-  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  const completedCount = useMemo(() => {
+    return sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  }, [sortedMatches]);
 
   return (
     <>
