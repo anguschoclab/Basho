@@ -6,14 +6,13 @@
  */
 
 import type { WorldState } from "../../../types/world";
-import type { Id } from "../../../types/common";
 import type { NPCWeeklyDecision } from "../../../npcAI";
 import { TrainingService } from "../../../systems/training/TrainingService";
-import type { HeyaTrainingState } from "../../../types/training";
+import type { ImpactBuilder } from "../../../core/ImpactBuilder";
 
 export function applyNPCDecisionPure(
   world: WorldState,
-  nextTrainingStates: Map<Id, HeyaTrainingState>,
+  builder: ImpactBuilder,
   decision: NPCWeeklyDecision
 ): void {
   const state = TrainingService.ensureHeyaTrainingState(world, decision.heyaId);
@@ -48,5 +47,5 @@ export function applyNPCDecisionPure(
   }));
 
   nextState.focusSlots = [...existingFocus, ...protectSlots, ...pushSlots, ...developSlots];
-  nextTrainingStates.set(decision.heyaId, nextState);
+  builder.updateTrainingState(decision.heyaId, nextState);
 }
