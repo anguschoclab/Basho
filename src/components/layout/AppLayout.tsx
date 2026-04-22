@@ -1,5 +1,5 @@
 // App Layout - 3-pane FM-inspired layout with persistent Sidebar, Top Nav, and Right Event Log
-import { ReactNode, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { TopNavBar } from "./TopNavBar";
 import { AppSidebar } from "./AppSidebar";

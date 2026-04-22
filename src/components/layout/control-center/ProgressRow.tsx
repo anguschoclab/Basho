@@ -5,6 +5,7 @@
  * Used inside StatCard or standalone in lists.
  */
 
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface ProgressRowProps {

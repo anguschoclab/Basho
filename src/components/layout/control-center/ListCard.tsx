@@ -6,6 +6,7 @@
  * Each row: label (left), value (right), optional sub-label and tone color.
  */
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
