@@ -228,6 +228,18 @@ export function updateBanzuke(
     jonokuchi: 20,
   });
 
+  // ⚡ Bolt Optimization: Pre-calculate rikishi to heya mapping to avoid O(N*M) nested lookups
+  const rikishiToHeyaMap = new Map<string, Heya>();
+  if (heyaMap) {
+    for (const heya of heyaMap.values()) {
+      if (heya.rikishiIds) {
+        for (const rId of heya.rikishiIds) {
+          rikishiToHeyaMap.set(rId, heya);
+        }
+      }
+    }
+  }
+
   // Assign candidates to slots
   const scored = currentBanzuke
     .map((e) => {
@@ -236,7 +248,7 @@ export function updateBanzuke(
 
       let politicalWeight = 0;
       if (heyaMap && e.rikishiId) {
-        const heya = Array.from(heyaMap.values()).find((h) => h.rikishiIds?.includes(e.rikishiId));
+        const heya = rikishiToHeyaMap.get(e.rikishiId);
         if (heya?.ichimon === "Dewanoumi") politicalWeight = 300;
         else if (heya?.ichimon === "Nishonoseki") politicalWeight = 250;
         else if (heya?.ichimon) politicalWeight = 100;

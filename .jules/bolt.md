@@ -15,3 +15,6 @@
 ## 2026-04-19 - Use singular useMemo hook to prevent redundant array loops
 **Learning:** Found a specific bottleneck where `sekitoriCount` was repeatedly filtering `.filter(...)` the exact same `rikishiIds` array inline in the `render` output of `Dashboard.tsx`, while another `useMemo` right above it was already heavily parsing through that identical `rikishiIds` array to construct the `rosterRows`.
 **Action:** Migrated the isolated loop counting into the primary `useMemo` block using an accumulator. Extracted `rosterRows` to be `rosterData.rows` and the `sekitoriCount` integer to safely and quickly render derived data efficiently in O(N) instead of 2 * O(N).
+## 2024-05-18 - Nested Loop Bottleneck in Banzuke Calculation
+**Learning:** Found an O(N*M) lookup where `Array.from(heyaMap.values()).find(h => h.rikishiIds?.includes(rikishiId))` is called inside a `.map` over the entire Banzuke. Since Banzuke can contain hundreds of rikishi and there are many heyas, this scales poorly.
+**Action:** Replace `Array.from(heyaMap.values()).find(...)` inside loops with a pre-calculated mapping from `rikishiId` to `heya` (e.g., `rikishiToHeyaMap: Map<string, Heya>`) created once outside the loop to change O(N*M) to O(N).
