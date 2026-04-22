@@ -58,8 +58,8 @@ export interface TransientContext {
   };
   lastReport?: Record<string, unknown>;
   preGeneratedSchedules?: {
-    day1: unknown[];
-    day2: unknown[];
+    day1: string[];
+    day2: string[];
     announcedAtWeek: number;
   };
 }
@@ -245,8 +245,8 @@ export interface WorldState {
   calendar?: { currentWeek: number };
 
   _preGeneratedSchedules?: {
-    day1: unknown[];
-    day2: unknown[];
+    day1: string[];
+    day2: string[];
     announcedAtWeek: number;
   };
 

@@ -14,7 +14,8 @@ export type FacilityId =
   | "academy_mongolia" // Regional Academy (Requires Presence > 80)
   | "academy_georgia"
   | "academy_europe"
-  | "academy_americas";
+  | "academy_americas"
+  | "scouting_office";
 
 export type ConstructionStatus = "active" | "under_construction" | "remodelling";
 
@@ -103,8 +104,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     },
   },
   scouting_office: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- scouting_office not yet in FacilityId union
-    id: "scouting_office" as any,
+    id: "scouting_office",
     label: "Global Scouting Hub",
     description:
       "A specialized office for tracking international talent pipelines and managing scout networks.",
