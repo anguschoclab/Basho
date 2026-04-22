@@ -10,3 +10,6 @@
 ## 2026-04-20 - Keyboard Focus on Link-Styled Buttons
 **Learning:** Custom link-styled interactive elements (like the 'Skip Tour' button) often miss critical focus indicators because they don't inherit default button outlines. Screen reader users can 'read' them via text, but keyboard users lose visual focus tracking without proper styling.
 **Action:** Prefer using the shared `Button` component or `buttonVariants` helper to ensure consistent focus-visible states. For raw `<button>` elements where the component cannot be used, apply the standard focus ring utility classes.
+## 2026-04-22 - TitleBar Window Controls Focus States
+**Learning:** Custom window control buttons (minimize, maximize, close) using raw HTML `<button>` tags lacked visual focus indicators during keyboard navigation.
+**Action:** Add standard Tailwind UI `focus-visible:ring-2` utilities to custom raw buttons to ensure they remain keyboard accessible.
