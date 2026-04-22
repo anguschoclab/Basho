@@ -59,7 +59,20 @@
       "Bash(awk '$1 >= 500')",
       "Bash(awk 'NR>=166 && NR<=580' src/engine/events.ts)",
       "Bash(awk 'NR<=20 || NR>=510' src/engine/almanac.ts)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version'\\)\\); print\\(list\\(d.get\\('exports',{}\\).keys\\(\\)\\)[:5]\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('main:', d.get\\('main'\\)\\); print\\('version:', d.get\\('version'\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\)\")",
+      "Bash(npm pack *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('main:', d.get\\('main'\\)\\)\")",
+      "Bash(python)",
+      "Bash(python fix_modules.py)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_run_code"
     ]
   },
   "outputStyle": "default"

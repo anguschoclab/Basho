@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -75,10 +76,10 @@ export default function HistoryPage() {
   const { state, getRikishi } = useGame();
   const { world } = state;
 
-  if (!world) {
-    navigate({ to: "/" });
-    return null;
-  }
+  useEffect(() => {
+    if (!world) navigate({ to: "/" });
+  }, [world, navigate]);
+  if (!world) return null;
 
   const history = [...((world.history ?? []) as HistoryRecord[])].reverse();
 

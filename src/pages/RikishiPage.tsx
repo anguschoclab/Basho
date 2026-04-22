@@ -6,7 +6,7 @@
  * Architecturally decomposed to use RosterList for list views.
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -59,10 +59,10 @@ export default function RikishiPage() {
   // Prepare data using custom hooks
   const careerProgressionData = useCareerProgressionData(history);
 
-  if (!world) {
-    navigate({ to: "/main-menu", replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (!world) navigate({ to: "/main-menu", replace: true });
+  }, [world, navigate]);
+  if (!world) return null;
 
   // ── Roster List View ────────────────────────────────
   if (!rikishiId) {

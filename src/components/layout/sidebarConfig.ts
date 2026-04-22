@@ -69,7 +69,7 @@ export function getMenuGroups(
         { title: "Training", url: "/stable/training", icon: Dumbbell },
         { title: "Medical", url: "/stable/medical", icon: Heart },
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
-        { title: "Oyakata", url: "/oyakata", icon: Crown },
+        { title: "Oyakata", url: "/stable/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
       ],
     },
@@ -109,7 +109,7 @@ export function getMenuGroups(
       label: "Association",
       items: [
         { title: "Governance", url: "/jsa/governance", icon: ShieldAlert },
-        { title: "Elder Market", url: "/jsa/myoseki", icon: Landmark },
+        { title: "Elder Market", url: "/myoseki", icon: Landmark },
         { title: "Press & Rep", url: "/media", icon: Newspaper },
         { title: "Trends", url: "/jsa/trends", icon: TrendingUp },
       ],

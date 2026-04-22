@@ -13,8 +13,8 @@ import { getCategoryMeta, getEventRoute, getLinkLabel } from "./eventLogHelpers"
 interface EventLogPanelProps {
   eventLogData: {
     events: EngineEvent[];
-    rikishiMap: Map<string, { id: string; shikona: string }>;
-    heyaMap: Map<string, { id: string; name: string }>;
+    getRikishi: (id: string) => { id: string; shikona: string } | null;
+    getHeya: (id: string) => { id: string; name: string } | undefined;
     playerHeyaId?: string;
   } | null;
   className?: string;
@@ -39,7 +39,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       const addRikishi = (id: string) => {
         if (seen.has(id)) return;
         seen.add(id);
-        const r = eventLogData.rikishiMap.get(id);
+        const r = eventLogData.getRikishi(id);
         if (r)
           tags.push(
             <RikishiName
@@ -61,8 +61,8 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
           // Clear primary tag, show bout-specific layout instead
           tags.length = 0;
           seen.clear();
-          const winner = eventLogData.rikishiMap.get(winnerId);
-          const loser = eventLogData.rikishiMap.get(loserId);
+          const winner = eventLogData.getRikishi(winnerId);
+          const loser = eventLogData.getRikishi(loserId);
           if (winner && loser) {
             tags.push(
               <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
@@ -89,7 +89,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       }
 
       if (e.heyaId) {
-        const h = eventLogData.heyaMap.get(e.heyaId);
+        const h = eventLogData.getHeya(e.heyaId);
         if (h)
           tags.push(
             <StableName
