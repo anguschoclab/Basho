@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,76 @@ import { formatYen } from "@/utils/engineUtils";
 import { RikishiName } from "@/components/ClickableName";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult } from "@/engine/types/basho";
+
+
+const RecentKenshoRow = React.memo(function RecentKenshoRow({
+  bout,
+}: {
+  bout: {
+    rikishiId: string;
+    rikishiName: string;
+    boutId: string;
+    kenshoEnvelopes: number;
+    awardFact?: string;
+  };
+}) {
+  return (
+    <div className="flex items-center justify-between p-2 rounded border bg-card">
+      <div>
+        <div className="font-medium text-sm">
+          <RikishiName id={bout.rikishiId} name={bout.rikishiName} />
+        </div>
+        <div className="text-xs text-muted-foreground">{bout.boutId}</div>
+      </div>
+      <div className="text-right">
+        <div className="font-semibold text-gold">
+          {bout.kenshoEnvelopes} envelopes
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {formatYen(bout.kenshoEnvelopes * 70000)}
+        </div>
+      </div>
+      {bout.awardFact && (
+        <Badge variant="secondary" className="ml-2">
+          {bout.awardFact}
+        </Badge>
+      )}
+    </div>
+  );
+});
+
+const RikishiKenshoRow = React.memo(function RikishiKenshoRow({
+  rikishi,
+}: {
+  rikishi: Rikishi;
+}) {
+  const economics = rikishi.economics;
+  const kenshoEarnings = (economics?.careerKenshoWon || 0) * 70000;
+  const rank = rikishi.rank || "unknown";
+
+  return (
+    <div className="flex items-center justify-between p-2 rounded border bg-card">
+      <div>
+        <div className="font-medium text-sm">
+          <RikishiName id={rikishi.id} name={rikishi.shikona || rikishi.id} />
+        </div>
+        <Badge variant="outline" className="text-xs">
+          {rank}
+        </Badge>
+      </div>
+      <div className="text-right">
+        <div className="font-semibold text-gold">
+          {formatYen(kenshoEarnings)}
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {kenshoEarnings > 0
+            ? `${Math.round(kenshoEarnings / 70000)} envelopes`
+            : "None"}
+        </div>
+      </div>
+    </div>
+  );
+});
 
 export function KenshoManagementWidget() {
   const { state } = useGame();
@@ -143,30 +213,7 @@ export function KenshoManagementWidget() {
               <ScrollArea className="h-[200px]">
                 <div className="space-y-2">
                   {recentBoutsWithKensho.map((bout) => (
-                    <div
-                      key={bout.boutId}
-                      className="flex items-center justify-between p-2 rounded border bg-card"
-                    >
-                      <div>
-                        <div className="font-medium text-sm">
-                          <RikishiName id={bout.rikishiId} name={bout.rikishiName} />
-                        </div>
-                        <div className="text-xs text-muted-foreground">{bout.boutId}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-gold">
-                          {bout.kenshoEnvelopes} envelopes
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {formatYen(bout.kenshoEnvelopes * 70000)}
-                        </div>
-                      </div>
-                      {bout.awardFact && (
-                        <Badge variant="secondary" className="ml-2">
-                          {bout.awardFact}
-                        </Badge>
-                      )}
-                    </div>
+                    <RecentKenshoRow key={bout.boutId} bout={bout} />
                   ))}
                 </div>
               </ScrollArea>
@@ -178,37 +225,9 @@ export function KenshoManagementWidget() {
             <h4 className="text-sm font-medium mb-3">Rikishi Breakdown</h4>
             <ScrollArea className="h-[200px]">
               <div className="space-y-2">
-                {playerRikishi.map((rikishi) => {
-                  const economics = rikishi.economics;
-                  const kenshoEarnings = (economics?.careerKenshoWon || 0) * 70000;
-                  const rank = rikishi.rank || "unknown";
-
-                  return (
-                    <div
-                      key={rikishi.id}
-                      className="flex items-center justify-between p-2 rounded border bg-card"
-                    >
-                      <div>
-                        <div className="font-medium text-sm">
-                          <RikishiName id={rikishi.id} name={rikishi.shikona || rikishi.id} />
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {rank}
-                        </Badge>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-gold">
-                          {formatYen(kenshoEarnings)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {kenshoEarnings > 0
-                            ? `${Math.round(kenshoEarnings / 70000)} envelopes`
-                            : "None"}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {playerRikishi.map((rikishi) => (
+                  <RikishiKenshoRow key={rikishi.id} rikishi={rikishi} />
+                ))}
               </div>
             </ScrollArea>
           </div>

@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
@@ -7,6 +8,62 @@ interface PlayoffBracketProps {
   matches: MatchSchedule[];
   world: WorldState;
 }
+
+
+const PlayoffMatchCard = React.memo(function PlayoffMatchCard({
+  m,
+  eastWon,
+  westWon,
+  eastShikona,
+  westShikona,
+}: {
+  m: MatchSchedule;
+  eastWon: boolean;
+  westWon: boolean;
+  eastShikona: string;
+  westShikona: string;
+}) {
+  const result = m.result;
+
+  return (
+    <div className="border rounded-md overflow-hidden bg-card">
+      {/* East */}
+      <div
+        className={`flex items-center gap-2 px-2 py-1.5 text-xs border-b ${
+          eastWon ? "bg-success/10 font-bold" : ""
+        }`}
+      >
+        <div className="w-1 h-4 rounded-full bg-east" />
+        <RikishiName
+          id={m.eastRikishiId}
+          name={eastShikona}
+          className={eastWon ? "font-bold" : ""}
+        />
+        {eastWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
+      </div>
+      {/* West */}
+      <div
+        className={`flex items-center gap-2 px-2 py-1.5 text-xs ${
+          westWon ? "bg-success/10 font-bold" : ""
+        }`}
+      >
+        <div className="w-1 h-4 rounded-full bg-west" />
+        <RikishiName
+          id={m.westRikishiId}
+          name={westShikona}
+          className={westWon ? "font-bold" : ""}
+        />
+        {westWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
+      </div>
+      {/* Kimarite */}
+      {result && (
+        <div className="px-2 py-1 bg-muted/50 text-[10px] text-muted-foreground text-center">
+          {result.kimariteName || result.kimarite}
+        </div>
+      )}
+    </div>
+  );
+});
 
 export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
   if (!matches || matches.length === 0) return null;
@@ -68,42 +125,14 @@ export function PlayoffBracket({ matches, world }: PlayoffBracketProps) {
                   const westWon = result?.winnerRikishiId === m.westRikishiId;
 
                   return (
-                    <div key={i} className="border rounded-md overflow-hidden bg-card">
-                      {/* East */}
-                      <div
-                        className={`flex items-center gap-2 px-2 py-1.5 text-xs border-b ${
-                          eastWon ? "bg-success/10 font-bold" : ""
-                        }`}
-                      >
-                        <div className="w-1 h-4 rounded-full bg-east" />
-                        <RikishiName
-                          id={m.eastRikishiId}
-                          name={east?.shikona || "???"}
-                          className={eastWon ? "font-bold" : ""}
-                        />
-                        {eastWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
-                      </div>
-                      {/* West */}
-                      <div
-                        className={`flex items-center gap-2 px-2 py-1.5 text-xs ${
-                          westWon ? "bg-success/10 font-bold" : ""
-                        }`}
-                      >
-                        <div className="w-1 h-4 rounded-full bg-west" />
-                        <RikishiName
-                          id={m.westRikishiId}
-                          name={west?.shikona || "???"}
-                          className={westWon ? "font-bold" : ""}
-                        />
-                        {westWon && <Trophy className="h-3 w-3 text-gold ml-auto" />}
-                      </div>
-                      {/* Kimarite */}
-                      {result && (
-                        <div className="px-2 py-1 bg-muted/50 text-[10px] text-muted-foreground text-center">
-                          {result.kimariteName || result.kimarite}
-                        </div>
-                      )}
-                    </div>
+                    <PlayoffMatchCard
+                      key={i}
+                      m={m}
+                      eastWon={eastWon}
+                      westWon={westWon}
+                      eastShikona={east?.shikona || "???"}
+                      westShikona={west?.shikona || "???"}
+                    />
                   );
                 })}
               </div>
