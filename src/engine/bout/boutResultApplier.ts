@@ -185,8 +185,15 @@ export function applyBoutResult(
 
   const ctx: NarrativeContext = {
     shikona: east.shikona,
+    rikishiId: east.id,
+    east: east.shikona,
+    eastRikishiId: east.id,
+    west: west.shikona,
+    westRikishiId: west.id,
     winner: winner.shikona,
+    winnerId: winner.id,
     loser: loser.shikona,
+    loserId: loser.id,
     kimarite: result.kimarite,
     duration: result.duration,
     day: match.day,

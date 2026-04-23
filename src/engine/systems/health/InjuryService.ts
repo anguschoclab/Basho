@@ -231,6 +231,8 @@ export function onBoutResolvedInjury(
       "LIFECYCLE_EVENT",
       "injury",
       {
+        rikishiId: loser.id,
+        shikona: loser.shikona || loser.name,
         status: "injury_bout",
         reason: "Bout impact",
         score: injuryWeeksRemaining,

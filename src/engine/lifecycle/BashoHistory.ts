@@ -207,7 +207,8 @@ export function recordBashoHistory(
       status: "ended",
       incident: basho.bashoName,
       winner: yushoRikishiForLog?.shikona || "Unknown",
-      winnerRikishiId: yusho,
+      winnerId: yusho,
+      rikishiId: yusho,
     },
     { rikishiId: yusho }
   );
@@ -235,6 +236,7 @@ export function recordBashoHistory(
       status: "concluded_summary",
       incident: basho.bashoName,
       shikona: yushoRikishiForLog?.shikona || "Unknown",
+      rikishiId: yusho,
       score: bestWins,
       delta: 15 - bestWins,
     },

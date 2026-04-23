@@ -108,7 +108,7 @@ function getOptions(path: string, intensity: number): string[] {
 /**
  * Zero-Leakage Interpolation with Auto-Formatting and Domain-Specific Logic.
  */
-function interpolate(text: string, context: NarrativeContext): string {
+export function interpolate(text: string, context: NarrativeContext): string {
   const pattern = /%([A-Z0-9_]+)%|\{\{([a-zA-Z0-9_]+)\}\}/g;
 
   const result = text.replace(pattern, (_match, p1, p2) => {
@@ -145,7 +145,44 @@ function interpolate(text: string, context: NarrativeContext): string {
       }
     }
 
-    return value.toString();
+    // Entity Tagging Logic: Wrap known entities in special tags for UI linking
+    const lowerKey = key.toLowerCase();
+    let entityType: string | undefined;
+    let entityId: string | number | boolean | undefined;
+
+    if (lowerKey === "shikona") {
+      entityType = "rikishi";
+      entityId = context.rikishiId || context.id;
+    } else if (lowerKey === "winner") {
+      entityType = "rikishi";
+      entityId = context.winnerId || context.winnerRikishiId;
+    } else if (lowerKey === "loser") {
+      entityType = "rikishi";
+      entityId = context.loserId || context.loserRikishiId;
+    } else if (lowerKey === "rival") {
+      entityType = "rikishi";
+      entityId = context.rivalId || context.rikishiRivalId;
+    } else if (lowerKey === "heya" || lowerKey === "stable") {
+      entityType = "stable";
+      entityId = context.heyaId || context.stableId;
+    } else if (lowerKey === "oyakata") {
+      entityType = "oyakata";
+      entityId = context.oyakataId;
+    } else if (lowerKey === "east") {
+      entityType = "rikishi";
+      entityId = context.eastRikishiId || context.winnerId;
+    } else if (lowerKey === "west") {
+      entityType = "rikishi";
+      entityId = context.westRikishiId || context.loserId;
+    }
+
+    const stringValue = value.toString();
+
+    if (entityType && entityId) {
+      return `[[${entityType}:${entityId}:${stringValue}]]`;
+    }
+
+    return stringValue;
   });
 
   if (result.includes("%") || result.includes("{{") || result.includes("}}")) {

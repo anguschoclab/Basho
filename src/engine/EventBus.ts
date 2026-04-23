@@ -40,7 +40,15 @@ export const EventBus = {
     importance: EventImportance = "major"
   ) => {
     const heya = world.heyas.get(heyaId);
-    const enrichedCtx: NarrativeContext = { heya: heya?.name, heyaname: heya?.name, ...ctx };
+    const enrichedCtx: NarrativeContext = {
+      heya: heya?.name,
+      heyaname: heya?.name,
+      heyaId,
+      stableId: heyaId,
+      oyakata: heya?.oyakataName,
+      oyakataId: heya?.oyakataId,
+      ...ctx,
+    };
     const rng = createRngForEvent(world, `gov-${heyaId}-${ctx.incident}`);
     const titleRes = BardEngine.resolve(rng, "events.governance.title", enrichedCtx);
     const summaryRes = BardEngine.resolve(rng, "events.governance.summary", enrichedCtx);
@@ -179,8 +187,16 @@ export const EventBus = {
       "narrative",
       "event"
     );
-    const titleRes = BardEngine.resolve(rng, "events.basho.bout_title", data);
-    const summaryRes = BardEngine.resolve(rng, "events.basho.bout_summary", data);
+    const titleRes = BardEngine.resolve(rng, "events.basho.bout_title", {
+      ...data,
+      winnerId: data.winnerRikishiId,
+      loserId: data.loserRikishiId,
+    });
+    const summaryRes = BardEngine.resolve(rng, "events.basho.bout_summary", {
+      ...data,
+      winnerId: data.winnerRikishiId,
+      loserId: data.loserRikishiId,
+    });
 
     return logEngineEvent(world, {
       type: "BOUT_RESOLVED",
@@ -190,7 +206,11 @@ export const EventBus = {
       scope: "world",
       title: titleRes.text,
       summary: summaryRes.text,
-      data,
+      data: {
+        ...data,
+        winnerId: data.winnerRikishiId,
+        loserId: data.loserRikishiId,
+      },
       tags: ["basho", "bout", "pbp"],
     });
   },
@@ -234,8 +254,13 @@ export const EventBus = {
 
   rivalryHeatSpike: (world: WorldState, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `rivalry-heat-${data.winner}-${data.loser}`);
-    const res = BardEngine.resolve(rng, "events.rivalry.press_rumors", data);
-    const titleRes = BardEngine.resolve(rng, "events.rivalry.title", data);
+    const enrichedData = {
+      ...data,
+      winnerId: data.winnerId || data.winnerRikishiId,
+      loserId: data.loserId || data.loserRikishiId,
+    };
+    const res = BardEngine.resolve(rng, "events.rivalry.press_rumors", enrichedData);
+    const titleRes = BardEngine.resolve(rng, "events.rivalry.title", enrichedData);
 
     return logEngineEvent(world, {
       type: "RIVALRY_HEAT_SPIKE",
@@ -244,7 +269,7 @@ export const EventBus = {
       scope: "world",
       title: titleRes.text,
       summary: res.text,
-      data,
+      data: enrichedData,
       tags: ["rivalry", "hype"],
     });
   },
