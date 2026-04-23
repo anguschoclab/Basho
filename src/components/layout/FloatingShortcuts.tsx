@@ -16,17 +16,17 @@ export function FloatingShortcuts({
   return (
     <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2">
       {!eventLogOpen && (
-        <TooltipWrap content="Open Event Log" side="top">
-          <Button
+        <Button
             variant="outline"
             size="icon"
             className="h-9 w-9 bg-card shadow-sm border-border/50 hover:bg-accent"
             onClick={() => setEventLogOpen(true)}
             aria-label="Open Event Log"
+            tooltip="Open Event Log"
+            tooltipSide="top"
           >
             <PanelRightOpen className="h-4 w-4 text-muted-foreground" />
           </Button>
-        </TooltipWrap>
       )}
 
       <TooltipWrap

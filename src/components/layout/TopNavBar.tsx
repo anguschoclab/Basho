@@ -165,36 +165,33 @@ export function TopNavBar() {
 
           <SaveLoadDialog />
 
-          <TooltipWrap
-            content={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-            side="bottom"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
+            tooltip={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+            tooltipSide="bottom"
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              {resolvedTheme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
-              ) : (
-                <Moon className="h-3.5 w-3.5" />
-              )}
-            </Button>
-          </TooltipWrap>
+            {resolvedTheme === "dark" ? (
+              <Sun className="h-3.5 w-3.5" />
+            ) : (
+              <Moon className="h-3.5 w-3.5" />
+            )}
+          </Button>
 
-          <TooltipWrap content="Settings" side="bottom">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-              onClick={() => navigate({ to: "/settings" })}
-              aria-label="Settings"
-            >
-              <Settings className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipWrap>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+            onClick={() => navigate({ to: "/settings" })}
+            aria-label="Settings"
+            tooltip="Settings"
+            tooltipSide="bottom"
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </Button>
 
           {/* Thin separator before the Continue button */}
           <div className="w-px h-5 mx-1" style={{ background: "hsl(var(--border))" }} />

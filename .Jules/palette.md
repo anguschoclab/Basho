@@ -10,3 +10,6 @@
 ## 2026-04-20 - Keyboard Focus on Link-Styled Buttons
 **Learning:** Custom link-styled interactive elements (like the 'Skip Tour' button) often miss critical focus indicators because they don't inherit default button outlines. Screen reader users can 'read' them via text, but keyboard users lose visual focus tracking without proper styling.
 **Action:** Prefer using the shared `Button` component or `buttonVariants` helper to ensure consistent focus-visible states. For raw `<button>` elements where the component cannot be used, apply the standard focus ring utility classes.
+## $(date +%Y-%m-%d) - Native Tooltip Props on Button Components
+**Learning:** The custom `<Button>` component in this app (`src/components/ui/button.tsx`) natively accepts `tooltip` and `tooltipSide` props, which automatically wrap the button in a `<TooltipWrap>`. Using these native props simplifies the component tree and reduces boilerplate compared to manually wrapping buttons with `<TooltipWrap>`.
+**Action:** When adding or refactoring tooltips for buttons, prefer passing `tooltip` and `tooltipSide` directly to the `<Button>` instead of introducing `<TooltipWrap>` wrappers manually.

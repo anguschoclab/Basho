@@ -82,20 +82,20 @@ const RosterEntryRow = React.memo(
           />
         </div>
         {isInjured && onWithdraw && (
-          <TooltipWrap content="Withdraw from tournament (kyujo)" side="left">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-              aria-label={`Withdraw ${shikona} from tournament`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onWithdraw(id);
-              }}
-            >
-              <UserMinus className="h-3 w-3" />
-            </Button>
-          </TooltipWrap>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+            aria-label={`Withdraw ${shikona} from tournament`}
+            tooltip="Withdraw from tournament (kyujo)"
+            tooltipSide="left"
+            onClick={(e) => {
+              e.stopPropagation();
+              onWithdraw(id);
+            }}
+          >
+            <UserMinus className="h-3 w-3" />
+          </Button>
         )}
       </div>
     );
