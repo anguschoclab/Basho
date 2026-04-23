@@ -17,6 +17,24 @@ import {
 } from "recharts";
 import { LayoutDashboard, Target, BrainCircuit } from "lucide-react";
 
+const commonAxisProps = {
+  tick: { fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" },
+  axisLine: false,
+  tickLine: false,
+};
+
+const commonTooltipProps = {
+  contentStyle: {
+    backgroundColor: "hsl(var(--card))",
+    borderColor: "hsl(var(--border))",
+    fontSize: "11px",
+    fontFamily: "Spectral",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+  },
+  labelStyle: { fontWeight: 600, fontFamily: "JetBrains Mono" },
+};
+
 interface TrainingAnalyticsProps {
   trainingEffectivenessData: Array<{
     intensity: string;
@@ -77,28 +95,9 @@ export function TrainingAnalytics({
                     vertical={false}
                     stroke="hsl(var(--border))"
                   />
-                  <XAxis
-                    dataKey="intensity"
-                    tick={{ fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderColor: "hsl(var(--border))",
-                      fontSize: "11px",
-                      fontFamily: "Spectral",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                    }}
-                    labelStyle={{ fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                  />
+                  <XAxis dataKey="intensity" {...commonAxisProps} />
+                  <YAxis {...commonAxisProps} />
+                  <Tooltip {...commonTooltipProps} />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
                   <Bar
                     dataKey="growth"
@@ -141,28 +140,9 @@ export function TrainingAnalytics({
                     vertical={false}
                     stroke="hsl(var(--border))"
                   />
-                  <XAxis
-                    dataKey="focus"
-                    tick={{ fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      borderColor: "hsl(var(--border))",
-                      fontSize: "11px",
-                      fontFamily: "Spectral",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                    }}
-                    labelStyle={{ fontWeight: 600, fontFamily: "JetBrains Mono" }}
-                  />
+                  <XAxis dataKey="focus" {...commonAxisProps} />
+                  <YAxis {...commonAxisProps} />
+                  <Tooltip {...commonTooltipProps} />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
                   <Bar
                     dataKey="strength"

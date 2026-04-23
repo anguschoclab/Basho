@@ -13,6 +13,21 @@ import type { ImpactBuilder } from "../../../core/ImpactBuilder";
 import { generateGovernanceHeadline } from "../../../systems/media/MediaService";
 import { clamp } from "../../../utils/math";
 
+function applyGovernanceHeadlineAndPressure(
+  world: WorldState,
+  heyaId: string,
+  mediaPressureChanges: Record<string, number>,
+  pressureAmount: number
+): void {
+  generateGovernanceHeadline({
+    world,
+    heyaId,
+    templatePath: "institutional.governance.welfare_headline",
+    severity: "national",
+  });
+  mediaPressureChanges[heyaId] = (mediaPressureChanges[heyaId] ?? 0) + pressureAmount;
+}
+
 export function handleCompliantTransition(
   world: WorldState,
   heya: Heya,
@@ -42,13 +57,7 @@ export function handleCompliantTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    generateGovernanceHeadline({
-      world,
-      heyaId: heya.id,
-      templatePath: "institutional.governance.welfare_headline",
-      severity: "national",
-    });
-    mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 15;
+    applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, 15);
   }
 }
 
@@ -80,13 +89,7 @@ export function handleWatchTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    generateGovernanceHeadline({
-      world,
-      heyaId: heya.id,
-      templatePath: "institutional.governance.welfare_headline",
-      severity: "national",
-    });
-    mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 30;
+    applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, 30);
   } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
     setComplianceStatePure(state, "compliant");
     builder.logEvent(
@@ -170,13 +173,7 @@ export function transitionToSanctioned(
     { heyaId: heya.id, importance: "notable" }
   );
 
-  generateGovernanceHeadline({
-    world,
-    heyaId: heya.id,
-    templatePath: "institutional.governance.welfare_headline",
-    severity: "national",
-  });
-  mediaPressureChanges[heya.id] = (mediaPressureChanges[heya.id] ?? 0) + 50;
+  applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, 50);
 }
 
 export function handleSanctionedTransition(
