@@ -22,6 +22,11 @@ export interface TrainingPhilosophy {
   targetFocusBias?: "power" | "technique" | "speed" | "balanced";
   targetIntensityBias?: "grueling" | "moderate" | "scientific";
   transitionProgress?: number; // 0.0 to 1.0
+
+  /** Drift / Cultural Influence accumulators (Phase 5) */
+  powerBias?: number;
+  techniqueBias?: number;
+  speedBias?: number;
 }
 
 /** Per-Oyakata era achievements. */

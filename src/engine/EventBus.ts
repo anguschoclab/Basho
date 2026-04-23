@@ -40,12 +40,13 @@ export const EventBus = {
     importance: EventImportance = "major"
   ) => {
     const heya = world.heyas.get(heyaId);
+    const oyakata = heya?.oyakataId ? world.oyakata.get(heya.oyakataId) : null;
     const enrichedCtx: NarrativeContext = {
       heya: heya?.name,
       heyaname: heya?.name,
       heyaId,
       stableId: heyaId,
-      oyakata: heya?.oyakataName,
+      oyakata: oyakata?.name || oyakata?.shikona || "The Master",
       oyakataId: heya?.oyakataId,
       ...ctx,
     };

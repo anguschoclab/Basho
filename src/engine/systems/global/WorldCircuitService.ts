@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * WorldCircuitService.ts
  * ======================
@@ -71,7 +70,8 @@ export const WorldCircuitService = {
         title: "Overseas Exhibition Invitations",
         description: `Your stable has received ${count} international exhibition invitation(s).`,
         incident: `Cards from abroad: ${invitations.map((i) => i.region).join(", ")}.`,
-        data: invitations,
+        invitationCount: count,
+        regions: invitations.map((i) => i.region).join(", "),
       },
       { heyaId, importance: "notable" }
     );
@@ -183,5 +183,86 @@ export const WorldCircuitService = {
     if (score >= PRESENCE_GATES.ACADEMY_THRESHOLD) return "academy";
     if (score >= PRESENCE_GATES.VISIBLE_THRESHOLD) return "visible";
     return "hidden";
+  },
+
+  /**
+   * Applies "Style Drift" to a heya based on its international presence.
+   * (Phase 5: Cultural Friction & Dynasty Drift)
+   */
+  applyStyleDrift(world: WorldState, heyaId: string): StateImpact {
+    const builder = createImpactBuilder("applyStyleDrift");
+    const heya = world.heyas.get(heyaId);
+    if (!heya || !heya.regionalPresence) return builder.build();
+
+    const regions = Object.keys(heya.regionalPresence) as ExhibitionRegion[];
+    if (regions.length === 0) return builder.build();
+
+    // Find the region with the highest presence
+    let dominantRegion = regions[0];
+    let maxPresence = 0;
+    for (const r of regions) {
+      if ((heya.regionalPresence[r] || 0) > maxPresence) {
+        maxPresence = heya.regionalPresence[r] || 0;
+        dominantRegion = r;
+      }
+    }
+
+    if (maxPresence < PRESENCE_GATES.VISIBLE_THRESHOLD) return builder.build();
+
+    // Small weekly drift towards regional philosophy
+    // This could modify the heya's trainingPhilosophy or just log a trend
+    const currentPhilosophy = heya.trainingPhilosophy || { 
+      focusBias: "balanced",
+      intensityBias: "moderate",
+      recruitmentBias: "domestic",
+      powerBias: 0, 
+      techniqueBias: 0, 
+      speedBias: 0 
+    };
+
+    const nextPhilosophy = { ...currentPhilosophy };
+    const driftAmount = 0.02 * (maxPresence / 100);
+
+    switch (dominantRegion) {
+      case "Mongolia":
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) + driftAmount;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.5;
+        break;
+      case "Georgia":
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount;
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) - driftAmount * 0.5;
+        break;
+      case "Europe":
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount;
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.5;
+        break;
+      case "Americas":
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount * 0.7;
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.3;
+        break;
+      case "East_Asia":
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount * 0.7;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.3;
+        break;
+    }
+
+    builder.updateHeya(heyaId, { trainingPhilosophy: nextPhilosophy });
+
+    if (world.week % 4 === 0) {
+      builder.logEvent(
+        "NARRATIVE_STRATEGY_SHIFT",
+        "narrative",
+        {
+          heyaId,
+          region: dominantRegion,
+          incident: "style_drift_observation",
+          status: "trending",
+          detail: `The training methods at ${heya.name} are showing a distinct ${dominantRegion} influence.`,
+        },
+        { heyaId, importance: "minor" }
+      );
+    }
+
+    return builder.build();
   },
 };

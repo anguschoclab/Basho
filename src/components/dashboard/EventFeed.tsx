@@ -10,6 +10,7 @@ import { useGameStore } from "@/store/gameStore";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
+import { MentionText } from "@/components/MentionText";
 
 interface EventFeedProps {
   maxEvents?: number;
@@ -39,7 +40,7 @@ function formatEventTime(event: EngineEvent): string {
   return `Year ${event.year}, Week ${event.week}`;
 }
 
-export function EventFeed({ maxEvents = 10, filterTypes }: EventFeedProps) {
+export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventFeedProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
 
   const events = useMemo(() => {
@@ -88,7 +89,7 @@ export function EventFeed({ maxEvents = 10, filterTypes }: EventFeedProps) {
                 <div className="mt-0.5 flex-shrink-0">{Icon}</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-200 truncate">{event.title}</p>
-                  <p className="text-xs text-slate-400 line-clamp-2">{event.summary}</p>
+                  <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
                   <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
                 </div>
               </div>

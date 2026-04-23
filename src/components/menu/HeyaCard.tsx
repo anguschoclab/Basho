@@ -31,42 +31,42 @@ export const STATURE_CONFIG: Record<
     label: "Legendary",
     labelJa: "伝説",
     difficulty: "Very Easy",
-    color: "bg-gold/20 text-gold border-gold/30",
+    color: "bg-gold/15 text-gold border-gold/30",
     icon: Star,
   },
   powerful: {
     label: "Powerful",
     labelJa: "強豪",
     difficulty: "Easy",
-    color: "bg-primary/20 text-primary border-primary/30",
+    color: "bg-primary/15 text-primary border-primary/30",
     icon: Sparkles,
   },
   established: {
     label: "Established",
     labelJa: "安定",
     difficulty: "Normal",
-    color: "bg-west/20 text-west border-west/30",
+    color: "bg-west/15 text-west border-west/30",
     icon: Building2,
   },
   rebuilding: {
     label: "Rebuilding",
     labelJa: "再建中",
     difficulty: "Hard",
-    color: "bg-warning/20 text-warning border-warning/30",
+    color: "bg-warning/15 text-warning border-warning/30",
     icon: TrendingDown,
   },
   fragile: {
     label: "Fragile",
     labelJa: "危機",
     difficulty: "Very Hard",
-    color: "bg-destructive/20 text-destructive border-destructive/30",
+    color: "bg-destructive/15 text-destructive border-destructive/30",
     icon: AlertTriangle,
   },
   new: {
     label: "New",
     labelJa: "新規",
     difficulty: "Extreme",
-    color: "bg-success/20 text-success border-success/30",
+    color: "bg-success/15 text-success border-success/30",
     icon: Plus,
   },
 };
@@ -203,9 +203,9 @@ export function HeyaCard({
             Review Roster
           </Button>
           {isSelected && (
-            <Badge className="bg-primary h-5 w-5 rounded-full p-0 flex items-center justify-center">
+            <div className="bg-primary h-5 w-5 rounded-sm flex items-center justify-center text-primary-foreground text-[10px]">
               ✓
-            </Badge>
+            </div>
           )}
         </div>
       </CardContent>

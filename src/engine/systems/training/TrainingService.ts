@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * src/engine/systems/training/TrainingService.ts
  * ==============================================
@@ -201,6 +200,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         stamina: Math.floor(updates.stamina),
         adaptability: Math.floor(updates.adaptability),
         mental: Math.floor(updates.experience),
+        weight: rikishi.stats?.weight ?? 145,
       };
 
       // Milestone Events (Threshold crossing)

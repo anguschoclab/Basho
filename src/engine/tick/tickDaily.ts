@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * dailyTick.ts
  * =======
@@ -38,6 +37,7 @@ export interface DailyTickReport {
   subsystemsRun: string[];
   monthBoundary?: boolean;
   yearBoundary?: boolean;
+  [key: string]: unknown;
 }
 
 // Migration complete: daily micro-logic moved to phases/phase01_daily_*.ts

@@ -242,7 +242,13 @@ export interface WorldState {
 
   boutTactics?: Record<string, string>;
 
-  calendar?: { currentWeek: number };
+  calendar?: { 
+    currentWeek: number;
+    year?: number;
+    month?: number;
+    week?: number;
+    currentDay?: number;
+  };
 
   _preGeneratedSchedules?: {
     day1: string[];
@@ -262,6 +268,7 @@ export interface WorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
+    enableStyleDrift?: boolean;
   };
 
   /**

@@ -8,20 +8,40 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 
+import { CrisisService } from "../narrative/CrisisService";
+
 export function resolveCrisis(
   world: WorldState,
   crisisId: string,
-  choice: "harsh" | "cover_up"
+  choiceId: string
 ): StateImpact {
   const builder = createImpactBuilder("resolveCrisis");
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return builder.build();
 
+  // 1. Look up the crisis in the registry or world state
+  const registry = CrisisService.getRegistry();
+  const crisis = registry.find((c) => c.id === crisisId) || world.pendingCrisis;
+
+  if (crisis && crisis.id === crisisId) {
+    const option = crisis.options.find((o) => o.id === choiceId);
+    if (option) {
+      // Execute the specific impact generator for this choice
+      const impact = option.impactGenerator(world);
+      
+      // Clear the pending crisis from the world state
+      builder.updateWorldField("pendingCrisis", undefined);
+      
+      return impact;
+    }
+  }
+
+  // Fallback/Legacy logic (if needed for old save files)
   const heya = world.heyas.get(playerHeyaId);
   if (!heya) return builder.build();
 
-  if (choice === "harsh") {
-    // Reputation Down, Compliance Up
+  if (choiceId === "harsh") {
+    // ... legacy logic ...
     builder.updateHeya(playerHeyaId, {
       reputation: Math.max(0, (heya.reputation ?? 50) - 15),
       welfareState: {
@@ -30,37 +50,6 @@ export function resolveCrisis(
         welfareRisk: Math.max(0, (heya.welfareState?.welfareRisk ?? 0) - 30),
       },
     });
-
-    builder.logEvent(
-      "GOVERNANCE_RULING",
-      "discipline",
-      {
-        incident: "crisis_resolved_harsh",
-        choice: "harsh_action",
-        status: "resolved",
-      },
-      { heyaId: playerHeyaId, importance: "major" }
-    );
-  } else if (choice === "cover_up") {
-    // Reputation Neutral, Compliance Down, Risk Up
-    builder.updateHeya(playerHeyaId, {
-      welfareState: {
-        ...heya.welfareState!,
-        complianceState: "investigation",
-        welfareRisk: Math.min(100, (heya.welfareState?.welfareRisk ?? 0) + 20),
-      },
-    });
-
-    builder.logEvent(
-      "GOVERNANCE_RULING",
-      "discipline",
-      {
-        incident: "crisis_resolved_coverup",
-        choice: "cover_up",
-        status: "hidden",
-      },
-      { heyaId: playerHeyaId, importance: "major" }
-    );
   }
 
   return builder.build();

@@ -131,27 +131,32 @@ export default function RikishiPage() {
         />
 
         <div className="p-8">
-          <RikishiLineage mentor={mentor} mentees={mentees} lineageTree={lineageTree} />
+          <RikishiLineage 
+            mentor={mentor} 
+            mentees={mentees} 
+            lineageTree={lineageTree} 
+            rikishiId={rikishi.id}
+          />
           <RikishiKeshoMawashi rikishi={rikishi} />
           <RikishiNaturalization rikishi={rikishi} />
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50 max-w-lg">
+            <TabsList className="bg-transparent h-10 p-0 gap-8 rounded-none border-b border-border/40 w-full justify-start">
               <TabsTrigger
                 value="profile"
-                className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white"
+                className="bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[10px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all"
               >
                 Profile
               </TabsTrigger>
               <TabsTrigger
                 value="combat"
-                className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white"
+                className="bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[10px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all"
               >
                 Combat
               </TabsTrigger>
               <TabsTrigger
                 value="history"
-                className="rounded-full px-8 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white"
+                className="bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[10px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all"
               >
                 Career Archives
               </TabsTrigger>
@@ -186,10 +191,10 @@ export default function RikishiPage() {
         </div>
       </div>
       <div className="mt-10 pt-6 border-t border-destructive/20">
-        <div className="flex items-center justify-between p-4 rounded-lg bg-destructive/5 border border-destructive/10">
+        <div className="flex items-center justify-between p-4 rounded bg-destructive/5 border border-destructive/10">
           <div>
-            <h4 className="font-display font-bold text-destructive">Administrative Actions</h4>
-            <p className="text-xs text-muted-foreground">
+            <h4 className="font-display font-bold text-destructive uppercase tracking-tight">Administrative Actions</h4>
+            <p className="text-[11px] text-muted-foreground font-body">
               Declare retirement (intai) for this rikishi.
             </p>
           </div>
@@ -199,7 +204,7 @@ export default function RikishiPage() {
             className="gap-2"
             onClick={() => setShowIntaiCeremony(true)}
           >
-            <Trash2 className="h-4 w-4" /> Declare Retirement
+            <Trash2 className="h-3.5 w-3.5" /> Declare Retirement
           </Button>
         </div>
       </div>

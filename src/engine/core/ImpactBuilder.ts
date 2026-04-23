@@ -394,6 +394,7 @@ export class ImpactBuilder {
       | "oyakata"
       | "heyas"
       | "transientContext"
+      | "settings"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -650,6 +651,7 @@ export function updateWorldFieldImpact<
     | "oyakata"
     | "heyas"
     | "transientContext"
+    | "settings"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

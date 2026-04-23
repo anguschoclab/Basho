@@ -371,7 +371,7 @@ export default function RecapPage() {
       <div className="fixed bottom-10 right-10 z-50">
         <Button
           size="lg"
-          className="h-16 w-16 rounded-full shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] border-4 border-white/20 p-0"
+          className="h-16 w-16 rounded shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] border-4 border-white/20 p-0"
           onClick={handleContinue}
           title="Finalize Basho"
         >

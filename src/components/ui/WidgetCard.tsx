@@ -24,9 +24,9 @@ const sizeClasses: Record<string, string> = {
 };
 
 const variantClasses: Record<string, string> = {
-  default: "bg-card border border-border rounded-lg",
-  paper: "paper rounded-lg",
-  glass: "glass paper rounded-lg",
+  default: "bg-card border border-border rounded",
+  paper: "paper rounded",
+  glass: "glass paper rounded",
 };
 
 export function WidgetCard({

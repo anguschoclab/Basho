@@ -110,20 +110,21 @@ export default function BanzukePage() {
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
       {/* Media Day Trigger (D1) */}
       {isMediaDay && !showPressConference && (
-        <div className="mb-6 bg-gradient-to-r from-primary/20 to-west/20 border border-primary/30 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+        <div className="mb-6 bg-gradient-to-r from-gold/10 to-west/10 border border-gold/30 rounded p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="space-y-1 text-center md:text-left">
-            <h2 className="text-xl font-display font-black uppercase tracking-tight flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <h2 className="text-xl font-display font-bold uppercase tracking-tight flex items-center gap-3 sumi-e-ink">
+              <span className="h-2 w-2 rounded-sm bg-gold animate-pulse" />
               Media Day
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-body">
               The press has arrived. Address the journalists' questions before the basho starts.
             </p>
           </div>
           <Button
             onClick={() => setShowPressConference(true)}
             size="lg"
-            className="font-black uppercase tracking-widest gap-2 bg-primary hover:bg-primary/90"
+            variant="primary-gradient"
+            className="gap-2"
           >
             Begin Press Conference
           </Button>
@@ -155,8 +156,8 @@ export default function BanzukePage() {
           <div className="flex flex-col gap-3 flex-1">
             <div className="flex items-center gap-3">
               {/* Player stable legend */}
-              <div className="flex items-center gap-1.5 text-[10px] text-primary border border-primary/20 rounded-md px-2 py-1 bg-primary/5">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              <div className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase text-gold border border-gold/30 rounded px-2 py-1 bg-gold/5 tracking-wider">
+                <span className="h-1.5 w-1.5 rounded-sm bg-gold" />
                 Your Stable
               </div>
               <div className="relative">

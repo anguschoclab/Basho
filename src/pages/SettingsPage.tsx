@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Keyboard, Palette, Save, Info } from "lucide-react";
+import { Settings, Keyboard, Palette, Save, Info, Dumbbell } from "lucide-react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
+import { useGame } from "../contexts/GameContext";
 import { useState } from "react";
 
 const AUTOSAVE_ENABLED_KEY = "basho_autosave_enabled";
@@ -43,6 +44,7 @@ function setAutosaveEnabled(enabled: boolean) {
 /** settings page. */
 export default function SettingsPage() {
   const { setTheme, resolvedTheme } = useTheme();
+  const { state, updateWorld } = useGame();
   const [autosaveOn, setAutosaveOn] = useState(getAutosaveEnabled);
 
   const handleAutosaveToggle = (checked: boolean) => {
@@ -157,6 +159,42 @@ export default function SettingsPage() {
                   </Badge>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Simulation */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Dumbbell className="h-5 w-5" /> Simulation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="drift-toggle" className="text-sm font-medium">
+                  Style Drift (Phase 5)
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Allow stable training styles to gradually drift based on international influence
+                </p>
+              </div>
+              <Switch
+                id="drift-toggle"
+                checked={!!state.world?.settings?.enableStyleDrift}
+                onCheckedChange={(checked) => {
+                  if (state.world) {
+                    updateWorld({
+                      ...state.world,
+                      settings: {
+                        ...(state.world.settings || {}),
+                        enableStyleDrift: checked,
+                      },
+                    });
+                  }
+                }}
+              />
             </div>
           </CardContent>
         </Card>

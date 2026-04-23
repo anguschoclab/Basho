@@ -87,7 +87,8 @@ export function getMenuGroups(
         { title: "Banzuke", url: "/banzuke", icon: ScrollText },
         { title: "Schedule", url: "/schedule", icon: Calendar },
         { title: "Rivalries", url: "/rivalries", icon: Swords },
-        { title: "Global Cup", url: "/global-cup", icon: Globe },
+        { title: "Global Cup", url: "/global-cup", icon: Trophy },
+        { title: "World Circuit", url: "/world-circuit", icon: Globe },
       ],
     },
     {
