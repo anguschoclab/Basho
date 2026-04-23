@@ -74,7 +74,8 @@
       "mcp__plugin_playwright_playwright__browser_click",
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_run_code",
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "Bash(sort -t: -k2 -rn)"
     ]
   },
   "outputStyle": "default"

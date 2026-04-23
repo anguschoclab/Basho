@@ -26,10 +26,12 @@ import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { formatYen } from "@/utils/engineUtils";
 import { EventFeed } from "@/components/dashboard/EventFeed";
+import { useGameStore } from "@/store/gameStore";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
   const { state, updateWorld, hasAutosave, loadFromAutosave } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const navigate = useNavigate();
   const world = state.world;
   const isLoaded = !!world;

@@ -50,7 +50,47 @@ export default function TrainingPage() {
     return legacy ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
-  // ... (useMemo remains same)
+  const rikishiList = useMemo<Rikishi[]>(() => {
+    if (!world || !heya) return [];
+    return (heya.rikishiIds ?? [])
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined)
+      .sort((a, b) => {
+        const aIdx = RANK_HIERARCHY.indexOf(a.rank);
+        const bIdx = RANK_HIERARCHY.indexOf(b.rank);
+        if (aIdx === -1 && bIdx === -1) return 0;
+        if (aIdx === -1) return 1;
+        if (bIdx === -1) return -1;
+        return aIdx - bIdx;
+      });
+  }, [world, heya]);
+
+  const trainingEffectivenessData = useMemo(
+    () =>
+      (Object.entries(INTENSITY_MULTIPLIERS) as Array<[TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }]>).map(
+        ([intensity, eff]) => ({
+          intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
+          growth: Math.round(eff.growth * 100),
+          fatigue: Math.round(eff.fatigue * 100),
+          injuryRisk: Math.round(eff.injuryRisk * 100),
+        })
+      ),
+    []
+  );
+
+  const focusBiasData = useMemo(
+    () =>
+      (Object.entries(FOCUS_BIAS_MATRIX) as Array<[TrainingFocus, Record<string, number>]>).map(
+        ([focus, biases]) => ({
+          focus: focus.charAt(0).toUpperCase() + focus.slice(1),
+          strength: Math.round((biases.strength ?? 1) * 100),
+          speed: Math.round((biases.speed ?? 1) * 100),
+          technique: Math.round((biases.technique ?? 1) * 100),
+          balance: Math.round((biases.balance ?? 1) * 100),
+        })
+      ),
+    []
+  );
 
   if (!world || !playerHeyaId || !heya) return null;
 
