@@ -69,21 +69,21 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
       >
         <button
           onClick={handleMinimize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           aria-label="Minimize"
         >
           <Minus size={14} />
         </button>
         <button
           onClick={handleMaximize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           aria-label={isMaximized ? "Restore" : "Maximize"}
         >
           <Square size={12} />
         </button>
         <button
           onClick={handleClose}
-          className="w-8 h-8 flex items-center justify-center hover:bg-destructive text-muted-foreground hover:text-white transition-colors"
+          className="w-8 h-8 flex items-center justify-center hover:bg-destructive text-muted-foreground hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           aria-label="Close"
         >
           <X size={14} />
