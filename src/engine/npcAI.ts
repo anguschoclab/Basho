@@ -389,7 +389,8 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     builder.merge(retirementStrat.evaluateRetirements(world, heya, oyakata));
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
-    const vacancies = recruitmentStrat.evaluateVacancies(world, heya, oyakata);
+    const { impact: recruitmentImpact, count: vacancies } = recruitmentStrat.evaluateVacancies(world, heya, oyakata);
+    builder.merge(recruitmentImpact);
 
     const governanceStrat = getGovernanceStrategy(oyakata.archetype);
     builder.merge(governanceStrat.evaluateGovernanceDecisions(world, heya, oyakata));

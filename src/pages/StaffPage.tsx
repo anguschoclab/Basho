@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from "react";
+import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { HQ_TABS } from "@/constants/navigation";
@@ -28,7 +29,6 @@ import {
 import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
-import { hireStaff, fireStaff } from "@/engine/staff";
 import { toast } from "sonner";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
@@ -70,7 +70,8 @@ const BAND_COLORS: Record<string, string> = {
 };
 
 export default function StaffPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const [isRecruitOpen, setIsRecruitOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<StaffRole>("assistant_oyakata");
 
@@ -90,15 +91,10 @@ export default function StaffPage() {
       return;
     }
 
-    const impact = hireStaff(world, heya.id, selectedRole);
-    if (impact) {
-      updateWorld(world);
-      setIsRecruitOpen(false);
-      toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
-    } else {
-      toast.error("Insufficient funds or recruitment error.");
-    }
-  }, [world, heya, selectedRole, staffList.length, updateWorld]);
+    sendCommand({ type: "HIRE_STAFF", heyaId: heya.id, role: selectedRole });
+    setIsRecruitOpen(false);
+    toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
+  }, [heya, selectedRole, staffList.length, sendCommand, world]);
 
   const handleFire = useCallback(
     (staffId: string) => {
@@ -110,13 +106,10 @@ export default function StaffPage() {
         return;
       }
 
-      const success = fireStaff(world, heya.id, staffId);
-      if (success) {
-        updateWorld(world);
-        toast.success("Staff member released.");
-      }
+      sendCommand({ type: "FIRE_STAFF", heyaId: heya.id, staffId });
+      toast.success("Staff member released.");
     },
-    [world, heya, updateWorld]
+    [world, heya, sendCommand]
   );
 
   if (!heya) return null;

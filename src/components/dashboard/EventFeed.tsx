@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from "react";
-import { Trophy, Bell, TrendingUp, AlertTriangle, Info } from "lucide-react";
+import { Trophy, Bell, TrendingUp, AlertTriangle, Info, ShieldAlert, Zap, Target } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
@@ -14,12 +14,13 @@ import type { EngineEvent, EventImportance } from "@/engine/types/events";
 interface EventFeedProps {
   maxEvents?: number;
   filterTypes?: string[];
+  minImportance?: EventImportance;
 }
 
 const importanceStyles: Record<EventImportance, string> = {
   minor: "opacity-60",
-  notable: "",
-  major: "border-l-2 border-amber-500 pl-2",
+  notable: "bg-slate-800/20",
+  major: "border-l-2 border-amber-500 pl-2 bg-amber-500/5",
   headline: "border-l-2 border-rose-500 pl-2 bg-rose-950/20",
 };
 
@@ -27,6 +28,10 @@ const typeIcons: Record<string, React.ReactNode> = {
   GLOBAL_CUP: <Trophy className="w-4 h-4 text-gold" />,
   BASHO_STATUS: <TrendingUp className="w-4 h-4 text-primary" />,
   FINANCIAL_ALERT: <AlertTriangle className="w-4 h-4 text-destructive" />,
+  NPC_MANAGER_DECISION: <Target className="w-4 h-4 text-indigo-400" />,
+  GOVERNANCE_RULING: <ShieldAlert className="w-4 h-4 text-amber-500" />,
+  RIVALRY_HEAT_SPIKE: <Zap className="w-4 h-4 text-orange-500" />,
+  STRATEGY_SHIFT: <TrendingUp className="w-4 h-4 text-emerald-400" />,
   default: <Info className="w-4 h-4 text-muted-foreground" />,
 };
 
@@ -43,14 +48,26 @@ export function EventFeed({ maxEvents = 10, filterTypes }: EventFeedProps) {
       ? allEvents.filter((e: EngineEvent) => filterTypes.includes(e.type))
       : allEvents;
 
+    if (minImportance) {
+      const impMap: Record<EventImportance, number> = {
+        minor: 0,
+        notable: 1,
+        major: 2,
+        headline: 3,
+      };
+      const minVal = impMap[minImportance];
+      filtered = filtered.filter((e: EngineEvent) => impMap[e.importance || "minor"] >= minVal);
+    }
+
     // Sort by most recent first
     filtered = [...filtered].sort((a, b) => {
       if (a.year !== b.year) return b.year - a.year;
-      return b.week - a.week;
+      if (a.week !== b.week) return b.week - a.week;
+      return 0;
     });
 
     return filtered.slice(0, maxEvents);
-  }, [workerWorld?.events?.log, maxEvents, filterTypes]);
+  }, [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]);
 
   return (
     <WidgetCard>

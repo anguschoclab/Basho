@@ -160,16 +160,17 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
     { heyaId: heya.id, importance: terms.loanType === "benefactor" ? "major" : "notable" }
   );
 
-  // generateGovernanceHeadline still called directly - will migrate in Phase 5
-  generateGovernanceHeadline({
-    world,
-    heyaId: heya.id,
-    templatePath:
-      terms.loanType === "emergency"
-        ? "institutional.governance.emergency_loan"
-        : "institutional.governance.scandal",
-    severity: terms.loanType === "benefactor" ? "main_event" : "national",
-  });
+  builder.merge(
+    generateGovernanceHeadline({
+      world,
+      heyaId: heya.id,
+      templatePath:
+        terms.loanType === "emergency"
+          ? "institutional.governance.emergency_loan"
+          : "institutional.governance.scandal",
+      severity: terms.loanType === "benefactor" ? "main_event" : "national",
+    })
+  );
 
   return builder.build();
 }

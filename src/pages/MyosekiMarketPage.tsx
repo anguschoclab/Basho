@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
 import {
   Card,
   CardContent,
@@ -52,26 +53,29 @@ export default function MyosekiMarketPage() {
       (s.ownerId === playerHeya.oyakataId || s.holderId === playerHeya.oyakataId)
   );
 
+  const sendCommand = useGameStore((s) => s.sendCommand);
+
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (buyMyoseki(world, playerHeya.oyakataId, playerHeya.id, stock.id)) {
-      updateWorld({ ...world }); // trigger re-render
-      toast.success(`Successfully acquired ${stock.name} Elder Stock!`);
-    } else {
-      toast.error(`Insufficient funds to acquire ${stock.name}.`);
-    }
+    sendCommand({
+      type: "BUY_MYOSEKI",
+      myosekiId: stock.id,
+      buyerId: playerHeya.oyakataId,
+      buyerHeyaId: playerHeya.id,
+    });
+    toast.success(`Acquisition request for ${stock.name} submitted.`);
   };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (leaseMyoseki(world, playerHeya.oyakataId, stock.id)) {
-      updateWorld({ ...world });
-      toast.success(`Successfully leased ${stock.name} Elder Stock!`);
-    } else {
-      toast.error(`Could not lease ${stock.name}.`);
-    }
+    sendCommand({
+      type: "LEASE_MYOSEKI",
+      myosekiId: stock.id,
+      buyerId: playerHeya.oyakataId,
+    });
+    toast.success(`Lease request for ${stock.name} submitted.`);
   };
 
   return (

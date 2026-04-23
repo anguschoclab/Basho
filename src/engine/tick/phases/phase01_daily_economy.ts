@@ -28,17 +28,16 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
     builder.updateHeya(id, { funds: heya.funds - dailyFoodCost });
   }
 
-  // Note: transientContext updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as transientContext is a nested state
-  const deltas = {
-    ...(world.transientContext?.deltas ?? {}),
-    expenses: (world.transientContext?.deltas?.expenses ?? 0) + totalDailyFoodCost
-  };
+  // Update transientContext via builder for pipeline compliance
   if (world.transientContext) {
-    world.transientContext = {
+    const nextTransient = {
       ...world.transientContext,
-      deltas: deltas as any
+      deltas: {
+        ...(world.transientContext.deltas ?? {}),
+        expenses: (world.transientContext.deltas?.expenses ?? 0) + totalDailyFoodCost,
+      },
     };
+    builder.updateWorldField("transientContext", nextTransient);
   }
 
   return builder.build();

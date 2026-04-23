@@ -96,27 +96,51 @@ export function scoutPool(
   world: WorldState,
   poolType: TalentPoolType,
   options: { revealCount: number } = { revealCount: 1 }
-): { revealed: Id[] } {
-  const tp = ensureTalentPoolState(world);
+): { revealed: Id[]; impact: StateImpact } {
+  const builder = createImpactBuilder("scoutPool");
+  const tp = world.talentPool;
+  if (!tp) return { revealed: [], impact: builder.build() };
+
   const pool = tp.pools[poolType];
-  if (!pool || pool.candidatesHidden.length === 0) return { revealed: [] };
+  if (!pool || pool.candidatesHidden.length === 0) return { revealed: [], impact: builder.build() };
 
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `reveal_${poolType}_${world.week}`);
   const count = Math.min(options.revealCount, pool.candidatesHidden.length);
 
+  const nextCandidatesHidden = [...pool.candidatesHidden];
+  const nextCandidatesVisible = [...pool.candidatesVisible];
+  const nextCandidates = { ...tp.candidates };
   const revealed: Id[] = [];
+
   for (let i = 0; i < count; i++) {
-    const idx = rng.int(0, pool.candidatesHidden.length - 1);
-    const id = pool.candidatesHidden.splice(idx, 1)[0];
-    pool.candidatesVisible.push(id);
+    const idx = rng.int(0, nextCandidatesHidden.length - 1);
+    const id = nextCandidatesHidden.splice(idx, 1)[0];
+    nextCandidatesVisible.push(id);
     revealed.push(id);
 
     // Set initial visibility band
-    const c = tp.candidates[id];
-    if (c) c.visibilityBand = "rumored";
+    const c = nextCandidates[id];
+    if (c) {
+      nextCandidates[id] = { ...c, visibilityBand: "rumored" };
+    }
   }
 
-  return { revealed };
+  const nextPools = {
+    ...tp.pools,
+    [poolType]: {
+      ...pool,
+      candidatesHidden: nextCandidatesHidden,
+      candidatesVisible: nextCandidatesVisible,
+    },
+  };
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+  });
+
+  return { revealed, impact: builder.build() };
 }
 
 /**
@@ -126,33 +150,48 @@ export function scoutCandidate(
   world: WorldState,
   candidateId: Id,
   options: { effort: number } = { effort: 1 }
-): { ok: boolean; scoutingLevel: number } {
-  const tp = ensureTalentPoolState(world);
-  const candidate = tp.candidates[candidateId];
-  if (!candidate) return { ok: false, scoutingLevel: 0 };
+): { ok: boolean; scoutingLevel: number; impact: StateImpact } {
+  const builder = createImpactBuilder("scoutCandidate");
+  const tp = world.talentPool;
+  if (!tp) return { ok: false, scoutingLevel: 0, impact: builder.build() };
 
-  if (!tp.playerScouting) tp.playerScouting = {};
-  if (!tp.playerScouting[candidateId]) {
-    tp.playerScouting[candidateId] = {
+  const candidate = tp.candidates[candidateId];
+  if (!candidate) return { ok: false, scoutingLevel: 0, impact: builder.build() };
+
+  const nextPlayerScouting = { ...(tp.playerScouting || {}) };
+  if (!nextPlayerScouting[candidateId]) {
+    nextPlayerScouting[candidateId] = {
       scoutingLevel: 0,
       lastScoutedWeek: world.week,
     };
   }
 
-  const record = tp.playerScouting[candidateId];
+  const record = { ...nextPlayerScouting[candidateId] };
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `intel_${candidateId}_${world.week}`);
 
   const gain = (10 + rng.int(0, 15)) * options.effort;
   record.scoutingLevel = clampInt(record.scoutingLevel + gain, 0, 100);
   record.lastScoutedWeek = world.week;
 
-  // If intel high enough, improve visibility band
-  if (record.scoutingLevel >= 70) candidate.visibilityBand = "public";
-  else if (record.scoutingLevel >= 30 && candidate.visibilityBand === "hidden") {
-    candidate.visibilityBand = "obscure";
-  }
+  nextPlayerScouting[candidateId] = record;
 
-  return { ok: true, scoutingLevel: record.scoutingLevel };
+  const nextCandidates = { ...tp.candidates };
+  const nextCandidate = { ...candidate };
+
+  // If intel high enough, improve visibility band
+  if (record.scoutingLevel >= 70) nextCandidate.visibilityBand = "public";
+  else if (record.scoutingLevel >= 30 && candidate.visibilityBand === "hidden") {
+    nextCandidate.visibilityBand = "obscure";
+  }
+  nextCandidates[candidateId] = nextCandidate;
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    playerScouting: nextPlayerScouting,
+    candidates: nextCandidates,
+  });
+
+  return { ok: true, scoutingLevel: record.scoutingLevel, impact: builder.build() };
 }
 
 /**

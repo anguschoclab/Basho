@@ -18,8 +18,6 @@ import { projectTrainingSummary } from "@/presenters/projections/trainingProject
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { CrisisModal } from "@/components/game/CrisisModal";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
-import { DynastyService } from "@/engine/systems/legacy/DynastyService";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 import { PageHeader, StatCard, ListCard, ProgressRow } from "@/components/layout/control-center";
 import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
@@ -27,6 +25,7 @@ import { BashoWidget } from "@/components/dashboard/BashoWidget";
 import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
 import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
 import { formatYen } from "@/utils/engineUtils";
+import { EventFeed } from "@/components/dashboard/EventFeed";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
@@ -387,19 +386,7 @@ export default function Dashboard() {
         {/* ── FULL-WIDTH: FINANCES CHART ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <FinancesWidget />
-          <div className="paper rounded-lg overflow-hidden p-4 space-y-3">
-            <p className="stat-label text-gold tracking-[0.2em] text-[10px]">── WEEKLY DIGEST ──</p>
-            {digest?.recentEvents?.slice(0, 6).map((evt, i) => (
-              <div key={i} className="flex items-start gap-2 text-xs">
-                <span className="font-mono text-[10px] text-muted-foreground shrink-0 mt-0.5">
-                  {String(evt.week ?? "").padStart(2, "0")}
-                </span>
-                <span className="text-foreground/80 leading-snug">
-                  {evt.summary ?? evt.title ?? String(evt.type)}
-                </span>
-              </div>
-            )) ?? <p className="text-xs text-muted-foreground italic">No events this week.</p>}
-          </div>
+          <EventFeed maxEvents={12} minImportance="notable" />
         </div>
       </div>
 
@@ -416,12 +403,11 @@ export default function Dashboard() {
             world={world}
             heyaId={state.playerHeyaId ?? ""}
             onSelect={(successorId) => {
-              const impact = DynastyService.triggerSuccession(
-                world,
-                state.playerHeyaId ?? "",
-                successorId
-              );
-              updateWorld(resolveImpacts(world, [impact]));
+              sendCommand({
+                type: "TRIGGER_SUCCESSION",
+                heyaId: state.playerHeyaId ?? "",
+                successorId,
+              });
             }}
           />
         );

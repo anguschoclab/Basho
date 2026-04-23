@@ -11,6 +11,7 @@ import type { SponsorRelationship, SponsorRole } from "./types/sponsors";
 import { rngForWorld } from "./rng";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { isSponsorPlayerRelevant } from "./npc/npcEventSurfacing";
 
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =
@@ -109,6 +110,8 @@ export function emitSponsorRecruitmentEvent(
   reasoning: string
 ): StateImpact {
   const builder = createImpactBuilder("emitSponsorRecruitmentEvent");
+  const importance = isSponsorPlayerRelevant(sponsorTier);
+
   builder.logEvent(
     "NPC_MANAGER_DECISION",
     "narrative",
@@ -119,7 +122,7 @@ export function emitSponsorRecruitmentEvent(
       tier: sponsorTier,
       reasoning,
     },
-    { heyaId, importance: "minor" }
+    { heyaId, importance }
   );
   return builder.build();
 }

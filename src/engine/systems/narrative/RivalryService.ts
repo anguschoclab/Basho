@@ -198,8 +198,10 @@ export const RivalryService = {
   /**
    * Seed Initial Rivalries (P0-C1).
    * Generates interesting initial grudges based on style clash and rank proximity.
+   * Returns StateImpact describing initial rivalries.
    */
-  seedInitialRivalries(world: WorldState): void {
+  seedInitialRivalries(world: WorldState): StateImpact {
+    const builder = createImpactBuilder("seedInitialRivalries");
     const state = this.ensureRivalriesState(world);
     const makuuchiJuryo = Array.from(world.rikishi.values()).filter(
       (r) => !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
@@ -244,14 +246,20 @@ export const RivalryService = {
     const toSeed = candidates.slice(0, 12);
     const rng = RNGRegistry.getSystemRNG(world, "rivalry", `init`);
 
+    const nextPairs = { ...state.pairs };
     for (const { a, b } of toSeed) {
       const key = this.makeRivalryKey(a.id, b.id);
       const pair = this.createFreshPair(a.id, b.id, world);
       pair.heat = rng.int(20, 45); // Warm heat
       pair.tone = rng.pick(["grudge", "bad_blood", "public_hype", "respect"]);
-      state.pairs[key] = pair;
+      nextPairs[key] = pair;
     }
 
-    world.rivalriesState = state;
+    builder.updateWorldField("rivalriesState", {
+      ...state,
+      pairs: nextPairs,
+    });
+
+    return builder.build();
   },
 };

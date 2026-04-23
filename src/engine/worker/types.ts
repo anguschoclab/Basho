@@ -9,7 +9,19 @@ export type EngineCommand =
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
   | { type: "START_BASHO" }
   | { type: "AUTO_SIM_DAYS"; days: number }
-  | { type: "OFFER_CONTRACT"; rikishiId: string; heyaId: string }
+  | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
+  | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
+  | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
+  | { type: "RESOLVE_CRISIS"; crisisId: string; choice: "lenient" | "standard" | "harsh" | "cover_up" }
+  | { type: "BUY_MYOSEKI"; myosekiId: string; buyerId: string; buyerHeyaId: string }
+  | { type: "LEASE_MYOSEKI"; myosekiId: string; buyerId: string }
+  | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }
+  | { type: "REQUEST_BAILOUT"; heyaId: string }
+  | { type: "PREPAY_LOAN"; heyaId: string; loanId: string }
+  | { type: "HIRE_STAFF"; heyaId: string; role: any }
+  | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
+  | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
+  | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: any }
   | { type: "GET_DIGEST" };
 
 /** Worker -> UI Events */

@@ -18,6 +18,8 @@ import type {
   NarrativeContext,
 } from "../types/events";
 import type { HeyaTrainingState } from "../types/training";
+import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import type { Staff } from "../types/staff";
 import { createEmptyImpact } from "./StateImpact";
 
 /**
@@ -201,6 +203,71 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a partial myoseki stock update to the impact.
+   */
+  updateMyosekiStock(id: string, update: Partial<MyosekiStock>): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.myosekiUpdates) {
+      this.impact.entities.myosekiUpdates = new Map();
+    }
+    const existing = this.impact.entities.myosekiUpdates.get(id);
+    this.impact.entities.myosekiUpdates.set(id, existing ? { ...existing, ...update } : update);
+    return this;
+  }
+
+  /**
+   * Record a myoseki transaction in the history.
+   */
+  recordMyosekiTransaction(transaction: MyosekiTransaction): ImpactBuilder {
+    return this.appendToWorldArray("myosekiMarket.history", [transaction]);
+  }
+
+  /**
+   * Add a partial staff update to the impact.
+   */
+  updateStaff(id: string, update: Partial<Staff>): ImpactBuilder {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    if (!this.impact.entities.staffUpdates) {
+      this.impact.entities.staffUpdates = new Map();
+    }
+    const existing = this.impact.entities.staffUpdates.get(id);
+    this.impact.entities.staffUpdates.set(id, existing ? { ...existing, ...update } : update);
+    return this;
+  }
+
+  /**
+   * Add a new staff member to the world.
+   */
+  addStaff(staff: Staff): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.staffToAdd) {
+      this.impact.collections.staffToAdd = [];
+    }
+    this.impact.collections.staffToAdd.push(staff);
+    return this;
+  }
+
+  /**
+   * Remove a staff member from the world.
+   */
+  removeStaff(id: string): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.staffToRemove) {
+      this.impact.collections.staffToRemove = [];
+    }
+    this.impact.collections.staffToRemove.push(id);
+    return this;
+  }
+
+  /**
    * Update a nested field in a training state.
    */
   updateTrainingStateNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
@@ -320,6 +387,13 @@ export class ImpactBuilder {
       | "npcScoutingPriorities"
       | "talentPool"
       | "candidatePool"
+      | "records"
+      | "hallOfFame"
+      | "staff"
+      | "rikishi"
+      | "oyakata"
+      | "heyas"
+      | "transientContext"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -418,6 +492,16 @@ export class ImpactBuilder {
     if (other.entities?.trainingStateUpdates) {
       for (const [id, update] of other.entities.trainingStateUpdates) {
         this.updateTrainingState(id, update as Partial<HeyaTrainingState>);
+      }
+    }
+    if (other.entities?.myosekiUpdates) {
+      for (const [id, update] of other.entities.myosekiUpdates) {
+        this.updateMyosekiStock(id, update as Partial<MyosekiStock>);
+      }
+    }
+    if (other.entities?.staffUpdates) {
+      for (const [id, update] of other.entities.staffUpdates) {
+        this.updateStaff(id, update as Partial<Staff>);
       }
     }
     if (other.collections?.rikishiToAdd) {
@@ -559,6 +643,13 @@ export function updateWorldFieldImpact<
     | "npcScoutingPriorities"
     | "talentPool"
     | "candidatePool"
+    | "records"
+    | "hallOfFame"
+    | "staff"
+    | "rikishi"
+    | "oyakata"
+    | "heyas"
+    | "transientContext"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

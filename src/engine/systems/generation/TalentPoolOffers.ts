@@ -5,7 +5,6 @@ import type { Id } from "../../types/common";
 import type { Heya } from "../../types/heya";
 import { TalentCandidate } from "../../types/talent";
 import { rngFromSeed } from "../../rng";
-import { EventBus } from "../../events";
 import { BardEngine } from "../../narrative/BardEngine";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
 import { getForeignCountInHeya } from "./TalentPoolScouting";

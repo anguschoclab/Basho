@@ -144,20 +144,7 @@ export function applyBoutResult(
 
     // Apply popularity boost for kinboshi/ginboshi awards
     if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {
-      if (!winnerEconomics) {
-        winnerEconomics = {
-          cash: 0,
-          retirementFund: 0,
-          careerKenshoWon: 0,
-          kinboshiCount: 0,
-          totalEarnings: 0,
-          currentBashoEarnings: 0,
-          popularity: 50,
-        };
-      }
-      const tempWinner = { ...winner, economics: { ...winnerEconomics } };
-      applyAchievementImpact(world, tempWinner, result.awardFact);
-      winnerEconomics = tempWinner.economics;
+      builder.merge(applyAchievementImpact(world, winner, result.awardFact));
     }
   }
 
@@ -169,45 +156,35 @@ export function applyBoutResult(
   // 3. Update Head-to-Head Records
   const bashoId = world.currentBasho?.id ?? "unknown";
   const year = world.year ?? 0;
-  const h2hImpact = updateH2H(winner, loser, result, bashoId, year, match.day);
+  builder.merge(updateH2H(winner, loser, result, bashoId, year, match.day));
 
   // 4. Notify Secondary Systems
-  const injuryImpact = injuries.onBoutResolvedInjury(world, { match, result, east, west });
-  const rivalryImpact = rivalries.onBoutResolvedRivalries(world, { match, result, east, west });
-  const economicsImpact = economics.onBoutResolvedEconomics(world, { match, result, east, west });
-  const scoutingImpact = scoutingStore.onBoutResolvedScouting(world, { match, result, east, west });
+  builder.merge(injuries.onBoutResolvedInjury(world, { match, result, east, west }));
+  builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
+  builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
+  builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
 
   // 5. Update Media (generates headlines, heat, etc.)
-  let mediaImpact = createImpactBuilder("media").build();
   if (!world.mediaState) {
     world.mediaState = createDefaultMediaState();
   }
-  mediaImpact = updateMediaFromBout({
-    state: world.mediaState,
-    world,
-    result,
-    day: match.day,
-    bashoName: world.currentBashoName,
-    division: east.division,
-    rivalries: world.rivalriesState,
-  });
-
-  // Merge all impacts into the main builder
-  mergeImpacts(
-    builder,
-    h2hImpact,
-    injuryImpact,
-    rivalryImpact,
-    economicsImpact,
-    scoutingImpact,
-    mediaImpact
+  builder.merge(
+    updateMediaFromBout({
+      state: world.mediaState,
+      world,
+      result,
+      day: match.day,
+      bashoName: world.currentBashoName,
+      division: east.division,
+      rivalries: world.rivalriesState,
+    })
   );
 
   // 6. Emit Canonical Event (Bard Engine v2.1)
   const intensity = calculateMatchIntensity(match, result);
 
   const ctx: NarrativeContext = {
-    shikona: east.shikona, // default to east for general context
+    shikona: east.shikona,
     winner: winner.shikona,
     loser: loser.shikona,
     kimarite: result.kimarite,
@@ -239,47 +216,10 @@ function calculateMatchIntensity(
     return "high_stakes";
   }
 
-  // Technical matches are long or have many momentum shifts
   const momentumShifts = result.log.filter((l) => l.phase === "momentum").length;
   if (result.duration > 15 || momentumShifts > 3) {
     return "technical";
   }
 
   return "neutral";
-}
-
-/**
- * Merge multiple StateImpact objects into a single builder.
- */
-function mergeImpacts(builder: ImpactBuilder, ...impacts: StateImpact[]): void {
-  for (const impact of impacts) {
-    if (impact.entities?.rikishiUpdates) {
-      for (const [id, update] of impact.entities.rikishiUpdates) {
-        builder.updateRikishi(id, update);
-      }
-    }
-    if (impact.entities?.heyaUpdates) {
-      for (const [id, update] of impact.entities.heyaUpdates) {
-        builder.updateHeya(id, update);
-      }
-    }
-    if (impact.worldFields) {
-      for (const [field, value] of Object.entries(impact.worldFields)) {
-        (
-          builder as ImpactBuilder & {
-            updateWorldField: (field: string, value: unknown) => ImpactBuilder;
-          }
-        ).updateWorldField(field, value);
-      }
-    }
-    if (impact.events) {
-      for (const event of impact.events) {
-        builder.logEvent(event.type, event.category, event.data, {
-          heyaId: event.heyaId,
-          rikishiId: event.rikishiId,
-          importance: event.importance,
-        });
-      }
-    }
-  }
 }

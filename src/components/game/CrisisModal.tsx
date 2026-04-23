@@ -80,8 +80,12 @@ export function CrisisModal() {
 
   if (!crisis || !isOpen) return null;
 
-  const handleResolve = () => {
-    sendCommand({ type: "OFFER_CONTRACT", rikishiId: "mock", heyaId: "mock" }); // Mock for resolve command
+  const handleResolve = (choice: "harsh" | "cover_up") => {
+    sendCommand({
+      type: "RESOLVE_CRISIS",
+      crisisId: "active_crisis",
+      choice,
+    });
     setIsOpen(false);
   };
 
@@ -116,7 +120,7 @@ export function CrisisModal() {
         <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-6">
           <Button
             variant="destructive"
-            onClick={() => handleResolve()}
+            onClick={() => handleResolve("harsh")}
             className="flex-1 font-bold"
             tooltip="Issue severe punishments to restore Association discipline (Reputation Down, Compliance Up)"
             tooltipSide="top"
@@ -125,7 +129,7 @@ export function CrisisModal() {
           </Button>
           <Button
             variant="outline"
-            onClick={() => handleResolve()}
+            onClick={() => handleResolve("cover_up")}
             className="flex-1 font-semibold"
             tooltip="Attempt to suppress the scandal (Reputation Neutral, Compliance Down, Risk Up)"
             tooltipSide="top"

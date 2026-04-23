@@ -2,9 +2,11 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import { assertNever } from "./utils/types";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
 
 interface RecruitmentStrategy {
-  evaluateVacancies: (world: WorldState, heya: Heya, oyakata: Oyakata) => number;
+  evaluateVacancies: (world: WorldState, heya: Heya, oyakata: Oyakata) => { impact: StateImpact; count: number };
   calculateMaxBid: (
     world: WorldState,
     heya: Heya,
@@ -15,9 +17,10 @@ interface RecruitmentStrategy {
 }
 
 export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(_world: WorldState, heya: Heya, oyakata: Oyakata): number {
+  evaluateVacancies(_world: WorldState, heya: Heya, oyakata: Oyakata): { impact: StateImpact; count: number } {
+    const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) return 0;
+    if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
     // Use ambition and tradition traits to determine target roster size
     let targetSize = 8;
@@ -32,8 +35,20 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     }
 
     const currentSize = heya.rikishiIds ? heya.rikishiIds.length : 0;
+    const count = Math.max(0, targetSize - currentSize);
 
-    return Math.max(0, targetSize - currentSize);
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        targetSize,
+        currentSize,
+        reasoning: "Maintaining target roster size based on ambition and tradition",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
 
   calculateMaxBid(
@@ -68,17 +83,28 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
  */
 export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) return 0;
+    if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
     // Traditionalists keep a stable, medium roster (approx 10-12)
-    // High patience leads to slightly larger target roster (slower development)
     let targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
     if (oyakata.traits.patience > 70) {
       targetSize += 1; // More patient oyakata maintain larger rosters
     }
     const currentSize = heya.rikishiIds?.length ?? 0;
-    return Math.max(0, targetSize - currentSize);
+    const count = Math.max(0, targetSize - currentSize);
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Seeking to maintain a stable, traditional roster size",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Traditionalists are conservative with money unless it's a "Traditional" prospect
@@ -103,9 +129,21 @@ export const TraditionalistRecruitmentStrategy: RecruitmentStrategy = {
 
 export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     // Scientists lean, high-potential rosters
     const targetSize = oyakata.traits.ambition > 80 ? 15 : 9;
-    return Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
+    const count = Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Optimizing roster for high-potential growth",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     // Scientists value 'Potential' (talentSeed) above all else
@@ -126,14 +164,22 @@ export const ScientistRecruitmentStrategy: RecruitmentStrategy = {
 };
 
 export const GamblerRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(_world, _heya, oyakata) {
+  evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     // Gamblers always have room for one more "long shot"
-    // Low patience leads to more aggressive recruitment (higher vacancy target)
-    const baseVacancies = 1;
+    let count = 1;
     if (oyakata.traits.patience < 30) {
-      return baseVacancies + 1; // Impatient gamblers recruit more aggressively
+      count = 2; // Impatient gamblers recruit more aggressively
     }
-    return baseVacancies;
+
+    builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+      archetype: oyakata.archetype,
+      action: "evaluate_vacancies",
+      count,
+      reasoning: "Rolling the dice on new recruits",
+    }, { heyaId: heya.id, importance: "minor" });
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(_world, heya, _oyakata, _candidateId, rivalHeyaId) {
     // Gamblers take massive risks if it denies a rival or if they feel lucky
@@ -144,9 +190,21 @@ export const GamblerRecruitmentStrategy: RecruitmentStrategy = {
 };
 
 export const TyrantRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(_world, heya, _oyakata) {
+  evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     // Tyrants want a massive meat-grinder roster
-    return Math.max(0, 25 - (heya.rikishiIds?.length ?? 0));
+    const count = Math.max(0, 25 - (heya.rikishiIds?.length ?? 0));
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Expanding the meat-grinder roster",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(_world, heya, _oyakata, _candidateId, _rivalHeyaId) {
     // Tyrants will spend 50% of their total wealth to secure a top prospect
@@ -156,11 +214,23 @@ export const TyrantRecruitmentStrategy: RecruitmentStrategy = {
 
 export const NurturerRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) return 0;
+    if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
     const targetSize = oyakata.traits.compassion > 70 ? 8 : 10;
     const currentSize = heya.rikishiIds?.length ?? 0;
-    return Math.max(0, targetSize - currentSize);
+    const count = Math.max(0, targetSize - currentSize);
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Nurturing a sustainable and close-knit roster",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, oyakata, candidateId, _rivalHeyaId) {
     const candidate = world.talentPool?.candidates?.[candidateId];
@@ -182,13 +252,25 @@ export const NurturerRecruitmentStrategy: RecruitmentStrategy = {
 
 export const IndulgentRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) return 0;
+    if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
     // Indulgent maintain moderate rosters (9-11) based on comfort
     const targetSize = 9 + Math.floor(oyakata.traits.tradition / 25);
     const currentSize = heya.rikishiIds?.length ?? 0;
-    return Math.max(0, targetSize - currentSize);
+    const count = Math.max(0, targetSize - currentSize);
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Maintaining a comfortable and balanced roster",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Indulgent bid based on "likeability" - they prefer prospects with compatible traits
@@ -207,13 +289,25 @@ export const IndulgentRecruitmentStrategy: RecruitmentStrategy = {
 
 export const StrictRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
-    if (freezeWeeks > 0) return 0;
+    if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
     // Strict maintain traditionalist-like rosters but with stricter stat thresholds
     const targetSize = Math.max(10, 8 + Math.floor(oyakata.traits.tradition / 20));
     const currentSize = heya.rikishiIds?.length ?? 0;
-    return Math.max(0, targetSize - currentSize);
+    const count = Math.max(0, targetSize - currentSize);
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Enforcing strict standards for roster composition",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Strict are conservative but will pay for high-quality traditional prospects
@@ -234,9 +328,21 @@ export const StrictRecruitmentStrategy: RecruitmentStrategy = {
 
 export const StrategistRecruitmentStrategy: RecruitmentStrategy = {
   evaluateVacancies(_world, heya, oyakata) {
+    const builder = createImpactBuilder("evaluateVacancies");
     // Strategists adapt roster size based on ambition
     const targetSize = oyakata.traits.ambition > 80 ? 14 : 10;
-    return Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
+    const count = Math.max(0, targetSize - (heya.rikishiIds?.length ?? 0));
+
+    if (count > 0) {
+      builder.logEvent("NPC_MANAGER_DECISION", "narrative", {
+        archetype: oyakata.archetype,
+        action: "evaluate_vacancies",
+        count,
+        reasoning: "Strategic roster adjustment based on ambition",
+      }, { heyaId: heya.id, importance: "minor" });
+    }
+
+    return { impact: builder.build(), count };
   },
   calculateMaxBid(world, heya, _oyakata, candidateId, _rivalHeyaId) {
     // Strategists use data-driven bidding based on talent analysis

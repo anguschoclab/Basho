@@ -93,15 +93,17 @@ export function phase01_week_governance(world: WorldState): StateImpact {
       );
 
       if (newStatus === "sanctioned" || newStatus === "probation") {
-        generateGovernanceHeadline({
-          world,
-          heyaId: heya.id,
-          templatePath:
-            newStatus === "sanctioned"
-              ? "institutional.governance.sanction"
-              : "institutional.governance.probation",
-          severity: newStatus === "sanctioned" ? "main_event" : "national",
-        });
+        builder.merge(
+          generateGovernanceHeadline({
+            world,
+            heyaId: heya.id,
+            templatePath:
+              newStatus === "sanctioned"
+                ? "institutional.governance.sanction"
+                : "institutional.governance.probation",
+            severity: newStatus === "sanctioned" ? "main_event" : "national",
+          })
+        );
       }
     }
 

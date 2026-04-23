@@ -18,6 +18,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useGameStore } from "@/store/gameStore";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import {
   projectRecruitmentUIDigest,
@@ -36,7 +37,8 @@ import { Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const { sendCommand } = useGameStore();
   const world = state.world;
   const { toast } = useToast();
   const [activePool, setActivePool] = useState<"high_school" | "university" | "foreign">(
@@ -76,46 +78,28 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
   const handleScoutPool = () => {
     if (!world) return;
-    try {
-      const result = scoutPool(world, activePool, {
-        revealCount: 2,
-      });
-      updateWorld({ ...world });
-      if (result.revealed.length > 0) {
-        toast({
-          title: "New prospects found",
-          description: `${result.revealed.length} prospect(s) revealed.`,
-        });
-      } else {
-        toast({
-          title: "No new prospects",
-          description: "No more hidden prospects in this pool right now.",
-        });
-      }
-    } catch {
-      toast({
-        title: "Scouting failed",
-        description: "Could not scout this pool.",
-      });
-    }
+    sendCommand({
+      type: "SCOUT_POOL",
+      pool: activePool,
+      revealCount: 2,
+    });
+    toast({
+      title: "Scouting initiated",
+      description: "Dispatching scouts to the pool...",
+    });
   };
 
   const handleScoutCandidate = (candidateId: string) => {
     if (!world) return;
-    try {
-      const result = scoutCandidate(world, candidateId, {
-        effort: 1,
-      });
-      updateWorld({ ...world });
-      if (result.ok) {
-        toast({
-          title: "Intel gathered",
-          description: `Scouting level: ${describeScoutingLevel(result.scoutingLevel)}`,
-        });
-      }
-    } catch {
-      toast({ title: "Scout failed" });
-    }
+    sendCommand({
+      type: "SCOUT_CANDIDATE",
+      candidateId,
+      effort: 1,
+    });
+    toast({
+      title: "Intel requested",
+      description: "Gathering deeper intelligence on this prospect...",
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
@@ -128,29 +112,15 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
     interest: "low" | "medium" | "high" | "all_in";
   }) => {
     if (!world || !playerHeyaId || !signingCandidate) return;
-    try {
-      const result = offerCandidate(
-        world,
-        signingCandidate.candidateId,
-        playerHeyaId,
-        offer.offerType,
-        offer.interest
-      );
-      updateWorld({ ...world });
-      if (result.ok) {
-        toast({
-          title: "Offer submitted",
-          description: "Decision pending — the prospect is considering offers.",
-        });
-      } else {
-        toast({
-          title: "Offer blocked",
-          description: result.reason ?? "Cannot make this offer.",
-        });
-      }
-    } catch {
-      toast({ title: "Offer failed" });
-    }
+    sendCommand({
+      type: "OFFER_CONTRACT",
+      candidateId: signingCandidate.candidateId,
+      heyaId: playerHeyaId,
+    });
+    toast({
+      title: "Offer submitted",
+      description: "Decision pending — the prospect is considering offers.",
+    });
     setSigningCandidate(null);
   };
 

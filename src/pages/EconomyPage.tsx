@@ -1,4 +1,5 @@
 import { useMemo, useCallback } from "react";
+import { useGameStore } from "@/store/gameStore";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
@@ -7,7 +8,6 @@ import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
-import { issueBailoutLoanIfNeeded } from "@/engine/loans";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
@@ -35,7 +35,8 @@ interface DebtLoan {
 
 /** economy page. */
 export default function EconomyPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
 
   const playerHeya = useMemo(() => {
@@ -58,19 +59,9 @@ export default function EconomyPage() {
       return;
     }
 
-    // Capture loan count before
-    const beforeCount = playerHeya.activeLoans?.length || 0;
-
-    issueBailoutLoanIfNeeded(world, state.playerHeyaId);
-
-    const afterCount = playerHeya.activeLoans?.length || 0;
-    if (afterCount > beforeCount) {
-      toast.success("Emergency bailout approved. Funds have been credited.");
-      updateWorld(world);
-    } else {
-      toast.error("Bailout request denied or already processed.");
-    }
-  }, [world, state.playerHeyaId, playerHeya, updateWorld]);
+    sendCommand({ type: "REQUEST_BAILOUT", heyaId: state.playerHeyaId });
+    toast.success("Emergency bailout requested. Processing...");
+  }, [state.playerHeyaId, playerHeya, sendCommand, world]);
 
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];

@@ -1,5 +1,5 @@
 // SponsorContractsPanel.tsx — Sponsor negotiation, contracts & expiry management
-import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, Clock, Star } from "lucide-react";
-import { renewSponsorContract, type projectSponsorUIDigest } from "@/presenters/uiDigest";
+import type { projectSponsorUIDigest } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
@@ -27,19 +27,15 @@ export function SponsorContractsPanel({
 }: {
   digest: NonNullable<ReturnType<typeof projectSponsorUIDigest>>;
 }) {
-  const { state, updateWorld } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const { toast } = useToast();
 
   const handleRenegotiate = (relId: string, name: string, sponsorId: string) => {
-    if (!state.world) return;
-    const success = renewSponsorContract(state.world, relId, sponsorId);
-    if (success) {
-      updateWorld({ ...state.world });
-      toast({
-        title: "Contract renewed",
-        description: `${name} has extended their partnership.`,
-      });
-    }
+    sendCommand({ type: "RENEW_SPONSOR", relationshipId: relId, sponsorId });
+    toast({
+      title: "Renewal request submitted",
+      description: `Negotiations with ${name} have begun.`,
+    });
   };
 
   return (

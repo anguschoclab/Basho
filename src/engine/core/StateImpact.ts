@@ -10,8 +10,10 @@
 import type { WorldState } from "../types/world";
 import type { HeyaTrainingState } from "../types/training";
 import type { Sponsor, Koenkai } from "../types/sponsors";
+import type { Staff } from "../types/staff";
 import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
 import type { GovernanceRuling } from "../types/economy";
+import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import type { AlmanacSnapshot } from "../almanac";
 import type {
   EngineEventType,
@@ -42,6 +44,10 @@ export interface StateImpact {
     koenkaiUpdates?: Map<string, Partial<Koenkai>>;
     /** Map of heya ID → partial training state update */
     trainingStateUpdates?: Map<string, Partial<HeyaTrainingState>>;
+    /** Map of myoseki ID → partial myoseki stock update */
+    myosekiUpdates?: Map<string, Partial<MyosekiStock>>;
+    /** Map of staff ID → partial staff update */
+    staffUpdates?: Map<string, Partial<Staff>>;
     // Add other entity types as needed
   };
 
@@ -58,6 +64,10 @@ export interface StateImpact {
     rikishiToHistorical?: string[];
     /** Rikishi IDs to move from historical back to active */
     rikishiFromHistorical?: string[];
+    /** Staff to add to active roster */
+    staffToAdd?: Staff[];
+    /** Staff IDs to remove from active roster (delete) */
+    staffToRemove?: string[];
     // Add other collection operations as needed
   };
 
@@ -121,6 +131,7 @@ export interface StateImpact {
     | { field: "basho.matches"; items: MatchSchedule[] }
     | { field: "governanceLog"; items: GovernanceRuling[] }
     | { field: "awardLog"; items: AwardLogEntry[] }
+    | { field: "myosekiMarket.history"; items: MyosekiTransaction[] }
   >;
 
   /**

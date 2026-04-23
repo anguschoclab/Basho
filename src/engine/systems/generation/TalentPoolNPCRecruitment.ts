@@ -7,6 +7,7 @@ import { TalentPoolType, TalentCandidate } from "../../types/talent";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
+import { isRecruitmentPlayerRelevant } from "../../npc/npcEventSurfacing";
 
 /**
  * Automates recruitment for NPC stables.
@@ -202,6 +203,8 @@ export function fillVacanciesForNPCWithBidding(
     currentCandidates = materializeImpact.nextCandidates;
     currentPools = materializeImpact.nextPools;
 
+    const importance = isRecruitmentPlayerRelevant(world, candidate);
+
     builder.logEvent(
       "NPC_MANAGER_DECISION",
       "narrative",
@@ -211,8 +214,9 @@ export function fillVacanciesForNPCWithBidding(
         bidAmount: bid.bidAmount,
         archetype: bid.oyakata.archetype,
         strategy: "recruitment_bidding",
+        candidateName: candidate.name,
       },
-      { heyaId: bid.heyaId, importance: "minor" }
+      { heyaId: bid.heyaId, importance }
     );
 
     assignedCandidates.add(bid.candidateId);

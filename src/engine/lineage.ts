@@ -125,27 +125,30 @@ export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
 
 /**
  * Records the transition of stable leadership from one Oyakata to another.
+ * Returns StateImpact describing the leadership change.
  */
 export function recordOyakataHandover(
   world: WorldState,
   heyaId: Id,
   newOyakataId: Id,
   newOyakataName: string
-) {
+): StateImpact {
+  const builder = createImpactBuilder("recordOyakataHandover");
   const heya = world.heyas.get(heyaId);
-  if (!heya) return;
+  if (!heya) return builder.build();
 
-  if (!heya.lineage) heya.lineage = [];
-
-  const currentGen = heya.lineage.length + 1;
+  const nextLineage = [...(heya.lineage || [])];
+  const currentGen = nextLineage.length + 1;
 
   // Close the current tenure if exists
-  if (heya.lineage.length > 0) {
-    const lastTenure = heya.lineage[heya.lineage.length - 1];
+  if (nextLineage.length > 0) {
+    const lastIdx = nextLineage.length - 1;
+    const lastTenure = { ...nextLineage[lastIdx] };
     if (!lastTenure.endYear) {
       lastTenure.endYear = world.year;
       // Capture achievements for the outgoing master
       lastTenure.achievements = calculateTenureAchievements(world, heya);
+      nextLineage[lastIdx] = lastTenure;
     }
   }
 
@@ -163,8 +166,14 @@ export function recordOyakataHandover(
     },
   };
 
-  heya.lineage.push(newTenure);
-  heya.oyakataId = newOyakataId;
+  nextLineage.push(newTenure);
+
+  builder.updateHeya(heyaId, {
+    lineage: nextLineage,
+    oyakataId: newOyakataId,
+  });
+
+  return builder.build();
 }
 
 /**

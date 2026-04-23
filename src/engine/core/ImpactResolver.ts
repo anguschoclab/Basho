@@ -4,6 +4,8 @@ import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 import type { HeyaTrainingState } from "../types/training";
+import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
 
@@ -75,8 +77,7 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         },
       };
     }
-
-    if (impact.entities.trainingStateUpdates && result.trainingState) {
+    if (impact.entities.trainingStateUpdates) {
       const nextTraining = new Map(result.trainingState);
       for (const [id, update] of impact.entities.trainingStateUpdates) {
         const existing = nextTraining.get(id);
@@ -84,6 +85,31 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         nextTraining.set(id, next as HeyaTrainingState);
       }
       result = { ...result, trainingState: nextTraining };
+    }
+
+    if (impact.entities.myosekiUpdates && result.myosekiMarket) {
+      const nextStocks = { ...result.myosekiMarket.stocks };
+      for (const [id, update] of impact.entities.myosekiUpdates) {
+        const existing = nextStocks[id];
+        nextStocks[id] = existing ? { ...existing, ...update } : (update as MyosekiStock);
+      }
+      result = {
+        ...result,
+        myosekiMarket: {
+          ...result.myosekiMarket,
+          stocks: nextStocks,
+        },
+      };
+    }
+
+    if (impact.entities.staffUpdates && result.staff) {
+      const nextStaff = new Map(result.staff);
+      for (const [id, update] of impact.entities.staffUpdates) {
+        const existing = nextStaff.get(id);
+        const next = existing ? { ...existing, ...update } : (update as Staff);
+        nextStaff.set(id, next as Staff);
+      }
+      result = { ...result, staff: nextStaff };
     }
   }
 
@@ -129,6 +155,22 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
         }
       }
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
+    }
+
+    if (impact.collections.staffToAdd) {
+      const nextStaff = new Map(result.staff);
+      for (const s of impact.collections.staffToAdd) {
+        nextStaff.set(s.id, s);
+      }
+      result = { ...result, staff: nextStaff };
+    }
+
+    if (impact.collections.staffToRemove) {
+      const nextStaff = new Map(result.staff);
+      for (const id of impact.collections.staffToRemove) {
+        nextStaff.delete(id);
+      }
+      result = { ...result, staff: nextStaff };
     }
   }
 
@@ -195,6 +237,14 @@ function applyImpact(world: WorldState, impact: StateImpact): WorldState {
           ...result,
           awardLog: [...(result.awardLog || []), ...append.items],
         };
+      } else if (append.field === "myosekiMarket.history" && result.myosekiMarket) {
+        result = {
+          ...result,
+          myosekiMarket: {
+            ...result.myosekiMarket,
+            history: [...append.items, ...(result.myosekiMarket.history || [])],
+          },
+        };
       }
     }
   }
@@ -251,12 +301,16 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       sponsorUpdates: new Map(),
       koenkaiUpdates: new Map(),
       trainingStateUpdates: new Map(),
+      myosekiUpdates: new Map(),
+      staffUpdates: new Map(),
     },
     collections: {
       rikishiToAdd: [],
       rikishiToRemove: [],
       rikishiToHistorical: [],
       rikishiFromHistorical: [],
+      staffToAdd: [],
+      staffToRemove: [],
     },
     deletedEntities: {
       heyaIds: [],
@@ -306,6 +360,16 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
           m.trainingStateUpdates.set(id, { ...(m.trainingStateUpdates.get(id) || {}), ...update });
         }
       }
+      if (e.myosekiUpdates && m?.myosekiUpdates) {
+        for (const [id, update] of e.myosekiUpdates) {
+          m.myosekiUpdates.set(id, { ...(m.myosekiUpdates.get(id) || {}), ...update });
+        }
+      }
+      if (e.staffUpdates && m?.staffUpdates) {
+        for (const [id, update] of e.staffUpdates) {
+          m.staffUpdates.set(id, { ...(m.staffUpdates.get(id) || {}), ...update });
+        }
+      }
     }
 
     if (impact.collections) {
@@ -317,6 +381,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         m.rikishiToHistorical.push(...c.rikishiToHistorical);
       if (c.rikishiFromHistorical && m?.rikishiFromHistorical)
         m.rikishiFromHistorical.push(...c.rikishiFromHistorical);
+      if (c.staffToAdd && m?.staffToAdd) m.staffToAdd.push(...c.staffToAdd);
+      if (c.staffToRemove && m?.staffToRemove) m.staffToRemove.push(...c.staffToRemove);
     }
 
     if (impact.deletedEntities) {
@@ -345,6 +411,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
           } else if (existing.field === "governanceLog" && append.field === "governanceLog") {
             existing.items.push(...append.items);
           } else if (existing.field === "awardLog" && append.field === "awardLog") {
+            existing.items.push(...append.items);
+          } else if (existing.field === "myosekiMarket.history" && append.field === "myosekiMarket.history") {
             existing.items.push(...append.items);
           }
         } else {

@@ -26,6 +26,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { MediaHeadline, MediaBeat } from "@/engine/types/media";
 import { projectMediaUIDigest } from "@/presenters/uiDigest";
 import { getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
+import { EventFeed } from "@/components/dashboard/EventFeed";
 
 /* ── Style maps ── */
 
@@ -373,6 +374,9 @@ export default function MediaPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Global Event Feed */}
+        <EventFeed maxEvents={20} minImportance="notable" />
       </div>
     </AppLayout>
   );
