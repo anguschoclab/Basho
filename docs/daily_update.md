@@ -9,7 +9,7 @@
  ⚠️ Missing/Deviations: Need to verify if the newly added `world.ts` fully implements the strict tick pipeline with boundary gates and whether the AI's PerceptionSnapshot is fully functional.
 
  📄 Proposed Documentation Updates:
- docs/architecture.md: Added summary of recent massive codebase expansion.
+ docs/architecture.md: (Proposed) Add summary of recent massive codebase expansion.
 
  Code Paths Covered: `src/engine/types/*`, `src/engine/utils/*`, `src/engine/worker/*`, `src/engine/world.ts`, `src/presenters/*`, `src/pages/*`, `src/hooks/*`
 
