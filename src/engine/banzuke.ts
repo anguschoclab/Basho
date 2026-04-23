@@ -61,40 +61,7 @@ function positionKey(e: BanzukeEntry): number {
   return tier * 1000 + num * 2 + side;
 }
 
-/**
- * Convert BanzukeEntry[] to BanzukeSnapshot format for comparison with historical snapshots.
- */
-export function convertBanzukeEntriesToSnapshot(
-  entries: BanzukeEntry[],
-  year: number,
-  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
-): BanzukeSnapshot {
-  const divisions: Record<Division, DivisionBanzukeSnapshot> = {
-    makuuchi: { division: "makuuchi", slots: [], assignments: [] },
-    juryo: { division: "juryo", slots: [], assignments: [] },
-    makushita: { division: "makushita", slots: [], assignments: [] },
-    sandanme: { division: "sandanme", slots: [], assignments: [] },
-    jonidan: { division: "jonidan", slots: [], assignments: [] },
-    jonokuchi: { division: "jonokuchi", slots: [], assignments: [] },
-  };
-
-  for (const entry of entries) {
-    const division = entry.division;
-    if (!divisions[division]) continue;
-
-    divisions[division].slots.push(entry.position);
-    divisions[division].assignments.push({
-      rikishiId: entry.rikishiId,
-      position: entry.position,
-    });
-  }
-
-  return {
-    year,
-    bashoNumber,
-    divisions,
-  };
-}
+// convertBanzukeEntriesToSnapshot removed (unused)
 
 /**
  * Compare current banzuke snapshot with previous snapshot to detect rank changes.

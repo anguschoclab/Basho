@@ -8,7 +8,7 @@ import { DEVELOPMENT_PROFILE_WEIGHTS } from "../../constants/DevelopmentCurves";
 import type { DevelopmentProfile } from "../../constants/DevelopmentCurves";
 import type { TalentCandidate, TalentPoolType } from "../../types/talent";
 import { rollPotential } from "./CandidateStats";
-import { LineageService } from "./LineageService";
+import { LegacyService } from "../legacy/LegacyService";
 import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
 
@@ -71,17 +71,13 @@ export function generateCandidate(args: {
   }
 
   // Phase 5 Depth: Genetic Lineage
-  const bloodlineTrait = world
-    ? LineageService.rollGeneticLineage(
-        world,
-        {
-          visibilityBand: "hidden",
-          isAmateurStar: false,
-          tags: isEmergentProdigy ? ["prodigy"] : [],
-        },
-        rng
-      )
+  const legacyTrait = world
+    ? LegacyService.rollLegacyAncestry(world, { isAmateurStar: isEmergentProdigy }, rng)
     : null;
+
+  if (legacyTrait) {
+    paPkg.stats = LegacyService.applyLegacyTrait(paPkg.stats, legacyTrait);
+  }
 
   // Determine origin based on pool
   const origin =
@@ -136,6 +132,6 @@ export function generateCandidate(args: {
     developmentSpeed: paPkg.developmentSpeed,
     peakAgeOffset: paPkg.peakAgeOffset,
     ceilingFraction: paPkg.ceilingFraction,
-    bloodlineTrait,
+    bloodlineTrait: legacyTrait,
   };
 }

@@ -10,6 +10,7 @@ import { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
+import { LegacyService } from "../legacy/LegacyService";
 
 export const CareerService = {
   /**
@@ -59,6 +60,9 @@ export const CareerService = {
             importance: rikishi.division === "makuuchi" ? "major" : "notable",
           }
         );
+
+        // Register legacy bloodline if applicable (Phase 5: Legacy Engine)
+        builder.merge(LegacyService.registerLegacyTrait(world, rikishi));
 
         // Disburse retirement payout (if implemented)
         const payout = rikishi.economics?.retirementFund || 0;

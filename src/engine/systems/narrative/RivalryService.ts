@@ -109,25 +109,39 @@ export const RivalryService = {
     // Build the updated rivalries state
     const updatedPairs = { ...state.pairs };
 
-    // Cull very cold rivalries
-    if (next.heat < 5 && next.meetings < 2 && result.duration && result.duration > 30) {
-      const { [key as string]: _, ...remainingPairs } = updatedPairs;
-      void _;
-      // update the reference for further updates if any
-      // but here we just pass it to updateWorldField
-      builder.updateWorldField("rivalriesState", {
-        version: state.version,
-        pairs: remainingPairs,
-        heyaRivalryPairs: state.heyaRivalryPairs,
-      });
-    } else {
-      updatedPairs[key] = next;
-      builder.updateWorldField("rivalriesState", {
-        version: state.version,
-        pairs: updatedPairs,
-        heyaRivalryPairs: state.heyaRivalryPairs,
-      });
+    // Update pairs
+    updatedPairs[key] = next;
+
+    // --- STABLE RIVALRY MERGE ---
+    const heyaAId = result.winnerHeyaId || "";
+    const heyaBId = result.loserHeyaId || "";
+    const updatedHeyaPairs = { ...(state.heyaRivalryPairs || {}) };
+
+    if (heyaAId && heyaBId && heyaAId !== heyaBId) {
+      const hKey = heyaAId < heyaBId ? `${heyaAId}|${heyaBId}` : `${heyaBId}|${heyaAId}`;
+      const existingH = updatedHeyaPairs[hKey] || {
+        id: hKey,
+        heyaAId: heyaAId < heyaBId ? heyaAId : heyaBId,
+        heyaBId: heyaAId < heyaBId ? heyaBId : heyaAId,
+        heat: 0,
+        aWins: 0,
+        bWins: 0,
+      };
+
+      const hHeatGain = result.isTitleStakes ? 8 : 3;
+      updatedHeyaPairs[hKey] = {
+        ...existingH,
+        heat: Math.min(100, existingH.heat + hHeatGain),
+        aWins: existingH.aWins + (result.winnerHeyaId === existingH.heyaAId ? 1 : 0),
+        bWins: existingH.bWins + (result.winnerHeyaId === existingH.heyaBId ? 1 : 0),
+      };
     }
+
+    builder.updateWorldField("rivalriesState", {
+      version: state.version,
+      pairs: updatedPairs,
+      heyaRivalryPairs: updatedHeyaPairs,
+    });
 
     return builder.build();
   },

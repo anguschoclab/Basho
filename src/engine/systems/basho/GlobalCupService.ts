@@ -108,6 +108,29 @@ export const GlobalCupService = {
       }
     }
 
+    // Update Chronicle history (merged from legacy ChronicleService)
+    const chronicle = world.chronicle || {
+      eraLabels: [],
+      topChampions: [],
+      greatestRivalries: [],
+      recordsBroken: [],
+    };
+    const globalCups = chronicle.globalCups || [];
+
+    const historyEntry = {
+      year: world.year,
+      championId: winner.id,
+      championName: winner.shikona,
+      championHeya: winner.heyaId ? world.heyas.get(winner.heyaId)?.name || "Unknown" : "Unknown",
+      participantCount: participants.length,
+      wasPlayerChampion: winner.heyaId === world.playerHeyaId,
+    };
+
+    builder.updateWorldField("chronicle", {
+      ...chronicle,
+      globalCups: [...globalCups, historyEntry],
+    });
+
     return builder.build();
   },
 };

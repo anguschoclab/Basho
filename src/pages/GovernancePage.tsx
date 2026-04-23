@@ -11,7 +11,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Scale, Landmark, Globe, Trophy } from "lucide-react";
+import { Scale, Landmark, Globe, Trophy, ShieldAlert, Coins, Users2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { StatItem, ProgressItem } from "@/components/layout/control-center";
 import {
@@ -357,6 +357,69 @@ export default function GovernancePage() {
                     </Button>
                   }
                 />
+              </div>
+
+              <div className="space-y-4">
+                <SectionHeader eyebrow="── FAVORS ──" title="JSA Political Favors" />
+                <div className="grid gap-3">
+                  {[
+                    {
+                      id: "matchmaking_avoid",
+                      label: "Matchmaking Influence",
+                      description: "Avoid a specific rival for one day.",
+                      cost: 15,
+                      icon: ShieldAlert,
+                    },
+                    {
+                      id: "advance_payout",
+                      label: "Emergency Stipend",
+                      description: "Immediate ¥5,000,000 cash infusion.",
+                      cost: 25,
+                      icon: Coins,
+                    },
+                    {
+                      id: "governance_pardon",
+                      label: "Council Clemency",
+                      description: "Wipe 10 points from your Scandal Score.",
+                      cost: 40,
+                      icon: Scale,
+                    },
+                  ].map((favor) => (
+                    <Card key={favor.id} className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm">
+                      <CardContent className="p-3.5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-muted/40 rounded shadow-inner">
+                            <favor.icon className="h-4.5 w-4.5 text-primary/80" />
+                          </div>
+                          <div>
+                            <div className="text-[13px] font-bold text-foreground/90">{favor.label}</div>
+                            <div className="text-[10px] text-muted-foreground/80 leading-tight">
+                              {favor.description}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-[11px] font-mono font-bold text-primary">{favor.cost} CAP</div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
+                            disabled={(heya.politicalCapital ?? 0) < favor.cost}
+                            onClick={() => {
+                              state.engine.sendCommand({
+                                type: "REQUEST_POLITICAL_FAVOR",
+                                heyaId: heya.id,
+                                favorId: favor.id,
+                              });
+                            }}
+                          >
+                            Request
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-4">

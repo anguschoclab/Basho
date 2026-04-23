@@ -21,14 +21,7 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   spent: "Spent",
 };
 
-export const POTENTIAL_LABELS: Record<PotentialBand, { label: string; color: string }> = {
-  generational: { label: "Generational Talent", color: "text-gold" },
-  star: { label: "Star Potential", color: "text-west" },
-  solid: { label: "Solid Prospect", color: "text-success" },
-  average: { label: "Average Prospect", color: "text-muted-foreground" },
-  limited: { label: "Limited Upside", color: "text-warning" },
-  unknown: { label: "Unknown", color: "text-muted-foreground" },
-};
+// POTENTIAL_LABELS removed (unused)
 
 export const TRAIT_LABELS: Record<TraitBand, string> = {
   negligible: "Negligible",
@@ -46,13 +39,7 @@ export const SCANDAL_LABELS: Record<ScandalBand, string> = {
   crisis: "Crisis",
 };
 
-export const PRIZE_LABELS: Record<PrizeBand, string> = {
-  nominal: "Nominal",
-  modest: "Modest",
-  notable: "Notable",
-  prestigious: "Prestigious",
-  grand: "Grand",
-};
+// PRIZE_LABELS removed (unused)
 
 // Re-exports from engine utilities for backward compatibility
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
@@ -61,46 +48,34 @@ export {
   RANK_HIERARCHY,
   compareRanks,
   formatRank,
-  getRankTitleJa,
-  isKachiKoshi,
-  isMakeKoshi,
 } from "../engine/banzuke";
-export { createDefaultMediaState } from "../engine/systems/media/MediaService";
+// createDefaultMediaState removed (unused)
 export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
 export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
-export { clamp, clampInt } from "../engine/utils";
-export { clearInjury, toInjuryEvent } from "../engine/systems/health/InjuryService";
-export { deleteSave, exportSave, importSave } from "../engine/saveload";
-export { ensureHeyaWelfareState } from "../engine/systems/welfare/WelfareService";
+export { clamp } from "../engine/utils";
+// clearInjury, toInjuryEvent removed (unused)
+export { deleteSave, importSave } from "../engine/saveload";
+// exportSave removed (unused)
+// ensureHeyaWelfareState removed (unused)
 export {
   formatEventTime,
   formatFinePenalty,
-  formatSaveDate,
   formatStance,
 } from "../engine/utils/formatters";
-export { generateH2HCommentary } from "../engine/h2h";
+// generateH2HCommentary removed (unused)
 export { generateNarrative } from "../engine/narrative";
 export { getArchetypeDescription } from "../engine/oyakataPersonalities";
 export { getKimarite } from "../engine/kimarite";
 export {
-  getOrCreateScouted,
-  getScoutingLevel,
   setScoutingInvestment,
-  warmScoutingForRikishiList,
 } from "../engine/scoutingStore";
 export {
-  getStatusColor,
-  getStatusLabel,
   spendPoliticalCapital,
 } from "../engine/governance/GovernanceService";
 export {
   scoutPool,
   scoutCandidate,
   offerCandidate,
-  getCandidateScoutingLevel,
 } from "../engine/systems/generation/TalentPoolService";
-export {
-  KOENKAI_MONTHLY_INCOME,
-  SPONSOR_TIER_INCOME,
-} from "../engine/systems/economics/SponsorshipService";
+// KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME removed (unused)
 export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";

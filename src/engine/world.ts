@@ -245,17 +245,9 @@ export function advanceDay(world: WorldState): WorldState | null {
 // redundant safeCall removed
 // --- CANONICAL SELECTORS ---
 
-export function getPlayerOyakata(world: WorldState) {
-  if (!world.playerHeyaId) return undefined;
-  const heya = world.heyas.get(world.playerHeyaId);
-  if (!heya) return undefined;
-  return world.oyakata.get(heya.oyakataId);
-}
+// getPlayerOyakata removed (unused)
 
-export function getPlayerStable(world: WorldState) {
-  if (!world.playerHeyaId) return undefined;
-  return world.heyas.get(world.playerHeyaId);
-}
+// getPlayerStable removed (unused)
 
 // getStableRikishi moved to queries.ts
 

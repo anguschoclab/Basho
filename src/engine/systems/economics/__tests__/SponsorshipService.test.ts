@@ -97,22 +97,29 @@ describe("SponsorshipService", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 10, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-      applyAchievementImpact({} as WorldState, rikishi, "kinboshi");
-      expect(rikishi.economics?.popularity).toBe(30);
+      const world = { rikishi: new Map([["r1", rikishi]]) } as any;
 
-      applyAchievementImpact({} as WorldState, rikishi, "ginboshi");
-      expect(rikishi.economics?.popularity).toBe(38);
+      const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
+      const resolved = resolveImpacts(world, [impact]);
+      expect(resolved.rikishi.get("r1")?.economics?.popularity).toBe(30);
 
-      applyAchievementImpact({} as WorldState, rikishi, "sansho");
-      expect(rikishi.economics?.popularity).toBe(50);
+      const impact2 = applyAchievementImpact(resolved as WorldState, resolved.rikishi.get("r1"), "ginboshi");
+      const resolved2 = resolveImpacts(resolved, [impact2]);
+      expect(resolved2.rikishi.get("r1")?.economics?.popularity).toBe(38);
+
+      const impact3 = applyAchievementImpact(resolved2 as WorldState, resolved2.rikishi.get("r1"), "sansho");
+      const resolved3 = resolveImpacts(resolved2, [impact3]);
+      expect(resolved3.rikishi.get("r1")?.economics?.popularity).toBe(50);
     });
 
     it("caps popularity at 100", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 90, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-      applyAchievementImpact({} as WorldState, rikishi, "kinboshi");
-      expect(rikishi.economics?.popularity).toBe(100);
+      const world = { rikishi: new Map([["r1", rikishi]]) } as any;
+      const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
+      const resolved = resolveImpacts(world, [impact]);
+      expect(resolved.rikishi.get("r1")?.economics?.popularity).toBe(100);
     });
   });
 

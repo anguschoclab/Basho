@@ -12,6 +12,7 @@ export interface RivalriesPageData {
   playerRivalries: RivalryPairState[];
   hotRivalries: RivalryPairState[];
   coolRivalries: RivalryPairState[];
+  stableRivalries: Array<{ aId: string; bId: string; heat: number; aName: string; bName: string; tone: string }>;
   stats: {
     total: number;
     inferno: number;
@@ -31,6 +32,7 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
       playerRivalries: [],
       hotRivalries: [],
       coolRivalries: [],
+      stableRivalries: [],
       stats: { total: 0, inferno: 0, hot: 0 },
       heatmapData: [],
       playerRikishiNames: [],
@@ -87,6 +89,19 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     playerRivalries: player,
     hotRivalries: hot,
     coolRivalries: cool,
+    stableRivalries: Object.entries(world.heyaRivalryPairs || {}).map(([key, heat]) => {
+      const [aId, bId] = key.split("::");
+      const a = world.heyas.get(aId);
+      const b = world.heyas.get(bId);
+      return {
+        aId,
+        bId,
+        heat,
+        aName: a?.name ?? aId,
+        bName: b?.name ?? bId,
+        tone: heat >= 80 ? "bad_blood" : heat >= 50 ? "rivalry" : "neutral",
+      };
+    }),
     stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
     heatmapData,
     playerRikishiNames,

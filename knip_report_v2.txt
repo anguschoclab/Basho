@@ -1,0 +1,720 @@
+Unused files (72)
+src/components/avatar/AvatarGallery.tsx                   
+src/components/avatar/AvatarStack.tsx                     
+src/components/avatar/AvatarWithBadge.tsx                 
+src/components/banzuke/index.ts                           
+src/components/banzuke/RankChangeIndicator.tsx            
+src/components/banzuke/RikishiCell.tsx                    
+src/components/charts/HeatmapGrid.tsx                     
+src/components/charts/index.ts                            
+src/components/charts/KokugikanChart.tsx                  
+src/components/charts/MiniSparkline.tsx                   
+src/components/dashboard/BanzukeWidget.tsx                
+src/components/dashboard/DigestWidget.tsx                 
+src/components/dashboard/DraggableWidget.tsx              
+src/components/dashboard/FacilitiesWidget.tsx             
+src/components/dashboard/GlobalCupWidget.tsx              
+src/components/dashboard/index.ts                         
+src/components/dashboard/InstitutionWidget.tsx            
+src/components/dashboard/KenshoManagementWidget.tsx       
+src/components/dashboard/NewsWidget.tsx                   
+src/components/dashboard/PreBashoAssessment.tsx           
+src/components/dashboard/RivalsWidget.tsx                 
+src/components/dashboard/RosterWidget.tsx                 
+src/components/dashboard/ScoutingWidget.tsx               
+src/components/dashboard/SponsorRecruitmentWidget.tsx     
+src/components/dashboard/StableWidget.tsx                 
+src/components/dashboard/TrainingWidget.tsx               
+src/components/dashboard/YearlyMetaReport.tsx             
+src/components/dashboard/YushoRaceWidget.tsx              
+src/components/economy/KenshoParade.tsx                   
+src/components/game/AutoSimControls.tsx                   
+src/components/game/AutoSimResultDialog.tsx               
+src/components/game/HolidayControls.tsx                   
+src/components/game/index.ts                              
+src/components/game/RikishiCard.tsx                       
+src/components/game/RivalStablesPanel.tsx                 
+src/components/game/StableOverviewPanel.tsx               
+src/components/game/TimeControls.tsx                      
+src/components/game/WeeklyDigest.tsx                      
+src/components/heya/HeyaBrandHeader.tsx                   
+src/components/index.ts                                   
+src/components/kesho/KeshoMiniIndicator.tsx               
+src/components/layout/index.ts                            
+src/components/media/PressConference.tsx                  
+src/components/recap/RetirementCeremony.tsx               
+src/components/stable/StableRivalryDashboard.tsx          
+src/components/ui/avatar.tsx                              
+src/components/ui/index.ts                                
+src/components/ui/menu-core.tsx                           
+src/components/ui/MiniBar.tsx                             
+src/components/ui/Sparkline.tsx                           
+src/components/ui/StatBlock.tsx                           
+src/components/ui/toggle.tsx                              
+src/contexts/localStorageProvider.ts                      
+src/engine/bout/kimarite/index.ts                         
+src/engine/narrative/GeminiClient.ts                      
+src/engine/npc/strategies/finance/FinanceStrategy.ts      
+src/engine/npc/strategies/governance/GovernanceStrategy.ts
+src/engine/npc/strategies/sponsor/SponsorStrategy.ts      
+src/engine/npc/strategies/StrategyRegistry.ts             
+src/engine/strategy/index.ts                              
+src/engine/strategy/NPCFinanceCalculator.ts               
+src/engine/strategy/NPCGovernanceCalculator.ts            
+src/engine/systems/ChronicleService.ts                    
+src/engine/systems/GlobalCupService.ts                    
+src/engine/systems/keshoMawashi/index.ts                  
+src/engine/systems/legacy/BloodlineService.ts             
+src/engine/systems/narrative/index.ts                     
+src/engine/systems/narrative/StableRivalryService.ts      
+src/engine/systems/politics/PoliticalFavorsService.ts     
+src/pages/index.ts                                        
+src/presenters/rikishi/index.ts                           
+src/test/utils/resetSingletons.ts                         
+Unused dependencies (29)
+@google/generative-ai             package.json:86:6 
+@radix-ui/react-accordion         package.json:87:6 
+@radix-ui/react-aspect-ratio      package.json:89:6 
+@radix-ui/react-avatar            package.json:90:6 
+@radix-ui/react-checkbox          package.json:91:6 
+@radix-ui/react-context           package.json:93:6 
+@radix-ui/react-context-menu      package.json:94:6 
+@radix-ui/react-hover-card        package.json:97:6 
+@radix-ui/react-menubar           package.json:99:6 
+@radix-ui/react-navigation-menu   package.json:100:6
+@radix-ui/react-popover           package.json:101:6
+@radix-ui/react-radio-group       package.json:103:6
+@radix-ui/react-toggle            package.json:112:6
+@radix-ui/react-toggle-group      package.json:113:6
+@swc/core                         package.json:115:6
+@typescript-eslint/eslint-plugin  package.json:119:6
+@typescript-eslint/parser         package.json:120:6
+cmdk                              package.json:123:6
+dexie                             package.json:125:6
+electron-is-dev                   package.json:126:6
+embla-carousel-react              package.json:128:6
+input-otp                         package.json:130:6
+lodash                            package.json:132:6
+nanoid                            package.json:134:6
+react-day-picker                  package.json:137:6
+react-hook-form                   package.json:140:6
+react-resizable-panels            package.json:141:6
+vaul                              package.json:147:6
+zod                               package.json:148:6
+Unused devDependencies (5)
+@tanstack/router-vite-plugin  package.json:154:6
+@testing-library/jest-dom     package.json:156:6
+@testing-library/user-event   package.json:158:6
+eslint-config-prettier        package.json:169:6
+lovable-tagger                package.json:174:6
+Unlisted dependencies (1)
+@electron-toolkit/utils  electron/main.ts:3:20
+Unlisted binaries (1)
+src/engine/simulation/run.ts  package.json
+Unused exports (465)
+default                                              variable  src/components/avatar/SumoAvatar.tsx:347:16              
+ParticipantNationalityChart                          function  src/components/charts/GlobalCupStats.tsx:38:17           
+BracketProgressChart                                 function  src/components/charts/GlobalCupStats.tsx:86:17           
+GlobalCupEventFeed                                   function  src/components/dashboard/EventFeed.tsx:104:17            
+BoutTags                                             function  src/components/game/boutCardComponents.tsx:69:17         
+getH2HRecord                                         function  src/components/game/boutCardTypes.tsx:74:17              
+lerp                                                 function  src/components/game/boutReplay/boutCanvas.ts:83:17       
+easeInOut                                            function  src/components/game/boutReplay/boutCanvas.ts:86:17       
+RikishiSelectorItem                                            src/components/game/perceptionComponents.tsx:27:14       
+RikishiSelectorList                                  function  src/components/game/perceptionComponents.tsx:53:17       
+COMPARE_ROWS                                                   src/components/game/perceptionComponents.tsx:78:14       
+CompareRowItem                                                 src/components/game/perceptionComponents.tsx:101:14      
+MatchupRow                                                     src/components/game/perceptionComponents.tsx:320:14      
+PerceptionChip                                       function  src/components/game/perceptionComponents.tsx:343:17      
+DataTable                                            function  src/components/layout/control-center/DataTable.tsx:34:17 
+HeroDossier                                          function  …c/components/layout/control-center/HeroDossier.tsx:37:17
+KanjiTile                                                      src/components/layout/control-center/index.ts:27:10      
+HeroDossier                                                    src/components/layout/control-center/index.ts:28:10      
+DataTable                                                      src/components/layout/control-center/index.ts:34:10      
+RankBadge                                                      src/components/layout/control-center/index.ts:36:10      
+SideIndicator                                                  src/components/layout/control-center/index.ts:37:10      
+RankBadge                                            function  src/components/layout/control-center/RankBadge.tsx:32:17 
+SideIndicator                                        function  …components/layout/control-center/SideIndicator.tsx:23:17
+CATEGORY_META                                                  src/components/layout/eventLogHelpers.ts:23:14           
+RankInline                                           function  src/components/rikishi/RankBadge.tsx:278:17              
+useKimariteDistributionData                          function  src/components/rikishi/useRikishiData.ts:42:17           
+AlertDialogPortal                                              src/components/ui/alert-dialog.tsx:94:3                  
+AlertDialogOverlay                                             src/components/ui/alert-dialog.tsx:95:3                  
+AlertDialogTrigger                                             src/components/ui/alert-dialog.tsx:96:3                  
+badgeVariants                                                  src/components/ui/badge.tsx:32:17                        
+HEAT_CONFIG                                                    src/components/ui/colorMaps.ts:45:14                     
+RANK_BORDER_COLORS                                             src/components/ui/colorMaps.ts:69:14                     
+DIVISION_COLORS                                                src/components/ui/colorMaps.ts:83:14                     
+SIDE_COLORS                                                    src/components/ui/colorMaps.ts:93:14                     
+RESULT_COLORS                                                  src/components/ui/colorMaps.ts:99:14                     
+STATURE_COLORS                                                 src/components/ui/colorMaps.ts:107:14                    
+PRESTIGE_COLORS                                                src/components/ui/colorMaps.ts:117:14                    
+COMPLIANCE_COLORS                                              src/components/ui/colorMaps.ts:127:14                    
+MOOD_COLORS                                                    src/components/ui/colorMaps.ts:135:14                    
+DialogPortal                                                   src/components/ui/dialog.tsx:86:3                        
+DialogOverlay                                                  src/components/ui/dialog.tsx:87:3                        
+DialogClose                                                    src/components/ui/dialog.tsx:88:3                        
+DropdownMenuItem                                               src/components/ui/dropdown-menu.tsx:167:3                
+DropdownMenuRadioItem                                          src/components/ui/dropdown-menu.tsx:169:3                
+DropdownMenuShortcut                                           src/components/ui/dropdown-menu.tsx:172:3                
+DropdownMenuGroup                                              src/components/ui/dropdown-menu.tsx:173:3                
+DropdownMenuPortal                                             src/components/ui/dropdown-menu.tsx:174:3                
+DropdownMenuSub                                                src/components/ui/dropdown-menu.tsx:175:3                
+DropdownMenuSubContent                                         src/components/ui/dropdown-menu.tsx:176:3                
+DropdownMenuSubTrigger                                         src/components/ui/dropdown-menu.tsx:177:3                
+DropdownMenuRadioGroup                                         src/components/ui/dropdown-menu.tsx:178:3                
+SelectGroup                                                    src/components/ui/select.tsx:134:3                       
+SelectLabel                                                    src/components/ui/select.tsx:138:3                       
+SelectSeparator                                                src/components/ui/select.tsx:140:3                       
+SelectScrollUpButton                                           src/components/ui/select.tsx:141:3                       
+SelectScrollDownButton                                         src/components/ui/select.tsx:142:3                       
+SheetClose                                                     src/components/ui/sheet.tsx:98:3                         
+SheetDescription                                               src/components/ui/sheet.tsx:100:3                        
+SheetFooter                                                    src/components/ui/sheet.tsx:101:3                        
+SheetHeader                                                    src/components/ui/sheet.tsx:102:3                        
+SheetOverlay                                                   src/components/ui/sheet.tsx:103:3                        
+SheetPortal                                                    src/components/ui/sheet.tsx:104:3                        
+SheetTitle                                                     src/components/ui/sheet.tsx:105:3                        
+SheetTrigger                                                   src/components/ui/sheet.tsx:106:3                        
+SidebarGroupAction                                             src/components/ui/sidebar.tsx:622:3                      
+SidebarGroupLabel                                              src/components/ui/sidebar.tsx:624:3                      
+SidebarInput                                                   src/components/ui/sidebar.tsx:626:3                      
+SidebarMenuAction                                              src/components/ui/sidebar.tsx:629:3                      
+SidebarMenuBadge                                               src/components/ui/sidebar.tsx:630:3                      
+SidebarMenuSkeleton                                            src/components/ui/sidebar.tsx:633:3                      
+SidebarMenuSub                                                 src/components/ui/sidebar.tsx:634:3                      
+SidebarMenuSubButton                                           src/components/ui/sidebar.tsx:635:3                      
+SidebarMenuSubItem                                             src/components/ui/sidebar.tsx:636:3                      
+SidebarSeparator                                               src/components/ui/sidebar.tsx:639:3                      
+useSidebar                                                     src/components/ui/sidebar.tsx:641:3                      
+toast                                                          src/components/ui/sonner.tsx:27:19                       
+ToastAction                                                    src/components/ui/toast.tsx:121:3                        
+ElectronStorageProvider                              class     src/contexts/electronStorageProvider.ts:15:14            
+setPlayerHeya                     actions                      src/contexts/gameActions.ts:12:14                        
+setAutoPlay                       actions                      src/contexts/gameActions.ts:91:14                        
+upgradeHeya                       actions                      src/contexts/gameActions.ts:106:14                       
+recruitStaff                      actions                      src/contexts/gameActions.ts:113:14                       
+sampleKeshoJuryo                                               src/engine/__tests__/keshoMawashi/fixtures.ts:8:14       
+sampleKeshoMakuuchi                                            src/engine/__tests__/keshoMawashi/fixtures.ts:30:14      
+sampleKeshoSanyaku                                             src/engine/__tests__/keshoMawashi/fixtures.ts:64:14      
+sampleKeshoYokozuna                                            src/engine/__tests__/keshoMawashi/fixtures.ts:100:14     
+sampleYokozunaTsuna                                            src/engine/__tests__/keshoMawashi/fixtures.ts:129:14     
+sampleHeyaBrand                                                src/engine/__tests__/keshoMawashi/fixtures.ts:139:14     
+samplePromotionSanyaku                                         src/engine/__tests__/keshoMawashi/fixtures.ts:167:14     
+sampleDemotion                                                 src/engine/__tests__/keshoMawashi/fixtures.ts:183:14     
+mockHeyaBrandIdentity                                function  src/engine/__tests__/utils.ts:159:17                     
+mockHeyaWithBrand                                    function  src/engine/__tests__/utils.ts:191:17                     
+mockKeshoMawashi                                     function  src/engine/__tests__/utils.ts:204:17                     
+mockYokozunaTsuna                                    function  src/engine/__tests__/utils.ts:227:17                     
+mockRikishiWithKesho                                 function  src/engine/__tests__/utils.ts:240:17                     
+deriveArchetype                                      function  src/engine/archetype.ts:10:17                            
+generateDefaultAvatarConfig                          function  src/engine/avatarGenerator.ts:162:17                     
+generateSanshoLedgerEntry                                      src/engine/banzuke.ts:32:10                              
+convertBanzukeEntriesToSnapshot                      function  src/engine/banzuke.ts:67:17                              
+computePushForce                                     function  src/engine/bout/boutSpatial.ts:58:17                     
+computePushAngle                                     function  src/engine/bout/boutSpatial.ts:77:17                     
+KIMARITE_STRATEGIES                                            src/engine/bout/kimariteStrategy.ts:10:10                
+BASHO_ORDER                                                    src/engine/calendar.ts:99:14                             
+getBashoInfo                                         function  src/engine/calendar.ts:146:17                            
+endBasho                                             function  src/engine/calendar.ts:277:17                            
+NON_SEKITORI_ALLOWANCE                                         src/engine/constants/EconomicConstants.ts:15:14          
+KENSHO_SPLIT                                                   src/engine/constants/EconomicConstants.ts:34:14          
+updateHeyaImpact                                     function  src/engine/core/ImpactBuilder.ts:575:17                  
+updateRikishiImpact                                  function  src/engine/core/ImpactBuilder.ts:582:17                  
+logEventImpact                                       function  src/engine/core/ImpactBuilder.ts:600:17                  
+updateWorldFieldImpact                               function  src/engine/core/ImpactBuilder.ts:617:17                  
+BASHO_MONTHS                                                   src/engine/core/SimulationConfig.ts:46:14                
+BASHO_NAMES                                                    src/engine/core/SimulationConfig.ts:47:14                
+toStatBand                                           function  src/engine/descriptorBands.ts:23:17                      
+toRivalryHeatBand                                    function  src/engine/descriptorBands.ts:44:17                      
+toPrizeBand                                          function  src/engine/descriptorBands.ts:58:17                      
+toConditionDescriptor                                function  src/engine/descriptorBands.ts:72:17                      
+toMoraleDescriptor                                   function  src/engine/descriptorBands.ts:79:17                      
+toPotentialDescriptor                                function  src/engine/descriptorBands.ts:86:17                      
+DURATION_LABELS                                                src/engine/descriptorBands.ts:135:14                     
+toDurationBand                                       function  src/engine/descriptorBands.ts:143:17                     
+generateSanshoLedgerEntry                            function  src/engine/economics_awards.ts:49:17                     
+handleInsolvency                  economics          function  src/engine/economics.ts:36:17                            
+runSponsorChurn                   economics          function  src/engine/economics.ts:175:17                           
+createEventWithNarrative                             function  src/engine/eventHelpers.ts:53:17                         
+tickMonthlyFacilities                                function  src/engine/facilities.ts:156:17                          
+getStatusColor                    governance         function  src/engine/governance/GovernanceService.ts:219:17        
+determineCPUTactic                                   function  src/engine/h2h.ts:207:17                                 
+resolveTacticalClash                                 function  src/engine/h2h.ts:240:17                                 
+getInducteesByCategory                               function  src/engine/hallOfFame.ts:209:17                          
+onBashoEnded                                         function  src/engine/hallOfFame.ts:217:17                          
+isInducted                                           function  src/engine/hallOfFame.ts:227:17                          
+generateCareerSnapshot                               function  src/engine/history.ts:13:17                              
+recordMilestones                                     function  src/engine/history.ts:58:17                              
+createEmptyHistoryIndex                              function  src/engine/historyIndex.ts:66:17                         
+buildHistoryIndex                                    function  src/engine/historyIndex.ts:93:17                         
+getBashoSummary                                      function  src/engine/historyIndex.ts:187:17                        
+getRikishiHistory                                    function  src/engine/historyIndex.ts:192:17                        
+indexBashoResult                                     function  src/engine/historyIndex.ts:196:17                        
+DEFAULT_CRITICAL_GATES                                         src/engine/holiday.ts:497:14                             
+getBashoNumber                                                 src/engine/index.ts:13:10                                
+isBashoMonth                                                   src/engine/index.ts:13:26                                
+getBashoInfo                                                   src/engine/index.ts:13:40                                
+getCurrentBasho                                                src/engine/index.ts:45:10                                
+recordObservation                                              src/engine/index.ts:55:3                                 
+createScoutedView                                              src/engine/index.ts:56:3                                 
+advanceBashoDay                                                src/engine/index.ts:73:10                                
+simulateBoutForToday                                           src/engine/index.ts:73:27                                
+getKimariteByJsaCategory                             function  src/engine/kimarite.ts:191:17                            
+getKimariteByClass                                   function  src/engine/kimarite.ts:196:17                            
+getKimariteCount                                     function  src/engine/kimarite.ts:200:17                            
+getKimariteForFamily                                 function  src/engine/kimarite.ts:209:17                            
+checkYokozunaPromotions           competition        function  src/engine/lifecycle/BashoHistory.ts:263:17              
+getCurrentBasho                   bashoManager       function  src/engine/lifecycle/BashoManager.ts:13:17               
+resolvePlayoffs                   competition                  src/engine/lifecycle/CompetitionService.ts:12:10         
+calculateStandings                competition                  src/engine/lifecycle/CompetitionService.ts:12:27         
+distributePrizes                  competition                  src/engine/lifecycle/CompetitionService.ts:13:10         
+payBashoTeate                     competition                  src/engine/lifecycle/CompetitionService.ts:13:28         
+payKinboshiStipends               competition                  src/engine/lifecycle/CompetitionService.ts:13:43         
+recordBashoHistory                competition                  src/engine/lifecycle/CompetitionService.ts:14:10         
+checkYokozunaPromotions           competition                  src/engine/lifecycle/CompetitionService.ts:14:30         
+ensureLineage                                        function  src/engine/lineage.ts:16:17                              
+determineLoanTerms                loans              function  src/engine/loans.ts:24:17                                
+createLoanObject                  loans              function  src/engine/loans.ts:79:17                                
+processMonthlyLoanRepayments      loans              function  src/engine/loans.ts:182:17                               
+DEFAULT_MATCHMAKING_RULES                                      src/engine/matchmaking/MatchmakingPhases.ts:42:14        
+buildCandidatePairs                                  function  src/engine/matchmaking/MatchmakingPhases.ts:245:17       
+buildPlayoffPairs                                    function  src/engine/matchmaking/MatchmakingPhases.ts:281:17       
+buildExhibitionPairs                                 function  src/engine/matchmaking/MatchmakingPhases.ts:297:17       
+generateMyosekiMarket             myoseki            function  src/engine/myosekiMarket.ts:53:17                        
+tickMyosekiMarket                 myoseki            function  src/engine/myosekiMarket.ts:110:17                       
+interpolate                                          function  src/engine/narrative/BardEngine.ts:111:17                
+describeAttribute                                    function  src/engine/narrativeDescriptions.ts:23:17                
+describeAggression                                   function  src/engine/narrativeDescriptions.ts:31:17                
+describeExperience                                   function  src/engine/narrativeDescriptions.ts:39:17                
+describeFatigue                                      function  src/engine/narrativeDescriptions.ts:47:17                
+getManagerPersona                 npcAI                        src/engine/npcAI.ts:33:10                                
+applyNPCDecision                  npcAI              function  src/engine/npcAI.ts:233:17                               
+tickWeekNPC                       npcAI              function  src/engine/npcAI.ts:281:17                               
+DefaultFinanceStrategy                                         src/engine/npcFinanceStrategy.ts:61:14                   
+TraditionalistFinanceStrategy                                  src/engine/npcFinanceStrategy.ts:80:14                   
+ScientistFinanceStrategy                                       src/engine/npcFinanceStrategy.ts:94:14                   
+GamblerFinanceStrategy                                         src/engine/npcFinanceStrategy.ts:107:14                  
+NurturerFinanceStrategy                                        src/engine/npcFinanceStrategy.ts:130:14                  
+TyrantFinanceStrategy                                          src/engine/npcFinanceStrategy.ts:148:14                  
+StrategistFinanceStrategy                                      src/engine/npcFinanceStrategy.ts:162:14                  
+StrictFinanceStrategy                                          src/engine/npcFinanceStrategy.ts:176:14                  
+IndulgentFinanceStrategy                                       src/engine/npcFinanceStrategy.ts:190:14                  
+DefaultGovernanceStrategy                                      src/engine/npcGovernanceStrategy.ts:52:14                
+TraditionalistGovernanceStrategy                               src/engine/npcGovernanceStrategy.ts:83:14                
+ScientistGovernanceStrategy                                    src/engine/npcGovernanceStrategy.ts:89:14                
+GamblerGovernanceStrategy                                      src/engine/npcGovernanceStrategy.ts:95:14                
+NurturerGovernanceStrategy                                     src/engine/npcGovernanceStrategy.ts:101:14               
+TyrantGovernanceStrategy                                       src/engine/npcGovernanceStrategy.ts:107:14               
+StrategistGovernanceStrategy                                   src/engine/npcGovernanceStrategy.ts:140:14               
+StrictGovernanceStrategy                                       src/engine/npcGovernanceStrategy.ts:146:14               
+IndulgentGovernanceStrategy                                    src/engine/npcGovernanceStrategy.ts:157:14               
+DefaultMediaStrategy                                           src/engine/npcMediaStrategy.ts:17:14                     
+TraditionalistMediaStrategy                                    src/engine/npcMediaStrategy.ts:92:14                     
+ScientistMediaStrategy                                         src/engine/npcMediaStrategy.ts:112:14                    
+GamblerMediaStrategy                                           src/engine/npcMediaStrategy.ts:132:14                    
+NurturerMediaStrategy                                          src/engine/npcMediaStrategy.ts:152:14                    
+TyrantMediaStrategy                                            src/engine/npcMediaStrategy.ts:172:14                    
+StrategistMediaStrategy                                        src/engine/npcMediaStrategy.ts:192:14                    
+StrictMediaStrategy                                            src/engine/npcMediaStrategy.ts:212:14                    
+IndulgentMediaStrategy                                         src/engine/npcMediaStrategy.ts:232:14                    
+DefaultRecruitmentStrategy                                     src/engine/npcRecruitmentStrategy.ts:19:14               
+TraditionalistRecruitmentStrate…                               src/engine/npcRecruitmentStrategy.ts:84:14               
+ScientistRecruitmentStrategy                                   src/engine/npcRecruitmentStrategy.ts:130:14              
+GamblerRecruitmentStrategy                                     src/engine/npcRecruitmentStrategy.ts:166:14              
+TyrantRecruitmentStrategy                                      src/engine/npcRecruitmentStrategy.ts:192:14              
+NurturerRecruitmentStrategy                                    src/engine/npcRecruitmentStrategy.ts:215:14              
+IndulgentRecruitmentStrategy                                   src/engine/npcRecruitmentStrategy.ts:253:14              
+StrictRecruitmentStrategy                                      src/engine/npcRecruitmentStrategy.ts:290:14              
+StrategistRecruitmentStrategy                                  src/engine/npcRecruitmentStrategy.ts:329:14              
+DefaultRetirementStrategy                                      src/engine/npcRetirementStrategy.ts:56:14                
+TraditionalistRetirementStrategy                               src/engine/npcRetirementStrategy.ts:62:14                
+ScientistRetirementStrategy                                    src/engine/npcRetirementStrategy.ts:75:14                
+GamblerRetirementStrategy                                      src/engine/npcRetirementStrategy.ts:81:14                
+NurturerRetirementStrategy                                     src/engine/npcRetirementStrategy.ts:92:14                
+TyrantRetirementStrategy                                       src/engine/npcRetirementStrategy.ts:105:14               
+StrategistRetirementStrategy                                   src/engine/npcRetirementStrategy.ts:118:14               
+StrictRetirementStrategy                                       src/engine/npcRetirementStrategy.ts:124:14               
+IndulgentRetirementStrategy                                    src/engine/npcRetirementStrategy.ts:138:14               
+DefaultSponsorStrategy                                         src/engine/npcSponsorStrategy.ts:16:14                   
+TraditionalistSponsorStrategy                                  src/engine/npcSponsorStrategy.ts:63:14                   
+ScientistSponsorStrategy                                       src/engine/npcSponsorStrategy.ts:82:14                   
+GamblerSponsorStrategy                                         src/engine/npcSponsorStrategy.ts:98:14                   
+NurturerSponsorStrategy                                        src/engine/npcSponsorStrategy.ts:122:14                  
+TyrantSponsorStrategy                                          src/engine/npcSponsorStrategy.ts:138:14                  
+StrategistSponsorStrategy                                      src/engine/npcSponsorStrategy.ts:154:14                  
+StrictSponsorStrategy                                          src/engine/npcSponsorStrategy.ts:170:14                  
+IndulgentSponsorStrategy                                       src/engine/npcSponsorStrategy.ts:186:14                  
+calculateRunwayMonths                                function  src/engine/npcSponsorStrategyHelpers.ts:16:17            
+countSponsors                                        function  src/engine/npcSponsorStrategyHelpers.ts:23:17            
+filterEligibleSponsors                               function  src/engine/npcSponsorStrategyHelpers.ts:36:17            
+createSponsorRelationship                            function  src/engine/npcSponsorStrategyHelpers.ts:57:17            
+addSponsorRelationship                               function  src/engine/npcSponsorStrategyHelpers.ts:77:17            
+emitSponsorRecruitmentEvent                          function  src/engine/npcSponsorStrategyHelpers.ts:105:17           
+OYAKATA_ARCHETYPES                                             src/engine/oyakataPersonalities.ts:9:14                  
+buildAllPerceptionSnapshots                          function  src/engine/perception.ts:349:17                          
+getHeyaRosterIds                                     function  src/engine/queries.ts:51:17                              
+getForeignCountInHeya                                function  src/engine/queries.ts:97:17                              
+getAllHeyas                                          function  src/engine/queries.ts:150:17                             
+getNPCHeyas                                          function  src/engine/queries.ts:157:17                             
+getRikishiByDivision                                 function  src/engine/queries.ts:179:17                             
+getCurrentBasho                                      function  src/engine/queries.ts:190:17                             
+ensureRecordsState                                   function  src/engine/records.ts:13:17                              
+upsertRivalry                     rivalries          function  src/engine/rivalries.ts:48:17                            
+tickWeekRivalries                 rivalries          function  src/engine/rivalries.ts:66:17                            
+setSeed                           rngModule          function  src/engine/rng.ts:103:17                                 
+random                            rngModule          function  src/engine/rng.ts:112:17                                 
+quickSave                                            function  src/engine/saveload.ts:115:17                            
+scheduleJuryoWithCrossover        schedule           function  src/engine/schedule.ts:154:17                            
+DEFAULT_DIVISION_DAYS                                          src/engine/scheduleHelpers.ts:15:14                      
+getDivisionBelow                                     function  src/engine/scheduleHelpers.ts:44:17                      
+greedySelectPairs                                    function  src/engine/scheduleHelpers.ts:77:17                      
+tickWeekScouting                  scoutingStore      function  src/engine/scoutingStore.ts:286:17                       
+getEligibleOpponents                                 function  src/engine/selectors.ts:50:17                            
+getStableFinances                                    function  src/engine/selectors.ts:83:17                            
+selectRetiredRikishi                                 function  src/engine/selectors.ts:92:17                            
+selectHeyasWithCriticalWelfare                       function  src/engine/selectors.ts:105:17                           
+selectMergerCandidates                               function  src/engine/selectors.ts:121:17                           
+BASE_PATTERN_WEIGHTS                                           src/engine/shikona/constants.ts:109:14                   
+mergePatternWeights                                  function  src/engine/shikona/helpers.ts:19:17                      
+choosePattern                                        function  src/engine/shikona/helpers.ts:37:17                      
+nationalityPool                                      function  src/engine/shikona/helpers.ts:45:17                      
+extractLegacyPrefix                                  function  src/engine/shikona/legacy.ts:10:17                       
+extractLegacySuffix                                  function  src/engine/shikona/legacy.ts:74:17                       
+RANK_RULES                                                     src/engine/shikona/rankRules.ts:9:14                     
+resolveRankTier                                      function  src/engine/shikona/rankRules.ts:54:17                    
+generateStaff                     staffService       function  src/engine/staff.ts:13:17                                
+tickStaffWeek                     staffService       function  src/engine/staff.ts:51:17                                
+tickStaffYear                     staffService       function  src/engine/staff.ts:92:17                                
+ElectronArchiveService                               class     src/engine/storage/electronArchive.ts:17:14              
+hasStorageProvider                                   function  src/engine/storageProvider.ts:42:17                      
+resetStorageProvider                                 function  src/engine/storageProvider.ts:49:17                      
+calculateTraitAdjustedThreshold                      function  src/engine/strategy/NPCStrategyFramework.ts:157:17       
+payMochikyukinBonuses                                function  src/engine/systems/economics/MochikyukinService.ts:103:17
+recalculateKoenkaiBand                               function  src/engine/systems/economics/SponsorshipService.ts:34:17 
+REGIONS                                                        src/engine/systems/generation/SponsorGenerator.ts:34:14  
+INDUSTRY_TAGS                                                  src/engine/systems/generation/SponsorGenerator.ts:35:14  
+generateSponsorNameV2                                function  src/engine/systems/generation/SponsorGenerator.ts:40:17  
+generateSponsorId                                    function  src/engine/systems/generation/SponsorGenerator.ts:72:17  
+rollSponsorCategory                                  function  src/engine/systems/generation/SponsorGenerator.ts:77:17  
+generateSponsor                                      function  src/engine/systems/generation/SponsorGenerator.ts:91:17  
+getTierTraitRanges                                   function  src/engine/systems/generation/SponsorGenerator.ts:122:17 
+rollTier                                             function  src/engine/systems/generation/SponsorGenerator.ts:135:17 
+INITIAL_SPONSOR_TIER_DISTRIBUTI…                               src/engine/systems/generation/SponsorGenerator.ts:146:14 
+BASE_SCOUT_COST                   TalentPoolService            src/engine/systems/generation/TalentPoolConstants.ts:2:14
+REVEAL_COST                       TalentPoolService            src/engine/systems/generation/TalentPoolConstants.ts:3:14
+getScoutedCandidateView           TalentPoolScouti…  function  …c/engine/systems/generation/TalentPoolScouting.ts:202:17
+ensureTalentPoolState             TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:12:3  
+refreshAllPools                   TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:15:3  
+tickYear                          TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:16:3  
+getScoutedCandidateView           TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:26:3  
+BASE_SCOUT_COST                   TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:31:3  
+REVEAL_COST                       TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:32:3  
+resolveCandidateSuitor            TalentPoolService            src/engine/systems/generation/TalentPoolService.ts:37:3  
+tickYear                          TalentPoolService  function  …gine/systems/generation/TalentPoolStateService.ts:261:17
+createHeyaWithOyakata                                function  src/engine/systems/generation/WorldFactory.ts:30:17      
+createStables                                        function  src/engine/systems/generation/WorldFactory.ts:121:17     
+createRosters                                        function  src/engine/systems/generation/WorldFactory.ts:189:17     
+BODY_AREA_LABELS                                               src/engine/systems/health/BodyDefinitions.ts:30:14       
+INJURY_TYPE_LABELS                                             src/engine/systems/health/BodyDefinitions.ts:43:14       
+adjustBrandForOyakata                                function  …engine/systems/keshoMawashi/HeyaBrandGenerator.ts:231:17
+buildDesignPalette                                   function  …ngine/systems/keshoMawashi/KeshoMawashiFactory.ts:184:17
+buildDesignPalette                                             …ngine/systems/keshoMawashi/KeshoMawashiGenerator.ts:15:3
+processMediaDecision              MediaService       function  src/engine/systems/media/MediaEventService.ts:158:17     
+getRankImpact                                        function  src/engine/systems/media/MediaImpactService.ts:29:17     
+processMediaDecision              MediaService                 src/engine/systems/media/MediaService.ts:24:3            
+hydrateDescriptor                                    function  src/engine/systems/narrative/NarrativeProse.ts:110:17    
+RIVALRY_TRIGGER_LABELS            rivalries                    src/engine/systems/narrative/RivalryConstants.ts:35:14   
+RIVALRY_TONE_LABELS               rivalries                    src/engine/systems/narrative/RivalryConstants.ts:46:14   
+DERBY_LABELS                      rivalries                    src/engine/systems/narrative/RivalryConstants.ts:55:14   
+bumpTrigger                       rivalries          function  src/engine/systems/narrative/RivalryHeatService.ts:51:17 
+ensurePersonaForOyakata           PersonaService     function  src/engine/systems/NPCPersonaService.ts:54:17            
+getConfidenceFromLevel                               function  src/engine/systems/recruitment/FogOfWarService.ts:42:17  
+getEstimatedValue                                    function  src/engine/systems/recruitment/FogOfWarService.ts:83:17  
+STYLE_NAMES                                                    …engine/systems/recruitment/RecruitmentConstants.ts:32:14
+ARCHETYPE_NAMES                                                …engine/systems/recruitment/RecruitmentConstants.ts:39:14
+createScoutedView                                              src/engine/systems/recruitment/ScoutingService.ts:229:14 
+recordObservation                                              src/engine/systems/recruitment/ScoutingService.ts:230:14 
+calculateGains                                       function  src/engine/systems/training/TrainingMath.ts:197:17       
+getIntensityLabel                 npcAI              function  src/engine/systems/training/TrainingNarrative.ts:27:17   
+getFocusLabel                     npcAI              function  src/engine/systems/training/TrainingNarrative.ts:35:17   
+getRecoveryLabel                  npcAI              function  src/engine/systems/training/TrainingNarrative.ts:43:17   
+getFocusModeLabel                 npcAI              function  src/engine/systems/training/TrainingNarrative.ts:51:17   
+applyWeeklyTraining                                  function  src/engine/systems/training/TrainingService.ts:60:17     
+ensureHeyaWelfareState                               function  src/engine/systems/welfare/WelfareService.ts:33:17       
+advanceDays                                                    src/engine/tick/index.ts:7:25                            
+enterPostBasho                                                 src/engine/tick/index.ts:7:38                            
+enterInterim                                                   src/engine/tick/index.ts:7:54                            
+runPipeline                                                    src/engine/tick/index.ts:8:10                            
+phase01_week_world_circuit        phases             function  …c/engine/tick/phases/phase01_week_world_circuit.ts:11:17
+transitionToSanctioned                                         src/engine/tick/phases/welfare/index.ts:12:3             
+setComplianceStatePure                                         src/engine/tick/phases/welfare/index.ts:13:3             
+transitionToSanctioned                               function  src/engine/tick/phases/welfare/transitions.ts:143:17     
+setComplianceStatePure                               function  src/engine/tick/phases/welfare/transitions.ts:210:17     
+advanceFullInterim                                   function  src/engine/tick/tickDaily.ts:166:17                      
+enterPostBasho                                       function  src/engine/tick/tickDaily.ts:179:17                      
+RING_RADIUS                                                    src/engine/types/combat-spatial.ts:17:14                 
+TACTICAL_MATRIX                                                src/engine/types/combat.ts:42:14                         
+ARCHETYPE_PROFILES                                             src/engine/types/combat.ts:222:14                        
+EXTENDED_ARCHETYPE_PROFILES                                    src/engine/types/combat.ts:311:14                        
+KESHO_TIER_THRESHOLDS                                          src/engine/types/keshoMawashi.ts:326:14                  
+createDefaultTutorialState                           function  src/engine/types/tutorial.ts:28:17                       
+countsAsForeign                                      function  src/engine/utils/citizenshipUtils.ts:32:17               
+isAtForeignLimit                                     function  src/engine/utils/citizenshipUtils.ts:55:17               
+mapIdsToRikishi                                      function  src/engine/utils/collectionOperations.ts:30:17           
+mapIdsToHeya                                         function  src/engine/utils/collectionOperations.ts:40:17           
+mapIdsToOyakata                                      function  src/engine/utils/collectionOperations.ts:50:17           
+filterEntities                                       function  src/engine/utils/collectionOperations.ts:60:17           
+safeParse                                            function  src/engine/utils/jsonParser.ts:41:17                     
+logger                                                         src/engine/utils/Logger.ts:109:14                        
+debug                                                          src/engine/utils/Logger.ts:112:14                        
+getActiveRikishi                  worldEngine                  src/engine/world.ts:37:10                                
+getStableRikishi                  worldEngine                  src/engine/world.ts:37:28                                
+applyBoutResult                   worldEngine                  src/engine/world.ts:37:46                                
+getPlayerOyakata                  worldEngine        function  src/engine/world.ts:248:17                               
+getPlayerStable                   worldEngine        function  src/engine/world.ts:255:17                               
+getRikishiBashoStats              worldEngine        function  src/engine/world.ts:262:17                               
+useDashboardLayout                                   function  src/hooks/useDashboardLayout.ts:58:17                    
+projectArray                                         function  src/presenters/projections/baseProjections.ts:78:17      
+projectMap                                           function  src/presenters/projections/baseProjections.ts:88:17      
+projectConditional                                   function  src/presenters/projections/baseProjections.ts:107:17     
+projectOptionalField                                 function  src/presenters/projections/baseProjections.ts:123:17     
+projectNestedField                                   function  src/presenters/projections/baseProjections.ts:138:17     
+projectCrisisData                                    function  src/presenters/projections/crisisProjections.ts:21:17    
+hasPendingCrisis                                     function  src/presenters/projections/crisisProjections.ts:39:17    
+getPendingCrisis                                     function  src/presenters/projections/crisisProjections.ts:46:17    
+getActiveCrisis                                      function  src/presenters/projections/crisisProjections.ts:53:17    
+isGlobalCupActive                                    function  src/presenters/projections/globalCupProjections.ts:119:17
+getGlobalCupPhase                                    function  src/presenters/projections/globalCupProjections.ts:126:17
+getGlobalCupProgress                                 function  src/presenters/projections/globalCupProjections.ts:133:17
+projectGovernancePage                                function  src/presenters/projections/governanceProjections.ts:33:17
+projectHistoryAggregate                              function  src/presenters/projections/historyProjections.ts:22:17   
+projectRivalriesPage                                 function  src/presenters/projections/rivalriesProjections.ts:24:17 
+projectScoutingSummary                               function  src/presenters/projections/scoutingProjections.ts:27:17  
+projectStableSummary                                 function  src/presenters/projections/stableProjections.ts:28:17    
+calculateSpecialPrizes                               function  src/presenters/rikishi/transformers/achievements.ts:13:17
+calculateAchievements                                function  src/presenters/rikishi/transformers/achievements.ts:24:17
+calculateAvgRank                                     function  src/presenters/rikishi/transformers/career.ts:37:17      
+toStatusDTO                                                    src/presenters/rikishi/transformers/index.ts:15:10       
+toBandsDTO                                                     src/presenters/rikishi/transformers/index.ts:15:23       
+toPerceivedStatsDTO                                            src/presenters/rikishi/transformers/index.ts:15:35       
+toDescriptorDTO                                                src/presenters/rikishi/transformers/index.ts:15:56       
+calculateInjurySummary                                         src/presenters/rikishi/transformers/index.ts:16:10       
+calculateAvgRank                                               src/presenters/rikishi/transformers/index.ts:19:40       
+calculateTopRivals                                             src/presenters/rikishi/transformers/index.ts:29:10       
+calculateTopRivals                                   function  src/presenters/rikishi/transformers/rivals.ts:14:17      
+toStatusDTO                                          function  src/presenters/rikishi/transformers/stats.ts:23:17       
+toBandsDTO                                           function  src/presenters/rikishi/transformers/stats.ts:37:17       
+toPerceivedStatsDTO                                  function  src/presenters/rikishi/transformers/stats.ts:54:17       
+toDescriptorDTO                                      function  src/presenters/rikishi/transformers/stats.ts:84:17       
+calculatePerceivedStats                              function  src/presenters/rikishiUI.ts:242:17                       
+selectRikishiByHeya                                            src/presenters/selectors.ts:120:14                       
+renewSponsorContract                                 function  src/presenters/uiActions.ts:15:17                        
+POTENTIAL_LABELS                                               src/presenters/uiConstants.ts:24:14                      
+PRIZE_LABELS                                                   src/presenters/uiConstants.ts:49:14                      
+getRankTitleJa                                                 src/presenters/uiConstants.ts:64:3                       
+isKachiKoshi                                                   src/presenters/uiConstants.ts:65:3                       
+isMakeKoshi                                                    src/presenters/uiConstants.ts:66:3                       
+createDefaultMediaState                                        src/presenters/uiConstants.ts:68:10                      
+clampInt                                                       src/presenters/uiConstants.ts:71:17                      
+clearInjury                                                    src/presenters/uiConstants.ts:72:10                      
+toInjuryEvent                                                  src/presenters/uiConstants.ts:72:23                      
+exportSave                                                     src/presenters/uiConstants.ts:73:22                      
+ensureHeyaWelfareState                                         src/presenters/uiConstants.ts:74:10                      
+formatSaveDate                                                 src/presenters/uiConstants.ts:78:3                       
+generateH2HCommentary                                          src/presenters/uiConstants.ts:81:10                      
+getOrCreateScouted                                             src/presenters/uiConstants.ts:86:3                       
+getScoutingLevel                                               src/presenters/uiConstants.ts:87:3                       
+warmScoutingForRikishiList                                     src/presenters/uiConstants.ts:89:3                       
+getStatusColor                                                 src/presenters/uiConstants.ts:92:3                       
+getCandidateScoutingLevel                                      src/presenters/uiConstants.ts:100:3                      
+KOENKAI_MONTHLY_INCOME                                         src/presenters/uiConstants.ts:103:3                      
+SPONSOR_TIER_INCOME                                            src/presenters/uiConstants.ts:104:3                      
+labelForWorld                                                  src/presenters/uiDigest.ts:17:3                          
+buildInjurySection                                             src/presenters/uiDigest.ts:18:3                          
+buildEventSections                                             src/presenters/uiDigest.ts:19:3                          
+buildHeadline                                                  src/presenters/uiDigest.ts:20:3                          
+buildMatchupItems                                              src/presenters/uiDigest.ts:21:3                          
+getYokozunaCandidates                                          src/presenters/uiDigest.ts:31:3                          
+projectMergerWarnings                                          src/presenters/uiDigest.ts:65:3                          
+projectPlayerContext                                           src/presenters/uiDigest.ts:80:3                          
+getHallOfFame                                                  src/presenters/uiDigest.ts:88:10                         
+POTENTIAL_LABELS                                               src/presenters/uiDigest.ts:92:3                          
+PRIZE_LABELS                                                   src/presenters/uiDigest.ts:95:3                          
+clampInt                                                       src/presenters/uiDigest.ts:97:3                          
+getRankTitleJa                                                 src/presenters/uiDigest.ts:104:3                         
+isKachiKoshi                                                   src/presenters/uiDigest.ts:105:3                         
+isMakeKoshi                                                    src/presenters/uiDigest.ts:106:3                         
+createDefaultMediaState                                        src/presenters/uiDigest.ts:107:3                         
+clearInjury                                                    src/presenters/uiDigest.ts:112:3                         
+toInjuryEvent                                                  src/presenters/uiDigest.ts:113:3                         
+exportSave                                                     src/presenters/uiDigest.ts:115:3                         
+ensureHeyaWelfareState                                         src/presenters/uiDigest.ts:117:3                         
+formatSaveDate                                                 src/presenters/uiDigest.ts:120:3                         
+generateH2HCommentary                                          src/presenters/uiDigest.ts:121:3                         
+getOrCreateScouted                                             src/presenters/uiDigest.ts:125:3                         
+getScoutingLevel                                               src/presenters/uiDigest.ts:126:3                         
+warmScoutingForRikishiList                                     src/presenters/uiDigest.ts:128:3                         
+getStatusColor                                                 src/presenters/uiDigest.ts:129:3                         
+getCandidateScoutingLevel                                      src/presenters/uiDigest.ts:135:3                         
+KOENKAI_MONTHLY_INCOME                                         src/presenters/uiDigest.ts:136:3                         
+SPONSOR_TIER_INCOME                                            src/presenters/uiDigest.ts:137:3                         
+renewSponsorContract                                           src/presenters/uiDigest.ts:140:10                        
+projectRikishiWithHeya                                         src/presenters/uiDigest.ts:142:3                         
+describeAggression                                             src/presenters/uiDigest.ts:155:3                         
+describeAttribute                                              src/presenters/uiDigest.ts:156:3                         
+describeExperience                                             src/presenters/uiDigest.ts:157:3                         
+createDefaultRivalriesState                                    src/presenters/uiDigest.ts:160:10                        
+getRivalry                                                     src/presenters/uiDigest.ts:160:39                        
+createScoutedView                                              src/presenters/uiDigest.ts:161:10                        
+getScoutedAttributes                                           src/presenters/uiDigest.ts:161:52                        
+PHASE_EFFECTS                                                  src/presenters/uiDigest.ts:165:3                         
+getFocusModeLabel                                              src/presenters/uiDigest.ts:170:3                         
+DEFAULT_CRITICAL_GATES                                         src/presenters/uiDigest.ts:183:10                        
+DEFAULT_DIVISION_DAYS                                          src/presenters/uiDigest.ts:185:3                         
+toPotentialBand                                                src/presenters/uiDigest.ts:191:3                         
+toPrizeBand                                                    src/presenters/uiDigest.ts:192:3                         
+toRivalryHeatBand                                              src/presenters/uiDigest.ts:193:3                         
+MockFileSystemFileHandle                             class     src/test/setup/index.ts:22:14                            
+safeRankSortKey                                      function  src/utils/engineUtils.ts:37:17                           
+Unused exported types (127)
+BaseWidgetAction                                   interface  src/components/dashboard/BaseWidget.tsx:5:18              
+BaseWidgetProps                                    interface  src/components/dashboard/BaseWidget.tsx:11:18             
+UseBoutReplayReturn                                interface  src/components/game/boutReplay/useBoutReplay.ts:35:18     
+NarrativeCeremonyDialogProps                       interface  src/components/game/NarrativeCeremonyDialog.tsx:7:18      
+DataColumn                                         interface  src/components/layout/control-center/DataTable.tsx:11:18  
+ListRow                                            type       src/components/layout/control-center/index.ts:32:15       
+DataColumn                                         type       src/components/layout/control-center/index.ts:35:15       
+ListRow                                            interface  src/components/layout/control-center/ListCard.tsx:14:18   
+MenuItem                                           interface  src/components/layout/sidebarConfig.ts:34:18              
+MenuGroup                                          interface  src/components/layout/sidebarConfig.ts:44:18              
+SubNavTab                                          interface  src/components/layout/SubNavTabs.tsx:5:18                 
+RankTier                                           type       src/components/rikishi/RankBadge.tsx:12:13                
+ButtonProps                                        interface  src/components/ui/button.tsx:36:18                        
+Reducer                         gameHelpers        type       src/contexts/gameHelpers.ts:56:13                         
+BashoPerformance                                   interface  src/engine/almanac.ts:16:18                               
+RikishiCareerRecord                                interface  src/engine/almanac.ts:35:18                               
+HeyaRecord                                         interface  src/engine/almanac.ts:72:18                               
+OyakataRecord                                      interface  src/engine/almanac.ts:98:18                               
+ArchivedRikishiSummary                             interface  src/engine/archival.ts:18:18                              
+EngineSnapshot                                     type       src/engine/bout/boutPhysics.ts:12:15                      
+AttributeGroup                                     type       src/engine/constants/DevelopmentCurves.ts:18:13           
+EntityQueryOptions                                 interface  src/engine/core/EntityCollection.ts:19:18                 
+SystemRNGKey                                       type       src/engine/core/RNGRegistry.ts:19:13                      
+DurationBand                                       type       src/engine/descriptorBands.ts:132:13                      
+EventFactoryConfig                                 interface  src/engine/eventHelpers.ts:40:18                          
+EngineEvent                                        type       src/engine/events.ts:25:3                                 
+EventsState                                        type       src/engine/events.ts:26:3                                 
+EventCategory                                      type       src/engine/events.ts:27:3                                 
+EventPhase                                         type       src/engine/events.ts:28:3                                 
+EventImportance                                    type       src/engine/events.ts:29:3                                 
+EventScope                                         type       src/engine/events.ts:30:3                                 
+ArchivedYear                                       interface  src/engine/historyCache.ts:15:18                          
+BashoPerformance                                   type       src/engine/index.ts:9:15                                  
+KimariteClass                                      type       src/engine/index.ts:26:15                                 
+JsaCategory                                        type       src/engine/index.ts:26:30                                 
+Kimarite                                           type       src/engine/index.ts:26:43                                 
+KimariteRequirements                               type       src/engine/index.ts:26:53                                 
+ScoutedRikishi                                     type       src/engine/index.ts:61:3                                  
+PublicRikishiInfo                                  type       src/engine/index.ts:62:3                                  
+ScoutedAttributeTruthSnapshot                      type       src/engine/index.ts:63:3                                  
+KoenkaiBandType                                    type       src/engine/index.ts:67:15                                 
+Sponsor                                            type       src/engine/index.ts:67:32                                 
+SponsorPool                                        type       src/engine/index.ts:67:41                                 
+RecordEntry                                        type       src/engine/index.ts:70:15                                 
+Kimarite                                           type       src/engine/kimarite.ts:4:15                               
+KimariteClass                                      type       src/engine/kimarite.ts:4:25                               
+JsaCategory                                        type       src/engine/kimarite.ts:4:40                               
+KimariteRequirements                               type       src/engine/kimarite.ts:4:53                               
+LineageTreeNode                                    interface  src/engine/lineage.ts:207:18                              
+LoanTerms                       loans              interface  src/engine/loans.ts:15:18                                 
+CandidateBuildOptions                              interface  src/engine/matchmaking/MatchmakingPhases.ts:53:18         
+ResolutionPath                                     type       src/engine/narrative/BardEngine.ts:5:13                   
+BardResult                                         interface  src/engine/narrative/BardEngine.ts:7:18                   
+RegistryEntry                                      interface  src/engine/narrative/BardEngine.ts:13:18                  
+BardArchive                                        interface  src/engine/narrative/BardEngine.ts:21:18                  
+DramaEvent                                         interface  src/engine/narrative/dramaGenerator.ts:17:18              
+AttributeKey                                       type       src/engine/narrativeDescriptions.ts:67:15                 
+TrainingWorkerResult                               interface  src/engine/npcAIWorkers.ts:40:18                          
+ScoutingWorkerResult                               interface  src/engine/npcAIWorkers.ts:55:18                          
+PersonnelWorkerResult                              interface  src/engine/npcAIWorkers.ts:67:18                          
+RivalryKey                      rivalries          type       src/engine/rivalries.ts:74:3                              
+TraitCheck                                         type       src/engine/strategy/NPCStrategyFramework.ts:21:13         
+ThresholdCalculator                                type       src/engine/strategy/NPCStrategyFramework.ts:24:13         
+StrategyAction                                     type       src/engine/strategy/NPCStrategyFramework.ts:27:13         
+OyakataScoutingObservation      NPCStrategyServi…  interface  src/engine/strategy/NPCStrategyService.ts:11:18           
+OyakataPersonnelObservation     NPCStrategyServi…  interface  src/engine/strategy/NPCStrategyService.ts:18:18           
+ReplayPhase                                        type       src/engine/systems/bout/ReplayMetadata.ts:8:13            
+BoutImportanceBucket                               type       src/engine/systems/economics/KenshoService.ts:7:13        
+HeyaFinanceResult                                  interface  src/engine/systems/economy/FinanceCalculator.ts:26:18     
+ExhibitionRegion                                   type       src/engine/systems/global/WorldCircuitService.ts:15:13    
+ExhibitionInvitation                               interface  src/engine/systems/global/WorldCircuitService.ts:17:18    
+YDCCandidate                                       interface  src/engine/systems/governance/YokozunaService.ts:15:18    
+EraTone                                            type       src/engine/systems/meta/EraDriftService.ts:14:13          
+FinancialBand                                      type       src/engine/systems/narrative/NarrativeBands.ts:56:13      
+NPCPersona                      PersonaService     interface  src/engine/systems/NPCPersonaService.ts:11:18             
+RankLabel                                          interface  …/engine/systems/recruitment/RecruitmentConstants.ts:14:18
+DailyTickReport                                    type       src/engine/tick/index.ts:7:73                             
+PipelinePhase                                      type       src/engine/tick/index.ts:8:28                             
+RankInfo                                           interface  src/engine/types/banzuke.ts:100:18                        
+BoutLogEntryV2                                     interface  src/engine/types/combat-spatial.ts:187:18                 
+HistoricalHeya                                     interface  src/engine/types/history.ts:81:18                         
+FacilityDefinition                                 interface  src/engine/types/infrastructure.ts:29:18                  
+KeshoGenerationWeights                             interface  src/engine/types/keshoMawashi.ts:281:18                   
+OutletType                                         type       src/engine/types/media.ts:15:13                           
+NewsItem                                           interface  src/engine/types/media.ts:18:18                           
+ScandalType                                        type       src/engine/types/media.ts:33:13                           
+AttributeKey                                       type       src/engine/types/rikishi.ts:26:13                         
+SerializedSponsorPool                              interface  src/engine/types/save.ts:31:18                            
+LogLevel                                           type       src/engine/utils/Logger.ts:7:13                           
+WorkerMessage                                      interface  src/engine/worker/types.ts:36:18                          
+WidgetDef                                          interface  src/hooks/useDashboardLayout.ts:7:18                      
+UIBoutRow                                          interface  src/presenters/bashoUI.ts:5:18                            
+UIBashoSummary                                     interface  src/presenters/bashoUI.ts:25:18                           
+UIStaffEntry                                       interface  src/presenters/heyaUI.ts:8:18                             
+UIHeya                                             interface  src/presenters/heyaUI.ts:15:18                            
+HealthBadge                                        type       src/presenters/PerceptionPresenter.ts:9:13                
+ScoutedAttr                                        interface  src/presenters/projections/boutProjections.ts:72:18       
+CrisisProjection                                   interface  src/presenters/projections/crisisProjections.ts:10:18     
+RunwayBand                                         type       src/presenters/projections/financeProjections.ts:12:13    
+FinanceSummary                                     interface  src/presenters/projections/financeProjections.ts:14:18    
+ScandalBand                                        type       src/presenters/projections/governanceProjections.ts:11:13 
+GovernanceSummary                                  interface  src/presenters/projections/governanceProjections.ts:13:18 
+HistoryAggregate                                   interface  src/presenters/projections/historyProjections.ts:11:18    
+RivalriesPageData                                  interface  src/presenters/projections/rivalriesProjections.ts:11:18  
+ScoutingOpponentSnap                               interface  src/presenters/projections/scoutingProjections.ts:10:18   
+ScoutingSummary                                    interface  src/presenters/projections/scoutingProjections.ts:20:18   
+StableSummary                                      interface  src/presenters/projections/stableProjections.ts:12:18     
+TrainingRikishiStatus                              interface  src/presenters/projections/trainingProjections.ts:10:18   
+TrainingSummary                                    interface  src/presenters/projections/trainingProjections.ts:19:18   
+RikishiRivalsDTO                                   interface  src/presenters/rikishi/types.ts:122:18                    
+UIRikishiDTO                                       interface  src/presenters/rikishi/types.ts:192:18                    
+UIRikishi                                          type       src/presenters/rikishi/types.ts:217:13                    
+GreatestFight                                      interface  src/presenters/types/uiDigest.ts:72:18                    
+YushoEntry                                         interface  src/presenters/types/uiDigest.ts:80:18                    
+HoFInducteeUI                                      interface  src/presenters/types/uiDigest.ts:86:18                    
+HOFUIDigest                                        interface  src/presenters/types/uiDigest.ts:94:18                    
+LoanProjection                                     interface  src/presenters/types/uiDigest.ts:175:18                   
+MergerWarning                                      interface  src/presenters/types/uiDigest.ts:192:18                   
+DivisionScheduleConfig                             interface  src/presenters/types/uiDigest.ts:203:18                   
+ScheduleRules                                      interface  src/presenters/types/uiDigest.ts:210:18                   
+PerceptionSnapshot                                 interface  src/presenters/types/uiDigest.ts:218:18                   
+EnrichedBoutResult                                 interface  src/presenters/types/uiDigest.ts:235:18                   
+IntaiEntry                                         interface  src/presenters/types/uiDigest.ts:244:18                   
+PrestigeChange                                     interface  src/presenters/types/uiDigest.ts:250:18                   
+DigestKind                                         type       src/presenters/uiDigest.ts:22:8                           
+DigestItem                                         type       src/presenters/uiDigest.ts:23:8                           
+DigestSection                                      type       src/presenters/uiDigest.ts:24:8                           
+Duplicate exports (3)
+SumoAvatar|default    src/components/avatar/SumoAvatar.tsx
+STABLE_TABS|HQ_TABS   src/constants/navigation.ts         
+seededPick|getRandom  src/engine/utils/random.ts          
+Configuration hints (8)
+. (root)                        knip.json  Add entry and/or refine project files (72 unused files)
+**/*.test.ts                    knip.json  Remove from ignore                                     
+**/*.test.tsx                   knip.json  Remove from ignore                                     
+@types/node                     knip.json  Remove from ignoreDependencies                         
+@types/react                    knip.json  Remove from ignoreDependencies                         
+@types/react-dom                knip.json  Remove from ignoreDependencies                         
+src/engine/simulation/run.ts    knip.json  Refine entry pattern (no matches)                      
+src/main.tsx                    knip.json  Remove redundant entry pattern                         

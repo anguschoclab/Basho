@@ -10,7 +10,7 @@ export type { BashoPerformance } from "./banzuke";
 export * from "./banzuke";
 export * from "./bout/boutResolver";
 export * from "./bout/boutResultApplier";
-export { getBashoNumber, isBashoMonth, getBashoInfo } from "./calendar";
+// getBashoNumber, isBashoMonth, getBashoInfo removed (unused re-export)
 export * from "./tick/tickDaily";
 export * from "./descriptorBands";
 export * from "./economics";
@@ -51,12 +51,7 @@ export * from "./persistence/SaveSlotService";
 
 export * from "./storageProvider";
 export * from "./schedule";
-export {
-  recordObservation,
-  createScoutedView,
-  getScoutedAttributes,
-  describeScoutingLevel,
-} from "./systems/recruitment/ScoutingService";
+// recordObservation, createScoutedView, getScoutedAttributes, describeScoutingLevel removed (unused re-export)
 export type {
   ScoutedRikishi,
   PublicRikishiInfo,
@@ -70,7 +65,7 @@ export * from "./systems/training/TrainingService";
 export type { RecordEntry } from "./types/records";
 export * from "./types/index";
 export * from "./systems/welfare/WelfareService";
-export { advanceBashoDay, simulateBoutForToday } from "./world";
+// advanceBashoDay, simulateBoutForToday removed (unused re-export)
 export * from "./systems/generation/WorldFactory";
 export * from "./rng";
 export * from "./lineage";

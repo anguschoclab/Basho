@@ -22,6 +22,7 @@ export type EngineCommand =
   | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
   | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
   | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: any }
+  | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "GET_DIGEST" };
 
 /** Worker -> UI Events */

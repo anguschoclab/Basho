@@ -1,0 +1,492 @@
+
+> studio-boss@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/amauricia/Documents/GitHub/sumo-manager-pro
+
+ ✓ src/engine/systems/generation/__tests__/archetypeStatModifiers.test.ts (6 tests) 12ms
+ ❯ src/engine/systems/economics/__tests__/SponsorshipService.test.ts (12 tests | 2 failed) 11ms
+   ✓ SponsorshipService > createKoenkai > creates a koenkai and determines strength band based on prestige 2ms
+   ✓ SponsorshipService > calculateKoenkaiIncome > returns expected income for each band 0ms
+   ✓ SponsorshipService > selectBenefactor > returns null if koenkai is undefined 0ms
+   ✓ SponsorshipService > selectBenefactor > returns null if no pillar with risk appetite >= 50 0ms
+   ✓ SponsorshipService > selectBenefactor > returns pillar with highest risk appetite >= 50 0ms
+   × SponsorshipService > applyAchievementImpact > applies popularity boost based on award type 5ms
+     → expected 10 to be 30 // Object.is equality
+   × SponsorshipService > applyAchievementImpact > caps popularity at 100 0ms
+     → expected 90 to be 100 // Object.is equality
+   ✓ SponsorshipService > computeStarPower > computes star power based on rikishi ranks 0ms
+   ✓ SponsorshipService > computeStarPower > caps star power at 100 0ms
+   ✓ SponsorshipService > processSponsorChurn > returns empty values if no sponsors pool 0ms
+   ✓ SponsorshipService > processSponsorChurn > evaluates satisfaction and updates koenkai band 1ms
+   ✓ SponsorshipService > processSponsorChurn > retains sponsors if satisfaction is high enough 0ms
+ ✓ src/engine/__tests__/engine_restoration.test.ts (5 tests) 95ms
+ ✓ src/presenters/__tests__/uiModels.test.ts (7 tests) 192ms
+ ✓ src/test/engine/utils/math.test.ts (18 tests) 16ms
+ ✓ src/test/engine/utils/string.test.ts (9 tests) 18ms
+ ✓ src/engine/__tests__/governance/issueRuling.test.ts (7 tests) 3ms
+ ✓ src/test/engine/utils/formatters.test.ts (13 tests) 17ms
+ ✓ src/engine/__tests__/banzukeHelpers.test.ts (13 tests) 11ms
+ ❯ src/presenters/__tests__/uiDigest.test.ts (21 tests | 3 failed) 13ms
+   ✓ UI Digest: Rikishi Perception Boundary > MUST NOT leak raw numerical stats into the UI model 1ms
+   ✓ UI Digest: Rikishi Perception Boundary > MUST expose public biographical data correctly 0ms
+   × UI Digest: Rikishi Perception Boundary > formatRadarData (v2.0 Visuals) > should map rikishi attributes to radar points with C5 labels 4ms
+     → formatRadarData is not a function
+   × UI Digest: Rikishi Perception Boundary > formatMetaTrends (Streamgraph Data) > should format world history into stacked components totaling 100% 0ms
+     → formatMetaTrends is not a function
+   × UI Digest: Rikishi Perception Boundary > formatMetaTrends (Streamgraph Data) > should return empty if no history 0ms
+     → formatMetaTrends is not a function
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > returns empty array if no historyIndex 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > returns empty array if no candidates (sekiwake/komusubi) 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > calculates recent wins from last 3 basho results 1ms
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > includes current basho standings in recent wins 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > filters NPC rikishi with < 20 wins, but includes player rikishi 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > getOzekiRunCandidates > sorts candidates descending by recentWins and assigns >=33 narrative 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > buildWeeklyDigest > returns null if world is null 0ms
+   ✓ UI Digest: Rikishi Perception Boundary > buildWeeklyDigest > returns a basic digest when no events or injuries exist 1ms
+   ✓ UI Digest: Rikishi Perception Boundary > buildWeeklyDigest > includes injury section when rikishi are injured 1ms
+   ✓ UI Digest: Rikishi Perception Boundary > buildWeeklyDigest > includes key matchups during active basho 1ms
+   ✓ UI Digest: Rikishi Perception Boundary > buildWeeklyDigest > groups engine events into correct sections 1ms
+   ✓ getKadobanDrama > should return empty array if ozekiKadoban is undefined/empty 0ms
+   ✓ getKadobanDrama > should skip if !isKadoban and consecutiveMakeKoshi < 2 0ms
+   ✓ getKadobanDrama > should return "Failed to clear Kadoban. Demotion to Sekiwake confirmed." when demoted 0ms
+   ✓ getKadobanDrama > should return "Cleared Kadoban. Retains Ozeki rank." when cleared 0ms
+   ✓ getKadobanDrama > should return "Fighting for survival as Kadoban Ozeki." when isKadoban is true and < 8 wins/losses 0ms
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — fusensho (walkover) > does NOT return fusensho when both are healthy
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > winner's momentum decreases after successful henka
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > momentum penalty does not drop below 0
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > resolveBout — henka momentum penalty > no momentum change when STANDARD tactic is used
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+stderr | src/engine/bout/__tests__/boutResolver.test.ts > simulateBout > returns a valid result for two healthy rikishi
+BardEngine: No options found at path "institutional.kensho_sponsors" (Intensity: 2)
+
+ ✓ src/engine/bout/__tests__/boutResolver.test.ts (9 tests) 18ms
+ ✓ src/pages/__tests__/HistoryPage.test.tsx (4 tests) 59ms
+ ✓ src/engine/systems/economics/__tests__/KenshoService.test.ts (13 tests) 19ms
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > strips markdown json blocks
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > parses JSON with unquoted keys
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > parses JSON with trailing commas
+[jsonParser] Initial parse failed, attempting sanitization...
+
+stderr | src/engine/utils/__tests__/jsonParser.test.ts > parseLLMResponse > throws a descriptive error on completely invalid JSON
+[jsonParser] Initial parse failed, attempting sanitization...
+[jsonParser] Critical Parse Failure on output: not json at all
+
+ ✓ src/engine/utils/__tests__/jsonParser.test.ts (5 tests) 5ms
+stdout | src/engine/__tests__/yokozunaPresence.test.ts > Yokozuna Presence Logic Validation > tracks yokozuna presence and promotion under new 2-basho rules
+
+=== Yokozuna Presence Validation Report ===
+Total Basho Simulated: 24
+Basho with 0 Yokozuna on Banzuke: 24 (100.0%)
+Basho with 0 Healthy Yokozunas: 24 (100.0%)
+
+ ✓ src/engine/__tests__/yokozunaPresence.test.ts (1 test) 736ms
+   ✓ Yokozuna Presence Logic Validation > tracks yokozuna presence and promotion under new 2-basho rules  736ms
+ ✓ src/engine/bout/__tests__/boutPhysics.test.ts (6 tests) 10ms
+stdout | src/contexts/__tests__/gameReducer.test.ts > Game Reducer Purity > MUST NOT mutate the previous state object on TICK_DAY
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+
+ ✓ src/engine/core/__tests__/StateImpact.test.ts (17 tests) 8ms
+ ✓ src/engine/bout/__tests__/boutResultApplier.test.ts (6 tests) 7ms
+ ✓ src/engine/__tests__/keshoMawashi/KeshoMawashiGenerator.test.ts (14 tests) 10ms
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus > wraps logEngineEvent correctly for standard domains
+BardEngine: No options found at path "events.medical.title" (Intensity: 2)
+BardEngine: No options found at path "events.medical.summary" (Intensity: 2)
+BardEngine Warning: Missing token {SHIKONA} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+BardEngine Warning: Missing token {WINS} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+BardEngine Warning: Missing token {LOSSES} in context for template: "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits OYAKATA_MOOD_SHIFT via oyakataMoodShift factory
+BardEngine: No options found at path "events.narrative.mood_shift_title" (Intensity: 2)
+BardEngine: No options found at path "events.narrative.mood_shift_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits NPC_MANAGER_DECISION via managementDecision factory
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits FACILITY_UPGRADED via facilityUpdate factory
+BardEngine: No options found at path "events.facility.upgraded_title" (Intensity: 2)
+BardEngine: No options found at path "events.facility.upgraded_summary" (Intensity: 2)
+
+stderr | src/engine/__tests__/events.test.ts > events.test.ts - Helpers & Cleanup > EventBus - Expanded Factories > emits LIFECYCLE_EVENT via lifecycleAction factory
+BardEngine Warning: Missing token {SHIKONA} in context for template: "%SHIKONA% Obtains Citizenship"
+BardEngine Warning: Missing token {SHIKONA} in context for template: "Legal milestone: %SHIKONA% is now a Japanese citizen."
+
+ ✓ src/engine/__tests__/events.test.ts (14 tests) 9ms
+ ✓ src/engine/__tests__/matchmaking.test.ts (18 tests) 6ms
+ ✓ src/engine/__tests__/schedule.test.ts (22 tests) 8ms
+ ✓ src/engine/banzuke/__tests__/banzukeTiebreak.test.ts (4 tests) 15ms
+ ✓ src/__tests__/presenters/projections/eventProjections.test.ts (6 tests) 3ms
+ ✓ src/presenters/rikishi/__tests__/transformers.test.ts (27 tests) 8ms
+ ✓ src/engine/__tests__/avatarGenerator.test.ts (25 tests) 7ms
+stderr | src/test/engine/storage/opfsArchive.test.ts > Stable Lords: OPFS Archival System > Suite 5: Fallback & Quota Management > Test 5.1: Graceful degradation on QuotaExceededError
+[OPFS] Storage quota exceeded. Archiving skipped.
+
+ ✓ src/test/engine/storage/opfsArchive.test.ts (10 tests) 7ms
+ ✓ src/engine/storage/__tests__/OPFSFileSystem.test.ts (9 tests) 6ms
+stdout | src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts > Yokozuna Promotion Logic > should trigger favorable deliberation for Ozeki with 2 consecutive Yushos and high heat
+[HistoryCache] Cache miss for year 2025, attempting OPFS load... 
+
+stdout | src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts > Yokozuna Promotion Logic > should trigger controversial deliberation for Ozeki with 2 consecutive Yushos but low heat
+[HistoryCache] Cache miss for year 2025, attempting OPFS load... 
+
+stdout | src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts > Yokozuna Promotion Logic > should NOT trigger deliberation if stats are insufficient
+[HistoryCache] Cache miss for year 2025, attempting OPFS load... 
+
+ ✓ src/engine/lifecycle/__tests__/yokozunaPromotion.test.ts (3 tests) 9ms
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should restore from snapshot when phase throws
+[PIPELINE FATAL ERROR] in phase: "badPhase" Error: Phase failure
+    at phase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:28:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:31:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should not corrupt state when phase partially mutates then throws
+[PIPELINE FATAL ERROR] in phase: "partialMutator" Error: Partial mutation error
+    at phase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:44:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:47:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should continue with remaining phases after error
+[PIPELINE FATAL ERROR] in phase: "failingPhase" Error: Expected failure
+    at phase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:67:13)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:70:5
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+stderr | src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts > pipelineRunner error recovery > should preserve heyas and rikishi maps through errors
+[PIPELINE FATAL ERROR] in phase: "corruptorPhase" Error: [pipelineRunner] Phase "corruptorPhase" returned invalid WorldState (heyas or rikishi map missing).
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:61:15)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts:90:20
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runSuite (file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/engine/__tests__/tick/pipelineRunner.snapshot.test.ts (4 tests) 6ms
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRule > should return true when condition and action succeed
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesExclusive > should stop after first executed rule
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesExclusive > should try subsequent rules if earlier ones fail
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesCumulative > should execute all matching rules
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+stderr | src/engine/strategy/__tests__/NPCStrategyFramework.test.ts > evaluateRulesCumulative > should count only successful executions
+BardEngine: No options found at path "events.management.decision_title" (Intensity: 2)
+BardEngine: No options found at path "events.management.decision_summary" (Intensity: 2)
+
+ ✓ src/engine/strategy/__tests__/NPCStrategyFramework.test.ts (28 tests) 9ms
+ ✓ src/engine/bout/__tests__/kimariteStrategiesV2.test.ts (5 tests) 15ms
+ ✓ src/engine/__tests__/keshoMawashi/determinism.test.ts (5 tests) 5ms
+ ✓ src/engine/bout/__tests__/boutGrip.test.ts (8 tests) 4ms
+ ✓ src/engine/__tests__/TalentPoolService.test.ts (10 tests) 6ms
+ ✓ src/engine/__tests__/keshoMawashi/integration.test.ts (6 tests) 7ms
+ ✓ src/engine/__tests__/governance/GovernanceService.test.ts (17 tests) 14ms
+ ✓ src/engine/bout/__tests__/kimariteClassifier.test.ts (18 tests) 6ms
+ ✓ src/engine/__tests__/shikona.test.ts (12 tests) 5ms
+ ✓ src/__tests__/presenters/projections/baseProjections.test.ts (4 tests) 2ms
+ ✓ src/engine/__tests__/h2h.test.ts (14 tests) 5ms
+ ✓ src/__tests__/presenters/projections/heyaProjections.test.ts (4 tests) 4ms
+ ✓ src/engine/systems/health/__tests__/InjuryService.test.ts (17 tests) 6ms
+ ✓ src/engine/__tests__/engine.worker.test.ts (8 tests) 16ms
+ ✓ src/engine/core/__tests__/SimulationConfig.test.ts (5 tests) 5ms
+ ✓ src/engine/bout/__tests__/determinism.test.ts (1 test) 6ms
+ ✓ src/engine/tick/phases/__tests__/phase02_context.test.ts (5 tests) 4ms
+ ✓ src/engine/bout/__tests__/favoredKimarite.test.ts (3 tests) 4ms
+ ✓ src/presenters/__tests__/selectors.test.ts (15 tests) 7ms
+ ✓ src/engine/bout/__tests__/boutResult.snapshot.test.ts (1 test) 5ms
+stderr | src/hooks/__tests__/useDashboardLayout.test.ts > useDashboardLayout: loadSavedOrder > should handle prototype pollution attempts via destr
+[destr] Dropping "__proto__" key to prevent prototype pollution.
+
+ ✓ src/hooks/__tests__/useDashboardLayout.test.ts (6 tests) 4ms
+ ✓ src/__tests__/presenters/facilityProjections.test.ts (8 tests) 7ms
+ ✓ src/engine/__tests__/core/SimulationRunner.test.ts (9 tests) 22ms
+ ✓ src/engine/core/__tests__/ImpactResolver.test.ts (13 tests) 8ms
+ ✓ src/engine/__tests__/keshoMawashi/HeyaBrandGenerator.test.ts (11 tests) 7ms
+ ✓ src/lib/__tests__/localStorageProvider.test.ts (9 tests) 6ms
+ ✓ src/engine/prestige/__tests__/prestigeSystem.test.ts (14 tests) 5ms
+stdout | src/contexts/__tests__/gameReducer.test.ts > Game Reducer: Batch Processing > MUST process multiple days atomically without intermediate states
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+
+ ✓ src/contexts/__tests__/gameReducer.test.ts (2 tests) 5733ms
+   ✓ Game Reducer Purity > MUST NOT mutate the previous state object on TICK_DAY  346ms
+   ✓ Game Reducer: Batch Processing > MUST process multiple days atomically without intermediate states  5387ms
+ ✓ src/test/engine/Phase5Depth.test.ts (5 tests) 3ms
+ ✓ src/presenters/__tests__/banzukeUI.test.ts (12 tests) 4ms
+ ✓ src/presenters/__tests__/rikishiUI.test.ts (15 tests) 6ms
+ ✓ src/__tests__/presenters/digestProjections.test.ts (10 tests) 6ms
+ ✓ src/__tests__/presenters/rikishiUI.test.ts (2 tests) 3ms
+ ✓ src/engine/__tests__/oyakataStylePreferences.test.ts (3 tests) 5ms
+ ✓ src/engine/simulation/__tests__/AutoSimService.test.ts (15 tests) 4ms
+ ✓ src/__tests__/engine/utils/entityAccess.test.ts (11 tests) 5ms
+ ✓ src/engine/tick/__tests__/advanceWeek.test.ts (5 tests) 13ms
+ ✓ src/engine/core/__tests__/EntityCollection.test.ts (10 tests) 8ms
+ ✓ src/engine/tick/phases/__tests__/phase06_narrative.test.ts (5 tests) 3ms
+ ✓ src/__tests__/components/ui/colorMaps.test.ts (6 tests) 6ms
+ ✓ src/engine/__tests__/promotionLogic.test.ts (17 tests) 5ms
+ ✓ src/__tests__/presenters/uiProjections.test.ts (5 tests) 4ms
+ ✓ src/engine/__tests__/npcAI_agentic.test.ts (4 tests) 5ms
+ ✓ src/engine/systems/welfare/__tests__/WelfareCalculations.test.ts (11 tests) 6ms
+ ✓ src/utils/__tests__/engineUtils.test.ts (4 tests) 2ms
+ ✓ src/engine/__tests__/banzukeTemplate.test.ts (2 tests) 3ms
+ ✓ src/engine/bout/__tests__/h2hConfidence.test.ts (6 tests) 4ms
+ ✓ src/engine/systems/generation/__tests__/CandidateGenerator.test.ts (6 tests) 4ms
+ ✓ src/test/engine/utils/safe.test.ts (2 tests) 4ms
+ ✓ src/engine/__tests__/TalentPoolConversion.test.ts (1 test) 5ms
+ ✓ src/engine/lifecycle/__tests__/RegistryService.test.ts (6 tests) 3ms
+ ✓ src/engine/core/__tests__/RNGRegistry.test.ts (5 tests) 3ms
+ ✓ src/presenters/__tests__/bashoUI.test.ts (6 tests) 3ms
+ ✓ src/engine/__tests__/media/mediaEvent.test.ts (6 tests) 3ms
+ ✓ src/presenters/__tests__/PerceptionPresenter.test.ts (13 tests) 8ms
+ ✓ src/__tests__/presenters/utilities/uiUtilities.test.ts (3 tests) 11ms
+ ✓ src/engine/__tests__/banzuke/promotionLogic.test.ts (32 tests) 5ms
+ ✓ src/engine/bout/__tests__/conditionMultiplier.test.ts (9 tests) 3ms
+ ✓ src/engine/systems/training/__tests__/TrainingMath.test.ts (16 tests) 7ms
+ ✓ src/engine/__tests__/hallOfFame.test.ts (3 tests) 5ms
+ ✓ src/__tests__/presenters/projections/economyProjections.test.ts (4 tests) 3ms
+ ✓ src/engine/__tests__/autoSimService.test.ts (17 tests) 4ms
+ ✓ src/engine/bout/__tests__/boutSpatial.test.ts (10 tests) 6ms
+ ✓ src/engine/__tests__/bardIntegration.test.ts (3 tests) 3ms
+ ✓ src/engine/bout/__tests__/boutGripDepth.test.ts (6 tests) 3ms
+ ✓ src/engine/__tests__/lifecycle.test.ts (5 tests) 4ms
+ ✓ src/engine/__tests__/specialPrizes.test.ts (5 tests) 3ms
+ ✓ src/__tests__/presenters/selectors.test.ts (6 tests) 3ms
+ ✓ src/engine/__tests__/oyakataPersonalities.test.ts (7 tests) 5ms
+ ✓ src/engine/core/__tests__/EntityService.test.ts (5 tests) 5ms
+ ✓ src/engine/tick/__tests__/pipelineRunner.test.ts (3 tests) 3ms
+ ✓ src/engine/types/__tests__/banzuke.test.ts (5 tests) 3ms
+ ✓ src/__tests__/engine/utils/collectionOperations.test.ts (6 tests) 3ms
+ ✓ src/engine/systems/health/__tests__/RecoveryService.test.ts (6 tests) 2ms
+ ✓ src/test/engine/utils/random.test.ts (7 tests) 5ms
+ ✓ src/engine/bout/__tests__/boutPhysicsStats.test.ts (12 tests) 4ms
+ ✓ src/__tests__/presenters/projections/boutProjections.test.ts (5 tests) 3ms
+ ✓ src/contexts/__tests__/financeSlice.test.ts (2 tests) 6ms
+ ✓ src/test/engine/utils/sort.test.ts (6 tests) 3ms
+ ✓ src/__tests__/presenters/banzukeUI.test.ts (4 tests) 9ms
+ ✓ src/contexts/__tests__/gameHelpers.test.ts (2 tests) 4ms
+ ✓ src/engine/bout/__tests__/weakAgainstStyles.test.ts (3 tests) 2ms
+ ✓ src/engine/npc/npcActivitySurfacing.test.ts (9 tests) 5ms
+ ✓ src/__tests__/presenters/projections/promotionProjections.test.ts (5 tests) 3ms
+ ✓ src/contexts/__tests__/bashoSlice.test.ts (4 tests) 4ms
+ ✓ src/test/engine/utils/identity.test.ts (6 tests) 2ms
+ ✓ src/engine/utils/__tests__/seed.test.ts (3 tests) 14ms
+stdout | src/__tests__/routes.test.tsx
+[Router] Initialized with history type: BROWSER
+
+ ✓ src/__tests__/routes.test.tsx (8 tests) 7ms
+ ✓ src/store/__tests__/gameStore.workerSync.test.ts (4 tests) 2ms
+ ✓ src/__tests__/presenters/uiDigest.test.ts (2 tests) 2ms
+ ✓ src/engine/__tests__/ozekiLogic.test.ts (4 tests) 3ms
+ ✓ src/engine/bout/__tests__/rivalryEdgeCrisis.test.ts (5 tests) 4ms
+ ✓ src/engine/systems/training/__tests__/adaptability.test.ts (4 tests) 3ms
+ ✓ src/__tests__/presenters/projections/dashboardProjections.test.ts (4 tests) 2ms
+ ✓ src/__tests__/presenters/uiFormatters.test.ts (2 tests) 2ms
+ ✓ src/__tests__/presenters/projections/bashoProjections.test.ts (2 tests) 2ms
+ ✓ src/engine/__tests__/staff_impact.test.ts (2 tests) 2ms
+stdout | src/engine/__tests__/simulationDeterminism.test.ts > Simulation determinism > produces identical checksum at day 50 on two independent runs
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+
+stdout | src/engine/__tests__/simulationDeterminism.test.ts > Simulation determinism > produces identical checksum at day 100 on two independent runs
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+
+stderr | src/engine/__tests__/simulationDeterminism.test.ts > Simulation determinism > produces identical checksum at day 100 on two independent runs
+[PIPELINE FATAL ERROR] in phase: "phase05_monthly_boundary" TypeError: builder.deleteRikishi is not a function
+    at evaluateRetirementsBase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcRetirementStrategy.ts:39:15)
+    at Object.evaluateRetirements (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcRetirementStrategy.ts:83:12)
+    at Module.tickMonthlyNPC (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcAI.ts:389:35)
+    at phase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/phases/phase05_monthly_boundary.ts:91:28)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at Module.advanceOneDay (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/tickDaily.ts:111:19)
+    at simDays (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/simulationDeterminism.test.ts:65:13)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/simulationDeterminism.test.ts:82:19
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+[PIPELINE FATAL ERROR] in phase: "phase05_monthly_boundary" TypeError: builder.deleteRikishi is not a function
+    at evaluateRetirementsBase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcRetirementStrategy.ts:39:15)
+    at Object.evaluateRetirements (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcRetirementStrategy.ts:83:12)
+    at Module.tickMonthlyNPC (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/npcAI.ts:389:35)
+    at phase (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/phases/phase05_monthly_boundary.ts:91:28)
+    at Module.runPipeline (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/pipelineRunner.ts:44:22)
+    at Module.advanceOneDay (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/tick/tickDaily.ts:111:19)
+    at simDays (/Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/simulationDeterminism.test.ts:65:13)
+    at /Users/amauricia/Documents/GitHub/sumo-manager-pro/src/engine/__tests__/simulationDeterminism.test.ts:83:19
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/amauricia/Documents/GitHub/sumo-manager-pro/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+
+stdout | src/engine/__tests__/simulationDeterminism.test.ts > Simulation determinism > day-50 checkpoint in a 100-day run matches standalone 50-day run
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+
+stdout | src/engine/__tests__/simulationDeterminism.test.ts > Simulation determinism > different seeds produce different checksums at day 50
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] interim -> banzuke_reveal: The official banzuke has been published.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] banzuke_reveal -> pre_basho: Final preparations for the upcoming basho begin.
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+[PhaseTransition] pre_basho -> active_basho: The hatsu basho begins!
+
+ ✓ src/engine/__tests__/simulationDeterminism.test.ts (4 tests) 111690ms
+   ✓ Simulation determinism > produces identical checksum at day 50 on two independent runs  27793ms
+   ✓ Simulation determinism > produces identical checksum at day 100 on two independent runs  42866ms
+   ✓ Simulation determinism > day-50 checkpoint in a 100-day run matches standalone 50-day run  20889ms
+   ✓ Simulation determinism > different seeds produce different checksums at day 50  20142ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/presenters/__tests__/uiDigest.test.ts > UI Digest: Rikishi Perception Boundary > formatRadarData (v2.0 Visuals) > should map rikishi attributes to radar points with C5 labels
+TypeError: formatRadarData is not a function
+ ❯ src/presenters/__tests__/uiDigest.test.ts:68:22
+     66|       };
+     67| 
+     68|       const result = formatRadarData(mockRikishi as Rikishi);
+       |                      ^
+     69|       expect(result).toHaveLength(5);
+     70|       expect(result[0].subject).toBe("Power");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/presenters/__tests__/uiDigest.test.ts > UI Digest: Rikishi Perception Boundary > formatMetaTrends (Streamgraph Data) > should format world history into stacked components totaling 100%
+TypeError: formatMetaTrends is not a function
+ ❯ src/presenters/__tests__/uiDigest.test.ts:85:22
+     83|       };
+     84| 
+     85|       const result = formatMetaTrends(mockWorld as WorldState);
+       |                      ^
+     86|       expect(result).toHaveLength(2);
+     87|       expect(result[0].basho).toBe("H24");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/presenters/__tests__/uiDigest.test.ts > UI Digest: Rikishi Perception Boundary > formatMetaTrends (Streamgraph Data) > should return empty if no history
+TypeError: formatMetaTrends is not a function
+ ❯ src/presenters/__tests__/uiDigest.test.ts:95:14
+     93|     it("should return empty if no history", () => {
+     94|       const mockWorld: Partial<WorldState> = { history: [], bashoNumbe…
+     95|       expect(formatMetaTrends(mockWorld as WorldState)).toEqual([]);
+       |              ^
+     96|     });
+     97|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/engine/systems/economics/__tests__/SponsorshipService.test.ts > SponsorshipService > applyAchievementImpact > applies popularity boost based on award type
+AssertionError: expected 10 to be 30 // Object.is equality
+
+- Expected
++ Received
+
+- 30
++ 10
+
+ ❯ src/engine/systems/economics/__tests__/SponsorshipService.test.ts:101:45
+     99|       } as any); // eslint-disable-line @typescript-eslint/no-explicit…
+    100|       applyAchievementImpact({} as WorldState, rikishi, "kinboshi");
+    101|       expect(rikishi.economics?.popularity).toBe(30);
+       |                                             ^
+    102| 
+    103|       applyAchievementImpact({} as WorldState, rikishi, "ginboshi");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/engine/systems/economics/__tests__/SponsorshipService.test.ts > SponsorshipService > applyAchievementImpact > caps popularity at 100
+AssertionError: expected 90 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 90
+
+ ❯ src/engine/systems/economics/__tests__/SponsorshipService.test.ts:115:45
+    113|       } as any); // eslint-disable-line @typescript-eslint/no-explicit…
+    114|       applyAchievementImpact({} as WorldState, rikishi, "kinboshi");
+    115|       expect(rikishi.economics?.popularity).toBe(100);
+       |                                             ^
+    116|     });
+    117|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:588:17
+ ❯ processTimers node:internal/timers:523:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  2 failed | 126 passed (128)
+      Tests  5 failed | 1034 passed (1039)
+     Errors  1 error
+   Start at  07:30:37
+   Duration  114.42s (transform 5.24s, setup 1.42s, collect 26.71s, tests 119.27s, environment 80.59s, prepare 7.44s)
+
