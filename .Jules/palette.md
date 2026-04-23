@@ -12,4 +12,4 @@
 **Action:** Prefer using the shared `Button` component or `buttonVariants` helper to ensure consistent focus-visible states. For raw `<button>` elements where the component cannot be used, apply the standard focus ring utility classes.
 ## 2026-04-22 - TitleBar Window Controls Focus States
 **Learning:** Custom window control buttons (minimize, maximize, close) using raw HTML `<button>` tags lacked visual focus indicators during keyboard navigation.
-**Action:** Add standard Tailwind UI `focus-visible:ring-2` utilities to custom raw buttons to ensure they remain keyboard accessible.
+**Action:** For buttons flush with container edges (like TitleBar controls), use focus-visible:ring-inset instead of the standard offset to prevent focus ring clipping, while maintaining focus-visible:ring-2 for consistency.
