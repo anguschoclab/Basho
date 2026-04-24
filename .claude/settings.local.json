@@ -75,7 +75,9 @@
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_run_code",
       "Bash(claude mcp *)",
-      "Bash(sort -t: -k2 -rn)"
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(ls .claude/)",
+      "Bash(dir \".claude\")"
     ]
   },
   "outputStyle": "default"
