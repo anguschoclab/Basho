@@ -13,7 +13,7 @@ import { logEngineEvent } from "../events";
  * Apply a single StateImpact to a WorldState.
  * Returns a new WorldState with the impact applied.
  */
-function applyImpact(world: WorldState, impact: StateImpact): WorldState {
+export function applyImpact(world: WorldState, impact: StateImpact): WorldState {
   let result = { ...world };
 
   // Apply entity updates

@@ -195,8 +195,9 @@ function applyBurnoutStep(
   if (currentWeeks === 2) crashProb = 0.35;
   if (currentWeeks >= 3) crashProb = 1.0;
 
-  // Use world week/rikishi ID for stable but stochastic seed
-  const roll = (Math.abs(Math.sin((world.week || 0) + parseInt(r.id.slice(-4), 16))) * 1000) % 1;
+  // Use system RNG for deterministic burnout rolls
+  const burnoutRng = RNGRegistry.getSystemRNG(world, "burnout", `burnout-${r.id}-${world.week}`);
+  const roll = burnoutRng.next();
 
   if (roll < crashProb) {
     return { crashed: true, consecutiveWeeks: currentWeeks };

@@ -4,7 +4,7 @@
  * Step 3: Acquire stable for new game wizard.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { Building, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -84,12 +84,12 @@ export function StableStep({
                       variant="outline"
                       className="text-[8px] font-black uppercase tracking-widest h-5 border-2"
                     >
-                      {(heya as any).facilitiesBand}
+                      {heya.facilitiesBand}
                     </Badge>
                   </div>
                   <p className="text-[10px] text-muted-foreground line-clamp-2 italic italic">
                     "
-                    {(heya as any).descriptor ||
+                    {heya.descriptor ||
                       "A stable with a long-standing history of training excellence."}
                     "
                   </p>

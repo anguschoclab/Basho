@@ -8,13 +8,28 @@
 import type { WorldState } from "../../engine/types/world";
 import { getHallOfFame } from "../../engine/hallOfFame";
 import type { HoFInductee } from "../../engine/hallOfFame";
-import type { Rikishi } from "../../engine/types/rikishi";
+import type { UIRikishi } from "../uiModels";
 import { projectRikishi } from "../rikishiUI";
+
+export interface UIHofInductee extends HoFInductee {
+  rikishi: UIRikishi | null;
+  heyaName: string;
+  greatestFights: Array<{
+    bashoName: string;
+    kimarite: string;
+    opponentName: string;
+    isWin: boolean;
+  }>;
+  yushoList: Array<{
+    year: number;
+    bashoName: string;
+  }>;
+}
 
 /**
  * Project Hall of Fame data for the HOF Page.
  */
-export function projectHOFUIDigest(world: WorldState) {
+export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInductee[] } {
   const rawHof = getHallOfFame(world);
 
   const inductees = rawHof.inductees.map((ind: HoFInductee) => {

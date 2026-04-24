@@ -81,10 +81,10 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "./utilities/uiUtilitie
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "./rikishiUI";
 export {
-  getHallOfFame,
   formatRadarData,
   formatMetaTrends,
 } from "./uiFormatters";
+export { getHallOfFame } from "../engine/hallOfFame";
 export {
   FATIGUE_LABELS,
   TRAIT_LABELS,
@@ -107,6 +107,9 @@ export {
   scoutCandidate,
   offerCandidate,
   recruitSponsor,
+  getCachedPerception,
+  buildPerceptionSnapshot,
+  formatEventTime,
 } from "./uiConstants";
 export { setHeyaDietAction } from "./uiActions";
 // renewSponsorContract removed (unused)

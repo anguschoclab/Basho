@@ -1,7 +1,7 @@
 import type { WorldState } from "../../types/world";
 import type { DailyTickReport } from "../tickDaily";
 import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
-import { applyImpact } from "../../core/ImpactBuilder";
+import { applyImpact } from "../../core/ImpactResolver";
 
 /**
  * Phase: World Circuit Processing (Weekly)

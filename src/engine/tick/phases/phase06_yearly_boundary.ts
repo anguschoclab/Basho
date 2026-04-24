@@ -32,6 +32,19 @@ import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosop
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
   const boundaries = world.transientContext?.boundaries;
+  // 0.2 Global Cup & Worlds Exhibition (Phase 3)
+  // Option B: Multi-day state machine.
+  // Day 1: Initialize (triggered by yearBoundary)
+  // Day 2-3: Advance (triggered as long as isActive is true)
+  if (boundaries?.yearBoundary && !world.globalCup?.isActive) {
+    const cupImpact = GlobalCupService.initializeTournament(world);
+    builder.merge(cupImpact);
+  } else if (world.globalCup?.isActive) {
+    const cupImpact = GlobalCupService.advanceTournament(world);
+    builder.merge(cupImpact);
+  }
+
+  // Only proceed with heavy yearly tasks on the actual Jan 1st boundary
   if (!boundaries?.yearBoundary) return builder.build();
 
   // 0. Era Drift & Meta Evolution (E6)
@@ -41,10 +54,6 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // 0.1 Infrastructure Construction Tick (P2)
   const infraImpact = InfrastructureService.processCompletionTick(world);
   builder.merge(infraImpact);
-
-  // 0.2 Global Cup & Worlds Exhibition (Phase 3)
-  const cupImpact = GlobalCupService.processGlobalCup(world);
-  builder.merge(cupImpact);
 
   // 0.3 Phase 5: Legacy & World Circuit
   // Succession checks for all stables

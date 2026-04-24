@@ -28,6 +28,7 @@ import {
 import { HoFTimeline } from "@/components/game/HoFTimeline";
 import type { HoFCategory } from "@/engine/hallOfFame";
 import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
+import type { UIHofInductee } from "@/presenters/uiProjections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {
@@ -88,8 +89,7 @@ function RikishiPortrait({
 
 // === Inductee Full Card ===
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type from engine doesn't match UI requirements
-function InducteeFullCard({ inductee }: { inductee: any }) {
+function InducteeFullCard({ inductee }: { inductee: UIHofInductee }) {
   const Icon = CATEGORY_ICONS[inductee.category as HoFCategory];
   const label = HOF_CATEGORY_LABELS[inductee.category as HoFCategory];
   const accent = CATEGORY_ACCENT[inductee.category as HoFCategory];
@@ -181,8 +181,7 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
                   Tournament Victories
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch */}
-                  {inductee.yushoList.map((y: any, i: number) => (
+                  {inductee.yushoList.map((y, i) => (
                     <Badge key={i} className="text-[10px] capitalize">
                       {y.bashoName} {y.year}
                     </Badge>
@@ -198,8 +197,7 @@ function InducteeFullCard({ inductee }: { inductee: any }) {
                   <Swords className="h-3 w-3" /> Notable Bouts
                 </div>
                 <div className="space-y-1">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch */}
-                  {inductee.greatestFights.map((f: any, i: number) => (
+                  {inductee.greatestFights.map((f, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs">
                       <span className="text-success">W</span>
                       <span className="text-muted-foreground">vs</span>
@@ -243,10 +241,8 @@ function StatBox({
 function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: any[] }) {
   const label = HOF_CATEGORY_LABELS[category];
 
-  // Group by induction year
   const byYear = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-    const map = new Map<number, any[]>();
+    const map = new Map<number, UIHofInductee[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
@@ -296,8 +292,7 @@ function CategoryTab({ category, inductees }: { category: HoFCategory; inductees
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
 function AllInducteesTab({ inductees }: { inductees: any[] }) {
   const byYear = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-    const map = new Map<number, any[]>();
+    const map = new Map<number, UIHofInductee[]>();
     for (const ind of inductees) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
@@ -349,8 +344,7 @@ export default function HallOfFamePage() {
   const hof = useMemo(() => (world ? projectHOFUIDigest(world) : null), [world]);
 
   const byCategory = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-    const map: Record<HoFCategory, any[]> = { champion: [], iron_man: [], technician: [] };
+    const map: Record<HoFCategory, UIHofInductee[]> = { champion: [], iron_man: [], technician: [] };
     if (!hof) return map;
     for (const ind of hof.inductees) {
       map[ind.category as HoFCategory]?.push(ind);
@@ -418,16 +412,12 @@ export default function HallOfFamePage() {
           <HoFTimeline
             rikishiMap={
               new Map(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-                ((hof?.inductees as any[]) ?? [])
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-                  .map((ind: any) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)])
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-                  .filter((pair: any) => pair[1]) as Array<[string, any]>
+                (hof?.inductees ?? [])
+                  .map((ind) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)])
+                  .filter((pair): pair is [string, any] => !!pair[1])
               )
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Type mismatch with HoFTimeline props
-            inductees={(hof?.inductees as any) ?? []}
+            inductees={hof?.inductees ?? []}
           />
         )}
 
