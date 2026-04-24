@@ -71,7 +71,6 @@ export function BoutControls({
             )}
             aria-label={`Set speed to ${s}x`}
             tooltip={`Set speed to ${s}x`}
-            tooltipSide="top"
           >
             {s}×
           </Button>
