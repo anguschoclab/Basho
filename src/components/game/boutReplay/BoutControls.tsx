@@ -35,7 +35,6 @@ export function BoutControls({
         onClick={onPlayPause}
         aria-label={isPlaying ? "Pause" : "Play"}
         tooltip={isPlaying ? "Pause" : "Play"}
-        tooltipSide="top"
       >
         {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </Button>
