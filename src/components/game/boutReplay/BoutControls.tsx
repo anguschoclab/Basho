@@ -34,6 +34,8 @@ export function BoutControls({
         className="h-8 w-8 shrink-0"
         onClick={onPlayPause}
         aria-label={isPlaying ? "Pause" : "Play"}
+        tooltip={isPlaying ? "Pause" : "Play"}
+        tooltipSide="top"
       >
         {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </Button>
@@ -44,6 +46,8 @@ export function BoutControls({
         className="h-8 w-8 shrink-0"
         onClick={onRestart}
         aria-label="Restart replay"
+        tooltip="Restart replay"
+        tooltipSide="top"
       >
         <RotateCcw className="h-4 w-4" />
       </Button>
@@ -68,6 +72,8 @@ export function BoutControls({
                 : "text-muted-foreground hover:text-foreground",
             )}
             aria-label={`Set speed to ${s}x`}
+            tooltip={`Set speed to ${s}x`}
+            tooltipSide="top"
           >
             {s}×
           </Button>
