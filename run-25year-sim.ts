@@ -58,6 +58,36 @@ async function run25YearSim() {
     Object.entries(metrics.rankDistribution).forEach(([rank, count]) => {
       console.log(`  ${rank.padEnd(12)}: ${count}`);
     });
+
+    console.log("\nArchetype Distribution (Drift Check):");
+    Object.entries(metrics.archetypeDistribution).forEach(([arch, count]) => {
+      console.log(`  ${arch.padEnd(12)}: ${count}`);
+    });
+
+    console.log("\nTop 10 Kimarite (Combat Variety):");
+    metrics.topKimarite.forEach((k, i) => {
+      console.log(`  ${(i + 1).toString().padStart(2)}. ${k.id.padEnd(15)}: ${k.count}`);
+    });
+
+    console.log("\nOyakata Ecosystem:");
+    console.log(`  Total Oyakata:          ${metrics.oyakataMetrics.totalOyakata}`);
+    console.log(`  Retired Rikishi -> Oya: ${metrics.oyakataMetrics.newOyakataFromRikishi}`);
+    console.log(`  Oyakata Promotion Rate: ${metrics.oyakataMetrics.promotionRate.toFixed(1)}%`);
+    console.log(`  Myoseki Saturation:     ${metrics.oyakataMetrics.myosekiSaturation.toFixed(1)}%`);
+
+    console.log("\nHistorical Prestige & Parity:");
+    console.log(`  Bashos without Yokozuna: ${metrics.yokozunaVacantBashoCount}`);
+    console.log(`  Unique Basho Winners:    ${metrics.uniqueWinnerCount}`);
+
+    console.log("\nBeya Dominance (Top 5 Stables):");
+    metrics.beyaDominance.forEach((b, i) => {
+      console.log(`  ${(i + 1).toString().padStart(2)}. ${b.name.padEnd(20)}: ${b.yusho} Yusho`);
+    });
+
+    console.log("\nEntropy & Drift Audit:");
+    console.log(`  Max World Stat:         ${metrics.entropyAudit.maxStat.toFixed(1)}`);
+    console.log(`  Average Rikishi Age:    ${metrics.entropyAudit.avgAge.toFixed(1)}`);
+    console.log(`  Active Injury Rate:     ${metrics.entropyAudit.injuryRate.toFixed(1)}%`);
   }
 }
 

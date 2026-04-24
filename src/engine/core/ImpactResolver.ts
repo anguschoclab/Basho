@@ -172,6 +172,22 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       }
       result = { ...result, staff: nextStaff };
     }
+
+    if (impact.collections.oyakataToAdd) {
+      const nextOyakata = new Map(result.oyakata);
+      for (const o of impact.collections.oyakataToAdd) {
+        nextOyakata.set(o.id, o);
+      }
+      result = { ...result, oyakata: nextOyakata };
+    }
+
+    if (impact.collections.oyakataToRemove) {
+      const nextOyakata = new Map(result.oyakata);
+      for (const id of impact.collections.oyakataToRemove) {
+        nextOyakata.delete(id);
+      }
+      result = { ...result, oyakata: nextOyakata };
+    }
   }
 
   // Apply entity deletions

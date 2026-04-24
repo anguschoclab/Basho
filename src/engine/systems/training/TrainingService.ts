@@ -18,6 +18,7 @@ import type { Rikishi } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { STAT_GROUP } from "../../constants/DevelopmentCurves";
 import type { StateImpact } from "../../core/StateImpact";
 import {
   calculateFatigueDelta,
@@ -268,6 +269,25 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         );
       }
     }
+
+    // 4. Final Enforcements (Clamping & Stat Floors)
+    (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
+      const ceiling = getEffectiveCeiling(updates, key, world.calendar.year);
+      let val = updates[key as keyof Rikishi] as number;
+
+      // Enforce Ceiling
+      val = Math.min(ceiling, val);
+
+      // Enforce Elite Division Floors
+      // This prevents the "Sumo Graveyard" effect where Makuuchi is filled with decayed jobbers.
+      if (rikishi.division === "makuuchi") {
+        val = Math.max(45, val);
+      } else if (rikishi.division === "juryo") {
+        val = Math.max(40, val);
+      }
+
+      updates[key as keyof Rikishi] = val;
+    });
 
     builder.updateRikishi(rikishi.id, updates);
   });

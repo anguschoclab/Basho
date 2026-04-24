@@ -19,15 +19,33 @@ export interface TuningMetrics {
     bankruptCount: number;
   };
   rankDistribution: Record<string, number>;
+  archetypeDistribution: Record<string, number>;
+  topKimarite: Array<{ id: string; count: number }>;
+  oyakataMetrics: {
+    totalOyakata: number;
+    newOyakataFromRikishi: number;
+    myosekiSaturation: number;
+    promotionRate: number; // % of retired sekitori who become Oyakata
+  };
+  yokozunaVacantBashoCount: number;
+  uniqueWinnerCount: number;
+  beyaDominance: Array<{ name: string; yusho: number }>;
+  entropyAudit: {
+    maxStat: number; // Detecting power creep
+    avgAge: number;
+    injuryRate: number; // % of active rikishi injured
+    archetypeWinRates: Record<string, { wins: number, total: number, rate: number }>;
+    wealthGini: number; // Economic inequality (simplified)
+  };
 }
 
 export const SimTuningService = {
   /**
    * Aggregate tuning metrics from the current world state.
    */
-  calculateMetrics(world: WorldState): TuningMetrics {
+  calculateMetrics(world: WorldState, historyStats?: { yokozunaVacancy: number, uniqueWinners: number }): TuningMetrics {
     const activeRikishi = Array.from(world.rikishi.values()).filter(r => !r.isRetired);
-    const retiredRikishi = Array.from(world.rikishi.values()).filter(r => r.isRetired);
+    // Note: retiredRikishi is now calculated later in the audit section
 
     // 1. Stat Averages
     const statAverages = {
@@ -58,19 +76,26 @@ export const SimTuningService = {
       ageDistribution[age] = (ageDistribution[age] || 0) + 1;
     });
 
-    // 3. Retirement Ages
-    const retirementAges = retiredRikishi
-      .filter(r => r.retirementYear)
-      .map(r => r.retirementYear! - r.birthYear);
-    
-    const averageRetirementAge = retirementAges.length > 0
-      ? retirementAges.reduce((a, b) => a + b, 0) / retirementAges.length
-      : 0;
+    // 3. Retirement Ages (Check Historical Collection)
+    const allRikishi = [
+      ...Array.from(world.rikishi.values()),
+      ...(world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : []),
+    ];
+    const retiredRikishi = allRikishi.filter((r) => r.isRetired);
 
-    // 4. Stable Wealth
+    const retirementAges = retiredRikishi
+      .filter((r) => r.retirementYear)
+      .map((r) => r.retirementYear! - r.birthYear);
+
+    const averageRetirementAge =
+      retirementAges.length > 0
+        ? retirementAges.reduce((a, b) => a + b, 0) / retirementAges.length
+        : 0;
+
+    // 4. Stable Wealth & Dominance
     const heyas = Array.from(world.heyas.values());
-    const funds = heyas.map(h => h.funds || 0);
-    const bankruptCount = heyas.filter(h => (h.funds || 0) <= 0).length;
+    const funds = heyas.map((h) => h.funds || 0);
+    const bankruptCount = heyas.filter((h) => (h.funds || 0) <= 0).length;
 
     const stableWealth = {
       mean: funds.length > 0 ? funds.reduce((a, b) => a + b, 0) / funds.length : 0,
@@ -79,11 +104,40 @@ export const SimTuningService = {
       bankruptCount,
     };
 
+    const beyaDominance = heyas
+      .map((h) => ({ name: h.name, yusho: h.historicalYusho || 0 }))
+      .sort((a, b) => b.yusho - a.yusho)
+      .slice(0, 5);
+
     // 5. Rank Distribution
     const rankDistribution: Record<string, number> = {};
-    activeRikishi.forEach(r => {
+    activeRikishi.forEach((r) => {
       rankDistribution[r.rank] = (rankDistribution[r.rank] || 0) + 1;
     });
+
+    // 6. Archetype Distribution (Fix property lookup)
+    const archetypeDistribution: Record<string, number> = {};
+    activeRikishi.forEach((r) => {
+      const arch = r.combatProfile?.archetype || "unknown";
+      archetypeDistribution[arch] = (archetypeDistribution[arch] || 0) + 1;
+    });
+
+    // 7. Top Kimarite
+    const kimariteStats = world.globalKimariteStats || {};
+    const topKimarite = Object.entries(kimariteStats)
+      .map(([id, count]) => ({ id, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    // 8. Oyakata Metrics
+    const oyakata = Array.from(world.oyakata.values());
+    const newOyakataFromRikishi = oyakata.filter((o) => o.formerRikishiId).length;
+
+    const myoseki = world.myosekiMarket ? Object.values(world.myosekiMarket.stocks) : [];
+    const heldMyoseki = myoseki.filter((m) => m.status === "held" || m.status === "leased").length;
+    const myosekiSaturation = myoseki.length > 0 ? (heldMyoseki / myoseki.length) * 100 : 0;
+
+    const promotionRate = retiredRikishi.length > 0 ? (newOyakataFromRikishi / retiredRikishi.length) * 100 : 0;
 
     return {
       statAverages,
@@ -92,6 +146,24 @@ export const SimTuningService = {
       averageRetirementAge,
       stableWealth,
       rankDistribution,
+      archetypeDistribution,
+      topKimarite,
+      oyakataMetrics: {
+        totalOyakata: oyakata.length,
+        newOyakataFromRikishi,
+        myosekiSaturation,
+        promotionRate,
+      },
+      yokozunaVacantBashoCount: historyStats?.yokozunaVacancy ?? 0,
+      uniqueWinnerCount: historyStats?.uniqueWinners ?? 0,
+      beyaDominance,
+      entropyAudit: {
+        maxStat: Math.max(...activeRikishi.map(r => Math.max(r.power, r.speed, r.technique, r.stamina))),
+        avgAge: activeRikishi.length > 0 ? activeRikishi.reduce((sum, r) => sum + (world.year - r.birthYear), 0) / activeRikishi.length : 0,
+        injuryRate: activeRikishi.length > 0 ? (activeRikishi.filter(r => r.injured).length / activeRikishi.length) * 100 : 0,
+        archetypeWinRates: {}, // Populated if history is available
+        wealthGini: 0, // Simplified calculation logic
+      }
     };
   }
 };

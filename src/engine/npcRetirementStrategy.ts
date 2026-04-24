@@ -33,7 +33,7 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
       if (!r) continue;
       const reason = checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
       if (reason) {
-        builder.retireRikishi(id, reason);
+        builder.retireRikishi(id, ctx.world.calendar?.year ?? 2026, reason);
       }
     }
     return builder.build();
@@ -54,12 +54,16 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
   action: (ctx) => {
     const builder = createImpactBuilder("ret_force_stagnant");
     const candidates = (ctx.heya.rikishiIds ?? [])
-      .map(id => ctx.world.rikishi.get(id))
+      .map((id) => ctx.world.rikishi.get(id))
       .filter((r): r is Rikishi => !!r && (ctx.world.calendar?.year ?? 2026) - r.birthYear > 32)
       .sort((a, b) => (a.power ?? 50) - (b.power ?? 50));
 
     if (candidates.length > 0) {
-      builder.retireRikishi(candidates[0].id, "Forced retirement due to stable restructuring");
+      builder.retireRikishi(
+        candidates[0].id,
+        ctx.world.calendar?.year ?? 2026,
+        "Forced retirement due to stable restructuring"
+      );
     }
     return builder.build();
   },

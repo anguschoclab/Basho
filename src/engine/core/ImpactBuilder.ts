@@ -254,6 +254,34 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a new oyakata member to the world.
+   */
+  addOyakata(oyakata: Oyakata): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.oyakataToAdd) {
+      this.impact.collections.oyakataToAdd = [];
+    }
+    this.impact.collections.oyakataToAdd.push(oyakata);
+    return this;
+  }
+
+  /**
+   * Remove an oyakata from the world.
+   */
+  removeOyakata(id: string): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.oyakataToRemove) {
+      this.impact.collections.oyakataToRemove = [];
+    }
+    this.impact.collections.oyakataToRemove.push(id);
+    return this;
+  }
+
+  /**
    * Remove a staff member from the world.
    */
   removeStaff(id: string): ImpactBuilder {
@@ -264,6 +292,20 @@ export class ImpactBuilder {
       this.impact.collections.staffToRemove = [];
     }
     this.impact.collections.staffToRemove.push(id);
+    return this;
+  }
+
+  /**
+   * Remove an oyakata member from the world.
+   */
+  removeOyakata(id: string): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.oyakataToRemove) {
+      this.impact.collections.oyakataToRemove = [];
+    }
+    this.impact.collections.oyakataToRemove.push(id);
     return this;
   }
 
@@ -312,9 +354,15 @@ export class ImpactBuilder {
   }
 
   /**
-   * Move a rikishi from active to historical collection (retirement).
+   * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string): ImpactBuilder {
+  retireRikishi(id: string, year: number, reason: string): ImpactBuilder {
+    this.updateRikishi(id, {
+      isRetired: true,
+      retirementYear: year,
+      retirementReason: reason,
+    });
+
     if (!this.impact.collections) {
       this.impact.collections = {};
     }
@@ -322,6 +370,22 @@ export class ImpactBuilder {
       this.impact.collections.rikishiToHistorical = [];
     }
     this.impact.collections.rikishiToHistorical.push(id);
+    return this;
+  }
+
+  /**
+    if (!this.impact.collections.rikishiToHistorical) {
+      this.impact.collections.rikishiToHistorical = [];
+    }
+    this.impact.collections.rikishiToHistorical.push(id);
+
+    // Also update the rikishi object with retirement metadata
+    this.updateRikishi(id, {
+      isRetired: true,
+      retirementYear: year,
+      retirementReason: reason,
+    });
+
     return this;
   }
 
@@ -591,8 +655,13 @@ export function updateRikishiImpact(
 /**
  * Convenience function to create a retirement impact.
  */
-export function retireRikishiImpact(id: string, source: string): StateImpact {
-  return createImpactBuilder(source).retireRikishi(id).build();
+export function retireRikishiImpact(
+  id: string,
+  year: number,
+  reason: string,
+  source: string
+): StateImpact {
+  return createImpactBuilder(source).retireRikishi(id, year, reason).build();
 }
 
 /**

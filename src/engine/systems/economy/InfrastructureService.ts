@@ -140,7 +140,7 @@ export const InfrastructureService = {
   /**
    * Aggregates all active infrastructure bonuses for a stable.
    */
-  getHeyaBonuses(heya: Heya) {
+  getHeyaBonuses(heya: Heya | undefined) {
     const totalBonuses = {
       statBuffs: {
         strength: 1,
@@ -157,7 +157,7 @@ export const InfrastructureService = {
       fatigueFloor: 0,
     };
 
-    if (!heya.infrastructure) return totalBonuses;
+    if (!heya || !heya.infrastructure) return totalBonuses;
 
     for (const [id, state] of Object.entries(heya.infrastructure)) {
       if (state.status !== "active") continue;

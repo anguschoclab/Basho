@@ -6,7 +6,8 @@ import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
 import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
-import { RANK_HIERARCHY } from "../banzuke";
+import { RANK_HIERARCHY, updateBanzuke } from "../banzuke";
+import type { BashoPerformance } from "../types/banzuke";
 import { assertNever } from "../utils/types";
 
 // === AUTO-SIM CONFIGURATION ===
@@ -112,7 +113,51 @@ export function runAutoSim(
     // Boundary-aware time skip
     currentWorld = advanceDays(currentWorld, 42); // Canon: 6 weeks inter-basho
 
-    currentWorld.currentBashoName = nextBasho;
+    // Map active rikishi to BanzukeEntry for the update logic
+    const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
+    const currentBanzuke = activeRikishi.map(r => ({
+      rikishiId: r.id,
+      division: r.division,
+      position: { rank: r.rank, rankNumber: r.rankNumber, side: r.side }
+    }));
+
+    // Translate standings to BashoPerformance for the banzuke system
+    const perfById = new Map<string, BashoPerformance>();
+    bashoResult.standings.forEach((stats, id) => {
+      perfById.set(id, {
+        rikishiId: id,
+        wins: stats.wins,
+        losses: stats.losses,
+        absences: stats.absences || 0
+      });
+    });
+
+    // Banzuke Update Hook
+    const banzukeResult = updateBanzuke(
+      currentBanzuke,
+      perfById,
+      currentWorld,
+      currentWorld.ozekiKadoban || {},
+      currentWorld.heyas
+    );
+
+    // Update the world state with the new banzuke results
+    // CRITICAL: We MUST update the existing map to preserve rikishi who aren't on the banzuke (the lower ranks)
+    const nextRikishiMap = new Map(currentWorld.rikishi);
+    banzukeResult.newBanzuke.forEach(e => {
+      const r = nextRikishiMap.get(e.rikishiId);
+      if (r) {
+        nextRikishiMap.set(e.rikishiId, { ...r, ...e });
+      }
+    });
+
+    currentWorld = {
+      ...currentWorld,
+      rikishi: nextRikishiMap,
+      currentBashoName: nextBasho,
+      ozekiKadoban: banzukeResult.updatedOzekiKadoban,
+    };
+
     if (isNewYear) currentWorld.year++;
 
     // History tracking
@@ -139,7 +184,13 @@ export function runAutoSim(
     }
   }
 
-  const tuningMetrics = SimTuningService.calculateMetrics(currentWorld);
+  // Final Metrics Calculation
+  const yokozunaCount = Array.from(currentWorld.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired).length;
+  const uniqueWinners = new Set(currentWorld.history?.map(h => h.yusho)).size;
+  const tuningMetrics = SimTuningService.calculateMetrics(currentWorld, {
+    yokozunaVacancy: yokozunaCount === 0 ? 1 : 0,
+    uniqueWinners
+  });
 
   return {
     startYear,

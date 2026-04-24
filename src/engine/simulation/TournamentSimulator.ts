@@ -154,6 +154,60 @@ export function simulateEntireBasho(
     demotions = hookResult.demotions;
   }
 
+  // --- STATE PERSISTENCE ---
+  const nextRikishiMap = new Map(world.rikishi);
+  const nextHeyaMap = new Map(world.heyas);
+
+  // 1. Update all rikishi who participated
+  standings.forEach((stats, id) => {
+    const r = nextRikishiMap.get(id);
+    if (r) {
+      const updated = {
+        ...r,
+        careerWins: (r.careerWins || 0) + stats.wins,
+        careerLosses: (r.careerLosses || 0) + stats.losses,
+        careerAbsences: (r.careerAbsences || 0) + (stats.absences || 0),
+        currentBashoWins: stats.wins,
+        currentBashoLosses: stats.losses,
+      };
+      
+      // Update division-specific records
+      if (updated.divisionRecords?.[r.division]) {
+        updated.divisionRecords[r.division].wins += stats.wins;
+        updated.divisionRecords[r.division].losses += stats.losses;
+      }
+
+      nextRikishiMap.set(id, updated);
+    }
+  });
+
+  // 2. Update Yusho Winner and their stable
+  if (yushoWinner.id) {
+    const winner = nextRikishiMap.get(yushoWinner.id);
+    if (winner) {
+      nextRikishiMap.set(yushoWinner.id, {
+        ...winner,
+        consecutiveYusho: (winner.consecutiveYusho || 0) + 1,
+      });
+
+      const heya = nextHeyaMap.get(winner.heyaId);
+      if (heya) {
+        nextHeyaMap.set(winner.heyaId, {
+          ...heya,
+          historicalYusho: (heya.historicalYusho || 0) + 1,
+        });
+      }
+    }
+  }
+
+  // 3. Update Global Kimarite Stats
+  const globalKimariteStats = { ...(world.globalKimariteStats || {}) };
+  basho.matches.forEach(m => {
+    if (m.result?.kimarite) {
+      globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
+    }
+  });
+
   return {
     bashoName,
     year: world.year,
@@ -164,5 +218,11 @@ export function simulateEntireBasho(
     injuries: Array.from(new Set(injuries)),
     promotions,
     demotions,
+    finalWorld: {
+      ...world,
+      rikishi: nextRikishiMap,
+      heyas: nextHeyaMap,
+      globalKimariteStats,
+    },
   };
 }

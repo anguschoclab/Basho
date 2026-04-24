@@ -34,10 +34,10 @@ export const DynastyService = {
       if (!oyakata) continue;
 
       const age = oyakata.age;
-      // Readiness reaches 100 at age 60
-      const readinessValue = Math.max(0, Math.min(100, (age - 50) * 10));
+      // Readiness reaches 100 at age 65 (JSA Rules)
+      const readinessValue = Math.max(0, Math.min(100, (age - 55) * 10));
       const readiness: "stable" | "transitioning" | "mandatory" =
-        age >= 60 ? "mandatory" : age >= 55 ? "transitioning" : "stable";
+        age >= 65 ? "mandatory" : age >= 60 ? "transitioning" : "stable";
 
       if (oyakata.successionReadiness !== readiness) {
         builder.updateOyakata(oyakata.id, { successionReadiness: readiness });
@@ -46,16 +46,16 @@ export const DynastyService = {
           "discipline",
           {
             incident: "succession_readiness_update",
-            status: age >= 57 ? "warning" : "info",
-            reason: `${oyakata.name} is ${age} years old. Mandatory retirement at 60.`,
+            status: age >= 62 ? "warning" : "info",
+            reason: `${oyakata.name} is ${age} years old. Mandatory retirement at 65 (JSA).`,
             score: readinessValue,
           },
           { heyaId: heya.id }
         );
       }
 
-      // Forced succession at 60
-      if (age >= 60 && !oyakata.retirementYear) {
+      // Forced succession at 65
+      if (age >= 65 && !oyakata.retirementYear) {
         let successorId = oyakata.successorCandidateId;
 
         // Phase 5 Depth: NPC Auto-Succession
@@ -163,11 +163,38 @@ export const DynastyService = {
     const newEra = record.era;
     const newTier = this.deriveLegacyTier(heya, newEra);
 
+    // 4. Create the new Oyakata entity
+    const newOyakataId = `oyakata_promoted_${successorRikishiId}`;
+    const newOyakata = {
+      id: newOyakataId,
+      heyaId: heyaId,
+      name: `${successorRikishi.shikona} Oyakata`,
+      shikona: successorRikishi.shikona,
+      formerShikona: successorRikishi.shikona,
+      highestRank: successorRikishi.rank,
+      age: world.year - successorRikishi.birthYear,
+      yearsInCharge: 0,
+      archetype: "traditionalist", // Default or derived from rikishi archetype
+      traits: {
+        ambition: 50,
+        patience: 50,
+        risk: 50,
+        tradition: 50,
+        compassion: 50,
+      },
+      successionReadiness: 0,
+      avatarConfig: successorRikishi.avatarConfig,
+    };
+
+    builder.addOyakata(newOyakata as any);
+
+    // 5. Retire the rikishi and assign the new Oyakata to the stable
+    builder.retireRikishi(successorRikishiId, world.year, "Promoted to Oyakata");
     builder.updateHeya(heyaId, {
       dynasty: [...(heya.dynasty ?? []), record],
       trainingPhilosophy: evolvedPhilosophy,
       legacyTier: newTier,
-      oyakataId: successorRikishiId, // Successor becomes the new Oyakata
+      oyakataId: newOyakataId,
     });
 
     builder.logEvent(
@@ -177,7 +204,7 @@ export const DynastyService = {
         rikishiId: successorRikishiId,
         shikona: successorRikishi.shikona,
         status: "oyakata_promotion",
-        reason: `${currentOyakata.name} has retired. ${successorRikishi.shikona} takes command.`,
+        reason: `${currentOyakata.name} has reached the JSA retirement age of 65. ${successorRikishi.shikona} takes command.`,
         incident: `A new era begins at ${heya.name}.`,
       },
       { heyaId, importance: "headline" }
