@@ -73,7 +73,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   ) {
     const smallStables: Record<string, number> = {};
     let hasItems = false;
-    const TARGET_ROSTER_SIZE = 15;
+    const TARGET_ROSTER_SIZE = 25;
     for (const h of world.heyas.values()) {
       const currentCount = (h.rikishiIds ?? []).length;
       if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {

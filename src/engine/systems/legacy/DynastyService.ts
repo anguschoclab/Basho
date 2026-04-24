@@ -86,6 +86,7 @@ export const DynastyService = {
     // 1. Current roster & alumni
     for (const rikishi of world.rikishi.values()) {
       const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
+      // Elite candidates: Current sekitori or high-performing alumni
       if (rikishi.heyaId === heyaId && isSekitori) {
         eligible.push(rikishi.id);
         continue;
@@ -94,6 +95,15 @@ export const DynastyService = {
       const wasAlumnus = rikishi.heyaHistory?.some((h) => h.heyaId === heyaId);
       if (wasAlumnus && isSekitori && (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna")) {
         eligible.push(rikishi.id);
+      }
+    }
+
+    // 1.5. Drought Fallback: Senior Makushita from current roster
+    if (eligible.length === 0) {
+      for (const rikishi of world.rikishi.values()) {
+        if (rikishi.heyaId === heyaId && rikishi.division === "makushita" && (rikishi.position.rankNumber || 99) <= 10) {
+          eligible.push(rikishi.id);
+        }
       }
     }
 

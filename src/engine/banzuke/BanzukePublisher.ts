@@ -88,6 +88,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
         promoteToYokozuna = true;
       }
+      // Promotion Case 4: Prestige Promotion (If world has 0 Yokozuna, 13+ win Yusho is enough)
+      else if (isYusho && stats.wins >= 13) {
+        const activeYokozuna = Array.from(world.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired);
+        if (activeYokozuna.length === 0) {
+          promoteToYokozuna = true;
+        }
+      }
 
       // Track consecutive strong performances (12+) for borderline cases
       if (currentWins >= 12) {

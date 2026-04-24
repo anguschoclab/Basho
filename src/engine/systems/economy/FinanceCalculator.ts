@@ -72,8 +72,11 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   }
   const weeklySponsorTierIncome = monthlySponsorTierIncome / 4;
 
+  // JSA Maintenance Subsidy (Safety Net for insolvent stables)
+  const maintenanceSubsidy = heya.funds < 0 ? 500_000 : 0;
+
   const effectiveIncome = Math.max(
-    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome,
+    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + maintenanceSubsidy,
     KOENKAI_SURVIVAL_FLOOR
   );
 

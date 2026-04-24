@@ -58,7 +58,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = { ...nextPools[pt] };
     if (pool.candidatesHidden.length > 0) {
-      const count = rng.int(1, 2);
+      const count = rng.int(3, 5);
       for (let i = 0; i < count; i++) {
         const cId = pool.candidatesHidden.shift();
         if (cId) {
