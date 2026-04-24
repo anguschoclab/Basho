@@ -1,16 +1,17 @@
 📝 Daily Progress & Docs Update
- 🏗️ Codebase Status: Extensive additions to the core game logic and systems. Introduced multiple new types in `src/engine/types/`, utility functions in `src/engine/utils/`, a Web Worker based engine (`src/engine/worker/`), and UI elements (`src/components/`, `src/pages/`, `src/presenters/`).
+🏗️ Codebase Status:
+The core engine heavily utilizes a Web Worker (`engine.worker.ts`) and a Strict Pipeline Architecture (`src/engine/tick/`) to process simulation phases. The strict separation of concerns is actively maintained: the engine processes `StateImpact` and uses `buildPerceptionSnapshot` to emit bounded data, ensuring UI layers (`src/presenters/`, `src/pages/`) only consume observable projections without leaking hidden engine truths.
 
- Current focus is migrating daily and boundary tick logic to the new `Strict Pipeline Architecture` inside `src/engine/tick/`, ensuring zero in-place mutations while evaluating NPC AI responses and UI updates based on `PerceptionSnapshot` data.
+Current focus appears to be migrating and solidifying daily tick pipelines (e.g., `phase01_week_npc_ai.ts`, `phase01_daily_welfare.ts`) and implementing Narrative and Welfare services.
 
- 📖 Basho Constitution Alignment:
- ✅ Aligned: The codebase follows the architectural boundary between the headless simulation engine (`src/engine/`) and the React presentation layer (`src/components/`, `src/pages/`, `src/presenters/`), aligning with the requirement that the UI must consume the engine's output via projections without leaking hidden truths. The `PerceptionSnapshot` correctly bands UI outputs and NPC logic to satisfy A7.1, and `enforceHardCapRosterOverflow` perfectly fulfills C4.3 limit policies.
+📖 Basho Constitution Alignment:
+✅ Aligned: NPC AI uses `buildPerceptionSnapshot` to prevent cheating (A7.1). Roster overflow management successfully integrates `enforceHardCapRosterOverflow` (C4.3). The hysteresis buffer in `NarrativeService.ts` strictly implements `HYSTERESIS_DELTA = 5` (C5.3).
 
- ⚠️ Missing/Deviations: None observed today. The `world.ts` engine (specifically `src/engine/tick/tickDaily.ts` and `src/engine/tick/pipelineRunner.ts`) fully implements the strict tick pipeline with explicit boundary gates (`phase05_monthly_boundary.ts`, `phase06_yearly_boundary.ts`). The `PerceptionSnapshot` (A7.1) is fully integrated into NPC AI logic (`phase01_week_npc_ai.ts`) and UI projections to prevent cheating/leaks. Overflow logic strictly adheres to C4.3 hard caps.
+⚠️ Missing/Deviations: The injury perception logic in `src/engine/descriptorBands.ts` implements `hampered` and `taped_up` but is missing the specific modifiers `favoring_it` and `moving_gingerly` outlined in section C5.4.
 
- 📄 Proposed Documentation Updates:
- docs/architecture.md: (Proposed) Add summary of recent massive codebase expansion.
+📄 Proposed Documentation Updates:
+docs/architecture.md: Add summary of the Strict Pipeline Architecture, StateImpact builder, and narrative hysteresis implementation.
 
- Code Paths Covered: `src/engine/types/*`, `src/engine/utils/*`, `src/engine/worker/*`, `src/engine/world.ts`, `src/presenters/*`, `src/pages/*`, `src/hooks/*`
+Code Paths Covered: `src/engine/tick/*`, `src/engine/systems/narrative/*`, `src/engine/descriptorBands.ts`, `src/presenters/*`
 
- Key Knowledge Gaps Addressed: Detailed the expansion of engine systems and UI layers, establishing the baseline for future simulation and projection development.
+Key Knowledge Gaps Addressed: Validated UI projection constraints against engine truths and documented the exact missing injury modifiers required by the constitution.
