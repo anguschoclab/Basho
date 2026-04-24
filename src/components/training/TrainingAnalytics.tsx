@@ -21,7 +21,7 @@ const commonAxisProps = {
   tick: { fontSize: 10, fontWeight: 600, fontFamily: "JetBrains Mono" },
   axisLine: false,
   tickLine: false,
-};
+} as const;
 
 const commonTooltipProps = {
   contentStyle: {
@@ -33,7 +33,7 @@ const commonTooltipProps = {
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
   },
   labelStyle: { fontWeight: 600, fontFamily: "JetBrains Mono" },
-};
+} as const;
 
 interface TrainingAnalyticsProps {
   trainingEffectivenessData: Array<{
